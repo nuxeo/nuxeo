@@ -2,18 +2,12 @@
 
   <!-- RESOURCES -->
   <assemble>
-    <outputFile>/</outputFile>
-    <unpack>true</unpack>
-    <unpackInNewDirectory>false</unpackInNewDirectory>
     <set>resources</set>
+    <outputFile>/</outputFile>
   </assemble>
-  <artifactSet id="resources">
-    <import>**</import>
-    <includes>
-      <artifact name="nuxeo-platform-ear-resources" classifier="search" type="zip" />
-    </includes>
-  </artifactSet>
-  </fileSet>
+  <zipEntrySet id="resources">
+    <artifact>org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-search</artifact>
+  </zipEntrySet>
 
   <!-- ARTIFACTS -->
   <assemble>

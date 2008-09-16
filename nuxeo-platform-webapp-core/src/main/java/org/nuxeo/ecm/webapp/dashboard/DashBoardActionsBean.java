@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -61,16 +62,12 @@ import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException
 import org.nuxeo.ecm.platform.workflow.api.client.delegate.WAPIBusinessDelegate;
 import org.nuxeo.ecm.platform.workflow.api.client.events.EventNames;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WAPI;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMFilter;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMParticipant;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMProcessInstance;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMProcessInstanceIterator;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemState;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkflowException;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.impl.WMFilterImpl;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.impl.WMParticipantImpl;
-import org.nuxeo.ecm.platform.workflow.api.common.WorkflowConstants;
 import org.nuxeo.ecm.platform.workflow.document.api.ejb.delegate.WorkflowDocumentRelationBusinessDelegate;
 import org.nuxeo.ecm.platform.workflow.document.api.ejb.delegate.WorkflowDocumentSecurityPolicyBusinessDelegate;
 import org.nuxeo.ecm.platform.workflow.document.api.relation.WorkflowDocumentRelationManager;
@@ -297,7 +294,8 @@ public class DashBoardActionsBean extends InputController implements
             Collection<WMWorkItemInstance> workItems = wapi.getWorkItemsFor(
                     participants, WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
 
-            List<DocumentRef> alreadyIn = new ArrayList<DocumentRef>();
+            //NXP-1706 Rux: show all not duplicated document - task pairs, except ended tasks
+            List<List<String>> docTaskPairs = new ArrayList<List<String>>();
             Set<String> pids = new HashSet<String>();
             for(WMWorkItemInstance workItem : workItems) {
                 pids.add(workItem.getProcessInstance().getId());
@@ -313,13 +311,18 @@ public class DashBoardActionsBean extends InputController implements
                         continue;
                     }
                 }
-
+                if (workItem.hasEnded()) {
+                    continue;
+                }
                 String authorName = workItem.getProcessInstance().getAuthorName();
                 String workflowType = workItem.getProcessInstance().getName();
 
                 for (DocumentModel dm : pidDmMap.get(workItem.getProcessInstance().getId())) {
                     DocumentRef docRef = dm.getRef();
-                    if (alreadyIn.contains(docRef)) {
+                    List<String> pair = new ArrayList<String>();
+                    pair.add(docRef.toString());
+                    pair.add(workflowType);
+                    if (docTaskPairs.contains(pair)) {
                         continue;
                     }
 
@@ -334,9 +337,7 @@ public class DashBoardActionsBean extends InputController implements
                     dashBoardItem.setAuthorName(authorName);
                     dashBoardItem.setWorkflowType(workflowType);
                     dashboardItems.add(dashBoardItem);
-
-                    // Do not duplicate in the future.
-                    alreadyIn.add(docRef);
+                    docTaskPairs.add(pair);
                 }
             }
         } catch (WMWorkflowException we) {
@@ -379,15 +380,12 @@ public class DashBoardActionsBean extends InputController implements
         if(uuids == null || uuids.isEmpty()) {
             return new DocumentModelListImpl();
         }
-        StringBuilder coreQuery = new StringBuilder("select * from document ");
-        // in is not implemented yet.
-        for(String id : uuids) {
-            coreQuery.append(" or jcr:uuid = '" + id + "' ");
+        DocumentRef[] refs = new DocumentRef[uuids.size()];
+        int i = 0;
+        for (String uuid : uuids) {
+            refs[i++] = new IdRef(uuid);
         }
-        int or = coreQuery.indexOf("or");
-        coreQuery.replace(or,  or + 2, "where");
-        DocumentModelList documentModelList = documentManager.query(coreQuery.toString());
-        return documentModelList;
+        return documentManager.getDocuments(refs);
     }
 
     @Destroy

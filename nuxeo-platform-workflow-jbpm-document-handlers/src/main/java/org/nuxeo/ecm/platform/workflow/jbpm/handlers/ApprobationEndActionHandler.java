@@ -36,9 +36,7 @@ public class ApprobationEndActionHandler extends
 
     public void execute(ExecutionContext ec) throws Exception {
 
-        log.info("##########################################");
-        log.info("             PROCESS ENDS                 ");
-        log.info("##########################################");
+        log.debug("Ending process");
 
         try {
 

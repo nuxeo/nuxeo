@@ -117,7 +117,7 @@ public abstract class AbstractWorkflowDocumentManager implements
         if (docRef != null) {
             documentManager.unlock(docRef);
             documentManager.save();
-            log.info("Document has been unlocked.... docRef=" + docRef);
+            log.debug("Document has been unlocked.... docRef=" + docRef);
         }
 
     }

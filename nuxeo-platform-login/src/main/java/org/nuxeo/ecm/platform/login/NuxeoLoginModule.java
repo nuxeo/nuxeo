@@ -301,7 +301,8 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             } else {
                 principal = manager.getPrincipal(name);
                 if (principal == null) {
-                    throw new LoginException("principal does not exist");
+                    throw new LoginException(String.format(
+                            "principal %s does not exist", name));
                 }
             }
 
@@ -310,7 +311,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             return principal;
         } catch (Exception e) {
             log.error("createIdentity failed", e);
-            LoginException le = new LoginException("createIdentity failed");
+            LoginException le = new LoginException("createIdentity failed for user " + name);
             le.initCause(e);
             throw le;
         }

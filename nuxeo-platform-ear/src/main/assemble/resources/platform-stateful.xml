@@ -1,17 +1,17 @@
 <assembly>
-  <id>platform-stateful</id>
+  <id>resources-platform-stateful</id>
   <formats>
     <format>zip</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>../../resources_common</directory>
+      <directory>src/main/resources_common</directory>
       <outputDirectory>/</outputDirectory>
       <useDefaultExcludes>true</useDefaultExcludes>
     </fileSet>
     <fileSet>
-      <directory>../../resources_platform-stateful</directory>
+      <directory>src/main/resources_platform-stateful</directory>
       <outputDirectory>/</outputDirectory>
       <useDefaultExcludes>true</useDefaultExcludes>
     </fileSet>

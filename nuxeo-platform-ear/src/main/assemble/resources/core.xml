@@ -1,17 +1,17 @@
 <assembly>
-  <id>core</id>
+  <id>resources-core</id>
   <formats>
     <format>zip</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>../../resources_common</directory>
+      <directory>src/main/resources_common</directory>
       <outputDirectory>/</outputDirectory>
       <useDefaultExcludes>true</useDefaultExcludes>
     </fileSet>
     <fileSet>
-      <directory>../../resources_core</directory>
+      <directory>src/main/resources_core</directory>
       <outputDirectory>/</outputDirectory>
       <useDefaultExcludes>true</useDefaultExcludes>
     </fileSet>

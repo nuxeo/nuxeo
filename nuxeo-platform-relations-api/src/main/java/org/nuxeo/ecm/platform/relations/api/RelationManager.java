@@ -45,6 +45,15 @@ public interface RelationManager extends Serializable {
     Graph getGraphByName(String name) throws ClientException;
 
     /**
+     * Get a transient graph.
+     *
+     * @param type The graph type.
+     * @return the graph.
+     * @throws ClientException
+     */
+    Graph getTransientGraph(String type) throws ClientException;
+
+    /**
      * Gets a resource given a namespace and an object.
      * <p>
      * There can be several resources with different namespaces associated to an

@@ -93,7 +93,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * This Seam bean manages the publishing tab.
- *
+ * 
  * @author Narcis Paslaru
  * @author Florent Guillaume
  * @author Thierry Martins
@@ -230,7 +230,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
      * Helper class to run something with an unrestricted session.
      * <p>
      * The caller should implement the run() method.
-     *
+     * 
      * @author Florent Guillaume
      */
     protected static abstract class UnrestrictedSessionRunner {
@@ -302,7 +302,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
          * This method will run with {@link #unrestrictedSession} available. The
          * field {@link #misc}, suitably cast, can be used to pass values back
          * to the caller.
-         *
+         * 
          * @throws ClientException
          */
         public abstract void run() throws ClientException;
@@ -504,7 +504,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
         if (published) {
 
-            // notifyEvent(org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_PUBLISHED,
+            // notifyEvent(org.nuxeo.ecm.webapp.helpers.EventNames.
+            // DOCUMENT_PUBLISHED,
             // null, comment,
             // null, docToPublish);
 
@@ -515,7 +516,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
         }
 
         if (!forModeration.isEmpty()) {
-            // notifyEvent(org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_SUBMITED_FOR_PUBLICATION,
+            // notifyEvent(org.nuxeo.ecm.webapp.helpers.EventNames.
+            // DOCUMENT_SUBMITED_FOR_PUBLICATION,
             // null, comment,
             // null, docToPublish);
             comment = null;
@@ -675,8 +677,10 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
                     // Fire an event for the publication workflow.
                     // NuxeoPrincipal principal = (NuxeoPrincipal)
-                    // FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
-                    // eventManager.raiseEventsOnDocumentSubmitedForPublication(docToPublish,
+                    // FacesContext.getCurrentInstance().getExternalContext().
+                    // getUserPrincipal();
+                    // eventManager.raiseEventsOnDocumentSubmitedForPublication(
+                    // docToPublish,
                     // section, principal, comment);
 
                     Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
@@ -720,7 +724,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
             documentManager.save();
             // fire an event for the publication workflow
             // NuxeoPrincipal principal = (NuxeoPrincipal)
-            // FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
+            // FacesContext.getCurrentInstance().getExternalContext().
+            // getUserPrincipal();
             // eventManager.raiseEventsOnDirectDocumentPublish(docToPublish,
             // section, principal, comment);
             Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
@@ -792,6 +797,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
         setSectionsModel(null);
         setSelectedSections(null);
         existingPublishedProxy = null;
+        comment = null;
     }
 
     /**

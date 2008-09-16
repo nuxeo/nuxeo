@@ -144,7 +144,7 @@ public class UserManagerActionsBean extends InputController implements
 
     @Create
     public void initialize() throws ClientException {
-        log.info("Initializing...");
+        log.debug("Initializing...");
         principal = (NuxeoPrincipal) FacesContext.getCurrentInstance()
                 .getExternalContext().getUserPrincipal();
         //principalIsAdmin = principal.isAdministrator();
@@ -511,12 +511,12 @@ public class UserManagerActionsBean extends InputController implements
 
     @PrePassivate
     public void saveState() {
-        log.info("PrePassivate");
+        log.debug("@PrePassivate");
     }
 
     @PostActivate
     public void readState() {
-        log.info("PostActivate");
+        log.debug("@PostActivate");
     }
 
     public String getSearchEmail() {

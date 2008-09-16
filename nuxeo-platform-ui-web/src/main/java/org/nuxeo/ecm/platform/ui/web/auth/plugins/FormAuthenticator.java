@@ -48,10 +48,16 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
         try {
             log.debug("Forward to Login Screen");
             String loginError = (String) httpRequest.getAttribute(NXAuthContants.LOGIN_ERROR);
-            if (loginError==null) {
+            if (loginError == null) {
                 httpResponse.sendRedirect(baseURL + loginPage);
             } else {
-                httpResponse.sendRedirect(baseURL + loginPage + "?loginFailed=true");
+                if (NXAuthContants.ERROR_USERNAME_MISSING.equals(loginError)) {
+                    httpResponse.sendRedirect(baseURL + loginPage
+                            + "?loginMissing=true");
+                } else {
+                    httpResponse.sendRedirect(baseURL + loginPage
+                            + "?loginFailed=true");
+                }
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -66,6 +72,12 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
         log.debug("Looking for user/password in the request");
         String userName = httpRequest.getParameter(usernameKey);
         String password = httpRequest.getParameter(passwordKey);
+        // NXP-2650: ugly hack to check if form was submitted
+        if (httpRequest.getParameter(NXAuthContants.FORM_SUBMITTED_MARKER) != null
+                && (userName == null || userName.length() == 0)) {
+            httpRequest.setAttribute(NXAuthContants.LOGIN_ERROR,
+                    NXAuthContants.ERROR_USERNAME_MISSING);
+        }
 
         return new UserIdentificationInfo(userName, password);
     }

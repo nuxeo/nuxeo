@@ -101,11 +101,11 @@ public class CommentManagerImpl implements CommentManager {
         }
 
         try {
-            log.info("trying to connect to ECM platform");
+            log.debug("trying to connect to ECM platform");
             Framework.login();
             RepositoryManager manager = Framework.getService(RepositoryManager.class);
             session = manager.getRepository(repositoryName).open();
-            log.info("CommentManager connected to ECM");
+            log.debug("CommentManager connected to ECM");
             currentRepositoryName = repositoryName;
         } catch (Exception e) {
             log.error("failed to connect to ECM platform", e);

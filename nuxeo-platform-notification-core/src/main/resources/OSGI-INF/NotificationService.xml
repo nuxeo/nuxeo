@@ -68,11 +68,19 @@
     <documentation>
       This extension point can be used to define templates for notifications.
 
-      Inside the template files are supported by default these expressions :
+      By default inside the template files those expressions are available to use:
 
-      ${docId} - displays the UID of the document that produced the notification
+      ${docId} - the UID of the document that produced the notification
 
-      ${author} - displays the user that produced the event
+      ${author} - the user name of who or what produced the event
+
+      ${principalAuthor} - the same as ${author}
+
+      ${principalAuthor.firstName} - the first name of ${principalAuthor}
+      if defined for the corresponding user
+
+      ${principalAuthor.lastName} - the family name of ${principalAuthor}
+      if defined for the corresponding user
 
       ${dateTime) - date and time when it happened - must be formatted according
       to the freemaker rules

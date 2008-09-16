@@ -370,8 +370,8 @@
     <context-param>
       <!-- Maximum disk space per request (in bytes) -->
       <param-name>org.apache.myfaces.trinidad.UPLOAD_MAX_DISK_SPACE</param-name>
-      <!-- Use 20,000K -->
-      <param-value>20480000</param-value>
+      <!-- Use 100MB -->
+      <param-value>104857600</param-value>
     </context-param>
   </extension>
 
