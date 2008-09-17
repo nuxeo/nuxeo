@@ -26,7 +26,6 @@ import java.util.Set;
 
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.Node;
-import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.services.RelationService;
 import org.nuxeo.runtime.api.Framework;
@@ -37,6 +36,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  *
  */
 public class GraphLoadingTest extends NXRuntimeTestCase {
+
     private RelationService service;
 
     private Graph graph;
@@ -53,12 +53,7 @@ public class GraphLoadingTest extends NXRuntimeTestCase {
         assertNotNull(graph);
     }
 
-    //meaningfull test
-    public void testTest() throws Exception {
-        assertTrue(true);
-    }
-
-    public void _testGetStatement() {
+    public void testGetStatement() throws Exception {
         InputStream is = getClass().getResourceAsStream("/post-rdf.xml");
         assertNotNull(is);
         graph.clear();
@@ -66,32 +61,37 @@ public class GraphLoadingTest extends NXRuntimeTestCase {
         graph.read(is, null, null);
         assertNotNull(graph);
         List<Statement> lists = graph.getStatements();
-        assertEquals(9, lists.size());
-    }
+        assertEquals(12, lists.size());
 
-    public void _testGetAllStatementWithURN() {
-        InputStream is = getClass().getResourceAsStream("/post-rdf-with-about.xml");
-        assertNotNull(is);
-        graph.clear();
-        assertTrue(graph.getStatements().isEmpty());
-        graph.read(is, null, null);
-        assertNotNull(graph);
-        List<Statement> lists = graph.getStatements();
-        assertEquals(9, lists.size());
-    }
-    public void _testGetAllStatementWithURL() {
-        InputStream is = getClass().getResourceAsStream("/post-rdf-with-about-with-url.xml");
-        assertNotNull(is);
-        graph.clear();
-        assertTrue(graph.getStatements().isEmpty());
-        graph.read(is, null, null);
-        assertNotNull(graph);
-        List<Statement> lists = graph.getStatements();
-        assertEquals(9, lists.size());
+        // test blank nodes are distinct
         Set<Node> subjects = new HashSet<Node>();
-        for(Statement s : lists) {
+        for (Statement s : lists) {
             subjects.add(s.getSubject());
         }
-        assertEquals(subjects.size(), 3);
+        assertEquals(2, subjects.size());
+    }
+
+    public void testGetAllStatementWithURN() {
+        InputStream is = getClass().getResourceAsStream(
+                "/post-rdf-with-about.xml");
+        assertNotNull(is);
+        graph.clear();
+        assertTrue(graph.getStatements().isEmpty());
+        graph.read(is, null, null);
+        assertNotNull(graph);
+        List<Statement> lists = graph.getStatements();
+        assertEquals(12, lists.size());
+    }
+
+    public void testGetAllStatementWithURL() throws Exception {
+        InputStream is = getClass().getResourceAsStream(
+                "/post-rdf-with-about-with-url.xml");
+        assertNotNull(is);
+        graph.clear();
+        assertTrue(graph.getStatements().isEmpty());
+        graph.read(is, null, null);
+        assertNotNull(graph);
+        List<Statement> lists = graph.getStatements();
+        assertEquals(12, lists.size());
     }
 }
