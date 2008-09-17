@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webapp.security;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ import org.jboss.seam.Seam;
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
@@ -73,6 +75,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  */
 @Name("userManagerActions")
 @Scope(CONVERSATION)
+@Install(precedence = FRAMEWORK)
 public class UserManagerActionsBean extends InputController implements
         UserManagerActions, Serializable {
 
