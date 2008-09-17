@@ -3,7 +3,6 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
@@ -24,7 +23,7 @@
       columnClasses="iconColumn,"
       rowClasses="dataRowEven,dataRowOdd">
      <h:column>
-        <t:graphicImage value="#{nxd:iconPath(document)}" styleClass="iconImage" />
+        <nxu:graphicImage value="#{nxd:iconPath(document)}" styleClass="iconImage" />
      </h:column>
      <h:column>
         <h:commandLink value="#{nxd:titleOrId(document)}" immediate="true"
@@ -46,7 +45,7 @@
       columnClasses="iconColumn,"
       rowClasses="dataRowEven,dataRowOdd">
         <h:column>
-        <t:graphicImage value="#{nxd:iconPath(document)}" styleClass="iconImage" />
+        <nxu:graphicImage value="#{nxd:iconPath(document)}" styleClass="iconImage" />
         </h:column>
         <h:column>
         <h:commandLink value="#{nxd:titleOrId(document)}" immediate="true"
@@ -101,7 +100,7 @@
      -->
 
 
-      <t:dataList
+      <nxu:dataList
           var="item"
           value="#{docModelExistingSelectVerbose[field.schemaName][field.fieldName]}"
           layout="simple"
@@ -111,9 +110,9 @@
             value="#{item}"
             directoryName="#{field.directory}" />
         </div>
-      </t:dataList>
+      </nxu:dataList>
 
-      <t:dataList
+      <nxu:dataList
           value="#{fictiveDocumentModel[field.schemaName][field.fieldName]}"
           var="entry"
           layout="simple"
@@ -124,7 +123,7 @@
         entrySeparator=" "
         display="idAndLabel"
       />
-      </t:dataList>
+      </nxu:dataList>
 
     </h:column>
 
@@ -152,7 +151,7 @@
         rendered="${field.jsfComponent=='nxdir:selectOneListbox'}"
         displayIdAndLabel="true" display="idAndLabel" />
 
-      <t:dataList
+      <nxu:dataList
           var="item"
           value="#{fictiveDocumentModel[field.schemaName][field.fieldName]}"
           layout="simple"
@@ -162,9 +161,9 @@
             value="#{item}"
             directoryName="#{field.directory}" />
         </div>
-      </t:dataList>
+      </nxu:dataList>
 
-      <t:dataList
+      <nxu:dataList
           var="entry"
           value="#{fictiveDocumentModel[field.schemaName][field.fieldName]}"
           layout="simple"
@@ -175,7 +174,7 @@
         entrySeparator=" "
         display="idAndLabel"
       />
-      </t:dataList>
+      </nxu:dataList>
 
     </h:column>
   </h:dataTable>
