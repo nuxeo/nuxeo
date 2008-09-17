@@ -4,34 +4,7 @@ import org.nuxeo.theme.themes.ThemeManager
 import org.nuxeo.theme.types.TypeFamily
 import org.nuxeo.theme.views.ViewType
 import org.nuxeo.theme.fragments.FragmentType
-
-class FragmentInfo {
-
-    FragmentType fragmentType;
-
-    FragmentInfo(FragmentType fragmentType) {
-        this.fragmentType = fragmentType;
-    }
-
-    FragmentType getFragmentType() {
-        return fragmentType;
-    }
-
-    List<ViewType> viewTypes = [];
-
-    void addView(final ViewType viewType) {
-        viewTypes.add(viewType);
-    }
-
-    List<ViewType> getViews() {
-        return viewTypes;
-    }
-
-    int size() {
-        return viewTypes.size();
-    }
-    
-}
+import org.nuxeo.theme.editor.FragmentInfo
 
 fragments = []
 templateEngine = ThemeManager.getTemplateEngine("/st")

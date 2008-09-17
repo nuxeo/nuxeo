@@ -37,6 +37,12 @@
        <mapping pattern="/load_theme">
           <script>/load_theme.groovy</script>
        </mapping>
+       <mapping pattern="/add_theme">
+          <script>/add_theme.groovy</script>
+       </mapping>
+       <mapping pattern="/add_page">
+          <script>/add_page.groovy</script>
+       </mapping>
        <mapping pattern="/repair_theme">
           <script>/repair_theme.groovy</script>
        </mapping>
@@ -60,6 +66,9 @@
        </mapping>
        <mapping pattern="/delete_element">
           <script>/delete_element.groovy</script>
+       </mapping>
+       <mapping pattern="/insert_section_after">
+          <script>/insert_section_after.groovy</script>
        </mapping>
       </mappings>
     </webapp>

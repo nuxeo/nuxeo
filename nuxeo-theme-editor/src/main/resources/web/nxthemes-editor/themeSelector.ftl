@@ -1,5 +1,6 @@
 <#assign themes = script("getThemes.groovy") />
 <#assign pages = script("getPages.groovy") />
+<#assign currentThemeName = script("getCurrentThemeName.groovy") />
 
 <div id="nxthemesThemeSelectorArea" style="width: 100%">
 
@@ -27,7 +28,7 @@
       <li class='${page.className}'><a class="switcher" href="javascript:void(0)"
         name="${page.link}">${page.name}</a></li>
     </#list>
-    <li><a href="javascript:void(0)" onclick="javascript:NXThemesEditor.addPage('nxthemesUiStates.currentTheme.name')"> + </a></li>
+    <li><a href="javascript:void(0)" onclick="javascript:NXThemesEditor.addPage('${currentThemeName}')"> + </a></li>
   </ul>
 
 <div style="clear: both"></div>

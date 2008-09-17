@@ -1,25 +1,17 @@
 
 import org.nuxeo.theme.Manager
 import org.nuxeo.theme.themes.ThemeManager
-
-themes = [];
-
-class ThemeInfo {
-    String name;
-    String link;
-    String className;
-
-    ThemeInfo(String name, String link, String className) {
-        this.name = name;
-        this.link = link;
-        this.className = className;
-    }
-}
-
+import org.nuxeo.theme.editor.ThemeInfo
 
 applicationPath = Request.getParameter("org.nuxeo.theme.application.path")
 
 defaultTheme = ThemeManager.getDefaultTheme(applicationPath)
+
+themes = [];
+if (!defaultTheme.contains("/")) {
+    return themes
+}
+
 defaultThemeName = defaultTheme.split("/")[0]
 defaultPageName = defaultTheme.split("/")[1]
 
