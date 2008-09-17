@@ -26,6 +26,8 @@ import java.security.Principal;
 
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.Name;
@@ -42,10 +44,21 @@ public class UserSessionBean implements Serializable, UserSession {
 
     private Principal currentUser;
 
+    private static final Log log = LogFactory.getLog(UserSessionBean.class);
+
     @Factory(value = "currentUser", scope = SESSION)
     public Principal getCurrentUser() throws Exception {
         if (currentUser == null) {
-            currentUser = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
+            FacesContext fContext=FacesContext.getCurrentInstance();
+            if (fContext==null)
+            {
+                currentUser = null;
+                log.error("Can not fetch user principal from FacesContext : there is no FacesContext attached to the current request");
+            }
+            else
+            {
+                currentUser = fContext.getExternalContext().getUserPrincipal();
+            }
         }
         return currentUser;
     }
@@ -56,7 +69,11 @@ public class UserSessionBean implements Serializable, UserSession {
     }
 
     public boolean isAdministrator() throws Exception {
-        return getCurrentNuxeoPrincipal().isAdministrator();
+        NuxeoPrincipal user = getCurrentNuxeoPrincipal();
+        if (user==null)
+            return false;
+        else
+            return user.isAdministrator();
     }
 
     @Destroy
