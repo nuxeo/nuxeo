@@ -397,7 +397,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
     public Map<String, Serializable> listProcessInstanceAttributes(String pid) {
 
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        if(pid == null) {
+        if (pid == null) {
             return props;
         }
         JbpmWorkflowExecutionContext ctx = getExecutionContext();
@@ -412,7 +412,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         } catch (Exception e) {
             log.error(e);
         }
-        if(vis == null || vis.isEmpty()) {
+        if (vis == null || vis.isEmpty()) {
             return props;
         }
         for (VariableInstance vi : vis) {
@@ -653,12 +653,13 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
     }
 
     public ResultSlice<WMWorkItemInstance> getWorkItemsFor(
-            List<WMParticipant> participants, String state,
-            int firstResult, int maxResults) {
+            List<WMParticipant> participants, String state, int firstResult,
+            int maxResults) {
 
         Collection<WMWorkItemInstance> workItems = new ArrayList<WMWorkItemInstance>();
         if (participants == null || participants.isEmpty()) {
-            return new ResultSlice<WMWorkItemInstance>(workItems, firstResult, maxResults, 0);
+            return new ResultSlice<WMWorkItemInstance>(workItems, firstResult,
+                    maxResults, 0);
         }
         JbpmWorkflowExecutionContext ctx = getExecutionContext();
 
@@ -666,7 +667,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         Session session = jctx.getSession();
 
         List<String> actorIds = new ArrayList<String>(participants.size());
-        for (WMParticipant participant: participants) {
+        for (WMParticipant participant : participants) {
             actorIds.add(participant.getName());
         }
 
@@ -688,11 +689,13 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
                 objects = query.list();
                 totalResults = objects.size();
             } else {
-                // scroll the results a to only collect elements of the required slice
+                // scroll the results a to only collect elements of the required
+                // slice
                 ScrollableResults results = query.scroll();
                 if (results.setRowNumber(firstResult)) {
-                    objects = new ArrayList<Object[]>(maxResults < 100 ? maxResults : 100);
-                    for (int i=0; i<maxResults; i++) {
+                    objects = new ArrayList<Object[]>(
+                            maxResults < 100 ? maxResults : 100);
+                    for (int i = 0; i < maxResults; i++) {
                         objects.add(results.get());
                         if (!results.next()) {
                             break;
@@ -727,7 +730,8 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
             }
         }
         ctx.closeContext();
-        return new ResultSlice<WMWorkItemInstance>(workItems, firstResult, maxResults, totalResults);
+        return new ResultSlice<WMWorkItemInstance>(workItems, firstResult,
+                maxResults, totalResults);
     }
 
     public Collection<WMWorkItemInstance> getWorkItemsFor(
