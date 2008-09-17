@@ -27,7 +27,6 @@ import javax.security.auth.login.LoginContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -61,7 +60,7 @@ public final class IndexingHelper {
     }
 
     private static void index(DocumentModel docModel, CoreSession session,
-            SearchService service) throws IndexingException, ClientException {
+            SearchService service) throws IndexingException {
         if (log.isDebugEnabled()) {
             log.debug("indexing: " + docModel.getPath());
         }
@@ -87,8 +86,7 @@ public final class IndexingHelper {
     }
 
     private static void recursiveIndex(DocumentModel docModel,
-            CoreSession session, SearchService service)
-            throws IndexingException, ClientException {
+            CoreSession session, SearchService service) {
 
         try {
             index(docModel, session, service);
@@ -137,7 +135,7 @@ public final class IndexingHelper {
             // exception here.
             // TODO Not enough protection. Rebuild a session.
             // Trying to index a proxy in the section space.
-            log.error("An error occured trying to index versions...", t);
+            log.error("An error occured trying to index versions for doc: "+ref, t);
         }
     }
 
@@ -319,7 +317,7 @@ public final class IndexingHelper {
     }
 
     private static void recursiveIndex(DocumentModel docModel,
-            CoreSession session) throws Exception {
+            CoreSession session) {
         recursiveIndex(docModel, session,
                 SearchServiceDelegate.getRemoteSearchService());
     }
