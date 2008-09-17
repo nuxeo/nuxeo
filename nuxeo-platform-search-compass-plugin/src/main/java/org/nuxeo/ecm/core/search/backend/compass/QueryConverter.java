@@ -496,10 +496,18 @@ public class QueryConverter {
         CompassQueryStringBuilder sBuilder = session.queryBuilder().queryString(
                 String.format("%s:(%s)", name.replaceAll(PER_PROP_ESCAPE,
                         "\\\\$0"), value.replaceAll(PER_PROP_ESCAPE, "\\\\$0")));
+
+        if (session.getSettings().getSettingAsBoolean("useAndDefaultOperator", false))
+            sBuilder.useAndDefaultOperator();
+
         if (analyzer != null) {
             sBuilder.setAnalyzer(analyzer);
         }
-        return sBuilder.toQuery();
+        CompassQuery res = sBuilder.toQuery();
+        if (res.toString().trim().length() == 0) {
+            return null;
+        }
+        return res;
     }
 
     /**

@@ -45,6 +45,7 @@ import org.compass.core.lucene.util.LuceneUtils;
 import org.compass.core.mapping.rsem.RawResourcePropertyMapping;
 import org.nuxeo.common.utils.Null;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -241,7 +242,7 @@ public class ResourceBuilder {
                 sortOption = sortOption.toLowerCase();
             }
             if ("case-insensitive".equals(sortOption)) {
-                sortValue = sValue.toLowerCase();
+                sortValue = StringUtils.toAscii(sValue).toLowerCase();
             } else {
                 sortValue = sValue;
             }

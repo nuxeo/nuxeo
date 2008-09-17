@@ -6,9 +6,7 @@
     <script>
       <expression>
         executionContext.setVariable("workflow_review_type", "workflowDocumentReviewTypeSerie");
-        System.out.println("Setting workflow review type....");
         executionContext.setVariable("workflowDirectives", new String[] {"workflowDirectiveValidation", "workflowDirectiveVerification"});
-        System.out.println("Setting work item directives for this process definition ....");
       </expression>
    </script>
   </event>

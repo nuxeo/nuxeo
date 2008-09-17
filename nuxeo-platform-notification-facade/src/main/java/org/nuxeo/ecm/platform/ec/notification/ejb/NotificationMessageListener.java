@@ -52,6 +52,7 @@ import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.ecm.platform.events.api.JMSConstant;
 import org.nuxeo.ecm.platform.notification.api.Notification;
+import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.url.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentLocation;
@@ -108,8 +109,7 @@ public class NotificationMessageListener implements MessageListener {
             NotificationService service = NotificationServiceHelper.getNotificationService();
 
             // (2)
-            List<Notification> notifs = service.getNotificationRegistry().getNotificationsForEvent(
-                    eventId);
+            List<Notification> notifs = service.getNotificationsForEvents(eventId);
             if (notifs == null || notifs.isEmpty()) {
                 return;
             }
@@ -328,8 +328,8 @@ public class NotificationMessageListener implements MessageListener {
         if (!documentHasBeenDeleted(message)) {
             DocumentLocation docLoc = new DocumentLocationImpl(
                     message.getRepositoryName(), message.getRef());
-            DocumentView docView = new DocumentViewImpl(docLoc);
-            docView.setViewId("view_documents");
+            TypeInfo typeInfo = message.getAdapter(TypeInfo.class);
+            DocumentView docView = new DocumentViewImpl(docLoc, typeInfo.getDefaultView());
             eventInfo.put(
                     "docUrl",
                     getDocLocator().getUrlFromDocumentView(

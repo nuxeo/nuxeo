@@ -38,7 +38,7 @@ public class StartupActionHandler extends AbstractWorkflowDocumentActionHandler 
 
 
     public void execute(ExecutionContext ec) throws Exception {
-        log.info("             PROCESS STARTS               ");
+        log.debug("Starting process");
 
         // Bind document to process
         bindDocumentToProcess(ec);

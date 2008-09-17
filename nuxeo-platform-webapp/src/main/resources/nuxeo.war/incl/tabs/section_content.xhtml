@@ -12,7 +12,7 @@
   <nxu:methodResult name="provider" value="#{resultsProvidersCache.get('CURRENT_DOC_CHILDREN')}" >
 
   <ui:decorate template="/incl/documents_table.xhtml">
-    <ui:param name="documents" value="#{documentActions.childrenSelectModel}" />
+    <ui:param name="documents" value="#{documentActions.sectionChildrenSelectModel}" />
     <ui:param name="showCheckboxes" value="#{true}" />
     <ui:param name="provider" value="#{provider}" />
     <ui:param name="providerName" value="CURRENT_DOC_CHILDREN" />

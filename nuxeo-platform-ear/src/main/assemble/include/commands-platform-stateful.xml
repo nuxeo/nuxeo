@@ -1,7 +1,0 @@
-<assembly>
-  <assemble>
-    <outputFile>/</outputFile>
-    <set>nuxeo-template-platform-stateful</set>
-  </assemble>
-</assembly>
-

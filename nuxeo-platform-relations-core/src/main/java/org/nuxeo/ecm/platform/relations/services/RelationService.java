@@ -42,6 +42,7 @@ import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.descriptors.GraphDescriptor;
 import org.nuxeo.ecm.platform.relations.descriptors.GraphTypeDescriptor;
 import org.nuxeo.ecm.platform.relations.descriptors.ResourceAdapterDescriptor;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -318,6 +319,15 @@ public class RelationService extends DefaultComponent implements
         return graph;
     }
 
+    public Graph getTransientGraph(String type) throws ClientException {
+        Graph graph = getGraphByType(type);
+        if (graph == null) {
+            throw new RuntimeException(String.format(
+                    "Caught error when instanciating graph %s", type));
+        }
+        return graph;
+    }
+
     // RelationManager interface
 
     public synchronized Graph getGraphByName(String name)
@@ -473,11 +483,15 @@ public class RelationService extends DefaultComponent implements
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(this);
+        if (Boolean.parseBoolean(
+                Framework.getProperty("org.nuxeo.ecm.platform.relations.initOnStartup", "true"))) {
+            context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(this);
+        }
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
+        // this is doing nothing if listener was not registered
         context.getRuntimeContext().getBundle().getBundleContext().removeFrameworkListener(this);
     }
 

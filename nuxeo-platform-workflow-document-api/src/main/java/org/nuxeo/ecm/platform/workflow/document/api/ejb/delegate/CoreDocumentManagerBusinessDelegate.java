@@ -62,15 +62,13 @@ public class CoreDocumentManagerBusinessDelegate implements Serializable {
         log.debug("getDocumentManager()");
 
         if (repositoryUri == null) {
-            log.debug("######################################");
-            log.debug("No repository URI given as paramter...");
-            log.debug("######################################");
+            log.debug("No repository URI given as paramter.");
             return null;
         }
 
         // first destroy if needed
         if (documentManager != null) {
-            log.info("Removing the documentManager first.");
+            log.trace("Removing the documentManager first.");
             documentManager = null;
         }
 

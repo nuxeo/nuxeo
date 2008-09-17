@@ -70,11 +70,15 @@ import org.nuxeo.ecm.directory.Session;
 
 /**
  * This class represents a session against an LDAPDirectory.
- *
+ * 
  * @author Olivier Grisel <ogrisel@nuxeo.com>
- *
+ * 
  */
 public class LDAPSession implements Session, EntrySource {
+
+    protected static final String MISSING_ID_LOWER_CASE = "lower";
+
+    protected static final String MISSING_ID_UPPER_CASE = "upper";
 
     // directory connection parameters
     private static final Log log = LogFactory.getLog(LDAPSession.class);
@@ -649,27 +653,23 @@ public class LDAPSession implements Session, EntrySource {
 
     protected DocumentModelList ldapResultsToDocumentModels(
             NamingEnumeration<SearchResult> results, boolean fetchReferences)
-            throws DirectoryException {
+            throws DirectoryException, NamingException {
         DocumentModelList list = new DocumentModelListImpl();
-        try {
-            DocumentModel entry;
-            while (results.hasMore()) {
-                SearchResult result = results.next();
-                entry = ldapResultToDocumentModel(result, null, fetchReferences);
-                if (entry != null) {
-                    list.add(entry);
-                }
+        DocumentModel entry;
+        while (results.hasMore()) {
+            SearchResult result = results.next();
+            entry = ldapResultToDocumentModel(result, null, fetchReferences);
+            if (entry != null) {
+                list.add(entry);
             }
-        } catch (NamingException e) {
-            throw new DirectoryException("Could not create DocumentModelList",
-                    e);
         }
         log.debug("LDAP search returned " + list.size() + " results");
         return list;
     }
 
     protected DocumentModel ldapResultToDocumentModel(SearchResult result,
-            String entryId, boolean fetchReferences) throws DirectoryException {
+            String entryId, boolean fetchReferences) throws DirectoryException,
+            NamingException {
         Attributes attributes = result.getAttributes();
         Attribute attribute;
         String attributeId;
@@ -677,18 +677,13 @@ public class LDAPSession implements Session, EntrySource {
         Map<String, Object> fieldMap = new HashMap<String, Object>();
 
         if (entryId == null) {
-            try {
-                // NXP-2461: check that id field is filled
-                attribute = attributes.get(idAttribute);
-                if (attribute != null) {
-                    Object entry = attribute.get();
-                    if (entry != null) {
-                        entryId = entry.toString();
-                    }
+            // NXP-2461: check that id field is filled
+            attribute = attributes.get(idAttribute);
+            if (attribute != null) {
+                Object entry = attribute.get();
+                if (entry != null) {
+                    entryId = entry.toString();
                 }
-            } catch (NamingException e) {
-                throw new DirectoryException("could not fetch " + idAttribute,
-                        e);
             }
         }
 
@@ -733,12 +728,24 @@ public class LDAPSession implements Session, EntrySource {
         }
         // check if the idAttribute was returned from the search. If not
         // set it anyway.
-        String fieldId = directory.getFieldMapper().getDirectoryField(idAttribute);
+        String fieldId = directory.getFieldMapper().getDirectoryField(
+                idAttribute);
         Object obj = fieldMap.get(fieldId);
-        if(obj == null) {
-            fieldMap.put(fieldId, entryId);
+        if (obj == null) {
+            fieldMap.put(fieldId, changeEntryIdCase(entryId));
         }
         return fieldMapToDocumentModel(fieldMap);
+    }
+
+    protected String changeEntryIdCase(String id) {
+        String idFieldCase = directory.getConfig().missingIdFieldCase;
+        if (MISSING_ID_LOWER_CASE.equals(idFieldCase)) {
+            return id.toLowerCase();
+        } else if (MISSING_ID_UPPER_CASE.equals(idFieldCase)) {
+            return id.toUpperCase();
+        }
+        // returns the unchanged id
+        return id;
     }
 
     public boolean authenticate(String username, String password)

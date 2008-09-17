@@ -21,15 +21,19 @@ package org.nuxeo.ecm.platform.workflow.jbpm;
 
 import java.io.Serializable;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.common.utils.SerializableHelper;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.ecm.platform.workflow.api.client.wfmc.ResultSlice;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMActivityDefinition;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMActivityInstance;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMFilter;
@@ -365,6 +369,11 @@ public class TestJbpmEngine extends AbstractJbmTestCase {
                 principal, WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
         assertEquals(1, taskInstances.size());
 
+        // equivalent query for multiple participants API
+        taskInstances = engine.getWorkItemsFor(Arrays.asList(principal),
+                WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
+        assertEquals(1, taskInstances.size());
+
         WMWorkItemInstance taskInstance = taskInstances.iterator().next();
         assertEquals(principal.getName(),
                 taskInstance.getParticipant().getName());
@@ -696,6 +705,67 @@ public class TestJbpmEngine extends AbstractJbmTestCase {
         assertNotNull(ti);
 
         engine.terminateProcess(pid);
+        undeployOne(RPATH_PD3);
+    }
+
+    public void testPaginatedTasksAPI() throws WMWorkflowException {
+        WMParticipant principal = new WMParticipantImpl("anguenot");
+
+        deployOne(RPATH_PD3);
+        String wdefID3 = getDefinitionFor(RPATH_PD3).getId();
+
+        // Used both for the process variables and start task parameters for
+        // now.
+        Map<String, Serializable> params = new HashMap<String, Serializable>();
+        params.put(WorkflowConstants.WORKFLOW_CREATOR, "theuser");
+
+        int processesNumber = 29;
+        List<String> pids = new ArrayList<String>(processesNumber);
+        for (int i = 0; i < processesNumber; i++) {
+            pids.add(engine.startProcess(wdefID3, params, params).getId());
+        }
+
+        // check that we can get all the results with the -1 max
+        List<WMParticipant> participants = new ArrayList<WMParticipant>();
+        participants.add(new WMParticipantImpl("theuser"));
+
+        ResultSlice<WMWorkItemInstance> rSlice = engine.getWorkItemsFor(participants,
+                WMWorkItemState.WORKFLOW_TASK_STATE_ALL, 0, -1);
+
+        assertEquals(processesNumber, rSlice.totalResult);
+        assertEquals(processesNumber, rSlice.slice.size());
+
+        // let us take the first 10 results
+        rSlice = engine.getWorkItemsFor(participants,
+                WMWorkItemState.WORKFLOW_TASK_STATE_ALL, 0, 10);
+
+        assertEquals(processesNumber, rSlice.totalResult);
+        assertEquals(10, rSlice.slice.size());
+
+        // let us take the first 35 results of 29 (from #0 to #28)
+        rSlice = engine.getWorkItemsFor(participants,
+                WMWorkItemState.WORKFLOW_TASK_STATE_ALL, 0, 35);
+
+        assertEquals(processesNumber, rSlice.totalResult);
+        assertEquals(29, rSlice.slice.size());
+
+        // let us take the from #5 to #15
+        rSlice = engine.getWorkItemsFor(participants,
+                WMWorkItemState.WORKFLOW_TASK_STATE_ALL, 5, 10);
+
+        assertEquals(processesNumber, rSlice.totalResult);
+        assertEquals(10, rSlice.slice.size());
+
+        // let us take the from #27 to #28
+        rSlice = engine.getWorkItemsFor(participants,
+                WMWorkItemState.WORKFLOW_TASK_STATE_ALL, 27, 10);
+
+        assertEquals(processesNumber, rSlice.totalResult);
+        assertEquals(2, rSlice.slice.size());
+
+        for (String pid : pids) {
+            engine.terminateProcess(pid);
+        }
         undeployOne(RPATH_PD3);
     }
 
@@ -1510,7 +1580,6 @@ public class TestJbpmEngine extends AbstractJbmTestCase {
         assertEquals(1, engine.listProcessInstances(
                 new WMFilterImpl(WorkflowConstants.WORKFLOW_CREATOR,
                         WMFilter.NE, "Joy")).size());
-
 
     }
 

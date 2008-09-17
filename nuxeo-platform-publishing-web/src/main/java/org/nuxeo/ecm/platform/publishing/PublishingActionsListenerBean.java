@@ -167,7 +167,8 @@ public class PublishingActionsListenerBean extends InputController implements
     public String publishDocument() throws PublishingException {
         WMParticipant creator;
         try {
-            WMWorkItemInstance wi = getPublishingWorkItem();
+            PublishingTasks tasks = new PublishingTasks(navigationContext.getCurrentDocument(), currentUser);
+            WMWorkItemInstance wi = tasks.getPublishingWorkItem();
             if (wi == null) {
                 throw new PublishingException(
                         "No publishing task found for user="
@@ -272,7 +273,8 @@ public class PublishingActionsListenerBean extends InputController implements
         }
 
         try {
-            WMWorkItemInstance wi = getPublishingWorkItem();
+            PublishingTasks tasks = new PublishingTasks(navigationContext.getCurrentDocument(), currentUser);
+            WMWorkItemInstance wi = tasks.getPublishingWorkItem();
             if (wi == null) {
                 throw new PublishingException(
                         "No publishing task found for user="
@@ -358,61 +360,7 @@ public class PublishingActionsListenerBean extends InputController implements
         return view;
     }
 
-    protected WMWorkItemInstance getPublishingWorkItem()
-            throws PublishingException {
-        WMWorkItemInstance workItem = null;
 
-        DocumentModel dm = getCurrentDocument();
-
-        try {
-            String[] pids = wfDocRelBD.getWorkflowDocument().getWorkflowInstanceIdsFor(
-                    dm.getRef());
-            for (String pid : pids) {
-
-                // Check we are on the right process.
-                WMProcessInstance pi = wapi.getProcessInstanceById(pid,
-                        WorkflowConstants.WORKFLOW_INSTANCE_STATUS_ACTIVE);
-                if (!pi.getName().equals(
-                        PublishingConstants.WORKFLOW_DEFINITION_NAME)) {
-                    continue;
-                }
-
-                // Now that we are check if this guy has a task.
-                boolean found = false;
-                for (WMWorkItemInstance wi : wapi.listWorkItems(pid,
-                        WMWorkItemState.WORKFLOW_TASK_STATE_STARTED)) {
-                    if (wi.getParticipantName().equals(currentUser.getName())) {
-                        workItem = wi;
-                        found = true;
-                        break;
-                    }
-                    // Try group resolution
-                    if (currentUser instanceof NuxeoPrincipal) {
-                        List<String> groupNames = ((NuxeoPrincipal) currentUser).getAllGroups();
-                        for (String groupName : groupNames) {
-                            if (wi.getParticipantName().equals(groupName)) {
-                                workItem = wi;
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (found) {
-                        break;
-                    }
-
-                }
-
-                if (found) {
-                    break;
-                }
-
-            }
-        } catch (Exception e) {
-            throw new PublishingException(e);
-        }
-        return workItem;
-    }
 
     protected DocumentModel getCurrentDocument() {
         return navigationContext.getCurrentDocument();
@@ -437,7 +385,8 @@ public class PublishingActionsListenerBean extends InputController implements
     public boolean canManagePublishing() throws PublishingException {
         // Current document is a proxy and the current user has a publishing
         // task.
-        return isProxy() && getPublishingWorkItem() != null;
+        PublishingTasks tasks = new PublishingTasks(navigationContext.getCurrentDocument(), currentUser);
+        return isProxy() && tasks.getPublishingWorkItem() != null;
     }
 
     public String getRejectPublishingComment() {

@@ -221,7 +221,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
 
         // :XXX: Apply path rules
         // String docPath = currentItem.getPath().makeAbsolute()
-        // log.info("Doc path is :" + docPath);
+        // log.debug("Doc path is :" + docPath);
         Collection<String> defIds = wrules.getAllowedWorkflowDefinitionNamesByDoctype(docType);
 
         for (String defId : defIds) {
@@ -242,7 +242,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
                 // Lazily remove entries at runtime to avoid having to recheck
                 // in the future. It will be reloaded at startup since this is
                 // defined within extension points though.
-                log.info("Optimization : remove rules because definition no longer exist or is incorrect.");
+                log.debug("Optimization : remove rules because definition no longer exist or is incorrect.");
                 wrules.delRuleByType(defId, docType);
             }
         }
@@ -272,7 +272,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
                 if (proc != null) {
                     procs.add(proc);
                 } else {
-                    log.info("Cleanup up worklfow document mapping....");
+                    log.debug("Cleanup up worklfow document mapping....");
                     wdoc.deleteDocumentWorkflowRef(
                             getCurrentDocument().getRef(), pid);
                 }
@@ -357,8 +357,8 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
             processVariables.put(WorkflowConstants.DOCUMENT_LOCATION_URI,
                     currentServerLocation.getName());
 
-            log.info("About to start a process for participant="
-                    + currentUser.getName());
+            log.debug("About to start a process for participant=" +
+                    currentUser.getName());
 
             workflowPath = wapi.startProcess(wdefId, processVariables, null);
         } catch (WMWorkflowException we) {
@@ -409,7 +409,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
         wfSecurityManager.removeACL(getCurrentDocument().getRef(),
                 reviewModel.getProcessInstanceId());
 
-        log.info("Deny WF rights ............ DONE");
+        log.debug("Deny WF rights");
 
         try {
             workflowInstance = wapi.terminateProcessInstance(wid);
