@@ -3,7 +3,7 @@
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * (LGPL) version 2.1 which accompanies this distributiun, and is available at
  * http://www.gnu.org/licenses/lgpl.html
  *
  * This library is distributed in the hope that it will be useful,
@@ -56,7 +56,8 @@ public class TestLocalAPI extends TestAPI {
 
     private static final Log log = LogFactory.getLog(TestLocalAPI.class);
 
-    protected void doDeployments() throws Exception {
+    @Override
+    protected void setUp() throws Exception {
         // Duplicated from NXRuntimeTestCase
         runtime = Framework.getRuntime();
         if (runtime != null) {
@@ -85,12 +86,6 @@ public class TestLocalAPI extends TestAPI {
         deploy("CoreEventListenerService.xml");
         deploy("DocumentAdapterService.xml");
 
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        doDeployments();
         openSession();
     }
 
