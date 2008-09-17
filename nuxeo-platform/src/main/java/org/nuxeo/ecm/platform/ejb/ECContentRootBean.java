@@ -91,7 +91,7 @@ public class ECContentRootBean implements ECContentRoot, ECContentRootLocal {
 
             return filteredDocuments;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -109,7 +109,7 @@ public class ECContentRootBean implements ECContentRoot, ECContentRootLocal {
 
             return contentRootDocuments;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 

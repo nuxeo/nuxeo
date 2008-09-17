@@ -23,8 +23,6 @@ import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.factory.IndexableResourceFactory;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceConf;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.ResourceTypeDescriptor;
-import org.nuxeo.ecm.platform.audit.search.resources.indexing.AuditIndexableResourceFactory;
-import org.nuxeo.ecm.platform.audit.search.resources.indexing.AuditIndexableResourceImpl;
 import org.nuxeo.ecm.platform.audit.search.resources.indexing.api.ResourceType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -42,13 +40,13 @@ public class TestAuditIndexableResource extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("org.nuxeo.ecm.platform.audit.search",
+        deployContrib("org.nuxeo.ecm.platform.audit.search.tests",
                 "nxsearch-test-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.audit.search",
+        deployContrib("org.nuxeo.ecm.platform.audit.search.tests",
                 "nxsearch-test-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.audit.search",
+        deployContrib("org.nuxeo.ecm.platform.audit.search.tests",
                 "test-nxsearch-backend-compass-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.audit.search",
+        deployContrib("org.nuxeo.ecm.platform.audit.search.tests",
                 "nxsearch-compass-test-contrib.xml");
 
         // Local lookup is enough
@@ -68,11 +66,8 @@ public class TestAuditIndexableResource extends NXRuntimeTestCase {
     public void testAuditResourceTypeRegistration() {
         ResourceTypeDescriptor desc = service.getResourceTypeDescriptorByName(ResourceType.AUDIT);
         assertNotNull(desc);
-
-        assertEquals(AuditIndexableResourceFactory.class, desc.getFactoryClass());
-
         IndexableResourceFactory factory = desc.getFactory();
-        assertTrue(factory.createEmptyIndexableResource() instanceof AuditIndexableResourceImpl);
+        assertNotNull(factory.createEmptyIndexableResource());
     }
 
 }

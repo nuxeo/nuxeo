@@ -14,6 +14,7 @@
  * Contributors:
  *     Narcis Paslaru
  *     Florent Guillaume
+ *     Thierry Martins
  */
 
 package org.nuxeo.ecm.platform.publishing;
@@ -40,12 +41,12 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
-import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -93,7 +94,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * This Seam bean manages the publishing tab.
- * 
+ *
  * @author Narcis Paslaru
  * @author Florent Guillaume
  * @author Thierry Martins
@@ -123,7 +124,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
     @In(create = true)
     protected transient VersioningManager versioningManager;
 
-    @In(create = true, required = true)
+    @In(create = true)
     protected transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
@@ -188,7 +189,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
             }
         }
         return sectionTypes;
-
     }
 
     private DocumentMessageProducer getDocumentMessageProducer()
@@ -230,10 +230,10 @@ public class PublishActionsBean implements PublishActions, Serializable {
      * Helper class to run something with an unrestricted session.
      * <p>
      * The caller should implement the run() method.
-     * 
+     *
      * @author Florent Guillaume
      */
-    protected static abstract class UnrestrictedSessionRunner {
+    protected abstract static class UnrestrictedSessionRunner {
 
         protected String repositoryName;
 
@@ -283,8 +283,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
                 } finally {
                     try {
                         repository.close(unrestrictedSession);
-                    } catch (ClientException e) {
-                        throw e;
                     } catch (Exception e) {
                         throw new ClientException(e);
                     }
@@ -302,11 +300,10 @@ public class PublishActionsBean implements PublishActions, Serializable {
          * This method will run with {@link #unrestrictedSession} available. The
          * field {@link #misc}, suitably cast, can be used to pass values back
          * to the caller.
-         * 
+         *
          * @throws ClientException
          */
         public abstract void run() throws ClientException;
-
     }
 
     protected void getSectionsSelectModel() throws ClientException {
@@ -373,7 +370,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
             }
 
         }.runUnrestricted();
-
     }
 
     private void accumulateAvailableSections(DocumentModelTree sections,
@@ -869,7 +865,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
         } catch (Exception e) {
             throw new ClientException(e);
         }
-
     }
 
     // TODO move to protected
