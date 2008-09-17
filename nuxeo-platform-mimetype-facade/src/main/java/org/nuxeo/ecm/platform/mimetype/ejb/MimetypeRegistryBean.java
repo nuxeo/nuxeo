@@ -48,12 +48,10 @@ import org.nuxeo.runtime.api.Framework;
 @Remote(MimetypeRegistry.class)
 public class MimetypeRegistryBean implements MimetypeRegistry {
 
-    private transient MimetypeRegistry service;
+    private MimetypeRegistry service;
 
-    private MimetypeRegistry getService()
-    {
-        if (service==null)
-        {
+    private MimetypeRegistry getService() {
+        if (service == null) {
             service = Framework.getLocalService(MimetypeRegistry.class);
         }
         return service;
@@ -69,16 +67,20 @@ public class MimetypeRegistryBean implements MimetypeRegistry {
         return getService().getMimetypeFromFile(file);
     }
 
-    @Deprecated // use getMimetypeFromBlob instead (and better with StreamingBlob)
+    @Deprecated
+    // use getMimetypeFromBlob instead (and better with StreamingBlob)
     public String getMimetypeFromStream(InputStream stream)
             throws MimetypeNotFoundException, MimetypeDetectionException {
         return getService().getMimetypeFromStream(stream);
     }
 
-    @Deprecated // use getMimetypeFromBlobWithDefault instead (and better with StreamingBlob)
+    @Deprecated
+    // use getMimetypeFromBlobWithDefault instead (and better with
+    // StreamingBlob)
     public String getMimetypeFromStreamWithDefault(InputStream is,
             String defaultMimetype) throws MimetypeDetectionException {
-        return getService().getMimetypeFromStreamWithDefault(is, defaultMimetype);
+        return getService().getMimetypeFromStreamWithDefault(is,
+                defaultMimetype);
     }
 
     public String getMimetypeFromBlob(Blob blob)
@@ -88,18 +90,19 @@ public class MimetypeRegistryBean implements MimetypeRegistry {
 
     public String getMimetypeFromBlobWithDefault(Blob blob,
             String defaultMimetype) throws MimetypeDetectionException {
-        return getService().getMimetypeFromBlobWithDefault(blob, defaultMimetype);
+        return getService().getMimetypeFromBlobWithDefault(blob,
+                defaultMimetype);
     }
-
 
     public String getMimetypeFromFilenameAndBlobWithDefault(String filename,
-            Blob blob, String defaultMimetype) throws MimetypeDetectionException
-    {
-        return getService().getMimetypeFromFilenameAndBlobWithDefault(filename, blob, defaultMimetype);
+            Blob blob, String defaultMimetype)
+            throws MimetypeDetectionException {
+        return getService().getMimetypeFromFilenameAndBlobWithDefault(filename,
+                blob, defaultMimetype);
     }
 
-
     // to be removed !!!!
+    @Deprecated
     public MimetypeEntry getMimetypeEntryByName(String name) {
         return getService().getMimetypeEntryByName(name);
     }
@@ -107,8 +110,6 @@ public class MimetypeRegistryBean implements MimetypeRegistry {
     public MimetypeEntry getMimetypeEntryByMimeType(String normalized) {
         return getService().getMimetypeEntryByMimeType(normalized);
     }
-
-
 
     // make it easier to test the bean API
     public void registerMimetype(MimetypeEntry mimetype) {

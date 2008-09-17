@@ -19,8 +19,7 @@
           <!-- clip board -->
           <fragment perspectives="default" type="generic fragment" />
           <!-- calendar -->
-          <fragment perspectives="view_calendar"
-            type="generic fragment" />
+          <fragment perspectives="view_calendar" type="generic fragment" />
         </cell>
         <cell><!-- breadcrumbs -->
           <fragment type="generic fragment" /><!-- main area -->
@@ -109,18 +108,15 @@
       element="page[1]/section[1]|page[2]/section[1]|page[3]/section[1]|page[3]/section[2]|page[4]/section[1]">
       <width>100%</width>
     </layout>
-    <layout
-      element="page[1]/section[1]/cell[1]|page[3]/section[1]/cell[1]">
+    <layout element="page[1]/section[1]/cell[1]|page[3]/section[1]/cell[1]">
       <width>18%</width>
     </layout>
-    <layout
-      element="page[1]/section[1]/cell[2]|page[3]/section[1]/cell[2]">
+    <layout element="page[1]/section[1]/cell[2]|page[3]/section[1]/cell[2]">
       <width>82%</width>
       <text-align>right</text-align>
       <padding>0px 10px 0px 0px</padding>
     </layout>
-    <layout
-      element="page[1]/section[1]/cell[3]|page[3]/section[1]/cell[3]">
+    <layout element="page[1]/section[1]/cell[3]|page[3]/section[1]/cell[3]">
       <width>0%</width>
     </layout>
     <layout element="page[1]/section[2]">
@@ -138,8 +134,7 @@
     <layout element="page[1]/section[3]|page[3]/section[4]">
       <width>100%</width>
     </layout>
-    <layout
-      element="page[1]/section[3]/cell[1]|page[3]/section[4]/cell[1]">
+    <layout element="page[1]/section[3]/cell[1]|page[3]/section[4]/cell[1]">
       <width>100%</width>
       <text-align>right</text-align>
     </layout><!-- Page 3 / Section 3 layout and widgets -->
@@ -520,6 +515,18 @@
         <line-height>1.25em</line-height>
         <padding>0</padding>
       </selector>
+      <!-- rich faces tree -->
+      <selector path=".dr-tree-h-ic-div">
+        <margin-left>8px</margin-left>
+        <padding-left>10px</padding-left>
+      </selector>
+      <selector path=".treeNodeHighlightedClass">
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".treeNodeSelectedClass">
+        <border>none</border>
+      </selector>
+      <!-- end of rich faces tree -->
       <selector path=".rightsAddSelect">
         <border>1px inset #666</border>
         <margin-top>0px</margin-top>
@@ -674,8 +681,7 @@
         </background>
         <padding>7px 7px 7px 24px</padding>
       </selector>
-      <selector
-        path=".vocabularyEntryContent .currentDocumentInformation">
+      <selector path=".vocabularyEntryContent .currentDocumentInformation">
         <background-color>#ddeeff</background-color>
       </selector>
       <selector path=".rightsAddLabel">
@@ -772,9 +778,7 @@
       </selector>
       <selector path=".commentAuthor">
         <color>#666</color>
-        <background>
-          url(/nuxeo/icons/comment.gif) no-repeat 4px 4px
-        </background>
+        <background>url(/nuxeo/icons/comment.gif) no-repeat 4px 4px</background>
         <font-weight>bold</font-weight>
         <padding>5px 3px 3px 24px</padding>
       </selector>
@@ -886,12 +890,10 @@
       <selector path=".smallButtonsGadget">
         <margin>0 0 5px 100px</margin>
       </selector>
-      <selector
-        path=".tabsBar a, .tabsBar a:hover, .tabsBar a:visited">
+      <selector path=".tabsBar a, .tabsBar a:hover, .tabsBar a:visited">
         <color>#5b2820</color>
         <background>
-          url(/nuxeo/img/courrier/tabs/tab_right.gif) no-repeat right
-          top
+          url(/nuxeo/img/courrier/tabs/tab_right.gif) no-repeat right top
         </background>
         <text-decoration>none</text-decoration>
         <font-weight>normal</font-weight>
@@ -963,8 +965,7 @@
       </selector>
       <selector path=".tabsBar li.selected">
         <background>
-          url(/nuxeo/img/courrier/tabs/tab_selected_left.gif) no-repeat
-          left top
+          url(/nuxeo/img/courrier/tabs/tab_selected_left.gif) no-repeat left top
         </background>
         <margin>0 0 0 5px</margin>
         <padding>0 0 0 6px</padding>
@@ -992,8 +993,8 @@
         path=".tabsBar li.selected a, .tabsBar li.selected a:hover, .tabsBar li.selected a:visited">
         <color>#0066cc</color>
         <background>
-          url(/nuxeo/img/courrier/tabs/tab_selected_right.gif) no-repeat
-          right top
+          url(/nuxeo/img/courrier/tabs/tab_selected_right.gif) no-repeat right
+          top
         </background>
         <text-decoration>none</text-decoration>
         <font-weight>normal</font-weight>
@@ -1078,8 +1079,7 @@
       <selector path="table.trashTable tbody tr.dataRowOdd">
         <background-color>#f6f0ee</background-color>
       </selector>
-      <selector path=".trashButtons input.button:hover">
-      </selector>
+      <selector path=".trashButtons input.button:hover"></selector>
     </style>
     <style name="common style 2">
       <selector path="h1,h2,h3,h4">
@@ -1089,13 +1089,14 @@
       <selector path="input">
         <display>none</display>
       </selector>
-      <selector path=".dataOutput .iconColumn img, .dataInput .iconColumn img, .dataList .iconColumn img">
+      <selector
+        path=".dataOutput .iconColumn img, .dataInput .iconColumn img, .dataList .iconColumn img">
         <display>block</display>
       </selector>
       <selector path=".fieldColumn">
         <padding-left>5px</padding-left>
       </selector>
-        <selector path=".dataOutput th, .dataList th">
+      <selector path=".dataOutput th, .dataList th">
         <color>#fff</color>
         <background-color>#e0e0e0</background-color>
         <padding>4px 5px</padding>
@@ -1115,7 +1116,7 @@
       <selector path=".dataInput, .dataOutput, .dataList">
         <border-collapse>collapse</border-collapse>
       </selector>
-      <selector path=".dataOutput input, .dataInput input, .dataList input"/>
+      <selector path=".dataOutput input, .dataInput input, .dataList input" />
       <selector path="ul">
         <display>none</display>
       </selector>
@@ -1142,8 +1143,7 @@
         <border>none</border>
       </selector>
       <selector path="" view="page frame">
-        <background
-          preset="blue.gradation (Courrier default backgrounds)" />
+        <background preset="blue.gradation (Courrier default backgrounds)" />
       </selector>
     </style><!-- Banner -->
     <style element="page[1]/section[1]/cell[2]">
@@ -1169,8 +1169,7 @@
         <padding>3px 3px 3px 20px</padding>
         <font-size>11px</font-size>
       </selector>
-      <selector path="a, a:link, a:visited"
-        view="nuxeo5 user services">
+      <selector path="a, a:link, a:visited" view="nuxeo5 user services">
         <text-decoration>none</text-decoration>
       </selector>
       <selector path="a:hover, a:active" view="nuxeo5 user services">
@@ -1186,34 +1185,31 @@
         <margin-right>2px</margin-right>
         <vertical-align>middle</vertical-align>
       </selector>
-      <selector path=".advancedSearchLink"
-        view="nuxeo5 user services">
+      <selector path=".advancedSearchLink" view="nuxeo5 user services">
         <margin>0 2px 0 0</margin>
         <padding>0</padding>
         <line-height>1%</line-height>
       </selector>
-      <selector path=".userServices .button"
-        view="nuxeo5 user services">
+      <selector path=".userServices .button" view="nuxeo5 user services">
         <margin-right>4px</margin-right>
       </selector>
     </style><!-- Left side -->
     <style element="page[1]/section[2]/cell[1]">
       <selector path="" view="cell frame">
         <background>
-          transparent url(/nuxeo/img/courrier/swoosh_bottom.gif)
-          no-repeat left top
+          transparent url(/nuxeo/img/courrier/swoosh_bottom.gif) no-repeat left
+          top
         </background>
       </selector>
     </style>
-    <style element="page[1]/section[2]/cell[1]/fragment[1]">
-      <selector
-        path="div,dd,dt,dl,img,p,h1,h2,h3,h4,h5,form,hr,fieldset"
+    <style element="page[1]/section[2]/cell[1]/fragment[1]"
+      inherit="common style 1">
+      <selector path="div,dd,dt,dl,img,p,h1,h2,h3,h4,h5,form,hr,fieldset"
         view="nuxeo5 tree explorer">
         <margin>0</margin>
         <padding>0</padding>
       </selector>
-      <selector
-        path=".treeLink a, .treeLink a:link, .treeLink a:visited"
+      <selector path=".treeLink a, .treeLink a:link, .treeLink a:visited"
         view="nuxeo5 tree explorer">
         <font-weight>normal</font-weight>
         <text-decoration>none</text-decoration>
@@ -1275,11 +1271,9 @@
       <selector path=".dropInto" view="nuxeo5 clip board">
         <background-color>#adf</background-color>
       </selector>
-      <selector path=".dropIntoClipboardCopy"
-        view="nuxeo5 clip board">
+      <selector path=".dropIntoClipboardCopy" view="nuxeo5 clip board">
         <background>
-          url(/nuxeo/icons/action_clipboard_copy.gif) no-repeat 98% 3%
-          #adf
+          url(/nuxeo/icons/action_clipboard_copy.gif) no-repeat 98% 3% #adf
         </background>
       </selector>
       <selector path="#clipboardCopy" view="nuxeo5 clip board">
@@ -1315,8 +1309,7 @@
       <selector path=".clipboardFunction" view="nuxeo5 clip board">
         <padding>2px 2px 2px 2px</padding>
       </selector>
-      <selector path=".clipboardEmptyMessage"
-        view="nuxeo5 clip board">
+      <selector path=".clipboardEmptyMessage" view="nuxeo5 clip board">
         <color>#666</color>
         <font-style>italic</font-style>
         <font-size>9px</font-size>
@@ -1326,8 +1319,7 @@
       <selector path=".userClipboardTabs a" view="nuxeo5 clip board">
         <color>#454545</color>
         <background>
-          transparent
-          url(/nuxeo/img/courrier/tabs/userclipboard/tab_right.gif)
+          transparent url(/nuxeo/img/courrier/tabs/userclipboard/tab_right.gif)
           no-repeat right top
         </background>
         <text-decoration>none</text-decoration>
@@ -1337,8 +1329,7 @@
       </selector>
       <selector path=".userClipboardTabs li" view="nuxeo5 clip board">
         <background>
-          transparent
-          url(/nuxeo/img/courrier/tabs/userclipboard/tab_left.gif)
+          transparent url(/nuxeo/img/courrier/tabs/userclipboard/tab_left.gif)
           no-repeat top left
         </background>
         <margin>0 0 0 5px</margin>
@@ -1392,8 +1383,7 @@
         <margin>30px 0px 0px 0px</margin>
       </selector>
     </style><!-- Main cell -->
-    <style
-      element="page[1]/section[2]/cell[2]|page[2]/section[1]/cell[1]">
+    <style element="page[1]/section[2]/cell[2]|page[2]/section[1]/cell[1]">
       <selector path="" view="cell frame" />
     </style>
     <style element="page[3]/section[2]/cell[1]">
@@ -1403,8 +1393,8 @@
       <selector path="" view="nuxeo5 breadcrumbs">
         <margin>2px 22px 0px</margin>
         <background>
-          transparent url(/nuxeo/img/courrier/breadcrumb_right.gif)
-          no-repeat scroll right top
+          transparent url(/nuxeo/img/courrier/breadcrumb_right.gif) no-repeat
+          scroll right top
         </background>
       </selector>
       <selector path="div" view="nuxeo5 breadcrumbs">
@@ -1445,7 +1435,8 @@
       <selector path=".printButton div a img" view="nuxeo5 breadcrumbs">
         <margin-left>5px</margin-left>
       </selector>
-      <selector path=".printButton .liveEditCreateButtons" view="nuxeo5 breadcrumbs">
+      <selector path=".printButton .liveEditCreateButtons"
+        view="nuxeo5 breadcrumbs">
         <margin-right>5px</margin-right>
         <padding-right>8px</padding-right>
         <border-right>1px solid #ccc</border-right>
@@ -1455,8 +1446,8 @@
         <padding>4px 20px 4px 4px</padding>
         <float>left</float>
         <background>
-          transparent url(/nuxeo/img/courrier/breadcrumb_left.gif)
-          no-repeat scroll left top
+          transparent url(/nuxeo/img/courrier/breadcrumb_left.gif) no-repeat
+          scroll left top
         </background>
       </selector>
     </style>
@@ -1466,8 +1457,8 @@
         <padding>0</padding>
         <margin-bottom>10px</margin-bottom>
         <background>
-          transparent url(/nuxeo/img/courrier/breadcrumb_right.gif)
-          no-repeat scroll right top
+          transparent url(/nuxeo/img/courrier/breadcrumb_right.gif) no-repeat
+          scroll right top
         </background>
       </selector>
       <selector path="div" view="nuxeo5 breadcrumbs">
@@ -1509,7 +1500,8 @@
       <selector path=".printButton div a img" view="nuxeo5 breadcrumbs">
         <margin-left>5px</margin-left>
       </selector>
-      <selector path=".printButton .liveEditCreateButtons" view="nuxeo5 breadcrumbs">
+      <selector path=".printButton .liveEditCreateButtons"
+        view="nuxeo5 breadcrumbs">
         <margin-right>5px</margin-right>
         <padding-right>8px</padding-right>
         <border-right>1px solid #ccc</border-right>
@@ -1520,8 +1512,8 @@
       <selector path=".breadcrumbs" view="nuxeo5 breadcrumbs">
         <margin-bottom>5px</margin-bottom>
         <background>
-          transparent url(/nuxeo/img/courrier/breadcrumb_left.gif)
-          no-repeat scroll left top
+          transparent url(/nuxeo/img/courrier/breadcrumb_left.gif) no-repeat
+          scroll left top
         </background>
         <font-size>9px</font-size>
         <padding>4px 20px 4px 4px</padding>
@@ -1541,8 +1533,7 @@
         <font preset="small (Nuxeo default fonts)" />
         <color>#ffffff</color>
         <background>
-          transparent url(/nuxeo/img/courrier/footer.gif) no-repeat top
-          right
+          transparent url(/nuxeo/img/courrier/footer.gif) no-repeat top right
         </background>
         <padding>5px 15px 5px 5px</padding>
       </selector>
@@ -1628,13 +1619,12 @@
       </selector>
       <selector path="" view="facelet region">
         <background>
-          transparent url(/nuxeo/img/courrier/mainFragment_bg.gif)
-          no-repeat top left
+          transparent url(/nuxeo/img/courrier/mainFragment_bg.gif) no-repeat top
+          left
         </background>
       </selector>
     </style><!-- main fragment for default page & popup -->
-    <style
-      element="page[3]/section[3]/cell[1]|page[3]/section[3]/cell[2]"
+    <style element="page[3]/section[3]/cell[1]|page[3]/section[3]/cell[2]"
       inherit="common style 1">
       <selector path="div.syndicationButton" view="facelet region">
         <background>

@@ -35,7 +35,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.core.Pages;
+import org.jboss.seam.navigation.Pages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -77,7 +77,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
     private static final Log log = LogFactory.getLog(BreadcrumbActionsBean.class);
 
     @In(create = true)
-    transient NavigationContext navigationContext;
+    NavigationContext navigationContext;
 
     @In(create = true, required = false)
     private CoreSession documentManager;

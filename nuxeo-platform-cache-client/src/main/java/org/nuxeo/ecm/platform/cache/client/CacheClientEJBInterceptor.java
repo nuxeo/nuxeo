@@ -86,19 +86,18 @@ public class CacheClientEJBInterceptor implements Interceptor, Serializable {
     private synchronized Object handleMethodInvokation(
             final MethodInvocation invocation) throws Throwable {
 
-        final Object result;
-
         final Method method = invocation.getMethod();
         final Annotation[] anns = method.getAnnotations(); // not null
         final Object[] args = invocation.getArguments(); // could be null
 
         log.debug("invoked method             : " + method);
         log.debug("invoked method annotations : " + Arrays.asList(anns));
+
+        final Object result;
         if (args == null) {
             // not interesting from the cache point of view - cannot obtain
             // anything
-            log
-                    .debug("no arguments method - no cache object required. pass over the invocation.");
+            log.debug("no arguments method - no cache object required. pass over the invocation.");
             result = invocation.invokeNext();
         } else {
             log.debug("invoked method  arguments  : " + Arrays.asList(args));
