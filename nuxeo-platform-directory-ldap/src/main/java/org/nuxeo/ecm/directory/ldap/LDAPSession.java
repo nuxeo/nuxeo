@@ -70,9 +70,9 @@ import org.nuxeo.ecm.directory.Session;
 
 /**
  * This class represents a session against an LDAPDirectory.
- * 
+ *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
- * 
+ *
  */
 public class LDAPSession implements Session, EntrySource {
 
@@ -704,24 +704,24 @@ public class LDAPSession implements Session, EntrySource {
         for (String fieldName : schemaFieldMap.keySet()) {
             Reference reference = directory.getReference(fieldName);
             if (reference != null) {
-                // reference resolution
-                List<String> referencedIds;
-                if (!fetchReferences) {
-                    referencedIds = new ArrayList<String>();
-                }
-                if (reference instanceof LDAPReference) {
-                    // optim: use the current LDAPSession directly to provide
-                    // the LDAP reference with the needed backend entries
-                    LDAPReference ldapReference = (LDAPReference) reference;
-                    referencedIds = ldapReference.getLdapTargetIds(attributes);
-                } else {
-                    try {
-                        referencedIds = reference.getTargetIdsForSource(entryId);
-                    } catch (ClientException e) {
-                        throw new DirectoryException(e);
+                if (fetchReferences) {
+                    // reference resolution
+                    List<String> referencedIds;
+                    if (reference instanceof LDAPReference) {
+                        // optim: use the current LDAPSession directly to
+                        // provide
+                        // the LDAP reference with the needed backend entries
+                        LDAPReference ldapReference = (LDAPReference) reference;
+                        referencedIds = ldapReference.getLdapTargetIds(attributes);
+                    } else {
+                        try {
+                            referencedIds = reference.getTargetIdsForSource(entryId);
+                        } catch (ClientException e) {
+                            throw new DirectoryException(e);
+                        }
                     }
+                    fieldMap.put(fieldName, referencedIds);
                 }
-                fieldMap.put(fieldName, referencedIds);
             } else {
                 // manage directly stored fields
                 String attributeId = directory.getFieldMapper().getBackendField(
