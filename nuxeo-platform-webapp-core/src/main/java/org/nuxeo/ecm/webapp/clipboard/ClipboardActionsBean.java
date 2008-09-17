@@ -102,7 +102,7 @@ public class ClipboardActionsBean extends InputController implements
 
     private static final String MOVE_OUTCOME = "after_move";
 
-    private static final String DELETED_LIFECYCLE_STATE = "deleted";
+    public static final String DELETED_LIFECYCLE_STATE = "deleted";
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;

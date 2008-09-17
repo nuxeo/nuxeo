@@ -37,13 +37,16 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
+import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.ecm.webapp.clipboard.ClipboardActionsBean;
 
 @Name("startupHelper")
 @Scope(SESSION)
@@ -148,8 +151,10 @@ public class StartupHelper implements Serializable {
 
         FacetFilter facetFilter = new FacetFilter(
                 FacetNames.HIDDEN_IN_NAVIGATION, false);
+        LifeCycleFilter lcFilter = new LifeCycleFilter(ClipboardActionsBean.DELETED_LIFECYCLE_STATE,false);
+        CompoundFilter complexFilter = new CompoundFilter(facetFilter,lcFilter);
         DocumentModelList domains = documentManager.getChildren(
-                rootDocument.getRef(), null, SecurityConstants.READ, facetFilter, null);
+                rootDocument.getRef(), null, SecurityConstants.READ, complexFilter, null);
 
         if (domains.size() == 1) {
             // select and go to the unique domain
