@@ -366,12 +366,9 @@ public class JenaGraph implements Graph {
         }
         Node nuxNode = null;
         if (jenaNodeInst.isBlank()) {
-            // AT: blank node id is not relevant and is a problem when comparing
-            // nodes
-            // AnonId anonId = jenaNodeInst.getBlankNodeId();
-            // String id = anonId.getLabelString();
-            // nuxNode = NodeFactory.createBlank(id);
-            nuxNode = NodeFactory.createBlank();
+            AnonId anonId = jenaNodeInst.getBlankNodeId();
+            String id = anonId.getLabelString();
+            nuxNode = NodeFactory.createBlank(id);
         } else if (jenaNodeInst.isLiteral()) {
             LiteralLabel label = jenaNodeInst.getLiteral();
             String value = label.getLexicalForm();
@@ -414,7 +411,8 @@ public class JenaGraph implements Graph {
      * @param nuxStatement NXRelations statement
      * @return jena statement selector
      */
-    private static SimpleSelector getJenaSelector(Model graph, Statement nuxStatement) {
+    private static SimpleSelector getJenaSelector(Model graph,
+            Statement nuxStatement) {
         com.hp.hpl.jena.rdf.model.Resource subjResource = null;
         com.hp.hpl.jena.graph.Node subject = getJenaNode(nuxStatement.getSubject());
         if (subject != null && subject.isURI()) {
@@ -477,7 +475,9 @@ public class JenaGraph implements Graph {
             List<com.hp.hpl.jena.rdf.model.Statement> jenaStatements) {
         List<Statement> nuxStmts = new ArrayList<Statement>();
         for (com.hp.hpl.jena.rdf.model.Statement jenaStmt : jenaStatements) {
-            if (!jenaStmt.getSubject().isAnon()) {
+            // NXP-2665: remove reified statements are they're as properties in
+            // nuxeo logic
+            if (!jenaStmt.getSubject().canAs(ReifiedStatement.class)) {
                 nuxStmts.add(getNXRelationsStatement(graph, jenaStmt));
             }
         }
