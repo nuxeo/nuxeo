@@ -14,37 +14,37 @@ String id = Request.getParameter("element_id")
 String property = Request.getParameter("property")
 String value = Request.getParameter("value")
 
-Element element = ThemeManager.getElementById(id);
+Element element = ThemeManager.getElementById(id)
 if (element == null) {
-    return;
+    return
 }
 
-Style style = (Style) ElementFormatter.getFormatFor(element, "style");
+Style style = (Style) ElementFormatter.getFormatFor(element, "style")
 if (style == null) {
-    style = (Style) FormatFactory.create("style");
-    Manager.getThemeManager().registerFormat(style);
-    ElementFormatter.setFormat(element, style);
+    style = (Style) FormatFactory.create("style")
+    Manager.getThemeManager().registerFormat(style)
+    ElementFormatter.setFormat(element, style)
 }
 
-Widget widget = (Widget) ElementFormatter.getFormatFor(element, "widget");
+Widget widget = (Widget) ElementFormatter.getFormatFor(element, "widget")
 if (widget == null) {
-    return;
+    return
 }
 
-String viewName = widget.getName();
+String viewName = widget.getName()
 
-Properties properties = style.getPropertiesFor(viewName, "");
+Properties properties = style.getPropertiesFor(viewName, "")
 if (properties == null) {
-    properties = new Properties();
+    properties = new Properties()
 }
 if (value == null) {
-    properties.remove(property);
+    properties.remove(property)
 } else {
-    properties.setProperty(property, value);
+    properties.setProperty(property, value)
 }
-style.setPropertiesFor(viewName, "", properties);
+style.setPropertiesFor(viewName, "", properties)
 
-EventManager eventManager = Manager.getEventManager();
-eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element, null));
-eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(style, null));
+EventManager eventManager = Manager.getEventManager()
+eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element, null))
+eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(style, null))
 

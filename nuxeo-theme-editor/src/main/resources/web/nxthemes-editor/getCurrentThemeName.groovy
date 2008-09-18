@@ -11,4 +11,3 @@ currentPagePath = Context.getCookie("nxthemes.theme", defaultTheme)
 currentThemeName = currentPagePath.split("/")[0]
 
 return currentThemeName
-

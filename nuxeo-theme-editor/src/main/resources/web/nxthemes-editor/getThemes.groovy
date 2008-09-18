@@ -7,7 +7,7 @@ applicationPath = Request.getParameter("org.nuxeo.theme.application.path")
 
 defaultTheme = ThemeManager.getDefaultTheme(applicationPath)
 
-themes = [];
+themes = []
 if (!defaultTheme.contains("/")) {
     return themes
 }
@@ -19,15 +19,15 @@ currentPagePath = Context.getCookie("nxthemes.theme", defaultTheme)
 
 currentThemeName = currentPagePath.split("/")[0]
 
-themeManager = Manager.getThemeManager();
+themeManager = Manager.getThemeManager()
 for (themeName in themeManager.getThemeNames()) {
-  link = String.format("%s/%s", themeName, defaultPageName);
-  className = themeName.equals(currentThemeName) ? "selected" : "";
+  link = String.format("%s/%s", themeName, defaultPageName)
+  className = themeName.equals(currentThemeName) ? "selected" : ""
   if (link.equals(defaultThemeName)) {
-    className += " default";
+    className += " default"
   }
-  themes.add(new ThemeInfo(themeName, link, className));
+  themes.add(new ThemeInfo(themeName, link, className))
 }
 
-return themes;
+return themes
 

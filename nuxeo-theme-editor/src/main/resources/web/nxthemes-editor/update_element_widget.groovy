@@ -10,18 +10,19 @@ import org.nuxeo.theme.formats.FormatType
 import org.nuxeo.theme.types.TypeFamily
 import org.nuxeo.theme.elements.ElementFormatter
 
-id = Request.getParameter("id");
-viewName = Request.getParameter("viewName");
+id = Request.getParameter("id")
+viewName = Request.getParameter("viewName")
 
-Element element = ThemeManager.getElementById(id);
-FormatType widgetType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "widget");
-Format widget = ElementFormatter.getFormatByType(element, widgetType);
+Element element = ThemeManager.getElementById(id)
+FormatType widgetType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "widget")
+Format widget = ElementFormatter.getFormatByType(element, widgetType)
 if (widget == null) {
-    widget = FormatFactory.create("widget");
-    themeManager.registerFormat(widget);
+    widget = FormatFactory.create("widget")
+    themeManager.registerFormat(widget)
 }
-widget.setName(viewName);
-ElementFormatter.setFormat(element, widget);
 
-EventManager eventManager = Manager.getEventManager();
-eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element, null));
+widget.setName(viewName)
+ElementFormatter.setFormat(element, widget)
+
+EventManager eventManager = Manager.getEventManager()
+eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element, null))

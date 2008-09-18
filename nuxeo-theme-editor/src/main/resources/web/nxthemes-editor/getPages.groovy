@@ -5,30 +5,34 @@ import org.nuxeo.theme.editor.PageInfo
 
 applicationPath = Request.getParameter("org.nuxeo.theme.application.path")
 
+themeManager = Manager.getThemeManager()
+
 defaultTheme = ThemeManager.getDefaultTheme(applicationPath)
 defaultPageName = defaultTheme.split("/")[1]
 
-currentPagePath = Context.getCookie("nxthemes.theme", defaultTheme)
+currentPagePath = Context.getCookie("nxthemes.theme")
 
 pages = []
 if (!currentPagePath || !currentPagePath.contains("/")) {
-  return pages
+  currentPagePath = defaultTheme
 }
 
 currentThemeName = currentPagePath.split("/")[0]
 currentPageName = currentPagePath.split("/")[1]
+currentTheme = themeManager.getThemeByName(currentThemeName)
 
-themeManager = Manager.getThemeManager();
-currentTheme = themeManager.getThemeByName(currentThemeName);
-
-for (page in ThemeManager.getPagesOf(currentTheme)) {
-    pageName = page.getName();
-    link = String.format("%s/%s", currentThemeName, pageName);
-    className = pageName.equals(currentPageName) ? "selected" : "";
-    if (defaultPageName.equals(pageName)) {
-        className += " default";
-    }
-    pages.add(new PageInfo(pageName, link, className));
+if (currentTheme == null) {
+    return pages
 }
 
-return pages;
+for (page in ThemeManager.getPagesOf(currentTheme)) {
+    pageName = page.getName()
+    link = String.format("%s/%s", currentThemeName, pageName)
+    className = pageName.equals(currentPageName) ? "selected" : ""
+    if (defaultPageName.equals(pageName)) {
+        className += " default"
+    }
+    pages.add(new PageInfo(pageName, link, className))
+}
+
+return pages

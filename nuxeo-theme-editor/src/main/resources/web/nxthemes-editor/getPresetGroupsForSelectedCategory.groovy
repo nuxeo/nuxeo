@@ -5,25 +5,25 @@ import org.nuxeo.theme.presets.PresetType
 import org.nuxeo.theme.types.TypeFamily
 import org.nuxeo.theme.types.Type
 
-groups = [];
-category = Context.getCookie("nxthemes.editor.styleCategory");
-groups.add("");
+groups = []
+category = Context.getCookie("nxthemes.editor.styleCategory")
+groups.add("")
 if (category == null) {
-    return groups;
+    return groups
 }
 
 groupNames = []
 for (Type type : Manager.getTypeRegistry().getTypes(TypeFamily.PRESET)) {
-    preset = (PresetType) type;
+    preset = (PresetType) type
 
-    group = preset.getGroup();
+    group = preset.getGroup()
     if (!preset.getCategory().equals(category)) {
-        continue;
+        continue
     }
     if (!groupNames.contains(group)) {
-        groups.add(group);
+        groups.add(group)
     }
-    groupNames.add(group);
+    groupNames.add(group)
 }
 
-return groups;
+return groups

@@ -57,5 +57,6 @@ if (element instanceof ThemeElement || element instanceof PageElement) {
 
 EventManager eventManager = Manager.getEventManager();
 eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null, null));
-return id;
+
+Response.writer.write(id)
 

@@ -1,5 +1,5 @@
 
-import org.nuxeo.theme.perspectives.PerspectiveManager;
+import org.nuxeo.theme.perspectives.PerspectiveManager
 
 return PerspectiveManager.listPerspectives()
 

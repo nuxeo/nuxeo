@@ -7,20 +7,20 @@ import org.nuxeo.theme.types.Type
 import org.nuxeo.theme.editor.StyleCategory
 import org.nuxeo.theme.editor.PresetInfo
 
-category = Context.getCookie("nxthemes.editor.styleCategory");
-group = Context.getCookie("nxthemes.editor.presetGroup");
+category = Context.getCookie("nxthemes.editor.styleCategory")
+group = Context.getCookie("nxthemes.editor.presetGroup")
 
 presets = []
 
 for (type in Manager.getTypeRegistry().getTypes(TypeFamily.PRESET)) {
-    PresetType preset = (PresetType) type;
+    PresetType preset = (PresetType) type
     if (!preset.getCategory().equals(category)) {
-        continue;
+        continue
     }
     if (!preset.getGroup().equals(group)) {
-        continue;
+        continue
     }
-    presets.add(new PresetInfo(preset));
+    presets.add(new PresetInfo(preset))
 }
 
-return presets;
+return presets
