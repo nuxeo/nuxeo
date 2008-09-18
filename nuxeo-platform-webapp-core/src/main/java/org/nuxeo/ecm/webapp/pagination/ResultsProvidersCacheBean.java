@@ -161,7 +161,8 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache, Seriali
                         facesMessages.add(FacesMessage.SEVERITY_WARN,
                         		resourcesAccessor.getMessages().get("feedback.search.invalid"));
                     }
-                    return new EmptyResultsProvider();
+                    resultsProvidersCache.put(name, new EmptyResultsProvider());
+                    return resultsProvidersCache.get(name); 
                 }
             }
             resultsProvidersCache.put(name, provider);
