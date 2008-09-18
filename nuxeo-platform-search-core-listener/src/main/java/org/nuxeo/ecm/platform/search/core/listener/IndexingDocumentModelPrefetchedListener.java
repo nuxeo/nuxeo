@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
 import org.nuxeo.ecm.core.search.api.client.common.TypeManagerServiceDelegate;
-import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingHelper;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResource;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResources;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.document.impl.DocumentIndexableResourceImpl;
@@ -63,14 +62,14 @@ import org.nuxeo.ecm.platform.events.api.EventMessage;
 
 /**
  * Indexing document model prefetched core event istener.
- *
+ * 
  * <p>
  * Core event listener that takes care of document model prefetched data
  * indexing. This listener is useful to index in a synchronous way minimum
  * document model data so that document updates can show up directly after one
  * request
  * </p>
- *
+ * 
  * <p>
  * Perform and generate partial schema resolved resource generation in a
  * programatic way. Usually, this is performed search service side using XML
@@ -78,16 +77,16 @@ import org.nuxeo.ecm.platform.events.api.EventMessage;
  * search based virtualn navigation tree can be displayed. As well, it will
  * compute search engine mandatory builtins.
  * </p>
- *
+ * 
  * <p>
  * The rest of the indexing will be done in an async way by a message driven
  * bean.
  * </p>
- *
+ * 
  * @see org.nuxeo.ecm.platform.search.ejb.SearchMessageListener
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
+ * 
  */
 public class IndexingDocumentModelPrefetchedListener extends
         AbstractEventListener {
@@ -127,7 +126,8 @@ public class IndexingDocumentModelPrefetchedListener extends
 
         if (dm.getContextData(EventMessage.BLOCK_SYNC_INDEXING) != null
                 && (Boolean) dm.getContextData(EventMessage.BLOCK_SYNC_INDEXING) == true) {
-            log.debug("sync indexing is blocked for doc " + dm.getRef().toString());
+            log.debug("sync indexing is blocked for doc "
+                    + dm.getRef().toString());
             return;
         }
 
@@ -169,8 +169,8 @@ public class IndexingDocumentModelPrefetchedListener extends
                 || IndexingEventConf.RE_INDEX.equals(action)) {
 
             indexDocumentModelPrefetch(dm);
-            if (("documentRestored".equals(event.getEventId())) && (dm.isFolder()))
-            {
+            if (("documentRestored".equals(event.getEventId()))
+                    && (dm.isFolder())) {
                 indexFirstLevelChildren(dm);
             }
 
@@ -179,24 +179,20 @@ public class IndexingDocumentModelPrefetchedListener extends
                 log.debug("synchronous unindexing " + dm.getPath());
             }
 
-            if (!eventConf.isRecursive())
-            {
-                // Here, we only unindex synchronously @ depth = 0. The sub-children
+            if (!eventConf.isRecursive()) {
+                // Here, we only unindex synchronously @ depth = 0. The
+                // sub-children
                 // will be unindex asynchronously.
                 service.deleteAggregatedResources(dm.getId());
-            }
-            else
-            {
+            } else {
                 // force sync recursive unindex
-                CoreSession session = CoreInstance.getInstance().getSession(dm.getSessionId());
-
-                IndexingHelper.recursiveUnIndex(dm, session, service);
+                service.unindex(dm);
             }
         }
     }
 
-    protected void indexDocumentModelPrefetch(DocumentModel dm) throws IndexingException
-    {
+    protected void indexDocumentModelPrefetch(DocumentModel dm)
+            throws IndexingException {
         SearchService service = getSearchService();
         Map<String, Serializable> prefetch = DocumentModelFactory.updatePrefetch(dm);
 
@@ -228,12 +224,11 @@ public class IndexingDocumentModelPrefetchedListener extends
 
     }
 
-    protected void indexFirstLevelChildren(DocumentModel doc) throws Exception
-    {
-        CoreSession session = CoreInstance.getInstance().getSession(doc.getSessionId());
+    protected void indexFirstLevelChildren(DocumentModel doc) throws Exception {
+        CoreSession session = CoreInstance.getInstance().getSession(
+                doc.getSessionId());
         DocumentModelList children = session.getChildren(doc.getRef());
-        for (DocumentModel child: children)
-        {
+        for (DocumentModel child : children) {
             indexDocumentModelPrefetch(child);
         }
     }

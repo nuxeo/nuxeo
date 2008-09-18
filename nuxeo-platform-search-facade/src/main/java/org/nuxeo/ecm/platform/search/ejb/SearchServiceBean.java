@@ -118,6 +118,14 @@ public class SearchServiceBean implements SearchService {
         }
     }
 
+    public void unindex(DocumentModel dm) throws IndexingException {
+        if (getSearchService() != null) {
+            getSearchService().unindex(dm);
+        } else {
+            log.error("Cannot find core search service....");
+        }
+    }
+
     public ResultSet searchQuery(NativeQuery nativeQuery, int offset, int range)
             throws SearchException, QueryException {
         ResultSet resultSet = null;
@@ -328,8 +336,7 @@ public class SearchServiceBean implements SearchService {
         }
     }
 
-    public long getIndexingWaitingQueueSize()
-    {
+    public long getIndexingWaitingQueueSize() {
         if (getSearchService() != null) {
             return getSearchService().getIndexingWaitingQueueSize();
         } else {
@@ -460,4 +467,5 @@ public class SearchServiceBean implements SearchService {
             log.error("Cannot find core search service....");
         }
     }
+
 }
