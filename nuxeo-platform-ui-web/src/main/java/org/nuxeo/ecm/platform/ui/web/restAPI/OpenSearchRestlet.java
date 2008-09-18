@@ -42,10 +42,16 @@ import org.restlet.data.Response;
 /**
  * Basic OpenSearch REST fulltext search implementation using the RSS 2.0
  * results format.
- *
+ * <p>
  * TODO: make it possible to change the page size and navigate to next results
  * pages using additional query parameters. See http://opensearch.org for
- * official specifications
+ * official specifications.
+ * <p>
+ * TODO: use a OPENSEARCH stateless query model to be able to override the
+ * currently hardcoded request pattern.
+ * <p>
+ * TODO: add OpenSearch XML description snippet in the default theme so that
+ * Firefox can autodetect the service URL.
  *
  * @author Olivier Grisel
  */
@@ -99,7 +105,7 @@ public class OpenSearchRestlet extends BaseNuxeoRestlet {
                     OPENSEARCH_NS.getURI());
             rssElement.addNamespace(ATOM_NS.getPrefix(), ATOM_NS.getURI());
 
-            // channel with opensearch metadata
+            // channel with OpenSearch metadata
             Element channelElement = rssElement.addElement(CHANNEL_TAG);
 
             channelElement.addElement(TITLE_TAG).setText(
@@ -127,7 +133,7 @@ public class OpenSearchRestlet extends BaseNuxeoRestlet {
             for (DocumentModel doc : documents) {
                 Element itemElement = channelElement.addElement(ITEM_TAG);
                 Element titleElement = itemElement.addElement(TITLE_TAG);
-                String title = (String) doc.getTitle();
+                String title = doc.getTitle();
                 if (title != null) {
                     titleElement.setText(title);
                 }
@@ -147,6 +153,6 @@ public class OpenSearchRestlet extends BaseNuxeoRestlet {
         } catch (Exception e) {
             handleError(res, e);
         }
-
     }
+
 }

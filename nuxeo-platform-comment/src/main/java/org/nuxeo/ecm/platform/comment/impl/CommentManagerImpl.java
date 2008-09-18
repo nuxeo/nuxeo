@@ -118,7 +118,6 @@ public class CommentManagerImpl implements CommentManager {
         return Framework.getService(RelationManager.class);
     }
 
-    @SuppressWarnings("unchecked")
     public List<DocumentModel> getComments(DocumentModel docModel)
             throws ClientException {
         RelationManager relationManager;
@@ -321,7 +320,9 @@ public class CommentManagerImpl implements CommentManager {
                 principal, CommentConstants.EVENT_COMMENT_CATEGORY, eventType);
 
         DocumentMessage msg = new DocumentMessageImpl(docModel, event);
-        producer.produce(msg);
+        if (producer != null) { // do not send if JMS not present
+            producer.produce(msg);
+        }
 
         // send also a synchronous Seam message so the CommentManagerActionBean
         // can rebuild its list

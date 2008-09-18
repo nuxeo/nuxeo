@@ -24,10 +24,8 @@ import org.nuxeo.ecm.platform.workflow.jbpm.handlers.api.client.AbstractWorkflow
 
 /**
  * Default startup action handler.
- *
  * <p>
  * Invoked at workflow startup time.
- * </p>
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
@@ -35,7 +33,6 @@ import org.nuxeo.ecm.platform.workflow.jbpm.handlers.api.client.AbstractWorkflow
 public class StartupActionHandler extends AbstractWorkflowDocumentActionHandler {
 
     private static final long serialVersionUID = 2751273934453742494L;
-
 
     public void execute(ExecutionContext ec) throws Exception {
         log.debug("Starting process");

@@ -28,10 +28,8 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Search service stateless delegate.
- *
  * <p>
  * Helper to reach the search service.
- * </p>
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
@@ -46,12 +44,10 @@ public final class SearchServiceDelegate implements Serializable {
     }
 
     /**
-     * Returns a distant search service.
-     *
+     * Returns a remote search service.
      * <p>
      * Returns null if an exception occurs.
      * XXX Should return an exception instead
-     * </p>
      *
      * @return a search service instance.
      */
@@ -66,16 +62,13 @@ public final class SearchServiceDelegate implements Serializable {
     }
 
     /**
-     *
      * Returns a local search service.
-     *
      * <p>
      * Returns null if an exception occurs
-     * </p>
      *
      * @return a search service instance
      */
-    public static SearchService getLocalSearchService() throws Exception {
+    public static SearchService getLocalSearchService() {
         return Framework.getLocalService(SearchService.class);
     }
 

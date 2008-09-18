@@ -139,18 +139,17 @@ public class QuerySplitter {
     }
 
     /**
-     * Extract a sub query from the query
-     *
-     * <p>Implementation heavily relies on the shape of queries produced by
+     * Extracts a subquery from the query.
+     * <p>
+     * Implementation heavily relies on the shape of queries produced by
      * current parser: n-fold AND operator is implemented as a totally
      * unbalanced tree (long leg on the right).
-     * </p>
      *
      * @return the extracted query
      * @throws QueryException
      */
     protected void extractSubQuery() throws QueryException {
-        if (! Operator.AND.equals(predicate.operator)) {
+        if (!Operator.AND.equals(predicate.operator)) {
             // Goes directly in main clause
             String[] resourceTypeName = resourceTypeOf(predicate);
             subQueries.add(new SubQuery(
@@ -226,7 +225,6 @@ public class QuerySplitter {
             }
             predicate = next;
         }
-
     }
 
     /**
@@ -261,11 +259,12 @@ public class QuerySplitter {
         return res;
     }
 
-    /** Infers the resource type and name of given predicate.
+    /**
+     * Infers the resource type and name of given predicate.
+     * <p>
+     * Assumes that the predicate if homogeneous, which is right within the
+     * scope of NXP 1348.
      *
-     * <p>Assumes that the predicate
-     * if homogeneous, which is right within the scope of NXP 1348
-     * </p>
      * @param predicate
      * @return
      * @throws QueryException
