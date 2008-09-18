@@ -174,6 +174,10 @@ Exponent = [eE] [+-]? [0-9]+
 	"Limit"				{ return symbol(sym.LIMIT); }
 	"limit"				{ return symbol(sym.LIMIT); }
 
+        "OFFSET"                        { return symbol(sym.OFFSET); }
+        "Offset"                        { return symbol(sym.OFFSET); }
+        "offset"                        { return symbol(sym.OFFSET); }
+
 	"TYPE"				{ return symbol(sym.TYPE); }
 	"Type"				{ return symbol(sym.TYPE); }
 	"type"				{ return symbol(sym.TYPE); }

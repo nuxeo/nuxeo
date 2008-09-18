@@ -48,7 +48,7 @@ parser code {:
 terminal           	SELECT, FROM, WHERE, AS, IN, LIKE, BETWEEN, NOTBETWEEN, NOTIN, NOTLIKE, ORDERBY, GROUPBY, HAVING, LIMIT, DISTINCT, ALL,
 					ASC, DESC, AND, OR, NOT, SUM, SUB, DIV, MUL, EQ, NOTEQ, LT, GT, LTEQ, GTEQ,
 					COMMA, LPARA, RPARA, LOCATION, STARTSWITH, TYPE,
-					DATE, TIMESTAMP;
+					DATE, TIMESTAMP, OFFSET;
 
 terminal String		IDENTIFIER, FROM_IDENTIFIER, PATH_IDENTIFIER, STRING, INTEGER, DOUBLE;
 
@@ -102,6 +102,10 @@ non terminal String			from_key;
 			{: RESULT = new SQLQuery(select, from, where, order); :}
 			| select_clause:select from_clause:from order_by_clause:order
 			{: RESULT = new SQLQuery(select, from, null, order); :}
+                        | query:q LIMIT INTEGER:l
+                        {: q.limit = Long.parseLong(l); RESULT = q; :}
+                        | query:q LIMIT INTEGER:l OFFSET INTEGER:o
+                        {: q.limit = Long.parseLong(l); q.offset = Long.parseLong(o); RESULT = q; :}
 			;
 
 

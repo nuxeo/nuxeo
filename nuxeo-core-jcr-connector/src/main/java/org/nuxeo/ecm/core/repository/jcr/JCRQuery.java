@@ -24,6 +24,7 @@ import javax.jcr.query.QueryManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jackrabbit.core.query.QueryImpl;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
@@ -69,6 +70,12 @@ public class JCRQuery implements Query {
             //log.info("!jcr Query: " + jcrQuery.getStatement());
             // run query within a controlable thread
             // use
+            if (sqlQuery.limit > 0) {
+                QueryImpl jq = (QueryImpl) jcrQuery;
+                // TODO the following is only available in Jackrabbit 1.4
+                // jq.setLimit(sqlQuery.limit);
+                // jq.setOffset(sqlQuery.offset);
+            }
             javax.jcr.query.QueryResult qr = jcrQuery.execute();
             return new JCRQueryResult(this, qr);
         } catch (RepositoryException e) {
