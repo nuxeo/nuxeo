@@ -24,29 +24,29 @@ public class FragmentInfo {
 
     FragmentType fragmentType;
 
-    public List<ViewType> getViewTypes() {
-        return viewTypes;
-    }
-
     FragmentInfo(FragmentType fragmentType) {
         this.fragmentType = fragmentType;
     }
 
-    FragmentType getFragmentType() {
-        return fragmentType;
-    }
-
-    List<ViewType> viewTypes = new ArrayList<ViewType>();
-
-    void addView(final ViewType viewType) {
-        viewTypes.add(viewType);
-    }
-
-    List<ViewType> getViews() {
+    public List<ViewType> getViewTypes() {
         return viewTypes;
     }
 
-    int size() {
+    public FragmentType getFragmentType() {
+        return fragmentType;
+    }
+
+    public List<ViewType> viewTypes = new ArrayList<ViewType>();
+
+    public void addView(final ViewType viewType) {
+        viewTypes.add(viewType);
+    }
+
+    public List<ViewType> getViews() {
+        return viewTypes;
+    }
+
+    public int size() {
         return viewTypes.size();
     }
 

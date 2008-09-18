@@ -70,6 +70,12 @@
        <mapping pattern="/insert_section_after">
           <script>/insert_section_after.groovy</script>
        </mapping>
+       <mapping pattern="/insert_fragment">
+          <script>/insert_fragment.groovy</script>
+       </mapping>
+       <mapping pattern="/move_element">
+          <script>/move_element.groovy</script>
+       </mapping>
       </mappings>
     </webapp>
 

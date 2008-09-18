@@ -9,11 +9,11 @@ Fragments
 </div>
 <ul>
   <#list fragments as fragment>
-    <li class="fragment">${fragment.fragmentType.typeName}</li>
+    <li class="fragment">${fragment.getFragmentType().getTypeName()}</li>
     <ul class="views" style="display:none">
-      <#list fragment.views as v>
+      <#list fragment.getViews() as v>
         <li class="nxthemesFragmentFactory" title="Drag this widget to the canvas"
-          typename="${fragment.fragmentType.typeName}/${v.viewName}"><img src="${v.icon}" width="16" height="16" /> ${v.viewName}</li>
+          typename="${fragment.getFragmentType().getTypeName()}/${v.getViewName()}"><img src="${v.getIcon()}" width="16" height="16" /> ${v.getViewName()}</li>
       </#list>
     </ul>
   </#list>
