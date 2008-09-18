@@ -36,12 +36,13 @@ import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingTask;
  * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class UnIndexingSingleDocumentTask extends AbstractIndexingTask implements
-        IndexingTask {
+public class UnIndexingSingleDocumentTask extends AbstractIndexingTask
+        implements IndexingTask {
 
     private static final Log log = LogFactory.getLog(UnIndexingSingleDocumentTask.class);
 
-    public UnIndexingSingleDocumentTask(DocumentRef docRef, String repositoryName) {
+    public UnIndexingSingleDocumentTask(DocumentRef docRef,
+            String repositoryName) {
         super(docRef, repositoryName);
     }
 
@@ -50,14 +51,14 @@ public class UnIndexingSingleDocumentTask extends AbstractIndexingTask implement
         log.debug("UnIndexing task runnin'......");
 
         // Check if the search service is active
-        if (!getSearchService().isEnabled()) {
+        if (searchService.isEnabled()) {
             log.warn("Search service is disabled. UnIndexing cannot be completed.");
             return;
         }
 
         try {
             DocumentModel dm = getCoreSession().getDocument(docRef);
-            getSearchService().deleteAggregatedResources(dm.getId());
+            searchService.deleteAggregatedResources(dm.getId());
         } catch (Exception e) {
             log.error("An error occured while performing the job : "
                     + e.getMessage());

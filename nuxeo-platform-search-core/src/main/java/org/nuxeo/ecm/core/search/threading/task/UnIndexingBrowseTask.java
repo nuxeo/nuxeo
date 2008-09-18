@@ -23,14 +23,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.BrowsingTask;
-import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingHelper;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * 
  */
-public class UnIndexingBrowseTask extends AbstractTask implements BrowsingTask {
+public class UnIndexingBrowseTask extends AbstractIndexingTask {
 
     private static final Log log = LogFactory.getLog(UnIndexingBrowseTask.class);
 
@@ -43,7 +41,7 @@ public class UnIndexingBrowseTask extends AbstractTask implements BrowsingTask {
 
         try {
             DocumentModel dm = getCoreSession().getDocument(docRef);
-            IndexingHelper.recursiveUnindex(dm);
+            searchService.unindex(dm);
             log.debug("Unindexing browse task done for document: "
                     + dm.getTitle());
         } catch (Exception e) {

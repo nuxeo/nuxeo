@@ -19,14 +19,16 @@
 
 package org.nuxeo.ecm.core.search.api.client.indexing.nxcore;
 
-import org.nuxeo.ecm.core.search.api.client.SearchService;
+import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * 
  */
-public interface IndexingTask extends Task {
+public interface IndexingTask extends Runnable {
 
-    void setSearchService(SearchService searchService);
+    DocumentRef getDocumentRef();
+
+    String getRepositoryName();
 
 }

@@ -23,14 +23,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.BrowsingTask;
 import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingHelper;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * 
  */
-public class IndexingBrowseTask extends AbstractTask implements BrowsingTask {
+public class IndexingBrowseTask extends AbstractIndexingTask {
 
     private static final Log log = LogFactory.getLog(IndexingBrowseTask.class);
 
@@ -44,7 +43,7 @@ public class IndexingBrowseTask extends AbstractTask implements BrowsingTask {
 
         try {
             DocumentModel dm = getCoreSession().getDocument(docRef);
-            IndexingHelper.recursiveIndex(dm);
+            IndexingHelper.recursiveIndex(dm, searchService);
             log.debug("Browse task done for document: " + dm.getTitle());
         } catch (Exception e) {
             log.error(e);

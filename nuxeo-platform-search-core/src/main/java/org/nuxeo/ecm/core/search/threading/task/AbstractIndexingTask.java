@@ -21,11 +21,17 @@ package org.nuxeo.ecm.core.search.threading.task;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResources;
+import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
 import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingTask;
+import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingThread;
+import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResources;
+import org.nuxeo.ecm.core.search.api.client.indexing.resources.factory.IndexableResourcesFactory;
 
 /**
  * Absract Indexing Task.
@@ -33,38 +39,81 @@ import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingTask;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  * 
  */
-public abstract class AbstractIndexingTask extends AbstractTask implements
-        IndexingTask {
+public abstract class AbstractIndexingTask implements IndexingTask {
 
     private static final Log log = LogFactory.getLog(AbstractIndexingTask.class);
 
-    protected SearchService searchService;
+    protected final DocumentRef docRef;
+
+    protected final String repositoryName;
+
+    protected final ResolvedResources resources;
+
+    protected final static SearchService searchService;
+
+    static {
+        // Initialize the SearchService, all the tasks will share the same one.
+        SearchService service;
+        try {
+            service = SearchServiceDelegate.getLocalSearchService();
+        } catch (Exception e) {
+            // Fallback on remote search service.
+            log.warn("Local search service is not available : trying to lookup remote instead");
+            service = SearchServiceDelegate.getRemoteSearchService();
+        }
+        if (service == null) {
+            throw new IllegalStateException(
+                    "Unable to initialize the SearchService");
+        }
+        searchService = service;
+    }
 
     protected AbstractIndexingTask(DocumentRef docRef, String repositoryName) {
-        super(docRef, repositoryName);
+        this.docRef = docRef;
+        this.repositoryName = repositoryName;
+        resources = null;
     }
 
     protected AbstractIndexingTask(ResolvedResources resources) {
-        super(resources);
+        this.docRef = null;
+        this.repositoryName = null;
+        this.resources = resources;
     }
 
-    public void setSearchService(SearchService searchService) {
-        this.searchService = searchService;
+    public DocumentRef getDocumentRef() {
+        return docRef;
     }
 
-    protected SearchService getSearchService() {
-        if (searchService == null) {
-            // XXX We assume that the thread pool will always be instanciated on
-            // the node running the search service.
+    public String getRepositoryName() {
+        return repositoryName;
+    }
+
+    protected CoreSession getCoreSession() throws IndexingException {
+        Thread currentThread = Thread.currentThread();
+        if (currentThread instanceof IndexingThread) {
+            IndexingThread thread = (IndexingThread) currentThread;
             try {
-                searchService = SearchServiceDelegate.getLocalSearchService();
+                return thread.getCoreSession(repositoryName);
             } catch (Exception e) {
-                // Fallback on remote search service.
-                log.warn("Local search service is not available : trying to lookup remote instead");
-                searchService = SearchServiceDelegate.getRemoteSearchService();
+                throw new IndexingException(
+                        "Unable to get a core session for repository name: "
+                                + repositoryName);
             }
+        } else {
+            // should not happen
+            throw new IndexingException("Not in an IndexingThread");
         }
-        return searchService;
+    }
+
+    protected static IndexableResources computeResourcesFor(DocumentModel dm)
+            throws IndexingException {
+        return IndexableResourcesFactory.computeResourcesFor(dm);
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        log.debug("Finalize...........................");
     }
 
 }

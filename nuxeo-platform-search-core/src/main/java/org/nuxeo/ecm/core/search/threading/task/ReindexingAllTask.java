@@ -25,9 +25,6 @@ public class ReindexingAllTask extends IndexingBrowseTask {
 
         final String errorMsg = "Reindexing all documents failed...";
 
-        // Init search service.
-        getSearchService();
-
         final int current_batch_size = searchService.getIndexingDocBatchSize();
 
         try {

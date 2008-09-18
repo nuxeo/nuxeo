@@ -67,23 +67,17 @@ public class IndexingSingleDocumentTask extends AbstractIndexingTask implements
         log.debug("Indexing task started");
 
         // Check if the search service is active
-        if (!getSearchService().isEnabled()) {
+        if (searchService.isEnabled()) {
             log.warn("Search service is disabled. Indexing cannot be completed.");
             return;
         }
 
         try {
             if (docRef == null) {
-                getSearchService().index(resources);
+                searchService.index(resources);
                 log.debug("Indexing task done for resource: "
                         + resources.getId());
             } else {
-                // if (recursive) {
-                // IndexingHelper.recursiveIndex(dm);
-                // log.debug("Indexing task done for document: "
-                // + dm.getTitle());
-                //
-                // } else {
                 DocumentModel dm = getCoreSession().getDocument(docRef);
                 IndexableResources docResources = computeResourcesFor(dm);
                 if (docResources != null) {
@@ -92,7 +86,7 @@ public class IndexingSingleDocumentTask extends AbstractIndexingTask implements
                     // before we were able to compute the resources.
                     // We need not log any warning here since
                     // computeResourcesFor already does so
-                    getSearchService().index(docResources, fulltext);
+                    searchService.index(docResources, fulltext);
                     log.debug("Indexing task done for document: "
                             + dm.getTitle());
                 }
@@ -115,7 +109,6 @@ public class IndexingSingleDocumentTask extends AbstractIndexingTask implements
     }
 
     private void recycledIfNeeded() {
-        boolean needRecycle;
 
         Thread thread = Thread.currentThread();
         if (thread instanceof IndexingThread) {
