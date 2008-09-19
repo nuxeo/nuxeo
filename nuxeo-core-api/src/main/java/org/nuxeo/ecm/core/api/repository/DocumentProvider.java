@@ -38,6 +38,9 @@ public interface DocumentProvider {
     DocumentModel getDocument(String id, boolean force) throws ClientException;
     DocumentModel getCachedDocument(String id);
 
+    void removeDocumentFromCache(DocumentRef ref);
+    void removeDocumentFromCache(String id);
+
     /**
      * Gets a document model given its reference.
      * <p>
