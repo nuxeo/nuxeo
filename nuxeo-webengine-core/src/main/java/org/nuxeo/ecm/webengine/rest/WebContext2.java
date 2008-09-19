@@ -27,10 +27,11 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
-import org.nuxeo.ecm.webengine.rest.domains.DefaultWebDomain;
+import org.nuxeo.ecm.webengine.rest.model.DefaultWebDomain;
+import org.nuxeo.ecm.webengine.rest.model.WebDomain;
+import org.nuxeo.ecm.webengine.rest.model.WebObject;
+import org.nuxeo.ecm.webengine.rest.model.WebView;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
-import org.nuxeo.ecm.webengine.rest.template.Template;
 import org.nuxeo.ecm.webengine.session.UserSession;
 
 
@@ -42,7 +43,7 @@ public interface WebContext2 {
 
     public void setDomain(DefaultWebDomain<?> domain);
 
-    public DefaultWebDomain<?> getDomain();
+    public WebDomain getDomain();
 
     public WebEngine2 getEngine();
 
@@ -94,8 +95,8 @@ public interface WebContext2 {
 
     public Object runScript(ScriptFile script, Map<String, Object> args) throws WebException;
 
-    public Template getTemplate(String path) throws IOException;
+    public WebView getTemplate(String path) throws IOException;
 
-    public Template getTemplate(ScriptFile script);
+    public WebView getTemplate(ScriptFile script);
 
 }

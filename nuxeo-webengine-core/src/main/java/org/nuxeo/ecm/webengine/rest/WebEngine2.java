@@ -35,11 +35,11 @@ import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.webengine.WebClassLoader;
 import org.nuxeo.ecm.webengine.nl.ResourceComposite;
-import org.nuxeo.ecm.webengine.rest.domains.DomainRegistry;
+import org.nuxeo.ecm.webengine.rest.model.WebTypeManager;
+import org.nuxeo.ecm.webengine.rest.model.impl.DomainRegistry;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
 import org.nuxeo.ecm.webengine.rest.servlet.jersey.WebContextImpl;
-import org.nuxeo.ecm.webengine.rest.types.WebTypeManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.deploy.FileChangeListener;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
@@ -51,6 +51,17 @@ import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
  */
 public class WebEngine2 implements FileChangeListener, ResourceLocator {
 
+    private final static ThreadLocal<WebContext2> CTX = new ThreadLocal<WebContext2>();
+    
+    public final static WebContext2 getActiveContext() {
+        return CTX.get();
+    }
+
+    public final static void setActiveContext(WebContext2 ctx) {
+        CTX.set(ctx);
+    }
+
+    
     protected File root;
     protected DomainRegistry domainReg;
     protected FileChangeNotifier notifier;
@@ -231,9 +242,9 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
         }
     }
 
-    public File getResourceFile(String key) {
+    public File getResourceFile(String key) {//TODO: this is jersey dependent -> put the thread local in WebContext2
         try {
-            WebContext2 ctx = WebContextImpl.getCurrent();
+            WebContext2 ctx = WebEngine2.getActiveContext();
             ScriptFile file = ctx.getFile(key);
             if (file != null) {
                 return file.getFile();

@@ -25,10 +25,11 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.rest.ResourceBinding;
+import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.domains.DomainDescriptor;
-import org.nuxeo.ecm.webengine.rest.domains.DomainRegistry;
-import org.nuxeo.ecm.webengine.rest.domains.WebDomain;
+import org.nuxeo.ecm.webengine.rest.model.WebDomain;
+import org.nuxeo.ecm.webengine.rest.model.impl.DomainDescriptor;
+import org.nuxeo.ecm.webengine.rest.model.impl.DomainRegistry;
 import org.nuxeo.ecm.webengine.rest.servlet.jersey.patch.ServletContainerRequest;
 import org.nuxeo.ecm.webengine.rest.servlet.jersey.patch.WebApplicationContext;
 import org.nuxeo.runtime.api.Framework;
@@ -66,6 +67,12 @@ public class WebEngineApplication extends
         WebContextImpl ctx = new WebContextImpl(this, request, response);
         ctx.setAction(((ServletContainerRequest) request).getAction());
         return ctx;
+    }
+    
+    @Override
+    protected void setThreadLocalContext(WebApplicationContext localContext) {
+        super.setThreadLocalContext(localContext);
+        WebEngine2.setActiveContext((WebContext2)localContext);
     }
 
     @Override

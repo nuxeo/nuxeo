@@ -44,12 +44,13 @@ import javax.ws.rs.core.SecurityContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.rest.ResourceBinding;
+import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.domains.DomainRegistry;
-import org.nuxeo.ecm.webengine.rest.domains.WebDomain;
-import org.nuxeo.ecm.webengine.rest.providers.DocumentObjectProvider;
-import org.nuxeo.ecm.webengine.rest.providers.ScriptFileProvider;
-import org.nuxeo.ecm.webengine.rest.template.TemplateProvider;
+import org.nuxeo.ecm.webengine.rest.io.DocumentObjectWriter;
+import org.nuxeo.ecm.webengine.rest.io.ScriptFileWriter;
+import org.nuxeo.ecm.webengine.rest.io.WebViewWriter;
+import org.nuxeo.ecm.webengine.rest.model.WebDomain;
+import org.nuxeo.ecm.webengine.rest.model.impl.DomainRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.resteasy.Dispatcher;
 import org.resteasy.Headers;
@@ -203,22 +204,24 @@ if (path == null) path = "/";
         try {
             in = new WebEngineContext(request, headers,
                     httpMethod.toUpperCase(), uriInfo);
+            WebEngine2.setActiveContext((WebContext2)in);
+            HttpResponse theResponse = new HttpServletResponseWrapper(response,
+                    dispatcher.getProviderFactory());
+            try {
+                ResteasyProviderFactory.pushContext(HttpServletRequest.class,
+                        request);
+                ResteasyProviderFactory.pushContext(HttpServletResponse.class,
+                        response);
+                ResteasyProviderFactory.pushContext(SecurityContext.class,
+                        new ServletSecurityContext(request));
+                dispatcher.invoke(in, theResponse);
+            } finally {
+                ResteasyProviderFactory.clearContextData();
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-        HttpResponse theResponse = new HttpServletResponseWrapper(response,
-                dispatcher.getProviderFactory());
-
-        try {
-            ResteasyProviderFactory.pushContext(HttpServletRequest.class,
-                    request);
-            ResteasyProviderFactory.pushContext(HttpServletResponse.class,
-                    response);
-            ResteasyProviderFactory.pushContext(SecurityContext.class,
-                    new ServletSecurityContext(request));
-            dispatcher.invoke(in, theResponse);
         } finally {
-            ResteasyProviderFactory.clearContextData();
+            WebEngine2.setActiveContext(null);  
         }
     }
 
@@ -306,9 +309,9 @@ if (path == null) path = "/";
     protected void initializeWebEngine(ResteasyProviderFactory providerFactory) throws ServletException {
         WebEngine2 engine = Framework.getLocalService(WebEngine2.class);
         try {
-            providerFactory.addMessageBodyWriter(new TemplateProvider());
-            providerFactory.addMessageBodyWriter(new DocumentObjectProvider());
-            providerFactory.addMessageBodyWriter(new ScriptFileProvider());
+            providerFactory.addMessageBodyWriter(new WebViewWriter());
+            providerFactory.addMessageBodyWriter(new DocumentObjectWriter());
+            providerFactory.addMessageBodyWriter(new ScriptFileWriter());
             addRootResources(engine);
         } catch (Throwable e) {
             e.printStackTrace();

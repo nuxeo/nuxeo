@@ -648,11 +648,22 @@ public class WebApplicationImpl implements WebApplication {
     protected WebApplicationContext createWebAcpplicationContext(ContainerRequest request, ContainerResponse response) {
         return new WebApplicationContext(this, request, response);
     }
+    
+    protected void setThreadLocalContext(WebApplicationContext localContext) {
+        context.set(localContext);
+    }
 
     public void handleRequest(ContainerRequest request, ContainerResponse response) throws IOException {
         final WebApplicationContext localContext = createWebAcpplicationContext(request, response);
-        context.set(localContext);
-
+        setThreadLocalContext(localContext);        
+        try {
+            _handleRequest(localContext, request, response);
+        } finally {
+            setThreadLocalContext(null);
+        }
+    }
+    
+    public void _handleRequest(WebApplicationContext localContext, ContainerRequest request, ContainerResponse response) throws IOException {
         if (resourceConfig.getFeature(ResourceConfig.FEATURE_NORMALIZE_URI)) {
             final URI uri = request.getRequestUri();
             final URI normalizedUri = UriHelper.normalize(uri,

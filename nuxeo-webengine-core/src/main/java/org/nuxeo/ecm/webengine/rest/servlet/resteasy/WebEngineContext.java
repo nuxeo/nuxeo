@@ -43,13 +43,13 @@ import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.adapters.DocumentObject;
-import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
-import org.nuxeo.ecm.webengine.rest.domains.DefaultWebDomain;
+import org.nuxeo.ecm.webengine.rest.model.DefaultWebDomain;
+import org.nuxeo.ecm.webengine.rest.model.WebDomain;
+import org.nuxeo.ecm.webengine.rest.model.WebObject;
+import org.nuxeo.ecm.webengine.rest.model.WebView;
+import org.nuxeo.ecm.webengine.rest.model.impl.DocumentObject;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
-import org.nuxeo.ecm.webengine.rest.servlet.jersey.patch.ThreadLocalHttpContext;
-import org.nuxeo.ecm.webengine.rest.template.Template;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 import org.python.core.PyDictionary;
@@ -70,11 +70,6 @@ public class WebEngineContext extends HttpRequestImpl implements WebContext2 {
     protected final LinkedList<File> scriptExecutionStack;
     protected String action;
     protected HttpServletRequest request;
-
-
-    public static final WebContext2 getCurrent() {
-        return (WebContext2)ThreadLocalHttpContext.get();
-    }
 
 
     public WebEngineContext(HttpServletRequest request, HttpHeaders headers, String httpMethod, UriInfo uri) throws IOException {
@@ -98,7 +93,7 @@ public class WebEngineContext extends HttpRequestImpl implements WebContext2 {
     /**
      * @return the domain.
      */
-    public DefaultWebDomain<?> getDomain() {
+    public WebDomain getDomain() {
         return domain;
     }
 
@@ -299,16 +294,16 @@ public class WebEngineContext extends HttpRequestImpl implements WebContext2 {
         }
     }
 
-    public Template getTemplate(ScriptFile script) {
-        return new Template(this, script);
+    public WebView getTemplate(ScriptFile script) {
+        return new WebView(this, script);
     }
 
-    public Template getTemplate(String path) throws IOException {
+    public WebView getTemplate(String path) throws IOException {
         ScriptFile script = getFile(path);
         if (script == null) {
             throw new FileNotFoundException(path);
         }
-        return new Template(this, script);
+        return new WebView(this, script);
     }
 
     public Bindings createBindings(Map<String, Object> vars) {
