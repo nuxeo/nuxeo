@@ -18,22 +18,19 @@
 
 package org.nuxeo.runtime.model;
 
-
-
 /**
  * A component extension point.
  * <p>
- * Extension points are described by a name and a list of optional
- * contribution object classes.
+ * Extension points are described by a name and a list of optional contribution
+ * object classes.
  * <p>
  * When defined, the contribution object classes are the type of objects
  * accepted by this extension point.
  * <p>
- * The extension point is also responsible for extracting contribution objects from
- * the extension data, if any.
+ * The extension point is also responsible for extracting contribution objects
+ * from the extension data, if any.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface ExtensionPoint {
 
@@ -59,12 +56,15 @@ public interface ExtensionPoint {
     String getDocumentation();
 
     /**
-     * Get the component owning the base extension which this one extend.
-     * <b>
-     * If this method returns nn null it means the courrent extension point is extending another extension point
-     * and sould forward any contribution to the base extension.
-     * The base extension have the same name as this one  but it is declared in another component
-     * @return the base extension point if this extension point is extending another extension point or null if none
+     * Get the component owning the base extension which this one extends.
+     * <p>
+     * If this method returns null, it means the current extension point is
+     * extending another extension point and should forward any contribution to
+     * the base extension. The base extension has the same name as this one but
+     * it is declared in another component.
+     *
+     * @return the base extension point if this extension point is extending
+     *         another extension point, or null if none
      */
     String getSuperComponent();
 

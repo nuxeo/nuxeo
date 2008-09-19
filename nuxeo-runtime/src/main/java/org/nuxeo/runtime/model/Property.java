@@ -55,7 +55,6 @@ public class Property implements Serializable {
 //        this.value = PropertyDecoder.decode(type, value);
 //    }
 
-
     public Object getValue() {
         return value;
     }

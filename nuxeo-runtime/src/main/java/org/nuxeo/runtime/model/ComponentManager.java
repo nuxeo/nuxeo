@@ -104,9 +104,9 @@ public interface ComponentManager {
     boolean isRegistered(ComponentName name);
 
     /**
-     * Gets the registrated components.
+     * Gets the registered components.
      *
-     * @return a read only collection of components
+     * @return a read-only collection of components
      */
     Collection<RegistrationInfo> getRegistrations();
 

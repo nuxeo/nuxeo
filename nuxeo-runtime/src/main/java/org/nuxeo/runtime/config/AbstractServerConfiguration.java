@@ -56,7 +56,6 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
     //TODO
     //protected ServiceLocator serviceLocator;
 
-
     protected AbstractServerConfiguration(InvokerLocator locator, String name, Version version) {
         this.locator = locator;
         this.name = name;
@@ -146,7 +145,6 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
 //    public void setServiceLocator(ServiceLocator serviceLocator) {
 //        this.serviceLocator = serviceLocator;
 //    }
-
 
     public abstract void install() throws Exception;
 

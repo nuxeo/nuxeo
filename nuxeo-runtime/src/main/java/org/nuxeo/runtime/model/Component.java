@@ -26,7 +26,6 @@ package org.nuxeo.runtime.model;
  * methods to respond to component life cycle events.
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface Component extends Extensible {
 

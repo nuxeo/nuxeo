@@ -199,7 +199,6 @@ public interface RuntimeService {
      */
     List<String> getWarnings();
 
-
     /**
      * OSGi frameworks are using a string {@link Bundle#getLocation()} to identify bundle locations.
      * <p>
