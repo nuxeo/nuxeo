@@ -20,15 +20,18 @@
 package org.nuxeo.ecm.core.search.api.client.indexing.nxcore;
 
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResources;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * 
  */
-public interface IndexingTask extends Runnable {
+public interface Task extends Runnable {
 
     DocumentRef getDocumentRef();
 
     String getRepositoryName();
+
+    ResolvedResources getResources();
 
 }

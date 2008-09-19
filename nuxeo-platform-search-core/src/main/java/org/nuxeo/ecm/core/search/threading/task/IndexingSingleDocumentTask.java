@@ -23,9 +23,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResources;
-import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingTask;
 import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingThread;
+import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.Task;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResources;
 
 /**
@@ -35,24 +37,18 @@ import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResource
  * executed within this <code>Runnable</code> can share
  * <code>IndexingThread</code> Nuxeo core session and login context.
  * 
- * @see org.nuxeo.ecm.core.search.threading.IndexingSingleDocumentThread
+ * @see org.nuxeo.ecm.core.search.threading.IndexingThreadImpl
  * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class IndexingSingleDocumentTask extends AbstractIndexingTask implements
-        IndexingTask {
+class IndexingSingleDocumentTask extends AbstractIndexingTask implements Task {
 
     private static final Log log = LogFactory.getLog(IndexingSingleDocumentTask.class);
 
     protected final boolean fulltext;
 
-    public IndexingSingleDocumentTask(DocumentRef docRef, String repositoryName) {
-        super(docRef, repositoryName);
-        fulltext = false;
-    }
-
-    public IndexingSingleDocumentTask(DocumentRef docRef, boolean fulltext,
-            String repositoryName) {
+    public IndexingSingleDocumentTask(DocumentRef docRef,
+            String repositoryName, boolean fulltext) {
         super(docRef, repositoryName);
         this.fulltext = fulltext;
     }
@@ -64,10 +60,14 @@ public class IndexingSingleDocumentTask extends AbstractIndexingTask implements
 
     public void run() {
 
-        log.debug("Indexing task started");
+        log.debug("Thread: "
+                + Thread.currentThread().getName()
+                + " ---Indexing task started for "
+                + (docRef == null ? "resources: " + resources.getId()
+                        : "document: " + docRef));
 
         // Check if the search service is active
-        if (searchService.isEnabled()) {
+        if (!searchService.isEnabled()) {
             log.warn("Search service is disabled. Indexing cannot be completed.");
             return;
         }
@@ -79,6 +79,22 @@ public class IndexingSingleDocumentTask extends AbstractIndexingTask implements
                         + resources.getId());
             } else {
                 DocumentModel dm = getCoreSession().getDocument(docRef);
+
+                log.debug("Thread: " + Thread.currentThread().getName()
+                        + " --- document: " + dm.getRef());
+                log.debug("Thread: " + Thread.currentThread().getName()
+                        + " --- document ACPS");
+                for (ACL acl : dm.getACP().getACLs()) {
+                    log.debug("Thread: " + Thread.currentThread().getName()
+                            + " --- ACL");
+                    for (ACE ace : acl.getACEs()) {
+                        log.debug("Thread: " + Thread.currentThread().getName()
+                                + " --- ACE: " + ace.getUsername() + " - "
+                                + ace.getPermission() + " - granted:"
+                                + ace.isGranted());
+                    }
+                }
+
                 IndexableResources docResources = computeResourcesFor(dm);
                 if (docResources != null) {
                     // We are doing asynchronous indexing, thus the document
@@ -88,10 +104,9 @@ public class IndexingSingleDocumentTask extends AbstractIndexingTask implements
                     // computeResourcesFor already does so
                     searchService.index(docResources, fulltext);
                     log.debug("Indexing task done for document: "
-                            + dm.getTitle());
+                            + dm.getTitle() + " docRef: " + docRef);
                 }
             }
-            // }
             recycledIfNeeded();
         } catch (Exception e) {
             // log complete stack trace since the Runnable.run interface does
@@ -118,6 +133,34 @@ public class IndexingSingleDocumentTask extends AbstractIndexingTask implements
                 thread.interrupt();
             }
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof IndexingSingleDocumentTask) {
+            IndexingSingleDocumentTask task = (IndexingSingleDocumentTask) obj;
+
+            if (docRef == null) {
+                return resources.getId().equals(task.resources.getId());
+            } else {
+                return docRef.equals(task.docRef)
+                        && repositoryName.equals(task.repositoryName);
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 37 * result + (docRef == null ? 0 : docRef.hashCode());
+        result = 37 * result
+                + (repositoryName == null ? 0 : repositoryName.hashCode());
+        result = 37 * result + (resources == null ? 0 : resources.hashCode());
+        return result;
     }
 
 }

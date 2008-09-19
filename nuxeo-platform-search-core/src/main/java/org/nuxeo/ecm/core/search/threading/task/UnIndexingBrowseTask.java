@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * 
  */
-public class UnIndexingBrowseTask extends AbstractIndexingTask {
+class UnIndexingBrowseTask extends AbstractIndexingTask {
 
     private static final Log log = LogFactory.getLog(UnIndexingBrowseTask.class);
 
@@ -37,16 +37,39 @@ public class UnIndexingBrowseTask extends AbstractIndexingTask {
     }
 
     public void run() {
-        log.debug("Unindexing browse task started");
+        log.debug("Unindexing browse task started for document: " + docRef);
 
         try {
             DocumentModel dm = getCoreSession().getDocument(docRef);
             searchService.unindex(dm);
             log.debug("Unindexing browse task done for document: "
-                    + dm.getTitle());
+                    + dm.getTitle() + " docRef: " + docRef);
         } catch (Exception e) {
             log.error(e);
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof UnIndexingBrowseTask) {
+            UnIndexingBrowseTask task = (UnIndexingBrowseTask) obj;
+            return docRef.equals(task.docRef)
+                    && repositoryName.equals(task.repositoryName);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 37 * result + (docRef == null ? 0 : docRef.hashCode());
+        result = 37 * result
+                + (repositoryName == null ? 0 : repositoryName.hashCode());
+        result = 37 * result + (resources == null ? 0 : resources.hashCode());
+        return result;
     }
 
 }

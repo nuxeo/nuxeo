@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     troger
+ *     anguenot
  *
- * $Id$
+ * $Id: IndexingThreadImpl.java 30415 2008-02-21 19:06:22Z tdelprat $
  */
 
 package org.nuxeo.ecm.core.search.threading;
@@ -34,12 +34,18 @@ import org.nuxeo.ecm.core.search.api.client.indexing.session.SearchServiceSessio
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * 
+ * Indexing dedicated thread.
+ * <p>
+ * Maintains a Nuxeo core session along with a JAAS session which can be shared
+ * in between app code executed within this thread. As well, the thread
+ * maintains a search service session.
+ *
+ * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ *
  */
-public class BrowseThread extends Thread implements IndexingThread {
+public class IndexingThreadImpl extends Thread implements IndexingThread {
 
-    private static final Log log = LogFactory.getLog(BrowseThread.class);
+    private static final Log log = LogFactory.getLog(IndexingThreadImpl.class);
 
     protected CoreSession coreSession;
 
@@ -56,7 +62,7 @@ public class BrowseThread extends Thread implements IndexingThread {
 
     private transient SearchService searchService;
 
-    public BrowseThread(Runnable r) {
+    public IndexingThreadImpl(Runnable r) {
         super(r);
         log.debug(getThreadNameAndId() + " : Indexing thread with name="
                 + getThreadNameAndId());
@@ -97,7 +103,7 @@ public class BrowseThread extends Thread implements IndexingThread {
 
     /**
      * Closes the bound core session if exists and still active.
-     * 
+     *
      * @throws Exception
      */
     private void closeCoreSession() {
@@ -111,14 +117,16 @@ public class BrowseThread extends Thread implements IndexingThread {
             log.error(
                     "Error when cleaning CoreSession bound to indexing thread",
                     t);
-        } finally {
-            coreSession = null;
+        }
+        finally
+        {
+            coreSession=null;
         }
     }
 
     /**
      * Initialize a new JAAS login.
-     * 
+     *
      * @throws Exception
      */
     private void login() throws Exception {
@@ -131,7 +139,7 @@ public class BrowseThread extends Thread implements IndexingThread {
 
     /**
      * Logout.
-     * 
+     *
      * @throws Exception
      */
     private void logout() {
@@ -146,7 +154,8 @@ public class BrowseThread extends Thread implements IndexingThread {
     }
 
     @Override
-    public void interrupt() {
+    public void interrupt()
+    {
         closeSearchServiceSession();
         closeCoreSession();
         logout();
@@ -154,10 +163,12 @@ public class BrowseThread extends Thread implements IndexingThread {
     }
 
     // NXP-2107
-    /*
-     * @Override protected void finalize() { closeSearchServiceSession();
-     * closeCoreSession(); logout(); }
-     */
+    /*@Override
+    protected void finalize() {
+        closeSearchServiceSession();
+        closeCoreSession();
+        logout();
+    }*/
 
     public SearchServiceSession getSearchServiceSession() throws Exception {
 
@@ -205,5 +216,4 @@ public class BrowseThread extends Thread implements IndexingThread {
             canRecycle = true;
         }
     }
-
 }

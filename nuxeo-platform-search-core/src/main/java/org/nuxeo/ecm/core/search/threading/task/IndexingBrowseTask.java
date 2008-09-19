@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingHelper;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * 
  */
-public class IndexingBrowseTask extends AbstractIndexingTask {
+class IndexingBrowseTask extends AbstractIndexingTask {
 
     private static final Log log = LogFactory.getLog(IndexingBrowseTask.class);
 
@@ -39,14 +39,37 @@ public class IndexingBrowseTask extends AbstractIndexingTask {
 
     public void run() {
 
-        log.debug("Indexing browse task started");
+        log.debug("Indexing browse task started for document: " + docRef);
 
         try {
             DocumentModel dm = getCoreSession().getDocument(docRef);
             IndexingHelper.recursiveIndex(dm, searchService);
-            log.debug("Browse task done for document: " + dm.getTitle());
+            log.debug("Browse task done for document: " + dm.getTitle()
+                    + " docRef: " + docRef);
         } catch (Exception e) {
             log.error(e);
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof IndexingBrowseTask) {
+            IndexingBrowseTask task = (IndexingBrowseTask) obj;
+            return docRef.equals(task.docRef)
+                    && repositoryName.equals(task.repositoryName);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 37 * result + (docRef == null ? 0 : docRef.hashCode());
+        result = 37 * result
+                + (repositoryName == null ? 0 : repositoryName.hashCode());
+        return result;
     }
 }

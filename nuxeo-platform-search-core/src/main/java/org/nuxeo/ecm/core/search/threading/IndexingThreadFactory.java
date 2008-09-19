@@ -31,25 +31,9 @@ import java.util.concurrent.ThreadFactory;
  * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class IndexingThreadFactory {
+public class IndexingThreadFactory implements ThreadFactory {
 
-    private IndexingThreadFactory() {
-        // Factory class.
-    }
-
-    public static ThreadFactory getBrowseThreadFactory() {
-        return new ThreadFactory() {
-            public Thread newThread(Runnable r) {
-                return new BrowseThread(r);
-            }
-        };
-    }
-
-    public static ThreadFactory getIndexingSingleDocumentThreadFactory() {
-        return new ThreadFactory() {
-            public Thread newThread(Runnable r) {
-                return new IndexingSingleDocumentThread(r);
-            }
-        };
+    public Thread newThread(Runnable r) {
+        return new IndexingThreadImpl(r);
     }
 }

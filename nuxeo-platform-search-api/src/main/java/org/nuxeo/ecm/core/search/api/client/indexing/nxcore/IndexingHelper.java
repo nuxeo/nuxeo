@@ -56,7 +56,8 @@ public final class IndexingHelper {
     private static void index(DocumentModel docModel, CoreSession session,
             SearchService service) throws IndexingException, ClientException {
         if (log.isDebugEnabled()) {
-            log.debug("indexing: " + docModel.getPath());
+            log.debug("indexing: " + docModel.getPath() + " docRef: "
+                    + docModel.getRef());
         }
         // Pool the task in an indexing thread.
         // Do not recurse in thread and do compute fulltext
@@ -130,14 +131,14 @@ public final class IndexingHelper {
     private static DocumentModelList getFolderishChildren(
             DocumentRef parentRef, CoreSession session) throws ClientException {
         DocumentModelList folderishChildren = session.getChildren(parentRef,
-                null, new FacetFilter("folderish", true), null);
+                null, new FacetFilter("Folderish", true), null);
         return folderishChildren;
     }
 
     private static DocumentModelList getNonFolderishChildren(
             DocumentRef parentRef, CoreSession session) throws ClientException {
         DocumentModelList nonFolderishChildren = session.getChildren(parentRef,
-                null, new FacetFilter("folderish", false), null);
+                null, new FacetFilter("Folderish", false), null);
         return nonFolderishChildren;
     }
 

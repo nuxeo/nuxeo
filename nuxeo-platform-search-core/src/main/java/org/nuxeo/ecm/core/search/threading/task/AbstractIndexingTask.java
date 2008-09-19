@@ -28,8 +28,8 @@ import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResource
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
-import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingTask;
 import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingThread;
+import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.Task;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResources;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.factory.IndexableResourcesFactory;
 
@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.search.api.client.indexing.resources.factory.Indexable
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  * 
  */
-public abstract class AbstractIndexingTask implements IndexingTask {
+abstract class AbstractIndexingTask implements Task {
 
     private static final Log log = LogFactory.getLog(AbstractIndexingTask.class);
 
@@ -88,6 +88,10 @@ public abstract class AbstractIndexingTask implements IndexingTask {
         return repositoryName;
     }
 
+    public ResolvedResources getResources() {
+        return resources;
+    }
+
     protected CoreSession getCoreSession() throws IndexingException {
         Thread currentThread = Thread.currentThread();
         if (currentThread instanceof IndexingThread) {
@@ -115,5 +119,11 @@ public abstract class AbstractIndexingTask implements IndexingTask {
         super.finalize();
         log.debug("Finalize...........................");
     }
+
+    @Override
+    public abstract boolean equals(Object obj);
+
+    @Override
+    public abstract int hashCode();
 
 }
