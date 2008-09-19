@@ -104,8 +104,6 @@ public abstract class UnrestrictedSessionRunner {
             } finally {
                 try {
                     repository.close(session);
-                } catch (ClientException e) {
-                    throw e;
                 } catch (Exception e) {
                     throw new ClientException(e);
                 } finally {
