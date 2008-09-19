@@ -32,9 +32,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
@@ -129,8 +131,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
             ctx.closeContext();
 
             // :XXX: The status of the jpdl file should be checked before trying
-            // to
-            // deploy
+            // to deploy
             workflowDeployment = new WMProcessDefinitionStateImpl(pdef, status);
         } else {
             log.info("Definition already deployed !");
@@ -304,15 +305,14 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         return pi;
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings( { "unchecked" })
     public Collection<WMProcessInstance> getProcessInstancesFor(String pdefId) {
         Collection<WMProcessInstance> pis = new ArrayList<WMProcessInstance>();
 
         JbpmWorkflowExecutionContext ctx = getExecutionContext();
         GraphSession session = ctx.getGraphSession();
 
-        List<ProcessInstance> processInstances = session.findProcessInstances(
-                IDConverter.getJbpmIdentifier(pdefId));
+        List<ProcessInstance> processInstances = session.findProcessInstances(IDConverter.getJbpmIdentifier(pdefId));
 
         for (ProcessInstance pi : processInstances) {
             pis.add(WAPIGenerator.createProcessInstance(pi));
@@ -379,7 +379,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         }
 
         if (pi != null) {
-            @SuppressWarnings({"unchecked"})
+            @SuppressWarnings( { "unchecked" })
             List<Token> tokens = pi.findAllTokens();
             for (Token token : tokens) {
                 activities.add(WAPIGenerator.createActivityInstance(token));
@@ -398,7 +398,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
     public Map<String, Serializable> listProcessInstanceAttributes(String pid) {
 
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        if(pid == null) {
+        if (pid == null) {
             return props;
         }
         JbpmWorkflowExecutionContext ctx = getExecutionContext();
@@ -413,7 +413,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         } catch (Exception e) {
             log.error(e);
         }
-        if(vis == null || vis.isEmpty()) {
+        if (vis == null || vis.isEmpty()) {
             return props;
         }
         for (VariableInstance vi : vis) {
@@ -475,8 +475,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         TaskMgmtSession taskSession = ctx.getTaskMgmtSession();
 
         // Get task instance
-        ExtendedTaskInstance taskInstance = (ExtendedTaskInstance) taskSession.getTaskInstance(
-                IDConverter.getJbpmIdentifier(workItem.getId()));
+        ExtendedTaskInstance taskInstance = (ExtendedTaskInstance) taskSession.getTaskInstance(IDConverter.getJbpmIdentifier(workItem.getId()));
 
         if (taskInstance.hasEnded()) {
             return WAPIGenerator.createWorkItemInstance(taskInstance);
@@ -598,7 +597,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         }
 
         TaskMgmtSession taskSession = ctx.getTaskMgmtSession();
-        @SuppressWarnings({"unchecked"})
+        @SuppressWarnings( { "unchecked" })
         List<TaskInstance> taskInstances = taskSession.findTaskInstancesByToken(token.getId());
         for (TaskInstance taskInstance : taskInstances) {
             if (taskInstance != null) {
@@ -653,16 +652,37 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
     @SuppressWarnings("unchecked")
     public Collection<WMWorkItemInstance> getWorkItemsFor(
             List<WMParticipant> participants, String state) {
-        return getWorkItemsFor(participants, state, 0, -1).slice;
+        try {
+            return getWorkItemsFor(participants, state, 0, -1).slice;
+        } catch (WMWorkflowException e) {
+            // TODO: change API in the development branch to allow for raising
+            // that exception instead of logging it here
+            log.error(e);
+            return Collections.emptyList();
+        }
     }
 
     public ResultSlice<WMWorkItemInstance> getWorkItemsFor(
-            List<WMParticipant> participants, String state,
-            int firstResult, int maxResults) {
+            List<WMParticipant> participants, String state, int firstResult,
+            int maxResults) throws WMWorkflowException {
+        return getWorkItemsFor(participants, state, firstResult, maxResults,
+                "start", true);
+    }
 
-        Collection<WMWorkItemInstance> workItems = new ArrayList<WMWorkItemInstance>();
+    public ResultSlice<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participants, String state, int firstResult,
+            int maxResults, String orderBy, boolean orderAscending)
+            throws WMWorkflowException {
+
+        if (!Pattern.matches("[a-zA-Z]\\w+", orderBy)) {
+            throw new WMWorkflowException(String.format(
+                    "'%s' is not a valid attribute name", orderBy));
+        }
+
+        List<WMWorkItemInstance> workItems = new ArrayList<WMWorkItemInstance>();
         if (participants == null || participants.isEmpty()) {
-            return new ResultSlice<WMWorkItemInstance>(workItems, firstResult, maxResults, 0);
+            return new ResultSlice<WMWorkItemInstance>(workItems, firstResult,
+                    maxResults, 0);
         }
         JbpmWorkflowExecutionContext ctx = getExecutionContext();
 
@@ -670,7 +690,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         Session session = jctx.getSession();
 
         List<String> actorIds = new ArrayList<String>(participants.size());
-        for (WMParticipant participant: participants) {
+        for (WMParticipant participant : participants) {
             actorIds.add(participant.getName());
         }
 
@@ -682,41 +702,50 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
                 + "org.jbpm.context.exe.variableinstance.StringInstance si "
                 + "where ti.actorId in (:actorIds) "
                 + "and ti.taskMgmtInstance.processInstance = si.processInstance "
-                + "and ti.end is null " + "and si.name = 'author' "
-                + "order by ti.start asc";
+                + "and ti.end is null and si.name = 'author'";
+        if (orderAscending) {
+            queryStr = String.format("%s order by ti.%s asc", queryStr, orderBy);
+        } else {
+            queryStr = String.format("%s order by ti.%s desc", queryStr,
+                    orderBy);
+        }
+
+        Query query;
         try {
-            Query query = session.createQuery(queryStr);
+            query = session.createQuery(queryStr);
             query.setParameterList("actorIds", actorIds);
-            if (firstResult == 0 && maxResults == -1) {
-                // fetch all results
-                objects = query.list();
-                totalResults = objects.size();
-            } else {
-                // scroll the results a to only collect elements of the required slice
-                ScrollableResults results = query.scroll();
-                if (results.setRowNumber(firstResult)) {
-                    objects = new ArrayList<Object[]>(maxResults < 100 ? maxResults : 100);
-                    for (int i=0; i<maxResults; i++) {
-                        objects.add(results.get());
-                        if (!results.next()) {
-                            break;
-                        }
+        } catch (HibernateException e) {
+            throw new WMWorkflowException(e);
+        }
+        if (firstResult == 0 && maxResults == -1) {
+            // fetch all results
+            objects = query.list();
+            totalResults = objects.size();
+        } else {
+            // scroll the results a to only collect elements of the required
+            // slice
+            ScrollableResults results = query.scroll();
+            if (results.setRowNumber(firstResult)) {
+                objects = new ArrayList<Object[]>(maxResults < 100 ? maxResults
+                        : 100);
+                for (int i = 0; i < maxResults; i++) {
+                    objects.add(results.get());
+                    if (!results.next()) {
+                        break;
                     }
-                } else {
-                    // no results at such position
-                    objects = Collections.emptyList();
                 }
-                // scroll till the end to fetch the total number of results
-                if (results.last()) {
-                    totalResults = results.getRowNumber() + 1;
-                } else {
-                    totalResults = 0;
-                }
-                // release the DB cursor
-                results.close();
+            } else {
+                // no results at such position
+                objects = Collections.emptyList();
             }
-        } catch (Exception e) {
-            log.error(e);
+            // scroll till the end to fetch the total number of results
+            if (results.last()) {
+                totalResults = results.getRowNumber() + 1;
+            } else {
+                totalResults = 0;
+            }
+            // release the DB cursor
+            results.close();
         }
         if (objects != null) {
             for (Object[] object : objects) {
@@ -731,7 +760,8 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
             }
         }
         ctx.closeContext();
-        return new ResultSlice<WMWorkItemInstance>(workItems, firstResult, maxResults, totalResults);
+        return new ResultSlice<WMWorkItemInstance>(workItems, firstResult,
+                maxResults, totalResults);
     }
 
     @SuppressWarnings("unchecked")
@@ -1045,8 +1075,8 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
      * @param session a jbpm graph session
      * @return a jBPM ProcessDefinition instance
      */
-    private static ProcessDefinition getProcessDefinition(String workflowDefinitionId,
-            GraphSession session) {
+    private static ProcessDefinition getProcessDefinition(
+            String workflowDefinitionId, GraphSession session) {
         return session.getProcessDefinition(IDConverter.getJbpmIdentifier(workflowDefinitionId));
     }
 
@@ -1058,8 +1088,8 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
      * @param session a jBPM graph session
      * @return a jBPM ProcessInstance instance
      */
-    private static ProcessInstance getProcessInstance(String workflowInstanceID,
-            GraphSession session) {
+    private static ProcessInstance getProcessInstance(
+            String workflowInstanceID, GraphSession session) {
         return session.getProcessInstance(IDConverter.getJbpmIdentifier(workflowInstanceID));
     }
 

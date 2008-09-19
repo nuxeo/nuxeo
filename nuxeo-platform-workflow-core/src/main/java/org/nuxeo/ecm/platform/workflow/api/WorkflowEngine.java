@@ -80,8 +80,8 @@ public interface WorkflowEngine {
      * @return the process definition id
      * @throws WMWorkflowException
      */
-    WMProcessDefinitionState deployDefinition(InputStream stream, String mimetype)
-            throws WMWorkflowException;
+    WMProcessDefinitionState deployDefinition(InputStream stream,
+            String mimetype) throws WMWorkflowException;
 
     /**
      * Undeploys a process definition given its identifier.
@@ -274,11 +274,50 @@ public interface WorkflowEngine {
      */
     Collection<WMWorkItemInstance> getWorkItemsFor(WMParticipant participant,
             String state);
+
+    /**
+     * Returns the work items for any of the given participants in a given
+     * state.
+     *
+     * @param participants
+     * @param state
+     * @return
+     */
     Collection<WMWorkItemInstance> getWorkItemsFor(
             List<WMParticipant> participants, String state);
+
+    /**
+     * Returns the range of work items ordered by start date for any of the
+     * given participants in a given state.
+     *
+     * @param participants
+     * @param state
+     * @param firstResult
+     * @param maxResult (-1 for no maximum)
+     * @return
+     * @throws WMWorkflowException
+     */
     ResultSlice<WMWorkItemInstance> getWorkItemsFor(
-            List<WMParticipant> participants, String state,
-            int firstResult, int maxResult);
+            List<WMParticipant> participants, String state, int firstResult,
+            int maxResult) throws WMWorkflowException;
+
+    /**
+     * Returns the range of ordered work items for any of the
+     * given participants. The sort order is determined by the orderBy and orderAscending parameters
+     *
+     * @param participants
+     * @param state
+     * @param firstResult
+     * @param maxResults
+     * @param orderBy TaskInstance attribute name to sort
+     * @param orderAscending ascending order if true, descending if false
+     * @return
+     * @throws WMWorkflowException
+     */
+    ResultSlice<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participants, String state, int firstResult,
+            int maxResults, String orderBy, boolean orderAscending)
+            throws WMWorkflowException;
 
     /**
      * Returns the work items for a given process instance in a given state.

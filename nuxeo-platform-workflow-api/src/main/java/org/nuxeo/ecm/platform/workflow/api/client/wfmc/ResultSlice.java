@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.platform.workflow.api.client.wfmc;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Data transfer class to hold a slice of a result set of items of type E along
@@ -32,7 +32,7 @@ import java.util.Collection;
  */
 public class ResultSlice<E> {
 
-    final public Collection<E> slice;
+    final public List<E> slice;
 
     final public int firstResult;
 
@@ -40,7 +40,7 @@ public class ResultSlice<E> {
 
     final public int totalResult;
 
-    public ResultSlice(Collection<E> slice, int firstResult, int maxResult,
+    public ResultSlice(List<E> slice, int firstResult, int maxResult,
             int totalResults) {
         this.slice = slice;
         this.firstResult = firstResult;

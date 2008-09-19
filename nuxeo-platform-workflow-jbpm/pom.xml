@@ -38,8 +38,29 @@
       <version>3.1.4</version>
     </dependency>
     <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jbpm-identity</artifactId>
+      <version>3.1.4</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>bsh</groupId>
+      <artifactId>bsh</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sf</groupId>
+      <artifactId>ehcache</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
