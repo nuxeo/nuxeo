@@ -136,7 +136,6 @@ public class DefaultWebContext implements WebContext {
         }
     }
 
-
     public boolean isCanceled() {
         return isCanceled;
     }
@@ -479,7 +478,6 @@ public class DefaultWebContext implements WebContext {
         isCanceled = true;
     }
 
-
     public void render(String template) throws WebException {
         render(template, null);
     }
@@ -567,7 +565,6 @@ public class DefaultWebContext implements WebContext {
         vars.put(key, value);
     }
 
-
     public WebObject getLastObject() {
         return tail;
     }
@@ -575,8 +572,6 @@ public class DefaultWebContext implements WebContext {
     public boolean hasTraversalPath() {
         return head != null;
     }
-
-
 
     public void removeLastTraversalObject() {
         if (head != null) {
@@ -625,7 +620,7 @@ public class DefaultWebContext implements WebContext {
     }
 
     /**
-     * We must support at least: CoreSession, DocumentModel, Principal
+     * We must support at least: CoreSession, DocumentModel, Principal.
      */
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter == DocumentModel.class) {
@@ -737,48 +732,48 @@ public class DefaultWebContext implements WebContext {
         }
     }
 
-
    /**
-    * XXX should be this made part of the API? or may be createa WebContexFactory ..
-    * @param name
-    * @param doc
-    * @return
-    */
-   public WebObject addWebObject(String name, DocumentModel doc) {
-       if (name == null) {
-           name = ""; // this happens for the root node
-       }
-       WebObject object = new WebObject(this, name, doc);
-       if (head == null) {
-           head = tail = object;
-           object.prev = null;
-       } else {
-           tail.next = object;
-           object.prev = tail;
-       }
-       object.next = null;
-       tail = object;
-       return object;
-   }
+     * XXX should be this made part of the API? or maybe create
+     * WebContexFactory ..
+     *
+     * @param name
+     * @param doc
+     * @return
+     */
+    public WebObject addWebObject(String name, DocumentModel doc) {
+        if (name == null) {
+            name = ""; // this happens for the root node
+        }
+        WebObject object = new WebObject(this, name, doc);
+        if (head == null) {
+            head = tail = object;
+            object.prev = null;
+        } else {
+            tail.next = object;
+            object.prev = tail;
+        }
+        object.next = null;
+        tail = object;
+        return object;
+    }
 
-
-
-
-   @Override
-   public String toString() {
-       return "PathInfo: " + pathInfo.toString();
-   }
-
+    @Override
+    public String toString() {
+        return "PathInfo: " + pathInfo.toString();
+    }
 
     /**
-     * Given an absolute path return its relative path to the given base path if any.
+     * Given an absolute path, returns its relative path to the given base path
+     * if any.
      * <p>
-     * If the path cannot be made relative to the basePath then null is returned
-     * <br>
-     * The returned path is always starting with a '/'
+     * If the path cannot be made relative to the basePath, then null is
+     * returned.
+     * <p>
+     * The returned path is always starting with a '/'.
+     *
      * @param basePath the base path
      * @param path the path
-     * @return the relative path or null if the relative path cannot be computed
+     * @return the relative path, or null if the relative path cannot be computed
      */
     public static Path getRelativePath(Path basePath, Path path) {
         int cnt = basePath.matchingFirstSegments(path);
@@ -787,4 +782,5 @@ public class DefaultWebContext implements WebContext {
         }
         return null;
     }
+
 }

@@ -21,10 +21,7 @@ package org.nuxeo.ecm.webengine.tests.forms;
 
 import java.net.URL;
 
-import net.sf.json.JSON;
 import net.sf.json.JSONObject;
-import net.sf.json.processors.JsonBeanProcessor;
-
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.forms.FormManager;
@@ -138,13 +135,13 @@ public class TestForms extends NXRuntimeTestCase {
         assertEquals("Confirmation E-mail address doesn't match: some@email.com", error);
 
         // test JSON representation
-        JSONObject obj = new JSONObject().element("isOk", false).element("field", "confirm_email").element("message", "Confirmation E-mail address doesn't match: %s");
+        JSONObject obj = new JSONObject().element("isOk", false)
+                .element("field", "confirm_email")
+                .element("message", "Confirmation E-mail address doesn't match: %s");
         assertEquals(obj, status.toJSON());
     }
 
-
     public static void main(String[] args) throws Exception {
-
         XMap xmap = new XMap();
         URL url = TestForms.class.getResource("test.xml");
         xmap.register(Form.class);
@@ -154,7 +151,6 @@ public class TestForms extends NXRuntimeTestCase {
         for (Field f : form.getFields().values()) {
             System.out.println(f.getConstraints());
         }
-
 
         Field f = form.getField("test-int");
         System.out.println("--------------");
@@ -223,7 +219,6 @@ public class TestForms extends NXRuntimeTestCase {
                 System.out.println(status);
             }
         }
-
     }
 
 }

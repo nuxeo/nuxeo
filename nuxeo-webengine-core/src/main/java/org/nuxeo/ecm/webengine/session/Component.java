@@ -22,7 +22,8 @@ package org.nuxeo.ecm.webengine.session;
 import java.io.Serializable;
 
 /**
- * A statefull session component.
+ * A stateful session component.
+ * <p>
  * A component is instantiate and activated the first time it is requested.
  * It is destroyed when the user session ends.
  * <p>
@@ -30,25 +31,23 @@ import java.io.Serializable;
  * from the UserSession thread.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface Component extends Serializable {
 
-
     /**
      * The component was instantiated by the given session.
+     * <p>
      * This method should initialize the component.
      * After returning the component will become visible in the session.
+     *
      * @param session the user session that created the component
      * @param name the name under this component is registered.
      * Can be null for unnamed component.
      *
      * @throws InvalidStateException if the component is not in an appropriate life cycle state
      * @throws SessionException an internal error occurred
-     *
      */
     public void initialize(UserSession session, String name) throws SessionException;
-
 
     /**
      * Destroy this component.

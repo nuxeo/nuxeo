@@ -49,7 +49,8 @@ import org.osgi.framework.Bundle;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebEngineComponent extends ManagedComponent implements FileChangeListener, ConfigurationChangedListener {
+public class WebEngineComponent extends ManagedComponent implements
+        FileChangeListener, ConfigurationChangedListener {
 
     public static final ComponentName NAME = new ComponentName(WebEngineComponent.class.getName());
 
@@ -62,7 +63,6 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
     public static final String CONFIG_XP = "configuration";
     public static final String APP_MAPPING_XP = "application-mapping";
     public static final String FORM_XP = "form";
-
 
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
@@ -107,9 +107,7 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
         engine = new DefaultWebEngine(root, notifier);
         deployer = new ConfigurationDeployer(notifier);
         deployer.addConfigurationChangedListener(this);
-
     }
-
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
@@ -148,8 +146,6 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
         }
     }
 
-
-
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
@@ -187,7 +183,6 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
             engine.getFormManager().registerForm(form);
         }
     }
-
 
     @Override
     public void unregisterContribution(Object contribution,
