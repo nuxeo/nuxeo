@@ -8,7 +8,7 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxdir="http://nuxeo.org/nxdirectory">
-  
+
 <c:forEach var="field" items="#{columns}">
 
   <nxu:column rendered="#{field.type != 'special'}">
@@ -25,10 +25,10 @@
 
     <nxu:dataList var="item" value="#{doc[field.schemaName][field.fieldName]}"
       rendered="#{field.jsfComponent == 't:dataList'}">
-      <h:inputText value="#{item}" styleClass="dataInputText" />
+      <h:outputText value="#{item}" styleClass="dataInputText" />
     </nxu:dataList>
 
-    <h:inputTextarea value="#{doc[field.schemaName][field.fieldName]}"
+    <h:outputText value="#{doc[field.schemaName][field.fieldName]}"
       class="dataInputText" rendered="#{field.jsfComponent=='h:inputTextarea'}" />
 
     <h:outputText value="#{doc[field.schemaName][field.fieldName]}"
