@@ -284,6 +284,8 @@ public class SchemaManagerImpl implements SchemaManager {
         return prefetchInfo;
     }
 
+    // Document Types
+
     public void registerDocumentType(DocumentType docType) {
         log.info("Register document type: " + docType.getName());
         synchronized (docTypeReg) {
@@ -338,7 +340,6 @@ public class SchemaManagerImpl implements SchemaManager {
             registerDocumentType(superType, dtd);
         }
     }
-
 
     private void removeFromFacetsCache(DocumentType docType) {
         if (facetsCache == null) {
@@ -406,6 +407,8 @@ public class SchemaManagerImpl implements SchemaManager {
             return docTypeReg.size();
         }
     }
+
+    // Misc
 
     public void clear() {
         synchronized (docTypeReg) {
@@ -483,11 +486,12 @@ public class SchemaManagerImpl implements SchemaManager {
     }
 
     /**
-     * Implementation details: there is a cache on each server for this
-     * Assumes that types never change in the lifespan of this server process
-     * and that the Core server has finished loading its types.
-     *
-     * This is tested in nuxeo-core and SearchBackendTestCase (hence compass plugin)
+     * Implementation details: there is a cache on each server for this Assumes
+     * that types never change in the lifespan of this server process and that
+     * the Core server has finished loading its types.
+     * <p>
+     * This is tested in nuxeo-core and SearchBackendTestCase (hence compass
+     * plugin).
      */
     public Set<String> getDocumentTypeNamesExtending(String docTypeName) {
         Set<String> res = inheritanceCache.get(docTypeName);
@@ -520,6 +524,7 @@ public class SchemaManagerImpl implements SchemaManager {
             return res;
         }
     }
+
     public String getXmlSchemaDefinition(String name) {
         File file = getSchemaFile(name);
         if (file != null) {
@@ -558,4 +563,5 @@ public class SchemaManagerImpl implements SchemaManager {
             return helpers.get(schema + ':' + type);
         }
     }
+
 }
