@@ -1395,6 +1395,9 @@ public abstract class AbstractSession implements CoreSession,
         DocumentModel docModel = readModel(doc, null);
         Map<String, Object> options = new HashMap<String, Object>();
         options.put(CoreEventConstants.DOCUMENT, doc);
+        if (docModel != null) {
+            options.put("docTitle", docModel.getTitle());
+        }
         // for now we don't notify for versions themselves, as they have the
         // same path as the working document
         if (!doc.isVersion()) {
@@ -1406,7 +1409,8 @@ public abstract class AbstractSession implements CoreSession,
         }
         doc.remove();
         if (!doc.isVersion()) {
-            notifyEvent(DocumentEventTypes.DOCUMENT_REMOVED, docModel, null,
+            options.remove(CoreEventConstants.DOCUMENT);
+            notifyEvent(DocumentEventTypes.DOCUMENT_REMOVED, docModel, options,
                     null, null, false);
         }
     }
