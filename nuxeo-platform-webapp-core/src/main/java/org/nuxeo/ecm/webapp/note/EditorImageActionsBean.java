@@ -61,7 +61,8 @@ import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.webapp.base.InputController;
 
 /**
- * Seam component implementing actions related to inserting an image in a Note document.
+ * Seam component implementing actions related to inserting an image in a Note
+ * document.
  * <p>
  * The uploaded image is stored in the <code>files</code> schema of the
  * document.
@@ -70,9 +71,9 @@ import org.nuxeo.ecm.webapp.base.InputController;
  * the appropriate method.
  * <p>
  * The search method retrieves only the Picture document of the repository.
- *
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
+ * 
  */
 @Name("editorImageActions")
 @Scope(CONVERSATION)
@@ -81,10 +82,12 @@ public class EditorImageActionsBean extends InputController implements
 
     private static final String SEARCH_QUERY = "SELECT * FROM Document WHERE %s";
 
+    private static final String FILES_SCHEMA = "files";
+
     private static final List<Map<String, String>> SIZES;
 
     static {
-        SIZES = new ArrayList<Map<String,String>>();
+        SIZES = new ArrayList<Map<String, String>>();
         Map<String, String> m = new HashMap<String, String>();
         m.put("label", "label.imageUpload.originalSize");
         m.put("value", "Original");
@@ -185,8 +188,12 @@ public class EditorImageActionsBean extends InputController implements
     }
 
     public boolean getInCreationMode() {
-        final DocumentModel doc = navigationContext.getCurrentDocument();
-        return !"note".equalsIgnoreCase(doc.getType());
+        final DocumentModel doc = navigationContext.getChangeableDocument();
+        if (doc.getId() == null) {
+            return true;
+        } else {
+            return !doc.hasSchema(FILES_SCHEMA);
+        }
     }
 
     public boolean getHasSearchResults() {
@@ -218,7 +225,8 @@ public class EditorImageActionsBean extends InputController implements
         }
         constraints.add("ecm:primaryType = 'Picture'");
 
-        final String query = String.format(SEARCH_QUERY, StringUtils.join(constraints, " AND "));
+        final String query = String.format(SEARCH_QUERY, StringUtils.join(
+                constraints, " AND "));
         final SQLQuery nxqlQuery = SQLQueryParser.parse(query);
         final ComposedNXQuery composedQuery = new ComposedNXQueryImpl(nxqlQuery);
         final SearchService searchService = SearchServiceDelegate.getRemoteSearchService();
