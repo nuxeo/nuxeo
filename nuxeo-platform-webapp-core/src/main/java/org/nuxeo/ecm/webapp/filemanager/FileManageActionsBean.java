@@ -354,21 +354,19 @@ public class FileManageActionsBean extends InputController implements
                 return MOVE_IMPOSSIBLE;
             }
 
-            // check the right to remove an element from the source folder :
-            if (!documentManager.hasPermission(doc.getParentRef(),
-                    SecurityConstants.REMOVE_CHILDREN)
-                    || documentManager.hasPermission(doc.getRef(),
-                            SecurityConstants.REMOVE)) {
-                // This should never append since user can only drop in visible
-                // sections
-                facesMessages.add(FacesMessage.SEVERITY_WARN,
-                        resourcesAccessor.getMessages().get(
-                                "move_insuffisant_rights"));
-                return MOVE_IMPOSSIBLE;
-            }
-
             if (doc.isProxy()) {
-                // if this is a proxy, simply move it
+                // check the right to remove an element from the source folder :
+                if (!documentManager.hasPermission(doc.getParentRef(),
+                        SecurityConstants.REMOVE_CHILDREN)
+                        ||!documentManager.hasPermission(doc.getRef(),
+                                SecurityConstants.REMOVE)) {
+                    // This should never append since user can only drop in visible
+                    // sections
+                    facesMessages.add(FacesMessage.SEVERITY_WARN,
+                            resourcesAccessor.getMessages().get(
+                                    "move_insuffisant_rights"));
+                    return MOVE_IMPOSSIBLE;
+                }
                 return MOVE_OK;
             }
 
