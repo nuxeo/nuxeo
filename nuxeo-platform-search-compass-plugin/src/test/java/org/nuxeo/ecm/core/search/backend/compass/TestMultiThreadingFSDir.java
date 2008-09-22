@@ -101,7 +101,7 @@ public class TestMultiThreadingFSDir extends NXRuntimeTestCase {
 
     public void testMultiThreading() throws Exception {
         ResolvedResources resources = SharedTestDataBuilder.makeAboutLifeAggregated();
-        IndexingThreadPool.setSearchService(service);
+        // IndexingThreadPool.setSearchService(service);
 
         final int NB_DOCS = 102;
 
@@ -110,14 +110,13 @@ public class TestMultiThreadingFSDir extends NXRuntimeTestCase {
 
         for (int i = 0; i < NB_DOCS; i++) {
             System.out.println("Launchin' a new indexing task :: => " + i);
-            //IndexingThreadPool.index(resources);
+            // IndexingThreadPool.index(resources);
             service.indexInThread(resources);
         }
 
         while (IndexingThreadPool.getActiveIndexingTasks() > 0) {
             System.out.println("Tasks done="
-                    + IndexingThreadPool.getTotalCompletedIndexingTasks()
-                    + " "
+                    + IndexingThreadPool.getTotalCompletedIndexingTasks() + " "
                     + timer.getSpent("in"));
             Thread.sleep(300);
         }
@@ -126,7 +125,8 @@ public class TestMultiThreadingFSDir extends NXRuntimeTestCase {
 
         timer.stop();
         System.out.println(timer);
-        System.out.println((NB_DOCS * 1000) / timer.getDuration() + " resources/sec");
+        System.out.println((NB_DOCS * 1000) / timer.getDuration()
+                + " resources/sec");
 
         System.out.println("DONE............................... !");
 

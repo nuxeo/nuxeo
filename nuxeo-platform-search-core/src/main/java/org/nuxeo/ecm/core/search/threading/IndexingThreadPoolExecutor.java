@@ -28,11 +28,18 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
+ * A ThreadPoolExecutor used for the asynchronous indexing tasks.
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * 
  */
 public class IndexingThreadPoolExecutor extends ThreadPoolExecutor {
+
+    private static final Log log = LogFactory.getLog(IndexingThreadPoolExecutor.class);
 
     public static List<Runnable> RUNNING_TASKS = Collections.synchronizedList(new ArrayList<Runnable>());
 
@@ -48,12 +55,16 @@ public class IndexingThreadPoolExecutor extends ThreadPoolExecutor {
     protected void beforeExecute(Thread t, Runnable r) {
         super.beforeExecute(t, r);
         RUNNING_TASKS.add(r);
+        log.debug("Adding a task to the running tasks list: "
+                + RUNNING_TASKS.size());
     }
 
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
         super.afterExecute(r, t);
         RUNNING_TASKS.remove(r);
+        log.debug("Removing a task from the running tasks list: "
+                + RUNNING_TASKS.size());
     }
 
 }

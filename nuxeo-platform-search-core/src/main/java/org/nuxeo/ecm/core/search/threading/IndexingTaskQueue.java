@@ -31,6 +31,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
+ * A {@code BlockingQueue} implementation used for the indexing tasks.
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * 
  */
@@ -56,18 +58,16 @@ public class IndexingTaskQueue extends LinkedBlockingQueue<Runnable> {
     public Runnable poll() {
         Runnable r = getAwaitingTask();
         if (r != null) {
-            tasksInQueue.remove(r);
-            log.debug("Removing a task from queue: " + tasksInQueue.size());
+            removeTask(r);
             return r;
         }
 
         while ((r = super.poll()) != null) {
-            if (!IndexingThreadPoolExecutor.RUNNING_TASKS.contains(r)) {
-                tasksInQueue.remove(r);
-                log.debug("Removing a task from queue: " + tasksInQueue.size());
+            if (canRunTask(r)) {
+                removeTask(r);
                 return r;
             } else {
-                awaitingTasks.add(r);
+                addAwaitingTask(r);
             }
         }
         return null;
@@ -78,20 +78,16 @@ public class IndexingTaskQueue extends LinkedBlockingQueue<Runnable> {
             throws InterruptedException {
         Runnable r = getAwaitingTask();
         if (r != null) {
-            tasksInQueue.remove(r);
-            log.debug("Removing a task from queue: " + tasksInQueue.size());
+            removeTask(r);
             return r;
         }
 
         while ((r = super.poll(timeout, unit)) != null) {
-            if (!IndexingThreadPoolExecutor.RUNNING_TASKS.contains(r)) {
-                tasksInQueue.remove(r);
-                log.debug("Removing a task from queue: " + tasksInQueue.size());
+            if (canRunTask(r)) {
+                removeTask(r);
                 return r;
             } else {
-                awaitingTasks.add(r);
-                log.debug("Adding a new task to the awaitingTasks list: "
-                        + awaitingTasks.size());
+                addAwaitingTask(r);
             }
         }
         return null;
@@ -99,35 +95,35 @@ public class IndexingTaskQueue extends LinkedBlockingQueue<Runnable> {
 
     @Override
     public Runnable take() throws InterruptedException {
+        // any awaiting task not yet running?
         Runnable r = getAwaitingTask();
         if (r != null) {
-            tasksInQueue.remove(r);
-            log.debug("Removing a task from queue: " + tasksInQueue.size());
+            removeTask(r);
             return r;
         }
 
         for (;;) {
+            // simulate a take by polling a task every 500ms
             r = super.poll(500, TimeUnit.MILLISECONDS);
             if (r != null) {
-                if (!IndexingThreadPoolExecutor.RUNNING_TASKS.contains(r)) {
-                    tasksInQueue.remove(r);
-                    log.debug("Removing a task from queue: "
-                            + tasksInQueue.size());
+                // if we get one, see if we can run it...
+                if (canRunTask(r)) {
+                    removeTask(r);
                     return r;
                 } else {
-                    awaitingTasks.add(r);
+                    addAwaitingTask(r);
                 }
             } else {
+                // ...else check the awaiting tasks list
                 if (awaitingTasks.isEmpty()) {
+                    // no more awaiting task, call the default take
                     return super.take();
                 } else {
-                    for (Runnable task : awaitingTasks) {
-                        if (!IndexingThreadPoolExecutor.RUNNING_TASKS.contains(task)) {
-                            tasksInQueue.remove(r);
-                            log.debug("Removing a task from queue: "
-                                    + tasksInQueue.size());
-                            return task;
-                        }
+                    // see if we can run an awaiting task
+                    r = getAwaitingTask();
+                    if (r != null) {
+                        removeTask(r);
+                        return r;
                     }
                 }
             }
@@ -135,55 +131,86 @@ public class IndexingTaskQueue extends LinkedBlockingQueue<Runnable> {
     }
 
     @Override
-    public boolean offer(Runnable o, long timeout, TimeUnit unit)
+    public boolean offer(Runnable r, long timeout, TimeUnit unit)
             throws InterruptedException {
-        if (tasksInQueue.contains(o)) {
+        if (tasksInQueue.contains(r)) {
             return false;
         }
-        if (super.offer(o, timeout, unit)) {
-            tasksInQueue.add(o);
-            log.debug("Adding a task in queue: " + tasksInQueue.size());
+        if (super.offer(r, timeout, unit)) {
+            addTask(r);
             return true;
         }
         return false;
     }
 
     @Override
-    public boolean offer(Runnable o) {
-        if (tasksInQueue.contains(o)) {
+    public boolean offer(Runnable r) {
+        if (tasksInQueue.contains(r)) {
             return false;
         }
-        if (super.offer(o)) {
-            tasksInQueue.add(o);
-            log.debug("Adding a task in queue: " + tasksInQueue.size());
+        if (super.offer(r)) {
+            addTask(r);
             return true;
         }
         return false;
     }
 
     @Override
-    public void put(Runnable o) throws InterruptedException {
-        if (tasksInQueue.contains(o)) {
+    public void put(Runnable r) throws InterruptedException {
+        if (tasksInQueue.contains(r)) {
             return;
         }
-        super.put(o);
-        tasksInQueue.add(o);
-        log.debug("Adding a task in queue: " + tasksInQueue.size());
+        super.put(r);
+        addTask(r);
     }
 
+    @Override
+    public int size() {
+        return tasksInQueue.size();
+    }
+
+    /**
+     * Returns the first awaiting task of the list not yet already running by
+     * the IndexingThreadPool, {@code null} if all tasks are already running.
+     * 
+     */
     private Runnable getAwaitingTask() {
         // any awaiting task in the list?
         if (!awaitingTasks.isEmpty()) {
             for (Runnable r : awaitingTasks) {
                 if (!IndexingThreadPoolExecutor.RUNNING_TASKS.contains(r)) {
-                    awaitingTasks.remove(r);
-                    log.debug("Removing a task from the awaitingTasks list: "
-                            + awaitingTasks.size());
+                    removeAwaitingTask(r);
                     return r;
                 }
             }
         }
         return null;
+    }
+
+    private boolean canRunTask(Runnable r) {
+        return !IndexingThreadPoolExecutor.RUNNING_TASKS.contains(r);
+    }
+
+    private void removeTask(Runnable r) {
+        tasksInQueue.remove(r);
+        log.debug("Removing a task from queue: " + tasksInQueue.size());
+    }
+
+    private void addTask(Runnable r) {
+        tasksInQueue.add(r);
+        log.debug("Adding a task in queue: " + tasksInQueue.size());
+    }
+
+    private void addAwaitingTask(Runnable r) {
+        awaitingTasks.add(r);
+        log.debug("Adding a new task to the awaitingTasks list: "
+                + awaitingTasks.size());
+    }
+
+    private void removeAwaitingTask(Runnable r) {
+        awaitingTasks.remove(r);
+        log.debug("Removing a task from the awaitingTasks list: "
+                + awaitingTasks.size());
     }
 
 }

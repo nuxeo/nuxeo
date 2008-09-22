@@ -23,8 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResources;
 import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingThread;
 import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.Task;
@@ -79,22 +77,6 @@ class IndexingSingleDocumentTask extends AbstractIndexingTask implements Task {
                         + resources.getId());
             } else {
                 DocumentModel dm = getCoreSession().getDocument(docRef);
-
-                log.debug("Thread: " + Thread.currentThread().getName()
-                        + " --- document: " + dm.getRef());
-                log.debug("Thread: " + Thread.currentThread().getName()
-                        + " --- document ACPS");
-                for (ACL acl : dm.getACP().getACLs()) {
-                    log.debug("Thread: " + Thread.currentThread().getName()
-                            + " --- ACL");
-                    for (ACE ace : acl.getACEs()) {
-                        log.debug("Thread: " + Thread.currentThread().getName()
-                                + " --- ACE: " + ace.getUsername() + " - "
-                                + ace.getPermission() + " - granted:"
-                                + ace.isGranted());
-                    }
-                }
-
                 IndexableResources docResources = computeResourcesFor(dm);
                 if (docResources != null) {
                     // We are doing asynchronous indexing, thus the document
