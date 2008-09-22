@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.usertype.UserVersionType;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -49,11 +51,13 @@ import org.jboss.seam.core.FacesMessages;
 import org.nuxeo.common.utils.i18n.Labeler;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
+import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -133,6 +137,9 @@ public class SecurityActionsBean extends InputController implements
 
     private Boolean blockRightInheritance;
 
+    protected static Map<String, List<UserVisiblePermission>> visibleUserPermissions = new HashMap<String, List<UserVisiblePermission>>();
+
+
     @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false, inject = false)
     public void resetSecurityData() throws ClientException {
         obsoleteSecurityData = true;
@@ -140,15 +147,17 @@ public class SecurityActionsBean extends InputController implements
     }
 
     public void rebuildSecurityData() throws ClientException {
+        DocumentModel currentDocument= navigationContext.getCurrentDocument();
         try {
             if (null != currentDocument) {
                 if (null == securityData) {
                     securityData = new SecurityData();
+                    securityData.setDocumentType(currentDocument.getType());
                 }
                 ACP acp = documentManager.getACP(currentDocument.getRef());
 
                 if (null != acp) {
-                    new SecurityDataConverter().convertToSecurityData(acp,
+                    SecurityDataConverter.convertToSecurityData(acp,
                             securityData);
                 } else {
                     securityData.clear();
@@ -275,7 +284,7 @@ public class SecurityActionsBean extends InputController implements
 
     public String updateSecurityOnDocument() throws ClientException {
         try {
-            List<UserEntry> modifiableEntries = new SecurityDataConverter().convertToUserEntries(securityData);
+            List<UserEntry> modifiableEntries = SecurityDataConverter.convertToUserEntries(securityData);
             ACP acp = currentDocument.getACP();
 
             if (null == acp) {
@@ -321,11 +330,65 @@ public class SecurityActionsBean extends InputController implements
                 return null;
             }
         }
-        securityData.addModifiablePrivilege(principalName, permissionName,
-                grant);
-        // remove the opposite rule if any
-        securityData.removeModifiablePrivilege(principalName, permissionName,
-                !grant);
+
+        String grantPerm = permissionName;
+        String denyPerm = permissionName;
+        if (visibleUserPermissions!=null)
+        {
+            List<UserVisiblePermission> uvps = visibleUserPermissions.get(securityData.getDocumentType());
+            if (uvps!=null)
+            {
+                for (UserVisiblePermission uvp : uvps)
+                {
+                    if (uvp.getId().equals(permissionName))
+                    {
+                        grantPerm=uvp.getPermission();
+                        denyPerm= uvp.getDenyPermission();
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                log.debug("no entry for documentType in visibleUserPermissions this should never happend, using default mapping ...");
+            }
+        }
+        else
+            log.debug("visibleUserPermissions is null this should never happend, using default mapping ...");
+
+
+        if (grant)
+        {
+            // remove the opposite rule if any
+            boolean removed = securityData.removeModifiablePrivilege(principalName, denyPerm,
+                    !grant);
+            if (!removed)
+                removed = securityData.removeModifiablePrivilege(principalName, grantPerm,
+                    !grant);
+            // add rule only if none was removed
+            if (!removed)
+                securityData.addModifiablePrivilege(principalName, grantPerm,
+                    grant);
+        }
+        else
+        {
+            // remove the opposite rule if any
+            boolean removed = securityData.removeModifiablePrivilege(principalName, grantPerm,
+                    !grant);
+            if (!removed)
+                removed = securityData.removeModifiablePrivilege(principalName, denyPerm,
+                        !grant);
+            // add rule only if none was removed
+            if (!removed)
+                securityData.addModifiablePrivilege(principalName, denyPerm,
+                       grant);
+        }
+
+        try {
+            reconstructTableModel();
+        } catch (ClientException e) {
+            log.error("Error whil reconstructing security data", e);
+        }
         return null;
     }
 
@@ -338,6 +401,13 @@ public class SecurityActionsBean extends InputController implements
     }
 
     public String addPermissions() {
+        if (principalListManager.getSelectedUserListEmpty()) {
+            String message = ComponentUtils.translate(
+                    FacesContext.getCurrentInstance(),
+                    "error.rightsManager.noUsersSelected");
+            FacesMessages.instance().add(message);
+            return null;
+        }
         List<String> principalsName = principalListManager.getSelectedUsers();
         String permissionName = permissionListManager.getSelectedPermission();
         boolean grant = permissionActionListManager.getSelectedGrant().equals(
@@ -358,13 +428,6 @@ public class SecurityActionsBean extends InputController implements
     }
 
     public String addPermissionsAndUpdate() throws ClientException {
-        if (principalListManager.getSelectedUserListEmpty()) {
-            String message = ComponentUtils.translate(
-                    FacesContext.getCurrentInstance(),
-                    "error.rightsManager.noUsersSelected");
-            FacesMessages.instance().add(message);
-            return null;
-        }
         addPermissions();
         updateSecurityOnDocument();
         // do not redirect to the default folder view
@@ -372,7 +435,18 @@ public class SecurityActionsBean extends InputController implements
 
         facesMessages.add(FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get("message.updated.rights"));
+        return null;
+    }
 
+
+    public String saveSecurityUpdates() throws ClientException
+    {
+        updateSecurityOnDocument();
+        // do not redirect to the default folder view
+        principalListManager.resetSelectedUserList();
+
+        facesMessages.add(FacesMessage.SEVERITY_INFO,
+                resourcesAccessor.getMessages().get("message.updated.rights"));
         return null;
     }
 
@@ -382,6 +456,11 @@ public class SecurityActionsBean extends InputController implements
                 permissionListManager.getSelectedPermission(),
                 permissionActionListManager.getSelectedGrant().equals("Grant"));
 
+        try {
+            reconstructTableModel();
+        } catch (ClientException e) {
+            log.error("Error whil reconstructing security data", e);
+        }
         return null;
     }
 
@@ -399,6 +478,23 @@ public class SecurityActionsBean extends InputController implements
         // do not redirect to the default folder view
         return null;
     }
+
+
+    public String removePermissions() throws ClientException, ECInvalidParameterException {
+        for (String user : getDataTableModel().getSelectedUsers()) {
+            securityData.removeModifiablePrivilege(user);
+            if (!checkPermissions()) {
+                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                        resourcesAccessor.getMessages().get(
+                            "message.error.removeRight"));
+                return null;
+            }
+        }
+        reconstructTableModel();
+        return null;
+    }
+
+
 
     public String removePermissionsAndUpdate() throws ClientException,
             ECInvalidParameterException {
@@ -443,11 +539,29 @@ public class SecurityActionsBean extends InputController implements
 
         if (settablePermissions == null || settablePermissions.length == 0) {
             // new centralized permission provider at the core level
-            try {
-                PermissionProvider pservice = Framework.getService(PermissionProvider.class);
-                settablePermissions = pservice.getUserVisiblePermissions(documentType);
-            } catch (Exception e) {
-                throw new ClientException(e);
+
+
+            List<UserVisiblePermission> visiblePerms =  visibleUserPermissions.get(documentType);
+            if (visiblePerms == null)
+            {
+                PermissionProvider pservice;
+                try {
+                    pservice = Framework.getService(PermissionProvider.class);
+                } catch (Exception e) {
+                    throw new ClientException("Unable to get PermissionProvider",e);
+                }
+
+                synchronized (visibleUserPermissions) {
+                    visiblePerms = pservice.getUserVisiblePermissionDescriptors(documentType);
+                    visibleUserPermissions.put(documentType, visiblePerms);
+                }
+            }
+            settablePermissions = new String[visiblePerms.size()];
+            int idx=0;
+            for (UserVisiblePermission uvp : visiblePerms)
+            {
+                settablePermissions[idx]=uvp.getId();
+                idx++;
             }
         }
 

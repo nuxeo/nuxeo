@@ -208,4 +208,8 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
     List<String> getCurrentDocumentUsers() throws ClientException;
 
     List<String> getParentDocumentsUsers() throws ClientException;
+
+    String removePermissions() throws ClientException, ECInvalidParameterException;
+
+    String saveSecurityUpdates() throws ClientException;
 }
