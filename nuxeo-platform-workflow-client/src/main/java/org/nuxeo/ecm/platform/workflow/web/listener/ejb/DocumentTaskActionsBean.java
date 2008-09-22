@@ -240,6 +240,7 @@ public class DocumentTaskActionsBean extends InputController implements
                 + principalName);
         // directive
         eventInfo.put("directive", taskInstance.getDirective());
+        eventInfo.put("duedate", taskInstance.getDueDate());
 
         notifyEvent(WorkflowEventTypes.WORKFLOW_TASK_ASSIGNED, comment.toString(),
                 reviewModel.getProcessInstanceName(), eventInfo);
