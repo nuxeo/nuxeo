@@ -37,6 +37,10 @@ import org.nuxeo.ecm.core.model.Document;
  */
 public class TestCoreEvent extends MockObjectTestCase {
 
+    private final static String COMMENT = "comment";
+
+    private final static String CATEGORY = "category";
+
     public void testCoreEventVarious() {
         String eventId = "someEvent";
         String source = "someDummySource";
@@ -45,26 +49,34 @@ public class TestCoreEvent extends MockObjectTestCase {
         assertNotNull(coreEvent);
         assertNull(coreEvent.getEventId());
         assertNull(coreEvent.getSource());
-        assertNull(coreEvent.getInfo());
+        assertNotNull(coreEvent.getInfo());
+        assertNull(coreEvent.getComment());
+        assertNull(coreEvent.getCategory());
 
         CoreEvent coreEvent1 = new CoreEventImpl(eventId, null, null, null, null, null);
         assertNotNull(coreEvent1);
         assertEquals(eventId, coreEvent1.getEventId());
         assertNull(coreEvent1.getSource());
-        assertNull(coreEvent1.getInfo());
+        assertNotNull(coreEvent1.getInfo());
+        assertNull(coreEvent1.getComment());
+        assertNull(coreEvent1.getCategory());
 
         CoreEvent coreEvent2 = new CoreEventImpl(eventId, source, null, null, null, null);
         assertNotNull(coreEvent2);
         assertEquals(eventId, coreEvent2.getEventId());
         assertEquals(source, coreEvent2.getSource());
-        assertNull(coreEvent2.getInfo());
+        assertNotNull(coreEvent2.getInfo());
+        assertNull(coreEvent2.getComment());
+        assertNull(coreEvent2.getCategory());
 
         Map<String, Serializable> info = null;
         CoreEvent coreEvent3 = new CoreEventImpl(eventId, source, info, null, null, null);
         assertNotNull(coreEvent3);
         assertEquals(eventId, coreEvent3.getEventId());
         assertEquals(source, coreEvent3.getSource());
-        assertEquals(info, coreEvent3.getInfo());
+        assertNotNull(coreEvent3.getInfo());
+        assertNull(coreEvent3.getComment());
+        assertNull(coreEvent3.getCategory());
     }
 
     // ::FIXME:
@@ -74,7 +86,9 @@ public class TestCoreEvent extends MockObjectTestCase {
 
         CoreEvent coreEvent = new CoreEventImpl(eventId, null, info, null, null, null);
         assertEquals(eventId, coreEvent.getEventId());
-        assertNull(coreEvent.getInfo());
+        assertNotNull(coreEvent.getInfo());
+        assertNull(coreEvent.getComment());
+        assertNull(coreEvent.getCategory());
         assertNull(coreEvent.getSource());
     }
 
@@ -89,6 +103,8 @@ public class TestCoreEvent extends MockObjectTestCase {
         CoreEvent coreEvent = new CoreEventImpl(eventId, null, info, null, null, null);
         assertEquals(eventId, coreEvent.getEventId());
         Map<String, ?> infoBack = coreEvent.getInfo();
+        ((Map)info).put(COMMENT, null);
+        ((Map)info).put(CATEGORY, null);
         assertEquals(info, infoBack);
         assertEquals("xxx", infoBack.get("destination"));
         assertNull(coreEvent.getSource());

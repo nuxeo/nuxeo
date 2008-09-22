@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.api.event.impl;
 
 import java.security.Principal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,7 @@ import org.nuxeo.ecm.core.api.event.CoreEvent;
  * Nuxeo core event implementation.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
  */
 public class CoreEventImpl implements CoreEvent {
 
@@ -43,11 +45,13 @@ public class CoreEventImpl implements CoreEvent {
 
     protected final Principal principal;
 
-    protected final String category;
+    // Interesting attributes to make accessible in the eventInfo
+    public static final String COMMENT_ATTRIBUTE = "comment";
 
-    protected final String comment;
+    public static final String CATEGORY_ATTRIBUTE = "category";
 
 
+    @SuppressWarnings("unchecked")
     public CoreEventImpl(String eventId, Object source, Map<String, ?> info,
             Principal principal, String category, String comment) {
         date = new Date();
@@ -57,13 +61,17 @@ public class CoreEventImpl implements CoreEvent {
             this.eventId = null;
         }
         this.source = source;
-        this.info = info;
+        if (info == null) {
+            this.info = new HashMap<String, Object>();
+        } else {
+            this.info = info;
+        }
         this.principal = principal;
-        this.category = category;
-        this.comment = comment;
+
+        // info map contains at least this 2 keys
+        ((Map)this.info).put(COMMENT_ATTRIBUTE, comment);
+        ((Map)this.info).put(CATEGORY_ATTRIBUTE, category);
     }
-
-
 
     public boolean isComposite() {
         return false;
@@ -86,11 +94,11 @@ public class CoreEventImpl implements CoreEvent {
     }
 
     public String getCategory() {
-        return category;
+        return (String) this.info.get(CATEGORY_ATTRIBUTE);
     }
 
     public String getComment() {
-        return comment;
+        return (String) this.info.get(COMMENT_ATTRIBUTE);
     }
 
     public Date getDate() {
@@ -120,9 +128,9 @@ public class CoreEventImpl implements CoreEvent {
             buf.append(principal.getName());
         }
         buf.append(", comment: ");
-        buf.append(comment);
+        buf.append(this.info.get(COMMENT_ATTRIBUTE));
         buf.append(", category: ");
-        buf.append(category);
+        buf.append(this.info.get(CATEGORY_ATTRIBUTE));
         buf.append('}');
 
         return buf.toString();
