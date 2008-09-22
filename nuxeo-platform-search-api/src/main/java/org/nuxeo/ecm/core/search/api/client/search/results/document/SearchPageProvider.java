@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.search.api.client.common.TypeManagerServiceDelegate;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.core.search.api.client.search.results.document.impl.ResultDocumentModel;
+import org.nuxeo.ecm.core.search.api.client.search.results.impl.DocumentModelResultItem;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceConf;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.ResourceType;
 
@@ -367,6 +368,14 @@ public class SearchPageProvider implements PagedDocumentsProvider {
     @SuppressWarnings("unchecked")
     private DocumentModel constructDocumentModel(ResultItem rItem)
             throws SearchException {
+
+        // try to recover DocumentModel
+        if (rItem instanceof DocumentModelResultItem) {
+            DocumentModel doc = ((DocumentModelResultItem) rItem).getDocumentModel();
+            if (doc != null) {
+                return doc;
+            }
+        }
 
         // Collector
         Map<String, Map<String, Object>> dataModels = new HashMap<String, Map<String, Object>>();
