@@ -962,10 +962,7 @@ public interface CoreSession {
      * @param query the query to execute
      * @return the query result
      * @throws ClientException
-     *
-     * @deprecated use search service
      */
-    @Deprecated
     DocumentModelList query(String query) throws ClientException;
 
     /**

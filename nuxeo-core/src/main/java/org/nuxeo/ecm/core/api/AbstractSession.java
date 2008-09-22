@@ -1178,7 +1178,6 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
-    @Deprecated
     public DocumentModelList query(String query) throws ClientException {
         return query(query, null, 0);
     }

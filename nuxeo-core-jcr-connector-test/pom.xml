@@ -78,6 +78,11 @@
       <artifactId>nuxeo-core-query</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-query-test</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

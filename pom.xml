@@ -32,6 +32,7 @@
     <module>nuxeo-core-jcr-connector</module>
     <module>nuxeo-core-jcr-connector-test</module>
     <module>nuxeo-core-query</module>
+    <module>nuxeo-core-query-test</module>
     <module>nuxeo-core-schema</module>
     <module>nuxeo-core-client</module>
     <module>nuxeo-core-io</module>
@@ -88,7 +89,17 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-storage-sql</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-query</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-query-test</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>
@@ -154,6 +165,12 @@
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-test</artifactId>
         <version>${nuxeo.runtime.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-core-query-test</artifactId>
+        <version>${nuxeo.core.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>

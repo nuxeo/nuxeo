@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Query
+Bundle-SymbolicName: org.nuxeo.ecm.core.query.test;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Export-Package: org.nuxeo.ecm.core.query.test
+Require-Bundle: org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.query
