@@ -69,9 +69,9 @@ import org.nuxeo.ecm.webapp.base.InputController;
  * the appropriate method.
  * <p>
  * The search method retrieves only the Picture document of the repository.
- *
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
+ * 
  */
 @Name("editorImageActions")
 @Scope(CONVERSATION)
@@ -79,6 +79,8 @@ public class EditorImageActionsBean extends InputController implements
         EditorImageActions, Serializable {
 
     private static final String SEARCH_QUERY = "SELECT * FROM Document WHERE %s";
+
+    private static final String FILES_SCHEMA = "files";
 
     private static final List<Map<String, String>> SIZES;
 
@@ -190,8 +192,12 @@ public class EditorImageActionsBean extends InputController implements
     }
 
     public boolean getInCreationMode() {
-        final DocumentModel doc = navigationContext.getCurrentDocument();
-        return !"note".equalsIgnoreCase(doc.getType());
+        final DocumentModel doc = navigationContext.getChangeableDocument();
+        if (doc.getId() == null) {
+            return true;
+        } else {
+            return !doc.hasSchema(FILES_SCHEMA);
+        }
     }
 
     public boolean getHasSearchResults() {
