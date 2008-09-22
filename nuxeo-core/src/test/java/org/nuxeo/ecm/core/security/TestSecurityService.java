@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.CoreTestConstants;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -219,6 +220,30 @@ public class TestSecurityService extends NXRuntimeTestCase {
         assertEquals(
                 Arrays.asList("Write", "Read", "ReadRemove", "Everything"),
                 Arrays.asList(orderedVisiblePermissions));
+    }
+
+    public void testPermissionsVsDeny() throws Exception {
+
+        PermissionProvider pp = service.getPermissionProvider();
+
+        List<UserVisiblePermission> vp = pp.getUserVisiblePermissionDescriptors();
+        assertNotNull(vp);
+
+        UserVisiblePermission deleteVP=null;
+
+        for (UserVisiblePermission uvp : vp)
+        {
+            if (uvp.getId().equals("ReadRemove"))
+            {
+                deleteVP = uvp;
+                break;
+            }
+        }
+
+        assertNotNull(deleteVP);
+        assertEquals("Remove",deleteVP.getDenyPermission());
+        assertEquals("ReadRemove",deleteVP.getPermission());
+
     }
 
 }

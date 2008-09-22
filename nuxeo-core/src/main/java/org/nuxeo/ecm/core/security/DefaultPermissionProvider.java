@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
 
 /**
  * @author Bogdan Stefanescu
@@ -39,7 +40,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 public class DefaultPermissionProvider implements PermissionProviderLocal {
 
     @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(DefaultPermissionProvider.class);
+    private static final Log log = LogFactory
+            .getLog(DefaultPermissionProvider.class);
 
     private final List<PermissionDescriptor> registeredPermissions = new LinkedList<PermissionDescriptor>();
 
@@ -57,6 +59,35 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         mergedPermissionsVisibility = null;
     }
 
+    public List<UserVisiblePermission> getUserVisiblePermissionDescriptors(
+            String typeName) throws ClientException {
+        if (mergedPermissionsVisibility == null) {
+            try {
+                computeMergedPermissionsVisibility();
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
+        }
+        // grab the default items (type is "")
+        PermissionVisibilityDescriptor defaultVisibility = mergedPermissionsVisibility
+                .get(typeName);
+        if (defaultVisibility == null) {
+            // fallback to default
+            defaultVisibility = mergedPermissionsVisibility.get("");
+        }
+        if (defaultVisibility == null) {
+            throw new ClientException(
+                    "no permission visibility configuration registered");
+        }
+        return defaultVisibility.getSortedUIPermissionDescriptor();
+    }
+
+    public List<UserVisiblePermission> getUserVisiblePermissionDescriptors()
+            throws ClientException {
+        return getUserVisiblePermissionDescriptors("");
+    }
+
+    @Deprecated // use getUserVisiblePermissionDescriptors instead
     public String[] getUserVisiblePermissions() throws ClientException {
         if (mergedPermissionsVisibility == null) {
             try {
@@ -66,7 +97,8 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
             }
         }
         // grab the default items (type is "")
-        PermissionVisibilityDescriptor defaultVisibility = mergedPermissionsVisibility.get("");
+        PermissionVisibilityDescriptor defaultVisibility = mergedPermissionsVisibility
+                .get("");
         if (defaultVisibility == null) {
             throw new ClientException(
                     "no permission visibility configuration registered");
@@ -74,6 +106,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         return defaultVisibility.getSortedItems();
     }
 
+    @Deprecated // use getUserVisiblePermissionDescriptors instead
     public String[] getUserVisiblePermissions(String typeName)
             throws ClientException {
         if (mergedPermissionsVisibility == null) {
@@ -83,7 +116,8 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
                 throw new ClientException(e);
             }
         }
-        PermissionVisibilityDescriptor defaultVisibility = mergedPermissionsVisibility.get(typeName);
+        PermissionVisibilityDescriptor defaultVisibility = mergedPermissionsVisibility
+                .get(typeName);
         if (defaultVisibility == null) {
             // fallback to default conf
             return getUserVisiblePermissions();
@@ -94,7 +128,8 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
     private void computeMergedPermissionsVisibility() throws Exception {
         mergedPermissionsVisibility = new HashMap<String, PermissionVisibilityDescriptor>();
         for (PermissionVisibilityDescriptor pvd : registeredPermissionsVisibility) {
-            PermissionVisibilityDescriptor mergedPvd = mergedPermissionsVisibility.get(pvd.getTypeName());
+            PermissionVisibilityDescriptor mergedPvd = mergedPermissionsVisibility
+                    .get(pvd.getTypeName());
             if (mergedPvd == null) {
                 mergedPvd = new PermissionVisibilityDescriptor(pvd);
                 mergedPermissionsVisibility.put(mergedPvd.getTypeName(),
@@ -207,7 +242,8 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
     synchronized protected void computeMergedPermissions() {
         mergedPermissions = new HashMap<String, MergedPermissionDescriptor>();
         for (PermissionDescriptor pd : registeredPermissions) {
-            MergedPermissionDescriptor mpd = mergedPermissions.get(pd.getName());
+            MergedPermissionDescriptor mpd = mergedPermissions
+                    .get(pd.getName());
             if (mpd == null) {
                 mpd = new MergedPermissionDescriptor(pd);
                 mergedPermissions.put(mpd.getName(), mpd);
@@ -217,8 +253,8 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         }
     }
 
-    synchronized public void registerDescriptor(
-            PermissionDescriptor descriptor) throws Exception {
+    synchronized public void registerDescriptor(PermissionDescriptor descriptor)
+            throws Exception {
         // check that all included permission have previously been registered
         Set<String> alreadyRegistered = new HashSet<String>();
         for (PermissionDescriptor registeredPerm : registeredPermissions) {
@@ -229,9 +265,10 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
                 // TODO: OG: use a specific exception sub class instead of the
                 // base type
                 throw new Exception(
-                        String.format(
-                                "Permission '%s' included by '%s' is not a registered permission",
-                                includePerm, descriptor.getName()));
+                        String
+                                .format(
+                                        "Permission '%s' included by '%s' is not a registered permission",
+                                        includePerm, descriptor.getName()));
             }
         }
         // invalidate merged permission
@@ -262,7 +299,8 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
 
     synchronized public void unregisterDescriptor(
             PermissionVisibilityDescriptor descriptor) throws Exception {
-        int lastOccurence = registeredPermissionsVisibility.lastIndexOf(descriptor);
+        int lastOccurence = registeredPermissionsVisibility
+                .lastIndexOf(descriptor);
         if (lastOccurence != -1) {
             // invalidate merged descriptors
             mergedPermissionsVisibility = null;
