@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.nuxeo.ecm.platform.search.backend.core
+Bundle-SymbolicName: org.nuxeo.ecm.platform.search.backend.core
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: search
+Export-Package: org.nuxeo.ecm.platform.search.backend.core
+Require-Bundle: org.nuxeo.ecm.core.api,
+  org.nuxeo.ecm.platform.search.api
+Nuxeo-Component: OSGI-INF/nxsearch-backend-core-service.xml

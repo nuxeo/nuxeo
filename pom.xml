@@ -85,6 +85,7 @@
     <module>nuxeo-platform-scheduler-core</module>
     <module>nuxeo-platform-search-api</module>
     <module>nuxeo-platform-search-compass-plugin</module>
+    <module>nuxeo-platform-search-backend-core</module>
     <module>nuxeo-platform-search-core</module>
     <module>nuxeo-platform-search-core-listener</module>
     <module>nuxeo-platform-search-facade</module>
@@ -177,6 +178,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-jcr-connector</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-storage-sql</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>
@@ -531,6 +537,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-search-compass-plugin</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-search-backend-core</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>
