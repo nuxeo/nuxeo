@@ -37,6 +37,8 @@ import org.nuxeo.ecm.webengine.forms.FormData;
  */
 public class CreateActionHandler implements ActionHandler {
 
+    protected DocumentModel createdDoc;
+    
     public void run(WebObject object) throws WebException {
         DocumentModel parent = object.getDocument();
         String name = object.getWebContext().getFirstUnresolvedSegment();
@@ -51,7 +53,9 @@ public class CreateActionHandler implements ActionHandler {
             } else {
                 path += '/' + doc.getName();
             }
+            createdDoc = doc;
             try {
+                object.getWebContext().resolveFirstUnresolvedSegment(doc);
                 object.getWebContext().getResponse().sendRedirect(path);
             } catch (IOException e) {
                 throw new WebException("Failed to redirect to the newly created page: "+path, e);
@@ -59,7 +63,9 @@ public class CreateActionHandler implements ActionHandler {
         } else {
             DocumentModel doc = createSubPage(parent, name, object.getWebContext());
             object.getWebContext().resolveFirstUnresolvedSegment(doc);
+            createdDoc = doc;
         }
+
     }
 
     private static DocumentModel createSubPage(DocumentModel parent, String name,
