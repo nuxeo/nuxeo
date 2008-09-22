@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.io;
 
 import java.util.Collection;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
@@ -55,7 +54,6 @@ public class IOCoreEvents {
      * @param docs
      * @param repositoryName
      * @param eventId
-     * @throws ClientException
      * @deprecated cannot use nuxeo-core
      */
     @Deprecated

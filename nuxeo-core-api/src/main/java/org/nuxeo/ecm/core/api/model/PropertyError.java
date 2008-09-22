@@ -29,11 +29,11 @@ public class PropertyError extends Error {
     private static final long serialVersionUID = -5551118891587232301L;
 
     public PropertyError(String message) {
-        super (message);
+        super(message);
     }
 
     public PropertyError(String message, Throwable cause) {
-        super (message, cause);
+        super(message, cause);
     }
 
 }

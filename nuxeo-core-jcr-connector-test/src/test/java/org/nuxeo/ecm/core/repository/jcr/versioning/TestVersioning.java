@@ -34,11 +34,6 @@ public class TestVersioning extends RepositoryTestCase {
     protected Document root;
 
     @Override
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
-    @Override
     public void tearDown() throws Exception {
         if (parent != null) {
             parent.remove();
@@ -233,4 +228,5 @@ public class TestVersioning extends RepositoryTestCase {
         ver.remove();
         session.save();
     }
+
 }

@@ -39,7 +39,7 @@ public abstract class TestConnection extends NXRuntimeTestCase {
         assertNotNull(remote);
     }
 
-    public void closeSession() throws ClientException {
+    public void closeSession() {
         CoreInstance.getInstance().close(remote);
     }
 }

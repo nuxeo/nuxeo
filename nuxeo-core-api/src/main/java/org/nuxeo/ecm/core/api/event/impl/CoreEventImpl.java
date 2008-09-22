@@ -67,7 +67,6 @@ public class CoreEventImpl implements CoreEvent {
             this.info = info;
         }
         this.principal = principal;
-
         // info map contains at least this 2 keys
         ((Map)this.info).put(COMMENT_ATTRIBUTE, comment);
         ((Map)this.info).put(CATEGORY_ATTRIBUTE, category);
