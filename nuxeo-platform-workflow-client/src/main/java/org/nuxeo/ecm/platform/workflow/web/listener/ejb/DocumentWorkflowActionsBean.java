@@ -85,6 +85,7 @@ import org.nuxeo.ecm.platform.workflow.web.api.DocumentTaskActions;
 import org.nuxeo.ecm.platform.workflow.web.api.DocumentWorkflowActions;
 import org.nuxeo.ecm.platform.workflow.web.api.WorkflowBeansDelegate;
 import org.nuxeo.ecm.webapp.security.PrincipalListManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Workflow actions bean.
@@ -189,10 +190,8 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
     @In(required = false)
     protected List<WMWorkItemInstance> documentTasks;
 
-
     @Create
-    public void init()
-    {
+    public void init() {
         Events.instance().raiseEvent(EventNames.WF_INIT);
     }
 
@@ -357,8 +356,8 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
             processVariables.put(WorkflowConstants.DOCUMENT_LOCATION_URI,
                     currentServerLocation.getName());
 
-            log.debug("About to start a process for participant=" +
-                    currentUser.getName());
+            log.debug("About to start a process for participant="
+                    + currentUser.getName());
 
             workflowPath = wapi.startProcess(wdefId, processVariables, null);
         } catch (WMWorkflowException we) {
@@ -422,6 +421,9 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
         // Broadcast events
         if (workflowInstance != null) {
             // Prepare an event for notification
+            Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
+            List<String> participants = getWorkflowParticipants(wapi, wid);
+            eventInfo.put("", getRecipientsFromList(participants));
             notifyEvent(WorkflowEventTypes.WORKFLOW_ABANDONED, null,
                     userComment, name);
 
@@ -980,4 +982,43 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
         return participantNameSet.size() >= 2;
     }
 
+    private List<String> getWorkflowParticipants(WAPI wapi, String pid) {
+        List<String> assignees = new ArrayList<String>();
+        Collection<WMWorkItemInstance> tasks = wapi.listWorkItems(pid,
+                WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
+        for (WMWorkItemInstance ti : tasks) {
+            if (ti.isCancelled()) {
+                continue;
+            }
+            assignees.add(ti.getParticipantName());
+        }
+        return assignees;
+    }
+
+    private String getRecipientsFromList(List<String> participants) {
+        StringBuffer recipients = new StringBuffer();
+        UserManager userManager;
+        try {
+            userManager = Framework.getService(UserManager.class);
+            if (participants != null && participants.size() > 0) {
+                for (String participantName : participants) {
+                    boolean isUser = false;
+                    isUser = userManager.getGroup(participantName) == null;
+                    participantName = (isUser ? "user:" : "group:")
+                            + participantName;
+                    recipients.append(participantName + "|");
+
+                }
+                String recipient = null;
+                if (recipients.toString().trim().length() > 0) {
+                    recipient = recipients.toString().substring(0,
+                            recipients.lastIndexOf("|"));
+                }
+                return recipient;
+            }
+        } catch (Exception e) {
+            log.error(e);
+        }
+        return "";
+    }
 }
