@@ -42,6 +42,7 @@ public class DocModifierListener extends AbstractEventListener implements
      *
      * @param coreEvent instance thrown at core layer
      */
+    @Override
     public void notifyEvent(CoreEvent coreEvent) throws Exception {
 
         Object source = coreEvent.getSource();
@@ -59,13 +60,13 @@ public class DocModifierListener extends AbstractEventListener implements
     }
 
     /**
-     * Doesn't return null. If the service is not available an exception is
+     * Doesn't return null. If the service is not available, an exception is
      * thrown so the caller code won't need to check.
      *
      * @return
      * @throws DocModifierException
      */
-    private DocModifierService getService() throws DocModifierException {
+    private static DocModifierService getService() throws DocModifierException {
         DocModifierService service = ServiceHelper.getDocModifierService();
         if (service == null) {
             log.error("DocModifierService service not found");
