@@ -15,9 +15,9 @@
       </filter>
     </action>
 
-    <action id="logout" link="#{loginLogoutAction.logout}" enabled="true"
+    <action id="logout" link="logout" enabled="true"
       label="command.logout" order="200">
-      <category>USER_SERVICES</category>
+      <category>USER_SERVICES_BOTTOM</category>
     </action>
 
     <action id="user_manager" link="#{userManagerActions.viewUsers}"
