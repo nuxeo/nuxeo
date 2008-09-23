@@ -101,6 +101,7 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
                             break;
                         }
                     }
+                    // TODO: handle content types
                     if (error) {
                         String messageId = authorized ? MIMETYPE_AUTHORIZED_EXTENSIONS_MESSAGE_ID
                                 : MIMETYPE_UNAUTHORIZED_EXTENSIONS_MESSAGE_ID;

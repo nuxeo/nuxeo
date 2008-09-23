@@ -33,17 +33,14 @@ public class PublishingValidatorException extends ClientException {
     private static final long serialVersionUID = 1L;
 
     public PublishingValidatorException() {
-
     }
 
     public PublishingValidatorException(String message) {
         super(message);
-
     }
 
     public PublishingValidatorException(String message, Throwable cause) {
         super(message, cause);
-
     }
 
     public PublishingValidatorException(Throwable cause) {

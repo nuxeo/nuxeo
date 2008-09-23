@@ -39,6 +39,7 @@ import org.nuxeo.ecm.platform.transform.document.TransformDocumentImpl;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
 import org.nuxeo.ecm.platform.transform.interfaces.Transformer;
 import org.nuxeo.ecm.platform.transform.service.TransformService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Test the Document Modifier component.
@@ -70,7 +71,7 @@ public class TestModifierOnDocModel extends AbstractPluginTestCase {
 
         openCoreSession();
 
-        TransformService service = NXTransform.getTransformService();
+        TransformService service = (TransformService) Framework.getRuntime().getComponent(TransformService.NAME);
         transformer = service.getTransformerByName("any2text");
     }
 
@@ -122,8 +123,6 @@ public class TestModifierOnDocModel extends AbstractPluginTestCase {
                 rootDM.getPathAsString(), "testfile1", "File");
         childFile = coreSession.createDocument(childFile);
 
-        childFile.setProperty("common", "description", "some file description");
-
         childFile.setProperty("uid", "uid", "TEST0001");
         childFile.setProperty("uid", "major_version", 2L);
         childFile.setProperty("uid", "minor_version", 15L);
@@ -144,7 +143,7 @@ public class TestModifierOnDocModel extends AbstractPluginTestCase {
         modifyContent(content);
     }
 
-    private void modifyContent(final ByteArrayBlob content) throws Exception {
+    private void modifyContent(final ByteArrayBlob content) {
         Map<String, Map<String, Serializable>> options = new HashMap<String, Map<String, Serializable>>();
         // options.put(pluginName, pluginOptions);
 
