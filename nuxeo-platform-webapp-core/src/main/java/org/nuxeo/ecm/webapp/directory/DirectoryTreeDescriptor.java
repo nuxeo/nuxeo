@@ -29,7 +29,8 @@ import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 @XObject(value = "directoryTree")
 public class DirectoryTreeDescriptor {
 
-//    private static final Log log = LogFactory.getLog(DirectoryTreeDescriptor.class);
+    // private static final Log log =
+    // LogFactory.getLog(DirectoryTreeDescriptor.class);
 
     public static final String VOCABULARY_SCHEMA = "vocabulary";
 
@@ -80,7 +81,6 @@ public class DirectoryTreeDescriptor {
      */
     protected String[] directories;
 
-
     @XNodeList(value = "directory", componentType = String.class, type = String[].class)
     public void setDirectories(String[] directories) throws DirectoryException {
         // check that each required directory exists and has the xvocabulary
@@ -95,16 +95,16 @@ public class DirectoryTreeDescriptor {
             }
             if (isFirst) {
                 if (!directory.getSchema().equals(VOCABULARY_SCHEMA)) {
-                throw new DirectoryException(directoryName
-                        + "does not have the required schema:"
-                        + VOCABULARY_SCHEMA);
+                    throw new DirectoryException(directoryName
+                            + "does not have the required schema:"
+                            + VOCABULARY_SCHEMA);
                 }
             } else {
                 if (!directory.getSchema().equals(XVOCABULARY_SCHEMA)) {
                     throw new DirectoryException(directoryName
                             + "does not have the required schema:"
                             + XVOCABULARY_SCHEMA);
-                    }
+                }
             }
             isFirst = false;
         }
