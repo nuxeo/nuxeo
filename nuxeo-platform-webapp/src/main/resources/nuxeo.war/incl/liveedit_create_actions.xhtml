@@ -38,6 +38,23 @@
        <h:graphicImage value="/icons/ppt.png" title="#{messages['action.liveedit.create.mspowerpoint']}"
         alt="#{messages['action.liveedit.create.mspowerpoint']}"/>
      </nxh:outputLink>
+     
+     
+     <nxh:outputLink value="#{nxd:liveCreateUrl('application/vnd.oasis.opendocument.text', 'File', 'file', 'content', 'filename')}">
+       <h:graphicImage value="/icons/odt.png" title="#{messages['action.liveedit.create.writer']}"
+		alt="#{messages['action.liveedit.create.writer']}"/>
+	  </nxh:outputLink>
+	
+	 <nxh:outputLink value="#{nxd:liveCreateUrl('application/vnd.oasis.opendocument.spreadsheet', 'File', 'file', 'content', 'filename')}">
+	   <h:graphicImage value="/icons/ods.png" title="#{messages['action.liveedit.create.calc']}"
+        alt="#{messages['action.liveedit.create.calc']}"/>
+	 </nxh:outputLink>
+     
+     <nxh:outputLink value="#{nxd:liveCreateUrl('application/vnd.oasis.opendocument.presentation', 'File', 'file', 'content', 'filename')}">
+       <h:graphicImage value="/icons/odp.png" title="#{messages['action.liveedit.create.impress']}"
+        alt="#{messages['action.liveedit.create.impress']}"/>
+     </nxh:outputLink>
+     
      </div>
     </div>
   </h:form>

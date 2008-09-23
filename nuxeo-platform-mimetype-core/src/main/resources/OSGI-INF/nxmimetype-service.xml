@@ -338,7 +338,7 @@
 
     <mimetype
       normalized="application/vnd.oasis.opendocument.spreadsheet"
-      binary="true" iconPath="ods.png" oleSupported="true">
+      binary="true" iconPath="ods.png" oleSupported="true"  onlineEditable="true">
       <mimetypes>
         <mimetype>
           application/vnd.oasis.opendocument.spreadsheet
@@ -351,7 +351,7 @@
 
     <mimetype
       normalized="application/vnd.oasis.opendocument.spreadsheet-template"
-      binary="true" iconPath="ots.png" oleSupported="true">
+      binary="true" iconPath="ots.png" oleSupported="true"  onlineEditable="true">
       <mimetypes>
         <mimetype>
           application/vnd.oasis.opendocument.spreadsheet-template
@@ -363,7 +363,7 @@
     </mimetype>
 
     <mimetype normalized="application/vnd.oasis.opendocument.text"
-      binary="true" iconPath="odt.png" oleSupported="true">
+      binary="true" iconPath="odt.png" oleSupported="true"  onlineEditable="true">
       <mimetypes>
         <mimetype>application/vnd.oasis.opendocument.text</mimetype>
       </mimetypes>
@@ -374,7 +374,7 @@
 
     <mimetype
       normalized="application/vnd.oasis.opendocument.text-template"
-      binary="true" iconPath="ott.png" oleSupported="true">
+      binary="true" iconPath="ott.png" oleSupported="true"  onlineEditable="true">
       <mimetypes>
         <mimetype>
           application/vnd.oasis.opendocument.text-template
@@ -387,7 +387,7 @@
 
     <mimetype
       normalized="application/vnd.oasis.opendocument.presentation"
-      binary="true" iconPath="odp.png" oleSupported="true">
+      binary="true" iconPath="odp.png" oleSupported="true"  onlineEditable="true">
       <mimetypes>
         <mimetype>
           application/vnd.oasis.opendocument.presentation
@@ -400,7 +400,7 @@
 
     <mimetype
       normalized="application/vnd.oasis.opendocument.presentation-template"
-      binary="true" iconPath="otp.png" oleSupported="true">
+      binary="true" iconPath="otp.png" oleSupported="true"  onlineEditable="true">
       <mimetypes>
         <mimetype>
           application/vnd.oasis.opendocument.presentation-template
@@ -412,7 +412,7 @@
     </mimetype>
 
     <mimetype normalized="application/vnd.oasis.opendocument.graphics"
-      binary="true" iconPath="odg.png" oleSupported="true">
+      binary="true" iconPath="odg.png" oleSupported="true"  onlineEditable="true">
       <mimetypes>
         <mimetype>application/vnd.oasis.opendocument.graphics</mimetype>
       </mimetypes>
@@ -423,7 +423,7 @@
 
     <mimetype
       normalized="application/vnd.oasis.opendocument.graphics-template"
-      binary="true" iconPath="otg.png" oleSupported="true">
+      binary="true" iconPath="otg.png" oleSupported="true"  onlineEditable="true">
       <mimetypes>
         <mimetype>
           application/vnd.oasis.opendocument.graphics-template
