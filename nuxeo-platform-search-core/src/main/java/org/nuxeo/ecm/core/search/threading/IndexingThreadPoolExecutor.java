@@ -41,30 +41,46 @@ public class IndexingThreadPoolExecutor extends ThreadPoolExecutor {
 
     private static final Log log = LogFactory.getLog(IndexingThreadPoolExecutor.class);
 
-    public static List<Runnable> RUNNING_TASKS = Collections.synchronizedList(new ArrayList<Runnable>());
+    private final List<Runnable> currentRunningIndexingTasks;
 
-    public IndexingThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
+    public static IndexingThreadPoolExecutor newInstance(int corePoolSize,
+            int maximumPoolSize, long keepAliveTime, TimeUnit unit) {
+        // List of current running indexing tasks the IndexingThreadPoolExecutor
+        // and the IndexingTaskQueue will share
+        List<Runnable> currentRunningIndexingTasks = Collections.synchronizedList(new ArrayList<Runnable>());
+        IndexingTaskQueue workQueue = new IndexingTaskQueue(
+                Collections.unmodifiableList(currentRunningIndexingTasks));
+
+        return new IndexingThreadPoolExecutor(corePoolSize, maximumPoolSize,
+                keepAliveTime, unit, workQueue, new IndexingThreadFactory(),
+                new IndexingRejectedExecutionHandler(),
+                currentRunningIndexingTasks);
+    }
+
+    private IndexingThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
             long keepAliveTime, TimeUnit unit,
             BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory,
-            RejectedExecutionHandler handler) {
+            RejectedExecutionHandler handler,
+            List<Runnable> currentRunningIndexingTasks) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
                 threadFactory, handler);
+        this.currentRunningIndexingTasks = currentRunningIndexingTasks;
     }
 
     @Override
     protected void beforeExecute(Thread t, Runnable r) {
         super.beforeExecute(t, r);
-        RUNNING_TASKS.add(r);
+        currentRunningIndexingTasks.add(r);
         log.debug("Adding a task to the running tasks list: "
-                + RUNNING_TASKS.size());
+                + currentRunningIndexingTasks.size());
     }
 
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
         super.afterExecute(r, t);
-        RUNNING_TASKS.remove(r);
+        currentRunningIndexingTasks.remove(r);
         log.debug("Removing a task from the running tasks list: "
-                + RUNNING_TASKS.size());
+                + currentRunningIndexingTasks.size());
     }
 
 }

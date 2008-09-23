@@ -25,6 +25,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
+ * Recursive unindexing task.
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * 
  */

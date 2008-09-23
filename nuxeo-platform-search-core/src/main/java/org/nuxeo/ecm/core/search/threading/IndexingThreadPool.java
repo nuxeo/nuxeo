@@ -70,10 +70,9 @@ public final class IndexingThreadPool {
         MAX_POOL_SIZE = NXSearch.getSearchService().getNumberOfIndexingThreads();
         log.info("Indexing thread pool will be initialized with a size pool @ "
                 + MAX_POOL_SIZE);
-        indexingTpExec = new IndexingThreadPoolExecutor(MIN_POOL_SIZE,
-                MAX_POOL_SIZE, THREAD_KEEP_ALIVE, TimeUnit.MILLISECONDS,
-                new IndexingTaskQueue(), new IndexingThreadFactory(),
-                new IndexingRejectedExecutionHandler());
+
+        indexingTpExec = IndexingThreadPoolExecutor.newInstance(MIN_POOL_SIZE,
+                MAX_POOL_SIZE, THREAD_KEEP_ALIVE, TimeUnit.MILLISECONDS);
         // tpExec.prestartAllCoreThreads();
         log.info("Indexing Thread Pool initialized...");
 

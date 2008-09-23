@@ -26,6 +26,8 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingHelper;
 
 /**
+ * Recursive indexing task.
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * 
  */

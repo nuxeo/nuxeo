@@ -24,6 +24,9 @@ import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResource
 import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.Task;
 
 /**
+ * Factory class creating {@code Task}s to be run by the {@code
+ * IndexingThreadPoolExecutor}.
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * 
  */
