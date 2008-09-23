@@ -143,14 +143,14 @@ public class JenaGraph implements Graph {
         private final Model graph;
 
         GraphConnection(DBConnection connection, Model graph) {
-            this.baseConnection = null;
+            baseConnection = null;
             this.connection = connection;
             this.graph = graph;
         }
 
         GraphConnection(Connection baseConnection, Model graph) {
             this.baseConnection = baseConnection;
-            this.connection = null;
+            connection = null;
             this.graph = graph;
         }
 
@@ -205,11 +205,10 @@ public class JenaGraph implements Graph {
         if (backend.equals("memory")) {
             if (memoryGraph == null || forceReload) {
                 memoryGraph = ModelFactory.createDefaultModel(ModelFactory.Convenient);
-                memoryGraph.setNsPrefixes(this.namespaces);
+                memoryGraph.setNsPrefixes(namespaces);
             }
             return new GraphConnection((Connection) null, memoryGraph);
         } else if (backend.equals("sql")) {
-            Model graph;
             DBConnection connection;
             Connection baseConnection = null;
             // create a database connection
@@ -252,6 +251,7 @@ public class JenaGraph implements Graph {
                         databasePassword, databaseType);
             }
             // check if named model already exists
+            Model graph;
             if (connection.containsModel(name)) {
                 ModelMaker m = ModelFactory.createModelRDBMaker(connection,
                         ModelFactory.Convenient);
@@ -309,7 +309,7 @@ public class JenaGraph implements Graph {
      * @param nuxNode NXrelations Node instance
      * @return Jena node instance
      */
-    private com.hp.hpl.jena.graph.Node getJenaNode(Node nuxNode) {
+    private static com.hp.hpl.jena.graph.Node getJenaNode(Node nuxNode) {
         if (nuxNode == null) {
             return null;
         }
@@ -366,12 +366,9 @@ public class JenaGraph implements Graph {
         }
         Node nuxNode = null;
         if (jenaNodeInst.isBlank()) {
-            // AT: blank node id is not relevant and is a problem when comparing
-            // nodes
-            // AnonId anonId = jenaNodeInst.getBlankNodeId();
-            // String id = anonId.getLabelString();
-            // nuxNode = NodeFactory.createBlank(id);
-            nuxNode = NodeFactory.createBlank();
+            AnonId anonId = jenaNodeInst.getBlankNodeId();
+            String id = anonId.getLabelString();
+            nuxNode = NodeFactory.createBlank(id);
         } else if (jenaNodeInst.isLiteral()) {
             LiteralLabel label = jenaNodeInst.getLiteral();
             String value = label.getLexicalForm();
@@ -414,7 +411,8 @@ public class JenaGraph implements Graph {
      * @param nuxStatement NXRelations statement
      * @return jena statement selector
      */
-    private SimpleSelector getJenaSelector(Model graph, Statement nuxStatement) {
+    private static SimpleSelector getJenaSelector(Model graph,
+            Statement nuxStatement) {
         com.hp.hpl.jena.rdf.model.Resource subjResource = null;
         com.hp.hpl.jena.graph.Node subject = getJenaNode(nuxStatement.getSubject());
         if (subject != null && subject.isURI()) {
@@ -477,7 +475,9 @@ public class JenaGraph implements Graph {
             List<com.hp.hpl.jena.rdf.model.Statement> jenaStatements) {
         List<Statement> nuxStmts = new ArrayList<Statement>();
         for (com.hp.hpl.jena.rdf.model.Statement jenaStmt : jenaStatements) {
-            if (!jenaStmt.getSubject().isAnon()) {
+            // NXP-2665: remove reified statements are they're as properties in
+            // nuxeo logic
+            if (!jenaStmt.getSubject().canAs(ReifiedStatement.class)) {
                 nuxStmts.add(getNXRelationsStatement(graph, jenaStmt));
             }
         }
@@ -496,28 +496,28 @@ public class JenaGraph implements Graph {
             String value = option.getValue();
             if (key.equals("backend")) {
                 if (value.equals("memory") || value.equals("sql")) {
-                    this.backend = value;
+                    backend = value;
                 } else {
                     throw new IllegalArgumentException(String.format(
                             "Unknown backend %s for Jena graph", value));
                 }
             } else if (key.equals("datasource")) {
-                this.datasource = value;
+                datasource = value;
             } else if (key.equals("databaseType")) {
-                this.databaseType = value;
+                databaseType = value;
             } else if (key.equals("databaseUrl")) {
-                this.databaseUrl = value;
+                databaseUrl = value;
             } else if (key.equals("databaseUser")) {
-                this.databaseUser = value;
+                databaseUser = value;
             } else if (key.equals("databasePassword")) {
-                this.databasePassword = value;
+                databasePassword = value;
             } else if (key.equals("databaseDriverClass")) {
-                this.databaseDriverClass = value;
+                databaseDriverClass = value;
             } else if (key.equals("databaseDoCompressUri")) {
                 if (value.equals("true")) {
-                    this.databaseDoCompressUri = true;
+                    databaseDoCompressUri = true;
                 } else if (value.equals("false")) {
-                    this.databaseDoCompressUri = false;
+                    databaseDoCompressUri = false;
                 } else {
                     String format = "Illegal value %s for databaseDoCompressUri, must be true or false";
                     throw new IllegalArgumentException(String.format(format,
@@ -525,9 +525,9 @@ public class JenaGraph implements Graph {
                 }
             } else if (key.equals("databaseTransactionEnabled")) {
                 if (value.equals("true")) {
-                    this.databaseTransactionEnabled = true;
+                    databaseTransactionEnabled = true;
                 } else if (value.equals("false")) {
-                    this.databaseTransactionEnabled = false;
+                    databaseTransactionEnabled = false;
                 } else {
                     String format = "Illegal value %s for databaseTransactionEnabled, must be true or false";
                     throw new IllegalArgumentException(String.format(format,
@@ -676,7 +676,6 @@ public class JenaGraph implements Graph {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public List<Node> getSubjects(Node predicate, Node object) {
         Model graph = null;
         GraphConnection graphConnection = null;
@@ -935,35 +934,7 @@ public class JenaGraph implements Graph {
             graphConnection = openGraph();
             graph = graphConnection.getGraph();
             graph.enterCriticalSection(Lock.READ);
-            // dunno why base and lang are inverted here
-            // DM: overcome com.hp.hpl.jena.rdf.model.impl.ModelCom impl bug -
-            // closes the stream
-            // create a temporary stream
-            // TODO : make a temp using hdd to avoid mem usage
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            int av = in.available();
-            while (av > 0) {
-                byte[] buf = new byte[av];
-                in.read(buf);
-                bos.write(buf);
-                av = in.available();
-            }
-
-            byte[] data = bos.toByteArray();
-            // remove trailing spaces at the end to avoid sax parse exception
-            int n = data.length - 1;
-            while (data[n] == ' ') {
-                n--;
-            }
-
-            log.warn("removed " + (data.length - n - 1) + " trailing spaces");
-
-            byte[] trimmed = new byte[n];
-            System.arraycopy(data, 0, trimmed, 0, n);
-
-            ByteArrayInputStream tis = new ByteArrayInputStream(trimmed);
-
-            graph.read(tis, base, lang);
+            graph.read(in, base, lang);
             // default to true
             return true;
         } catch (Exception e) {
@@ -1056,7 +1027,7 @@ class ConnectionFixInvocationHandler implements InvocationHandler {
 
     private final Connection connection;
 
-    public ConnectionFixInvocationHandler(Connection connection) {
+    ConnectionFixInvocationHandler(Connection connection) {
         this.connection = connection;
     }
 

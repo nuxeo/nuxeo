@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ec.notification.ejb.facade.NotificationServiceLocal;
+import org.nuxeo.ecm.platform.ec.notification.service.NotificationRegistryImpl;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
@@ -99,7 +100,8 @@ public class NotificationServiceBean implements NotificationManager {
      */
     @Deprecated
     public NotificationRegistry getNotificationRegistry() {
-        return service.getNotificationRegistry();
+        NotificationRegistryImpl registry = (NotificationRegistryImpl) service.getNotificationRegistry();
+        return new SerializableNotificationRegistry(registry);
     }
 
     public Notification getNotificationByName(String selectedNotification) {
@@ -123,4 +125,9 @@ public class NotificationServiceBean implements NotificationManager {
         service.sendNotification(notificationName, infoMap, userPrincipal);
     }
 
+
+    public List<Notification> getNotificationsForEvents(String eventId)
+    {
+        return service.getNotificationsForEvents(eventId);
+    }
 }

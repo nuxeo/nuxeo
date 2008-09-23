@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webapp.action;
 
 import static org.jboss.seam.ScopeType.EVENT;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -36,6 +37,7 @@ import javax.faces.application.FacesMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
@@ -79,6 +81,7 @@ import org.nuxeo.ecm.webapp.trashManagement.TrashManager;
 
 @Name("deleteActions")
 @Scope(EVENT)
+@Install(precedence = FRAMEWORK)
 public class DeleteActionsBean extends InputController implements
         DeleteActions, Serializable, SelectDataModelListener,
         ResultsProviderFarm {

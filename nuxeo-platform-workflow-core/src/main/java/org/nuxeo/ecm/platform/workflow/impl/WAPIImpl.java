@@ -244,15 +244,30 @@ public class WAPIImpl implements WAPI {
     }
 
     public ResultSlice<WMWorkItemInstance> getWorkItemsFor(
-            List<WMParticipant> participant, String state, int firstResult,
-            int maxResult) throws WMWorkflowException {
+            List<WMParticipant> participants, String state, int firstResult,
+            int maxResults) throws WMWorkflowException {
         WorkflowEngine workflowEngine = getDefaultEngine();
         if (workflowEngine != null) {
-            return workflowEngine.getWorkItemsFor(participant, state, firstResult, maxResult);
+            return workflowEngine.getWorkItemsFor(participants, state, firstResult, maxResults);
         } else {
             return new ResultSlice<WMWorkItemInstance>(
                     Collections.<WMWorkItemInstance> emptyList(), firstResult,
-                    maxResult, 0);
+                    maxResults, 0);
+        }
+    }
+
+    public ResultSlice<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participants, String state, int firstResult,
+            int maxResults, String orderBy, boolean orderAscending)
+            throws WMWorkflowException {
+        WorkflowEngine workflowEngine = getDefaultEngine();
+        if (workflowEngine != null) {
+            return workflowEngine.getWorkItemsFor(participants, state,
+                    firstResult, maxResults, orderBy, orderAscending);
+        } else {
+            return new ResultSlice<WMWorkItemInstance>(
+                    Collections.<WMWorkItemInstance> emptyList(), firstResult,
+                    maxResults, 0);
         }
     }
 

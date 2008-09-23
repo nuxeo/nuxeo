@@ -212,7 +212,8 @@ public class FileManageActionsBean extends InputController implements
 
     public String addBinaryFileFromPlugin(Blob blob, String fullName,
             DocumentModel targetContainer) throws ClientException {
-        return createDocumentFromBlob(blob, fullName, targetContainer.getPathAsString());
+        return createDocumentFromBlob(blob, fullName,
+                targetContainer.getPathAsString());
     }
 
     protected String createDocumentFromBlob(Blob blob, String fullName,
@@ -335,15 +336,25 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
-    private String checkMoveAllowed(DocumentRef docRef, DocumentRef containerRef)
+    protected String checkMoveAllowed(DocumentRef docRef, DocumentRef containerRef)
             throws ClientException {
 
         DocumentModel doc = documentManager.getDocument(docRef);
         DocumentModel container = documentManager.getDocument(containerRef);
 
-        if (container.getType().equals("Section")
+        // check that we are not trying to move a folder inside itself
+        if ((container.getPathAsString() + "/").startsWith(doc.getPathAsString()
+                + "/")) {
+            facesMessages.add(FacesMessage.SEVERITY_WARN,
+                    resourcesAccessor.getMessages().get("move_impossible"));
+            return MOVE_IMPOSSIBLE;
+        }
+
+        if (!doc.isProxy() && container.getType().equals("Section")
                 && !doc.getType().equals("Section")) {
-            // We try to do a publication check browse in sections
+            // we try to do a publication check browse in sections
+            // TODO: use a PUBLICATION_TARGET facet instead of hardcoding the
+            // Section type name
             if (!documentManager.hasPermission(containerRef,
                     SecurityConstants.BROWSE)) {
                 // This should never append since user can only drop in visible
@@ -351,25 +362,8 @@ public class FileManageActionsBean extends InputController implements
                 facesMessages.add(FacesMessage.SEVERITY_WARN,
                         resourcesAccessor.getMessages().get(
                                 "move_insuffisant_rights"));
+                // TODO: this should be PUBLISH_IMPOSSIBLE
                 return MOVE_IMPOSSIBLE;
-            }
-
-            // check the right to remove an element from the source folder :
-            if (!documentManager.hasPermission(doc.getParentRef(),
-                    SecurityConstants.REMOVE_CHILDREN)
-                    || documentManager.hasPermission(doc.getRef(),
-                            SecurityConstants.REMOVE)) {
-                // This should never append since user can only drop in visible
-                // sections
-                facesMessages.add(FacesMessage.SEVERITY_WARN,
-                        resourcesAccessor.getMessages().get(
-                                "move_insuffisant_rights"));
-                return MOVE_IMPOSSIBLE;
-            }
-
-            if (doc.isProxy()) {
-                // if this is a proxy, simply move it
-                return MOVE_OK;
             }
 
             if (doc.hasFacet(FacetNames.PUBLISHABLE)) {
@@ -378,18 +372,24 @@ public class FileManageActionsBean extends InputController implements
                 facesMessages.add(FacesMessage.SEVERITY_WARN,
                         resourcesAccessor.getMessages().get(
                                 "publish_impossible"));
+                // TODO: this should be PUBLISH_IMPOSSIBLE
                 return MOVE_IMPOSSIBLE;
             }
-
         }
+        // this is a real move operation (not a publication)
 
-        // do not allow to move a published document back in a workspace
-        if (doc.isProxy() && !container.getType().equals("Section")) {
+        // check the right to remove the document from the source container
+        if (!documentManager.hasPermission(doc.getParentRef(),
+                SecurityConstants.REMOVE_CHILDREN)
+                || !documentManager.hasPermission(doc.getRef(),
+                        SecurityConstants.REMOVE)) {
             facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get("move_impossible"));
+                    resourcesAccessor.getMessages().get(
+                            "move_impossible"));
             return MOVE_IMPOSSIBLE;
         }
 
+        // check that we have the right to create the copy in the target
         if (!documentManager.hasPermission(containerRef,
                 SecurityConstants.ADD_CHILDREN)) {
             facesMessages.add(FacesMessage.SEVERITY_WARN,
@@ -398,12 +398,24 @@ public class FileManageActionsBean extends InputController implements
             return MOVE_IMPOSSIBLE;
         }
 
-        List<String> allowedTypes = Arrays.asList(typeManager.getType(
-                container.getType()).getAllowedSubTypes());
-        if (!allowedTypes.contains(doc.getType())) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get("move_impossible"));
-            return MOVE_IMPOSSIBLE;
+        if (doc.isProxy()) {
+            if (!container.getType().equals("Section")) {
+                // do not allow to move a published document back in a workspace
+                // TODO: use a PUBLICATION_TARGET facet instead of hardcoding
+                // the Section type name
+                facesMessages.add(FacesMessage.SEVERITY_WARN,
+                        resourcesAccessor.getMessages().get("move_impossible"));
+                return MOVE_IMPOSSIBLE;
+            }
+        } else {
+            // check allowed content types constraints for non-proxy documents
+            List<String> allowedTypes = Arrays.asList(typeManager.getType(
+                    container.getType()).getAllowedSubTypes());
+            if (!allowedTypes.contains(doc.getType())) {
+                facesMessages.add(FacesMessage.SEVERITY_WARN,
+                        resourcesAccessor.getMessages().get("move_impossible"));
+                return MOVE_IMPOSSIBLE;
+            }
         }
 
         return MOVE_OK;
@@ -473,7 +485,7 @@ public class FileManageActionsBean extends InputController implements
 
             return debug;
         } catch (Throwable t) {
-            log.error(t);
+            log.error(t.getMessage(), t);
             return getErrorMessage(MOVE_ERROR, docId);
         }
     }

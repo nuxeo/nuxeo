@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webapp.security;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
@@ -60,6 +62,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  */
 @Name("groupManagerActions")
 @Scope(CONVERSATION)
+@Install(precedence = FRAMEWORK)
 public class GroupManagerActionsBean extends InputController implements
         GroupManagerActions, Serializable {
 

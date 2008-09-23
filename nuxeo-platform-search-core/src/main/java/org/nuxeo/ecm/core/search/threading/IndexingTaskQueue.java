@@ -259,18 +259,17 @@ public class IndexingTaskQueue extends LinkedBlockingQueue<Runnable> {
 
     private void removeTask(Runnable r) {
         Task t = (Task) r;
-        boolean b = tasksInQueue.remove(r);
+        tasksInQueue.remove(r);
         log.debug("Removing a task from queue: " + tasksInQueue.size()
-                + " -- BlockingQueue size: " + super.size()
-                + " -- was in Set? " + b + " -- docRef: " + t.getDocumentRef());
+                + " -- BlockingQueue size: " + super.size() + " -- docRef: "
+                + t.getDocumentRef());
     }
 
     private void addTask(Runnable r) {
         Task t = (Task) r;
-        boolean b = tasksInQueue.add(r);
+        tasksInQueue.add(r);
         log.debug("Adding a task in queue: " + tasksInQueue.size()
-                + " -- BlockingQueue size: " + super.size()
-                + " -- already in Set? " + !b + " -- docRef: "
+                + " -- BlockingQueue size: " + super.size() + " -- docRef: "
                 + t.getDocumentRef());
     }
 
@@ -281,9 +280,9 @@ public class IndexingTaskQueue extends LinkedBlockingQueue<Runnable> {
     }
 
     private void removeAwaitingTask(Runnable r) {
-        boolean b = awaitingTasks.remove(r);
+        awaitingTasks.remove(r);
         log.debug("Removing a task from the awaitingTasks list: "
-                + awaitingTasks.size() + " -- was in List? " + b);
+                + awaitingTasks.size());
     }
 
 }

@@ -510,7 +510,9 @@ public class CompassBackend extends AbstractSearchEngineBackend {
                     range, query, principal);
         } catch (SearchEngineQueryParseException qe) {
             if (tx != null) {
-                tx.rollback();
+            	// Shouldn't have to rollback the transaction since Query is not
+            	// executed
+            	// tx.rollback(); 
             }
             throw new QueryException(qe.getMessage(), qe);
         } catch (CompassException ce) {
