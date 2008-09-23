@@ -46,9 +46,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.TestRuntime;
 
 /**
- *
+ * 
  * @author Razvan Caraghin
- *
+ * 
  */
 public class TestLocalAPI extends TestAPI {
 
@@ -56,18 +56,7 @@ public class TestLocalAPI extends TestAPI {
 
     private static final Log log = LogFactory.getLog(TestLocalAPI.class);
 
-    @Override
-    protected void setUp() throws Exception {
-        // Duplicated from NXRuntimeTestCase
-        runtime = Framework.getRuntime();
-        if (runtime != null) {
-            Framework.shutdown();
-            runtime = null; // be sure no runtime is intialized (this may happen
-            // when some test crashes)
-        }
-        runtime = new TestRuntime();
-        Framework.initialize(runtime);
-
+    protected void doDeployments() throws Exception {
         deploy("EventService.xml");
 
         // TODO: use deployBundle / deployContrib for all of them instead but
@@ -85,7 +74,21 @@ public class TestLocalAPI extends TestAPI {
         deploy("LifeCycleServiceExtensions.xml");
         deploy("CoreEventListenerService.xml");
         deploy("DocumentAdapterService.xml");
+    }
 
+    @Override
+    protected void setUp() throws Exception {
+        // Duplicated from NXRuntimeTestCase
+        runtime = Framework.getRuntime();
+        if (runtime != null) {
+            Framework.shutdown();
+            runtime = null; // be sure no runtime is intialized (this may happen
+            // when some test crashes)
+        }
+        runtime = new TestRuntime();
+        Framework.initialize(runtime);
+
+        doDeployments();
         openSession();
     }
 
@@ -546,7 +549,8 @@ public class TestLocalAPI extends TestAPI {
         }
     }
 
-    protected static CoreSession openSession(String userName) throws ClientException {
+    protected static CoreSession openSession(String userName)
+            throws ClientException {
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("username", userName);
         ctx.put("principal", new UserPrincipal(userName));
@@ -582,7 +586,8 @@ public class TestLocalAPI extends TestAPI {
         // add the permission to remove children on the root
         ACP rootACP = root.getACP();
         ACL rootACL = rootACP.getOrCreateACL();
-        rootACL.add(new ACE("joe_localmanager", SecurityConstants.REMOVE_CHILDREN, true));
+        rootACL.add(new ACE("joe_localmanager",
+                SecurityConstants.REMOVE_CHILDREN, true));
         rootACP.addACL(rootACL);
         root.setACP(rootACP, true);
 
