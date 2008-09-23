@@ -26,7 +26,7 @@ import java.io.Serializable;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -43,10 +43,10 @@ public class ParalleleNavigationHelper implements Serializable {
 
     public static final String PARALLELE_URL_PREFIX = "/parallele.faces?";
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected transient NavigationContext navigationContext;
 
-    @In(required = true, create = true)
+    @In(create = true)
     ConversationIdGenerator conversationIdGenerator;
 
     @RequestParameter

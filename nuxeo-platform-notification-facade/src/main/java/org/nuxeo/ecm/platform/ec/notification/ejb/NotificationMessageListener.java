@@ -98,8 +98,9 @@ public class NotificationMessageListener implements MessageListener {
         log.debug("onMessage");
         try {
             Object obj = ((ObjectMessage) message).getObject();
-            if (!(obj instanceof DocumentMessage))
+            if (!(obj instanceof DocumentMessage)) {
                 return;
+            }
             DocumentMessage doc = (DocumentMessage) obj;
 
             String eventId = doc.getEventId();
@@ -120,10 +121,8 @@ public class NotificationMessageListener implements MessageListener {
             LoginContext lc = Framework.login();
             if (eventId.equals("documentPublicationApproved")
                     || eventId.equals("documentPublished")) {
-                DocumentModel publishedDoc = getDocFromPath((String) doc.getEventInfo().get(
-                        "sectionPath"), doc);
-                gatherConcernedUsersForDocument(publishedDoc, notifs,
-                        targetUsers);
+                DocumentModel publishedDoc = getDocFromPath((String) doc.getEventInfo().get("sectionPath"), doc);
+                gatherConcernedUsersForDocument(publishedDoc, notifs, targetUsers);
             } else {
                 gatherConcernedUsersForDocument(doc, notifs, targetUsers);
             }

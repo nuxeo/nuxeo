@@ -97,7 +97,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
             // create the new instance
             AuthenticationPluginDescriptor actualDescriptor = authenticatorsDescriptors.get(descriptor.getName());
             try {
-                NuxeoAuthenticationPlugin authPlugin = (NuxeoAuthenticationPlugin) actualDescriptor.getClassName().newInstance();
+                NuxeoAuthenticationPlugin authPlugin = actualDescriptor.getClassName().newInstance();
                 authPlugin.initPlugin(actualDescriptor.getParameters());
                 authenticators.put(actualDescriptor.getName(), authPlugin);
             } catch (InstantiationException e) {
@@ -121,17 +121,16 @@ public class PluggableAuthenticationService extends DefaultComponent {
             startupURLs.addAll(startupURLContrib.getStartURLPatterns());
         }
         else if (extensionPoint.equals(EP_PROPAGATOR)) {
-        	AuthenticationPropagatorDescriptor propagationContrib = (AuthenticationPropagatorDescriptor) contribution;
+            AuthenticationPropagatorDescriptor propagationContrib = (AuthenticationPropagatorDescriptor) contribution;
 
-        	// create the new instance
-        	try {
-				propagator = (NuxeoAuthenticationPropagator) propagationContrib.getClassName().newInstance();
-			} catch (InstantiationException e) {
-				log.error("Unable to creeate propagator", e);
-			} catch (IllegalAccessException e) {
-				log.error("Unable to creeate propagator", e);
-			}
-
+            // create the new instance
+            try {
+                propagator = (NuxeoAuthenticationPropagator) propagationContrib.getClassName().newInstance();
+            } catch (InstantiationException e) {
+                log.error("Unable to creeate propagator", e);
+            } catch (IllegalAccessException e) {
+                log.error("Unable to creeate propagator", e);
+            }
         }
         else if (extensionPoint.equals(EP_CBFACTORY)) {
             CallbackHandlerFactoryDescriptor cbhfContrib = (CallbackHandlerFactoryDescriptor) contribution;
@@ -183,30 +182,27 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     // Service API
 
-
     public List<String> getStartURLPatterns() {
         return startupURLs;
     }
-
 
     public List<String> getAuthChain() {
         return authChain;
     }
 
-
-    public UserIdentificationInfoCallbackHandler getCallbackHandler(UserIdentificationInfo userIdent)
-    {
-        if (cbhFactory==null)
-        {
+    public UserIdentificationInfoCallbackHandler getCallbackHandler(
+            UserIdentificationInfo userIdent) {
+        if (cbhFactory == null) {
             return new UserIdentificationInfoCallbackHandler(userIdent);
         }
         return cbhFactory.createCallbackHandler(userIdent);
     }
 
-    public void propagateUserIdentificationInformation(CachableUserIdentificationInfo cachableUserIdent)
-    {
-    	if (propagator!=null)
-    		propagator.propagateUserIdentificationInformation(cachableUserIdent);
+    public void propagateUserIdentificationInformation(
+            CachableUserIdentificationInfo cachableUserIdent) {
+        if (propagator != null) {
+            propagator.propagateUserIdentificationInformation(cachableUserIdent);
+        }
     }
 
     public List<NuxeoAuthenticationPlugin> getPluginChain() {

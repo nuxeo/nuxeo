@@ -3,7 +3,6 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
@@ -93,7 +92,7 @@
         directoryName="#{field.directory}"
         rendered="${field.jsfComponent=='nxdir:selectOneListbox'}" />
 
-      <t:dataList
+      <nxu:dataList
           var="item"
           value="#{currentDocument[field.schemaName][field.fieldName]}"
           layout="simple"
@@ -103,7 +102,7 @@
             value="#{item}"
             directoryName="#{field.directory}" />
         </div>
-      </t:dataList>
+      </nxu:dataList>
 
     </h:column>
   </h:dataTable>

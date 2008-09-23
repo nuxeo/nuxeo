@@ -69,7 +69,6 @@ public class PublishingServiceImpl extends DefaultComponent implements
         } catch (IllegalAccessException e) {
             throw new PublishingValidatorException(e);
         }
-
     }
 
     public String getValidDateFieldName() {
@@ -105,7 +104,6 @@ public class PublishingServiceImpl extends DefaultComponent implements
         } else {
             log.error("Extension point name is unknown... => " + extensionPoint);
         }
-
     }
 
     @Override

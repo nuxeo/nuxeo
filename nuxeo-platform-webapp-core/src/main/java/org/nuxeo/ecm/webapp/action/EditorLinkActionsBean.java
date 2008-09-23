@@ -43,7 +43,6 @@ import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.core.search.api.client.search.results.document.SearchPageProvider;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.webapp.base.InputController;
 
 /**
@@ -122,7 +121,7 @@ public class EditorLinkActionsBean extends InputController implements EditorLink
                             "label.search.service.wrong.query"));
             log.error("QueryParseException in search popup : " + e.getMessage());
         } catch (SearchException e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
         return "test_popup";
     }
