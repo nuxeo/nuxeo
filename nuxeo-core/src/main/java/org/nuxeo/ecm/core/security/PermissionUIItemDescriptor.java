@@ -19,18 +19,31 @@
 
 package org.nuxeo.ecm.core.security;
 
+import java.io.Serializable;
+
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 @XObject("item")
-public class PermissionUIItemDescriptor {
+public class PermissionUIItemDescriptor implements Serializable{
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     @XNode("@show")
     private Boolean show;
 
     @XNode("@order")
     private Integer order;
+
+    @XNode("@denyPermission")
+    private String denyPermission;
+
+    @XNode("@id")
+    private String id;
 
     private String permission = "";
 
@@ -45,6 +58,8 @@ public class PermissionUIItemDescriptor {
         show = referenceDescriptor.show;
         order = referenceDescriptor.order;
         permission = referenceDescriptor.permission;
+        denyPermission = referenceDescriptor.denyPermission;
+        id = referenceDescriptor.id;
     }
 
     public int getOrder() {
@@ -67,6 +82,23 @@ public class PermissionUIItemDescriptor {
 
     public String getPermission() {
         return permission;
+    }
+
+
+    public String getDenyPermission()
+    {
+        if (denyPermission!=null)
+            return denyPermission;
+        else
+            return permission;
+    }
+
+    public String getId()
+    {
+        if (id!=null)
+            return id;
+        else
+            return permission;
     }
 
     @Override
@@ -94,6 +126,29 @@ public class PermissionUIItemDescriptor {
                     return false;
                 }
             }
+            if (getId() !=null)
+            {
+                if (!getId().equals(otherPid.getId())) {
+                    return false;
+                }
+            }
+            else
+            {
+                if (otherPid.getId()!=null)
+                    return false;
+            }
+            if (getDenyPermission() !=null)
+            {
+                if (!getDenyPermission().equals(otherPid.getDenyPermission())) {
+                    return false;
+                }
+            }
+            else
+            {
+                if (otherPid.getDenyPermission()!=null)
+                    return false;
+            }
+
             return true;
         }
         return false;
@@ -110,11 +165,17 @@ public class PermissionUIItemDescriptor {
         // do not merge unset attributes
         show = pid.show != null ? pid.show : show;
         order = pid.order != null ? pid.order : order;
+        id = pid.id !=null ? pid.id : id;
+        denyPermission = pid.denyPermission !=null ? pid.denyPermission : denyPermission;
+
     }
 
     @Override
     public String toString() {
-        return String.format("PermissionUIItemDescriptor[%s]", permission);
+        if (denyPermission!=null)
+            return String.format("PermissionUIItemDescriptor[%s (deny %s)]", permission, denyPermission);
+        else
+            return String.format("PermissionUIItemDescriptor[%s]", permission);
     }
 
 }

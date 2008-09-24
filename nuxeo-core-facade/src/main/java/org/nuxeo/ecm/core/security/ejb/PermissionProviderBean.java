@@ -19,12 +19,15 @@
 
 package org.nuxeo.ecm.core.security.ejb;
 
+import java.util.List;
+
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
+import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -62,12 +65,25 @@ public class PermissionProviderBean implements PermissionProvider {
         return permissionProvider.getSubPermissions(perm);
     }
 
+    @Deprecated // use getUserVisiblePermissionDescriptors instead
     public String[] getUserVisiblePermissions() throws ClientException {
         return permissionProvider.getUserVisiblePermissions();
     }
 
+    @Deprecated // use getUserVisiblePermissionDescriptors instead
     public String[] getUserVisiblePermissions(String typeName)
             throws ClientException {
         return permissionProvider.getUserVisiblePermissions(typeName);
+    }
+
+    public List<UserVisiblePermission> getUserVisiblePermissionDescriptors()
+            throws ClientException {
+        return permissionProvider.getUserVisiblePermissionDescriptors();
+
+    }
+
+    public List<UserVisiblePermission> getUserVisiblePermissionDescriptors(
+            String typeName) throws ClientException {
+        return permissionProvider.getUserVisiblePermissionDescriptors(typeName);
     }
 }
