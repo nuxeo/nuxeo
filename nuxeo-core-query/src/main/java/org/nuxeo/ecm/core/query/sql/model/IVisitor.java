@@ -27,8 +27,6 @@ import java.io.Serializable;
  */
 public interface IVisitor extends Serializable {
 
-    void visitLiteral(Literal node);
-
     void visitDateLiteral(DateLiteral node);
 
     void visitStringLiteral(StringLiteral node);

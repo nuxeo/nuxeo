@@ -115,11 +115,11 @@ public interface DocumentType extends CompositeType {
      * a document of the current type.
      * <p>
      * Type names may include '*' for all types.
-     * TODO: exclusion filters
      *
-     * @param subTypes null if no children types was defined
-     * (i.e. this type cannot have children) or an array with children types
+     * @param subTypes null if no children types have been defined
+     * (i.e. this type cannot have children), else an array with children types
      */
+    // TODO: exclusion filters
     void setChildrenTypes(String[] subTypes);
 
     /**

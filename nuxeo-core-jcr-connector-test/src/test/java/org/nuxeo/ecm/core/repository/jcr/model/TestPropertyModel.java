@@ -198,7 +198,7 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
         assertTrue(p.getValue() instanceof Map);
         assertEquals(0, ((Map) p.getValue()).size());
         p.setValue("string", "test");
-        HashMap<String,Serializable> map = new HashMap<String,Serializable>();
+        Map<String,Serializable> map = new HashMap<String,Serializable>();
         map.put("string", "test2");
         p.setValue("complex", map);
 
