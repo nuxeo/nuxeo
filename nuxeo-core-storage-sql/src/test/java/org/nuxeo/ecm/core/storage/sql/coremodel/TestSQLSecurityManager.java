@@ -72,6 +72,8 @@ public class TestSQLSecurityManager extends TestCase {
         acp.addACL(acl);
         ace = new ACE("steve", "Write", false);
         acl.add(ace);
+        ace = new ACE(null, "m", true); // null name skipped
+        acl.add(ace);
         ace = new ACE("pete", "Zap", true);
         acl.add(ace);
         acl = new ACLImpl(ACL.INHERITED_ACL); // must be skipped
