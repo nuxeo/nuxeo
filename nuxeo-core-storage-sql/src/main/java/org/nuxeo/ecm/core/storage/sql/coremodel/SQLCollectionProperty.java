@@ -75,22 +75,22 @@ public class SQLCollectionProperty extends SQLBaseProperty {
     @SuppressWarnings("unchecked")
     public void setValue(Object value) throws DocumentException {
         checkWritable();
-        if (value != null && !(value instanceof Serializable[])) {
+        if (value != null && !(value instanceof Object[])) {
             if (isArray) {
-                throw new DocumentException("Value is not Serializable[] but " +
+                throw new DocumentException("Value is not Object[] but " +
                         value.getClass().getName() + ": " + value);
             }
-            // accept Serializable[] or any List
+            // accept also any List
             if (!(value instanceof Collection)) {
                 throw new DocumentException(
-                        "Value is not Serializable[] or Collection but " +
+                        "Value is not Object[] or Collection but " +
                                 value.getClass().getName() + ": " + value);
             }
             value = property.type.getArrayBaseType().collectionToArray(
                     (Collection<Serializable>) value);
         }
         try {
-            property.setValue((Serializable[]) value);
+            property.setValue((Object[]) value);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }

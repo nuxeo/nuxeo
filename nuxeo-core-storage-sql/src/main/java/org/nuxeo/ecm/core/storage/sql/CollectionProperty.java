@@ -63,9 +63,14 @@ public class CollectionProperty extends BaseProperty {
 
     // ----- setters -----
 
-    public void setValue(Serializable[] value) throws StorageException {
+    public void setValue(Object[] value) throws StorageException {
         checkWritable();
-        fragment.set(type.normalize(value));
+        try {
+            fragment.set(type.normalize(value));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("item of list property '" +
+                    name + "': " + e.getMessage());
+        }
         // mark fragment dirty!
     }
 

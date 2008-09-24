@@ -86,9 +86,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
     public void testBasics() throws Exception {
         DocumentModel root = session.getRootDocument();
-        String name = "domain123";
-        DocumentModel child = new DocumentModelImpl(root.getPathAsString(),
-                name, "MyDocType");
+        DocumentModel child = new DocumentModelImpl("/", "domain", "MyDocType");
         child = session.createDocument(child);
         session.save();
 
@@ -97,11 +95,38 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         Calendar cal = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34,
                 56);
         child.setProperty("dublincore", "modified", cal);
+        session.saveDocument(child);
+        session.save();
+        closeSession();
+
+        // ----- new session -----
+        openSession();
+        // root = session.getRootDocument();
+        child = session.getChild(root.getRef(), "domain");
+
+        String title = (String) child.getProperty("dublincore", "title");
+        assertEquals("The title", title);
+        String description = (String) child.getProperty("dublincore",
+                "description");
+        assertNull(description);
+        Calendar modified = (Calendar) child.getProperty("dublincore",
+                "modified");
+        assertEquals(cal, modified);
+    }
+
+    public void testLists() throws Exception {
+        DocumentModel root = session.getRootDocument();
+        DocumentModel child = new DocumentModelImpl("/", "domain", "MyDocType");
+        child = session.createDocument(child);
+        session.save();
+
         // simple list as array
         child.setProperty("dublincore", "subjects", new String[] { "a", "b" });
         // simple list as List
         child.setProperty("dublincore", "contributors", new ArrayList<String>(
                 Arrays.asList("c", "d")));
+        // simple list as non-serializable array
+        child.setProperty("testList", "strings", new Object[] { "e", "f" });
         // complex list as List
         child.setProperty("testList", "participants", new ArrayList<String>(
                 Arrays.asList("c", "d")));
@@ -112,16 +137,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         // ----- new session -----
         openSession();
         root = session.getRootDocument();
-        child = session.getChild(root.getRef(), name);
+        child = session.getChild(root.getRef(), "domain");
 
-        String title = (String) child.getProperty("dublincore", "title");
-        assertEquals("The title", title);
-        String description = (String) child.getProperty("dublincore",
-                "description");
-        assertNull(description);
-        Calendar modified = (Calendar) child.getProperty("dublincore",
-                "modified");
-        assertEquals(cal, modified);
         Object subjects = child.getProperty("dublincore", "subjects");
         assertTrue(subjects instanceof String[]);
         assertEquals(Arrays.asList("a", "b"),
@@ -130,6 +147,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(contributors instanceof String[]);
         assertEquals(Arrays.asList("c", "d"),
                 Arrays.asList((String[]) contributors));
+        Object strings = child.getProperty("testList", "strings");
+        assertTrue(strings instanceof String[]);
+        assertEquals(Arrays.asList("e", "f"), Arrays.asList((String[]) strings));
         Object participants = child.getProperty("testList", "participants");
         assertTrue(participants instanceof List);
         assertEquals(Arrays.asList("c", "d"), (List<?>) participants);

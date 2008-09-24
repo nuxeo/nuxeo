@@ -98,57 +98,56 @@ public enum PropertyType {
      * @return the normalized value
      * @throws IllegalArgumentException
      */
-    public Serializable normalize(Serializable value)
-            throws IllegalArgumentException {
+    public Serializable normalize(Object value) throws IllegalArgumentException {
         if (value == null) {
             return null;
         }
         switch (this) {
         case STRING:
             if (value instanceof String) {
-                return value;
+                return (String) value;
             }
-            throw new IllegalArgumentException("Value is not a String: " +
+            throw new IllegalArgumentException("value is not a String: " +
                     value);
         case BOOLEAN:
             if (value instanceof Boolean) {
-                return value;
+                return (Boolean) value;
             }
-            throw new IllegalArgumentException("Value is not a Boolean: " +
+            throw new IllegalArgumentException("value is not a Boolean: " +
                     value);
         case LONG:
             if (value instanceof Long) {
-                return value;
+                return (Long) value;
             }
-            throw new IllegalArgumentException("Value is not a Long: " + value);
+            throw new IllegalArgumentException("value is not a Long: " + value);
         case DOUBLE:
             if (value instanceof Double) {
-                return value;
+                return (Double) value;
             }
-            throw new IllegalArgumentException("Value is not a Double: " +
+            throw new IllegalArgumentException("value is not a Double: " +
                     value);
         case DATETIME:
             if (value instanceof Calendar) {
-                return value;
+                return (Calendar) value;
             }
             if (value instanceof Date) {
                 Calendar cal = new GregorianCalendar(); // XXX timezone
                 cal.setTime((Date) value);
                 return cal;
             }
-            throw new IllegalArgumentException("Value is not a Calendar: " +
+            throw new IllegalArgumentException("value is not a Calendar: " +
                     value);
         case BINARY:
             if (value instanceof Binary) {
-                return value;
+                return (Binary) value;
             }
-            throw new IllegalArgumentException("Value is not a Binary: " +
+            throw new IllegalArgumentException("value is not a Binary: " +
                     value);
         case ACL:
             if (value instanceof ACLRow) {
-                return value;
+                return (ACLRow) value;
             }
-            throw new IllegalArgumentException("Value is not a ACLRow: " +
+            throw new IllegalArgumentException("value is not a ACLRow: " +
                     value);
         default:
             throw new AssertionError(this);
@@ -164,15 +163,22 @@ public enum PropertyType {
      * @return the normalized array
      * @throws IllegalArgumentException
      */
-    public Serializable[] normalize(Serializable[] value)
+    public Serializable[] normalize(Object[] value)
             throws IllegalArgumentException {
         if (value == null) {
             return emptyArray;
         }
-        for (int i = 0; i < value.length; i++) {
-            value[i] = arrayBaseType.normalize(value[i]);
+        Serializable[] newValue;
+        if (value instanceof Serializable[]) {
+            // update in place
+            newValue = (Serializable[]) value;
+        } else {
+            newValue = new Serializable[value.length];
         }
-        return value;
+        for (int i = 0; i < value.length; i++) {
+            newValue[i] = arrayBaseType.normalize(value[i]);
+        }
+        return newValue;
     }
 
     /**

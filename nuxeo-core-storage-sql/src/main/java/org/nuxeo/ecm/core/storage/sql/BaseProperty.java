@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 public abstract class BaseProperty {
 
     /** The property name. */
-    private final String name;
+    protected final String name;
 
     /** The property type. */
     public final PropertyType type;
