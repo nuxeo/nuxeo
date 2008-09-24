@@ -488,6 +488,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         nodea.setSingleProperty("tst:title", "hello world");
         nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
                 "c" });
+        nodea.setSingleProperty("ecm:lifeCycleState", "foostate"); // misc table
         assertEquals("/folder_a/node_a/node_a_complex", session.getPath(nodeac));
         Node folderb = session.addChildNode(root, "folder_b", null, "TestDoc",
                 false);
@@ -525,6 +526,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertNotSame(prevNodeaId, nodea2.getId());
         assertEquals("hello world",
                 nodea2.getSimpleProperty("tst:title").getString());
+        assertEquals("foostate",
+                nodea2.getSimpleProperty("ecm:lifeCycleState").getString());
         // check that the collection copy is different from the original
         String[] subjectsa2 = nodea2.getCollectionProperty("tst:subjects").getStrings();
         nodea.setCollectionProperty("tst:subjects", new String[] { "foo" });
@@ -716,7 +719,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
         root = session.getRootNode();
         assertNotNull(root);
         nodea = session.getChildNode(root, "foo", false);
-        assertEquals(Boolean.TRUE, nodea.getSimpleProperty("ecm:wfInProgress").getValue());
-        assertEquals("beeep", nodea.getSimpleProperty("ecm:wfIncOption").getValue());
+        assertEquals(Boolean.TRUE,
+                nodea.getSimpleProperty("ecm:wfInProgress").getValue());
+        assertEquals("beeep",
+                nodea.getSimpleProperty("ecm:wfIncOption").getValue());
     }
 }
