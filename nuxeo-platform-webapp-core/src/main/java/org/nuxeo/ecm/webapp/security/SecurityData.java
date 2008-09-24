@@ -79,6 +79,21 @@ public class SecurityData implements Serializable {
 
     protected final List<String> parentDocumentsUsers = new ArrayList<String>();
 
+    protected String documentType = "";
+
+    protected boolean needSave=false;
+
+
+
+    public void setNeedSave(boolean needSave)
+    {
+        this.needSave=needSave;
+    }
+
+    public boolean getNeedSave()
+    {
+        return needSave;
+    }
 
     public Map<String, List<String>> getCurrentDocDeny() {
         return currentDocDeny;
@@ -130,6 +145,7 @@ public class SecurityData implements Serializable {
 
     protected Map<String, List<String>> buildLabelMap(Map<String, List<String>> permissions) {
         Map<String, List<String>> labelMap = new HashMap<String, List<String>>();
+
         for (String user : permissions.keySet()) {
             List<String> labels = new ArrayList<String>();
             for (String perm : permissions.get(user)) {
@@ -175,6 +191,7 @@ public class SecurityData implements Serializable {
             return;
         }
 
+        needSave=true;
         if (grant) {
             // if we already have the user stored with rights we dont add the
             // user again, just update the list if needed
@@ -233,14 +250,20 @@ public class SecurityData implements Serializable {
     /**
      * Removes a privilege from the displayed list. This does not submit anything
      * to backend.
+     *
+     * returns true if a privilege was indeed removed
      */
-    public void removeModifiablePrivilege(String principalName,
+    public boolean removeModifiablePrivilege(String principalName,
             String permissionName, boolean grant) {
+
+        boolean removed=false;
+
         if (null == principalName || null == permissionName) {
             log.error("Null params received, returning...");
-            return;
+            return false;
         }
 
+        needSave=true;
         if (grant) {
             if (null != currentDocGrant.get(principalName)) {
                 // we have the specified user, check if we have the right
@@ -249,6 +272,7 @@ public class SecurityData implements Serializable {
                 while (permissionIterator.hasNext()) {
                     if (permissionIterator.next().equals(permissionName)) {
                         permissionIterator.remove();
+                        removed=true;
                         break;
                     }
                 }
@@ -261,6 +285,7 @@ public class SecurityData implements Serializable {
                 while (permissionIterator.hasNext()) {
                     if (permissionIterator.next().equals(permissionName)) {
                         permissionIterator.remove();
+                        removed=true;
                         break;
                     }
                 }
@@ -268,6 +293,7 @@ public class SecurityData implements Serializable {
         }
 
         rebuildUserLists();
+        return removed;
     }
 
     /**
@@ -281,6 +307,7 @@ public class SecurityData implements Serializable {
         }
         currentDocGrant.remove(principalName);
         currentDocDeny.remove(principalName);
+        needSave=true;
         rebuildUserLists();
     }
 
@@ -360,6 +387,15 @@ public class SecurityData implements Serializable {
         parentDocumentsUsers.clear();
 
         log.debug("Cleared data...");
+        needSave=false;
+    }
+
+    public String getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(String documentType) {
+        this.documentType = documentType;
     }
 
 }

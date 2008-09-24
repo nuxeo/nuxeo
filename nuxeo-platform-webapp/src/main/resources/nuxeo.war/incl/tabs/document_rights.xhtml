@@ -24,7 +24,7 @@
         </f:facet>
 
         <h:graphicImage value="#{securityActions.iconPathMap[principalType]}"
-          alt="#{securityActions.iconAltMap[principalType]}" />
+          title="#{securityActions.iconAltMap[principalType]}" />
 
       </h:column>
 
@@ -74,7 +74,10 @@
 <p><h:outputText rendered="${empty securityActions.parentDocumentsUsers}"
   value="#{messages['label.security.noParentDocumentsRights']}" /></p>
 
-<h3><h:outputText value="#{messages['label.security.localRights']}" /></h3>
+<h3><h:outputText value="#{messages['label.security.localRights']} " />
+ <h:graphicImage value="/img/warning.gif" title="#{messages['label.security.saveNeeded']}"
+ rendered="#{securityActions.securityData.needSave}"/>
+</h3>
 
 <a4j:region renderRegionOnly="true">
   <h:form id="rights_content">
@@ -114,7 +117,7 @@
         <!-- Icon -->
         <h:graphicImage rendered="${columnHeader.id == 'c4'}"
           value="#{securityActions.dataTableModel.currentCellDisplayedValue}"
-          alt="#{securityActions.dataTableModel.currentCellDisplayedValue}" />
+          title="#{securityActions.dataTableModel.currentCellDisplayedValue}" />
 
         <!--  Username -->
         <f:subview rendered="${columnHeader.id == 'c1'}">
@@ -153,7 +156,7 @@
       type="submit" id="security_button_remove"
       value="#{messages['command.security.delPerm']}" class="button"
       rendered="${not empty securityActions.currentDocumentUsers}"
-      action="#{securityActions.removePermissionsAndUpdate}"
+      action="#{securityActions.removePermissions}"
       disabled="#{!securityActions.canRemoveSecurityRules}" /> <h:panelGroup
       id="security_button_remove_script">
       <script>
@@ -176,6 +179,14 @@
     </h:panelGroup></p>
   </h:form>
 </a4j:region>
+
+<h:form id="validate_rights">
+<h:commandButton type="submit"
+      value="#{messages['label.security.save']}"
+      class="button rightsAddButton"
+      action="#{securityActions.saveSecurityUpdates}"
+      rendered="#{securityActions.securityData.needSave}"/>
+</h:form>
 
 <h3><h:outputText value="#{messages['label.security.addNewRule']}" /></h3>
 
