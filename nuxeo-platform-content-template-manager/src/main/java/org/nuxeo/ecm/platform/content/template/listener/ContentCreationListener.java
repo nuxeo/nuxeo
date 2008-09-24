@@ -35,6 +35,7 @@ public class ContentCreationListener extends AbstractEventListener {
 
     private ContentTemplateService service;
 
+    @Override
     public void notifyEvent(CoreEvent event) throws Exception {
 
         String eventId = event.getEventId();

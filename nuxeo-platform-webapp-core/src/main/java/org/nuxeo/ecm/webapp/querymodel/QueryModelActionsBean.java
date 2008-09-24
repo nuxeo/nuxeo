@@ -34,6 +34,8 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -79,6 +81,12 @@ public class QueryModelActionsBean extends InputController implements
         }
         QueryModel model = queryModels.get(queryModelName);
         if (model == null) {
+            // because documentManager is not required for injection we check it
+            // before usage to avoid later NPE
+            if (documentManager == null) {
+                throw new ClientException("Cannot create QueryModel for '"
+                        + queryModelName + "'. DocumentManager is null.");
+            }
             if (log.isDebugEnabled()) {
                 log.debug("(Re)building query model " + queryModelName);
             }
@@ -91,16 +99,16 @@ public class QueryModelActionsBean extends InputController implements
                 model = new QueryModel(descriptor,
                         (NuxeoPrincipal) documentManager.getPrincipal());
             } else {
-                assert descriptor.isStateful()
-                        : queryModelName + " is neither stateless nor stateful";
+                assert descriptor.isStateful() : queryModelName
+                        + " is neither stateless nor stateful";
 
                 if (!isInitialized()) {
                     throw new ClientException(
-                    "Cannot build a stateful query model without a Core session");
+                            "Cannot build a stateful query model without a Core session");
                 }
                 String docTypeName = descriptor.getDocType();
-                model = new QueryModel(descriptor, documentManager
-                        .createDocumentModel(docTypeName),
+                model = new QueryModel(descriptor,
+                        documentManager.createDocumentModel(docTypeName),
                         (NuxeoPrincipal) documentManager.getPrincipal());
             }
             queryModels.put(queryModelName, model);
@@ -109,7 +117,7 @@ public class QueryModelActionsBean extends InputController implements
     }
 
     public PagedDocumentsProvider getResultsProvider(String queryModelName)
-                throws ClientException, ResultsProviderFarmUserException {
+            throws ClientException, ResultsProviderFarmUserException {
         try {
             return getResultsProvider(queryModelName, null);
         } catch (SortNotSupportedException e) {
@@ -117,13 +125,14 @@ public class QueryModelActionsBean extends InputController implements
         }
     }
 
-    public PagedDocumentsProvider getResultsProvider(String queryModelName, SortInfo sortInfo)
-        throws ClientException, ResultsProviderFarmUserException {
+    public PagedDocumentsProvider getResultsProvider(String queryModelName,
+            SortInfo sortInfo) throws ClientException,
+            ResultsProviderFarmUserException {
         QueryModel model = get(queryModelName);
         QueryModelDescriptor descriptor = model.getDescriptor();
         if (descriptor.isStateless()) {
-            throw new ClientException("queryModelActions " +
-            "is a ResultsProviderFarm for stateful query models only");
+            throw new ClientException("queryModelActions "
+                    + "is a ResultsProviderFarm for stateful query models only");
         }
 
         if (!descriptor.isSortable() && sortInfo != null) {
@@ -131,11 +140,13 @@ public class QueryModelActionsBean extends InputController implements
         }
 
         try {
-            PagedDocumentsProvider provider = model.getResultsProvider(null, sortInfo);
+            PagedDocumentsProvider provider = model.getResultsProvider(null,
+                    sortInfo);
             provider.setName(queryModelName);
             return provider;
         } catch (QueryException e) {
-            throw new ResultsProviderFarmUserException("label.search.service.wrong.query", e);
+            throw new ResultsProviderFarmUserException(
+                    "label.search.service.wrong.query", e);
         }
     }
 
@@ -146,20 +157,88 @@ public class QueryModelActionsBean extends InputController implements
 
     protected QueryModelDescriptor getQueryModelDescriptor(String descriptorName) {
         if (queryModelService == null) {
-            queryModelService = (QueryModelService) Framework.getRuntime()
-                    .getComponent(QueryModelService.NAME);
+            queryModelService = (QueryModelService) Framework.getRuntime().getComponent(
+                    QueryModelService.NAME);
         }
         return queryModelService.getQueryModelDescriptor(descriptorName);
     }
 
     public void reset(String queryModelName) throws ClientException {
-        QueryModel qm = queryModels.get(queryModelName);
+        if (isPersisted(queryModelName)) {
+            queryModels.remove(queryModelName);
+        }
+        QueryModel qm = get(queryModelName);
         qm.reset();
         Events.instance().raiseEvent(EventNames.QUERY_MODEL_CHANGED, qm);
     }
 
     public void destroy() {
         log.debug("Removing component");
+    }
+
+    public boolean isPersisted(String queryModelName) throws ClientException {
+        QueryModelDescriptor descriptor = getQueryModelDescriptor(queryModelName);
+        if (!descriptor.isStateful()) {
+            return false;
+        }
+        DocumentModel doc = get(queryModelName).getDocumentModel();
+        return doc != null && doc.getRef() != null;
+    }
+
+    public QueryModel load(String queryModelName, DocumentRef ref)
+            throws ClientException {
+        QueryModelDescriptor descriptor = getQueryModelDescriptor(queryModelName);
+        if (descriptor == null) {
+            throw new ClientException(String.format(
+                    "QueryModel '%s' does not exist", queryModelName));
+        }
+        if (!descriptor.isStateful()) {
+            throw new ClientException(String.format(
+                    "QueryModel '%s' is not stateful", queryModelName));
+        }
+        if (!isInitialized()) {
+            throw new ClientException("Need a Core Session");
+        }
+        QueryModel qm = new QueryModel(descriptor, documentManager.getDocument(ref),
+                (NuxeoPrincipal) documentManager.getPrincipal());
+        queryModels.put(queryModelName, qm);
+        Events.instance().raiseEvent(EventNames.QUERY_MODEL_CHANGED, qm);
+        return qm;
+    }
+
+    public QueryModel persist(String queryModelName, String parentPath,
+            String name) throws ClientException {
+        return persist(queryModelName, parentPath, name, true);
+    }
+
+    public QueryModel persist(String queryModelName, String parentPath,
+            String name, boolean saveSession) throws ClientException {
+        if (isPersisted(queryModelName)) {
+            throw new ClientException(String.format(
+                    "QueryModel '%s' has already been persisted",
+                    queryModelName));
+        }
+        QueryModelDescriptor descriptor = getQueryModelDescriptor(queryModelName);
+        if (descriptor == null) {
+            throw new ClientException(String.format(
+                    "QueryModel '%s' does not exist", queryModelName));
+        }
+        if (!descriptor.isStateful()) {
+            throw new ClientException(String.format(
+                    "QueryModel '%s' is not stateful", queryModelName));
+        }
+        if (!isInitialized()) {
+            throw new ClientException("Need a Core Session");
+        }
+        QueryModel qm = get(queryModelName);
+        DocumentModel doc = qm.getDocumentModel();
+        doc.setPathInfo(parentPath, name);
+        doc = documentManager.createDocument(doc);
+        if (saveSession) {
+            documentManager.save();
+        }
+        return new QueryModel(descriptor, doc,
+                (NuxeoPrincipal) documentManager.getPrincipal());
     }
 
 }

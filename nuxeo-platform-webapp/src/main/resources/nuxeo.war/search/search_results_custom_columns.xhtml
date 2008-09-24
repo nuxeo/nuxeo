@@ -7,12 +7,11 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxdir="http://nuxeo.org/nxdirectory"
-  xmlns:t="http://myfaces.apache.org/tomahawk">
+  xmlns:nxdir="http://nuxeo.org/nxdirectory">
 
 <c:forEach var="field" items="#{columns}">
 
-  <t:column rendered="#{field.type != 'special'}">
+  <nxu:column rendered="#{field.type != 'special'}">
 
     <ui:decorate template="/search/column_header.xhtml">
       <ui:param name="sortColumn" value="#{field.prefixedName}" />
@@ -24,10 +23,10 @@
     <h:outputText value="#{doc[field.schemaName][field.fieldName]}"
       styleClass="dataInputText" rendered="#{field.jsfComponent=='h:inputText'}" />
 
-    <t:dataList var="item" value="#{doc[field.schemaName][field.fieldName]}"
+    <nxu:dataList var="item" value="#{doc[field.schemaName][field.fieldName]}"
       rendered="#{field.jsfComponent == 't:dataList'}">
       <h:outputText value="#{item}" styleClass="dataInputText" />
-    </t:dataList>
+    </nxu:dataList>
 
     <h:outputText value="#{doc[field.schemaName][field.fieldName]}"
       class="dataInputText" rendered="#{field.jsfComponent=='h:inputTextarea'}" />
@@ -63,7 +62,7 @@
         value="#{doc[field.schemaName][field.fieldName]}" />
     </f:subview>
 
-  </t:column>
+  </nxu:column>
 
   <ui:include src="/search/search_results_special_columns.xhtml" />
 

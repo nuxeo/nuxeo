@@ -30,8 +30,6 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -86,8 +84,9 @@ public class VersioningMessageListener implements MessageListener {
     public void onMessage(Message message) {
         try {
             Object obj = ((ObjectMessage) message).getObject();
-            if (!(obj instanceof DocumentMessage))
+            if (!(obj instanceof DocumentMessage)) {
                 return;
+            }
             DocumentMessage doc = (DocumentMessage) obj;
 
             String eventId = doc.getEventId();
@@ -108,7 +107,7 @@ public class VersioningMessageListener implements MessageListener {
      * @param wfInProgress
      *
      * @param doc the DocumentMessage instance
-     * @throws LoginException
+     * @throws Exception
      */
     private void setWFVersioningPolicy(DocumentMessage doc, boolean wfInProgress)
             throws Exception {

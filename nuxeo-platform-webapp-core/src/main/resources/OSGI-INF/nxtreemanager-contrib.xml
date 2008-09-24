@@ -1,16 +1,28 @@
 <?xml version="1.0"?>
-<component name="treeManagerComponentContribute">
-  <documentation>
-  Default configuration for Nuxeo5 tree
-  </documentation>
-  <extension target="treeManagerComponentBase" point="display">
+
+<component name="org.nuxeo.ecm.platform.treeManager.contrib">
+
+  <documentation>Default configuration for Nuxeo5 tree</documentation>
+
+  <extension target="org.nuxeo.ecm.platform.treeManager" point="plugin">
+
     <documentation>
-    Default configuration for the Nuxeo5 tree.
-    Displays only Folderish objects.
+      Default configuration for the Nuxeo5 tree.
+
+      Displays only Folderish objects, not marked as hidden in navigation, and
+      sorts by dc:title property.
     </documentation>
-    <treeManagerPlugin>
-      <showFiles>false</showFiles>
-      <showSection>true</showSection>
+
+    <treeManagerPlugin name="navigation">
+      <excludedFacets>
+        <facet name="HiddenInNavigation" />
+      </excludedFacets>
+      <includedFacets>
+        <facet name="Folderish" />
+      </includedFacets>
+      <sortPropertyPath>dc:title</sortPropertyPath>
     </treeManagerPlugin>
+
   </extension>
+
 </component>
