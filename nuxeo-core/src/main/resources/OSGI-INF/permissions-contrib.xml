@@ -82,8 +82,8 @@
 
     <visibility>
       <item show="true" order="10">Read</item>
-      <item show="true" order="50">ReadWrite</item>
-      <item show="true" order="60">ReadRemove</item>
+      <item show="true" order="50" denyPermission="Write">ReadWrite</item>
+      <item show="true" order="60" denyPermission="Remove">ReadRemove</item>
       <item show="true" order="100">Everything</item>
     </visibility>
 

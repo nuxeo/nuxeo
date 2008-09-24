@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.security;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,9 +30,15 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * @author Bogdan Stefanescu
  * @author Olivier Grisel
+ * @author Thierry Delprat
  */
 @XObject("permission")
-public class PermissionDescriptor {
+public class PermissionDescriptor implements Serializable{
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     @XNode("@name")
     private String name;

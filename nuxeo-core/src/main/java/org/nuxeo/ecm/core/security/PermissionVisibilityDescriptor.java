@@ -28,6 +28,7 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
 
 @XObject("visibility")
 public class PermissionVisibilityDescriptor {
@@ -98,6 +99,19 @@ public class PermissionVisibilityDescriptor {
                     new String[filteredPermissions.size()]);
         }
         return sortedPermissionNames;
+    }
+
+
+    public List<UserVisiblePermission> getSortedUIPermissionDescriptor()
+    {
+        Collections.sort(items, new PermissionUIItemComparator());
+        List<UserVisiblePermission> result = new ArrayList<UserVisiblePermission>();
+        for (PermissionUIItemDescriptor pid : items) {
+            if (pid.isShown()) {
+                result.add(new UserVisiblePermission(pid.getId(), pid.getPermission(), pid.getDenyPermission()));
+            }
+        }
+        return result;
     }
 
     @Override
