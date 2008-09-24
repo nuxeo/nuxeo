@@ -582,6 +582,8 @@ public class Model {
             inferTypePropertyInfos(typeName, documentType.getSchemaNames());
             // all documents have ACLs too
             addTypeCollectionFragment(typeName, ACL_TABLE_NAME);
+            // all documents have MISC too
+            addTypeCollectionFragment(typeName, MISC_TABLE_NAME);
             log.debug("Fragments for " + typeName + ": " +
                     getTypeFragments(typeName));
         }
