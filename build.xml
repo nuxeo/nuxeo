@@ -57,7 +57,7 @@
   <!-- backward compatibility -->
   <target name="undeploy" depends="jboss-clean" description="Undeploy Nuxeo-EP (deprecated : use jboss-clean instead)" />
 
-  <target name="install" depends="install-unix,install-windows" description="Run mvn install" />
+  <target name="install" depends="clean,install-unix,install-windows" description="Run mvn install" />
   <target name="install-unix" if="osfamily-unix">
     <exec executable="env"/>
     <exec executable="mvn" failonerror="true">
