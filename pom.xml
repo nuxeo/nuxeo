@@ -9,7 +9,6 @@
 
   <groupId>org.nuxeo.theme</groupId>
   <artifactId>nuxeo-theme-parent</artifactId>
-  <version>5.2-SNAPSHOT</version>
   <name>Nuxeo Theme Parent</name>
   <packaging>pom</packaging>
   <description>
