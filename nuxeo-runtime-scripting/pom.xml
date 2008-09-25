@@ -9,7 +9,6 @@
 
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-scripting</artifactId>
-  <version>1.5-SNAPSHOT</version>
   <name>Nuxeo Runtime Scripting</name>
   <description>Nuxeo Runtime Scripting Support.</description>
 

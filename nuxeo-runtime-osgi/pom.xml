@@ -9,7 +9,6 @@
 
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-osgi</artifactId>
-  <version>1.5-SNAPSHOT</version>
   <name>Nuxeo Runtime OSGI Adapter</name>
   <description>Nuxeo Runtime: OSGi Framework Adapter.</description>
 

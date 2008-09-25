@@ -9,7 +9,6 @@
 
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-gf3-adapter</artifactId>
-  <version>1.5-SNAPSHOT</version>
   <name>Nuxeo Runtime GlassFish3 Adapter</name>
   <description>Emebeds GlassFish3 in Nuxeo</description>
 

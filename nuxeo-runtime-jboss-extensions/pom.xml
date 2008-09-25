@@ -9,7 +9,6 @@
 
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-jboss-extensions</artifactId>
-  <version>1.5-SNAPSHOT</version>
   <name>Nuxeo Runtime JBoss Extensions</name>
 
   <description>Nuxeo Runtime: JBoss Extensions.</description>

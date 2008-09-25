@@ -9,7 +9,6 @@
 
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-launcher</artifactId>
-  <version>1.5-SNAPSHOT</version>
   <name>Nuxeo Runtime Launcher</name>
   <description>A Java Application Launcher that enables the target application to change it's root class loader</description>
 

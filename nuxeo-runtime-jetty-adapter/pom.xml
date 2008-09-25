@@ -9,7 +9,6 @@
 
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-jetty-adapter</artifactId>
-  <version>1.5-SNAPSHOT</version>
   <name>Nuxeo Runtime Jetty Adapter</name>
   <description>Emebeds Jetty in Nuxeo</description>
 

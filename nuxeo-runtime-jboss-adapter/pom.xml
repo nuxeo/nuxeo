@@ -9,7 +9,6 @@
 
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-jboss-adapter</artifactId>
-  <version>1.5-SNAPSHOT</version>
   <packaging>jboss-sar</packaging>
   <name>Nuxeo Runtime JBoss Adapter</name>
   <description>Nuxeo Runtime: JBoss Adapter.</description>
