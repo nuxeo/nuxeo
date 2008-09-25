@@ -7,6 +7,10 @@
 
   <implementation class="org.nuxeo.ecm.platform.comment.service.CommentService" />
 
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.comment.api.CommentManager" />
+  </service>
+
   <extension-point name="config">
     <documentation>
       This extension can be used to configure the Comment Service

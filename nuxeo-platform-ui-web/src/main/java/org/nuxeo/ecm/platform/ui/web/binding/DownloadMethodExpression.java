@@ -65,14 +65,14 @@ public class DownloadMethodExpression extends MethodExpression implements
             return false;
         }
 
-        DownloadMethodExpression that = (DownloadMethodExpression) o;
+        DownloadMethodExpression other = (DownloadMethodExpression) o;
 
-        if (blobExpression != null ? !blobExpression.equals(that.blobExpression)
-                : that.blobExpression != null) {
+        if (blobExpression != null ? !blobExpression.equals(other.blobExpression)
+                : other.blobExpression != null) {
             return false;
         }
-        if (fileNameExpression != null ? !fileNameExpression.equals(that.fileNameExpression)
-                : that.fileNameExpression != null) {
+        if (fileNameExpression != null ? !fileNameExpression.equals(other.fileNameExpression)
+                : other.fileNameExpression != null) {
             return false;
         }
 
