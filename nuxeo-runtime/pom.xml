@@ -10,7 +10,6 @@
 
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime</artifactId>
-  <version>1.4.3-SNAPSHOT</version>
   <name>Nuxeo Runtime</name>
 
   <description>Nuxeo Runtime: The Nuxeo Runtime.</description>
