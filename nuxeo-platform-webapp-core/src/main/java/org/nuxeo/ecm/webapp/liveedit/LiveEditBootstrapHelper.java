@@ -128,6 +128,9 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     @RequestParameter
     protected String templateDocRef;
 
+    @In(create=true)
+    protected LiveEditClientConfig liveEditClientConfig;
+
     /**
      * @deprecated use blobPropertyField and filenamePropertyField instead
      */
@@ -542,6 +545,10 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             log.warn("cannot check live editable state of null DocumentModel");
             return false;
         }
+
+        // check Client browser config
+        if (!liveEditClientConfig.isLiveEditInstalled())
+            return false;
 
         String cacheKey = documentModel.getRef() + "__" + propertyName;
         Boolean cachedEditableBlob = cachedEditableBlobs.get(cacheKey);
