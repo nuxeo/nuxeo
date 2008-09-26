@@ -41,6 +41,8 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.RequestParameter;
@@ -498,8 +500,21 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             return false;
         }
         String mimetype = blob.getMimeType();
+        return isMimeTypeLiveEditable(mimetype);
+    }
+
+    public boolean isMimeTypeLiveEditable(String mimetype) throws ClientException {
+
         Boolean isEditable = cachedEditableStates.get(mimetype);
         if (isEditable == null) {
+
+            if (liveEditClientConfig.getLiveEditConfigurationPolicy().equals(LiveEditClientConfig.LE_CONFIG_CLIENTSIDE)){
+                // only trust client config
+                isEditable = liveEditClientConfig.isMimeTypeLiveEditable(mimetype);
+                cachedEditableStates.put(mimetype, isEditable);
+                return isEditable;
+            }
+
             try {
                 MimetypeEntry mimetypeEntry = getMimetypeRegistry().getMimetypeEntryByMimeType(
                         mimetype);
@@ -511,10 +526,56 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             } catch (Throwable t) {
                 throw EJBExceptionHandler.wrapException(t);
             }
+
+            if (liveEditClientConfig.getLiveEditConfigurationPolicy().equals(LiveEditClientConfig.LE_CONFIG_BOTHSIDES)){
+                Boolean isEditableOnClient = liveEditClientConfig.isMimeTypeLiveEditable(mimetype);
+                isEditable = isEditable && isEditableOnClient;
+            }
             cachedEditableStates.put(mimetype, isEditable);
         }
         return isEditable.booleanValue();
+
     }
+
+
+    @Factory(value="msword_liveeditable", scope=ScopeType.SESSION)
+    public boolean isMSWordLiveEdititable() throws ClientException
+    {
+        return isMimeTypeLiveEditable("application/msword");
+    }
+
+    @Factory(value="msexcel_liveeditable", scope=ScopeType.SESSION)
+    public boolean isMSExcelLiveEdititable() throws ClientException
+    {
+        return isMimeTypeLiveEditable("application/vnd.ms-excel");
+    }
+
+    @Factory(value="mspowerpoint_liveeditable", scope=ScopeType.SESSION)
+    public boolean isMSPowerpointLiveEdititable() throws ClientException
+    {
+        return isMimeTypeLiveEditable("application/vnd.ms-powerpoint");
+    }
+
+    @Factory(value="ootext_liveeditable", scope=ScopeType.SESSION)
+    public boolean isOOTextLiveEdititable() throws ClientException
+    {
+        return isMimeTypeLiveEditable("application/vnd.oasis.opendocument.text");
+    }
+
+    @Factory(value="oocalc_liveeditable", scope=ScopeType.SESSION)
+    public boolean isOOCalcLiveEdititable() throws ClientException
+    {
+        return isMimeTypeLiveEditable("application/vnd.oasis.opendocument.spreadsheet");
+    }
+
+    @Factory(value="oopresentation_liveeditable", scope=ScopeType.SESSION)
+    public boolean isOOPresentationLiveEdititable() throws ClientException
+    {
+        return isMimeTypeLiveEditable("application/vnd.oasis.opendocument.presentation");
+    }
+
+
+
 
     public boolean isCurrentDocumentLiveEditable() throws ClientException {
         return isDocumentLiveEditable(navigationContext.getCurrentDocument(),
@@ -547,8 +608,9 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         }
 
         // check Client browser config
-        if (!liveEditClientConfig.isLiveEditInstalled())
+        if (!liveEditClientConfig.isLiveEditInstalled()){
             return false;
+        }
 
         String cacheKey = documentModel.getRef() + "__" + propertyName;
         Boolean cachedEditableBlob = cachedEditableBlobs.get(cacheKey);
