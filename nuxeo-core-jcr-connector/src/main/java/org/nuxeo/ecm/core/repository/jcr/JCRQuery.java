@@ -180,7 +180,7 @@ public class JCRQuery implements Query {
         if (operand instanceof Expression) {
             Expression expression = (Expression) operand;
 
-            if (expression.lvalue.toString().equals("'ecm:path'")) {
+            if (expression.lvalue.toString().equals("ecm:path")) {
                 if (expression.operator.equals(Operator.STARTSWITH)) {
                     // log.info(operand);
 
@@ -205,12 +205,29 @@ public class JCRQuery implements Query {
     }
 
     public javax.jcr.query.Query buildJcrQuery(SQLQuery sqlQuery)
-            throws QueryException {
+    throws QueryException {
+        return buildXPathJcrQuery(sqlQuery);
+        //return buildSqlJcrQuery(sqlQuery);
+    }
+
+    public javax.jcr.query.Query buildSqlJcrQuery(SQLQuery sqlQuery)
+    throws QueryException {
         try {
             final String jcrQuery = buildJCRQueryString(sqlQuery);
-            //log.info("!JCR query: " + jcrQuery);
             final QueryManager qm = session.jcrSession().getWorkspace().getQueryManager();
             return qm.createQuery(jcrQuery, javax.jcr.query.Query.SQL);
+        } catch (RepositoryException e) {
+            throw new QueryException("Invalid JCR query", e);
+        }
+    }
+
+    public javax.jcr.query.Query buildXPathJcrQuery(SQLQuery sqlQuery)
+    throws QueryException {
+        try {
+            final String jcrQuery = XPathBuilder.fromNXQL(sqlQuery);
+            //System.out.println(">>>>> "+jcrQuery);
+            final QueryManager qm = session.jcrSession().getWorkspace().getQueryManager();
+            return qm.createQuery(jcrQuery, javax.jcr.query.Query.XPATH);
         } catch (RepositoryException e) {
             throw new QueryException("Invalid JCR query", e);
         }

@@ -25,15 +25,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface RepositoryInstance extends CoreSession {
-
-    Repository getRepository();
-
-    /**
-     * @return the session.
-     */
-    CoreSession getSession();
-
-    void close();
+public interface RepositoryInstance extends CoreSession, RepositoryConnection {
 
 }

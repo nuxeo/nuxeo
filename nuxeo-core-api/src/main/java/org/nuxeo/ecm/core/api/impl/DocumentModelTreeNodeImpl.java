@@ -76,16 +76,10 @@ public class DocumentModelTreeNodeImpl implements Serializable, DocumentModelTre
         this.levelTree = levelTree;
     }
 
-    /**
-     * @return the version
-     */
     public String getVersion() {
         return version;
     }
 
-    /**
-     * @param version the version to set
-     */
     public void setVersion(String version) {
         this.version = version;
     }
