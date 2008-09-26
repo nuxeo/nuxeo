@@ -4,7 +4,6 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:fn="http://java.sun.com/jsp/jstl/functions"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxdir="http://nuxeo.org/nxdirectory">
@@ -83,7 +82,7 @@
   <h:inputHidden id="fieldRef2" value="#{searchColumns.fieldRef2}" />
 
   <a4j:outputPanel id="a4j_resultFieldList">
-  <t:dataList id="resultFieldList" var="field" layout="simple"
+  <nxu:dataList id="resultFieldList" var="field" layout="simple"
         value="#{searchColumns.resultColumns}"
     styleClass="resultColumnsContainer">
 
@@ -107,7 +106,7 @@
             value="Droppables.add('fieldRef:#{field.fullName}', {accept:'cell', onDrop:function(element){swapColumns(element.id,'fieldRef:#{field.fullName}')}, hoverclass:'dropInto'});"/>
         </script>
 
-  </t:dataList>
+  </nxu:dataList>
   <br />
   </a4j:outputPanel>
   </div>

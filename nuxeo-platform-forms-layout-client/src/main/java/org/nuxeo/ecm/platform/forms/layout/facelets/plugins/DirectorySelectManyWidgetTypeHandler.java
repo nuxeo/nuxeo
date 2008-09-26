@@ -24,10 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.component.html.HtmlColumn;
+import javax.faces.component.html.HtmlDataTable;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.myfaces.custom.datalist.HtmlDataList;
-import org.apache.myfaces.custom.htmlTag.HtmlTag;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
@@ -100,10 +101,10 @@ public class DirectorySelectManyWidgetTypeHandler extends
                 // don't bother
                 return leaf;
             }
+
             TagAttributes tableAttributes = FaceletHandlerHelper.getTagAttributes(
                     helper.createIdAttribute(widgetName), valueAttr,
-                    helper.createAttribute("var", "item"),
-                    helper.createAttribute("layout", "simple"));
+                    helper.createAttribute("var", "item"));
             List<TagAttribute> attrs = new ArrayList<TagAttribute>();
             // first fill with widget properties
             if (properties != null) {
@@ -119,18 +120,16 @@ public class DirectorySelectManyWidgetTypeHandler extends
             }
             attrs.add(helper.createAttribute("value", "#{item}"));
             TagAttributes dirEntryAttrs = FaceletHandlerHelper.getTagAttributes(attrs);
-
-            // use html tag to get <div> tags between each entry.
-            TagAttributes divAttrs = FaceletHandlerHelper.getTagAttributes(helper.createAttribute(
-                    "value", "div"));
+            // XXX facelets do not like null attributes
+            TagAttributes columnAttrs = new TagAttributes(new TagAttribute[0]);
 
             ComponentHandler dirEntry = helper.getHtmlComponentHandler(
                     dirEntryAttrs, leaf,
                     DirectoryEntryOutputComponent.COMPONENT_TYPE, null);
-            ComponentHandler divEntry = helper.getHtmlComponentHandler(
-                    divAttrs, dirEntry, HtmlTag.COMPONENT_TYPE, null);
+            ComponentHandler columnEntry = helper.getHtmlComponentHandler(
+                    columnAttrs, dirEntry, HtmlColumn.COMPONENT_TYPE, null);
             ComponentHandler table = helper.getHtmlComponentHandler(
-                    tableAttributes, divEntry, HtmlDataList.COMPONENT_TYPE,
+                    tableAttributes, columnEntry, HtmlDataTable.COMPONENT_TYPE,
                     null);
             return table;
         }

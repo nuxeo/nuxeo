@@ -26,6 +26,7 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 
 @XObject(value = "authenticationPlugin")
 public class AuthenticationPluginDescriptor implements Serializable {
@@ -39,7 +40,7 @@ public class AuthenticationPluginDescriptor implements Serializable {
     Boolean enabled = true;
 
     @XNode("@class")
-    Class className;
+    Class<NuxeoAuthenticationPlugin> className;
 
     @XNode("loginModulePlugin")
     String loginModulePlugin;
@@ -53,11 +54,11 @@ public class AuthenticationPluginDescriptor implements Serializable {
     @XNode("statefull")
      Boolean statefull = true;
 
-    public Class getClassName() {
+    public Class<NuxeoAuthenticationPlugin> getClassName() {
         return className;
     }
 
-    public void setClassName(Class className) {
+    public void setClassName(Class<NuxeoAuthenticationPlugin> className) {
         this.className = className;
     }
 

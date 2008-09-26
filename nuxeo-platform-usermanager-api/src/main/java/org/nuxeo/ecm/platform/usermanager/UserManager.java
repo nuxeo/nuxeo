@@ -40,6 +40,9 @@ public interface UserManager {
 
     /**
      * Retrieves the principal with the given username.
+     * <p>
+     * Can build principals for anonymous and virtual users as well as for users
+     * defined in the users directory.
      *
      * @param username the username.
      * @return the principal, or null if doesn't exist.
@@ -74,27 +77,13 @@ public interface UserManager {
 
     String getDefaultGroup();
 
-    void setDefaultGroup(String defaultGroup);
-
-    void setRootLogin(String defaultRootLogin) throws ClientException;
-
-    void setUserSortField(String sortField) throws ClientException;
-
     String getUserListingMode() throws ClientException;
-
-    void setUserListingMode(String userListingMode) throws ClientException;
 
     String getUserSortField() throws ClientException;
 
     Pattern getUserPasswordPattern() throws ClientException;
 
-    void setUserPasswordPattern(Pattern userPasswordPattern) throws ClientException;
-
     String getGroupListingMode() throws ClientException;
-
-    void setGroupListingMode(String groupListingMode) throws ClientException;
-
-    void setGroupSortField(String sortField) throws ClientException;
 
     DocumentModel getModelForUser(String name) throws ClientException;
 
@@ -141,137 +130,77 @@ public interface UserManager {
     Boolean areUsersReadOnly() throws ClientException;
 
     /**
-     * Sets the user directory name.
-     *
-     * @param userDirectoryName the user directory name.
-     * @throws ClientException 
-     */
-    void setUserDirectoryName(String userDirectoryName) throws ClientException;
-
-    /**
      * Gets the user directory name.
      *
      * @return the user directory name.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getUserDirectoryName() throws ClientException;
-
-    /**
-     * Sets the user email field.
-     *
-     * @param userEmailField the email field.
-     * @throws ClientException 
-     */
-    void setUserEmailField(String userEmailField) throws ClientException;
 
     /**
      * Gets the user email field.
      *
      * @return the user email field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getUserEmailField() throws ClientException;
-
-    /**
-     * Sets the user search fields, the fields to use when a fulltext search is
-     * done.
-     *
-     * @param userSearchFields the search fields.
-     * @throws ClientException 
-     */
-    void setUserSearchFields(Set<String> userSearchFields) throws ClientException;
 
     /**
      * Gets the user search fields, the fields to use when a fulltext search is
      * done.
      *
      * @return the search fields.
-     * @throws ClientException 
+     * @throws ClientException
      */
     Set<String> getUserSearchFields() throws ClientException;
-
-    /**
-     * Sets the group directory name.
-     *
-     * @param groupDirectoryName the user directory name.
-     * @throws ClientException 
-     */
-    void setGroupDirectoryName(String groupDirectoryName) throws ClientException;
 
     /**
      * Gets the group directory name.
      *
      * @return the group directory name.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getGroupDirectoryName() throws ClientException;
-
-    /**
-     * Sets the group members field.
-     *
-     * @param groupMembersField the members field.
-     * @throws ClientException 
-     */
-    void setGroupMembersField(String groupMembersField) throws ClientException;
 
     /**
      * Gets the group members field.
      *
      * @return the group members field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getGroupMembersField() throws ClientException;
-
-    /**
-     * Sets the group sub-groups field.
-     *
-     * @param groupSubGroupsField the sub-groups field.
-     * @throws ClientException 
-     */
-    void setGroupSubGroupsField(String groupSubGroupsField) throws ClientException;
 
     /**
      * Gets the group sub-groups field.
      *
      * @return the sub-groups field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getGroupSubGroupsField() throws ClientException;
-
-    /**
-     * Sets the group parentGroups field.
-     *
-     * @param groupParentGroupsField the parentGroups field.
-     * @throws ClientException 
-     */
-    void setGroupParentGroupsField(String groupParentGroupsField) throws ClientException;
 
     /**
      * Gets the group parent-groups field.
      *
      * @return the parent-groups field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getGroupParentGroupsField() throws ClientException;
 
     /**
-     * Sets the anonymous user properties.
-     *
-     * @param anonymousUser the anonymous user properties.
-     * @throws ClientException 
-     */
-    void setAnonymousUser(Map<String, String> anonymousUser) throws ClientException;
-
-    /**
      * Gets the anonymous user id.
      *
-     * @return the anonymous user id, or null if none is defined.
-     * @throws ClientException 
+     * @return the anonymous user id, or the default one if none is defined.
+     * @throws ClientException
      */
     String getAnonymousUserId() throws ClientException;
 
     /**
-     * The key in the anonymous user map that hold its id.
+     * Sets the given configuration on the service
+     *
+     * @param descriptor the descriptor as parsed from xml, merged from the
+     *            previous one if it exists.
      */
-    String ANONYMOUS_USER_ID_KEY = "__id__";
+    void setConfiguration(UserManagerDescriptor descriptor)
+            throws ClientException;
+
 }

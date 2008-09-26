@@ -44,7 +44,7 @@ public class PublishingServiceBean implements PublishingService {
 
     protected PublishingService service;
 
-    private PublishingService getService() throws Exception {
+    private PublishingService getService() {
         if (service == null) {
             service = Framework.getLocalService(PublishingService.class);
         }

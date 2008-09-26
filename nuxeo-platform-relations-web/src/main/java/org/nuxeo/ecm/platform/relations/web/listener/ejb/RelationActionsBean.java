@@ -63,7 +63,6 @@ import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.core.search.api.client.search.results.document.SearchPageProvider;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducerException;
@@ -74,6 +73,7 @@ import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
+import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.Subject;
 import org.nuxeo.ecm.platform.relations.api.event.RelationEvents;
@@ -163,8 +163,11 @@ public class RelationActionsBean extends InputController implements
     public DocumentModel getDocumentModel(Node node) throws ClientException {
         if (node.isQNameResource()) {
             QNameResource resource = (QNameResource) node;
+            Map<String, Serializable> context = new HashMap<String, Serializable>();
+            context.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY,
+                    documentManager.getSessionId());
             Object o = relationManager.getResourceRepresentation(
-                    resource.getNamespace(), resource);
+                    resource.getNamespace(), resource, context);
             if (o instanceof DocumentModel) {
                 return (DocumentModel) o;
             }
@@ -188,7 +191,7 @@ public class RelationActionsBean extends InputController implements
         QNameResource documentResource = null;
         if (document != null) {
             documentResource = (QNameResource) relationManager.getResource(
-                    RelationConstants.DOCUMENT_NAMESPACE, document);
+                    RelationConstants.DOCUMENT_NAMESPACE, document, null);
         }
         return documentResource;
     }
@@ -561,7 +564,7 @@ public class RelationActionsBean extends InputController implements
             facesMessages.add(FacesMessage.SEVERITY_WARN,
                     resourcesAccessor.getMessages().get(
                             "label.search.service.wrong.query"));
-            // throw EJBExceptionHandler.wrapException(e);
+            // throw ClientException.wrap(e);
             log.error("QueryException in search popup : " + e.getMessage());
         } catch (QueryParseException e) {
             facesMessages.add(FacesMessage.SEVERITY_WARN,
@@ -569,7 +572,7 @@ public class RelationActionsBean extends InputController implements
                             "label.search.service.wrong.query"));
             log.error("QueryParseException in search popup : " + e.getMessage());
         } catch (SearchException e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
         return "create_relation_search_document";
     }
