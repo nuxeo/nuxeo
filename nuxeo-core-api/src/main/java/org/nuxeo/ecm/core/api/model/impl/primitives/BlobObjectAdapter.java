@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.osm.DynamicObjectAdapter;
 import org.nuxeo.runtime.services.streaming.ByteArraySource;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
@@ -43,7 +42,7 @@ public class BlobObjectAdapter extends DynamicObjectAdapter {
         super(Blob.class);
     }
 
-    public Object create(Map<String, Object> value) throws PropertyException {
+    public Object create(Map<String, Object> value) {
         String mimeType = (String) value.get("mime-type");
         String encoding = (String) value.get("encoding");
 //        long length = -1;
@@ -65,7 +64,7 @@ public class BlobObjectAdapter extends DynamicObjectAdapter {
             ss = new ByteArraySource(new byte[0]);
         }
 
-        StreamingBlob blob = new StreamingBlob(ss);
+        Blob blob = new StreamingBlob(ss);
         blob.setMimeType(mimeType);
         blob.setEncoding(encoding);
 //        blob.setFilename(filename);
