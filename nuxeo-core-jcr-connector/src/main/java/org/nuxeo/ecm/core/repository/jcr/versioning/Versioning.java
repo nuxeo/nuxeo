@@ -19,8 +19,12 @@
 
 package org.nuxeo.ecm.core.repository.jcr.versioning;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
+
+import sun.security.krb5.internal.tools.Klist;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -28,12 +32,33 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class Versioning extends DefaultComponent {
 
+    private static final Log log = LogFactory.getLog(Versioning.class);
+    
+    private static String klazzName;
+    
     private static VersioningService service;
 
     public static VersioningService getService() {
         if (service == null) {
-            service = new JCRVersioningService();
+            if (klazzName != null) {
+//                service = (VersioningService) context.getRuntimeContext().loadClass(klass).newInstance();
+                
+                // CB: NXP-2679 - Allow lazy register in versioning service
+                try {
+                    Class implemObj = Class.forName(klazzName);
+                    service = (VersioningService) implemObj.newInstance();
+                } catch (ClassNotFoundException e) {
+                    log.warn("Cannot load implementor class: " + klazzName, e);
+                } catch (InstantiationException e) {
+                    log.warn("Cannot instantiate implementor class: " + klazzName, e);
+                } catch (IllegalAccessException e) {
+                    log.error("Cannot create implementor class: " + klazzName, e);
+                }
+            } else {            
+                service = new JCRVersioningService();
+            }
         }
+        
         return service;
     }
 
@@ -42,7 +67,8 @@ public class Versioning extends DefaultComponent {
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         String klass = (String) context.getPropertyValue("versioningService");
         if (klass != null) {
-            service = (VersioningService) context.getRuntimeContext().loadClass(klass).newInstance();
+            klazzName = klass;
+//            service = (VersioningService) context.getRuntimeContext().loadClass(klass).newInstance();
         }
     }
 
