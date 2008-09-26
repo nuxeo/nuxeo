@@ -31,9 +31,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -59,10 +59,10 @@ public class ConversionActionBean implements ConversionAction {
     private static final Log log = LogFactory.getLog(ConversionActionBean.class);
 
     @In(create = true, required = false)
-    transient CoreSession documentManager;
+    CoreSession documentManager;
 
     @In(create = true)
-    transient NavigationContext navigationContext;
+    NavigationContext navigationContext;
 
     @RequestParameter
     private String docRef;

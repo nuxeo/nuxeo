@@ -34,11 +34,6 @@ public interface NotificationManager {
 
     /**
      * Gets the users that subscribed to a notification on a certain document.
-     *
-     * @param notification
-     * @param docId
-     * @return
-     * @throws ClassNotFoundException
      */
     List<String> getSubscribers(String notification, String docId)
             throws ClientException;
@@ -46,12 +41,6 @@ public interface NotificationManager {
     /**
      * Gets the notifications for which a user subscribed for a certain
      * document.
-     *
-     * @param username
-     * @param docId
-     * @return
-     * @throws ClassNotFoundException
-     * @throws ClientException
      */
     List<String> getSubscriptionsForUserOnDocument(String username,
             String docId) throws ClassNotFoundException, ClientException;
@@ -59,33 +48,20 @@ public interface NotificationManager {
     /**
      * Gets all users and groups that subscribed to a notification on a document
      * This is used in management of subscritptions.
-     *
-     * @param notification
-     * @param docId
-     * @return
-     * @throws ClientException
      */
     List<String> getUsersSubscribedToNotificationOnDocument(
             String notification, String docId) throws ClientException;
 
     /**
      * Called when a user subscribes to a notification.
-     *
-     * @param username
-     * @param notification
-     * @param docId
-     * @throws ClientException
      */
     void addSubscription(String username, String notification,
-            DocumentModel doc, Boolean sendConfirmationEmail, NuxeoPrincipal principal, String notificationName) throws ClientException;
+            DocumentModel doc, Boolean sendConfirmationEmail,
+            NuxeoPrincipal principal, String notificationName)
+            throws ClientException;
 
     /**
      * Called when a user cancels his notification.
-     *
-     * @param username
-     * @param notification
-     * @param docId
-     * @throws ClientException
      */
     void removeSubscription(String username, String notification,
             String docId) throws ClientException;
@@ -94,54 +70,39 @@ public interface NotificationManager {
      * Returns the notification manager.
      *
      * @deprecated should never have to return the registry : use delegation
-     * @return
      */
     @Deprecated
     NotificationRegistry getNotificationRegistry();
 
     /**
-     * Returns a notification with all data loaded (label, etc)
-     * @param selectedNotification
-     * @return
+     * Returns a notification with all data loaded (label, etc).
      */
     Notification getNotificationByName(String selectedNotification);
 
     /**
      * Directly sends a notification to the principal, using the data provided
      * in the map
+     * <p>
+     * The map should contain at least the userName of the user calling the
+     * method stored under the key "author".
+     * <p>
+     * infoMap should also contain all the variables that should be used to
+     * make-up the body of the notifications message.
      *
-     * The map should contain at least the userName of the user calling the method
-     * stored under the key "author".
-     *
-     * infoMap should also contain all the variables that should be used to make-up
-     * the body of the notifications message.
-     *
-     * @param notificationName - name of notification
-     * @param infoMap - data used to compose the notification body
-     * @param userPrincipal - recipient used to get the adress(es) to send
-     *            emails
+     * @param notificationName name of notification
+     * @param infoMap data used to compose the notification body
+     * @param userPrincipal recipient used to get the adress(es) to send emails
      */
     void sendNotification(String notificationName, Map<String, Object> infoMap,
             String userPrincipal) throws ClientException;
 
     /**
-     * Send an e-mail directly
-     *
-     * @param doc
-     * @param freemarkerTemplateName
-     * @param commentaire
-     * @param sender
-     * @param sendto
+     * Sends an e-mail directly.
      */
     void sendDocumentByMail(DocumentModel doc,
             String freemarkerTemplateName, String subject, String comment,
             NuxeoPrincipal sender, List<String> sendto);
 
-    /**
-     *
-     * @param parentType
-     * @return
-     */
     List<Notification> getNotificationsForSubscriptions(String parentType);
 
 
