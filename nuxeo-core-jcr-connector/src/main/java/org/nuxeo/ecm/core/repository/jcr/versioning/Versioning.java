@@ -24,8 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-import sun.security.krb5.internal.tools.Klist;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -41,8 +39,6 @@ public class Versioning extends DefaultComponent {
     public static VersioningService getService() {
         if (service == null) {
             if (klazzName != null) {
-//                service = (VersioningService) context.getRuntimeContext().loadClass(klass).newInstance();
-                
                 // CB: NXP-2679 - Allow lazy register in versioning service
                 try {
                     Class implemObj = Class.forName(klazzName);
@@ -68,7 +64,6 @@ public class Versioning extends DefaultComponent {
         String klass = (String) context.getPropertyValue("versioningService");
         if (klass != null) {
             klazzName = klass;
-//            service = (VersioningService) context.getRuntimeContext().loadClass(klass).newInstance();
         }
     }
 
