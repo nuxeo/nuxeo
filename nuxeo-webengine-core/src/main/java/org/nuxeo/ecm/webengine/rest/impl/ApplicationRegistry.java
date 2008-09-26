@@ -17,30 +17,30 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.model.impl;
+package org.nuxeo.ecm.webengine.rest.impl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuxeo.ecm.webengine.RootDescriptor;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.model.DefaultWebDomain;
-import org.nuxeo.ecm.webengine.rest.model.WebDomain;
+import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DomainRegistry extends AbstractContributionRegistry<String, DomainDescriptor> {
+public class ApplicationRegistry extends AbstractContributionRegistry<String, ApplicationDescriptor> {
 
-    protected Map<String, WebDomain> domains = new ConcurrentHashMap<String, WebDomain>();
+    protected Map<String, WebApplication> apps = new ConcurrentHashMap<String, WebApplication>();
 
     protected WebEngine2 engine;
 
 
-    public DomainRegistry(WebEngine2 engine) {
+    public ApplicationRegistry(WebEngine2 engine) {
         this.engine = engine;
     }
 
@@ -48,30 +48,34 @@ public class DomainRegistry extends AbstractContributionRegistry<String, DomainD
         return engine;
     }
 
-    public void putDomain(WebDomain domain) {
-        domains.put(domain.getId(), domain);
+    public void putApplication(WebApplication domain) {
+        apps.put(domain.getId(), domain);
     }
 
-    public WebDomain removeDomain(String id) {
-        return domains.remove(id);
+    public WebApplication removeApplication(String id) {
+        return apps.remove(id);
     }
 
-    public WebDomain getDomain(String id) {
-        return domains.get(id);
+    public WebApplication getApplication(String id) {
+        return apps.get(id);
     }
 
-    public WebDomain[] getDomains() {
-        return domains.values().toArray(new WebDomain[domains.size()]);
-    }
-
-    @Override
-    public synchronized void clear() {
-        super.clear();
-        domains.clear();
+    public WebApplication[] getApplications() {
+        return apps.values().toArray(new WebApplication[apps.size()]);
     }
 
     @Override
-    protected void applyFragment(DomainDescriptor object, DomainDescriptor fragment) {
+    public synchronized void dispose() {
+        super.dispose();
+        apps.clear();
+    }
+
+    protected ApplicationDescriptor clone(ApplicationDescriptor descriptor) {
+        return descriptor.clone();
+    }
+    
+    @Override
+    protected void applyFragment(ApplicationDescriptor object, ApplicationDescriptor fragment) {
         if (fragment.contentRoot != null) {
             object.contentRoot = fragment.contentRoot;
         }
@@ -99,37 +103,38 @@ public class DomainRegistry extends AbstractContributionRegistry<String, DomainD
     }
 
     @Override
-    protected void installContribution(String key, DomainDescriptor object) {
-        WebDomain domain = null;
+    protected void installContribution(String key, ApplicationDescriptor object) {
         try {
-            if (object.contentRoot != null) {
-                domain = new DocumentDomain(engine, object);
-            } else if (object.type != null) {
-                domain = new DefaultWebDomain<DomainDescriptor>(engine, object);
-            } else {
-                domain = new ScriptDomain(engine, object);
-            }
-            domains.put(key, domain);
+            apps.put(key, new DefaultWebApplication(engine, object.directory, object));
         } catch (Exception e) {
             e.printStackTrace(); //TODO
         }
     }
 
     @Override
-    protected void reinstallContribution(String key, DomainDescriptor object) {
+    protected void reinstallContribution(String key, ApplicationDescriptor object) {
         installContribution(key, object);
     }
 
     @Override
     protected void uninstallContribution(String key) {
-        domains.remove(key);
+        apps.remove(key);
+    }
+    
+    @Override
+    protected boolean isMainFragment(ApplicationDescriptor object) {
+        return object.fragment == null || object.fragment.length() == 0;
     }
 
-    public void registerDescriptor(DomainDescriptor desc) {
+    public void registerDescriptor(File root, String mainClass,  ApplicationDescriptor desc) {
+        desc.directory = root;
+        if (mainClass != null) {
+            desc.main = mainClass;
+        }
         addFragment(desc.id, desc, desc.base);
     }
 
-    public void unregisterDescriptor(DomainDescriptor desc) {
+    public void unregisterDescriptor(ApplicationDescriptor desc) {
         removeFragment(desc.id, desc);
     }
 

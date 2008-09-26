@@ -17,60 +17,114 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.model.impl;
+package org.nuxeo.ecm.webengine.rest.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.ws.rs.ProduceMime;
-
 import org.nuxeo.ecm.webengine.RootDescriptor;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.rest.PathDescriptor;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.model.ChainingWebDomain;
-import org.nuxeo.ecm.webengine.rest.model.WebDomain;
+import org.nuxeo.ecm.webengine.rest.model.ManagedResource;
+import org.nuxeo.ecm.webengine.rest.model.TypeNotFoundException;
+import org.nuxeo.ecm.webengine.rest.model.WebApplication;
+import org.nuxeo.ecm.webengine.rest.model.WebType;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.util.DirectoryStack;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
 import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
 
 /**
- * The dispatch is using by default a right path match (limited=false).
- * This way we avoid generating a resource chain corresponding to each
- * segment in the path.
- * Anyway in some cases you may want a segment by segment dispatch
- * to build a chain of resources for each segment. In this case you need to use the
- * {@link ChainingWebDomain} variant. See {@link DocumentDomain} for an example.
+ * The default implementation for a web configuration
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@ProduceMime({"text/html", "*/*"})
-public class AbstractWebDomain<T extends DomainDescriptor> implements WebDomain {
+public class DefaultWebApplication implements WebApplication {
 
     protected WebEngine2 engine;
-    protected T descriptor;
+    protected ApplicationDescriptor descriptor;
 
+    protected ManagedResource rootResource;
+    protected File root;
     protected DirectoryStack dirStack;
     protected ConcurrentMap<String, ScriptFile> fileCache;
 
+    protected final Object typeLock = new Object();
+    
+    // these two members are lazy initialized when needed
+    protected TypeRegistry typeReg;
+    protected TypeConfigurationProvider localTypes;
 
-    public AbstractWebDomain(WebEngine2 engine, T desc) throws WebException {
-        descriptor = desc;
+
+    public DefaultWebApplication(WebEngine2 engine, File root, ApplicationDescriptor desc) throws WebException {
+        this.root = root;
+        this.descriptor = desc;
         this.engine = engine;
         this.fileCache = new ConcurrentHashMap<String, ScriptFile>();
         loadDirectoryStack();
-    }
+    }    
 
-    public <K> K getAdapter(Class<K> adapter) {
-        return null;
+    public boolean isFragment() {
+        return descriptor.fragment != null;
     }
     
-    public DomainDescriptor getDescriptor() {
+    public PathDescriptor getPath() {
+        return descriptor.path;
+    }
+    
+    public ManagedResource getRootResource() {
+        if (rootResource != null || isFragment()) {
+            return rootResource;
+        }        
+        Class<?> clazz = null;
+        if (descriptor.main != null) {
+            try {
+                clazz = loadClass(descriptor.main);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace(); //TODO log error
+            }
+        }
+        if (clazz == null) { // look into parent app
+            if (descriptor.base != null) {
+                WebApplication baseApp = engine.getApplication(descriptor.base);
+                if (baseApp != null) {
+                    rootResource = baseApp.getRootResource();
+                    return rootResource;
+                }
+            }
+        }
+        
+        String contentRoot = (String)descriptor.properties.get("content-root");
+        if (contentRoot != null) { // a document app.
+            //TODO
+            return new ManagedResource(this);
+        } else { // a generic app.
+            //TODO
+            String resourceType = (String)descriptor.properties.get("resource-type");
+            if (resourceType != null) {
+                resourceType = WebType.ROOT_TYPE_NAME;
+            }
+            return new ManagedResource(this);
+        }
+    }
+    
+    public Object getProperty(String key) {
+        return descriptor.properties.get(key);
+    }
+
+    public Object getProperty(String key, Object defValue) {
+        Object val = getProperty(key);
+        return val == null ? defValue : val;
+    }
+
+    public ApplicationDescriptor getDescriptor() {
         return descriptor;
     }
 
@@ -109,6 +163,11 @@ public class AbstractWebDomain<T extends DomainDescriptor> implements WebDomain 
 
     public void flushCache() {
         fileCache.clear();
+        synchronized (typeLock) {
+            typeReg = null; // type registry will be recreated on first access
+            localTypes = null;
+        }
+        engine.getScripting().flushCache();
     }
 
     protected void loadDirectoryStack() throws WebException {
@@ -176,6 +235,47 @@ public class AbstractWebDomain<T extends DomainDescriptor> implements WebDomain 
         return file;
     }
 
+    protected void loadConfiguredTypes() {
+        localTypes = new TypeConfigurationProvider();
+        // load declared types and actions        
+        localTypes.types = new ArrayList<TypeDescriptor>();
+        if (descriptor.types != null) {
+            localTypes.types.addAll(descriptor.types); 
+        }
+        localTypes.actions = new ArrayList<ActionDescriptor>();
+        if (descriptor.actions != null) {
+            descriptor.actions.addAll(descriptor.actions);
+        }
+    }
+
+    public Class<?> loadClass(String className) throws ClassNotFoundException {
+        return engine.getScripting().loadClass(className);
+    }
+
+    public WebType getWebType(String typeName) throws TypeNotFoundException {
+        if (typeReg == null) { // create type registry if not already created
+            synchronized (typeLock) {
+                if (typeReg == null) {
+                    typeReg = new TypeRegistry();
+                    // install global types
+                    GlobalTypesLoader globalTypes = engine.getGlobalTypes();
+                    globalTypes.getMainProvider().install(typeReg);
+                    // install types defined in script classes for each entry in directory stack 
+                    for (DirectoryStack.Entry entry : dirStack.getEntries()) {
+                        TypeConfigurationProvider provider = globalTypes.getProvider(entry.file.getName());
+                        if (provider != null) {
+                            provider.install(typeReg);
+                        }
+                    }
+                    // install local configured types (in XML configuration)
+                    loadConfiguredTypes();
+                    localTypes.install(typeReg);
+                }
+            }
+        }
+        return typeReg.getType(typeName);
+    }
+
     /**
      * A tracked file changed.
      * Flush directory stack cache
@@ -187,5 +287,6 @@ public class AbstractWebDomain<T extends DomainDescriptor> implements WebDomain 
             }
         }
     }
+
 
 }

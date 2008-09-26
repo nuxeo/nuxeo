@@ -17,33 +17,21 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.model;
+package org.nuxeo.runtime.annotations.test;
 
-import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.rest.model.impl.ScriptObject;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Temp class until configuration will be again available
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ScriptType extends AbstractWebType {
-
-    public String getName() {
-        return "Script";
-    }
-
-    public WebType getSuperType() {
-        return WebType.ROOT;
-    }
-
-    public WebObject newInstance() throws WebException {
-        return new ScriptObject(this);
-    }
-
-    public Class<? extends WebObject> getObjectClass() {
-        return ScriptObject.class;
-    }
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface Anno1 {
+    
+    String value() default "N/A";
+    
 }

@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.model.impl;
+package org.nuxeo.ecm.webengine.rest.impl.model;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -26,6 +26,7 @@ import javax.ws.rs.PathParam;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
+import org.nuxeo.ecm.webengine.rest.annotations.Type;
 import org.nuxeo.ecm.webengine.rest.methods.LOCK;
 import org.nuxeo.ecm.webengine.rest.model.WebObject;
 import org.nuxeo.ecm.webengine.rest.model.WebType;
@@ -36,6 +37,7 @@ import org.nuxeo.ecm.webengine.rest.model.WebType;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+@Type(value="Document", superType="*")
 public class DocumentObject extends WebObject {
 
     protected DocumentModel doc;
@@ -54,7 +56,7 @@ public class DocumentObject extends WebObject {
     @Path(value="{path}", limited=true)
     public WebObject dispatch(@PathParam("path") String path) throws Exception {
         DocumentModel doc = ctx.getCoreSession().getChild(((DocumentObject)ctx.tail()).getDocument().getRef(), path);
-        DocumentObject obj = (DocumentObject)ctx.getEngine().getWebTypeManager().newInstance(doc.getType());
+        DocumentObject obj = (DocumentObject)ctx.getApplication().getWebType(doc.getType()).newInstance();
         obj.initialize(ctx, doc, path);
         return obj;
     }

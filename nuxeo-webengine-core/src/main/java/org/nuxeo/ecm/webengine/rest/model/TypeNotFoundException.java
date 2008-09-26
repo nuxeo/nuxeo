@@ -19,13 +19,12 @@
 
 package org.nuxeo.ecm.webengine.rest.model;
 
-import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TypeNotFoundException extends WebException {
+public class TypeNotFoundException extends TypeException {
 
     private static final long serialVersionUID = 1L;
 

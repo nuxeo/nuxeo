@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.model.impl;
+package org.nuxeo.ecm.webengine.rest.impl.model;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +29,7 @@ import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
+import org.nuxeo.ecm.webengine.rest.annotations.Type;
 import org.nuxeo.ecm.webengine.rest.model.WebObject;
 import org.nuxeo.ecm.webengine.rest.model.WebType;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
@@ -40,6 +41,7 @@ import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+@Type("Script")
 public class ScriptObject extends WebObject {
 
     protected ScriptFile file;
@@ -52,7 +54,7 @@ public class ScriptObject extends WebObject {
     public void initialize(WebContext2 ctx, String path) {
         super.initialize(ctx, path);
         try {
-            file = ctx.getDomain().getFile(path);
+            file = ctx.getApplication().getFile(path);
         } catch (IOException e) {
             e.printStackTrace();
         }

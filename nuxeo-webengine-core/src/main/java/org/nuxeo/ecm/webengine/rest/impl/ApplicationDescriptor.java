@@ -17,17 +17,21 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.model.impl;
+package org.nuxeo.ecm.webengine.rest.impl;
 
+import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.RootDescriptor;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
+import org.nuxeo.ecm.webengine.rest.PathDescriptor;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 import org.nuxeo.runtime.model.Adaptable;
@@ -37,8 +41,14 @@ import org.nuxeo.runtime.model.Adaptable;
  *
  */
 @XObject("domain")
-public class DomainDescriptor {
+public class ApplicationDescriptor implements Cloneable {
 
+    /**
+     * The application directory
+     * Must be set by the client before registering the descriptor.
+     */
+    public File directory;
+    
     @XNode("@id")
     public String id;
 
@@ -50,21 +60,51 @@ public class DomainDescriptor {
 
     @XNode("@extends")
     public String base;
+    
+    /**
+     * The main class to use. The main class is the root JAX-RS resource that will be registered 
+     * for this application
+     */
+    @XNode("main")
+    public String main;
 
-    /** the class of the resource to serve */
+    /**
+     * The path this application is bound. 
+     * If this application extends another one and the path is not specified then the base application path will be used.
+     * Thus the base application will be replaced by this one.  
+     */
+    @XNode("path")
+    public PathDescriptor path;
+
+    /** 
+     * the class of the resource to serve
+     * @deprecated check if this is still needed 
+     * */
     @XNode("type")
     public String type;
 
+    /**
+     * @deprecated you should use properties instead - this field is too specialized 
+     */
     @XNode("contentRoot")
     public String contentRoot;
 
-    @XNode("errorPage")
+    @XNodeMap(value="property", key="property@name", componentType=String.class, type=HashMap.class, nullByDefault=false)
+    public HashMap<String, Object> properties;
+
+    @XNodeList(value="types/type", componentType=TypeDescriptor.class, type=ArrayList.class, nullByDefault=false)
+    public ArrayList<TypeDescriptor> types;
+
+    @XNodeList(value="actions/action", componentType=ActionDescriptor.class, type=ArrayList.class, nullByDefault=false)
+    public ArrayList<ActionDescriptor> actions;
+
+    @XNode("error-page")
     public String errorPage = "error.ftl";
 
-    @XNode("indexPage")
+    @XNode("index-page")
     public String indexPage = "index.ftl";
 
-    @XNode("defaultPage")
+    @XNode("default-page")
     public String defaultPage = "default.ftl";
 
     @XNode("script-extension")
@@ -101,10 +141,23 @@ public class DomainDescriptor {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj.getClass() == DomainDescriptor.class) {
-            DomainDescriptor dd = (DomainDescriptor)obj;
+        if (obj.getClass() == ApplicationDescriptor.class) {
+            ApplicationDescriptor dd = (ApplicationDescriptor)obj;
             return dd.id.equals(id) && dd.fragment.equals(fragment);
         }
         return false;
     }
+    
+    @Override
+    public ApplicationDescriptor clone() {
+        try {
+            ApplicationDescriptor cfg = (ApplicationDescriptor)super.clone();
+            cfg.actions = (ArrayList)actions.clone();
+            cfg.types = (ArrayList)types.clone();
+            return cfg; 
+        } catch (CloneNotSupportedException e) {
+            throw new Error("Should never happen");
+        }
+    }
+    
 }

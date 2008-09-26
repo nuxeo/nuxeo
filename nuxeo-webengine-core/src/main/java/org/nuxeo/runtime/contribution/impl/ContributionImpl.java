@@ -39,13 +39,15 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
 
     protected AbstractContributionRegistry<K,T> registry;
     protected K primaryKey;
+    protected List<T> mainFragments = new ArrayList<T>();
     protected List<T> fragments = new ArrayList<T>();
     // the contributions I depend on
     protected Set<Contribution<K,T>> dependencies = new HashSet<Contribution<K,T>>();
     // the contributions that are waiting for me
     protected Set<Contribution<K,T>> dependents = new HashSet<Contribution<K,T>>();
     // the unresolved dependencies that are blocking my registration
-    protected Set<Contribution<K,T>> unresolvedDependencies = new HashSet<Contribution<K,T>>();
+    //TODO: this member can be removed since we can obtain unresolved deps from dependencies set. 
+    //protected Set<Contribution<K,T>> unresolvedDependencies = new HashSet<Contribution<K,T>>();
 
     // last merged fragment
     protected T value = null;
@@ -82,7 +84,25 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
     }
 
     public Set<Contribution<K,T>> getUnresolvedDependencies() {
-        return unresolvedDependencies;
+        HashSet<Contribution<K,T>> set = new HashSet<Contribution<K,T>>();
+        for (Contribution<K,T> dep : dependencies) {
+            if (dep.isResolved()) {
+                set.add(dep);
+            }
+        }
+        return set;
+    }
+    
+    protected boolean checkIsResolved() {
+        if (mainFragments.isEmpty()) {
+            return false;
+        }
+        for (Contribution<K,T> dep : dependencies) {
+            if (!dep.isResolved()) {
+                return false;
+            }
+        }
+        return true;        
     }
 
     public int size() {
@@ -98,57 +118,66 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
     }
 
     public boolean removeFragment(Object fragment) {
-        if (fragments.remove(fragment)) {
-            if (fragments.isEmpty()) {
-                unregister();
+        if (mainFragments.remove(fragment)) {
+            if (mainFragments.isEmpty()) {
+                if (fragments.isEmpty()) {
+                    unregister();    
+                } else {
+                    unresolve();
+                }
             } else {
+                update();
+            }
+            return true;
+        }
+        if (fragments.remove(fragment)) {            
+            if (!mainFragments.isEmpty()) {
                 update();
             }
             return true;
         }
         return false;
     }
-
+    
     public void addFragment(T fragment, K ... superKeys) {
-        fragments.add(fragment);
+        // check if it is the main fragment
+        if (registry.isMainFragment(fragment)) {
+            mainFragments.add(fragment);   
+        } else { // update contribution fragments
+            fragments.add(fragment);
+        }
         if (superKeys != null && superKeys.length > 0 && superKeys[0] != null) { // when passing a null value as the superKey you get an arrray with a null element
-            if (superKeys != null && superKeys.length > 0) {
-                for (int i=0; i<superKeys.length; i++) {
-                    Contribution<K,T> c = registry.getOrCreateContribution(superKeys[i]);
-                    dependencies.add(c);
-                    c.getDependents().add(this);
-                }
+            for (int i=0; i<superKeys.length; i++) {
+                Contribution<K,T> c = registry.getOrCreateDependency(superKeys[i]);
+                dependencies.add(c);
+                c.getDependents().add(this);
             }
         }
         // recompute resolved state
         update();
     }
 
-    @SuppressWarnings("unchecked")
-    public T merge() {
+    public T getValue() {
         try {
-            if (fragments.isEmpty()) {
-                return value;
-            }
             if (!isResolved) {
                 throw new IllegalStateException("Cannot compute merged values for not resolved contributions");
             }
-            try {
-                value = (T)fragments.get(0).getClass().newInstance();
-            } catch (Exception e) {
-                e.printStackTrace(); //TODO
-                return null;
+            if (mainFragments.isEmpty() || value != null) {
+                return value;
             }
-            // first build object from its super objects if any
+            // clone the last registered main fragment.
+            T result = registry.clone(mainFragments.get(mainFragments.size()-1));
+            // first apply its super objects if any
             for (Contribution<K,T> key : dependencies) {
-                T superObject = (T)registry.getContribution(key.getId()).merge();
-                registry.applyFragment(value, superObject);
+                T superObject = (T)registry.getContribution(key.getId()).getValue();
+                registry.applySuperFragment(result, superObject);
             }
             // and now apply fragments
             for (T fragment : this) {
-                registry.applyFragment(value, fragment);
+                registry.applyFragment(result, fragment);
             }
-            return value;
+            value = result;
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
             return null; //TODO
@@ -156,7 +185,7 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
     }
 
     public boolean isPhantom() {
-        return fragments.isEmpty();
+        return mainFragments.isEmpty();
     }
 
     public boolean isResolved() {
@@ -173,19 +202,12 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
      * the registry owning that contribution
      */
     protected void update() {
-        // update missing requirements
-        unresolvedDependencies.clear();
-        for (Contribution<K,T> c : dependencies) {
-            if (!c.isResolved()) {
-                unresolvedDependencies.add(c);
-            }
-        }
-        boolean canResolve = unresolvedDependencies.isEmpty();
+        boolean canResolve = checkIsResolved();
         if (isResolved != canResolve) { // resolved state changed
             if (canResolve) {
-                resolve(null);
+                resolve();
             } else {
-                unresolve(null);
+                unresolve();
             }
         } else if (isResolved) {
             registry.fireUpdated(this);
@@ -194,40 +216,34 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
 
     public void unregister() {
         if (isResolved) {
-            unresolve(null);
+            unresolve();
         }
         fragments.clear();
         value = null;
     }
 
-    public void unresolve(Contribution<K,T> requirement) {
+    public void unresolve() {
         if (!isResolved) {
             return;
         }
-        if (requirement != null) {
-            unresolvedDependencies.add(requirement);
-        }
         isResolved = false;
         for (Contribution<K,T> dep : dependents) {
-            dep.unresolve(this);
+            dep.unresolve();
         }
         registry.fireUnresolved(this);
         value = null;
     }
 
-    public void resolve(Contribution<K,T> requirement) {
+    public void resolve() {
         if (isResolved || isPhantom()) {
             throw new IllegalStateException("Cannot resolve. Invalid state. phantom: "+isPhantom()+"; resolved: "+isResolved);
         }
-        if (requirement != null) {
-            unresolvedDependencies.remove(requirement);
-        }
-        if (unresolvedDependencies.isEmpty()) { // resolve dependents
+        if (checkIsResolved()) { // resolve dependents
             isResolved = true;
             registry.fireResolved(this);
             for (Contribution<K,T> dep : dependents) {
                 if (!dep.isResolved()) {
-                    dep.resolve(this);
+                    dep.resolve();
                 }
             }
         }

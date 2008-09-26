@@ -43,14 +43,14 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.webengine.rest.PathDescriptor;
 import org.nuxeo.ecm.webengine.rest.ResourceBinding;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.io.DocumentObjectWriter;
 import org.nuxeo.ecm.webengine.rest.io.ScriptFileWriter;
 import org.nuxeo.ecm.webengine.rest.io.WebViewWriter;
-import org.nuxeo.ecm.webengine.rest.model.WebDomain;
-import org.nuxeo.ecm.webengine.rest.model.impl.DomainRegistry;
+import org.nuxeo.ecm.webengine.rest.model.ManagedResource;
+import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.runtime.api.Framework;
 import org.resteasy.Dispatcher;
 import org.resteasy.Headers;
@@ -310,7 +310,6 @@ if (path == null) path = "/";
         WebEngine2 engine = Framework.getLocalService(WebEngine2.class);
         try {
             providerFactory.addMessageBodyWriter(new WebViewWriter());
-            providerFactory.addMessageBodyWriter(new DocumentObjectWriter());
             providerFactory.addMessageBodyWriter(new ScriptFileWriter());
             addRootResources(engine);
         } catch (Throwable e) {
@@ -322,28 +321,28 @@ if (path == null) path = "/";
     //TODO: refactor webapplication and rename it as ResourceContainer ?
     protected void addRootResources(WebEngine2 engine) throws Exception {
         org.nuxeo.ecm.webengine.rest.servlet.resteasy.patch.ResourceMethodRegistry registry = dispatcher.getRegistry();
-        DomainRegistry domains = engine.getDomainRegistry();
+        // add first annotated JAX-RS resources?? 
         for (ResourceBinding binding : engine.getBindings()) {
             Class<?> rc = null;
-            if (binding.className != null) {
+            if (binding.className != null && binding.path != null) {
                 rc = engine.getScripting().loadClass(binding.className);
                 if (binding.singleton) { // TODO use a factory to create singletons and remove singleton property
-                    registry.addSingletonResource(rc.newInstance(), binding.pattern, binding.encode, binding.limited);
+                    registry.addSingletonResource(rc.newInstance(), binding.path, binding.encode, binding.limited);
                 } else {
-                    registry.addPojoResource(rc, binding.pattern, binding.encode, binding.limited);
+                    registry.addPojoResource(rc, binding.path, binding.encode, binding.limited);
                 }
-            } else if (binding.domain != null) {
-                WebDomain domain =domains.getDomain(binding.domain);
-                if (domain == null) {
-                    log.error("Invalid resource binding: "+binding.pattern+". Domain not found: "+binding.domain);
+            } else {
+                log.error("Invalid resource binding: "+binding.path+" -> "+binding.className+". No resource path / class specified.");
+                continue;
+            }            
+            // add managed resources
+            for (WebApplication app : engine.getApplicationRegistry().getApplications()) {
+                if (app.isFragment()) {
                     continue;
                 }
-                binding.singleton = true;
-                rc = domain.getClass();
-                registry.addSingletonResource(domain, binding.pattern, binding.encode, binding.limited);
-            } else {
-                log.error("Invalid resource binding: "+binding.pattern+". No resource class specified.");
-                continue;
+                PathDescriptor path = app.getPath();
+                ManagedResource res = app.getRootResource();
+                registry.addSingletonResource(res, path.path, path.encode, path.limited);
             }
         }
     }

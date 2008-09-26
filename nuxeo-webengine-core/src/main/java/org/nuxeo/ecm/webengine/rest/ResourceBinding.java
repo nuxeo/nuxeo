@@ -39,8 +39,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("resource")
 public class ResourceBinding {
 
-    @XNode("@pattern")
-    public String pattern;
+    @XNode("@path")
+    public String path;
 
     @XNode("@limited")
     public boolean limited = true;
@@ -59,22 +59,18 @@ public class ResourceBinding {
     @XNode("@class")
     public String className;
 
-    /**
-     * Use this to specify a WebEngine domain instead of a class
-     */
-    @XNode("@domain")
-    public String domain;
 
     @Override
     public int hashCode() {
-        return pattern.hashCode();
+        return path.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj instanceof ResourceBinding) {
-            return ((ResourceBinding)obj).pattern.equals(pattern);
+            ResourceBinding binding = (ResourceBinding)obj;
+            return binding.path.equals(path) && binding.className.equals(className);
         }
         return false;
     }

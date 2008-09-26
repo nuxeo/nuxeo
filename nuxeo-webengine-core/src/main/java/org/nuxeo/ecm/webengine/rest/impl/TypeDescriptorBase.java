@@ -17,49 +17,23 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.contribution;
-
-import java.util.Set;
-
+package org.nuxeo.ecm.webengine.rest.impl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Contribution<K,T> extends Iterable<T> {
+public interface TypeDescriptorBase extends Cloneable {
 
-    ContributionRegistry<K,T> getRegistry();
-
-    K getId();
-
-    Set<Contribution<K,T>> getDependencies();
-
-    Set<Contribution<K,T>> getDependents();
-
-    Set<Contribution<K,T>> getUnresolvedDependencies();
-
-    void addFragment(T fragment, K ... superKeys);
-
-    boolean removeFragment(T fragment);
-
-    T getValue();
-
-    int size();
-
-    boolean isEmpty();
-
-    T getFragment(int index);
-
-    public boolean isResolved();
-
-    public boolean isPhantom();
-
-    public boolean isRegistered();
-
-    public void unregister();
-
-    public void resolve();
-
-    public void unresolve();
-
+    String getId(); 
+    
+    String getFragment();    
+    
+    TypeDescriptor asTypeDescriptor();
+    
+    ActionDescriptor asActionDescriptor();
+    
+    boolean isMainFragment();
+    
+    public TypeDescriptorBase clone();
 }

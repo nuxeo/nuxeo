@@ -17,49 +17,17 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.contribution;
+package org.nuxeo.ecm.webengine.rest.impl.model;
 
-import java.util.Set;
-
+import org.nuxeo.ecm.webengine.rest.annotations.Action;
+import org.nuxeo.ecm.webengine.rest.model.WebAction;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Contribution<K,T> extends Iterable<T> {
+@Action(value="test", type="Document", categories={"cat1","cat\"2"}, enabled=false)
+public class TestAction extends WebAction {
 
-    ContributionRegistry<K,T> getRegistry();
-
-    K getId();
-
-    Set<Contribution<K,T>> getDependencies();
-
-    Set<Contribution<K,T>> getDependents();
-
-    Set<Contribution<K,T>> getUnresolvedDependencies();
-
-    void addFragment(T fragment, K ... superKeys);
-
-    boolean removeFragment(T fragment);
-
-    T getValue();
-
-    int size();
-
-    boolean isEmpty();
-
-    T getFragment(int index);
-
-    public boolean isResolved();
-
-    public boolean isPhantom();
-
-    public boolean isRegistered();
-
-    public void unregister();
-
-    public void resolve();
-
-    public void unresolve();
-
+    
 }

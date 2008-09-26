@@ -29,8 +29,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.ProduceMime;
 
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
+import org.nuxeo.ecm.webengine.rest.impl.ActionDescriptor;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.runtime.model.Adaptable;
 
@@ -66,8 +66,8 @@ public class WebObject implements Adaptable {
         return ctx;
     }
 
-    public WebDomain getDomain() {
-        return ctx.getDomain();
+    public WebApplication getDomain() {
+        return ctx.getApplication();
     }
 
     /**
@@ -84,15 +84,17 @@ public class WebObject implements Adaptable {
     public <T> T getAdapter(Class<T> adapter) {
         return null;
     }
+    
+
 
 
     public ScriptFile getActionScript(String action) {
-        WebDomain domain = ctx.getDomain();
+        WebApplication app = ctx.getApplication();
         StringBuilder path = new StringBuilder();
         path.append('/').append(getType().getName()).append('/')
-            .append(action).append('.').append(domain.getScriptExtension());
+            .append(action).append('.').append(app.getScriptExtension());
         try {
-            return domain.getFile(path.toString());
+            return app.getFile(path.toString());
         } catch (IOException e) {
             return null;
         }
@@ -103,31 +105,31 @@ public class WebObject implements Adaptable {
     }
 
     public ScriptFile getTemplateScript(String action, String format) {
-        WebDomain domain = ctx.getDomain();
+        WebApplication app = ctx.getApplication();
         StringBuilder path = new StringBuilder();
         path.append('/').append(getType().getName()).append('/')
             .append(action).append('.');
         if (format != null) {
           path.append(format).append('.');
         }
-        path.append(domain.getTemplateExtension());
+        path.append(app.getTemplateExtension());
         try {
-            return domain.getFile(path.toString());
+            return app.getFile(path.toString());
         } catch (Exception e) {
             return null;
         }
     }
 
     public ActionDescriptor getAction(String action) {
-        return null; //TODO
+        return type.getAction(action); 
     }
 
-    public Collection<ActionDescriptor> getActions() {
-        return null; //TODO
+    public ActionDescriptor[] getActions() {
+        return type.getActions(); 
     }
 
-    public Collection<ActionDescriptor> getActions(String category) {
-        return null; //TODO
+    public ActionDescriptor[] getActions(String category) {
+        return type.getActions(category);
     }
 
     public Map<String, Collection<ActionDescriptor>> getActionsByCategory() throws WebException {
@@ -136,13 +138,18 @@ public class WebObject implements Adaptable {
 
 
     @Path("@{action}")
-    public WebAction dispatchAction(@PathParam("action") String action) {
-        //WebAction act = ctx.getEngine().getWebTypeManager().getAction(action);
-        WebAction act = new WebAction();
-        act.initialize(this, action);
-        return act;
+    public WebAction dispatchAction(@PathParam("action") String name) throws WebException {
+        WebAction action = type.getActionInstance(ctx, name);
+        action.initialize(this, name);
+        return action;
     }
 
+    @GET
+    public Object doGet() {
+        return "default view on object: "+this;
+    }
+    
+    //TODO: testing
     @Path("([a-c]){view}")
     @GET
     public String dispatchView(@PathParam("view") String view) {

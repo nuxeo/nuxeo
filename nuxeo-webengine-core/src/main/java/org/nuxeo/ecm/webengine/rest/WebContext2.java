@@ -27,23 +27,23 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.rest.model.DefaultWebDomain;
-import org.nuxeo.ecm.webengine.rest.model.WebDomain;
+import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.model.WebObject;
 import org.nuxeo.ecm.webengine.rest.model.WebView;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.session.UserSession;
+import org.nuxeo.runtime.model.Adaptable;
 
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface WebContext2 {
+public interface WebContext2 extends Adaptable {
 
-    public void setDomain(DefaultWebDomain<?> domain);
+    public void setApplication(WebApplication config);
 
-    public WebDomain getDomain();
+    public WebApplication getApplication();
 
     public WebEngine2 getEngine();
 
@@ -52,11 +52,6 @@ public interface WebContext2 {
     public CoreSession getCoreSession();
 
     public Principal getPrincipal();
-
-    public void setAction(String action);
-
-    public String getAction();
-
 
     /** object stack API */
 

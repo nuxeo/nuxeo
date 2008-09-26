@@ -29,10 +29,10 @@ import org.nuxeo.ecm.webengine.install.Installer;
 import org.nuxeo.ecm.webengine.rendering.RenderingExtensionDescriptor;
 import org.nuxeo.ecm.webengine.rest.ResourceBinding;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.model.impl.DomainDescriptor;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.RuntimeServiceException;
+import org.nuxeo.runtime.annotations.loader.BundleAnnotationsLoader;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.deploy.ConfigurationChangedListener;
 import org.nuxeo.runtime.deploy.ConfigurationDeployer;
@@ -45,6 +45,7 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
 
 /**
  * TODO remove old WebEngine references and rename WebEngine2 to WebEngine
@@ -59,7 +60,6 @@ public class WebEngineComponent extends ManagedComponent implements Configuratio
     public static final String WEB_OBJ_XP = "webObject";
     public static final String BINDING_XP = "binding"; // TODO deprecated
     public static final String RESOURCE_BINDING_XP = "resource";
-    public static final String DOMAIN_XP = "domain";
     public static final String GUARD_XP = "guard"; // global guards
     public static final String APPLICATION_XP = "application";
     public static final String INSTALL_XP = "install";
@@ -81,6 +81,10 @@ public class WebEngineComponent extends ManagedComponent implements Configuratio
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
         ctx = context;
+        
+        //TODO: move this into runtime
+        context.getRuntimeContext().getBundle().getBundleContext().addBundleListener(BundleAnnotationsLoader.getInstance());
+        
         String webDir = Framework.getProperty("org.nuxeo.ecm.web.root");
         File root = null;
         if (webDir != null) {
@@ -120,6 +124,9 @@ public class WebEngineComponent extends ManagedComponent implements Configuratio
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
+        //TODO: move this in runtime
+        context.getRuntimeContext().getBundle().getBundleContext().removeBundleListener(BundleAnnotationsLoader.getInstance());
+        
         notifier.stop();
         deployer.removeConfigurationChangedListener(this);
         engine.destroy();
@@ -168,8 +175,6 @@ public class WebEngineComponent extends ManagedComponent implements Configuratio
             PermissionService.getInstance().registerGuard(gd.getId(), gd.getGuard());
         } else if (RESOURCE_BINDING_XP.equals(extensionPoint)) {
             engine2.addResourceBinding((ResourceBinding)contribution);
-        } else if (DOMAIN_XP.equals(extensionPoint)) {
-            engine2.getDomainRegistry().registerDescriptor((DomainDescriptor)contribution);
         } else if (BINDING_XP.equals(extensionPoint)) {
             WebObjectBindingDescriptor binding = (WebObjectBindingDescriptor)contribution;
             engine.registerBinding(binding.type, binding.objectId);
@@ -212,8 +217,6 @@ public class WebEngineComponent extends ManagedComponent implements Configuratio
             PermissionService.getInstance().unregisterGuard(gd.getId());
         } else if (RESOURCE_BINDING_XP.equals(extensionPoint)) {
             engine2.removeResourceBinding((ResourceBinding)contribution);
-        } else if (DOMAIN_XP.equals(extensionPoint)) {
-            engine2.getDomainRegistry().unregisterDescriptor((DomainDescriptor)contribution);
         } else if (BINDING_XP.equals(extensionPoint)) {
             WebObjectBindingDescriptor binding = (WebObjectBindingDescriptor)contribution;
             engine.unregisterBinding(binding.type);

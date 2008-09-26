@@ -1,2 +1,2 @@
-org.nuxeo.ecm.webengine.rest.template.TemplateProvider
-org.nuxeo.ecm.webengine.rest.providers.DocumentObjectProvider
+org.nuxeo.ecm.webengine.rest.io.WebViewWriter.java
+org.nuxeo.ecm.webengine.rest.io.WebScriptWriter.java

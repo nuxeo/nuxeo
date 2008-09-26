@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.servlet.jersey;
+package org.nuxeo.ecm.webengine.rest.impl;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,7 +29,6 @@ import java.util.Map;
 
 import javax.script.Bindings;
 import javax.script.SimpleBindings;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,37 +44,30 @@ import org.nuxeo.ecm.webengine.rest.model.WebObject;
 import org.nuxeo.ecm.webengine.rest.model.WebView;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
-import org.nuxeo.ecm.webengine.rest.servlet.jersey.patch.ServletContainerRequest;
-import org.nuxeo.ecm.webengine.rest.servlet.jersey.patch.WebApplicationContext;
-import org.nuxeo.ecm.webengine.rest.servlet.jersey.patch.WebApplicationImpl;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.python.core.PyDictionary;
-
-import com.sun.jersey.api.core.HttpContext;
-import com.sun.jersey.spi.container.ContainerRequest;
-import com.sun.jersey.spi.container.ContainerResponse;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebContextImpl extends WebApplicationContext implements WebContext2 {
+public class AbstractWebContext implements WebContext2 {
 
     protected static final Log log = LogFactory.getLog(WebContext2.class);
 
-    protected UserSession us;
     protected WebApplication config;
+    protected UserSession us;
     protected final LinkedList<WebObject> stack;
     protected final LinkedList<File> scriptExecutionStack;
 
-
-    public WebContextImpl(WebApplicationImpl app,
-            ContainerRequest request, ContainerResponse response) {
-        super (app, request, response);
-        this.us = UserSession.getCurrentSession(((ServletContainerRequest)request).getSession(true));
+    public AbstractWebContext(UserSession userSession) {
+        this.us = userSession;
         this.stack = new LinkedList<WebObject>();
         this.scriptExecutionStack = new LinkedList<File>();
     }
+
+//    public abstract HttpServletRequest getHttpServletRequest();
+//    public abstract HttpServletResponse getHttpServletResponse();
 
 
     public <T> T getAdapter(Class<T> adapter) {
@@ -87,10 +79,6 @@ public class WebContextImpl extends WebApplicationContext implements WebContext2
         return null;
     }
     
-    public HttpServletRequest getHttpServletRequest() {
-        return  ((ServletContainerRequest)request).getHttpServletRequest();
-    }
-
     public void setApplication(WebApplication config) {
         this.config = config;
     }
@@ -113,10 +101,6 @@ public class WebContextImpl extends WebApplicationContext implements WebContext2
 
     public Principal getPrincipal() {
         return us.getPrincipal();
-    }
-
-    public HttpContext getHttpContext() {
-        return this;
     }
 
 
@@ -315,8 +299,9 @@ public class WebContextImpl extends WebApplicationContext implements WebContext2
     protected void initializeBindings(Bindings bindings) {
         WebObject obj = tail();
         bindings.put("Context", this);
-        bindings.put("Request", request);
-        bindings.put("Response", response);
+        //TODO uncomment for compatibility
+        //bindings.put("Request", request);
+        //bindings.put("Response", response);
         if (obj != null) {
             bindings.put("This", obj);
             bindings.put("Root", head());
@@ -324,7 +309,7 @@ public class WebContextImpl extends WebApplicationContext implements WebContext2
                 bindings.put("Document", ((DocumentObject)obj).getDocument());
             }
         }
-        bindings.put("Config", config); // TODO use domain as Root?
+        bindings.put("Config", config);
         bindings.put("Engine", config.getEngine());
         //TODO
         //bindings.put("basePath", getBasePath());

@@ -34,6 +34,12 @@ public class MyRegistry extends AbstractContributionRegistry<String,MyObject> {
     protected Map<String,MyObject> map = new HashMap<String, MyObject>();
 
 
+    @Override
+    protected MyObject clone(MyObject object) {
+        MyObject clone = new MyObject();
+        applyFragment(clone, object);
+        return clone;
+    }
 
     @Override
     protected void applyFragment(MyObject object, MyObject fragment) {
@@ -62,6 +68,11 @@ public class MyRegistry extends AbstractContributionRegistry<String,MyObject> {
     @Override
     protected void uninstallContribution(String key) {
         map.remove(key);
+    }
+    
+    @Override
+    protected boolean isMainFragment(MyObject object) {
+        return true;
     }
 
 

@@ -26,18 +26,39 @@ import org.nuxeo.runtime.contribution.Contribution;
 import org.nuxeo.runtime.contribution.ContributionRegistry;
 
 /**
+ * The parent provider is read only. It is never modified by the registry.
+ * It serves only to resolve dependencies. This allow greater flexibility in managing dependencies.
+ * 
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public abstract class AbstractContributionRegistry<K, T> implements
         ContributionRegistry<K, T> {
 
-    private Map<Object, Contribution<K, T>> registry = new HashMap<Object, Contribution<K, T>>();
+    protected Map<Object, Contribution<K, T>> registry; 
+    
+
+
+    public AbstractContributionRegistry() {
+        this.registry = new HashMap<Object, Contribution<K, T>>();
+    }
 
     public synchronized Contribution<K, T> getContribution(K primaryKey) {
         return registry.get(primaryKey);
     }
+    
 
+    public T getObject(K key) {
+        Contribution<K,T> contrib = getContribution(key);
+        if (contrib != null) {
+            if (contrib.isResolved()) {
+                return contrib.getValue();
+            }
+        }
+        return null;
+    };
+    
     public synchronized void removeContribution(K key) {
         Contribution<K, T> contrib = registry.get(key);
         if (contrib != null) {
@@ -65,7 +86,7 @@ public abstract class AbstractContributionRegistry<K, T> implements
         return contrib;
     }
 
-    public Contribution<K, T> getOrCreateContribution(K key) {
+    public synchronized Contribution<K, T> getOrCreateDependency(K key) {
         Contribution<K, T> contrib = registry.get(key);
         if (contrib == null) {
             contrib = new ContributionImpl<K, T>(this, key);
@@ -75,22 +96,12 @@ public abstract class AbstractContributionRegistry<K, T> implements
         return contrib;
     }
 
-    @SuppressWarnings("unchecked")
-    public synchronized void clear() {
-//        Contribution<K, T>[] contribs = registry.values().toArray(
-//                new Contribution[registry.size()]);
-//        for (Contribution<K, T> c : contribs) {
-//            fireUnresolved(c);
-//        }
-        registry.clear();
-    }
-
     public void fireUnresolved(Contribution<K, T> contrib) {
         uninstallContribution(contrib.getId());
     }
 
     public void fireResolved(Contribution<K, T> contrib) {
-        T value = contrib.merge();
+        T value = contrib.getValue();
         if (value == null) {
             throw new IllegalStateException("contribution is null");
         }
@@ -98,24 +109,44 @@ public abstract class AbstractContributionRegistry<K, T> implements
     }
 
     public void fireUpdated(Contribution<K, T> contrib) {
-        T value = contrib.merge();
+        T value = contrib.getValue();
         if (value == null) {
             throw new IllegalStateException("contribution is null");
         }
         reinstallContribution(contrib.getId(), value);
     }
 
+
+    public void dispose() {
+        registry.clear();
+    }
+
+    protected abstract T clone(T object);
+    
     /**
      * Apply fragment over the given object
      * @param object
      * @param fragment
      */
-    protected abstract void applyFragment(T object, T fragment);
-
+    protected void applyFragment(T object, T fragment) {
+        // do nothing
+    }
+    
+    protected void applySuperFragment(T object, T superFragment) {
+        // do nothing
+    }
+    
     protected abstract void installContribution(K key, T object);
 
     protected abstract void uninstallContribution(K key);
 
-    protected abstract void reinstallContribution(K key, T object);
-
+    protected boolean isMainFragment(T object) {
+        return true;
+    }
+    
+    protected void reinstallContribution(K key, T object) {
+        uninstallContribution(key);
+        installContribution(key, object);
+    }
+    
 }

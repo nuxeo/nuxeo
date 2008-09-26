@@ -19,33 +19,22 @@
 
 package org.nuxeo.ecm.webengine.rest.model;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
-
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.model.impl.DomainDescriptor;
 
 /**
- * This domain is initiating a chain resolving of objects on the traversal path
- * because of limited = true
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ChainingWebDomain<T extends DomainDescriptor> extends DefaultWebDomain<T> {
+public class TypeException extends WebException {
 
+    private static final long serialVersionUID = 1L;
 
-    public ChainingWebDomain(WebEngine2 engine, T desc) throws WebException {
-        super (engine, desc);
+    public TypeException(String msg) {
+        super (msg);
     }
-
-    @Path(value="{path}", limited=true)
-    public WebObject dispatch(@PathParam("path") String path, @Context WebContext2 ctx) throws Exception {
-        return super.dispatch(path, ctx);
+    
+    public TypeException(String msg, Throwable cause) {
+        super (msg, cause);
     }
-
 
 }

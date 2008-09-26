@@ -40,7 +40,6 @@ import com.sun.jersey.spi.container.WebApplication;
 public class ServletContainerRequest extends ContainerRequest {
 
     private final HttpServletRequest request;
-    protected String action;
 
     public ServletContainerRequest(
             HttpServletRequest request,
@@ -49,17 +48,9 @@ public class ServletContainerRequest extends ContainerRequest {
             URI baseUri,
             URI requestUri,
             InBoundHeaders headers,
-            InputStream entity, String action) {
+            InputStream entity) {
         super(wa, method, baseUri, requestUri, headers, entity);
         this.request = request;
-        this.action = action;
-    }
-
-    /**
-     * @return the action.
-     */
-    public String getAction() {
-        return action;
     }
 
     public HttpServletRequest getHttpServletRequest() {

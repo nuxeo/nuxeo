@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webengine.rest.model;
 import javax.ws.rs.GET;
 import javax.ws.rs.ProduceMime;
 
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *

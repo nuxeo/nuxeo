@@ -17,40 +17,21 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.model;
+package org.nuxeo.runtime.annotations.test;
 
-import org.nuxeo.ecm.webengine.WebException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * The root type. This has no super type. Any other type has a super type.  
- * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ObjectType implements WebType {
-
-    public Action getAction(String action) {
-        return null;
-    }
-
-    public String getName() {
-        return "Object";
-    }
-
-    public Class<? extends WebObject> getObjectClass() {
-        return WebObject.class;
-    }
-
-    public WebType getSuperType() {
-        return null;
-    }
-
-    public boolean isDynamic() {
-        return false;
-    }
-
-    public WebObject newInstance() throws WebException {
-        return new WebObject(this);
-    }
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface Anno2 {
+    
+    String value() default "N/A";
+    
 }

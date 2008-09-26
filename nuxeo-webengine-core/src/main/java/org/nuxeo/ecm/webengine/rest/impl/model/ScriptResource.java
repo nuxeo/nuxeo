@@ -17,36 +17,35 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.model.impl;
+package org.nuxeo.ecm.webengine.rest.impl.model;
 
 import javax.ws.rs.GET;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.model.DefaultWebDomain;
-import org.nuxeo.ecm.webengine.rest.model.WebObject;
+import org.nuxeo.ecm.webengine.rest.model.ManagedResource;
+import org.nuxeo.ecm.webengine.rest.model.WebApplication;
+import org.nuxeo.ecm.webengine.rest.model.WebType;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ScriptDomain extends DefaultWebDomain<DomainDescriptor> {
+public class ScriptResource extends ManagedResource {
 
     @GET
     public Object get() {
         return "hello world!";
     }
 
-    public ScriptDomain(WebEngine2 engine, DomainDescriptor desc) throws WebException {
-        super (engine, desc );
+    public ScriptResource(WebApplication cfg) throws WebException {
+        super (cfg);
+    }
+    
+    @Override
+    protected WebType getResourceType(WebContext2 ctx) throws WebException {
+        return ctx.getApplication().getWebType("Script");
     }
 
-    @Override
-    protected WebObject resolve(WebContext2 ctx, String path) throws WebException {
-        ScriptObject script = (ScriptObject)ctx.getEngine().getWebTypeManager().newInstance("Script");
-        script.initialize(ctx, path);
-        return script;
-    }
 
 }

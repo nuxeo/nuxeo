@@ -19,8 +19,11 @@
 
 package org.nuxeo.ecm.webengine.rest;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -29,17 +32,22 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
+import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.webengine.WebClassLoader;
 import org.nuxeo.ecm.webengine.nl.ResourceComposite;
-import org.nuxeo.ecm.webengine.rest.model.WebTypeManager;
-import org.nuxeo.ecm.webengine.rest.model.impl.DomainRegistry;
+import org.nuxeo.ecm.webengine.rest.annotations.Action;
+import org.nuxeo.ecm.webengine.rest.annotations.Type;
+import org.nuxeo.ecm.webengine.rest.impl.ApplicationDescriptor;
+import org.nuxeo.ecm.webengine.rest.impl.ApplicationRegistry;
+import org.nuxeo.ecm.webengine.rest.impl.GlobalTypesLoader;
+import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
-import org.nuxeo.ecm.webengine.rest.servlet.jersey.WebContextImpl;
+import org.nuxeo.runtime.annotations.loader.BundleAnnotationsLoader;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.deploy.FileChangeListener;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
@@ -63,24 +71,23 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
 
     
     protected File root;
-    protected DomainRegistry domainReg;
+    protected ApplicationRegistry appReg;
     protected FileChangeNotifier notifier;
     protected volatile long lastMessagesUpdate = 0;
     protected Scripting scripting;
-    protected WebTypeManager typeMgr;
     protected RenderingEngine rendering;
     protected Map<String, Object> env;
     protected ResourceBundle messages;
     protected Map<String, Object> renderingExtensions; //TODO this should be moved in rendering project
     protected boolean isDebug = false;
 
+    protected GlobalTypesLoader globalTypes;
     protected List<ResourceBinding> bindings = new Vector<ResourceBinding>();
 
 
 
     public WebEngine2(File root, FileChangeNotifier notifier) throws IOException {
         isDebug = Boolean.parseBoolean(Framework.getProperty("debug", "false"));
-        this.domainReg = new DomainRegistry(this);
         this.root = root;
         this.notifier = notifier;
         this.scripting = new Scripting(isDebug);
@@ -89,7 +96,13 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
             cp = new File(root, "classes").getAbsolutePath();
         }
         scripting.addClassPath(cp);
-        this.typeMgr = new WebTypeManager(this);
+        
+        this.globalTypes = new GlobalTypesLoader(this);
+        BundleAnnotationsLoader.getInstance().addLoader(Type.class.getName(), globalTypes);
+        BundleAnnotationsLoader.getInstance().addLoader(Action.class.getName(), globalTypes);        
+        
+        loadApplications();
+        
         this.renderingExtensions = new Hashtable<String, Object>();
         this.env = new HashMap<String, Object>();
         env.put("installDir", root);
@@ -108,6 +121,10 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
             notifier.addListener(this);
         }
     }
+    
+    public GlobalTypesLoader getGlobalTypes() {
+        return globalTypes;
+    }
 
     private void loadMessageBundle(boolean watch) throws IOException {
         File file = new File(root, "i18n");
@@ -124,7 +141,42 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
             }
         }
     }
+    
+    protected  void loadApplications() {
+        appReg = new ApplicationRegistry(this);
+        for (File file : root.listFiles()) {
+            File cfg = new File(file, "application.xml");
+            if (file.isDirectory() && cfg.isFile()) {
+                    loadApplication(cfg);
+           }
+        }
+    }
 
+    protected synchronized void loadApplication(File cfg) {
+        try {
+            XMap xmap = new XMap();
+            xmap.register(ApplicationDescriptor.class);
+            InputStream in = new BufferedInputStream(new FileInputStream(cfg));
+            ApplicationDescriptor ad = (ApplicationDescriptor)xmap.load(in);
+            File parent = cfg.getParentFile();
+            String mainClass = null;
+            File mainClassFile = new File(parent, "Main.groovy"); 
+            if (mainClassFile.isFile()) {
+                mainClass = parent.getName()+".Main";
+                notifier.watch(mainClassFile);
+            }
+            appReg.registerDescriptor(parent, mainClass, ad);
+        } catch (Exception e) {
+            e.printStackTrace(); // TODO log exception
+        } finally {
+            try {
+                notifier.watch(cfg);
+            } catch (IOException e) {
+                e.printStackTrace(); //TODO log error
+            }
+        }
+    }
+    
     public boolean isDebug() {
         return isDebug;
     }
@@ -160,10 +212,6 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
         return messages;
     }
 
-    public WebTypeManager  getWebTypeManager() {
-        return typeMgr;
-    }
-
     /**
      * @return the scripting.
      */
@@ -171,10 +219,14 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
         return scripting;
     }
 
-    public DomainRegistry getDomainRegistry() {
-        return domainReg;
+    public ApplicationRegistry getApplicationRegistry() {
+        return appReg;
     }
-
+    
+    public WebApplication getApplication(String name) {
+        return appReg.getApplication(name); 
+    }
+        
     public File getRootDirectory() {
         return root;
     }
@@ -227,9 +279,13 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
         String rootPath = root.getAbsolutePath();
         if (!path.startsWith(rootPath)) {
             return;
+        } 
+        if (path.endsWith("/Main.groovy") || path.endsWith("/application.xml")) {
+            loadApplications(); // TODO optimize reloading
+        } else {
+            loadMessageBundle(false);
         }
-        lastMessagesUpdate = now;
-        loadMessageBundle(false);
+        lastMessagesUpdate = now;        
     }
 
     /** ResourceLocator API */
@@ -242,7 +298,7 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
         }
     }
 
-    public File getResourceFile(String key) {//TODO: this is jersey dependent -> put the thread local in WebContext2
+    public File getResourceFile(String key) {
         try {
             WebContext2 ctx = WebEngine2.getActiveContext();
             ScriptFile file = ctx.getFile(key);

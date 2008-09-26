@@ -17,49 +17,25 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.contribution;
+package org.nuxeo.ecm.webengine.rest.annotations;
 
-import java.util.Set;
-
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Contribution<K,T> extends Iterable<T> {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+public @interface Action {
 
-    ContributionRegistry<K,T> getRegistry();
-
-    K getId();
-
-    Set<Contribution<K,T>> getDependencies();
-
-    Set<Contribution<K,T>> getDependents();
-
-    Set<Contribution<K,T>> getUnresolvedDependencies();
-
-    void addFragment(T fragment, K ... superKeys);
-
-    boolean removeFragment(T fragment);
-
-    T getValue();
-
-    int size();
-
-    boolean isEmpty();
-
-    T getFragment(int index);
-
-    public boolean isResolved();
-
-    public boolean isPhantom();
-
-    public boolean isRegistered();
-
-    public void unregister();
-
-    public void resolve();
-
-    public void unresolve();
-
+    String value(); // action name
+    String type() default "*";
+    boolean enabled() default true;
+    String[] categories() default {};
+    String guard() default "";
+    
 }

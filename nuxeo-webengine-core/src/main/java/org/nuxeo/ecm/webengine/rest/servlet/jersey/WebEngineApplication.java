@@ -19,23 +19,18 @@
 
 package org.nuxeo.ecm.webengine.rest.servlet.jersey;
 
-import java.lang.reflect.Constructor;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.webengine.rest.PathDescriptor;
 import org.nuxeo.ecm.webengine.rest.ResourceBinding;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.model.WebDomain;
-import org.nuxeo.ecm.webengine.rest.model.impl.DomainDescriptor;
-import org.nuxeo.ecm.webengine.rest.model.impl.DomainRegistry;
-import org.nuxeo.ecm.webengine.rest.servlet.jersey.patch.ServletContainerRequest;
+import org.nuxeo.ecm.webengine.rest.model.ManagedResource;
+import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.servlet.jersey.patch.WebApplicationContext;
 import org.nuxeo.runtime.api.Framework;
-
-import sun.awt.ConstrainableGraphics;
-import sun.nio.cs.SingleByteDecoder;
 
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.api.uri.UriTemplate;
@@ -65,7 +60,6 @@ public class WebEngineApplication extends
     protected WebApplicationContext createWebAcpplicationContext(
             ContainerRequest request, ContainerResponse response) {
         WebContextImpl ctx = new WebContextImpl(this, request, response);
-        ctx.setAction(((ServletContainerRequest) request).getAction());
         return ctx;
     }
     
@@ -91,11 +85,11 @@ public class WebEngineApplication extends
     protected void addRootResources(RulesMap<UriRule> rules) throws Exception {
         boolean redirect = resourceConfig.getFeature(ResourceConfig.FEATURE_REDIRECT);
         WebEngine2 engine = Framework.getLocalService(WebEngine2.class);
-        DomainRegistry domains = engine.getDomainRegistry();
+        // register regular resources
         for (ResourceBinding binding : engine.getBindings()) {
-            String path = binding.pattern;
+            String path = binding.path;
             boolean pathEndsInSlash = false;
-            if (binding.pattern == null || binding.pattern.equals("/")) {
+            if (binding.path == null || binding.path.equals("/")) {
                 path = "/";
                 pathEndsInSlash = true;
             }
@@ -113,18 +107,8 @@ public class WebEngineApplication extends
                 } else {
                     rule = new ResourceClassRule(t, rc);
                 }
-            } else if (binding.domain != null) {
-                WebDomain domain = domains.getDomain(binding.domain);
-                if (domain == null) {
-                    log.error("Invalid resource binding: " + binding.pattern
-                            + ". Domain not found: " + binding.domain);
-                    continue;
-                }
-                binding.singleton = true;
-                rc = domain.getClass();
-                rule = new ResourceObjectRule(t, domain);
             } else {
-                log.error("Invalid resource binding: " + binding.pattern
+                log.error("Invalid resource binding: " + binding.path
                         + ". No resource class specified.");
                 continue;
             }
@@ -133,6 +117,30 @@ public class WebEngineApplication extends
 
             rules.put(p, new RightHandPathRule(redirect, pathEndsInSlash, rule));
         }
+
+        // add managed resources
+        for (WebApplication app : engine.getApplicationRegistry().getApplications()) {
+            if (app.isFragment()) {
+                continue;
+            }
+            PathDescriptor pathDesc = app.getPath();
+            ManagedResource res = app.getRootResource();
+            String path = pathDesc.path;
+            boolean pathEndsInSlash = false;
+            if (path == null || path.equals("/")) {
+                path = "/";
+                pathEndsInSlash = true;
+            }
+            
+            UriTemplate t = new PathTemplate(path, pathDesc.encode);
+            PathPattern p = new PathPattern(t, pathDesc.limited);
+            UriRule rule = new ResourceObjectRule(t, res);
+                        
+            getResourceClass(res.getClass()); // TODO here we must be able to modify
+
+            rules.put(p, new RightHandPathRule(redirect, pathEndsInSlash, rule));
+        }
+        
     }
 
 }

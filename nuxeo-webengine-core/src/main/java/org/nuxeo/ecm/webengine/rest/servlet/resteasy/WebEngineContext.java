@@ -24,7 +24,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Writer;
 import java.security.Principal;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -39,19 +38,16 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.model.DefaultWebDomain;
-import org.nuxeo.ecm.webengine.rest.model.WebDomain;
+import org.nuxeo.ecm.webengine.rest.impl.model.DocumentObject;
+import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.model.WebObject;
 import org.nuxeo.ecm.webengine.rest.model.WebView;
-import org.nuxeo.ecm.webengine.rest.model.impl.DocumentObject;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
 import org.nuxeo.ecm.webengine.session.UserSession;
-import org.nuxeo.runtime.api.Framework;
 import org.python.core.PyDictionary;
 import org.resteasy.util.HttpRequestImpl;
 
@@ -63,42 +59,47 @@ public class WebEngineContext extends HttpRequestImpl implements WebContext2 {
 
     protected static final Log log = LogFactory.getLog(WebContext2.class);
 
-    protected DefaultWebDomain<?> domain;
+    protected WebApplication config;
     protected UserSession us;
-    protected WebEngine2 engine;
     protected final LinkedList<WebObject> stack;
     protected final LinkedList<File> scriptExecutionStack;
-    protected String action;
     protected HttpServletRequest request;
 
 
     public WebEngineContext(HttpServletRequest request, HttpHeaders headers, String httpMethod, UriInfo uri) throws IOException {
         super(request.getInputStream(), headers, httpMethod, uri);
         this.us = UserSession.getCurrentSession(request.getSession(true));
-        this.engine = Framework.getLocalService(WebEngine2.class);
         this.stack = new LinkedList<WebObject>();
         this.scriptExecutionStack = new LinkedList<File>();
         this.request = request;
     }
 
-
+    public <T> T getAdapter(Class<T> adapter) {
+        if (WebObject.class == adapter) {
+            return (T)tail();
+        } else if (WebEngine2.class == adapter) {
+            return (T)this;
+        }
+        return null;
+    }
+    
     public HttpServletRequest getHttpServletRequest() {
         return request;
     }
 
-    public void setDomain(DefaultWebDomain<?> domain) {
-        this.domain = domain;
+    public void setApplication(WebApplication config) {
+        this.config = config;
     }
 
     /**
      * @return the domain.
      */
-    public WebDomain getDomain() {
-        return domain;
+    public WebApplication getApplication() {
+        return config;
     }
 
     public WebEngine2 getEngine() {
-        return domain.getEngine();
+        return config.getEngine();
     }
 
     public UserSession getUserSession() {
@@ -112,16 +113,6 @@ public class WebEngineContext extends HttpRequestImpl implements WebContext2 {
     public Principal getPrincipal() {
         return us.getPrincipal();
     }
-
-
-    public String getAction() {
-        return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
-    }
-
 
     /** object stack API */
 
@@ -163,7 +154,7 @@ public class WebEngineContext extends HttpRequestImpl implements WebContext2 {
                     return new ScriptFile(file);
                 }
                 // try using stacked roots
-                String rootPath = engine.getRootDirectory().getAbsolutePath();
+                String rootPath = config.getEngine().getRootDirectory().getAbsolutePath();
                 String filePath = file.getAbsolutePath();
                 path = filePath.substring(rootPath.length());
             } else {
@@ -178,7 +169,7 @@ public class WebEngineContext extends HttpRequestImpl implements WebContext2 {
                 return script;
             }
         }
-        return domain.getFile(path);
+        return config.getFile(path);
     }
 
     public void pushScriptFile(File file) {
@@ -254,7 +245,7 @@ public class WebEngineContext extends HttpRequestImpl implements WebContext2 {
             }
             pushScriptFile(script.getFile());
             //TODO =========== fix rendering ============
-            engine.getRendering().render(template, bindings, writer);
+            config.getEngine().getRendering().render(template, bindings, writer);
         } catch (Exception e) {
             e.printStackTrace();
             throw new WebException("Failed to render template: "+script.getAbsolutePath(), e);
@@ -283,7 +274,7 @@ public class WebEngineContext extends HttpRequestImpl implements WebContext2 {
     public Object runScript(ScriptFile script, Map<String, Object> args) throws WebException {
         try {
             pushScriptFile(script.getFile());
-            return domain.getEngine().getScripting().runScript(script, createBindings(args));
+            return config.getEngine().getScripting().runScript(script, createBindings(args));
         } catch (WebException e) {
             throw e;
         } catch (Exception e) {
@@ -327,9 +318,8 @@ public class WebEngineContext extends HttpRequestImpl implements WebContext2 {
                 bindings.put("Document", ((DocumentObject)obj).getDocument());
             }
         }
-        bindings.put("Domain", domain); // TODO use domain as Root?
-
-        bindings.put("Engine", engine);
+        bindings.put("Config", config); // TODO use domain as Root?
+        bindings.put("Engine", config.getEngine());
         //TODO
         //bindings.put("basePath", getBasePath());
         //bindings.put("appPath", getApplicationPath());
@@ -343,39 +333,39 @@ public class WebEngineContext extends HttpRequestImpl implements WebContext2 {
 
     /** deprecated methods used for compatibility */
 
-    /**
-     * @deprecated use {@link WebObject#getActions()}
-     */
-    Collection<ActionDescriptor> getActions() throws WebException {
-        if (!stack.isEmpty()) {
-            return stack.getLast().getActions();
-        }
-        return null;
-    }
-
-    /**
-     * @deprecated use {@link WebObject#getActions(String)}
-     * @param category
-     * @return
-     * @throws WebException
-     */
-    Collection<ActionDescriptor> getActions(String category) throws WebException {
-        if (!stack.isEmpty()) {
-            return stack.getLast().getActions(category);
-        }
-        return null;
-    }
-
-    /**
-     * @deprecated use {@link WebObject#getActionsByCategory()}
-     * @return
-     * @throws WebException
-     */
-    Map<String, Collection<ActionDescriptor>> getActionsByCategory() throws WebException {
-        if (!stack.isEmpty()) {
-            return stack.getLast().getActionsByCategory();
-        }
-        return null;
-    }
+//    /**
+//     * @deprecated use {@link WebObject#getActions()}
+//     */
+//    Collection<ActionDescriptor> getActions() throws WebException {
+//        if (!stack.isEmpty()) {
+//            return stack.getLast().getActions();
+//        }
+//        return null;
+//    }
+//
+//    /**
+//     * @deprecated use {@link WebObject#getActions(String)}
+//     * @param category
+//     * @return
+//     * @throws WebException
+//     */
+//    Collection<ActionDescriptor> getActions(String category) throws WebException {
+//        if (!stack.isEmpty()) {
+//            return stack.getLast().getActions(category);
+//        }
+//        return null;
+//    }
+//
+//    /**
+//     * @deprecated use {@link WebObject#getActionsByCategory()}
+//     * @return
+//     * @throws WebException
+//     */
+//    Map<String, Collection<ActionDescriptor>> getActionsByCategory() throws WebException {
+//        if (!stack.isEmpty()) {
+//            return stack.getLast().getActionsByCategory();
+//        }
+//        return null;
+//    }
 
 }

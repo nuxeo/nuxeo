@@ -17,20 +17,35 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.model;
+package org.nuxeo.ecm.webengine.rest;
 
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.common.xmap.annotation.XContent;
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class NoSuchActionException extends WebException {
+@XObject("path")
+public class PathDescriptor {
 
-    private static final long serialVersionUID = 1L;
-
-    public NoSuchActionException(String action) {
-        super ("Undefined Action: "+action);
+    @XContent
+    public String path;
+    
+    @XNode("@limited")
+    public boolean limited = true;
+    
+    @XNode("@encode")
+    public boolean encode = true;
+  
+    public PathDescriptor() {
+    }
+    
+    public PathDescriptor(String path, boolean limited, boolean encode) {
+        this.path = path;
+        this.limited = limited;
+        this.encode = encode;
     }
 
 }

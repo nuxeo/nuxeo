@@ -34,7 +34,7 @@ public interface ContributionRegistry<K,T> {
     void removeContribution(K key);
 
     void removeFragment(K key, T fragment);
-
-    void clear();
+    
+    void dispose();
 
 }
