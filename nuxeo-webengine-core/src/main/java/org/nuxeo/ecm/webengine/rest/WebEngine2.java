@@ -93,8 +93,9 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
         this.scripting = new Scripting(isDebug);
         String cp = System.getProperty("groovy.classpath");
         if (cp == null) {
-            cp = new File(root, "classes").getAbsolutePath();
+            cp = new File(root, "classes").getAbsolutePath();        
         }
+        scripting.addClassPath(new File(root,".").getAbsolutePath());
         scripting.addClassPath(cp);
         
         this.globalTypes = new GlobalTypesLoader(this);

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.tools.ant.taskdefs.Typedef;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -40,7 +41,7 @@ import org.nuxeo.runtime.model.Adaptable;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@XObject("domain")
+@XObject("application")
 public class ApplicationDescriptor implements Cloneable {
 
     /**
@@ -49,14 +50,14 @@ public class ApplicationDescriptor implements Cloneable {
      */
     public File directory;
     
-    @XNode("@id")
-    public String id;
+    @XNode("@name")
+    public String name;
 
     /**
      * A fragment id to be used only if this contribution is patching another one
      */
     @XNode("@fragment")
-    public String fragment = "";
+    public String fragment;
 
     @XNode("@extends")
     public String base;
@@ -143,7 +144,7 @@ public class ApplicationDescriptor implements Cloneable {
     public boolean equals(Object obj) {
         if (obj.getClass() == ApplicationDescriptor.class) {
             ApplicationDescriptor dd = (ApplicationDescriptor)obj;
-            return dd.id.equals(id) && dd.fragment.equals(fragment);
+            return dd.name.equals(name) && TypeDescriptor.streq(dd.fragment, fragment);
         }
         return false;
     }

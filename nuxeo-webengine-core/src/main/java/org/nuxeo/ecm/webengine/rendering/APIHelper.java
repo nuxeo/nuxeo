@@ -36,7 +36,7 @@ import org.osgi.framework.Bundle;
  */
 public class APIHelper implements RenderingExtensionFactory {
 
-    public final static APIHelper INSTANCE = new APIHelper();
+    public static final APIHelper INSTANCE = new APIHelper();
 
     public static final Comparator<DocumentType> DOCTYPE_COMPARATOR = new Comparator<DocumentType>() {
         public int compare(DocumentType o1, DocumentType o2) {

@@ -19,6 +19,11 @@
 
 package org.nuxeo.ecm.webengine.rest.model;
 
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.ProduceMime;
@@ -60,6 +65,11 @@ public class ManagedResource {
         return obj;
     }
 
+    @GET
+    @POST
+    @PUT
+    @DELETE
+    @HEAD
     @Path(value="{path}", limited=false)
     public WebObject dispatch(@PathParam("path") String path, @Context WebContext2 ctx) throws Exception {
         ctx.setApplication(app);

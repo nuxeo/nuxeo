@@ -131,11 +131,11 @@ public class ApplicationRegistry extends AbstractContributionRegistry<String, Ap
         if (mainClass != null) {
             desc.main = mainClass;
         }
-        addFragment(desc.id, desc, desc.base);
+        addFragment(desc.name, desc, desc.base);
     }
 
     public void unregisterDescriptor(ApplicationDescriptor desc) {
-        removeFragment(desc.id, desc);
+        removeFragment(desc.name, desc);
     }
 
 }

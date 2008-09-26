@@ -30,7 +30,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("path")
 public class PathDescriptor {
 
-    @XContent
+    @XNode
     public String path;
     
     @XNode("@limited")

@@ -129,7 +129,7 @@ public class DefaultWebApplication implements WebApplication {
     }
 
     public String getId() {
-        return descriptor.id;
+        return descriptor.name;
     }
 
     public WebEngine2 getEngine() {

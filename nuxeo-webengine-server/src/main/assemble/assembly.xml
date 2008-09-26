@@ -14,16 +14,14 @@
   <artifactSet id="bundles">
     <import>*</import>
     <includes>
-      <artifact group="org.nuxeo.ecm.*" />      
-      <artifact group="org.nuxeo.runtime*" />
       <artifact group="org.nuxeo.common" />
+      <artifact group="org.nuxeo.runtime*" />
       <artifact group="org.nuxeo.ecm.*" />
     </includes>
     <excludes>
       <artifact name="nuxeo-runtime-launcher"/>
     </excludes>
   </artifactSet>
-
 
   <artifactSet id="third-party-libs">
     <import>**</import>
@@ -61,7 +59,6 @@
     </excludes>
   </artifactSet>
 
-
   <assemble>
     <set>template</set>
     <outputFile>nxserver</outputFile>
@@ -83,4 +80,3 @@
   </assemble>
 
 </assembly>
-
