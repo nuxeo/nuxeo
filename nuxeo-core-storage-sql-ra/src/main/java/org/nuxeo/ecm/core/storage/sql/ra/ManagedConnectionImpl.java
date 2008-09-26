@@ -244,6 +244,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
             log.debug("addConnection: " + connection);
             ConnectionImpl previous = connections.peek();
             if (previous != null) {
+                log.debug("addConnection: disassociate previous: " + previous);
                 previous.disassociate();
             }
             connections.addFirst(connection);
