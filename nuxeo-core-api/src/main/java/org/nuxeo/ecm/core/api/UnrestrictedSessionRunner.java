@@ -36,7 +36,12 @@ public abstract class UnrestrictedSessionRunner {
 
     protected CoreSession session;
 
+    protected final boolean sessionIsAlreadyUnrestricted;
+
     protected final String repositoryName;
+
+    /** True if a call to {@link #runUnrestricted} is in progress. */
+    public boolean isUnrestricted;
 
     /**
      * Constructs a {@link UnrestrictedSessionRunner} given an existing session
@@ -45,11 +50,11 @@ public abstract class UnrestrictedSessionRunner {
      * @param session the available session
      */
     public UnrestrictedSessionRunner(CoreSession session) {
-        if (isUnrestricted(session)) {
-            this.session = session;
+        this.session = session;
+        sessionIsAlreadyUnrestricted = isUnrestricted(session);
+        if (sessionIsAlreadyUnrestricted) {
             this.repositoryName = null;
         } else {
-            this.session = null;
             this.repositoryName = session.getRepositoryName();
         }
     }
@@ -61,6 +66,7 @@ public abstract class UnrestrictedSessionRunner {
      */
     public UnrestrictedSessionRunner(String repositoryName) {
         this.session = null;
+        sessionIsAlreadyUnrestricted = false;
         this.repositoryName = repositoryName;
     }
 
@@ -69,61 +75,73 @@ public abstract class UnrestrictedSessionRunner {
     }
 
     /**
-     * Calls the {@link #run} method with an unrestricted {@link #session}.
+     * Calls the {@link #run()} method with an unrestricted {@link #session}.
+     * During this call, {@link #isUnrestricted} is set to {@code true}.
      *
      * @throws ClientException
      */
     public void runUnrestricted() throws ClientException {
-        if (session != null) {
-            run();
-            return;
-        }
-        LoginContext loginContext;
+        isUnrestricted = true;
         try {
-            loginContext = Framework.login();
-        } catch (LoginException e) {
-            throw new ClientException(e);
-        }
-        try {
-            Repository repository;
+            if (sessionIsAlreadyUnrestricted) {
+                run();
+                return;
+            }
+
+            LoginContext loginContext;
             try {
-                repository = Framework.getService(RepositoryManager.class).getRepository(
-                        repositoryName);
-                if (repository == null) {
-                    throw new ClientException("Cannot get repository: " +
-                            repositoryName);
-                }
-                session = repository.open();
-            } catch (ClientException e) {
-                throw e;
-            } catch (Exception e) {
+                loginContext = Framework.login();
+            } catch (LoginException e) {
                 throw new ClientException(e);
             }
             try {
-                run();
-            } finally {
+                Repository repository;
+                CoreSession baseSession = session;
                 try {
-                    repository.close(session);
+                    repository = Framework.getService(RepositoryManager.class).getRepository(
+                            repositoryName);
+                    if (repository == null) {
+                        throw new ClientException("Cannot get repository: " +
+                                repositoryName);
+                    }
+                    session = repository.open();
                 } catch (ClientException e) {
                     throw e;
                 } catch (Exception e) {
                     throw new ClientException(e);
+                }
+                try {
+                    run();
                 } finally {
-                    session = null;
+                    try {
+                        repository.close(session);
+                    } catch (ClientException e) {
+                        throw e;
+                    } catch (Exception e) {
+                        throw new ClientException(e);
+                    } finally {
+                        session = baseSession;
+                    }
+                }
+            } finally {
+                try {
+                    loginContext.logout();
+                } catch (LoginException e) {
+                    throw new ClientException(e);
                 }
             }
         } finally {
-            try {
-                loginContext.logout();
-            } catch (LoginException e) {
-                throw new ClientException(e);
-            }
+            isUnrestricted = false;
         }
     }
 
     /**
-     * This method will run with {@link #session} available as an unrestricted
-     * session.
+     * This method will be called by {@link #runUnrestricted()} with
+     * {@link #session} available as an unrestricted session.
+     * <p>
+     * It can also be called directly in which case the {@link #session}
+     * available will be the one passed to {@code
+     * #UnrestrictedSessionRunner(CoreSession)}.
      *
      * @throws ClientException
      */
