@@ -17,37 +17,17 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.model;
+package org.nuxeo.ecm.webengine.rest.impl.model;
 
-import java.io.IOException;
-
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
-import org.nuxeo.runtime.deploy.FileChangeListener;
-import org.nuxeo.runtime.model.Adaptable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface WebDomain extends Adaptable, FileChangeListener {
-
-    WebEngine2 getEngine();
-
-    String getId();
-
-    ScriptFile getIndexPage();
-
-    ScriptFile getErrorPage();
-
-    ScriptFile getDefaultPage();
-
-    String getScriptExtension();
-
-    String getTemplateExtension();
-
-    void flushCache();
-
-    ScriptFile getFile(String path) throws IOException;
-
+public class TestObject {//extends WebObject {
+    
+    public TestObject() {
+        super ();
+    }
+    
 }

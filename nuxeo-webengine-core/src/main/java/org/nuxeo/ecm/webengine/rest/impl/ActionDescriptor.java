@@ -59,7 +59,6 @@ public class ActionDescriptor implements TypeDescriptorBase {
     
     
     public ActionDescriptor() {
-        // TODO Auto-generated constructor stub
     }
     
     public ActionDescriptor(Class<?> klass, String name, String type, String guard, boolean enabled) {

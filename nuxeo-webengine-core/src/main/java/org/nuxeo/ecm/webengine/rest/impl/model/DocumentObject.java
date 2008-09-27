@@ -56,7 +56,7 @@ public class DocumentObject extends WebObject {
     @Path(value="{path}", limited=true)
     public WebObject dispatch(@PathParam("path") String path) throws Exception {
         DocumentModel doc = ctx.getCoreSession().getChild(((DocumentObject)ctx.tail()).getDocument().getRef(), path);
-        DocumentObject obj = (DocumentObject)ctx.getApplication().getWebType(doc.getType()).newInstance();
+        DocumentObject obj = (DocumentObject)ctx.getApplication().getType(doc.getType()).newInstance();
         obj.initialize(ctx, doc, path);
         return obj;
     }

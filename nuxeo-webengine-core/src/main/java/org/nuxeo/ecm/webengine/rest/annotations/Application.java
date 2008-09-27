@@ -24,19 +24,24 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.nuxeo.ecm.webengine.rest.impl.WebTypeImpl;
-import org.nuxeo.runtime.annotations.loader.Indexable;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@Indexable({"value"})
-public @interface Type {
-
-    String value(); // the type name
-    String superType() default WebTypeImpl.ROOT_TYPE_NAME; // the super type name
-    
+public @interface Application {
+    String name(); // application name    
+    String path();
+    boolean limited() default true;
+    boolean encode() default true;
+    String fragment() default "";
+    String base() default "";
+    String guard() default "";
+    String[] roots() default {};
+    String indexPage() default "index.ftl";
+    String errorPage() default "error.ftl";
+    String defaultPage() default "default.ftl";
+    String scriptExtension() default ".groovy";
+    String templateExtension() default ".ftl";
 }

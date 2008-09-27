@@ -48,8 +48,8 @@ public class ApplicationRegistry extends AbstractContributionRegistry<String, Ap
         return engine;
     }
 
-    public void putApplication(WebApplication domain) {
-        apps.put(domain.getId(), domain);
+    public void putApplication(WebApplication app) {
+        apps.put(app.getName(), app);
     }
 
     public WebApplication removeApplication(String id) {
@@ -76,9 +76,6 @@ public class ApplicationRegistry extends AbstractContributionRegistry<String, Ap
     
     @Override
     protected void applyFragment(ApplicationDescriptor object, ApplicationDescriptor fragment) {
-        if (fragment.contentRoot != null) {
-            object.contentRoot = fragment.contentRoot;
-        }
         if (fragment.defaultPage != "default.ftl") {
             object.defaultPage = fragment.defaultPage;
         }
@@ -91,9 +88,6 @@ public class ApplicationRegistry extends AbstractContributionRegistry<String, Ap
         if (fragment.guardDescriptor != null) {
             object.guardDescriptor = fragment.guardDescriptor;
         }
-        if (fragment.type != null) {
-            object.type = fragment.type;
-        }
         if (fragment.roots != null) {
             if (object.roots == null) {
                 object.roots = new ArrayList<RootDescriptor>();
@@ -105,7 +99,21 @@ public class ApplicationRegistry extends AbstractContributionRegistry<String, Ap
     @Override
     protected void installContribution(String key, ApplicationDescriptor object) {
         try {
-            apps.put(key, new DefaultWebApplication(engine, object.directory, object));
+            Class<?> clazz = object.clazz;
+            if (clazz == null) { // try to use the parent class if any 
+                if (object.base != null) {
+                    WebApplication parent = apps.get(object.base);
+                    if (parent != null) {
+                        clazz = parent.getClass();
+                    }
+                }
+                if (clazz == null) { // no class specified
+                    throw new AssertionError("Application class is not specified for application: "+object.name);
+                }
+            }
+            WebApplication app = (WebApplication)clazz.newInstance();
+            app.initialize(engine, object.directory, object);
+            apps.put(key, app);
         } catch (Exception e) {
             e.printStackTrace(); //TODO
         }
@@ -126,11 +134,8 @@ public class ApplicationRegistry extends AbstractContributionRegistry<String, Ap
         return object.fragment == null || object.fragment.length() == 0;
     }
 
-    public void registerDescriptor(File root, String mainClass,  ApplicationDescriptor desc) {
+    public void registerDescriptor(File root, ApplicationDescriptor desc) {
         desc.directory = root;
-        if (mainClass != null) {
-            desc.main = mainClass;
-        }
         addFragment(desc.name, desc, desc.base);
     }
 

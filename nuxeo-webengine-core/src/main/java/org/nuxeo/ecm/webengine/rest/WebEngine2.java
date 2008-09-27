@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
+import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
@@ -143,39 +144,79 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
         }
     }
     
+
+    protected Context createXMapContext() {
+        return new Context() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public Class<?> loadClass(String className)
+                    throws ClassNotFoundException {
+                return scripting.loadClass(className);
+            }
+            @Override
+            public URL getResource(String name) {
+                return scripting.getGroovyScripting().getGroovyClassLoader().getResource(name);
+            }
+        };
+    }
+
     protected  void loadApplications() {
         appReg = new ApplicationRegistry(this);
         for (File file : root.listFiles()) {
-            File cfg = new File(file, "application.xml");
-            if (file.isDirectory() && cfg.isFile()) {
-                    loadApplication(cfg);
-           }
+            if (file.isDirectory()) {
+                ApplicationDescriptor ad = null;
+                File appFile = new File(file, "Main.groovy");
+                if (appFile.isFile()) {       
+                    ad = loadApplicationDescriptor(file.getName()+".Main");
+                } else {
+                    appFile = new File(file, "application.xml");
+                    if (appFile.isFile()) {
+                        ad = loadApplicationDescriptor(appFile);
+                    }
+                }
+                if (ad != null) {
+                    try {
+                        appReg.registerDescriptor(file, ad);
+                        notifier.watch(appFile); // always track the file
+                    } catch (Exception e) {                
+                        e.printStackTrace(); // TODO log
+                    }                    
+                }
+            }
         }
     }
 
-    protected synchronized void loadApplication(File cfg) {
+    
+    /**
+     * Load an application given its annotated class 
+     * @param clazz
+     */
+    protected synchronized ApplicationDescriptor loadApplicationDescriptor(String className) {
+        try {
+            Class<?> clazz = scripting.loadClass(className);
+            return ApplicationDescriptor.fromAnnotation(clazz);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace(); //TODO log
+            // do nothing
+        }
+        return null;
+    }
+    
+    /**
+     * load an application given its configuration file
+     * @param ctx
+     * @param cfgFile
+     */
+    protected synchronized ApplicationDescriptor loadApplicationDescriptor(File cfgFile) {
         try {
             XMap xmap = new XMap();
             xmap.register(ApplicationDescriptor.class);
-            InputStream in = new BufferedInputStream(new FileInputStream(cfg));
-            ApplicationDescriptor ad = (ApplicationDescriptor)xmap.load(in);
-            File parent = cfg.getParentFile();
-            String mainClass = null;
-            File mainClassFile = new File(parent, "Main.groovy"); 
-            if (mainClassFile.isFile()) {
-                mainClass = parent.getName()+".Main";
-                notifier.watch(mainClassFile);
-            }
-            appReg.registerDescriptor(parent, mainClass, ad);
+            InputStream in = new BufferedInputStream(new FileInputStream(cfgFile));            
+            return (ApplicationDescriptor)xmap.load(createXMapContext(), in);
         } catch (Exception e) {
             e.printStackTrace(); // TODO log exception
-        } finally {
-            try {
-                notifier.watch(cfg);
-            } catch (IOException e) {
-                e.printStackTrace(); //TODO log error
-            }
         }
+        return null;
     }
     
     public boolean isDebug() {

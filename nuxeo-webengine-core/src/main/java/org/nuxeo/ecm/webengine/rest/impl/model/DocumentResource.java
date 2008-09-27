@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
+import org.nuxeo.ecm.webengine.rest.annotations.Application;
 import org.nuxeo.ecm.webengine.rest.model.ManagedResource;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.model.WebObject;
@@ -38,6 +39,7 @@ import org.nuxeo.ecm.webengine.rest.model.WebType;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+@Application(name="document", path="/doc")
 public class DocumentResource extends ManagedResource {
 
     protected String repository = "default"; // TODO
@@ -52,7 +54,7 @@ public class DocumentResource extends ManagedResource {
         // create the root document
         try {
             DocumentModel root = session.getDocument(new PathRef((String)app.getProperty("contentRoot")));
-            return app.getWebType(root.getType());
+            return app.getType(root.getType());
         } catch (Exception e) {
             throw WebException.wrap(e);
         }

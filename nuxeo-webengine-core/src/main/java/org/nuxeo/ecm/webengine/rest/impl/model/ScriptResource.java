@@ -44,7 +44,7 @@ public class ScriptResource extends ManagedResource {
     
     @Override
     protected WebType getResourceType(WebContext2 ctx) throws WebException {
-        return ctx.getApplication().getWebType("Script");
+        return ctx.getApplication().getType("Script");
     }
 
 

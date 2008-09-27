@@ -27,7 +27,6 @@ import org.nuxeo.ecm.webengine.rest.PathDescriptor;
 import org.nuxeo.ecm.webengine.rest.ResourceBinding;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.model.ManagedResource;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.servlet.jersey.patch.WebApplicationContext;
 import org.nuxeo.runtime.api.Framework;
@@ -124,7 +123,6 @@ public class WebEngineApplication extends
                 continue;
             }
             PathDescriptor pathDesc = app.getPath();
-            ManagedResource res = app.getRootResource();
             String path = pathDesc.path;
             boolean pathEndsInSlash = false;
             if (path == null || path.equals("/")) {
@@ -134,9 +132,9 @@ public class WebEngineApplication extends
             
             UriTemplate t = new PathTemplate(path, pathDesc.encode);
             PathPattern p = new PathPattern(t, pathDesc.limited);
-            UriRule rule = new ResourceObjectRule(t, res);
+            UriRule rule = new ResourceObjectRule(t, app);
                         
-            getResourceClass(res.getClass()); // TODO here we must be able to modify
+            getResourceClass(app.getClass()); // TODO here we must be able to modify
 
             rules.put(p, new RightHandPathRule(redirect, pathEndsInSlash, rule));
         }

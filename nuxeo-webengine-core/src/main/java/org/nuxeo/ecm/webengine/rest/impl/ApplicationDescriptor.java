@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.tools.ant.taskdefs.Typedef;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -33,6 +32,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.RootDescriptor;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.rest.PathDescriptor;
+import org.nuxeo.ecm.webengine.rest.annotations.Application;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 import org.nuxeo.runtime.model.Adaptable;
@@ -66,8 +66,8 @@ public class ApplicationDescriptor implements Cloneable {
      * The main class to use. The main class is the root JAX-RS resource that will be registered 
      * for this application
      */
-    @XNode("main")
-    public String main;
+    @XNode("class")
+    public Class<?> clazz;
 
     /**
      * The path this application is bound. 
@@ -76,19 +76,6 @@ public class ApplicationDescriptor implements Cloneable {
      */
     @XNode("path")
     public PathDescriptor path;
-
-    /** 
-     * the class of the resource to serve
-     * @deprecated check if this is still needed 
-     * */
-    @XNode("type")
-    public String type;
-
-    /**
-     * @deprecated you should use properties instead - this field is too specialized 
-     */
-    @XNode("contentRoot")
-    public String contentRoot;
 
     @XNodeMap(value="property", key="property@name", componentType=String.class, type=HashMap.class, nullByDefault=false)
     public HashMap<String, Object> properties;
@@ -160,5 +147,43 @@ public class ApplicationDescriptor implements Cloneable {
             throw new Error("Should never happen");
         }
     }
+
     
+    public static ApplicationDescriptor fromAnnotation(Class<?> clazz) {
+        Application anno = clazz.getAnnotation(Application.class);
+        if (anno == null) {
+            return null;
+        }
+        ApplicationDescriptor ad = new ApplicationDescriptor();
+        ad.clazz = clazz;
+        ad.name = anno.name();
+        ad.path = new PathDescriptor(anno.path(), anno.limited(), anno.encode());
+        ad.defaultPage = anno.defaultPage();
+        ad.indexPage = anno.indexPage();
+        ad.errorPage = anno.errorPage();
+        ad.templateExtension = anno.templateExtension();
+        ad.scriptExtension = anno.scriptExtension();
+        ad.fragment = nullIfEmpty(anno.fragment());
+        ad.base = nullIfEmpty(anno.base());
+        String guard = nullIfEmpty(anno.guard());
+        if (guard != null) {
+            ad.guardDescriptor = new GuardDescriptor();
+            ad.guardDescriptor.setExpression(guard);
+        }
+        String[] roots = anno.roots();
+        if (roots.length > 0) {
+            ad.roots = new ArrayList<RootDescriptor>(); 
+            for (int i=0; i<roots.length; i++) {
+                ad.roots.add(new RootDescriptor(roots[i], i));
+            }
+        }
+        ad.properties = new HashMap<String, Object>();
+        ad.actions = new ArrayList<ActionDescriptor>();
+        ad.types = new ArrayList<TypeDescriptor>();        
+        return ad;
+    }
+
+    public static final String nullIfEmpty(String str) {
+        return str != null && str.length() == 0 ? null : str;
+    }
 }

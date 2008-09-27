@@ -39,7 +39,6 @@ public class RootDescriptor implements Comparable<RootDescriptor> {
      *
      */
     public RootDescriptor() {
-        // TODO Auto-generated constructor stub
     }
 
     public RootDescriptor(String path, int priority) {

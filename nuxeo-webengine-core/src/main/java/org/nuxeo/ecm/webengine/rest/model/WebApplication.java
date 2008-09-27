@@ -19,10 +19,13 @@
 
 package org.nuxeo.ecm.webengine.rest.model;
 
+import java.io.File;
 import java.io.IOException;
 
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.PathDescriptor;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
+import org.nuxeo.ecm.webengine.rest.impl.ApplicationDescriptor;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.runtime.deploy.FileChangeListener;
 
@@ -32,12 +35,12 @@ import org.nuxeo.runtime.deploy.FileChangeListener;
  */
 public interface WebApplication extends FileChangeListener {
 
-    String getId();
+    void initialize(WebEngine2 engine, File root, ApplicationDescriptor descriptor) throws WebException;
+    
+    String getName();
     
     boolean isFragment();
 
-    ManagedResource getRootResource();
-    
     PathDescriptor getPath();
     
     WebEngine2 getEngine();
@@ -90,6 +93,6 @@ public interface WebApplication extends FileChangeListener {
      * @return the web type instance
      * @throws TypeNotFoundException if no such web type was defined
      */
-    WebType getWebType(String typeName) throws TypeNotFoundException;
+    WebType getType(String typeName) throws TypeNotFoundException;
     
 }

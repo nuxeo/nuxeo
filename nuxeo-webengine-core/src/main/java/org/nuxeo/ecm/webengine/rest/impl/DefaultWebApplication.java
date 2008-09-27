@@ -31,7 +31,6 @@ import org.nuxeo.ecm.webengine.RootDescriptor;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.PathDescriptor;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.model.ManagedResource;
 import org.nuxeo.ecm.webengine.rest.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.model.WebType;
@@ -51,7 +50,6 @@ public class DefaultWebApplication implements WebApplication {
     protected WebEngine2 engine;
     protected ApplicationDescriptor descriptor;
 
-    protected ManagedResource rootResource;
     protected File root;
     protected DirectoryStack dirStack;
     protected ConcurrentMap<String, ScriptFile> fileCache;
@@ -63,13 +61,16 @@ public class DefaultWebApplication implements WebApplication {
     protected TypeConfigurationProvider localTypes;
 
 
-    public DefaultWebApplication(WebEngine2 engine, File root, ApplicationDescriptor desc) throws WebException {
-        this.root = root;
-        this.descriptor = desc;
-        this.engine = engine;
+    public DefaultWebApplication() throws WebException {
         this.fileCache = new ConcurrentHashMap<String, ScriptFile>();
-        loadDirectoryStack();
     }    
+    
+    public void initialize(WebEngine2 engine, File root, ApplicationDescriptor descriptor) throws WebException {
+        this.root = root;
+        this.descriptor = descriptor;
+        this.engine = engine;
+        loadDirectoryStack();
+    }
 
     public boolean isFragment() {
         return descriptor.fragment != null;
@@ -78,43 +79,7 @@ public class DefaultWebApplication implements WebApplication {
     public PathDescriptor getPath() {
         return descriptor.path;
     }
-    
-    public ManagedResource getRootResource() {
-        if (rootResource != null || isFragment()) {
-            return rootResource;
-        }        
-        Class<?> clazz = null;
-        if (descriptor.main != null) {
-            try {
-                clazz = loadClass(descriptor.main);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace(); //TODO log error
-            }
-        }
-        if (clazz == null) { // look into parent app
-            if (descriptor.base != null) {
-                WebApplication baseApp = engine.getApplication(descriptor.base);
-                if (baseApp != null) {
-                    rootResource = baseApp.getRootResource();
-                    return rootResource;
-                }
-            }
-        }
         
-        String contentRoot = (String)descriptor.properties.get("content-root");
-        if (contentRoot != null) { // a document app.
-            //TODO
-            return new ManagedResource(this);
-        } else { // a generic app.
-            //TODO
-            String resourceType = (String)descriptor.properties.get("resource-type");
-            if (resourceType != null) {
-                resourceType = WebType.ROOT_TYPE_NAME;
-            }
-            return new ManagedResource(this);
-        }
-    }
-    
     public Object getProperty(String key) {
         return descriptor.properties.get(key);
     }
@@ -128,7 +93,7 @@ public class DefaultWebApplication implements WebApplication {
         return descriptor;
     }
 
-    public String getId() {
+    public String getName() {
         return descriptor.name;
     }
 
@@ -173,16 +138,35 @@ public class DefaultWebApplication implements WebApplication {
     protected void loadDirectoryStack() throws WebException {
         try {
             List<RootDescriptor> roots = descriptor.roots;
-            dirStack = new DirectoryStack();
-            if (roots == null) {
-                dirStack.addDirectory(new File(engine.getRootDirectory(), "default"), 0);
-            } else {
-                Collections.sort(roots);
-                for (RootDescriptor rd : roots) {
-                    File file =new File(engine.getRootDirectory(), rd.path);
-                    dirStack.addDirectory(file, rd.priority);
+            // if no roots are defined import base roots and add application directory
+            if (roots == null || roots.isEmpty()) {  
+                if (descriptor.base != null) { 
+                    DefaultWebApplication parent = (DefaultWebApplication)engine.getApplication(descriptor.base);
+                    if (parent != null && parent.dirStack != null) {                        
+                        dirStack = new DirectoryStack(parent.dirStack.getEntries());
+                        int size  = dirStack.getEntries().size();
+                        int p = 0;
+                        if (size > 0) {
+                            DirectoryStack.Entry entry = dirStack.getEntries().get(size-1);
+                            p = entry.priority+1;
+                        }
+                        dirStack.addDirectory(root, p);
+                    }
+                } else {
+                    dirStack = new DirectoryStack();
+                    if (descriptor.roots != null && !descriptor.roots.isEmpty()) {
+                        for (RootDescriptor rd : descriptor.roots) {
+                            File file =new File(engine.getRootDirectory(), rd.path);
+                            dirStack.addDirectory(file, rd.priority);
+                        }
+                        Collections.sort(dirStack.getEntries()); //TODO priority is meaningless
+                    } else {
+                        dirStack.addDirectory(root, 0);
+                    }
                 }
             }
+
+            // watch roots for modifications
             FileChangeNotifier notifier = engine.getFileChangeNotifier();
             if (notifier != null) {
                 if (!dirStack.isEmpty()) {
@@ -252,7 +236,7 @@ public class DefaultWebApplication implements WebApplication {
         return engine.getScripting().loadClass(className);
     }
 
-    public WebType getWebType(String typeName) throws TypeNotFoundException {
+    public WebType getType(String typeName) throws TypeNotFoundException {
         if (typeReg == null) { // create type registry if not already created
             synchronized (typeLock) {
                 if (typeReg == null) {

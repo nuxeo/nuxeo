@@ -17,26 +17,27 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.annotations;
+package org.nuxeo.runtime.annotations.loader;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.nuxeo.ecm.webengine.rest.impl.WebTypeImpl;
-import org.nuxeo.runtime.annotations.loader.Indexable;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+@Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-@Indexable({"value"})
-public @interface Type {
+@Target(ElementType.ANNOTATION_TYPE)
+public @interface Indexable {
 
-    String value(); // the type name
-    String superType() default WebTypeImpl.ROOT_TYPE_NAME; // the super type name
+    /**
+     * The name of annotation arguments that should be indexed
+     * @return
+     */
+    public String[] value();
     
 }

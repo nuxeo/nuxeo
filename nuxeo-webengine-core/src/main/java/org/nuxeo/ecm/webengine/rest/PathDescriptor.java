@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine.rest;
 
-import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 

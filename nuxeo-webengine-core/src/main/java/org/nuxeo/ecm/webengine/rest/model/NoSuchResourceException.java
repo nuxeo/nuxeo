@@ -17,26 +17,24 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.annotations;
+package org.nuxeo.ecm.webengine.rest.model;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.nuxeo.ecm.webengine.rest.impl.WebTypeImpl;
-import org.nuxeo.runtime.annotations.loader.Indexable;
+import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-@Indexable({"value"})
-public @interface Type {
+public class NoSuchResourceException extends WebException {
 
-    String value(); // the type name
-    String superType() default WebTypeImpl.ROOT_TYPE_NAME; // the super type name
+    private static final long serialVersionUID = -651531091916992562L;
+
+    public NoSuchResourceException(String msg) {
+        super(msg);
+    }
+    
+    public NoSuchResourceException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
     
 }

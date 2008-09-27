@@ -49,7 +49,6 @@ import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.io.ScriptFileWriter;
 import org.nuxeo.ecm.webengine.rest.io.WebViewWriter;
-import org.nuxeo.ecm.webengine.rest.model.ManagedResource;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.runtime.api.Framework;
 import org.resteasy.Dispatcher;
@@ -341,8 +340,7 @@ if (path == null) path = "/";
                     continue;
                 }
                 PathDescriptor path = app.getPath();
-                ManagedResource res = app.getRootResource();
-                registry.addSingletonResource(res, path.path, path.encode, path.limited);
+                registry.addSingletonResource(app, path.path, path.encode, path.limited);
             }
         }
     }
