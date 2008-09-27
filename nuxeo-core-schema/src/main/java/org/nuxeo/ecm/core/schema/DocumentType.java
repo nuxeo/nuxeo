@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 
-
 /**
  * Document types are composite types made of several schemas.
  * <p>
@@ -53,11 +52,12 @@ public interface DocumentType extends CompositeType {
     /**
      * Gets the prefetch info or null if no prefetch is defined.
      * <p>
-     * If the prefetch info is not null, the caller should use it when instantiating a document
-     * to preload the fields defined by the prefetch info.
+     * If the prefetch info is not null, the caller should use it when
+     * instantiating a document to preload the fields defined by the prefetch
+     * info.
      * <p>
-     * If no prefetch is specified by the document type the caller is free to use a default prefetch info
-     * or no prefetch at all.
+     * If no prefetch is specified by the document type the caller is free to
+     * use a default prefetch info or no prefetch at all.
      *
      * @return the prefetch info or null
      */
@@ -86,7 +86,8 @@ public interface DocumentType extends CompositeType {
 
     /**
      * Gets all the facets of this document type.
-     * <p>Facets inherited from parents are taken into account</p>
+     * <p>
+     * Facets inherited from parents are taken into account.
      *
      * @return the facets
      */
@@ -106,7 +107,6 @@ public interface DocumentType extends CompositeType {
     void addSchemas(String[] schemas);
 
     TypeRef<DocumentType> getRef();
-
 
     /**
      * Sets the names of the allowed children doc types.
