@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webengine.rest.impl;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,14 +37,14 @@ import org.nuxeo.ecm.webengine.rest.model.WebType;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebTypeImpl implements WebType {
+public class DefaultWebType implements WebType {
         
     protected String name;
-    protected WebTypeImpl superType;
+    protected DefaultWebType superType;
     protected ConcurrentMap<String, ActionDescriptor> actions;
     protected Class<WebObject> clazz;
 
-    public WebTypeImpl(WebTypeImpl superType, String name, Class<WebObject> clazz, Map<String, ActionDescriptor> actions) {
+    public DefaultWebType(DefaultWebType superType, String name, Class<WebObject> clazz, Map<String, ActionDescriptor> actions) {
         this.superType = superType;
         this.name = name;
         this.clazz = clazz;
@@ -70,7 +71,8 @@ public class WebTypeImpl implements WebType {
     
     public WebObject newInstance() throws WebException {
         try {
-            return clazz.newInstance();
+            Constructor<WebObject> ctor = clazz.getConstructor(WebType.class);            
+            return ctor.newInstance(this);
         } catch (Exception e) {
             throw WebException.wrap("Failed to instantiate web object: "+clazz, e);
         }
@@ -87,7 +89,7 @@ public class WebTypeImpl implements WebType {
                 if (!action.getGuard().check(ctx)) {
                     throw new WebSecurityException("Failed to get action: "+action.name+". Action is not accessible in the current context", action.name);
                 }
-                return (WebAction)action.klass.newInstance();
+                return action.newInstance();
             } catch (Exception e) {
                 throw WebException.wrap(e);
             }

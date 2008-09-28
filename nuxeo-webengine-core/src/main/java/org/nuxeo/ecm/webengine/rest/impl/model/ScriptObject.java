@@ -30,6 +30,7 @@ import javax.ws.rs.core.Response;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.annotations.Type;
+import org.nuxeo.ecm.webengine.rest.impl.DefaultWebObject;
 import org.nuxeo.ecm.webengine.rest.model.WebObject;
 import org.nuxeo.ecm.webengine.rest.model.WebType;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
@@ -42,7 +43,7 @@ import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
  *
  */
 @Type("Script")
-public class ScriptObject extends WebObject {
+public class ScriptObject extends DefaultWebObject {
 
     protected ScriptFile file;
 
@@ -51,13 +52,14 @@ public class ScriptObject extends WebObject {
     }
 
     @Override
-    public void initialize(WebContext2 ctx, String path) {
+    public WebObject initialize(WebContext2 ctx, String path) {
         super.initialize(ctx, path);
         try {
             file = ctx.getApplication().getFile(path);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     @GET

@@ -11,7 +11,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyWorkers;
 
 import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.servlet.WebConst;
+import org.nuxeo.ecm.webengine.rest.servlet.resteasy.WebEngineHttpRequest;
 import org.resteasy.ValueInjector;
 import org.resteasy.specimpl.MessageBodyWorkersImpl;
 import org.resteasy.specimpl.RequestImpl;
@@ -39,7 +39,7 @@ public class ContextParameterInjector implements ValueInjector
       if (type.equals(HttpHeaders.class)) return request.getHttpHeaders();
       if (type.equals(UriInfo.class)) return request.getUri();
       if (type.equals(Request.class)) return new RequestImpl(request.getHttpHeaders(), request.getHttpMethod());
-      if (type.equals(WebContext2.class)) return request;
+      if (type.equals(WebContext2.class)) return ((WebEngineHttpRequest)request).getContext();
       if (type.equals(HttpRequest.class)) return request;
       if (type.equals(MessageBodyWorkers.class)) return new MessageBodyWorkersImpl();
       else return factory.getContextData(type);

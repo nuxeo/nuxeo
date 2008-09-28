@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.webengine.rest.PathDescriptor;
 import org.nuxeo.ecm.webengine.rest.ResourceBinding;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
@@ -58,14 +57,14 @@ public class WebEngineApplication extends
     @Override
     protected WebApplicationContext createWebAcpplicationContext(
             ContainerRequest request, ContainerResponse response) {
-        WebContextImpl ctx = new WebContextImpl(this, request, response);
-        return ctx;
+        WebContext2 ctx = new WebContextImpl(request);
+        return new WebEngineApplicationContext(ctx, this, request, response);
     }
     
     @Override
     protected void setThreadLocalContext(WebApplicationContext localContext) {
         super.setThreadLocalContext(localContext);
-        WebEngine2.setActiveContext((WebContext2)localContext);
+        WebEngine2.setActiveContext(((WebEngineApplicationContext)localContext).getContext());
     }
 
     @Override
@@ -122,16 +121,15 @@ public class WebEngineApplication extends
             if (app.isFragment()) {
                 continue;
             }
-            PathDescriptor pathDesc = app.getPath();
-            String path = pathDesc.path;
+            String path = app.getPath();
             boolean pathEndsInSlash = false;
             if (path == null || path.equals("/")) {
                 path = "/";
                 pathEndsInSlash = true;
             }
             
-            UriTemplate t = new PathTemplate(path, pathDesc.encode);
-            PathPattern p = new PathPattern(t, pathDesc.limited);
+            UriTemplate t = new PathTemplate(path, app.getPathEncode());
+            PathPattern p = new PathPattern(t, app.getPathLimited());
             UriRule rule = new ResourceObjectRule(t, app);
                         
             getResourceClass(app.getClass()); // TODO here we must be able to modify

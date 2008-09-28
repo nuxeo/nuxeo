@@ -29,7 +29,6 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.nuxeo.ecm.webengine.RootDescriptor;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.rest.PathDescriptor;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
@@ -61,7 +60,7 @@ public class DefaultWebApplication implements WebApplication {
     protected TypeConfigurationProvider localTypes;
 
 
-    public DefaultWebApplication() throws WebException {
+    public DefaultWebApplication() {
         this.fileCache = new ConcurrentHashMap<String, ScriptFile>();
     }    
     
@@ -76,10 +75,18 @@ public class DefaultWebApplication implements WebApplication {
         return descriptor.fragment != null;
     }
     
-    public PathDescriptor getPath() {
-        return descriptor.path;
+    public String getPath() {
+        return descriptor.path.path;
     }
-        
+
+    public boolean getPathLimited() {
+        return descriptor.path.limited;
+    }
+
+    public boolean getPathEncode() {
+        return descriptor.path.encode;
+    }
+
     public Object getProperty(String key) {
         return descriptor.properties.get(key);
     }

@@ -27,8 +27,10 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.rest.model.WebAction;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.model.WebObject;
+import org.nuxeo.ecm.webengine.rest.model.WebResource;
 import org.nuxeo.ecm.webengine.rest.model.WebView;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.session.UserSession;
@@ -55,15 +57,17 @@ public interface WebContext2 extends Adaptable {
 
     /** object stack API */
 
-    public void push(WebObject obj);
+    public WebResource push(String path, WebResource obj);
 
-    public WebObject pop();
+    public WebResource pop();
 
-    public WebObject tail();
+    public WebResource tail();
 
-    public WebObject head();
+    public WebResource head();
 
+    public WebObject getTargetObject();
 
+    public WebAction getAction(); 
 
     /** template and script resolver */
 

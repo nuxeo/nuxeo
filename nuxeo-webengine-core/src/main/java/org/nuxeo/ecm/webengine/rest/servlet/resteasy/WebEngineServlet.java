@@ -43,7 +43,6 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.webengine.rest.PathDescriptor;
 import org.nuxeo.ecm.webengine.rest.ResourceBinding;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
@@ -201,9 +200,9 @@ if (path == null) path = "/";
 
         HttpRequest in;
         try {
-            in = new WebEngineContext(request, headers,
-                    httpMethod.toUpperCase(), uriInfo);
-            WebEngine2.setActiveContext((WebContext2)in);
+            WebContext2 ctx = new WebEngineContext(request);
+            WebEngine2.setActiveContext(ctx);
+            in = new WebEngineHttpRequest(ctx, headers, request.getInputStream(), uriInfo, httpMethod.toUpperCase());
             HttpResponse theResponse = new HttpServletResponseWrapper(response,
                     dispatcher.getProviderFactory());
             try {
@@ -339,8 +338,7 @@ if (path == null) path = "/";
                 if (app.isFragment()) {
                     continue;
                 }
-                PathDescriptor path = app.getPath();
-                registry.addSingletonResource(app, path.path, path.encode, path.limited);
+                registry.addSingletonResource(app, app.getPath(), app.getPathEncode(), app.getPathLimited());
             }
         }
     }

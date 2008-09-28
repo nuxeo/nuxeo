@@ -19,57 +19,67 @@
 
 package org.nuxeo.ecm.webengine.rest.impl;
 
+import java.lang.reflect.Constructor;
 import java.text.ParseException;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebRuntimeException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.annotations.Action;
+import org.nuxeo.ecm.webengine.rest.model.ActionType;
+import org.nuxeo.ecm.webengine.rest.model.WebAction;
 import org.nuxeo.ecm.webengine.rest.model.WebType;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 @XObject("action")
-public class ActionDescriptor implements TypeDescriptorBase {
+public class ActionDescriptor implements TypeDescriptorBase, ActionType {
 
-    protected volatile String actionId;
     @XNode("@name")
     public String name;
+
     @XNode("@fragment")
-    public String fragment;    
+    public String fragment;
+
     @XNode("@type")
     public String type = WebType.ROOT_TYPE_NAME;
+
     @XNode("@enabled")
     public boolean enabled = true;
+
     @XNode("guard")
     public String guardExpression;
+
     @XNode("@class")
-    public Class<?> klass;
-    @XNodeList(value="category", type=HashSet.class, componentType=String.class, nullByDefault=false)
+    public Class<WebAction> clazz;
+
+    @XNodeList(value = "category", type = HashSet.class, componentType = String.class, nullByDefault = false)
     public HashSet<String> categories;
-        
+
     private volatile Guard guard;
-    
-    
+
     public ActionDescriptor() {
     }
-    
-    public ActionDescriptor(Class<?> klass, String name, String type, String guard, boolean enabled) {
-        this.klass = klass;
+
+    public ActionDescriptor(Class<WebAction> klass, String name, String type,
+            String guard, boolean enabled) {
+        this.clazz = klass;
         this.name = name;
         this.type = type;
         this.guardExpression = guard;
         this.enabled = enabled;
         this.categories = new HashSet<String>();
     }
-    
+
     public Guard getGuard() {
         if (guard == null) {
             if (guardExpression == null) {
@@ -78,72 +88,98 @@ public class ActionDescriptor implements TypeDescriptorBase {
                 try {
                     guard = PermissionService.parse(guardExpression);
                 } catch (ParseException e) {
-                    throw new WebRuntimeException("Parse error for action guard: "+guardExpression, e);
+                    throw new WebRuntimeException(
+                            "Parse error for action guard: " + guardExpression,
+                            e);
                 }
             }
         }
-        return guard;        
+        return guard;
     }
-    
+
     public boolean isEnabled(WebContext2 ctx) {
         if (!enabled) {
             return false;
-        }        
+        }
         return getGuard().check(ctx);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null) return false;
+        if (obj == this)
+            return true;
+        if (obj == null)
+            return false;
         if (obj instanceof ActionDescriptor) {
-            ActionDescriptor ad = (ActionDescriptor)obj;
-            return name.equals(ad.name) && type.equals(ad.type) && TypeDescriptor.streq(fragment, ad.fragment);
+            ActionDescriptor ad = (ActionDescriptor) obj;
+            return name.equals(ad.name) && type.equals(ad.type)
+                    && TypeDescriptor.streq(fragment, ad.fragment);
         }
         return false;
     }
-    
+
     @Override
     public ActionDescriptor clone() {
         try {
-            ActionDescriptor ad  = (ActionDescriptor)super.clone();
-            ad.categories = new HashSet<String>(categories); 
+            ActionDescriptor ad = (ActionDescriptor) super.clone();
+            ad.categories = new HashSet<String>(categories);
             return ad;
         } catch (CloneNotSupportedException e) {
             throw new Error("Canot happen");
         }
     }
 
-
     public String getId() {
-        if (actionId == null) {
-            actionId = new StringBuilder().append(name).append('@').append(type).toString();
-        }
-        return actionId;
+        return new StringBuilder().append(name).append('@').append(type).toString();
     }
-    
+
     public String getFragment() {
         return fragment;
     }
-    
+
     public ActionDescriptor asActionDescriptor() {
         return this;
     }
-    
+
     public TypeDescriptor asTypeDescriptor() {
         return null;
     }
-    
+
     public boolean isMainFragment() {
         return fragment == null;
     }
-    
+
+    @SuppressWarnings("unchecked")
     public static ActionDescriptor fromAnnotation(Class<?> clazz, Action action) {
-        ActionDescriptor ad = new ActionDescriptor(clazz, action.value(), action.type(), action.guard(), action.enabled());
+        ActionDescriptor ad = new ActionDescriptor((Class<WebAction>)clazz, action.value(),
+                action.type(), action.guard(), action.enabled());
         for (String cat : action.categories()) {
             ad.categories.add(cat);
         }
         return ad;
     }
+
     
+    public Set<String> getCategories() {
+        return categories;
+    }
+    
+    public boolean isEnabled() {
+        return enabled;
+    }
+    
+    public String getName() {
+        return name;
+    }
+
+    
+    public WebAction newInstance() throws WebException {
+        try {
+            Constructor<WebAction> ctor = clazz.getConstructor(ActionType.class);
+            return ctor.newInstance(this);
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to instantiate action type: "+name, e);           
+        }
+    }
+
 }

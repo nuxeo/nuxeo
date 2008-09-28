@@ -17,17 +17,43 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.impl.model;
+package org.nuxeo.ecm.webengine.rest.impl;
 
-import org.nuxeo.ecm.webengine.rest.annotations.Action;
+import java.util.Set;
+
+import org.nuxeo.ecm.webengine.rest.model.ActionType;
 import org.nuxeo.ecm.webengine.rest.model.WebAction;
+import org.nuxeo.ecm.webengine.rest.model.WebObject;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Action(value="test", type="Document", categories={"cat1","cat\"2"}, enabled=false)
-public class TestAction extends WebAction {
+public class DefaultWebAction extends AbstractWebResource<ActionType> implements WebAction {
 
+
+    public DefaultWebAction(ActionType type) {
+        super (type); 
+    }
     
+    public WebObject getTargetObject() {
+        return (WebObject)prev;
+    }
+    
+    public boolean isEnabled() {
+        return type.isEnabled(ctx);
+    }
+     
+    public Set<String> getCategories() {
+        return type.getCategories();
+    }
+   
+    public boolean isAction() {
+        return true;
+    }
+    
+    public boolean isObject() {
+        return false;
+    }
 }

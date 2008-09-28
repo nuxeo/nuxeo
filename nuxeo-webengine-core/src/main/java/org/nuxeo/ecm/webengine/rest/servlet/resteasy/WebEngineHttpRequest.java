@@ -17,21 +17,31 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.model;
+package org.nuxeo.ecm.webengine.rest.servlet.resteasy;
 
-import java.util.Set;
+import java.io.InputStream;
 
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.UriInfo;
+
+import org.nuxeo.ecm.webengine.rest.WebContext2;
+import org.resteasy.util.HttpRequestImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface WebAction extends WebResource {
+public class WebEngineHttpRequest extends HttpRequestImpl {
+
+    protected WebContext2 ctx;
     
-    ActionType getType();
+    public WebEngineHttpRequest(WebContext2 ctx, HttpHeaders httpHeaders, InputStream inputStream, UriInfo uri, String httpMethod) {
+       super(inputStream, httpHeaders, httpMethod, uri);
+       this.ctx = ctx;
+    }
     
-    boolean isEnabled();
-     
-    Set<String> getCategories();
-   
+    public WebContext2 getContext() {
+        return this.ctx;
+    }
+
 }

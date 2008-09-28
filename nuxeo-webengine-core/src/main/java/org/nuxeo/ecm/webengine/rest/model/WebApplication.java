@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.rest.PathDescriptor;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.impl.ApplicationDescriptor;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
@@ -41,7 +40,9 @@ public interface WebApplication extends FileChangeListener {
     
     boolean isFragment();
 
-    PathDescriptor getPath();
+    String getPath();
+    boolean getPathLimited();
+    boolean getPathEncode();
     
     WebEngine2 getEngine();
 

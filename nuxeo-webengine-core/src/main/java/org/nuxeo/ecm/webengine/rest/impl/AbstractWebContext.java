@@ -39,8 +39,10 @@ import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.impl.model.DocumentObject;
+import org.nuxeo.ecm.webengine.rest.model.WebAction;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.model.WebObject;
+import org.nuxeo.ecm.webengine.rest.model.WebResource;
 import org.nuxeo.ecm.webengine.rest.model.WebView;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
@@ -55,14 +57,15 @@ public class AbstractWebContext implements WebContext2 {
 
     protected static final Log log = LogFactory.getLog(WebContext2.class);
 
-    protected WebApplication config;
+    protected WebApplication app;
     protected UserSession us;
-    protected final LinkedList<WebObject> stack;
     protected final LinkedList<File> scriptExecutionStack;
-
+    protected AbstractWebResource<?> head;
+    protected AbstractWebResource<?> tail;
+    
+    
     public AbstractWebContext(UserSession userSession) {
         this.us = userSession;
-        this.stack = new LinkedList<WebObject>();
         this.scriptExecutionStack = new LinkedList<File>();
     }
 
@@ -80,15 +83,15 @@ public class AbstractWebContext implements WebContext2 {
     }
     
     public void setApplication(WebApplication config) {
-        this.config = config;
+        this.app = config;
     }
 
     public WebApplication getApplication() {
-        return config;
+        return app;
     }
 
     public WebEngine2 getEngine() {
-        return config.getEngine();
+        return app.getEngine();
     }
 
     public UserSession getUserSession() {
@@ -103,27 +106,43 @@ public class AbstractWebContext implements WebContext2 {
         return us.getPrincipal();
     }
 
-
     /** object stack API */
 
-    public void push(WebObject obj) {
-        obj.setContext(this);
-        stack.add(obj);
+    public WebResource push(String path, WebResource obj) {
+        obj.initialize(this, path);
+        AbstractWebResource<?> rs = (AbstractWebResource<?>)obj;
+        if (tail != null) {
+            tail.next = rs;
+            rs.prev = tail;
+            tail = rs;
+        } else {
+            rs.prev = tail;
+            head = tail = rs;
+        }
+        return obj;
     }
 
-    public WebObject pop() {
-        if (stack.isEmpty()) {
+    public WebResource pop() {        
+        if (tail == null) {
             return null;
         }
-        return stack.removeLast();
+        AbstractWebResource<?> rs = (AbstractWebResource<?>)tail;
+        if (tail == head) {
+            head = tail = null;
+        } else {
+            tail = rs.prev;
+            tail.next = null;
+        }
+        rs.initialize(null, null);
+        return rs;
     }
 
-    public WebObject tail() {
-        return stack.isEmpty() ? null : stack.getLast();
+    public WebResource tail() {
+        return tail;
     }
 
-    public WebObject head() {
-        return stack.isEmpty() ? null : stack.getFirst();
+    public WebResource head() {
+        return head;
     }
 
 
@@ -144,7 +163,7 @@ public class AbstractWebContext implements WebContext2 {
                     return new ScriptFile(file);
                 }
                 // try using stacked roots
-                String rootPath = config.getEngine().getRootDirectory().getAbsolutePath();
+                String rootPath = app.getEngine().getRootDirectory().getAbsolutePath();
                 String filePath = file.getAbsolutePath();
                 path = filePath.substring(rootPath.length());
             } else {
@@ -154,12 +173,13 @@ public class AbstractWebContext implements WebContext2 {
         }  else if (c == '@' && tail() != null && path.length() > 2 && path.charAt(1) == '@') {
             // workaround to support action references
             // an action shortcut
-            ScriptFile script = tail().getActionScript(path.substring(2));
-            if (script != null) {
-                return script;
-            }
+            //TODO xxxxxx
+//            ScriptFile script = tail().getActionScript(path.substring(2));
+//            if (script != null) {
+//                return script;
+//            }
         }
-        return config.getFile(path);
+        return app.getFile(path);
     }
 
     public void pushScriptFile(File file) {
@@ -235,7 +255,7 @@ public class AbstractWebContext implements WebContext2 {
             }
             pushScriptFile(script.getFile());
             //TODO =========== fix rendering ============
-            config.getEngine().getRendering().render(template, bindings, writer);
+            app.getEngine().getRendering().render(template, bindings, writer);
         } catch (Exception e) {
             e.printStackTrace();
             throw new WebException("Failed to render template: "+script.getAbsolutePath(), e);
@@ -264,7 +284,7 @@ public class AbstractWebContext implements WebContext2 {
     public Object runScript(ScriptFile script, Map<String, Object> args) throws WebException {
         try {
             pushScriptFile(script.getFile());
-            return config.getEngine().getScripting().runScript(script, createBindings(args));
+            return app.getEngine().getScripting().runScript(script, createBindings(args));
         } catch (WebException e) {
             throw e;
         } catch (Exception e) {
@@ -296,8 +316,32 @@ public class AbstractWebContext implements WebContext2 {
         return bindings;
     }
 
+    public WebObject getTargetObject() {
+        if (tail != null) {            
+            if (tail.isObject()) {
+                return (WebObject)tail;
+            } else {
+                AbstractWebResource<?> rs = tail.prev;
+                while (rs != null) {
+                    if (rs.isObject()) {
+                        return (WebObject)rs;
+                    }
+                    rs = rs.prev;
+                } 
+            }
+        }
+        return null;        
+    }
+    
+    public WebAction getAction() {
+        if (tail != null) {
+            return tail.isAction() ? (WebAction)tail : null;
+        }
+        return null;
+    }
+    
     protected void initializeBindings(Bindings bindings) {
-        WebObject obj = tail();
+        WebResource obj = getTargetObject();
         bindings.put("Context", this);
         //TODO uncomment for compatibility
         //bindings.put("Request", request);
@@ -309,8 +353,8 @@ public class AbstractWebContext implements WebContext2 {
                 bindings.put("Document", ((DocumentObject)obj).getDocument());
             }
         }
-        bindings.put("Config", config);
-        bindings.put("Engine", config.getEngine());
+        bindings.put("Config", app);
+        bindings.put("Engine", app.getEngine());
         //TODO
         //bindings.put("basePath", getBasePath());
         //bindings.put("appPath", getApplicationPath());

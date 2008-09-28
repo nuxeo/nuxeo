@@ -19,15 +19,30 @@
 
 package org.nuxeo.ecm.webengine.rest.impl.model;
 
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
+
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.rest.WebContext2;
+import org.nuxeo.ecm.webengine.rest.impl.DefaultWebApplication;
+import org.nuxeo.ecm.webengine.rest.model.WebObject;
+import org.nuxeo.ecm.webengine.rest.model.WebResource;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TestObject {//extends WebObject {
+public class ScriptApplication extends DefaultWebApplication {
+
+    @Path(value="{path}", limited=false)
+    public WebResource dispatch(@PathParam("path") String path, @Context WebContext2 ctx) throws Exception {
+        return ctx.push(path, getScriptObject());
+    }    
     
-    public TestObject() {
-        super ();
+    protected WebObject getScriptObject() throws WebException {
+        return getType("Script").newInstance();
     }
-    
+
+
 }

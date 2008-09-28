@@ -19,32 +19,16 @@
 
 package org.nuxeo.ecm.webengine.rest.model;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XNodeMap;
-import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
+import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@XObject("type")
-public class WebTypeDescriptor {
+public interface WebResourceType<T extends WebResource> {
 
-    @XNode("@name")
-    protected String name;
-
-    @XNode("@superType")
-    protected String superTypeName = "Object";
-
-    @XNode("@class")
-    protected String className;
-
-    @XNodeMap(value="actions/action", key="@name", type=HashMap.class, componentType=ActionDescriptor.class)
-    protected Map<String, ActionDescriptor> actions;
-
-
+    String getName();
+    
+    T newInstance() throws WebException;
+    
 }

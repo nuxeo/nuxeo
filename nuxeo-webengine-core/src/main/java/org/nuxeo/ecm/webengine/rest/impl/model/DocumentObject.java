@@ -22,13 +22,17 @@ package org.nuxeo.ecm.webengine.rest.impl.model;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.annotations.Type;
+import org.nuxeo.ecm.webengine.rest.impl.DefaultWebObject;
 import org.nuxeo.ecm.webengine.rest.methods.LOCK;
 import org.nuxeo.ecm.webengine.rest.model.WebObject;
+import org.nuxeo.ecm.webengine.rest.model.WebResource;
 import org.nuxeo.ecm.webengine.rest.model.WebType;
 
 
@@ -38,7 +42,7 @@ import org.nuxeo.ecm.webengine.rest.model.WebType;
  *
  */
 @Type(value="Document", superType="*")
-public class DocumentObject extends WebObject {
+public class DocumentObject extends DefaultWebObject {
 
     protected DocumentModel doc;
 
@@ -47,18 +51,20 @@ public class DocumentObject extends WebObject {
         super (type);
     }
 
-    public void initialize(WebContext2 ctx, DocumentModel doc, String path) {
-        super.initialize(ctx, path);
-        this.ctx = ctx;
+    public void setDocument(DocumentModel doc) {
         this.doc = doc;
     }
 
     @Path(value="{path}", limited=true)
-    public WebObject dispatch(@PathParam("path") String path) throws Exception {
-        DocumentModel doc = ctx.getCoreSession().getChild(((DocumentObject)ctx.tail()).getDocument().getRef(), path);
-        DocumentObject obj = (DocumentObject)ctx.getApplication().getType(doc.getType()).newInstance();
-        obj.initialize(ctx, doc, path);
-        return obj;
+    public WebResource dispatch(@Context WebContext2 ctx, @PathParam("path") String path) throws WebException {
+        try {
+            DocumentModel doc = ctx.getCoreSession().getChild(((DocumentObject)ctx.tail()).getDocument().getRef(), path);
+            DocumentObject obj = (DocumentObject)ctx.getApplication().getType(doc.getType()).newInstance();
+            obj.setDocument(doc);
+            return ctx.push(path, obj);
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
     }
 
 

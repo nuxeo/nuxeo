@@ -71,6 +71,7 @@ import javax.ws.rs.ext.MessageBodyWorkers;
 import javax.ws.rs.ext.Provider;
 
 import org.nuxeo.ecm.webengine.rest.WebContext2;
+import org.nuxeo.ecm.webengine.rest.servlet.jersey.WebEngineApplicationContext;
 
 import com.sun.jersey.api.NotFoundException;
 import com.sun.jersey.api.container.ContainerCheckedException;
@@ -576,7 +577,7 @@ public class WebApplicationImpl implements WebApplication {
         HttpContextInjectableProvider ctxInjectableProvider = new HttpContextInjectableProvider();
         ctxInjectableProvider.putInjectable(WebContext2.class, new Injectable<Object>() {
             public Object getValue(HttpContext context) {
-                return context;
+                return ((WebEngineApplicationContext)context).getContext();
             }
         }
         );

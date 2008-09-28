@@ -17,35 +17,31 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.impl.model;
+package org.nuxeo.ecm.webengine.rest.servlet.jersey;
 
-import javax.ws.rs.GET;
-
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.model.ManagedResource;
-import org.nuxeo.ecm.webengine.rest.model.WebApplication;
-import org.nuxeo.ecm.webengine.rest.model.WebType;
+import org.nuxeo.ecm.webengine.rest.servlet.jersey.patch.WebApplicationContext;
+import org.nuxeo.ecm.webengine.rest.servlet.jersey.patch.WebApplicationImpl;
+
+import com.sun.jersey.spi.container.ContainerRequest;
+import com.sun.jersey.spi.container.ContainerResponse;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ScriptResource extends ManagedResource {
+public class WebEngineApplicationContext extends WebApplicationContext {
 
-    @GET
-    public Object get() {
-        return "hello world!";
-    }
-
-    public ScriptResource(WebApplication cfg) throws WebException {
-        super (cfg);
+    protected WebContext2 ctx;
+    
+    public WebEngineApplicationContext(WebContext2 ctx, WebApplicationImpl app,
+            ContainerRequest request, ContainerResponse response) {
+        super (app, request, response);
+        this.ctx = ctx;
     }
     
-    @Override
-    protected WebType getResourceType(WebContext2 ctx) throws WebException {
-        return ctx.getApplication().getType("Script");
+    public WebContext2 getContext() {
+        return ctx;
     }
-
-
+    
 }

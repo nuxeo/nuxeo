@@ -37,11 +37,11 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
 public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescriptorBase>{
     
     //TODO: types map is useless - remove it?
-    protected Map<String, WebTypeImpl> types;
+    protected Map<String, DefaultWebType> types;
     
     
     public TypeRegistry() {
-        types = new ConcurrentHashMap<String, WebTypeImpl>();
+        types = new ConcurrentHashMap<String, DefaultWebType>();
         // register root type
         TypeDescriptor root = new TypeDescriptor(WebObject.class, WebType.ROOT_TYPE_NAME, null); 
         registerType(root);        
@@ -53,7 +53,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
     
     public WebType[] getTypes() {
-        return types.values().toArray(new WebTypeImpl[types.size()]);
+        return types.values().toArray(new DefaultWebType[types.size()]);
     }
     
     public void registerAction(ActionDescriptor ad) {
@@ -138,9 +138,9 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     
     @SuppressWarnings("unchecked")
     protected void installTypeContribution(String key, TypeDescriptor td) {
-        WebTypeImpl superType = types.get(td.superType);
+        DefaultWebType superType = types.get(td.superType);
         assert superType != null; // must never be null since the object is resolved
-        WebTypeImpl type = new WebTypeImpl(superType, td.name, (Class<WebObject>)td.clazz, td.actions);
+        DefaultWebType type = new DefaultWebType(superType, td.name, (Class<WebObject>)td.clazz, td.actions);
         types.put(td.name, type);
     }
   
@@ -170,7 +170,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         }
         String action = key.substring(0, p);
         String type = key.substring(p+1);
-        WebTypeImpl wt = types.get(type);
+        DefaultWebType wt = types.get(type);
         if (wt != null) {
             wt.removeAction(action);
         }

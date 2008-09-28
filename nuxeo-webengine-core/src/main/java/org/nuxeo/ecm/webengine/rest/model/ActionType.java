@@ -21,17 +21,25 @@ package org.nuxeo.ecm.webengine.rest.model;
 
 import java.util.Set;
 
+import org.nuxeo.ecm.webengine.rest.WebContext2;
+import org.nuxeo.ecm.webengine.security.Guard;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface WebAction extends WebResource {
+public interface ActionType extends WebResourceType<WebAction> {
     
-    ActionType getType();
+    Set<String> getCategories();
     
     boolean isEnabled();
-     
-    Set<String> getCategories();
-   
+    
+    boolean isEnabled(WebContext2 ctx);
+    
+    /**
+     * TODO use guard into WebType too?
+     * @return
+     */
+    Guard getGuard();
+    
 }

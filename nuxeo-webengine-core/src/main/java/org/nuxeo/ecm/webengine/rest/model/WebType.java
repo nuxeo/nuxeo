@@ -27,14 +27,12 @@ import org.nuxeo.ecm.webengine.rest.impl.ActionDescriptor;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface WebType {
+public interface WebType extends WebResourceType<WebObject> {
     
     public final static String ROOT_TYPE_NAME = "*";
 
     public WebType getSuperType();
     public Class<? extends WebObject> getObjectType();
-    public String getName();
-    public WebObject newInstance() throws WebException;
     public ActionDescriptor getAction(String name);
     public WebAction getActionInstance(WebContext2 ctx, String name) throws WebException;
     public ActionDescriptor addAction(ActionDescriptor action);
