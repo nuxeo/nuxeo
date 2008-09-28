@@ -30,9 +30,6 @@ import org.nuxeo.runtime.model.Adaptable;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-// There is a bug in jersey ResourceJavaMethodDispatcher#getAcceptableMediaType
-// when no setting the mime type it will return binary content ...
-@ProduceMime({"text/html", "*/*"})
 public interface WebResource extends Adaptable {
 
     WebResource initialize(WebContext2 ctx, String path);

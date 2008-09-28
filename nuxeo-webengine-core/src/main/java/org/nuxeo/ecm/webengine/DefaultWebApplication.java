@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.ws.rs.ProduceMime;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
@@ -50,6 +52,7 @@ import org.nuxeo.runtime.deploy.FileChangeNotifier;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+@ProduceMime({"text/html", "*/*"})
 public class DefaultWebApplication implements WebApplication, FileChangeListener {
 
     public static final Log log = LogFactory.getLog(WebApplication.class);

@@ -64,7 +64,8 @@ public class WebEngineApplication extends
     @Override
     protected void setThreadLocalContext(WebApplicationContext localContext) {
         super.setThreadLocalContext(localContext);
-        WebEngine2.setActiveContext(((WebEngineApplicationContext)localContext).getContext());
+        WebContext2 ctx = localContext != null ? ((WebEngineApplicationContext)localContext).getContext() : null; 
+        WebEngine2.setActiveContext(ctx);        
     }
 
     @Override

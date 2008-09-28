@@ -41,6 +41,8 @@ import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+//There is a bug in jersey ResourceJavaMethodDispatcher#getAcceptableMediaType
+//when no setting the mime type it will return binary content ...
 @ProduceMime({"text/html", "*/*"})
 public class DefaultWebObject extends AbstractWebResource<WebType> implements WebObject {
 
