@@ -6,7 +6,7 @@ import org.nuxeo.theme.types.TypeFamily
 import org.nuxeo.theme.types.Type
 
 groups = []
-category = Context.getCookie("nxthemes.editor.styleCategory")
+category = Context.getCookie("nxthemes.editor.style_category")
 groups.add("")
 if (category == null) {
     return groups

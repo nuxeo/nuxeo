@@ -22,12 +22,12 @@ import org.nuxeo.theme.themes.ThemeManager
 
 id = Request.getParameter("id")
 
-Element element = ThemeManager.getElementById(id)
-
-Element newSection = ElementFactory.create("section")
-Element newCell = ElementFactory.create("cell")
 
 ThemeManager themeManager = Manager.getThemeManager()
+
+Element element = ThemeManager.getElementById(id)
+Element newSection = ElementFactory.create("section")
+Element newCell = ElementFactory.create("cell")
 
 // section
 Format sectionWidget = FormatFactory.create("widget")

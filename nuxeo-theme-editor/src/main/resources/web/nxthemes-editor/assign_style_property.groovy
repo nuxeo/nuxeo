@@ -10,9 +10,9 @@ import org.nuxeo.theme.events.EventManager
 import org.nuxeo.theme.Manager
 import org.nuxeo.theme.editor.Events
 
-String id = Request.getParameter("element_id")
-String property = Request.getParameter("property")
-String value = Request.getParameter("value")
+id = Request.getParameter("element_id")
+property = Request.getParameter("property")
+value = Request.getParameter("value")
 
 Element element = ThemeManager.getElementById(id)
 if (element == null) {
@@ -31,16 +31,16 @@ if (widget == null) {
     return
 }
 
-String viewName = widget.getName()
+viewName = widget.getName()
 
 Properties properties = style.getPropertiesFor(viewName, "")
 if (properties == null) {
     properties = new Properties()
 }
-if (value == null) {
-    properties.remove(property)
-} else {
+if (value) {
     properties.setProperty(property, value)
+} else {
+    properties.remove(property)
 }
 style.setPropertiesFor(viewName, "", properties)
 

@@ -8,7 +8,8 @@ import org.nuxeo.theme.types.TypeRegistry
 defaultTheme = ""
 
 typeRegistry = Manager.getTypeRegistry()
-applicationPath = "/st"
+applicationPath = Request.getParameter("org.nuxeo.theme.application.path")
+
 application = typeRegistry.lookup(TypeFamily.APPLICATION, applicationPath)
  
 if (application != null) {

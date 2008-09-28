@@ -3,10 +3,9 @@ import org.nuxeo.theme.Manager
 import org.nuxeo.theme.themes.ThemeManager
 import org.nuxeo.theme.editor.PageInfo
 
-applicationPath = Request.getParameter("org.nuxeo.theme.application.path")
-
 themeManager = Manager.getThemeManager()
 
+applicationPath = Request.getParameter("org.nuxeo.theme.application.path")
 defaultTheme = ThemeManager.getDefaultTheme(applicationPath)
 defaultPageName = defaultTheme.split("/")[1]
 

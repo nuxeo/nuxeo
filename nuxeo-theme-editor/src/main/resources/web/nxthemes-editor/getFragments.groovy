@@ -6,7 +6,8 @@ import org.nuxeo.theme.fragments.FragmentType
 import org.nuxeo.theme.editor.FragmentInfo
 
 fragments = []
-templateEngine = ThemeManager.getTemplateEngine("/st")
+applicationPath = Request.getParameter("org.nuxeo.theme.application.path")
+templateEngine = ThemeManager.getTemplateEngine(applicationPath)
 
 for (f in Manager.getTypeRegistry().getTypes(TypeFamily.FRAGMENT)) {
     FragmentType fragmentType = (FragmentType) f

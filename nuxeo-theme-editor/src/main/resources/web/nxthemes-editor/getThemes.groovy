@@ -4,7 +4,6 @@ import org.nuxeo.theme.themes.ThemeManager
 import org.nuxeo.theme.editor.ThemeInfo
 
 applicationPath = Request.getParameter("org.nuxeo.theme.application.path")
-
 defaultTheme = ThemeManager.getDefaultTheme(applicationPath)
 
 themes = []

@@ -1,5 +1,5 @@
 
 category = Request.getParameter("category")
-Context.setCookie("nxthemes.editor.styleCategory", category)
+Context.setCookie("nxthemes.editor.style_category", category)
 
 
