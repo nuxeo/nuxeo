@@ -86,14 +86,22 @@ public class LiveEditClientConfig implements Serializable {
 
             for (int i=0; i<accepted.length;i++)
             {
-                if (accepted[i].startsWith(LE_MIME_TYPE))
+                String acceptHeader =accepted[i];
+                if (acceptHeader!=null)
+                {
+                    acceptHeader=acceptHeader.trim();
+                }
+                else
+                    continue;
+                if (acceptHeader.startsWith(LE_MIME_TYPE))
                 {
                     clientHasLiveEditInstalled=true;
-                    String[] subTypes = accepted[i].split(";");
+                    String[] subTypes = acceptHeader.split(";");
 
                     for (int j=0;j<subTypes.length;j++)
                     {
-                        advertizedLiveEditableMimeTypes.add(subTypes[j]);
+                        String subMT = subTypes[j].replace("!", "/");
+                        advertizedLiveEditableMimeTypes.add(subMT);
                     }
                 }
             }
