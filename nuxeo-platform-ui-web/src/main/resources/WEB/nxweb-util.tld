@@ -547,6 +547,14 @@
       </description>
     </attribute>
     <attribute>
+      <name>timeZone</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        String timeZone ID. The server time zone is used if not set.
+      </description>
+    </attribute>
+    <attribute>
       <name>triggerLabel</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>

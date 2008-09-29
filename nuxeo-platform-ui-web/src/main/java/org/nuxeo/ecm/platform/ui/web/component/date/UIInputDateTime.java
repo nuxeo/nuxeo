@@ -55,6 +55,8 @@ public class UIInputDateTime extends UIInput {
 
     private String locale;
 
+    private String timeZone;
+
     private String triggerLabel;
 
     public UIInputDateTime() {
@@ -71,7 +73,8 @@ public class UIInputDateTime extends UIInput {
 
     public DateTimeConverter getDateTimeConverter() {
         DateTimeConverter converter = new DateTimeConverter();
-        converter.setTimeZone(TimeZone.getDefault());
+        String timeZone = getTimeZone();
+        converter.setTimeZone(TimeZone.getTimeZone(timeZone));
         converter.setPattern(getFormat());
         return converter;
     }
@@ -96,6 +99,33 @@ public class UIInputDateTime extends UIInput {
 
     public void setFormat(String format) {
         this.format = format;
+    }
+
+    public String getTimeZone() {
+        if (timeZone != null) {
+            return timeZone;
+        }
+        ValueExpression ve = getValueExpression("timeZone");
+        if (ve != null) {
+            try {
+                Object t = ve.getValue(getFacesContext().getELContext());
+                if (t instanceof TimeZone) {
+                    timeZone = ((TimeZone) t).getID();
+                } else if (t instanceof String) {
+                    timeZone = (String) t;
+                }
+            } catch (ELException e) {
+                throw new FacesException(e);
+            }
+        } else {
+            // default value
+            timeZone = TimeZone.getDefault().getID();
+        }
+        return timeZone;
+    }
+
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
     }
 
     public Boolean getShowsTime() {
@@ -164,8 +194,8 @@ public class UIInputDateTime extends UIInput {
 
     @Override
     public Object saveState(FacesContext context) {
-        Object[] values = new Object[]{ super.saveState(context), format,
-                showsTime, locale, triggerLabel, };
+        Object[] values = new Object[] { super.saveState(context), format,
+                showsTime, locale, timeZone, triggerLabel, };
         return values;
     }
 
@@ -176,6 +206,7 @@ public class UIInputDateTime extends UIInput {
         format = (String) values[1];
         showsTime = (Boolean) values[2];
         locale = (String) values[3];
-        triggerLabel = (String) values[4];
+        timeZone = (String) values[4];
+        triggerLabel = (String) values[5];
     }
 }
