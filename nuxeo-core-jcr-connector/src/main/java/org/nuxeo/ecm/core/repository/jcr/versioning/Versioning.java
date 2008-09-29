@@ -31,9 +31,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class Versioning extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(Versioning.class);
-    
+
     private static String klazzName;
-    
+
     private static VersioningService service;
 
     public static VersioningService getService() {
@@ -50,11 +50,11 @@ public class Versioning extends DefaultComponent {
                 } catch (IllegalAccessException e) {
                     log.error("Cannot create implementor class: " + klazzName, e);
                 }
-            } else {            
+            } else {
                 service = new JCRVersioningService();
             }
         }
-        
+
         return service;
     }
 
@@ -69,7 +69,8 @@ public class Versioning extends DefaultComponent {
 
     @Override
     public void deactivate(ComponentContext context) {
-        // do nothing
+        service = null;
+        klazzName = null;
     }
 
 }
