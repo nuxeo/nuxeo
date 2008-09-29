@@ -82,8 +82,10 @@ public class LiveEditClientConfig implements Serializable {
         {
             Map<String,String> headers = fContext.getExternalContext().getRequestHeaderMap();
             String accept = headers.get("Accept");
-            String[] accepted = accept.split(",");
+            if (accept==null)
+                return;
 
+            String[] accepted = accept.split(",");
             for (int i=0; i<accepted.length;i++)
             {
                 String acceptHeader =accepted[i];
