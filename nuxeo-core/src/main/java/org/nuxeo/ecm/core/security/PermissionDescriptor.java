@@ -68,8 +68,11 @@ public class PermissionDescriptor implements Serializable{
         return Arrays.asList(aliasPermissions);
     }
 
-    @Override // used to unregistered a PermissionDescriptor out of the list
-                // of already registered contributions
+    /**
+     * Used to unregistered a PermissionDescriptor out of the list
+     * of already registered contributions.
+     */
+    @Override
     public boolean equals(Object o) {
         if (o instanceof PermissionDescriptor) {
             PermissionDescriptor pd = (PermissionDescriptor) o;

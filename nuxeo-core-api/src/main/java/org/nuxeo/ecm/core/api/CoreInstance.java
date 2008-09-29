@@ -157,10 +157,10 @@ public class CoreInstance implements Serializable {
         return sessions.remove(sid);
     }
 
-    public void close(CoreSession client) throws ClientException {
+    public void close(CoreSession client) {
         client = sessions.remove(client.getSessionId());
         if (client != null) {
-            client.disconnect();
+            client.destroy();
         }
     }
 
@@ -201,7 +201,7 @@ public class CoreInstance implements Serializable {
             if (session != null) {
                 documentProvider = Framework.getLocalService(DocumentProvider.class);
                 if (documentProvider instanceof DocumentProviderManager) {
-                    ((DocumentProviderManager)documentProvider).setSession(session);
+                    ((DocumentProviderManager) documentProvider).setSession(session);
                 }
                 documentProviders.put(sid, documentProvider);
             }
