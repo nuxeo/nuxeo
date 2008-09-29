@@ -1936,6 +1936,8 @@
     </match>
   </match-list>
 </match>
+
+<!--
 <match>
   <mimetype>text/x-java</mimetype>
   <extension>java</extension>
@@ -1977,7 +1979,8 @@
   <extension>.sh</extension>
   <description>ksh script</description>
   <test offset="0" type="regex" comparator="=">/^#!\/bin\/ksh/</test>
-</match>
+</match>-->
+<!--
 <match>
   <mimetype>text/html</mimetype>
   <extension>.html</extension>
@@ -1990,6 +1993,7 @@
   <description>HTML Document</description>
   <test offset="0" type="regex" comparator="=">/^\s*&lt;html&gt;/</test>
 </match>
+-->
 <!--
 <match>
   <mimetype>text/plain</mimetype>
