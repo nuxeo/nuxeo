@@ -69,7 +69,7 @@ public class TypeDescriptor implements TypeDescriptorBase {
         if (obj == null) return false;
         if (obj instanceof TypeDescriptor) {
             TypeDescriptor td = (TypeDescriptor)obj;
-            return name.equals(td.name) && streq(fragment, td.fragment);
+            return name.equals(td.name) && Utils.streq(fragment, td.fragment);
         }
         return false;
     }
@@ -78,7 +78,9 @@ public class TypeDescriptor implements TypeDescriptorBase {
     public TypeDescriptor clone() {
         try {
             TypeDescriptor td  = (TypeDescriptor)super.clone();
-            td.actions = new HashMap<String, ActionDescriptor>(actions); 
+            if (actions != null) {
+                td.actions = new HashMap<String, ActionDescriptor>(actions);
+            }
             return td;
         } catch (CloneNotSupportedException e) {
             throw new Error("Canot happen");
@@ -105,15 +107,6 @@ public class TypeDescriptor implements TypeDescriptorBase {
         return fragment == null;
     }
     
-    public final static boolean streq(String str1, String str2) {
-        if (str1 == null) {
-            return str2 == null;
-        } else if (str2 == null) {
-            return str1 == null;
-        } else {
-            return str1.equals(str2);
-        }
-    }
 
     public static TypeDescriptor fromAnnotation(Class<?> clazz, Type type) {
         return  new TypeDescriptor(clazz, type.value(), type.superType());

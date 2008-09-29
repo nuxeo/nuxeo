@@ -138,9 +138,11 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     
     @SuppressWarnings("unchecked")
     protected void installTypeContribution(String key, TypeDescriptor td) {
-        DefaultWebType superType = types.get(td.superType);
-        assert superType != null; // must never be null since the object is resolved
-        DefaultWebType type = new DefaultWebType(superType, td.name, (Class<WebObject>)td.clazz, td.actions);
+        DefaultWebType type = new DefaultWebType(null, td.name, (Class<WebObject>)td.clazz, td.actions);
+        if (td.superType != null) {
+            type.superType = types.get(td.superType);
+            assert type.superType != null; // must never be null since the object is resolved 
+        }
         types.put(td.name, type);
     }
   

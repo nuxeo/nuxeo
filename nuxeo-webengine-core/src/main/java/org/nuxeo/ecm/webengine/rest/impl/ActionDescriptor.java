@@ -113,7 +113,7 @@ public class ActionDescriptor implements TypeDescriptorBase, ActionType {
         if (obj instanceof ActionDescriptor) {
             ActionDescriptor ad = (ActionDescriptor) obj;
             return name.equals(ad.name) && type.equals(ad.type)
-                    && TypeDescriptor.streq(fragment, ad.fragment);
+                    && Utils.streq(fragment, ad.fragment);
         }
         return false;
     }
@@ -152,9 +152,12 @@ public class ActionDescriptor implements TypeDescriptorBase, ActionType {
     @SuppressWarnings("unchecked")
     public static ActionDescriptor fromAnnotation(Class<?> clazz, Action action) {
         ActionDescriptor ad = new ActionDescriptor((Class<WebAction>)clazz, action.value(),
-                action.type(), action.guard(), action.enabled());
-        for (String cat : action.categories()) {
-            ad.categories.add(cat);
+                action.type(), Utils.nullIfEmpty(action.guard()), action.enabled());
+        String[] cats = action.categories();
+        if (cats != null) {
+            for (String cat : cats) {
+                ad.categories.add(cat);
+            }
         }
         return ad;
     }

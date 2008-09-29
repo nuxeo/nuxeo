@@ -31,7 +31,9 @@ import org.nuxeo.ecm.webengine.rest.model.WebView;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class AbstractWebResource<T extends WebResourceType<?>> implements WebResource {
+// DO NOT MODIFY class declaration! Cannot use WebResourceType<?> since groovy doesn't supports wildcards for now
+@SuppressWarnings("unchecked")
+public abstract class AbstractWebResource<T extends WebResourceType> implements WebResource {
 
     protected WebContext2 ctx;
     protected AbstractWebResource<?> next;

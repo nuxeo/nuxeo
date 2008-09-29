@@ -63,21 +63,27 @@ public class GlobalTypesLoader  implements AnnotationLoader {
     public TypeConfigurationProvider getProvider(String dirName) {
         TypeConfigurationProvider provider = providers.get(dirName);
         if (provider == null) {
-            try {
-                provider = scanResourceDirectory(new File(engine.getRootDirectory(), dirName));
-                providers.put(dirName, provider);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace(); //TODO
+            File root = new File(engine.getRootDirectory(), dirName);
+            for (File typeDir : root.listFiles()) {
+                if (!typeDir.isDirectory()) {
+                    continue;
+                }
+                try {
+                    provider = scanResourceDirectory(dirName, typeDir);
+                    providers.put(dirName, provider);
+                } catch (Throwable e) {
+                    e.printStackTrace(); //TODO
+                }
             }
         }
         return provider;
     }
     
 
-    public TypeConfigurationProvider scanResourceDirectory(File dir) throws ClassNotFoundException {
+    public TypeConfigurationProvider scanResourceDirectory(String parentName, File dir) throws ClassNotFoundException {
         TypeConfigurationProvider provider = new TypeConfigurationProvider();
-        String pkgName = dir.getName();
-        String typeName = fcToUpperCase(pkgName);
+        String pkgName = new StringBuilder().append(parentName).append('.').append(dir.getName()).toString();
+        String typeName = fcToUpperCase(dir.getName());
         int extlen = ".groovy".length(); 
         for (File file : dir.listFiles()) {
             String name = file.getName();

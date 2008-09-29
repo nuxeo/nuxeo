@@ -131,7 +131,7 @@ public class ApplicationDescriptor implements Cloneable {
     public boolean equals(Object obj) {
         if (obj.getClass() == ApplicationDescriptor.class) {
             ApplicationDescriptor dd = (ApplicationDescriptor)obj;
-            return dd.name.equals(name) && TypeDescriptor.streq(dd.fragment, fragment);
+            return dd.name.equals(name) && Utils.streq(dd.fragment, fragment);
         }
         return false;
     }
@@ -163,9 +163,9 @@ public class ApplicationDescriptor implements Cloneable {
         ad.errorPage = anno.errorPage();
         ad.templateExtension = anno.templateExtension();
         ad.scriptExtension = anno.scriptExtension();
-        ad.fragment = nullIfEmpty(anno.fragment());
-        ad.base = nullIfEmpty(anno.base());
-        String guard = nullIfEmpty(anno.guard());
+        ad.fragment = Utils.nullIfEmpty(anno.fragment());
+        ad.base = Utils.nullIfEmpty(anno.base());
+        String guard = Utils.nullIfEmpty(anno.guard());
         if (guard != null) {
             ad.guardDescriptor = new GuardDescriptor();
             ad.guardDescriptor.setExpression(guard);
@@ -183,7 +183,4 @@ public class ApplicationDescriptor implements Cloneable {
         return ad;
     }
 
-    public static final String nullIfEmpty(String str) {
-        return str != null && str.length() == 0 ? null : str;
-    }
 }
