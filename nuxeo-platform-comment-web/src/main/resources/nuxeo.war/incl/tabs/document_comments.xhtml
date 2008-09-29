@@ -47,7 +47,8 @@
           <h:outputText value=" "/>
           <span class="commentCreationDate">
             <h:outputText value="#{threadEntry.comment.comment.creationDate}" >
-              <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}" />
+              <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+                timeZone="#{timeZone}" />
             </h:outputText>
           </span>
         </div>

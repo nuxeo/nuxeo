@@ -49,7 +49,8 @@
         <h:outputText value="#{messages['label.workflow.task.startdate']}"/>
       </f:facet>
       <h:outputText value="#{workflowTaskInstance.startDate}">
-        <f:convertDateTime pattern="#{nxu:dateAndTimeFormater('medium')}" />
+        <f:convertDateTime pattern="#{nxu:dateAndTimeFormater('medium')}"
+          timeZone="#{timeZone}" />
       </h:outputText>
     </h:column>
 
@@ -58,7 +59,8 @@
         <h:outputText value="#{messages['label.workflow.task.duedate']}"/>
       </f:facet>
       <h:outputText value="#{workflowTaskInstance.dueDate}">
-        <f:convertDateTime pattern="#{nxu:dateAndTimeFormater('medium')}" />
+        <f:convertDateTime pattern="#{nxu:dateAndTimeFormater('medium')}"
+          timeZone="#{timeZone}" />
       </h:outputText>
     </h:column>
 

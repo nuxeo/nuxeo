@@ -69,7 +69,8 @@
             </f:facet>
             <h:outputText value="#{workflowTaskInstance.startDate}">
               <f:convertDateTime
-                pattern="#{nxu:dateAndTimeFormater('medium')}" />
+                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                timeZone="#{timeZone}" />
             </h:outputText>
           </h:column>
 
@@ -80,7 +81,8 @@
             </f:facet>
             <h:outputText value="#{workflowTaskInstance.dueDate}">
               <f:convertDateTime
-                pattern="#{nxu:dateAndTimeFormater('medium')}" />
+                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                timeZone="#{timeZone}" />
             </h:outputText>
           </h:column>
 

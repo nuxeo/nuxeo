@@ -79,7 +79,8 @@
           <h:outputText value="#{messages['label.forum.content.header.last_added']}" />
         </f:facet>
         <h:outputText value="#{lastPost.post.creationDate}" rendered="#{lastPost != null}">
-          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}" />
+          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+            timeZone="#{timeZone}" />
         </h:outputText>
         <h:outputText value=" #{messages['label.forum.post.by']} " rendered="#{lastPost != null}"/>
         <h:outputText value="#{lastPost.post.author}" rendered="#{lastPost != null}"/>

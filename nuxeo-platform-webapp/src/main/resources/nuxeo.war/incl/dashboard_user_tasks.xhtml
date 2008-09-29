@@ -65,12 +65,14 @@
                     rendered="#{dashboardItem.expired}"
                     styleClass="error">
                     <f:convertDateTime
-                      pattern="#{nxu:dateAndTimeFormater('medium')}" />
+                      pattern="#{nxu:dateAndTimeFormater('medium')}"
+                      timeZone="#{timeZone}" />
                   </h:outputText>
                   <h:outputText value="#{dashboardItem.dueDate}"
                     rendered="#{!dashboardItem.expired}">
                     <f:convertDateTime
-                      pattern="#{nxu:dateAndTimeFormater('medium')}" />
+                      pattern="#{nxu:dateAndTimeFormater('medium')}"
+                      timeZone="#{timeZone}" />
                   </h:outputText>
                 </h:column>
                 <h:column>
@@ -80,7 +82,8 @@
                   </f:facet>
                   <h:outputText value="#{dashboardItem.startDate}">
                     <f:convertDateTime
-                      pattern="#{nxu:dateAndTimeFormater('medium')}" />
+                      pattern="#{nxu:dateAndTimeFormater('medium')}"
+                      timeZone="#{timeZone}" />
                   </h:outputText>
                 </h:column>
               </h:dataTable>
