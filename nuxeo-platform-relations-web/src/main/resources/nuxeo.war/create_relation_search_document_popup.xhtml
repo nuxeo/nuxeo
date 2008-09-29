@@ -64,7 +64,8 @@
               <h:outputText value="#{messages['label.content.header.modified']}" />
             </f:facet>
             <h:outputText value="#{document.dublincore.modified}">
-              <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}" />
+              <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+                timeZone="#{timeZone}" />
             </h:outputText>
           </nxu:column>
           <!--  Author -->

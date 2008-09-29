@@ -50,11 +50,11 @@ public class UserServicesContext implements Serializable {
 
     private static final long serialVersionUID = -4938620211123775744L;
 
-    @In(required = true, create = true)
+    @In(create = true)
     private transient NavigationContext navigationContext;
 
     @In(required = false, create = true)
-    private Principal currentUser;
+    private transient Principal currentUser;
 
     private transient RepositoryLocation repoLocation;
 

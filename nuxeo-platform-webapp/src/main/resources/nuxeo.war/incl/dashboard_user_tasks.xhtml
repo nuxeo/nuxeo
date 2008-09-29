@@ -1,7 +1,6 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
@@ -66,12 +65,14 @@
                     rendered="#{dashboardItem.expired}"
                     styleClass="error">
                     <f:convertDateTime
-                      pattern="#{nxu:dateAndTimeFormater('medium')}" />
+                      pattern="#{nxu:dateAndTimeFormater('medium')}"
+                      timeZone="#{timeZone}" />
                   </h:outputText>
                   <h:outputText value="#{dashboardItem.dueDate}"
                     rendered="#{!dashboardItem.expired}">
                     <f:convertDateTime
-                      pattern="#{nxu:dateAndTimeFormater('medium')}" />
+                      pattern="#{nxu:dateAndTimeFormater('medium')}"
+                      timeZone="#{timeZone}" />
                   </h:outputText>
                 </h:column>
                 <h:column>
@@ -81,7 +82,8 @@
                   </f:facet>
                   <h:outputText value="#{dashboardItem.startDate}">
                     <f:convertDateTime
-                      pattern="#{nxu:dateAndTimeFormater('medium')}" />
+                      pattern="#{nxu:dateAndTimeFormater('medium')}"
+                      timeZone="#{timeZone}" />
                   </h:outputText>
                 </h:column>
               </h:dataTable>

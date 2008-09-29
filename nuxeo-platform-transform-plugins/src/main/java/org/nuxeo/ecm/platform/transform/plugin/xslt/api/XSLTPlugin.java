@@ -27,8 +27,8 @@ import org.nuxeo.ecm.platform.transform.interfaces.Plugin;
  */
 public interface XSLTPlugin extends Plugin {
 
-    static final String OPTION_STYLESHEET = "stylesheet";
+    String OPTION_STYLESHEET = "stylesheet";
 
-    static final String OPTION_XSL_PARAMETERS = "xslParameters";
+    String OPTION_XSL_PARAMETERS = "xslParameters";
 
 }

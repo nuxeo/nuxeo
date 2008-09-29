@@ -365,7 +365,6 @@ public class TestMultiDirectory extends NXRuntimeTestCase {
         e = entries.get(1);
         assertEquals("3", e.getId());
         assertEquals("bar3", e.getProperty("schema3", "thebar"));
-
     }
 
     public void testGetProjection() throws Exception {
