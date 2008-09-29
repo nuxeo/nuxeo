@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.search.indexingwrapper.IndexingWrapperManagerComponent">
+  <implementation
+    class="org.nuxeo.ecm.core.search.api.indexingwrapper.IndexingWrapperManagerComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.search.api.indexingwrapper.IndexingWrapperManagerService" />
+  </service>
+
+  <documentation>
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+  <extension-point name="IndexingWrapperFactories">
+    <object
+      class="org.nuxeo.ecm.core.search.api.indexingwrapper.DocumentModelIndexingWrapperDescriptor" />
+    <documentation>
+        @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+  </extension-point>
+
+
+</component>

@@ -31,9 +31,11 @@ import javax.security.auth.login.LoginContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.search.NXSearch;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.events.IndexingEventConf;
+import org.nuxeo.ecm.core.search.api.indexingwrapper.DocumentModelIndexingWrapper;
 import org.nuxeo.ecm.core.search.threading.IndexingThreadPool;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.ecm.platform.events.api.EventMessage;
@@ -143,6 +145,8 @@ public class SearchMessageListener implements MessageListener {
             boolean recursive = eventConf.isRecursive();
             String action = eventConf.getAction();
 
+            // get the wrapper if available
+            DocumentModel dm = doc.getAdapter(DocumentModelIndexingWrapper.class);
             if (IndexingEventConf.INDEX.equals(action)
                     || IndexingEventConf.RE_INDEX.equals(action)) {
 
@@ -150,21 +154,21 @@ public class SearchMessageListener implements MessageListener {
                 // For now only based on explicit registration of the doc type
                 // against the search service. (i.e : versus core type facet
                 // based)
-                if (service.getIndexableDocTypeFor(doc.getType()) == null) {
+                if (service.getIndexableDocTypeFor(dm.getType()) == null) {
                     return;
                 }
 
                 if (log.isDebugEnabled()) {
-                    log.debug("indexing " + doc.getPath());
+                    log.debug("indexing " + dm.getPath());
                 }
 
                 // Compute full text as well.
-                IndexingThreadPool.index(doc, recursive, true);
+                IndexingThreadPool.index(dm, recursive, true);
             } else if (IndexingEventConf.UN_INDEX.equals(action)) {
                 if (log.isDebugEnabled()) {
-                    log.debug("asynchronous unindexing " + doc.getPath());
+                    log.debug("asynchronous unindexing " + dm.getPath());
                 }
-                IndexingThreadPool.unindex(doc, recursive);// Compute
+                IndexingThreadPool.unindex(dm, recursive);// Compute
             }
         } catch (Exception e) {
             throw new EJBException(e);

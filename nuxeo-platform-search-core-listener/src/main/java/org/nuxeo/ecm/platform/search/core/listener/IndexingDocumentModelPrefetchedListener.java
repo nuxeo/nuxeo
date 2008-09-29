@@ -58,6 +58,7 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableR
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceDescriptor;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.ResourceTypeDescriptor;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.ResourceType;
+import org.nuxeo.ecm.core.search.api.indexingwrapper.DocumentModelIndexingWrapper;
 import org.nuxeo.ecm.platform.events.api.EventMessage;
 
 /**
@@ -123,6 +124,10 @@ public class IndexingDocumentModelPrefetchedListener extends
         }
 
         DocumentModel dm = (DocumentModel) ob;
+
+        // get the wrapper if available
+        dm = dm.getAdapter(DocumentModelIndexingWrapper.class);
+
 
         if (dm.getContextData(EventMessage.BLOCK_SYNC_INDEXING) != null
                 && (Boolean) dm.getContextData(EventMessage.BLOCK_SYNC_INDEXING) == true) {
