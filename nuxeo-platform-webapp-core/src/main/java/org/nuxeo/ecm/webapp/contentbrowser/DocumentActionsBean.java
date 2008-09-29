@@ -44,10 +44,10 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.StringUtils;
@@ -62,9 +62,6 @@ import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
@@ -83,7 +80,6 @@ import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
@@ -130,7 +126,7 @@ public class DocumentActionsBean extends InputController implements
 
     protected String comment;
 
-    // @Create
+    //@Create
     public void initialize() {
         log.debug("Initializing...");
     }
@@ -205,7 +201,7 @@ public class DocumentActionsBean extends InputController implements
             return name;
 
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -221,7 +217,7 @@ public class DocumentActionsBean extends InputController implements
             FacesContext context = FacesContext.getCurrentInstance();
             return ComponentUtils.download(context, blob, filename);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -250,9 +246,10 @@ public class DocumentActionsBean extends InputController implements
                     bigDownloadURL += "nxbigfile" + "/";
                     bigDownloadURL += doc.getRepositoryName() + "/";
                     bigDownloadURL += doc.getRef().toString() + "/";
-                    bigDownloadURL += docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY)
-                            + "/";
-                    bigDownloadURL += docView.getParameter(DocumentFileCodec.FILENAME_KEY);
+                    bigDownloadURL += docView.getParameter(
+                            DocumentFileCodec.FILE_PROPERTY_PATH_KEY) + "/";
+                    bigDownloadURL += docView.getParameter(
+                            DocumentFileCodec.FILENAME_KEY);
                     try {
                         response.sendRedirect(bigDownloadURL);
                     } catch (IOException e) {
@@ -301,7 +298,7 @@ public class DocumentActionsBean extends InputController implements
             context.responseComplete();
             return null;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -329,7 +326,7 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.navigateToDocument(currentDocument,
                     "after-edit");
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -350,10 +347,10 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.navigateToDocument(changeableDocument,
                     "after-edit");
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
-
     }
+
 
     /**
      * Saves changes in current version and then create a new current one.
@@ -372,7 +369,7 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.navigateToDocument(changeableDocument,
                     "after-edit");
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -402,7 +399,7 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.getActionResult(changeableDocument,
                     UserAction.CREATE);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -447,7 +444,7 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.navigateToDocument(newDocument,
                     "after-create");
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -462,7 +459,8 @@ public class DocumentActionsBean extends InputController implements
         // XXX : this proves that this method is called too many times
         // log.debug("Getter children select model");
         DocumentModelList documents = navigationContext.getCurrentDocumentChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST,
                 documents, selectedDocuments);
         model.addSelectModelListener(this);
@@ -532,13 +530,13 @@ public class DocumentActionsBean extends InputController implements
     @WebRemote
     public String processSelectRow(String docRef, String providerName,
             String listName, Boolean selection) {
-        DocumentModel doc = null;
         PagedDocumentsProvider provider;
         try {
             provider = resultsProvidersCache.get(providerName);
         } catch (ClientException e) {
             return handleError(e.getMessage());
         }
+        DocumentModel doc = null;
         for (DocumentModel pagedDoc : provider.getCurrentPage()) {
             if (pagedDoc.getRef().toString().equals(docRef)) {
                 doc = pagedDoc;

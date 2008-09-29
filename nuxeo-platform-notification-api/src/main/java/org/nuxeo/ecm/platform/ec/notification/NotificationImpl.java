@@ -44,7 +44,7 @@ public class NotificationImpl implements Notification {
     private final String name;
 
     private final String template;
-    
+
     private final String subjectTemplate;
 
     private final String subject;

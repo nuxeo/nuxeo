@@ -71,13 +71,14 @@ public class MultiDirectoryFactory extends DefaultComponent implements
     public static DirectoryService getDirectoryService() {
         directoryService = (DirectoryService) Framework.getRuntime().getComponent(
                 DirectoryService.NAME);
-        if (directoryService==null) {
-            directoryService= Framework.getLocalService(DirectoryService.class);
-            if (directoryService==null) {
+        if (directoryService == null) {
+            directoryService = Framework.getLocalService(DirectoryService.class);
+            if (directoryService == null) {
                 try {
-                    directoryService= Framework.getService(DirectoryService.class);
+                    directoryService = Framework.getService(
+                            DirectoryService.class);
                 } catch (Exception e) {
-                    log.error("Can't find Directory Service",e);
+                    log.error("Can't find Directory Service", e);
                 }
             }
         }

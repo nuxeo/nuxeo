@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.audit.facade;
 
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.ejb.LogEntryImpl;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
@@ -47,7 +46,7 @@ public class TestLogEntry extends MockObjectTestCase {
         return (DocumentMessage) mockDocMsg.proxy();
     }
 
-    public void testGetEventId() throws DocumentException {
+    public void testGetEventId() {
         String eventId = "documentCreated";
         DocumentMessage docMsg = createDocumentMessage(eventId);
 
@@ -55,13 +54,11 @@ public class TestLogEntry extends MockObjectTestCase {
         assertEquals(logEntry.getEventId(), eventId);
     }
 
-    public void testFetUUID() throws DocumentException {
+    public void testFetUUID() {
         String eventId = "documentCreated";
         DocumentMessage docMsg = createDocumentMessage(eventId);
 
         LogEntryImpl logEntry = new LogEntryImpl(docMsg);
-        System.out.println("Log Entry doc UUID : " + logEntry.getDocUUID());
-
         // :XXX: Fake document is not initialized
         assertNull(logEntry.getDocUUID());
     }

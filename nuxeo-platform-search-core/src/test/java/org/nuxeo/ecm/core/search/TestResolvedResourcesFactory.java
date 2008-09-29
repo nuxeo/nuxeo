@@ -49,7 +49,6 @@ import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResource
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResources;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory.BuiltinDocumentFields;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory.ResolvedResourcesFactory;
-import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResource;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResources;
@@ -81,16 +80,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "RepositoryManager.xml");
 
-        deployContrib("org.nuxeo.ecm.platform.search.tests", "CoreService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests", "TypeService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "PolicyService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "SecurityService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "RepositoryService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "test-CoreExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "CoreTestExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests",
@@ -298,7 +287,7 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         dm.setProperty("dublincore", "title", "A document of my type");
 
         HashMap<String, Serializable> task;
-        ArrayList<HashMap<String, Serializable>> tasks = new ArrayList<HashMap<String, Serializable>>(2);
+        List<HashMap<String, Serializable>> tasks = new ArrayList<HashMap<String, Serializable>>(2);
         task = new HashMap<String, Serializable>();
         task.put("what", "eat");
         tasks.add(task);
@@ -323,9 +312,7 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         return null;
     }
 
-    public void testWithEmptyDM() throws IndexingException {
-
-
+    public void testWithEmptyDM() {
         // Ensure no exception
         DocumentModel dm = null;
         IndexableResources ir = IndexableResourcesFactory.computeResourcesFor(dm);
@@ -333,16 +320,13 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
     }
 
     public void testIndexableResourcesGeneration() throws Exception {
-
         DocumentModel dm = createSampleFile();
 
         // Generate aggregated indexable resources and test out.
-
         IndexableResources res = IndexableResourcesFactory.computeResourcesFor(dm);
         assertEquals(dm.getId(), res.getId());
 
         // Test fetching data from the resources.
-
         List<IndexableResource> resources = res.getIndexableResources();
         assertEquals(3, resources.size());
 
@@ -354,7 +338,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
                 oneRes.getValueFor("dublincore:description"));
 
         // Test configuration including data field configuration
-
         IndexableResourceConf conf = oneRes.getConfiguration();
         assertEquals("dublincore", conf.getName());
 
@@ -362,14 +345,12 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         assertEquals(4, fields.size());
 
         // This configuration includes 3 fields
-
         assertTrue(fields.keySet().contains("title"));
         assertTrue(fields.keySet().contains("description"));
         assertTrue(fields.keySet().contains("contributors"));
         assertTrue(fields.keySet().contains("created"));
 
         // Test the title configuration
-
         IndexableResourceDataConf fconf = fields.get("title");
         assertNotNull(fconf);
         assertEquals("title", fconf.getIndexingName());
@@ -381,7 +362,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         assertEquals(0, fconf.getTermVector().size());
 
         // Test the description configuration
-
         fconf = fields.get("description");
         assertNotNull(fconf);
         assertEquals("description", fconf.getIndexingName());
@@ -413,7 +393,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         assertFalse(fconf.isBinary());
 
         // Test doc resources metadata
-
         DocumentIndexableResource docRes = oneRes;
         assertEquals(dm.getRef(), docRes.getDocRef());
         assertEquals(dm.getParentRef(), docRes.getDocParentRef());
@@ -425,7 +404,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         // assertEquals(dm.getRepositoryName(), docRes.getDocURL());
 
         // Test second resources
-
         oneRes.closeCoreSession();
 
         oneRes = (DocumentIndexableResource) resources.get(1);
@@ -433,7 +411,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         assertEquals("foo.pdf", oneRes.getValueFor("file:filename"));
 
         // Test configuration including data field configuration
-
         conf = oneRes.getConfiguration();
 
         assertEquals("file", conf.getName());
@@ -493,8 +470,7 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         assertEquals(0, fconf.getTermVector().size());
 
         // Test doc resources metadata
-
-        docRes = (DocumentIndexableResource) oneRes;
+        docRes = oneRes;
         assertEquals(dm.getRef(), docRes.getDocRef());
         assertEquals(dm.getParentRef(), docRes.getDocParentRef());
         assertEquals(dm.getType(), docRes.getDocType());
@@ -505,7 +481,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         // assertEquals(dm.getRepositoryName(), docRes.getDocURL());
 
         oneRes.closeCoreSession();
-
     }
 
     public void testResolvedResourcesGeneration() throws Exception {
@@ -513,11 +488,9 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         DocumentModel dm = createSampleFile();
 
         // Generate aggregated indexable resources
-
         IndexableResources resources = IndexableResourcesFactory.computeResourcesFor(dm);
 
         // Generate aggregated resolved resources and test out.
-
         ResolvedResources aggregated = ResolvedResourcesFactory.computeAggregatedResolvedResourcesFrom(resources, true);
 
         assertEquals(dm.getId(), aggregated.getId());
@@ -548,7 +521,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         assertEquals("file", fileResource.getConfiguration().getPrefix());
 
         // Test the title configuration
-
         ResolvedData data = resource.getIndexableDataByName("title");
         assertNotNull(data);
         assertEquals("title", data.getName());
@@ -561,7 +533,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         assertEquals("Indexable data", data.getValue());
 
         // Test the description configuration
-
         data = resource.getIndexableDataByName("description");
         assertNotNull(data);
         assertEquals("description", data.getName());
@@ -581,7 +552,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         assertEquals(7, fConf.getIndexableData().size());
 
         // Test the contributorList configuration
-
         data = resource.getIndexableDataByName("contributors");
         assertNotNull(data);
         assertEquals("contributors", data.getName());
@@ -619,7 +589,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         assertFalse(data.isBinary());
         assertEquals(0, data.getTermVector().size());
         assertEquals("foo.pdf", data.getValue());
-
 
         data = fConf.getIndexableDataByName("content:data");
         assertNotNull(data);
@@ -668,7 +637,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         //assertEquals(7, merged.size());
 
         // Test builtins
-
         data = getDataFrom(BuiltinDocumentFields.FIELD_DOC_PARENT_REF, merged);
         assertNotNull(data);
         assertEquals(BuiltinDocumentFields.FIELD_DOC_PARENT_REF, data.getName());
@@ -804,7 +772,7 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         assertFalse((Boolean)data.getValue());
     }
 
-    String normalizeWhiteSpace(Object s) {
+    private static String normalizeWhiteSpace(Object s) {
         return ((String) s).trim().replaceAll("\\s+", " ");
     }
 
@@ -812,7 +780,7 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         assertEquals(normalizeTokens(expected), normalizeTokens(actual));
     }
 
-    private List<String>normalizeTokens(String txt) {
+    private static List<String> normalizeTokens(String txt) {
         txt = txt.trim();
         String[] tokens = txt.split("\\s+");
         Arrays.sort(tokens);
@@ -820,17 +788,14 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
     }
 
     public void testFullTextAll() throws Exception {
-
         deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "nxsearch-test-fulltext-all.xml");
         DocumentModel dm = createSampleMyDocument();
 
         // Generate aggregated indexable resources
-
         IndexableResources resources = IndexableResourcesFactory.computeResourcesFor(dm);
 
         // Generate aggregated resolved resources and test out.
-
         ResolvedResources aggregated = ResolvedResourcesFactory.computeAggregatedResolvedResourcesFrom(resources, true);
 
         List<ResolvedData> merged = aggregated.getMergedIndexableData();
@@ -860,8 +825,7 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         assertTrue(data.getTermVector().isEmpty());
         // note: no conversion available for text/html from here
         assertTextEquals("a b Indexable data Indexable description text/html ISO-8859-15 foo.pdf",
-                (String)data.getValue());
-
+                (String) data.getValue());
     }
 
     public void testFullTextAllOneResource() throws Exception {
@@ -889,11 +853,9 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         DocumentModel dm = createSampleFileTextPlain();
 
         // Generate aggregated indexable resources
-
         IndexableResources resources = IndexableResourcesFactory.computeResourcesFor(dm);
 
         // Generate aggregated resolved resources and test out.
-
         ResolvedResources aggregated = ResolvedResourcesFactory.computeAggregatedResolvedResourcesFrom(resources, true);
 
         assertEquals(dm.getId(), aggregated.getId());
@@ -940,7 +902,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         assertEquals("Indexing baby", blob.getString());
 
         // Test fulltext
-
         List<ResolvedData> merged = aggregated.getMergedIndexableData();
         data = getDataFrom(BuiltinDocumentFields.FIELD_FULLTEXT, merged);
         assertNotNull(data);
@@ -960,11 +921,9 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         DocumentModel dm = createSampleMyDocument();
 
         // Generate aggregated indexable resources
-
         IndexableResources resources = IndexableResourcesFactory.computeResourcesFor(dm);
 
         // Generate aggregated resolved resources and test out.
-
         ResolvedResources aggregated = ResolvedResourcesFactory.computeAggregatedResolvedResourcesFrom(
                 resources, true);
 
@@ -996,8 +955,7 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         assertEquals("Racinet", data.getValue());
     }
 
-    private static IndexableResources computeResourcesFor(DocumentModel doc)
-            throws IndexingException {
+    private static IndexableResources computeResourcesFor(DocumentModel doc) {
         return IndexableResourcesFactory.computeResourcesFor(doc);
     }
 
@@ -1012,15 +970,11 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
     }
 
     public void xtestReindexAll() throws Exception {
-
         final int NB_DOCS = 100;
-
-        for (int i=0; i< NB_DOCS; i++) {
+        for (int i = 0; i < NB_DOCS; i++) {
             createSampleFileTextPlain();
         }
-
         service.reindexAll("demo", "/", false);
-
     }
 
 }

@@ -9,7 +9,7 @@
 <fmt:setBundle basename="messages" var="messages"/>
 
 <head>
-<title>Nuxeo Enterprise Platform 5.1</title>
+<title>Nuxeo Enterprise Platform 5.2</title>
 <link rel="icon" type="image/png" href="/nuxeo/icons/favicon.png" />
 <style type="text/css">
 <!--

@@ -297,33 +297,25 @@ public class FakeSearchService implements SearchServiceInternals {
     }
 
     public boolean isReindexingAll() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public void setReindexingAll(boolean flag) {
-        // TODO Auto-generated method stub
+
     }
 
     public void index(IndexableResources sources, boolean fulltext,
             boolean newTxn) throws IndexingException {
-        // TODO Auto-generated method stub
-
     }
 
     public void index(ResolvedResources sources, boolean newTxn)
             throws IndexingException {
-        // TODO Auto-generated method stub
-
     }
-
     public void clear(boolean newTxn) throws IndexingException {
-        // TODO Auto-generated method stub
 
     }
 
     public void unindex(DocumentModel dm) throws IndexingException {
-
     }
 
 }

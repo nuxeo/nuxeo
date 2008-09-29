@@ -95,14 +95,12 @@ public abstract class AbstractPlugin implements Plugin {
         this.fileManagerService = fileManagerService;
     }
 
-
-    public void setEnabled(boolean enabled)
-    {
-       this.enabled=enabled;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
-    public boolean isEnabled()
-    {
+    public boolean isEnabled() {
         return enabled;
     }
+
 }
