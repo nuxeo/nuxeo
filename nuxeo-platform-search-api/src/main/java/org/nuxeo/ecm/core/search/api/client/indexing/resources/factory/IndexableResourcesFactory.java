@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableR
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.IndexableDocType;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.IndexableDocTypeDescriptor;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.ResourceType;
+import org.nuxeo.ecm.core.search.api.indexingwrapper.DocumentModelIndexingWrapper;
 
 /**
  * Computes an <code>IndexableResources</code> instance for a given
@@ -106,6 +107,8 @@ public final class IndexableResourcesFactory implements Serializable {
                     CoreSession session = idxThread.getCoreSession(repositoryName);
                     sid = session.getSessionId();
                     dm = session.getDocument(dm.getRef());
+                    // get the wrapper if available
+                    dm = dm.getAdapter(DocumentModelIndexingWrapper.class);
                 } catch (ClientException e) {
                     log.warn(String.format(
                             "Unable to fetch DocumentModel with ref '%s' and title '%s' from indexing thread context",
