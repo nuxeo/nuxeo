@@ -815,7 +815,6 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
                             workItems.add(WAPIGenerator.createWorkItemInstance(taskInstance));
                         }
                     }
-
                 }
             }
         }
