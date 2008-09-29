@@ -88,6 +88,8 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
 
     private static final Log log = LogFactory.getLog(JbpmWorkflowEngine.class);
 
+    protected static final Pattern keywordPattern = Pattern.compile("[a-zA-Z]\\w+");
+
     /**
      * @deprecated Use {@link #deployDefinition(InputStream,String)} instead
      */
@@ -671,10 +673,27 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
             List<WMParticipant> participants, String state, int firstResult,
             int maxResults, String orderBy, boolean orderAscending)
             throws WMWorkflowException {
+        return getWorkItemsFor(participants, state, null, firstResult,
+                maxResults, orderBy, orderAscending);
+    }
 
-        if (!Pattern.matches("[a-zA-Z]\\w+", orderBy)) {
+    public ResultSlice<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participants, String state,
+            List<String> processNames, int firstResult, int maxResults,
+            String orderBy, boolean orderAscending) throws WMWorkflowException {
+
+        if (!keywordPattern.matcher(orderBy).matches()) {
             throw new WMWorkflowException(String.format(
                     "'%s' is not a valid attribute name", orderBy));
+        }
+
+        if (processNames != null) {
+            for (String processName : processNames) {
+                if (!keywordPattern.matcher(processName).matches()) {
+                    throw new WMWorkflowException(String.format(
+                            "'%s' is not a valid process name", processName));
+                }
+            }
         }
 
         List<WMWorkItemInstance> workItems = new ArrayList<WMWorkItemInstance>();
@@ -701,6 +720,10 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
                 + "where ti.actorId in (:actorIds) "
                 + "and ti.taskMgmtInstance.processInstance = si.processInstance "
                 + "and ti.end is null and si.name = 'author'";
+
+        if (processNames != null) {
+            queryStr += " and ti.task.processDefinition.name in (:processNames)";
+        }
         if (orderAscending) {
             queryStr = String.format("%s order by ti.%s asc", queryStr, orderBy);
         } else {
@@ -712,6 +735,9 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         try {
             query = session.createQuery(queryStr);
             query.setParameterList("actorIds", actorIds);
+            if (processNames != null) {
+                query.setParameterList("processNames", processNames);
+            }
         } catch (HibernateException e) {
             throw new WMWorkflowException(e);
         }

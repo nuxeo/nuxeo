@@ -741,6 +741,22 @@ public class TestJbpmEngine extends AbstractJbmTestCase {
         assertEquals(processesNumber, rSlice.totalResult);
         assertEquals(10, rSlice.slice.size());
 
+        // test with filtering by process name
+        rSlice = engine.getWorkItemsFor(participants,
+                WMWorkItemState.WORKFLOW_TASK_STATE_ALL,
+                Arrays.asList("some_processname_with_no_task_instance"), 0, 10,
+                "start", true);
+
+        assertEquals(0, rSlice.totalResult);
+        assertEquals(0, rSlice.slice.size());
+
+        rSlice = engine.getWorkItemsFor(participants,
+                WMWorkItemState.WORKFLOW_TASK_STATE_ALL, Arrays.asList(
+                        "some_processname_with_no_task_instance",
+                        "tasksprocess_parallel"), 0, 10, "start", true);
+        assertEquals(processesNumber, rSlice.totalResult);
+        assertEquals(10, rSlice.slice.size());
+
         // let us take the first 35 results of 29 (from #0 to #28)
         rSlice = engine.getWorkItemsFor(participants,
                 WMWorkItemState.WORKFLOW_TASK_STATE_ALL, 0, 35);
@@ -769,6 +785,16 @@ public class TestJbpmEngine extends AbstractJbmTestCase {
         WMWorkItemInstance lastResultLastPageDescending = engine.getWorkItemsFor(
                 participants, WMWorkItemState.WORKFLOW_TASK_STATE_ALL, 20, 10,
                 "start", false).slice.get(8);
+        assertEquals(firstResultFirstPageAscending.getId(),
+                lastResultLastPageDescending.getId());
+
+        // same test using process name filtering
+        firstResultFirstPageAscending = engine.getWorkItemsFor(participants,
+                WMWorkItemState.WORKFLOW_TASK_STATE_ALL,
+                Arrays.asList("tasksprocess_parallel"), 0, 10, "start", true).slice.get(0);
+        lastResultLastPageDescending = engine.getWorkItemsFor(participants,
+                WMWorkItemState.WORKFLOW_TASK_STATE_ALL,
+                Arrays.asList("tasksprocess_parallel"), 20, 10, "start", false).slice.get(8);
         assertEquals(firstResultFirstPageAscending.getId(),
                 lastResultLastPageDescending.getId());
 
