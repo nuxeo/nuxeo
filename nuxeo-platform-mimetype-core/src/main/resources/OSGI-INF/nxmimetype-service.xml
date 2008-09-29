@@ -764,6 +764,230 @@
       </extensions>
     </mimetype>
 
+
+   <mimetype normalized="audio/mpeg" binary="true"
+      iconPath="audio.png">
+      <mimetypes>
+        <mimetype>audio/mpeg</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>mp3</extension>
+        <extension>mpga</extension>
+        <extension>mp2</extension>
+      </extensions>
+    </mimetype>
+
+   <mimetype normalized="audio/x-wav" binary="true"
+      iconPath="wav.png">
+      <mimetypes>
+        <mimetype>audio/x-wav</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>wav</extension>
+      </extensions>
+    </mimetype>
+
+   <mimetype normalized="audio/x-mpegurl" binary="true"
+      iconPath="audio.png">
+      <mimetypes>
+        <mimetype>audio/x-mpegurl</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>m3u</extension>
+      </extensions>
+    </mimetype>
+
+
+
+   <mimetype normalized="audio/x-aiff" binary="true"
+      iconPath="audio.png">
+      <mimetypes>
+        <mimetype>audio/x-aiff</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>aif</extension>
+        <extension>aifc</extension>
+        <extension>aiff</extension>
+      </extensions>
+    </mimetype>
+
+   <mimetype normalized="audio/ogg" binary="true"
+      iconPath="audio.png">
+      <mimetypes>
+        <mimetype>audio/ogg</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>ogg</extension>
+        <extension>oga</extension>
+        <extension>spx</extension>
+      </extensions>
+    </mimetype>
+
+   <mimetype normalized="audio/flac" binary="true"
+      iconPath="audio.png">
+      <mimetypes>
+        <mimetype>audio/flac</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>flac</extension>
+      </extensions>
+    </mimetype>
+
+   <mimetype normalized="application/ogg" binary="true"
+      iconPath="audio.png">
+      <mimetypes>
+        <mimetype>application/ogg</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>ogm</extension>
+        <extension>ogx</extension>
+      </extensions>
+    </mimetype>
+
+   <mimetype normalized="audio/x-ms-wax" binary="true"
+      iconPath="audio.png">
+      <mimetypes>
+        <mimetype>audio/x-ms-wax</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>wax</extension>
+      </extensions>
+    </mimetype>
+
+   <mimetype normalized="audio/x-ms-wma" binary="true"
+      iconPath="audio.png">
+      <mimetypes>
+        <mimetype>audio/x-ms-wma</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>wma</extension>
+      </extensions>
+    </mimetype>
+
+   <mimetype normalized="video/mpeg" binary="true"
+      iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/mpeg</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>mpa</extension>
+        <extension>mpe</extension>
+        <extension>mpeg</extension>
+        <extension>mpg</extension>
+        <extension>mpv2</extension>
+      </extensions>
+    </mimetype>
+
+   <mimetype normalized="video/mp4" binary="true"
+      iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/mp4</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>mp4</extension>
+      </extensions>
+    </mimetype>
+
+
+   <mimetype normalized="video/quicktime" binary="true"
+      iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/quicktime</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>mov</extension>
+        <extension>qt</extension>
+      </extensions>
+    </mimetype>
+
+   <mimetype normalized="video/ogg" binary="true"
+      iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/ogg</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>ogv</extension>
+      </extensions>
+    </mimetype>
+
+   <mimetype normalized="video/x-ms-asf" binary="true"
+      iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/x-ms-asf</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>asf</extension>
+        <extension>asr</extension>
+        <extension>asx</extension>
+      </extensions>
+    </mimetype>
+
+   <mimetype normalized="video/x-msvideo" binary="true"
+      iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/x-msvideo</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>avi</extension>
+      </extensions>
+    </mimetype>
+
+   <mimetype normalized="video/fli" binary="true"
+      iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/fli</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>fli</extension>
+      </extensions>
+    </mimetype>
+
+   <mimetype normalized="video/flv" binary="true"
+      iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/flv</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>flv</extension>
+      </extensions>
+    </mimetype>
+
+   <mimetype normalized="video/vnd.vivo" binary="true"
+      iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/vnd.vivo</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>viv</extension>
+        <extension>vivo</extension>
+      </extensions>
+    </mimetype>
+
+
+   <mimetype normalized="application/java-archive" binary="true"
+      iconPath="java.png">
+      <mimetypes>
+        <mimetype>application/java-archive</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>jar</extension>
+      </extensions>
+    </mimetype>
+
+
+   <mimetype normalized="application/postscript" binary="true"
+      iconPath="ps.png">
+      <mimetypes>
+        <mimetype>application/postscript</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>ps</extension>
+        <extension>eps</extension>
+        <extension>ai</extension>
+      </extensions>
+    </mimetype>
+
+
   </extension>
 
   <extension
