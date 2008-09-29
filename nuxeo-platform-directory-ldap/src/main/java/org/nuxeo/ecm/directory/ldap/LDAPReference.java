@@ -38,6 +38,7 @@ import javax.naming.directory.SearchResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.directory.AbstractReference;
@@ -272,6 +273,15 @@ public class LDAPReference extends AbstractReference {
                         // do the LDAP request to store missing dns
                         Attributes attrsToAdd = new BasicAttributes();
                         attrsToAdd.put(attrToAdd);
+
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format(
+                                    "LDAPReference.addLinks(%s, %s): LDAP modifyAttributes dn='%s' "
+                                            + "mod_op='ADD_ATTRIBUTE' attrs='%s' [%s]",
+                                    sourceId,
+                                    StringUtils.join(targetIds, ", "),
+                                    sourceDn, attrsToAdd.toString(), this));
+                        }
                         sourceSession.dirContext.modifyAttributes(sourceDn,
                                 DirContext.ADD_ATTRIBUTE, attrsToAdd);
 
@@ -280,6 +290,15 @@ public class LDAPReference extends AbstractReference {
                         if (storedAttr.contains(emptyRefMarker)) {
                             Attributes cleanAttrs = new BasicAttributes(
                                     attributeId, emptyRefMarker);
+
+                            if (log.isDebugEnabled()) {
+                                log.debug(String.format(
+                                        "LDAPReference.addLinks(%s, %s): LDAP modifyAttributes dn='%s'"
+                                                + " mod_op='REMOVE_ATTRIBUTE' attrs='%s' [%s]",
+                                        sourceId, StringUtils.join(targetIds,
+                                                ", "), sourceDn,
+                                        cleanAttrs.toString(), this));
+                            }
                             sourceSession.dirContext.modifyAttributes(sourceDn,
                                     DirContext.REMOVE_ATTRIBUTE, cleanAttrs);
                         }
@@ -353,6 +372,15 @@ public class LDAPReference extends AbstractReference {
                         // add the new dn
                         Attributes attrs = new BasicAttributes(attributeId,
                                 targetDn);
+
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format(
+                                    "LDAPReference.addLinks(%s, %s): LDAP modifyAttributes dn='%s'"
+                                            + " mod_op='ADD_ATTRIBUTE' attrs='%s' [%s]",
+                                    StringUtils.join(sourceIds, ", "),
+                                    targetId, sourceDn, attrs.toString(),
+                                    this));
+                        }
                         sourceSession.dirContext.modifyAttributes(sourceDn,
                                 DirContext.ADD_ATTRIBUTE, attrs);
 
@@ -361,6 +389,14 @@ public class LDAPReference extends AbstractReference {
                         if (storedAttr.contains(emptyRefMarker)) {
                             Attributes cleanAttrs = new BasicAttributes(
                                     attributeId, emptyRefMarker);
+                            if (log.isDebugEnabled()) {
+                                log.debug(String.format(
+                                        "LDAPReference.addLinks(%s, %s): LDAP modifyAttributes dn='%s'"
+                                                + " mod_op='REMOVE_ATTRIBUTE' attrs='%s' [%s]",
+                                        StringUtils.join(sourceIds, ", "),
+                                        targetId, sourceDn,
+                                        cleanAttrs.toString(), this));
+                            }
                             sourceSession.dirContext.modifyAttributes(sourceDn,
                                     DirContext.REMOVE_ATTRIBUTE, cleanAttrs);
                         }
@@ -372,7 +408,7 @@ public class LDAPReference extends AbstractReference {
                                     getFieldName(), targetId));
                         } else {
                             // this is a real schema configuration problem,
-                            // wrapup the exception
+                            // wrap the exception
                             throw new DirectoryException(e);
                         }
                     }
@@ -433,6 +469,13 @@ public class LDAPReference extends AbstractReference {
             LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
             SearchControls sctls = sourceDirectory.getSearchControls();
             try {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "LDAPReference.getSourceIdsForTarget(%s): LDAP search search base='%s'"
+                                    + " filter='%s' args='%s' scope='%s' [%s]",
+                            targetId, searchBaseDn, filterExpr, filterArgs,
+                            sctls.getSearchScope(), this));
+                }
                 NamingEnumeration<SearchResult> results = sourceSession.dirContext.search(
                         searchBaseDn, filterExpr, filterArgs, sctls);
 
@@ -487,6 +530,14 @@ public class LDAPReference extends AbstractReference {
                 // dynamic links in the source directory
                 SearchControls sctls = sourceDirectory.getSearchControls();
                 String filterExpr = String.format("%s=*", dynamicAttributeId);
+
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "LDAPReference.getSourceIdsForTarget(%s): LDAP search search base='%s'"
+                                    + " filter='%s' scope='%s' [%s]", targetId,
+                            searchBaseDn, filterExpr, sctls.getSearchScope(),
+                            this));
+                }
                 NamingEnumeration<SearchResult> results = sourceSession.dirContext.search(
                         searchBaseDn, filterExpr, sctls);
                 while (results.hasMore()) {
@@ -634,10 +685,21 @@ public class LDAPReference extends AbstractReference {
                         // fetch the LDAP entry to grab it
                         Attributes entry;
                         try {
+
+                            if (log.isDebugEnabled()) {
+                                log.debug(String.format(
+                                        "LDAPReference.getLdapTargetIds(%s): LDAP get attributtes dn='%s'"
+                                                + " attribute ids to collect='%s' [%s]",
+                                        attributes, targetDn, StringUtils.join(
+                                                attributeIdsToCollect, ", "),
+                                        this));
+                            }
                             entry = targetSession.dirContext.getAttributes(
                                     targetDn, attributeIdsToCollect);
                         } catch (NamingException e) {
-                            log.error("could not find " + targetDn);
+                            log.error(String.format(
+                                    "could not find %s while fetching reference %s",
+                                    targetDn, this));
                             continue;
                         }
                         // NXP-2461: check that id field is filled
