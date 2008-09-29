@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.query.sql.model.LiteralList;
 import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
@@ -122,10 +123,8 @@ public class QueryConverter {
         // ORDER BY
         OrderByClause order = query.getOrderByClause();
         if (order != null) {
-            SortDirection direction = order.isDescendent ? SortDirection.REVERSE
-                    : SortDirection.AUTO;
-            for (Reference elt : order.elements) {
-                String orderField = elt.name;
+            for (OrderByExpr elt : order.elements) {
+                String orderField = elt.reference.name;
                 IndexableResourceDataConf propConf = searchService.getIndexableDataConfFor(orderField);
 
                 if (propConf != null) {
@@ -139,7 +138,9 @@ public class QueryConverter {
                                 orderField));
                     }
                 }
-                cQuery.addSort(orderField, direction);
+                cQuery.addSort(orderField,
+                        elt.isDescending ? SortDirection.REVERSE
+                                : SortDirection.AUTO);
             }
         }
         return cQuery;
