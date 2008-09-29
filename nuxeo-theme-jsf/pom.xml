@@ -88,6 +88,25 @@
     </dependency>
   </dependencies>
 
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>OSGI-INF/**</include>
+        </includes>
+        <filtering>true</filtering>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <excludes>
+          <exclude>OSGI-INF/**</exclude>
+        </excludes>
+        <filtering>false</filtering>
+      </resource>
+    </resources>
+  </build>
+
   <reporting>
     <plugins>
       <plugin>
