@@ -103,7 +103,8 @@
           </h:panelGroup>
         </f:facet>
         <h:outputText value="#{row.data.dublincore.modified}">
-          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}" />
+          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+            timeZone="#{timeZone}" />
         </h:outputText>
       </nxu:column>
 

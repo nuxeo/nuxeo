@@ -24,7 +24,8 @@
         <h:outputText value="#{messages['label.date']}" />
         </f:facet>
         <h:outputText value="#{logEntry.eventDate}" >
-             <f:convertDateTime pattern="#{nxu:basicDateFormater()}" />
+          <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
+            timeZone="#{timeZone}" />
         </h:outputText>
     </h:column>
     <h:column>

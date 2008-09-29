@@ -33,7 +33,8 @@
 
     <h:outputText value="#{doc[field.schemaName][field.fieldName]}"
       rendered="#{field.jsfComponent=='t:inputCalendar'}">
-      <f:convertDateTime pattern="#{nxu:basicDateFormater()}" />
+      <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
+        timeZone="#{timeZone}" />
     </h:outputText>
 
     <nxdir:selectOneListbox
