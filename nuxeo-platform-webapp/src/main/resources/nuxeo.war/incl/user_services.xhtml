@@ -14,22 +14,33 @@
 
 
     <!--  &nbsp; -->
-      <nxu:methodResult name="actions"
-                        value="#{webActions.getActionsList('USER_SERVICES')}">
-        <nxu:dataList layout="simple"
-                      var="action"
-                      value="#{actions}"
-                      rowIndexVar="row"
-                      rowCountVar="rowCount">
-          <h:outputText value=" | " rendered="#{row!=(rowCount-1)}"/>
-          <nxh:commandLink action="#{action.getLink()}">
-            <f:subview rendered="#{row==(rowCount-1)}">
-              <br />
-            </f:subview>
-            <h:outputText value="#{messages[action.label]}" />
-          </nxh:commandLink>
-        </nxu:dataList>
-      </nxu:methodResult>
+    <nxu:methodResult name="actions"
+                      value="#{webActions.getActionsList('USER_SERVICES')}">
+      <nxu:dataList layout="simple"
+                    var="action"
+                    value="#{actions}"
+                    rowIndexVar="row"
+                    rowCountVar="rowCount">
+        <h:outputText value=" | " rendered="#{row!=(rowCount-1)}"/>
+        <nxh:commandLink action="#{action.getLink()}">
+          <h:outputText value="#{messages[action.label]}" />
+        </nxh:commandLink>
+      </nxu:dataList>
+    </nxu:methodResult>
+    <br />
+    <nxu:methodResult name="actions"
+                      value="#{webActions.getActionsList('USER_SERVICES_BOTTOM')}">
+      <nxu:dataList layout="simple"
+                    var="action"
+                    value="#{actions}"
+                    rowIndexVar="row"
+                    rowCountVar="rowCount">
+        <h:outputText value=" | " rendered="#{row!=(rowCount-1)}"/>
+        <h:outputLink value="#{baseURL}#{action.getLink()}">
+          <h:outputText value="#{messages[action.label]}" />
+        </h:outputLink>
+      </nxu:dataList>
+    </nxu:methodResult>
     <br />
     <!--  &nbsp; -->
 

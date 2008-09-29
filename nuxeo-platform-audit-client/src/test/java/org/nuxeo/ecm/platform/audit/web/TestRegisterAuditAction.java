@@ -41,11 +41,6 @@ public class TestRegisterAuditAction extends NXRuntimeTestCase {
         as = (ActionService) runtime.getComponent(ActionService.ID);
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     public void testRegistration() {
         Action act1 = as.getActionRegistry().getAction("TAB_CONTENT_HISTORY");
 
