@@ -50,7 +50,6 @@ public class CoreEventImpl implements CoreEvent {
 
     public static final String CATEGORY_ATTRIBUTE = "category";
 
-
     @SuppressWarnings("unchecked")
     public CoreEventImpl(String eventId, Object source, Map<String, ?> info,
             Principal principal, String category, String comment) {
@@ -64,13 +63,12 @@ public class CoreEventImpl implements CoreEvent {
         if (info == null) {
             this.info = new HashMap<String, Object>();
         } else {
-            this.info = info;
+            this.info = new HashMap<String, Object>(info);
         }
         this.principal = principal;
-
         // info map contains at least this 2 keys
-        ((Map)this.info).put(COMMENT_ATTRIBUTE, comment);
-        ((Map)this.info).put(CATEGORY_ATTRIBUTE, category);
+        ((Map) this.info).put(COMMENT_ATTRIBUTE, comment);
+        ((Map) this.info).put(CATEGORY_ATTRIBUTE, category);
     }
 
     public boolean isComposite() {
