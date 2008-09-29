@@ -34,8 +34,9 @@ import org.nuxeo.ecm.core.query.sql.model.Literal;
 import org.nuxeo.ecm.core.query.sql.model.LiteralList;
 import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
-import org.nuxeo.ecm.core.query.sql.model.ReferenceList;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 
@@ -95,23 +96,20 @@ public class XPathBuilder implements QueryConstants {
         if (query.orderBy == null) {
             return;
         }
-        ReferenceList refs = query.orderBy.elements;
+        OrderByList refs = query.orderBy.elements;
         if (refs.isEmpty()) {
             return;
         }
         xq.orderBy.append(" order by ");
-        int size = refs.size() - 1;
-        for (int i = 0; i < size; i++) {
-            Reference ref = refs.get(i);
-            reference(xq.orderBy, ref);
-            xq.orderBy.append(", ");
-        }
-        Reference ref = refs.get(size);
-        reference(xq.orderBy, ref);
-        if (query.orderBy.isDescendent) {
-            xq.orderBy.append(" descending");
-        } else {
-            xq.orderBy.append(" ascending");
+        for (int i = 0; i < refs.size(); i++) {
+            if (i != 0) {
+                xq.orderBy.append(", ");
+            }
+            OrderByExpr ref = refs.get(i);
+            reference(xq.orderBy, ref.reference);
+            if (ref.isDescending) {
+                xq.orderBy.append(" descending");
+            }
         }
     }
 
