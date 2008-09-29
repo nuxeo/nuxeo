@@ -20,6 +20,7 @@
     <nuxeo.common.version>1.5-SNAPSHOT</nuxeo.common.version>
     <nuxeo.runtime.version>1.5-SNAPSHOT</nuxeo.runtime.version>
     <nuxeo.theme.version>${pom.version}</nuxeo.theme.version>
+    <nuxeo.webengine.version>${pom.version}</nuxeo.webengine.version>
   </properties>
 
   <modules>
