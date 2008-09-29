@@ -70,7 +70,8 @@ non terminal HavingClause	having_clause;
 non terminal SelectList 	select_list;
 non terminal FromList   	from_list;
 non terminal LiteralList	literal_list;
-non terminal ReferenceList	reference_list;
+non terminal OrderByList        order_by_list;
+non terminal OrderByExpr        order_by_expr;
 non terminal String			from_key;
 
 
@@ -180,13 +181,24 @@ non terminal String			from_key;
 						{: RESULT = new WhereClause(e); :}
 						;
 
-	order_by_clause ::= ORDERBY reference_list:l
-						{: RESULT = new OrderByClause(l); :}
-						|  ORDERBY reference_list:l ASC
-						{: RESULT = new OrderByClause(l, false); :}
-						| ORDERBY reference_list:l DESC
- 						{: RESULT = new OrderByClause(l, true); :}
-						;
+        order_by_clause ::= ORDERBY order_by_list:l
+                                {: RESULT = new OrderByClause(l); :}
+                        ;
+
+        order_by_list ::= order_by_expr:e
+                                {: RESULT = new OrderByList(e); :}
+                        | order_by_list:l COMMA order_by_expr:e
+                                {: l.add(e); RESULT = l; :}
+                        ;
+
+        order_by_expr ::= IDENTIFIER:name
+                                {: RESULT = new OrderByExpr(new Reference(name), false); :}
+                        | IDENTIFIER:name ASC
+                                {: RESULT = new OrderByExpr(new Reference(name), false); :}
+                        | IDENTIFIER:name DESC
+                                {: RESULT = new OrderByExpr(new Reference(name), true); :}
+                        ;
+
 
 	predicate ::= predicate:l AND predicate:r
 				{: RESULT = new Predicate(l, Operator.AND, r); :}
@@ -310,12 +322,6 @@ non terminal String			from_key;
 				{: l.add(v); RESULT = l; :}
 				;
 
-
-	reference_list ::= IDENTIFIER:v
-				{: RESULT = new ReferenceList(); RESULT.add(new Reference(v)); :}
-				| reference_list:l COMMA IDENTIFIER:v
-				{: l.add(new Reference(v)); RESULT = l; :}
-				;
 
 	function ::= IDENTIFIER:name LPARA RPARA
 				{: RESULT = new Function(name);:}

@@ -12,49 +12,39 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Bogdan Stefanescu
  *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.query.sql.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.nuxeo.common.utils.StringUtils;
+
 /**
- * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
-public class OrderByClause extends Clause {
+public class OrderByList extends ArrayList<OrderByExpr> implements Operand {
 
     private static final long serialVersionUID = 1L;
 
-    public final OrderByList elements;
-
-    public OrderByClause(OrderByList orderBy) {
-        this(orderBy, false);
-    }
-
-    public OrderByClause(OrderByList orderBy, boolean isDescendent) {
-        super("ORDER BY");
-        elements = orderBy;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj instanceof OrderByClause) {
-            return elements.equals(((OrderByClause) obj).elements);
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return elements.hashCode();
+    public OrderByList(OrderByExpr expr) {
+        super();
+        add(expr);
     }
 
     public void accept(IVisitor visitor) {
         // TODO Auto-generated method stub
+    }
+
+    @Override
+    public String toString() {
+        List<String> list = new ArrayList<String>(size());
+        for (OrderByExpr expr : this) {
+            list.add(expr.toString());
+        }
+        return StringUtils.join(list, ", ");
     }
 
 }

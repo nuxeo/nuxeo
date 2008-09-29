@@ -31,6 +31,8 @@ import org.nuxeo.ecm.core.query.sql.model.IntegerLiteral;
 import org.nuxeo.ecm.core.query.sql.model.LiteralList;
 import org.nuxeo.ecm.core.query.sql.model.OperandList;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
+import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
@@ -451,22 +453,40 @@ public class TestQueryParser extends TestCase {
 
     public void testOrderByClause() {
         SQLQuery query = SQLQueryParser.parse("SELECT p, q, r FROM t ORDER BY p, q");
-        assertFalse(query.getOrderByClause().isDescendent);
-        assertEquals("p", query.getOrderByClause().elements.get(0).name);
-        assertEquals("q", query.getOrderByClause().elements.get(1).name);
-        assertEquals(2, query.getOrderByClause().elements.size());
+        OrderByClause clause = query.getOrderByClause();
+        OrderByList elements = clause.elements;
+        assertEquals("p", elements.get(0).reference.name);
+        assertFalse(elements.get(0).isDescending);
+        assertEquals("q", elements.get(1).reference.name);
+        assertFalse(elements.get(1).isDescending);
+        assertEquals(2, elements.size());
 
         query = SQLQueryParser.parse("SELECT p, q, r FROM t ORDER BY p, q ASC");
-        assertFalse(query.getOrderByClause().isDescendent);
-        assertEquals("p", query.getOrderByClause().elements.get(0).name);
-        assertEquals("q", query.getOrderByClause().elements.get(1).name);
-        assertEquals(2, query.getOrderByClause().elements.size());
+        clause = query.getOrderByClause();
+        elements = clause.elements;
+        assertEquals("p", elements.get(0).reference.name);
+        assertFalse(elements.get(0).isDescending);
+        assertEquals("q", elements.get(1).reference.name);
+        assertFalse(elements.get(1).isDescending);
+        assertEquals(2, elements.size());
 
         query = SQLQueryParser.parse("SELECT p, q, r FROM t ORDER BY p, q DESC");
-        assertTrue(query.getOrderByClause().isDescendent);
-        assertEquals("p", query.getOrderByClause().elements.get(0).name);
-        assertEquals("q", query.getOrderByClause().elements.get(1).name);
-        assertEquals(2, query.getOrderByClause().elements.size());
+        clause = query.getOrderByClause();
+        elements = clause.elements;
+        assertEquals("p", elements.get(0).reference.name);
+        assertFalse(elements.get(0).isDescending);
+        assertEquals("q", elements.get(1).reference.name);
+        assertTrue(elements.get(1).isDescending);
+        assertEquals(2, elements.size());
+
+        query = SQLQueryParser.parse("SELECT p, q, r FROM t ORDER BY p DESC, q");
+        clause = query.getOrderByClause();
+        elements = clause.elements;
+        assertEquals("p", elements.get(0).reference.name);
+        assertTrue(elements.get(0).isDescending);
+        assertEquals("q", elements.get(1).reference.name);
+        assertFalse(elements.get(1).isDescending);
+        assertEquals(2, elements.size());
     }
 
     public void testFromTypeClause(){

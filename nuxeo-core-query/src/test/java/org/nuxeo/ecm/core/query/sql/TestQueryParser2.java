@@ -114,6 +114,8 @@ public class TestQueryParser2 extends TestCase {
         "SELECT p, q, r FROM t ORDER BY p, q",
         "SELECT p, q FROM t ORDER BY p, q ASC",
         "SELECT p, q FROM t ORDER BY p, q DESC",
+        "SELECT p, q FROM t ORDER BY p DESC, q DESC",
+        "SELECT p, q FROM t ORDER BY p DESC, q",
         "SELECT p, q, r FROM t1, t2, t3",
         "SELECT p1, $id, p3 FROM t1, t2 WHERE state=1 AND title = 'test'",
         "SELECT p1, p2 FROM t WHERE (title = \"test\" OR p2 >= 10.2) AND p1 + p2 < 5",

@@ -20,7 +20,9 @@
     <javac srcdir="." destdir="." />
   </target>
 
-  <target name="scanner"> <jflex file="nxql.flex"/> </target>
+  <target name="scanner">
+    <jflex file="nxql.flex" destdir="${project.dir}/${src_gen.dir}"/>
+  </target>
 
   <target name="cup">
     <cup srcfile="${basedir}/nxql.cup" interface="yes" destdir="${project.dir}/${src_gen.dir}" force="true"/>

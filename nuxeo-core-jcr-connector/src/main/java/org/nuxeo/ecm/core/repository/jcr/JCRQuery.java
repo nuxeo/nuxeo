@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.core.repository.jcr;
 
+import java.util.Iterator;
+
 import javax.jcr.RepositoryException;
 import javax.jcr.query.QueryManager;
 
@@ -37,7 +39,7 @@ import org.nuxeo.ecm.core.query.sql.model.FromList;
 import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
-import org.nuxeo.ecm.core.query.sql.model.Reference;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.query.sql.model.WhereClause;
@@ -131,12 +133,15 @@ public class JCRQuery implements Query {
         OrderByClause obc = sqlQuery.getOrderByClause();
         if (obc != null) {
             jcrq.append(" ORDER BY ");
-            for (Object element : obc.elements) {
-                Reference reference = (Reference) element;
-                jcrq.append(' ').append(reference.name).append(' ');
-            }
-            if (obc.isDescendent) {
-                jcrq.append(" DESC ");
+            for (Iterator<OrderByExpr> it = obc.elements.iterator(); it.hasNext();) {
+                OrderByExpr expr = it.next();
+                jcrq.append(expr.reference.name);
+                if (expr.isDescending) {
+                    jcrq.append(" DESC");
+                }
+                if (it.hasNext()) {
+                    jcrq.append(", ");
+                }
             }
         }
 
