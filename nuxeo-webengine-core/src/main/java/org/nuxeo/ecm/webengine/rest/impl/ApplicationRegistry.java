@@ -99,20 +99,7 @@ public class ApplicationRegistry extends AbstractContributionRegistry<String, Ap
     @Override
     protected void installContribution(String key, ApplicationDescriptor object) {
         try {
-            Class<?> clazz = object.clazz;
-            if (clazz == null) { // try to use the parent class if any 
-                if (object.base != null) {
-                    WebApplication parent = apps.get(object.base);
-                    if (parent != null) {
-                        clazz = parent.getClass();
-                    }
-                }
-                if (clazz == null) { // no class specified
-                    throw new AssertionError("Application class is not specified for application: "+object.name);
-                }
-            }
-            WebApplication app = (WebApplication)clazz.newInstance();
-            app.initialize(engine, object.directory, object);
+            WebApplication app = new DefaultWebApplication(engine, object.directory, object);
             apps.put(key, app);
         } catch (Exception e) {
             e.printStackTrace(); //TODO

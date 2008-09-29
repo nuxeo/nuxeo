@@ -31,7 +31,6 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.RootDescriptor;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
-import org.nuxeo.ecm.webengine.rest.PathDescriptor;
 import org.nuxeo.ecm.webengine.rest.annotations.Application;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
@@ -61,21 +60,6 @@ public class ApplicationDescriptor implements Cloneable {
 
     @XNode("@extends")
     public String base;
-    
-    /**
-     * The main class to use. The main class is the root JAX-RS resource that will be registered 
-     * for this application
-     */
-    @XNode("class")
-    public Class<?> clazz;
-
-    /**
-     * The path this application is bound. 
-     * If this application extends another one and the path is not specified then the base application path will be used.
-     * Thus the base application will be replaced by this one.  
-     */
-    @XNode("path")
-    public PathDescriptor path;
 
     @XNodeMap(value="property", key="property@name", componentType=String.class, type=HashMap.class, nullByDefault=false)
     public HashMap<String, Object> properties;
@@ -155,9 +139,7 @@ public class ApplicationDescriptor implements Cloneable {
             return null;
         }
         ApplicationDescriptor ad = new ApplicationDescriptor();
-        ad.clazz = clazz;
         ad.name = anno.name();
-        ad.path = new PathDescriptor(anno.path(), anno.limited(), anno.encode());
         ad.defaultPage = anno.defaultPage();
         ad.indexPage = anno.indexPage();
         ad.errorPage = anno.errorPage();

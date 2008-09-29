@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
+import org.nuxeo.ecm.webengine.rest.model.NoSuchResourceException;
 import org.nuxeo.ecm.webengine.rest.model.WebAction;
 import org.nuxeo.ecm.webengine.rest.model.WebObject;
 import org.nuxeo.ecm.webengine.rest.model.WebType;
@@ -69,6 +70,10 @@ public class DefaultWebType implements WebType {
         return name;
     }
     
+    public Class<WebObject> getResourceClass() {
+        return clazz;
+    }
+    
     public WebObject newInstance() throws WebException {
         try {
             Constructor<WebObject> ctor = clazz.getConstructor(WebType.class);            
@@ -94,7 +99,7 @@ public class DefaultWebType implements WebType {
                 throw WebException.wrap(e);
             }
         }
-        return null;
+        throw new NoSuchResourceException("No Such Action: "+name);
     }
     
     public ActionDescriptor addAction(ActionDescriptor action) {

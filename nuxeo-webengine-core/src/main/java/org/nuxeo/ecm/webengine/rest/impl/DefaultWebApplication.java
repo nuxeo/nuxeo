@@ -35,6 +35,7 @@ import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.model.WebType;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.util.DirectoryStack;
+import org.nuxeo.runtime.deploy.FileChangeListener;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
 import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
 
@@ -44,8 +45,9 @@ import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DefaultWebApplication implements WebApplication {
+public class DefaultWebApplication implements WebApplication, FileChangeListener  {
 
+    
     protected WebEngine2 engine;
     protected ApplicationDescriptor descriptor;
 
@@ -60,33 +62,19 @@ public class DefaultWebApplication implements WebApplication {
     protected TypeConfigurationProvider localTypes;
 
 
-    public DefaultWebApplication() {
+    public DefaultWebApplication(WebEngine2 engine, File root, ApplicationDescriptor descriptor) throws WebException {
         this.fileCache = new ConcurrentHashMap<String, ScriptFile>();
-    }    
-    
-    public void initialize(WebEngine2 engine, File root, ApplicationDescriptor descriptor) throws WebException {
         this.root = root;
         this.descriptor = descriptor;
         this.engine = engine;
         loadDirectoryStack();
-    }
+    }    
+    
 
     public boolean isFragment() {
         return descriptor.fragment != null;
     }
     
-    public String getPath() {
-        return descriptor.path.path;
-    }
-
-    public boolean getPathLimited() {
-        return descriptor.path.limited;
-    }
-
-    public boolean getPathEncode() {
-        return descriptor.path.encode;
-    }
-
     public Object getProperty(String key) {
         return descriptor.properties.get(key);
     }
@@ -103,7 +91,7 @@ public class DefaultWebApplication implements WebApplication {
     public String getName() {
         return descriptor.name;
     }
-
+    
     public WebEngine2 getEngine() {
         return engine;
     }
@@ -264,7 +252,11 @@ public class DefaultWebApplication implements WebApplication {
                 }
             }
         }
-        return typeReg.getType(typeName);
+        WebType type = typeReg.getType(typeName);
+        if (type == null) {
+            throw new TypeNotFoundException(typeName);
+        }
+        return type;
     }
 
     /**
@@ -278,6 +270,5 @@ public class DefaultWebApplication implements WebApplication {
             }
         }
     }
-
 
 }

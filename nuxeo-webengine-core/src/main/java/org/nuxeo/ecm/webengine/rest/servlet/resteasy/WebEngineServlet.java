@@ -333,13 +333,13 @@ if (path == null) path = "/";
                 log.error("Invalid resource binding: "+binding.path+" -> "+binding.className+". No resource path / class specified.");
                 continue;
             }            
-            // add managed resources
-            for (WebApplication app : engine.getApplicationRegistry().getApplications()) {
-                if (app.isFragment()) {
-                    continue;
-                }
-                registry.addSingletonResource(app, app.getPath(), app.getPathEncode(), app.getPathLimited());
-            }
+//            // add managed resources
+//            for (WebApplication app : engine.getApplicationRegistry().getApplications()) {
+//                if (app.isFragment()) {
+//                    continue;
+//                }
+//                registry.addSingletonResource(app, app.getPath(), app.getPathEncode(), app.getPathLimited());
+//            }
         }
     }
 

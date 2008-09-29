@@ -23,12 +23,17 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.ws.rs.ConsumeMime;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
+import org.nuxeo.ecm.webengine.rest.model.NoSuchResourceException;
 import org.nuxeo.ecm.webengine.rest.model.WebAction;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.model.WebObject;
@@ -59,11 +64,48 @@ public class DefaultWebObject extends AbstractWebResource<WebType> implements We
         return true;
     }
 
-    @Path(value="@{action}", limited=true)
-    public WebResource dispatchAction(@PathParam("action") String actionName) throws WebException {
-        //TODO remove the getActionInstance method
-        WebAction action = getType().getActionInstance(ctx, actionName);
-        return action.initialize(ctx, actionName);
+    @Path(value="{segment}", limited=true)
+    public Object dispatch(@PathParam("segment") String segment) throws WebException {
+      System.out.println(">>>>>>>>>>>> "+segment);
+      Object result = null; 
+      if (segment.startsWith("@")) {
+          System.out.println(">>>>>>>>>>>> "+segment+" - dispatch action");
+          result = resolveAction(segment.substring(1));    
+      } else {
+          System.out.println(">>>>>>>>>>>> "+segment+" - dispatch object");
+          result = resolveObject(segment);
+      }
+      if (result == null) {
+          throw new NoSuchResourceException("No Such object "+segment);
+      }
+      return result;
+    }
+    
+    protected WebAction resolveAction(String actionName) throws WebException {
+        return newAction(actionName);
+    }
+    
+    protected WebObject resolveObject(String segment) throws WebException {
+        return null;
+    }
+    
+
+    @Path(value="testPath")
+    public WebResource testInheritedPath() throws WebException {
+        return newObject(getType().getName(), "testPath");
+    }
+
+    
+    @GET
+    public String testInheritedGET() {
+        return "testInheritedGet";
+    }
+
+    @GET
+    @Path(value="testGetPath")
+    public String testInheritedGETWithPath(@Context UriInfo info) {
+        System.out.println("uinfo: "+info);
+        return "testInheritedGetWithPath";
     }
 
 

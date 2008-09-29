@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webengine.rest.impl;
 
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.model.WebAction;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
@@ -98,4 +99,12 @@ public abstract class AbstractWebResource<T extends WebResourceType> implements 
         return null;
     }
 
+    public WebObject newObject(String type, String path) throws WebException {
+        return ctx.newObject(type, path);
+    }
+    
+    public WebAction newAction(String name) throws WebException {        
+        return ctx.newAction(type.getName(), name);
+    }
+    
 }

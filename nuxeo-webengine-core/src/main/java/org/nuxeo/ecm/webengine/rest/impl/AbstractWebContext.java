@@ -47,6 +47,7 @@ import org.nuxeo.ecm.webengine.rest.model.WebView;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
 import org.nuxeo.ecm.webengine.session.UserSession;
+import org.nuxeo.runtime.api.Framework;
 import org.python.core.PyDictionary;
 
 /**
@@ -57,6 +58,7 @@ public class AbstractWebContext implements WebContext2 {
 
     protected static final Log log = LogFactory.getLog(WebContext2.class);
 
+    protected WebEngine2 engine;
     protected WebApplication app;
     protected UserSession us;
     protected final LinkedList<File> scriptExecutionStack;
@@ -66,6 +68,7 @@ public class AbstractWebContext implements WebContext2 {
     
     public AbstractWebContext(UserSession userSession) {
         this.us = userSession;
+        this.engine = Framework.getLocalService(WebEngine2.class);
         this.scriptExecutionStack = new LinkedList<File>();
     }
 
@@ -91,7 +94,7 @@ public class AbstractWebContext implements WebContext2 {
     }
 
     public WebEngine2 getEngine() {
-        return app.getEngine();
+        return engine;
     }
 
     public UserSession getUserSession() {
@@ -106,6 +109,16 @@ public class AbstractWebContext implements WebContext2 {
         return us.getPrincipal();
     }
 
+
+    
+    public WebObject newObject(String type, String path) throws WebException {
+        return (WebObject)push(path, app.getType(type).newInstance());
+    }
+    
+    public WebAction newAction(String type, String name) throws WebException {
+        return (WebAction)push("@"+name, app.getType(type).getActionInstance(this, name));
+    }
+    
     /** object stack API */
 
     public WebResource push(String path, WebResource obj) {

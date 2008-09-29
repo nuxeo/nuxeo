@@ -32,9 +32,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 public @interface Application {
     String name(); // application name    
-    String path();
-    boolean limited() default true;
-    boolean encode() default true;
     String fragment() default "";
     String base() default "";
     String guard() default "";

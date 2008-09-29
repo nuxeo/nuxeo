@@ -175,6 +175,9 @@ public class ActionDescriptor implements TypeDescriptorBase, ActionType {
         return name;
     }
 
+    public Class<WebAction> getResourceClass() {
+        return clazz;
+    }
     
     public WebAction newInstance() throws WebException {
         try {

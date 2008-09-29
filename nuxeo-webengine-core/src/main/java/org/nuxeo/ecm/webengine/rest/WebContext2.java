@@ -54,6 +54,11 @@ public interface WebContext2 extends Adaptable {
     public CoreSession getCoreSession();
 
     public Principal getPrincipal();
+    
+
+    WebObject newObject(String type, String path) throws WebException;
+    
+    WebAction newAction(String type, String name) throws WebException;
 
     /** object stack API */
 

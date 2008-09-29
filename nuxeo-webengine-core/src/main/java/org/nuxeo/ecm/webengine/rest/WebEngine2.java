@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
+import javax.ws.rs.Path;
+
 import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.url.URLFactory;
@@ -167,7 +169,7 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
                 ApplicationDescriptor ad = null;
                 File appFile = new File(file, "Main.groovy");
                 if (appFile.isFile()) {       
-                    ad = loadApplicationDescriptor(file.getName()+".Main");
+                    ad = loadApplicationDescriptor(file.getName()+".Main");                   
                 } else {
                     appFile = new File(file, "application.xml");
                     if (appFile.isFile()) {
@@ -194,7 +196,14 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
     protected synchronized ApplicationDescriptor loadApplicationDescriptor(String className) {
         try {
             Class<?> clazz = scripting.loadClass(className);
-            return ApplicationDescriptor.fromAnnotation(clazz);
+            ApplicationDescriptor ad = ApplicationDescriptor.fromAnnotation(clazz);
+            if (ad != null) {
+                ResourceBinding binding = ResourceBinding.fromAnnotation(clazz);
+                if (binding != null) {
+                    bindings.add(binding);
+                }
+            }            
+            return ad;
         } catch (ClassNotFoundException e) {
             e.printStackTrace(); //TODO log
             // do nothing

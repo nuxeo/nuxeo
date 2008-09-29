@@ -20,15 +20,13 @@
 package org.nuxeo.ecm.webengine.rest.impl.model;
 
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.impl.DefaultWebApplication;
-import org.nuxeo.ecm.webengine.rest.model.WebResource;
+import org.nuxeo.ecm.webengine.rest.model.MainResource;
+import org.nuxeo.ecm.webengine.rest.model.WebObject;
 
 
 /**
@@ -36,19 +34,20 @@ import org.nuxeo.ecm.webengine.rest.model.WebResource;
  *  
  *  TODO: use defined repository
  */
-public class DocumentApplication extends DefaultWebApplication {
+public class DocumentApplication extends MainResource {
 
     @Path(value="{path}", limited=true)
-    public WebResource dispatch(@Context WebContext2 ctx, @PathParam("path") String path) throws Exception {
+    protected WebObject resolveObject(String segment) throws WebException {
         DocumentModel root = getRootDocument(ctx);       
         // push the root first
+        //TODO we need the actual path not the path template
         ctx.push(getPath(), getDocumentObject(ctx, root)); 
-        DocumentModel doc = resolveDocument(ctx, path);
-        return ctx.push(path, getDocumentObject(ctx, doc));
+        DocumentModel doc = resolveDocument(ctx, segment);
+        return (WebObject)ctx.push(segment, getDocumentObject(ctx, doc));
     }
     
     public DocumentObject getDocumentObject(WebContext2 ctx, DocumentModel doc) throws WebException {
-        DocumentObject obj = (DocumentObject)getType(doc.getType()).newInstance();
+        DocumentObject obj = (DocumentObject)(app.getType(doc.getType()).newInstance());
         obj.setDocument(doc);
         return obj;
     }
@@ -77,11 +76,11 @@ public class DocumentApplication extends DefaultWebApplication {
     
 
     public String getRepository() {
-        return (String)getProperty("repository", "default");
+        return (String)app.getProperty("repository", "default");
     }
     
     public String getContentRoot() {
-        return (String)getProperty("content-root", "/");
+        return (String)app.getProperty("content-root", "/");
     }
     
 }

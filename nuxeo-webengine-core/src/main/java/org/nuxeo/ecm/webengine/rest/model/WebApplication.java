@@ -19,31 +19,23 @@
 
 package org.nuxeo.ecm.webengine.rest.model;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.impl.ApplicationDescriptor;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
-import org.nuxeo.runtime.deploy.FileChangeListener;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface WebApplication extends FileChangeListener {
-
-    void initialize(WebEngine2 engine, File root, ApplicationDescriptor descriptor) throws WebException;
+public interface WebApplication {
     
     String getName();
     
     boolean isFragment();
 
-    String getPath();
-    boolean getPathLimited();
-    boolean getPathEncode();
-    
     WebEngine2 getEngine();
 
     ScriptFile getIndexPage();
@@ -62,6 +54,7 @@ public interface WebApplication extends FileChangeListener {
 
     void flushCache();
 
+    
     /**
      * Get a file using the configured directory stack. Each directory in the stack is asked for the file
      * until a file is found. If no file is found return null.

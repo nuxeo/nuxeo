@@ -117,26 +117,26 @@ public class WebEngineApplication extends
             rules.put(p, new RightHandPathRule(redirect, pathEndsInSlash, rule));
         }
 
-        // add managed resources
-        for (WebApplication app : engine.getApplicationRegistry().getApplications()) {
-            if (app.isFragment()) {
-                continue;
-            }
-            String path = app.getPath();
-            boolean pathEndsInSlash = false;
-            if (path == null || path.equals("/")) {
-                path = "/";
-                pathEndsInSlash = true;
-            }
-            
-            UriTemplate t = new PathTemplate(path, app.getPathEncode());
-            PathPattern p = new PathPattern(t, app.getPathLimited());
-            UriRule rule = new ResourceObjectRule(t, app);
-                        
-            getResourceClass(app.getClass()); // TODO here we must be able to modify
-
-            rules.put(p, new RightHandPathRule(redirect, pathEndsInSlash, rule));
-        }
+//        // add managed resources
+//        for (WebApplication app : engine.getApplicationRegistry().getApplications()) {
+//            if (app.isFragment()) {
+//                continue;
+//            }
+//            String path = app.getPath();
+//            boolean pathEndsInSlash = false;
+//            if (path == null || path.equals("/")) {
+//                path = "/";
+//                pathEndsInSlash = true;
+//            }
+//            
+//            UriTemplate t = new PathTemplate(path, app.getPathEncode());
+//            PathPattern p = new PathPattern(t, app.getPathLimited());
+//            UriRule rule = new ResourceObjectRule(t, app);
+//                        
+//            getResourceClass(app.getClass()); // TODO here we must be able to modify
+//
+//            rules.put(p, new RightHandPathRule(redirect, pathEndsInSlash, rule));
+//        }
         
     }
 

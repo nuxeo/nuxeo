@@ -74,4 +74,18 @@ public class ResourceBinding {
         }
         return false;
     }
+    
+    public static final ResourceBinding fromAnnotation(Class<?> clazz) {
+        Path path = clazz.getAnnotation(Path.class);
+        ResourceBinding binding = null;
+        if (path != null) {
+            binding = new ResourceBinding();
+            binding.path = path.value();
+            binding.encode = path.encode();
+            binding.limited = path.limited();
+            binding.className = clazz.getName();
+        }
+        return binding;
+    }
+    
 }

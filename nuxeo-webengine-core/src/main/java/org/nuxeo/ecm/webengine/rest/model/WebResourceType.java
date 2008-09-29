@@ -29,6 +29,8 @@ public interface WebResourceType<T extends WebResource> {
 
     String getName();
     
+    Class<T> getResourceClass();
+    
     T newInstance() throws WebException;
     
 }
