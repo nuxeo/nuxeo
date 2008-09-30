@@ -62,10 +62,21 @@ public class TestQueryVisitor extends TestCase {
         expected = "SELECT foo FROM docs";
         check(sql, expected);
 
-        sql = "select * from d where DATE '2008-01-01' = TIMESTAMP '2008-08-08 12:34:56'";
-        expected = "SELECT * FROM d WHERE (DATE '2008-01-01' = TIMESTAMP '2008-08-08T12:34:56.000+02:00')";
+        sql = "select * from d where foo <> DATE '2008-01-01'";
+        expected = "SELECT * FROM d WHERE (foo <> DATE '2008-01-01')";
         check(sql, expected);
+
+        // hack around timezone variations for this test
+        sql = "select * from d where foo = TIMESTAMP '2008-08-08 12:34:56'";
+        expected = "SELECT * FROM d WHERE (foo = TIMESTAMP '2008-08-08T12:34:56.000+00:00')";
+        expected = expected.substring(0, expected.length() - 8); // truncate timezone
+        PrintVisitor v = new PrintVisitor();
+        v.visitQuery(SQLQueryParser.parse(sql));
+        String got = v.toString();
+        got = got.substring(0, got.length() - 8); // truncate timezone
+        assertEquals(expected, got);
     }
+
 }
 
 class PrintVisitor extends DefaultQueryVisitor {
