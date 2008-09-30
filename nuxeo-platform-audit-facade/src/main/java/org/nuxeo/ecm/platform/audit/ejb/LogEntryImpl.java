@@ -47,9 +47,8 @@ import org.nuxeo.ecm.platform.events.api.DocumentMessage;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @Entity
-@NamedQueries({
-        @NamedQuery(name = "listLogEntriesFor",
-                query = "from LogEntryImpl log where log.docUUID=:docUUID ORDER BY log.eventDate DESC"),
+@NamedQueries( {
+        @NamedQuery(name = "listLogEntriesFor", query = "from LogEntryImpl log where log.docUUID=:docUUID ORDER BY log.eventDate DESC"),
         @NamedQuery(name = "allLogEntries", query = "from LogEntryImpl") })
 @Table(name = "NXP_LOGS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -60,7 +59,7 @@ public class LogEntryImpl extends LogEntryBase {
 
     private static final long serialVersionUID = 0L;
 
-    public  LogEntryImpl() {
+    public LogEntryImpl() {
     }
 
     public LogEntryImpl(DocumentMessage doc) {
@@ -100,7 +99,7 @@ public class LogEntryImpl extends LogEntryBase {
         return docUUID;
     }
 
-    @Column(name = "LOG_DOC_PATH", length=1024)
+    @Column(name = "LOG_DOC_PATH", length = 1024)
     @Override
     public String getDocPath() {
         return docPath;
@@ -118,7 +117,7 @@ public class LogEntryImpl extends LogEntryBase {
         return category;
     }
 
-    @Column(name = "LOG_EVENT_COMMENT")
+    @Column(name = "LOG_EVENT_COMMENT", length = 1024)
     @Override
     public String getComment() {
         return comment;
