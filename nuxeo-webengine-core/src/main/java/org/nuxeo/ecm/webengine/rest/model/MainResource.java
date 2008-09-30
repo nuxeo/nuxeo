@@ -37,12 +37,16 @@ public class MainResource {
     protected WebContext2 ctx;
     protected WebApplication app;
     
-    
+  
     public MainResource() {
         ctx = WebEngine2.getActiveContext();
         app = ctx.getEngine().getApplication(getApplicationName());
-        ctx.setApplication(app);
+        ctx.setApplication(app);        
         //TODO: invoke application guard if any
+
+        System.out.println("@@@ MAIN2: "+getClass()+" >> ancestors res>> "+ctx.getUriInfo().getAncestorResources());
+      System.out.println("@@@ MAIN2: "+getClass()+" >> ancestors uris>> "+ctx.getUriInfo().getAncestorResourceURIs());
+
     }
     
     public WebApplication getApplication() {

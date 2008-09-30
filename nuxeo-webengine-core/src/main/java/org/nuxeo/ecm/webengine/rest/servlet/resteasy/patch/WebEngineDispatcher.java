@@ -17,9 +17,8 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.servlet.resteasy;
+package org.nuxeo.ecm.webengine.rest.servlet.resteasy.patch;
 
-import org.nuxeo.ecm.webengine.rest.servlet.resteasy.patch.ResourceMethodRegistry;
 import org.resteasy.Dispatcher;
 import org.resteasy.spi.ResteasyProviderFactory;
 

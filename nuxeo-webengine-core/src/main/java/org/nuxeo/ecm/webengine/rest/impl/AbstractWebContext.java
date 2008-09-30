@@ -54,7 +54,7 @@ import org.python.core.PyDictionary;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class AbstractWebContext implements WebContext2 {
+public abstract class AbstractWebContext implements WebContext2 {
 
     protected static final Log log = LogFactory.getLog(WebContext2.class);
 
@@ -64,7 +64,6 @@ public class AbstractWebContext implements WebContext2 {
     protected final LinkedList<File> scriptExecutionStack;
     protected AbstractWebResource<?> head;
     protected AbstractWebResource<?> tail;
-    
     
     public AbstractWebContext(UserSession userSession) {
         this.us = userSession;
@@ -119,6 +118,7 @@ public class AbstractWebContext implements WebContext2 {
         return (WebAction)push("@"+name, app.getType(type).getActionInstance(this, name));
     }
     
+   
     /** object stack API */
 
     public WebResource push(String path, WebResource obj) {

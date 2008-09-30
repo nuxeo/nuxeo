@@ -24,6 +24,7 @@ import java.util.Set;
 
 import javax.ws.rs.Path;
 
+import org.resteasy.InjectorFactoryImpl;
 import org.resteasy.PathParamIndex;
 import org.resteasy.ResourceMethod;
 import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;

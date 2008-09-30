@@ -25,6 +25,8 @@ import java.io.Writer;
 import java.security.Principal;
 import java.util.Map;
 
+import javax.ws.rs.core.UriInfo;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.model.WebAction;
@@ -54,12 +56,13 @@ public interface WebContext2 extends Adaptable {
     public CoreSession getCoreSession();
 
     public Principal getPrincipal();
-    
 
     WebObject newObject(String type, String path) throws WebException;
     
     WebAction newAction(String type, String name) throws WebException;
 
+    UriInfo getUriInfo();
+    
     /** object stack API */
 
     public WebResource push(String path, WebResource obj);

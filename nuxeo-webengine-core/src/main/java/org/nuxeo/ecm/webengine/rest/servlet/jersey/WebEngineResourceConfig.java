@@ -19,6 +19,13 @@
 
 package org.nuxeo.ecm.webengine.rest.servlet.jersey;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.nuxeo.ecm.webengine.rest.ResourceBinding;
+import org.nuxeo.ecm.webengine.rest.WebEngine2;
+import org.nuxeo.runtime.api.Framework;
+
 import com.sun.jersey.api.core.DefaultResourceConfig;
 
 /**
@@ -34,5 +41,21 @@ public class WebEngineResourceConfig extends DefaultResourceConfig {
     public WebEngineResourceConfig() {
         super ();
     }
+    
+    @Override
+    public Set<Class<?>> getResourceClasses() {
+        WebEngine2 engine = Framework.getLocalService(WebEngine2.class);
+        HashSet<Class<?>> result = new HashSet<Class<?>>();
+        for (ResourceBinding binding : engine.getBindings()) {
+            try {
+                result.add(engine.getScripting().loadClass(binding.className));
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+    
+    
 
 }

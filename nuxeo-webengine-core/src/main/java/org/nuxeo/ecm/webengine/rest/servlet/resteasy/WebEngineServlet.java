@@ -48,7 +48,6 @@ import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.io.ScriptFileWriter;
 import org.nuxeo.ecm.webengine.rest.io.WebViewWriter;
-import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.runtime.api.Framework;
 import org.resteasy.Dispatcher;
 import org.resteasy.Headers;
@@ -62,6 +61,7 @@ import org.resteasy.plugins.providers.StringTextStar;
 import org.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.resteasy.plugins.server.servlet.HttpServletInputMessage;
 import org.resteasy.plugins.server.servlet.HttpServletResponseWrapper;
 import org.resteasy.plugins.server.servlet.ServletSecurityContext;
 import org.resteasy.specimpl.HttpHeadersImpl;
@@ -93,9 +93,9 @@ public class WebEngineServlet extends HttpServlet {
     private static final Log log = LogFactory.getLog(WebEngineServlet.class);
 
 
-    protected WebEngineDispatcher dispatcher;
+    protected Dispatcher dispatcher;
 
-    public WebEngineDispatcher getDispatcher() {
+    public Dispatcher getDispatcher() {
         return dispatcher;
     }
 
@@ -108,10 +108,11 @@ public class WebEngineServlet extends HttpServlet {
                     ResteasyProviderFactory.class.getName(), providerFactory);
         }
 
-        dispatcher = (WebEngineDispatcher) servletConfig.getServletContext().getAttribute(
+        dispatcher = (Dispatcher) servletConfig.getServletContext().getAttribute(
                 Dispatcher.class.getName());
         if (dispatcher == null) {
-            dispatcher = new WebEngineDispatcher(providerFactory);
+            //dispatcher = new WebEngineDispatcher(providerFactory);
+            dispatcher = new Dispatcher(providerFactory);
             servletConfig.getServletContext().setAttribute(
                     Dispatcher.class.getName(), dispatcher);
             servletConfig.getServletContext().setAttribute(
@@ -200,9 +201,9 @@ if (path == null) path = "/";
 
         HttpRequest in;
         try {
-            WebContext2 ctx = new WebEngineContext(request);
+            WebContext2 ctx = new WebEngineContext(uriInfo, request);
             WebEngine2.setActiveContext(ctx);
-            in = new WebEngineHttpRequest(ctx, headers, request.getInputStream(), uriInfo, httpMethod.toUpperCase());
+            in = new HttpServletInputMessage(headers, request.getInputStream(), uriInfo, httpMethod.toUpperCase());
             HttpResponse theResponse = new HttpServletResponseWrapper(response,
                     dispatcher.getProviderFactory());
             try {
@@ -318,28 +319,24 @@ if (path == null) path = "/";
 
     //TODO: refactor webapplication and rename it as ResourceContainer ?
     protected void addRootResources(WebEngine2 engine) throws Exception {
-        org.nuxeo.ecm.webengine.rest.servlet.resteasy.patch.ResourceMethodRegistry registry = dispatcher.getRegistry();
+        Registry registry = dispatcher.getRegistry();
+        // TODO if (registry.getClass() == WebEngineDispatcher.class) {...}
         // add first annotated JAX-RS resources?? 
         for (ResourceBinding binding : engine.getBindings()) {
             Class<?> rc = null;
             if (binding.className != null && binding.path != null) {
                 rc = engine.getScripting().loadClass(binding.className);
                 if (binding.singleton) { // TODO use a factory to create singletons and remove singleton property
-                    registry.addSingletonResource(rc.newInstance(), binding.path, binding.encode, binding.limited);
+//                    registry.addSingletonResource(rc.newInstance(), binding.path, binding.encode, binding.limited);
+                    registry.addSingletonResource(rc.newInstance());
                 } else {
-                    registry.addPojoResource(rc, binding.path, binding.encode, binding.limited);
+//                    registry.addPojoResource(rc, binding.path, binding.encode, binding.limited);
+                    registry.addPerRequestResource(rc);
                 }
             } else {
                 log.error("Invalid resource binding: "+binding.path+" -> "+binding.className+". No resource path / class specified.");
                 continue;
             }            
-//            // add managed resources
-//            for (WebApplication app : engine.getApplicationRegistry().getApplications()) {
-//                if (app.isFragment()) {
-//                    continue;
-//                }
-//                registry.addSingletonResource(app, app.getPath(), app.getPathEncode(), app.getPathLimited());
-//            }
         }
     }
 

@@ -20,17 +20,15 @@
 package org.nuxeo.ecm.webengine.rest.servlet.jersey;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.impl.AbstractWebContext;
-import org.nuxeo.ecm.webengine.rest.servlet.jersey.patch.ServletContainerRequest;
-import org.nuxeo.ecm.webengine.rest.servlet.jersey.patch.WebApplicationImpl;
 import org.nuxeo.ecm.webengine.session.UserSession;
 
-import com.sun.jersey.spi.container.ContainerRequest;
-import com.sun.jersey.spi.container.ContainerResponse;
+import com.sun.jersey.api.core.HttpContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -40,15 +38,26 @@ public class WebContextImpl extends AbstractWebContext {  //WebApplicationContex
 
     protected static final Log log = LogFactory.getLog(WebContext2.class);
     
-    protected ContainerRequest request;
+    protected HttpServletRequest request;
+    protected HttpContext ctx;
+    protected UriInfo uri;
 
-    public WebContextImpl(ContainerRequest request) {
-        super (UserSession.getCurrentSession(((ServletContainerRequest)request).getSession(true)));
+    public WebContextImpl(HttpContext ctx, HttpServletRequest request) {
+        super (UserSession.getCurrentSession(request.getSession(true)));
         this.request = request;
+        this.ctx = ctx;
     }
+
 
     public HttpServletRequest getHttpServletRequest() {
-        return  ((ServletContainerRequest)request).getHttpServletRequest();
+        return  request;
     }
 
+    public UriInfo getUriInfo() {
+        if (uri == null) {
+            uri = ctx.getUriInfo();
+        }
+        return uri;
+    }
+    
 }
