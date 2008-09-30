@@ -34,7 +34,7 @@ public class DefaultWebAction extends AbstractWebResource<ActionType> implements
 
 
     public DefaultWebAction(ActionType type) {
-        super (type); 
+        super (type);        
     }
     
     public WebObject getTargetObject() {

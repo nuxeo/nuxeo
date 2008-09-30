@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webengine.rest.impl;
 
+import javax.print.attribute.standard.MediaSize.ISO;
+
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.model.WebAction;
@@ -50,8 +52,7 @@ public abstract class AbstractWebResource<T extends WebResourceType> implements 
     public WebResource initialize(WebContext2 ctx, String path) {
         this.ctx = ctx;
         this.path = path;
-        System.out.println("@@@ RES: "+getClass()+" >> ancestors res>> "+ctx.getUriInfo().getMatchedResources());
-        System.out.println("@@@ RES: "+getClass()+" >> ancestors uris>> "+ctx.getUriInfo().getMatchedURIs());
+        System.out.println("@@@ RES: "+getClass().getSimpleName()+" >> "+path+" >> "+ctx.getUriInfo().getMatchedResources() + " => "+ctx.getUriInfo().getMatchedURIs());
         return this;
     }
 

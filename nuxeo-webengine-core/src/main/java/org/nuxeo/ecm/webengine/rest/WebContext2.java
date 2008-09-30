@@ -29,6 +29,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.rest.model.MainResource;
 import org.nuxeo.ecm.webengine.rest.model.WebAction;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.model.WebObject;
@@ -63,8 +64,12 @@ public interface WebContext2 extends Adaptable {
 
     UriInfo getUriInfo();
     
+    public String getApplicationPath();
+    
     /** object stack API */
-
+    public void setRootResource(MainResource resource);
+    public MainResource getRootResource();
+    
     public WebResource push(String path, WebResource obj);
 
     public WebResource pop();

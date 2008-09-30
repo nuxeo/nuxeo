@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.security.Principal;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.script.Bindings;
@@ -39,6 +40,7 @@ import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.impl.model.DocumentObject;
+import org.nuxeo.ecm.webengine.rest.model.MainResource;
 import org.nuxeo.ecm.webengine.rest.model.WebAction;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.model.WebObject;
@@ -64,6 +66,7 @@ public abstract class AbstractWebContext implements WebContext2 {
     protected final LinkedList<File> scriptExecutionStack;
     protected AbstractWebResource<?> head;
     protected AbstractWebResource<?> tail;
+    protected MainResource root;
     
     public AbstractWebContext(UserSession userSession) {
         this.us = userSession;
@@ -108,6 +111,9 @@ public abstract class AbstractWebContext implements WebContext2 {
         return us.getPrincipal();
     }
 
+    public String getApplicationPath() {
+        return root.getPath();
+    }
 
     
     public WebObject newObject(String type, String path) throws WebException {
@@ -121,8 +127,20 @@ public abstract class AbstractWebContext implements WebContext2 {
    
     /** object stack API */
 
+    public void setRootResource(MainResource root) {
+        this.root = root;
+    }
+    
+    public MainResource getRootResource() {
+        return root;
+    }
+    
+    protected String guessObjectPath() {
+        return getUriInfo().getMatchedURIs().get(0);        
+    }
+    
     public WebResource push(String path, WebResource obj) {
-        obj.initialize(this, path);
+        obj.initialize(this, guessObjectPath());
         AbstractWebResource<?> rs = (AbstractWebResource<?>)obj;
         if (tail != null) {
             tail.next = rs;

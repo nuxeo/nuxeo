@@ -36,17 +36,18 @@ public class MainResource {
 
     protected WebContext2 ctx;
     protected WebApplication app;
-    
+    protected String path;
   
     public MainResource() {
         ctx = WebEngine2.getActiveContext();
         app = ctx.getEngine().getApplication(getApplicationName());
         ctx.setApplication(app);        
+        path = guessPath();
+        ctx.setRootResource(this);
+        
         //TODO: invoke application guard if any
-
-        System.out.println("@@@ MAIN2: "+getClass()+" >> ancestors res>> "+ctx.getUriInfo().getMatchedResources());
-      System.out.println("@@@ MAIN2: "+getClass()+" >> ancestors uris>> "+ctx.getUriInfo().getMatchedURIs());
-
+        
+        System.out.println("@@@ MAIN: "+getClass().getSimpleName()+" >> "+path+" >> "+ctx.getUriInfo().getMatchedResources().getClass().getSimpleName()+" => "+ctx.getUriInfo().getMatchedURIs());
     }
     
     public WebApplication getApplication() {
@@ -67,13 +68,10 @@ public class MainResource {
 
     @Path(value="{segment}")
     public Object dispatch(@PathParam("segment") String segment) throws WebException {
-      System.out.println("appdispatch>>>>>>>>>>>> "+segment);
       Object result = null; 
       if (segment.startsWith("@")) {
-          System.out.println("appdispatch>>>>>>>>>>>> "+segment+" - dispatch action");
           result = resolveAction(segment.substring(1));    
       } else {
-          System.out.println("appdispatch>>>>>>>>>>>> "+segment+" - dispatch object");
           result = resolveObject(segment);
       }
       if (result == null) {
@@ -95,7 +93,32 @@ public class MainResource {
     }
     
     public String getPath() {
-        return "/"; //TODO 
+        return path; 
+    }
+
+    /**
+     * This method try to guess the actual path under this resource was called.
+     * RestEasy version 1.0-beta-8 has a bug in UriInfo.getMatchedURIs(). See:
+     * https://jira.jboss.org/jira/browse/RESTEASY-100
+     * <p>
+     * So we cannot use JAX-RS API to correctly retrieve the paths.
+     * This method should be replaced with {@link #_guessPath()} when the bug will be fixed (in RC1)
+     * @return
+     */
+    protected String guessPath() {
+        Path p = getClass().getAnnotation(Path.class);
+        String path = p.value();
+        if (path.indexOf('{') > -1) {
+            path = _guessPath(); 
+        }
+        return path;
     }
     
+    /**
+     * The correct method to guess the path that is not working for now because of a bug in RestEasy
+     * @return
+     */
+    protected String _guessPath() {
+        return ctx.getUriInfo().getMatchedURIs().get(0);
+    }
 }

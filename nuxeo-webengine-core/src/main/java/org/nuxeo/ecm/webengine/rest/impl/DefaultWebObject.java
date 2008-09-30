@@ -46,6 +46,7 @@ import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
  */
 public class DefaultWebObject extends AbstractWebResource<WebType> implements WebObject {
 
+    public final static String ACTION_PREFIX = ".";
 
     public DefaultWebObject(WebType type) {
         super (type);
@@ -61,13 +62,10 @@ public class DefaultWebObject extends AbstractWebResource<WebType> implements We
 
     @Path(value="{segment}")
     public Object dispatch(@PathParam("segment") String segment) throws WebException {
-      System.out.println(">>>>>>>>>>>> "+segment);
       Object result = null; 
-      if (segment.startsWith("@")) {
-          System.out.println(">>>>>>>>>>>> "+segment+" - dispatch action");
+      if (segment.startsWith(ACTION_PREFIX)) {
           result = resolveAction(segment.substring(1));    
       } else {
-          System.out.println(">>>>>>>>>>>> "+segment+" - dispatch object");
           result = resolveObject(segment);
       }
       if (result == null) {
