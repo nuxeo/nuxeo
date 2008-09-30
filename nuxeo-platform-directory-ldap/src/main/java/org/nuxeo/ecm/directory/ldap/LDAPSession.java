@@ -177,9 +177,10 @@ public class LDAPSession implements Session, EntrySource {
             }
 
             if (log.isDebugEnabled()) {
+                String idField = directory.getConfig().getIdField();
                 log.debug(String.format(
-                        "LDAPSession.createEntry(%s): LDAP bind dn=%s attrs=%s",
-                        fieldMap.toString(), dn, attrs.toString()));
+                        "LDAPSession.createEntry(%s=%s): LDAP bind dn='%s' attrs='%s' [%s]",
+                        idField, fieldMap.get(idField), dn, attrs, this));
             }
             dirContext.bind(dn, null, attrs);
 
@@ -247,8 +248,9 @@ public class LDAPSession implements Session, EntrySource {
         if (log.isDebugEnabled()) {
             log.debug(String.format(
                     "LDAPSession.getLdapEntry(%s, %s): LDAP search base='%s' filter='%s' "
-                            + " args='%s' scope='%s'", id, fetchAllAttributes,
-                    searchBaseDn, filterExpr, id, scts.getSearchScope()));
+                            + " args='%s' scope='%s' [%s]", id,
+                    fetchAllAttributes, searchBaseDn, filterExpr, id,
+                    scts.getSearchScope(), this));
         }
         NamingEnumeration<SearchResult> results = dirContext.search(
                 searchBaseDn, filterExpr, filterArgs, scts);
@@ -259,8 +261,8 @@ public class LDAPSession implements Session, EntrySource {
         }
         SearchResult result = results.next();
         if (results.hasMore()) {
-            log.debug("More than one entry found");
-            throw new DirectoryException("more than one entry found for " + id);
+            log.debug("More than one entry found for: " + id);
+            throw new DirectoryException("more than one entry found for: " + id);
         }
         return result;
     }
@@ -271,8 +273,8 @@ public class LDAPSession implements Session, EntrySource {
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "LDAPSession.getEntries(): LDAP search base='%s' filter='%s' "
-                                + " args=* scope=%s", searchBaseDn,
-                        directory.getBaseFilter(), scts.getSearchScope()));
+                                + " args=* scope=%s [%s]", searchBaseDn,
+                        directory.getBaseFilter(), scts.getSearchScope(), this));
             }
             NamingEnumeration<SearchResult> results = dirContext.search(
                     searchBaseDn, directory.getBaseFilter(), scts);
@@ -335,16 +337,18 @@ public class LDAPSession implements Session, EntrySource {
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
-                            "LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' mod_op='REMOVE_ATTRIBUTE' attr='%s'",
-                            docModel.toString(), dn, attrsToDel.toString()));
+                            "LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' " +
+                            "mod_op='REMOVE_ATTRIBUTE' attr='%s' [%s]",
+                            docModel, dn, attrsToDel, this));
                 }
                 dirContext.modifyAttributes(dn, DirContext.REMOVE_ATTRIBUTE,
                         attrsToDel);
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
-                            "LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' mod_op='REPLACE_ATTRIBUTE' attr='%s'",
-                            docModel.toString(), dn, attrs.toString()));
+                            "LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' " +
+                            "mod_op='REPLACE_ATTRIBUTE' attr='%s' [%s]",
+                            docModel, dn, attrs, this));
                 }
                 dirContext.modifyAttributes(dn, DirContext.REPLACE_ATTRIBUTE,
                         attrs);
@@ -384,12 +388,12 @@ public class LDAPSession implements Session, EntrySource {
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
-                        "LDAPSession.deleteEntry(%s): LDAP destroySubcontext dn='%s'",
-                        id, result.getNameInNamespace()));
+                        "LDAPSession.deleteEntry(%s): LDAP destroySubcontext dn='%s' [%s]",
+                        id, result.getNameInNamespace(), this));
             }
             dirContext.destroySubcontext(result.getNameInNamespace());
         } catch (Exception e) {
-            throw new DirectoryException("deleteEntry failed", e);
+            throw new DirectoryException("deleteEntry failed for: " + id, e);
         }
         directory.invalidateCaches();
     }
@@ -466,9 +470,9 @@ public class LDAPSession implements Session, EntrySource {
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
-                        "LDAPSession.query(): LDAP search base=%s filter=%s args=%s scope=%s",
+                        "LDAPSession.query(...): LDAP search base='%s' filter='%s' args='%s' scope='%s' [%s]",
                         searchBaseDn, filterExpr, StringUtils.join(filterArgs,
-                                ","), scts.getSearchScope()));
+                                ","), scts.getSearchScope(), this));
             }
             NamingEnumeration<SearchResult> results = dirContext.search(
                     searchBaseDn, filterExpr, filterArgs, scts);
@@ -870,6 +874,13 @@ public class LDAPSession implements Session, EntrySource {
         } catch (NamingException e) {
             throw new DirectoryException("getMandatoryAttributes failed", e);
         }
+    }
+
+    @Override
+    // useful for the log function
+    public String toString() {
+        return String.format("LDAPSession '%s' for directory %s", sid,
+                directory.getName());
     }
 
 }
