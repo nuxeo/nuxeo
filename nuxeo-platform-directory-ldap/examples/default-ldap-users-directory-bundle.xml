@@ -84,6 +84,12 @@
            anything else will not change the case.
       -->
       <missingIdFieldCase>lower</missingIdFieldCase>
+      
+      <!-- Maximum number of entries returned by the search -->
+      <querySizeLimit>200</querySizeLimit>
+      
+      <!-- Time to wait for a search to finish. 0 to wait indefinitely -->
+      <queryTimeLimit>0</queryTimeLimit>
 
       <creationBaseDn>ou=people,dc=example,dc=com</creationBaseDn>
       <creationClass>top</creationClass>

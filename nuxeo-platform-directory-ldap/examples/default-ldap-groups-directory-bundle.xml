@@ -37,10 +37,16 @@
       <creationBaseDn>ou=groups,dc=example,dc=com</creationBaseDn>
       <creationClass>top</creationClass>
       <creationClass>groupOfUniqueNames</creationClass>
+      
+      <!-- Maximum number of entries returned by the search -->
+      <querySizeLimit>200</querySizeLimit>
+      
+      <!-- Time to wait for a search to finish. 0 to wait indefinitely -->
+      <queryTimeLimit>0</queryTimeLimit>
 
       <rdnAttribute>cn</rdnAttribute>
       <fieldMapping name="groupname">cn</fieldMapping>
-
+      
       <references>
 
 
