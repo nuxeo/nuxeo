@@ -21,8 +21,6 @@ package org.nuxeo.ecm.webengine.rest.impl;
 
 import java.util.Set;
 
-import javax.ws.rs.ProduceMime;
-
 import org.nuxeo.ecm.webengine.rest.model.ActionType;
 import org.nuxeo.ecm.webengine.rest.model.WebAction;
 import org.nuxeo.ecm.webengine.rest.model.WebObject;
@@ -32,9 +30,6 @@ import org.nuxeo.ecm.webengine.rest.model.WebObject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-//There is a bug in jersey ResourceJavaMethodDispatcher#getAcceptableMediaType
-//when no setting the mime type it will return binary content ...
-@ProduceMime({"text/html", "*/*"})
 public class DefaultWebAction extends AbstractWebResource<ActionType> implements WebAction {
 
 

@@ -55,7 +55,7 @@ public class DocumentObject extends DefaultWebObject {
         this.doc = doc;
     }
 
-    @Path(value="{path}", limited=true)
+    @Path(value="{path}")
     public WebResource dispatch(@Context WebContext2 ctx, @PathParam("path") String path) throws WebException {
         try {
             DocumentModel doc = ctx.getCoreSession().getChild(((DocumentObject)ctx.tail()).getDocument().getRef(), path);

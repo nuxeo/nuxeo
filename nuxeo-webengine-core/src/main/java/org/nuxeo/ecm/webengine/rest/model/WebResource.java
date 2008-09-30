@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.webengine.rest.model;
 
-import javax.ws.rs.ProduceMime;
-
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.runtime.model.Adaptable;
 

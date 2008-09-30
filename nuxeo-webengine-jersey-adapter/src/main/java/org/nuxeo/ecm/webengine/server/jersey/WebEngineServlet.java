@@ -35,27 +35,8 @@
 * holder.
 */
 
-package org.nuxeo.ecm.webengine.rest.servlet.jersey;
+package org.nuxeo.ecm.webengine.server.jersey;
 
-import com.sun.jersey.api.container.ContainerException;
-import com.sun.jersey.api.core.ApplicationConfigAdapter;
-import com.sun.jersey.api.core.ResourceConfig;
-import com.sun.jersey.impl.ThreadLocalHttpContext;
-import com.sun.jersey.impl.ThreadLocalInvoker;
-import com.sun.jersey.api.core.ClasspathResourceConfig;
-import com.sun.jersey.api.core.PackagesResourceConfig;
-import com.sun.jersey.api.uri.UriComponent;
-import com.sun.jersey.impl.container.servlet.JSPTemplateProcessor;
-import com.sun.jersey.impl.container.servlet.ServletContainerRequest;
-import com.sun.jersey.spi.container.ContainerListener;
-import com.sun.jersey.spi.container.ContainerNotifier;
-import com.sun.jersey.spi.container.ContainerRequest;
-import com.sun.jersey.spi.container.ContainerResponse;
-import com.sun.jersey.spi.container.ContainerResponseWriter;
-import com.sun.jersey.spi.container.InBoundHeaders;
-import com.sun.jersey.spi.container.WebApplication;
-import com.sun.jersey.spi.container.WebApplicationFactory;
-import com.sun.jersey.spi.inject.SingletonTypeInjectableProvider;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
@@ -68,11 +49,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.ApplicationConfig;
@@ -81,6 +62,25 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
+
+import com.sun.jersey.api.container.ContainerException;
+import com.sun.jersey.api.core.ApplicationConfigAdapter;
+import com.sun.jersey.api.core.ClasspathResourceConfig;
+import com.sun.jersey.api.core.PackagesResourceConfig;
+import com.sun.jersey.api.core.ResourceConfig;
+import com.sun.jersey.api.uri.UriComponent;
+import com.sun.jersey.impl.ThreadLocalInvoker;
+import com.sun.jersey.impl.container.servlet.JSPTemplateProcessor;
+import com.sun.jersey.impl.container.servlet.ServletContainerRequest;
+import com.sun.jersey.spi.container.ContainerListener;
+import com.sun.jersey.spi.container.ContainerNotifier;
+import com.sun.jersey.spi.container.ContainerRequest;
+import com.sun.jersey.spi.container.ContainerResponse;
+import com.sun.jersey.spi.container.ContainerResponseWriter;
+import com.sun.jersey.spi.container.InBoundHeaders;
+import com.sun.jersey.spi.container.WebApplication;
+import com.sun.jersey.spi.container.WebApplicationFactory;
+import com.sun.jersey.spi.inject.SingletonTypeInjectableProvider;
 
 
 /**

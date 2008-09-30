@@ -23,11 +23,9 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
-import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
@@ -46,9 +44,6 @@ import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-//There is a bug in jersey ResourceJavaMethodDispatcher#getAcceptableMediaType
-//when no setting the mime type it will return binary content ...
-@ProduceMime({"text/html", "*/*"})
 public class DefaultWebObject extends AbstractWebResource<WebType> implements WebObject {
 
 
@@ -64,7 +59,7 @@ public class DefaultWebObject extends AbstractWebResource<WebType> implements We
         return true;
     }
 
-    @Path(value="{segment}", limited=true)
+    @Path(value="{segment}")
     public Object dispatch(@PathParam("segment") String segment) throws WebException {
       System.out.println(">>>>>>>>>>>> "+segment);
       Object result = null; 

@@ -17,7 +17,9 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.servlet.jersey;
+package org.nuxeo.ecm.webengine.server.resteasy;
+
+import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriInfo;
@@ -28,35 +30,28 @@ import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.impl.AbstractWebContext;
 import org.nuxeo.ecm.webengine.session.UserSession;
 
-import com.sun.jersey.api.core.HttpContext;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebContextImpl extends AbstractWebContext {  //WebApplicationContext implements WebContext2 {
+public class WebEngineContext extends AbstractWebContext {// extends HttpRequestImpl implements WebContext2 {
 
     protected static final Log log = LogFactory.getLog(WebContext2.class);
-    
+
     protected HttpServletRequest request;
-    protected HttpContext ctx;
     protected UriInfo uri;
 
-    public WebContextImpl(HttpContext ctx, HttpServletRequest request) {
+    public WebEngineContext(UriInfo uri, HttpServletRequest request) throws IOException {
         super (UserSession.getCurrentSession(request.getSession(true)));
         this.request = request;
-        this.ctx = ctx;
+        this.uri = uri;
     }
-
-
+    
     public HttpServletRequest getHttpServletRequest() {
-        return  request;
+        return request;
     }
 
     public UriInfo getUriInfo() {
-        if (uri == null) {
-            uri = ctx.getUriInfo();
-        }
         return uri;
     }
     

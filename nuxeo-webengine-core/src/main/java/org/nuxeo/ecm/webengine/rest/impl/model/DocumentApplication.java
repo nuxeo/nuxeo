@@ -36,7 +36,7 @@ import org.nuxeo.ecm.webengine.rest.model.WebObject;
  */
 public class DocumentApplication extends MainResource {
 
-    @Path(value="{path}", limited=true)
+    @Path(value="{path}")
     protected WebObject resolveObject(String segment) throws WebException {
         DocumentModel root = getRootDocument(ctx);       
         // push the root first

@@ -81,8 +81,9 @@ public class ResourceBinding {
         if (path != null) {
             binding = new ResourceBinding();
             binding.path = path.value();
-            binding.encode = path.encode();
-            binding.limited = path.limited();
+//TODO: these methods were removed in latest specs
+//            binding.encode = path.encode();
+//            binding.limited = path.limited();
             binding.className = clazz.getName();
         }
         return binding;

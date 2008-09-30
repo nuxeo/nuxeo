@@ -44,8 +44,8 @@ public class MainResource {
         ctx.setApplication(app);        
         //TODO: invoke application guard if any
 
-        System.out.println("@@@ MAIN2: "+getClass()+" >> ancestors res>> "+ctx.getUriInfo().getAncestorResources());
-      System.out.println("@@@ MAIN2: "+getClass()+" >> ancestors uris>> "+ctx.getUriInfo().getAncestorResourceURIs());
+        System.out.println("@@@ MAIN2: "+getClass()+" >> ancestors res>> "+ctx.getUriInfo().getMatchedResources());
+      System.out.println("@@@ MAIN2: "+getClass()+" >> ancestors uris>> "+ctx.getUriInfo().getMatchedURIs());
 
     }
     
@@ -65,7 +65,7 @@ public class MainResource {
         throw new UnsupportedOperationException("This method must be implement by derived main resource classes");
     }
 
-    @Path(value="{segment}", limited=true)
+    @Path(value="{segment}")
     public Object dispatch(@PathParam("segment") String segment) throws WebException {
       System.out.println("appdispatch>>>>>>>>>>>> "+segment);
       Object result = null; 

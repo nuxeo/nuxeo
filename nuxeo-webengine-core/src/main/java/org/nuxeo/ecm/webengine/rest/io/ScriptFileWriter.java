@@ -41,15 +41,6 @@ import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 public class ScriptFileWriter implements MessageBodyWriter<ScriptFile> {
 
 
-    public long getSize(ScriptFile t) {
-        return -1;
-    }
-
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
-        return type == ScriptFile.class;
-    }
-
     public void writeTo(ScriptFile t, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
@@ -76,4 +67,16 @@ public class ScriptFileWriter implements MessageBodyWriter<ScriptFile> {
         // TODO Auto-generated method stub
         return null;
     }
+
+    public long getSize(ScriptFile arg0, Class<?> arg1, Type arg2,
+            Annotation[] arg3, MediaType arg4) {
+        return -1;
+    }
+
+    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
+            MediaType arg3) {
+        return true;
+    }
+    
+    
 }

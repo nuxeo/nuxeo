@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.servlet.jersey;
+package org.nuxeo.ecm.webengine.server.jersey;
 
 import java.util.HashSet;
 import java.util.Set;

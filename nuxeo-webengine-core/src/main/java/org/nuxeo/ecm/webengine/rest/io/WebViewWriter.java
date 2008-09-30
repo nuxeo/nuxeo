@@ -24,7 +24,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -37,17 +37,8 @@ import org.nuxeo.ecm.webengine.rest.model.WebView;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@ProduceMime("text/html")
+@Produces("text/html")
 public class WebViewWriter implements MessageBodyWriter<WebView> {
-
-    public long getSize(WebView t) {
-        return -1;
-    }
-
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
-        return type == WebView.class;
-    }
 
     public void writeTo(WebView t, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
@@ -61,6 +52,17 @@ public class WebViewWriter implements MessageBodyWriter<WebView> {
             ee.initCause(e);
             throw ee;
         }
+    }
+
+    public long getSize(WebView arg0, Class<?> arg1, Type arg2,
+            Annotation[] arg3, MediaType arg4) {
+        // TODO Auto-generated method stub
+        return -1;
+    }
+
+    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
+            MediaType arg3) {
+        return WebView.class.isAssignableFrom(arg0);
     }
 
 }
