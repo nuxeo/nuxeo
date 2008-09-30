@@ -171,7 +171,8 @@ public interface WebContext extends Adaptable {
     CoreSession getCoreSession() throws WebException;
 
     /**
-     * A method to be used to change the session durring the current request
+     * A method to be used to change the session during the current request.
+     *
      * @param session the new session to use
      */
     void setCoreSession(CoreSession session);
