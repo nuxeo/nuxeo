@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -201,14 +202,19 @@ public class MimetypeIconUpdater extends AbstractEventListener {
      */
     public static void updateIconField(MimetypeEntry mimetypeEntry,
             DocumentModel doc) throws Exception {
-        String iconPath;
+        String iconPath = null;
         if (mimetypeEntry != null && mimetypeEntry.getIconPath() != null) {
             iconPath = "/icons/" + mimetypeEntry.getIconPath();
         } else {
             TypeManager typeManager = Framework.getService(TypeManager.class);
-            iconPath = typeManager.getType(doc.getType()).getIcon();
+            Type uiType = typeManager.getType(doc.getType());
+            if (uiType != null) {
+                iconPath = uiType.getIcon();
+            }
         }
-        doc.setPropertyValue(ICON_FIELD, iconPath);
+        if (iconPath != null) {
+            doc.setPropertyValue(ICON_FIELD, iconPath);
+        }
     }
 
 }
