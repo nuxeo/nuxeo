@@ -260,9 +260,9 @@ public class LDAPReference extends AbstractReference {
                     ldapEntry = targetSession.getLdapEntry(targetId);
                     if (ldapEntry == null) {
                         log.warn(String.format(
-                                "entry %s in directory %s not found: could not add link from %s in directory %s",
+                                "entry '%s' in directory '%s' not found: could not add link from '%s' in directory '%s' for '%s'",
                                 targetId, targetDirectory.getName(), sourceId,
-                                sourceDirectory.getName()));
+                                sourceDirectory.getName(), this));
                         continue;
                     }
                     String dn = ldapEntry.getNameInNamespace();
@@ -668,9 +668,11 @@ public class LDAPReference extends AbstractReference {
 
                     if (!pseudoNormalizeDn(targetDn).endsWith(baseDn)) {
                         // optim: avoid network connections when obvious
-                        log.debug(String.format(
-                                "ignoring: dn=%s (does not match %s)",
-                                targetDn, baseDn));
+                        if (log.isTraceEnabled()) {
+                            log.trace(String.format(
+                                    "ignoring: dn='%s' (does not match '%s') for '%s'",
+                                    targetDn, baseDn, this));
+                        }
                         continue;
                     }
                     // find the id of the referenced entry
@@ -699,8 +701,8 @@ public class LDAPReference extends AbstractReference {
                             entry = targetSession.dirContext.getAttributes(
                                     targetDn, attributeIdsToCollect);
                         } catch (NamingException e) {
-                            log.error(String.format(
-                                    "could not find %s while fetching reference %s",
+                            log.warn(String.format(
+                                    "could not find target '%s' while fetching reference '%s'",
                                     targetDn, this));
                             continue;
                         }
@@ -708,6 +710,11 @@ public class LDAPReference extends AbstractReference {
                         Attribute attr = entry.get(targetSession.idAttribute);
                         if (attr != null) {
                             id = attr.get().toString();
+                        } else {
+                            log.warn(String.format(
+                                    "ignoring target '%s' (missing attribute '%s') while resolving reference '%s'",
+                                    targetDn, targetSession.idAttribute, this));
+                            continue;
                         }
                     }
                     if (forceDnConsistencyCheck.booleanValue()) {
@@ -717,8 +724,12 @@ public class LDAPReference extends AbstractReference {
                         // this check can be very expensive on large groups
                         // and thus not enabled by default
                         if (!targetSession.hasEntry(id)) {
-                            log.debug("ignoring: " + targetDn
-                                    + " (not part of target directory)");
+                            if (log.isTraceEnabled()) {
+                                log.trace(String.format(
+                                        "ignoring target '%s' when resolving '%s' (not part of target"
+                                                + " directory by forced DN consistency check)",
+                                        targetDn, this));
+                            }
                             continue;
                         }
                     }
@@ -923,8 +934,8 @@ public class LDAPReference extends AbstractReference {
                     String rdnAttribute = targetDirectory.getConfig().getRdnAttribute();
                     if (!rdnAttribute.equals(targetSession.idAttribute)) {
                         log.warn(String.format(
-                                "cannot remove links to missing entry %s in directory %s",
-                                targetId, targetDirectory.getName()));
+                                "cannot remove links to missing entry %s in directory %s for reference %s",
+                                targetId, targetDirectory.getName(), this));
                         return;
                     }
                     // the entry might have already been deleted, try to
