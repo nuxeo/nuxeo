@@ -10,7 +10,7 @@
 
 <h:form>
   <h:dataTable var="user" class="dataOutput" rowClasses="dataRowEven,dataRowOdd"
-    columnClasses="iconColumn,,,,,"
+    columnClasses="${columnHeader.id=='c4' ? 'iconColumn' : ''}"
     value="#{securityActions.parentDocumentsUsers}"
     rendered="#{securityActions.displayInheritedPermissions}">
 
