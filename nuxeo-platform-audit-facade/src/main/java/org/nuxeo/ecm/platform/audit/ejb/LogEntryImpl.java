@@ -38,7 +38,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntryBase;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 
@@ -48,7 +47,7 @@ import org.nuxeo.ecm.platform.events.api.DocumentMessage;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @Entity
-@NamedQueries({
+@NamedQueries( {
         @NamedQuery(name = "listLogEntriesFor", query = "from LogEntryImpl log where log.docUUID=:docUUID ORDER BY log.eventDate DESC"),
         @NamedQuery(name = "allLogEntries", query = "from LogEntryImpl") })
 @Table(name = "NXP_LOGS")
@@ -56,11 +55,11 @@ import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 @DiscriminatorColumn(name = "DISCRIMINATOR", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("NXP")
 @EntityListeners(LogEntryCallbackListener.class)
-public class LogEntryImpl extends LogEntryBase implements LogEntry {
+public class LogEntryImpl extends LogEntryBase {
 
     private static final long serialVersionUID = 0L;
 
-    public  LogEntryImpl() {
+    public LogEntryImpl() {
     }
 
     public LogEntryImpl(DocumentMessage doc) {
@@ -100,7 +99,7 @@ public class LogEntryImpl extends LogEntryBase implements LogEntry {
         return docUUID;
     }
 
-    @Column(name = "LOG_DOC_PATH", length=1024)
+    @Column(name = "LOG_DOC_PATH", length = 1024)
     @Override
     public String getDocPath() {
         return docPath;
@@ -118,7 +117,7 @@ public class LogEntryImpl extends LogEntryBase implements LogEntry {
         return category;
     }
 
-    @Column(name = "LOG_EVENT_COMMENT")
+    @Column(name = "LOG_EVENT_COMMENT", length = 1024)
     @Override
     public String getComment() {
         return comment;
