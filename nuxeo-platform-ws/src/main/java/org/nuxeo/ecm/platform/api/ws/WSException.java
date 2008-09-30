@@ -29,7 +29,6 @@ public class WSException extends Exception {
     private static final long serialVersionUID = -961763618434457798L;
 
     public WSException() {
-
     }
 
     public WSException(String message) {

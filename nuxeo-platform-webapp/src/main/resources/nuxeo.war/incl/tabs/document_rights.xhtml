@@ -1,7 +1,6 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
   xmlns:c="http://java.sun.com/jstl/core" xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
@@ -48,20 +47,20 @@
       <f:facet name="header">
         <h:outputText value="#{messages['label.security.grantedPerms']}" />
       </f:facet>
-      <t:dataList var="perm"
+      <nxu:dataList var="perm"
         value="#{securityActions.securityData.parentDocsGrantLabels[user]}">
         <h:outputText value="#{messages[perm]}" />
-      </t:dataList>
+      </nxu:dataList>
     </h:column>
 
     <h:column>
       <f:facet name="header">
         <h:outputText value="#{messages['label.security.deniedPerms']}" />
       </f:facet>
-      <t:dataList var="perm"
+      <nxu:dataList var="perm"
         value="#{securityActions.securityData.parentDocsDenyLabels[user]}">
         <h:outputText value="#{messages[perm]}" />
-      </t:dataList>
+      </nxu:dataList>
     </h:column>
   </h:dataTable>
 </h:form>
@@ -81,11 +80,11 @@
 
 <a4j:region renderRegionOnly="true">
   <h:form id="rights_content">
-    <t:dataTable var="user" id="dataTable_local_rights"
+    <nxu:dataTable var="user" id="dataTable_local_rights"
       rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput"
       value="#{securityActions.dataTableModel.data}"
       rendered="#{not empty securityActions.currentDocumentUsers}">
-      <t:columns id="columns"
+      <nxu:columns id="columns"
         value="#{securityActions.dataTableModel.columnHeaders}"
         styleClass="${columnHeader.id=='c4' ? 'iconColumn' : ''}"
         var="columnHeader">
@@ -136,19 +135,19 @@
         </f:subview>
 
         <!-- Grant permissions -->
-        <t:dataList var="perm" rendered="${columnHeader.id == 'c2'}"
+        <nxu:dataList var="perm" rendered="${columnHeader.id == 'c2'}"
           value="#{securityActions.dataTableModel.currentCellDisplayedValue}">
           <h:outputText value="#{messages[perm]}" />
-        </t:dataList>
+        </nxu:dataList>
 
         <!-- Deny permissions -->
-        <t:dataList var="perm" rendered="${columnHeader.id == 'c3'}"
+        <nxu:dataList var="perm" rendered="${columnHeader.id == 'c3'}"
           value="#{securityActions.dataTableModel.currentCellDisplayedValue}">
           <h:outputText value="#{messages[perm]}" />
-        </t:dataList>
+        </nxu:dataList>
 
-      </t:columns>
-    </t:dataTable>
+      </nxu:columns>
+    </nxu:dataTable>
 
     <p><h:outputText
       rendered="${empty securityActions.currentDocumentUsers}"
