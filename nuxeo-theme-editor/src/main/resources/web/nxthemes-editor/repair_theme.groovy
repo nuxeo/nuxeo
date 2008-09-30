@@ -1,4 +1,3 @@
-
 import org.nuxeo.theme.Manager
 import org.nuxeo.theme.editor.Events
 import org.nuxeo.theme.events.EventContext
@@ -10,7 +9,6 @@ res = true
 if (theme == null) {
     res = false
 }
-
 
 if (res) {
     ThemeManager.repairTheme(theme)

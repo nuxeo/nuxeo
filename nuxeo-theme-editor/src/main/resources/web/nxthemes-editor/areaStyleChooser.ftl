@@ -1,7 +1,7 @@
-<#assign styleCategory = Context.getCookie("nxthemes.editor.style_category", "page") />
+<#assign styleCategory = script("getCurrentStyleCategory.groovy") />
 <#assign presetGroups = script("getPresetGroupsForSelectedCategory.groovy") />
 <#assign presetsForCurrentGroup = script("getPresetsForCurrentGroup.groovy") />
-<#assign currentPresetGroup = Context.getCookie("nxthemes.editor.preset_group") />
+<#assign currentPresetGroup = script("getCurrentPresetGroup.groovy") />
 
 <div class="nxthemesToolbox" id="nxthemesAreaStyleChooser">
 

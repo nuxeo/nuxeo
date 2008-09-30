@@ -1,4 +1,3 @@
-
 import org.nuxeo.theme.Manager
 import org.nuxeo.theme.editor.Events
 import org.nuxeo.theme.elements.CellElement
@@ -21,7 +20,6 @@ import org.nuxeo.theme.fragments.FragmentFactory
 import org.nuxeo.theme.themes.ThemeManager
 
 id = Request.getParameter("id")
-
 
 ThemeManager themeManager = Manager.getThemeManager()
 

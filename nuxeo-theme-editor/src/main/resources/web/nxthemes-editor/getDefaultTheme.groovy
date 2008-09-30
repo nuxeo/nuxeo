@@ -1,4 +1,3 @@
-
 import org.nuxeo.theme.Manager
 import org.nuxeo.theme.ApplicationType
 import org.nuxeo.theme.types.TypeFamily

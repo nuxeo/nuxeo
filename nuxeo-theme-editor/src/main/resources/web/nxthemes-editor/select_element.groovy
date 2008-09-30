@@ -1,5 +1,5 @@
 
 id = Request.getParameter("id")
-Context.setCookie("nxthemes.editor.selected_element", id)
+Request.getSession(true).setAttribute("nxthemes.editor.selected_element", id)
 
 

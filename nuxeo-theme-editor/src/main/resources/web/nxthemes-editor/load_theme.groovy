@@ -1,4 +1,3 @@
-
 import org.nuxeo.theme.Manager
 import org.nuxeo.theme.editor.Events
 import org.nuxeo.theme.events.EventContext

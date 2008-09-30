@@ -1,4 +1,3 @@
-
 import org.nuxeo.theme.Manager
 import org.nuxeo.theme.themes.ThemeManager
 import org.nuxeo.theme.presets.PresetType
@@ -6,7 +5,7 @@ import org.nuxeo.theme.types.TypeFamily
 import org.nuxeo.theme.types.Type
 
 groups = []
-category = Context.getCookie("nxthemes.editor.style_category")
+category = Context.runScript("getCurrentStyleCategory.groovy")
 groups.add("")
 if (category == null) {
     return groups

@@ -1,4 +1,3 @@
-
 import org.nuxeo.theme.themes.ThemeManager
 
 src = Request.getParameter("src")
