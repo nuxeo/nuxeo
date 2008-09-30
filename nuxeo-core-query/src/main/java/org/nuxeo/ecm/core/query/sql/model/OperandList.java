@@ -29,9 +29,8 @@ public class OperandList extends ArrayList<Operand> implements Operand {
 
     private static final long serialVersionUID = -4527766076726382014L;
 
-
     public void accept(IVisitor visitor) {
-        // TODO Auto-generated method stub
+        visitor.visitOperandList(this);
     }
 
     @Override

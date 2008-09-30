@@ -40,7 +40,7 @@ public class WhereClause extends Clause {
     }
 
     public void accept(IVisitor visitor) {
-        // TODO Auto-generated method stub
+        visitor.visitWhereClause(this);
     }
 
     @Override

@@ -119,7 +119,7 @@ public class SelectClause extends Clause {
     }
 
     public void accept(IVisitor visitor) {
-        //visitor.visitSelectClause(this);
+        visitor.visitSelectClause(this);
     }
 
     @Override

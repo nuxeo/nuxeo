@@ -40,7 +40,7 @@ public class HavingClause extends Clause {
     }
 
     public void accept(IVisitor visitor) {
-        // TODO Auto-generated method stub
+        visitor.visitHavingClause(this);
     }
 
     @Override

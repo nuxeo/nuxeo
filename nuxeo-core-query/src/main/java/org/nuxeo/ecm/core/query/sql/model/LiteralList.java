@@ -31,7 +31,7 @@ public class LiteralList extends ArrayList<Literal> implements Operand {
 
 
     public void accept(IVisitor visitor) {
-        // TODO Auto-generated method stub
+        visitor.visitLiteralList(this);
     }
 
     @Override

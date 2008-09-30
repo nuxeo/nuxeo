@@ -52,7 +52,7 @@ public class GroupByClause extends Clause {
     }
 
     public void accept(IVisitor visitor) {
-        // TODO Auto-generated method stub
+        visitor.visitGroupByClause(this);
     }
 
 }
