@@ -33,10 +33,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.SqlResultSetMapping;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance;
 import org.nuxeo.ecm.platform.workflow.document.api.ejb.local.WorkflowDocumentRelationLocal;
 import org.nuxeo.ecm.platform.workflow.document.api.ejb.remote.WorkflowDocumentRelationRemote;
 import org.nuxeo.ecm.platform.workflow.document.api.relation.WorkflowDocumentRelationException;

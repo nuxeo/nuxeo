@@ -120,6 +120,9 @@
           <creationClass>organizationalPerson</creationClass>
           <creationClass>inetOrgPerson</creationClass>
           <rdnAttribute>uid</rdnAttribute>
+          
+          <querySizeLimit>200</querySizeLimit>
+          <queryTimeLimit>0</queryTimeLimit>
 
           <fieldMapping name="username">uid</fieldMapping>
           <fieldMapping name="password">userPassword</fieldMapping>
@@ -151,6 +154,9 @@
           <creationClass>top</creationClass>
           <creationClass>groupOfUniqueNames</creationClass>
           <rdnAttribute>cn</rdnAttribute>
+          
+          <querySizeLimit>200</querySizeLimit>
+          <queryTimeLimit>0</queryTimeLimit>
 
           <fieldMapping name="groupname">cn</fieldMapping>
 

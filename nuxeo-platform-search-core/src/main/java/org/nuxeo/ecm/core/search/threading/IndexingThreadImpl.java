@@ -41,7 +41,6 @@ import org.nuxeo.runtime.api.Framework;
  * maintains a search service session.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class IndexingThreadImpl extends Thread implements IndexingThread {
 
@@ -60,10 +59,10 @@ public class IndexingThreadImpl extends Thread implements IndexingThread {
     // recycle at least every 20*batch_size documents
     protected static final int RECYCLE_INTERVAL = 20;
 
-    private transient SearchService searchService;
+    private SearchService searchService;
 
     public IndexingThreadImpl(Runnable r) {
-        super(r);
+        super(r, "NuxeoIndexingThread");
         log.debug(getThreadNameAndId() + " : Indexing thread with name="
                 + getThreadNameAndId());
         // // FIXME Initialze this in a lazy way
@@ -103,8 +102,6 @@ public class IndexingThreadImpl extends Thread implements IndexingThread {
 
     /**
      * Closes the bound core session if exists and still active.
-     *
-     * @throws Exception
      */
     private void closeCoreSession() {
         try {
@@ -114,13 +111,9 @@ public class IndexingThreadImpl extends Thread implements IndexingThread {
                 CoreInstance.getInstance().close(coreSession);
             }
         } catch (Throwable t) {
-            log.error(
-                    "Error when cleaning CoreSession bound to indexing thread",
-                    t);
-        }
-        finally
-        {
-            coreSession=null;
+            log.error("Error when cleaning CoreSession bound to indexing thread", t);
+        } finally {
+            coreSession = null;
         }
     }
 
@@ -139,8 +132,6 @@ public class IndexingThreadImpl extends Thread implements IndexingThread {
 
     /**
      * Logout.
-     *
-     * @throws Exception
      */
     private void logout() {
         if (loginCtx != null) {
@@ -154,8 +145,7 @@ public class IndexingThreadImpl extends Thread implements IndexingThread {
     }
 
     @Override
-    public void interrupt()
-    {
+    public void interrupt() {
         closeSearchServiceSession();
         closeCoreSession();
         logout();
@@ -171,7 +161,6 @@ public class IndexingThreadImpl extends Thread implements IndexingThread {
     }*/
 
     public SearchServiceSession getSearchServiceSession() throws Exception {
-
         if (searchServiceSession == null) {
             searchServiceSession = getSearchService().openSession();
         }
@@ -185,7 +174,7 @@ public class IndexingThreadImpl extends Thread implements IndexingThread {
         return searchServiceSession;
     }
 
-    protected SearchService getSearchService() throws Exception {
+    protected SearchService getSearchService() {
         if (searchService == null) {
             searchService = SearchServiceDelegate.getLocalSearchService();
         }
