@@ -30,6 +30,8 @@ public interface WebAction extends WebResource {
     
     ActionType getType();
     
+    public String getName();
+    
     boolean isEnabled();
      
     Set<String> getCategories();

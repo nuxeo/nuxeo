@@ -33,7 +33,6 @@ import org.nuxeo.ecm.webengine.rest.impl.DefaultWebObject;
 import org.nuxeo.ecm.webengine.rest.methods.LOCK;
 import org.nuxeo.ecm.webengine.rest.model.WebObject;
 import org.nuxeo.ecm.webengine.rest.model.WebResource;
-import org.nuxeo.ecm.webengine.rest.model.WebType;
 
 
 
@@ -47,10 +46,6 @@ public class DocumentObject extends DefaultWebObject {
     protected DocumentModel doc;
 
 
-    public DocumentObject(WebType type) {
-        super (type);
-    }
-
     public void setDocument(DocumentModel doc) {
         this.doc = doc;
     }
@@ -61,7 +56,7 @@ public class DocumentObject extends DefaultWebObject {
             DocumentModel doc = ctx.getCoreSession().getChild(((DocumentObject)ctx.tail()).getDocument().getRef(), path);
             DocumentObject obj = (DocumentObject)ctx.getApplication().getType(doc.getType()).newInstance();
             obj.setDocument(doc);
-            return ctx.push(path, obj);
+            return ctx.push(obj);
         } catch (Exception e) {
             throw WebException.wrap(e);
         }

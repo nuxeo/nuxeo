@@ -48,8 +48,7 @@ public class DefaultWebObject extends AbstractWebResource<WebType> implements We
 
     public final static String ACTION_PREFIX = ".";
 
-    public DefaultWebObject(WebType type) {
-        super (type);
+    public DefaultWebObject() {
     }
     
     public boolean isAction() {
@@ -75,7 +74,7 @@ public class DefaultWebObject extends AbstractWebResource<WebType> implements We
     }
     
     protected WebAction resolveAction(String actionName) throws WebException {
-        return newAction(actionName);
+        return ctx.newAction(type, actionName);
     }
     
     protected WebObject resolveObject(String segment) throws WebException {
@@ -85,7 +84,7 @@ public class DefaultWebObject extends AbstractWebResource<WebType> implements We
 
     @Path(value="testPath")
     public WebResource testInheritedPath() throws WebException {
-        return newObject(getType().getName(), "testPath");
+        return ctx.newObject(type);
     }
 
     

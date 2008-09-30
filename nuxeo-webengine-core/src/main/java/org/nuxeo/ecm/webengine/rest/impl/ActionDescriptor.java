@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine.rest.impl;
 
-import java.lang.reflect.Constructor;
 import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Set;
@@ -181,8 +180,7 @@ public class ActionDescriptor implements TypeDescriptorBase, ActionType {
     
     public WebAction newInstance() throws WebException {
         try {
-            Constructor<WebAction> ctor = clazz.getConstructor(ActionType.class);
-            return ctor.newInstance(this);
+            return clazz.newInstance();
         } catch (Exception e) {
             throw WebException.wrap("Failed to instantiate action type: "+name, e);           
         }

@@ -34,6 +34,7 @@ import org.nuxeo.ecm.webengine.rest.model.WebAction;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.model.WebObject;
 import org.nuxeo.ecm.webengine.rest.model.WebResource;
+import org.nuxeo.ecm.webengine.rest.model.WebType;
 import org.nuxeo.ecm.webengine.rest.model.WebView;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.session.UserSession;
@@ -58,19 +59,25 @@ public interface WebContext2 extends Adaptable {
 
     public Principal getPrincipal();
 
-    WebObject newObject(String type, String path) throws WebException;
-    
-    WebAction newAction(String type, String name) throws WebException;
-
     UriInfo getUriInfo();
     
     public String getApplicationPath();
+
+    public WebObject newObject(String typeName) throws WebException;
+
+    public WebObject newObject(WebType type) throws WebException;
+
+    public WebAction newAction(String typeName, String actionName) throws WebException;
     
+    public WebAction newAction(WebObject obj, String actionName) throws WebException;
+    
+    public WebAction newAction(WebType type, String actionName) throws WebException;
+
     /** object stack API */
     public void setRootResource(MainResource resource);
     public MainResource getRootResource();
     
-    public WebResource push(String path, WebResource obj);
+    public WebResource push(WebResource obj);
 
     public WebResource pop();
 

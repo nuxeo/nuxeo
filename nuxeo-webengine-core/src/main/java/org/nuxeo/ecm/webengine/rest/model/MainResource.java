@@ -88,10 +88,6 @@ public class MainResource {
         throw new NoSuchResourceException("No Such Object: "+segment);
     }
     
-    public WebObject newObject(String type, String path) throws WebException {
-        return ctx.newObject(type, path);
-    }
-    
     public String getPath() {
         return path; 
     }

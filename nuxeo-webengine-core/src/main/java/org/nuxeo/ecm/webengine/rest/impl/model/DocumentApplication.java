@@ -41,9 +41,9 @@ public class DocumentApplication extends MainResource {
         DocumentModel root = getRootDocument(ctx);       
         // push the root first
         //TODO we need the actual path not the path template
-        ctx.push(getPath(), getDocumentObject(ctx, root)); 
+        ctx.push(getDocumentObject(ctx, root)); 
         DocumentModel doc = resolveDocument(ctx, segment);
-        return (WebObject)ctx.push(segment, getDocumentObject(ctx, doc));
+        return (WebObject)ctx.push(getDocumentObject(ctx, doc));
     }
     
     public DocumentObject getDocumentObject(WebContext2 ctx, DocumentModel doc) throws WebException {

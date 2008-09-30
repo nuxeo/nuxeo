@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webengine.rest.model;
 
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.runtime.model.Adaptable;
 
@@ -30,8 +31,10 @@ import org.nuxeo.runtime.model.Adaptable;
  */
 public interface WebResource extends Adaptable {
 
-    WebResource initialize(WebContext2 ctx, String path);
+    WebResource initialize(WebContext2 ctx, WebResourceType<?> type) throws WebException;
 
+    void dispose();
+    
     WebContext2 getContext();    
     
     WebApplication getApplication();

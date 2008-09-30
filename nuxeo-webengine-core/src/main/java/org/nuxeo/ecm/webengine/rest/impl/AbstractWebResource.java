@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.webengine.rest.impl;
 
-import javax.print.attribute.standard.MediaSize.ISO;
-
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.model.WebAction;
@@ -45,15 +43,19 @@ public abstract class AbstractWebResource<T extends WebResourceType> implements 
     protected T type;
 
   
-    public AbstractWebResource(T type) {
-        this.type = type;
-    }
     
-    public WebResource initialize(WebContext2 ctx, String path) {
+    public WebResource initialize(WebContext2 ctx, WebResourceType<?> type) throws WebException {
         this.ctx = ctx;
-        this.path = path;
+        this.type = (T)type;
+        this.path = ctx.getUriInfo().getMatchedURIs().get(0);
         System.out.println("@@@ RES: "+getClass().getSimpleName()+" >> "+path+" >> "+ctx.getUriInfo().getMatchedResources() + " => "+ctx.getUriInfo().getMatchedURIs());
         return this;
+    }
+    
+    public void dispose() {
+        this.ctx = null;
+        this.type = null;
+        this.path = null;
     }
 
     public T getType() {
@@ -102,12 +104,5 @@ public abstract class AbstractWebResource<T extends WebResourceType> implements 
         return null;
     }
 
-    public WebObject newObject(String type, String path) throws WebException {
-        return ctx.newObject(type, path);
-    }
-    
-    public WebAction newAction(String name) throws WebException {        
-        return ctx.newAction(type.getName(), name);
-    }
     
 }

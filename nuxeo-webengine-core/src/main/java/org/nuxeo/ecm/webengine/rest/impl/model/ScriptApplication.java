@@ -38,7 +38,7 @@ public class ScriptApplication extends MainResource {
     //@Path(value="{path}", limited=false)
     @Path(value="{path}")
     public WebResource dispatch(@PathParam("path") String path, @Context WebContext2 ctx) throws Exception {
-        return ctx.push(path, getScriptObject());
+        return ctx.push(getScriptObject());
     }    
     
     protected WebObject getScriptObject() throws WebException {

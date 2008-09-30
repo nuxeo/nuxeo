@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine.rest.model;
 
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.impl.ActionDescriptor;
 
@@ -34,7 +33,6 @@ public interface WebType extends WebResourceType<WebObject> {
     public WebType getSuperType();
     public Class<? extends WebObject> getObjectType();
     public ActionDescriptor getAction(String name);
-    public WebAction getActionInstance(WebContext2 ctx, String name) throws WebException;
     public ActionDescriptor addAction(ActionDescriptor action);
     public void removeAction(String name);
     public ActionDescriptor[] getActions();

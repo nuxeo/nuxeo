@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.security.Principal;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import javax.script.Bindings;
@@ -41,10 +40,12 @@ import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.impl.model.DocumentObject;
 import org.nuxeo.ecm.webengine.rest.model.MainResource;
+import org.nuxeo.ecm.webengine.rest.model.NoSuchResourceException;
 import org.nuxeo.ecm.webengine.rest.model.WebAction;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.model.WebObject;
 import org.nuxeo.ecm.webengine.rest.model.WebResource;
+import org.nuxeo.ecm.webengine.rest.model.WebType;
 import org.nuxeo.ecm.webengine.rest.model.WebView;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
@@ -116,14 +117,44 @@ public abstract class AbstractWebContext implements WebContext2 {
     }
 
     
-    public WebObject newObject(String type, String path) throws WebException {
-        return (WebObject)push(path, app.getType(type).newInstance());
+    public WebObject newObject(String typeName) throws WebException {
+        WebType type = app.getType(typeName);
+        if (type == null) {
+            throw new NoSuchResourceException("No Such Object Type: "+typeName);
+        }
+        return newObject(type);
     }
-    
-    public WebAction newAction(String type, String name) throws WebException {
-        return (WebAction)push("@"+name, app.getType(type).getActionInstance(this, name));
+
+    public WebObject newObject(WebType type) throws WebException {
+        WebObject obj = type.newInstance();
+        obj.initialize(this, type);
+        push(obj);
+        return obj;
     }
-    
+
+    public WebAction newAction(String typeName, String actionName) throws WebException {
+        WebType type = app.getType(typeName);
+        if (type == null) {
+            throw new NoSuchResourceException("No Such Object Type: "+typeName);
+        }
+        return newAction(type, actionName);
+    }
+
+    public WebAction newAction(WebObject obj, String actionName) throws WebException {
+        return newAction(obj.getType(), actionName);
+    }
+
+    public WebAction newAction(WebType type, String actionName) throws WebException {
+        ActionDescriptor actionType = type.getAction(actionName);
+        if (actionType == null) {
+            throw new NoSuchResourceException("No Such Action: "+actionName);
+        }
+        WebAction action = actionType.newInstance();
+        action.initialize(this, actionType);
+        push(action);
+        return action;
+    }
+
    
     /** object stack API */
 
@@ -135,12 +166,8 @@ public abstract class AbstractWebContext implements WebContext2 {
         return root;
     }
     
-    protected String guessObjectPath() {
-        return getUriInfo().getMatchedURIs().get(0);        
-    }
     
-    public WebResource push(String path, WebResource obj) {
-        obj.initialize(this, guessObjectPath());
+    public WebResource push(WebResource obj) {
         AbstractWebResource<?> rs = (AbstractWebResource<?>)obj;
         if (tail != null) {
             tail.next = rs;
@@ -164,7 +191,7 @@ public abstract class AbstractWebContext implements WebContext2 {
             tail = rs.prev;
             tail.next = null;
         }
-        rs.initialize(null, null);
+        rs.dispose();
         return rs;
     }
 

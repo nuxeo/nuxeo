@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine.rest.impl;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,10 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.model.NoSuchResourceException;
-import org.nuxeo.ecm.webengine.rest.model.WebAction;
 import org.nuxeo.ecm.webengine.rest.model.WebObject;
 import org.nuxeo.ecm.webengine.rest.model.WebType;
 
@@ -75,9 +71,8 @@ public class DefaultWebType implements WebType {
     }
     
     public WebObject newInstance() throws WebException {
-        try {
-            Constructor<WebObject> ctor = clazz.getConstructor(WebType.class);            
-            return ctor.newInstance(this);
+        try {            
+            return clazz.newInstance();
         } catch (Exception e) {
             throw WebException.wrap("Failed to instantiate web object: "+clazz, e);
         }
@@ -85,22 +80,7 @@ public class DefaultWebType implements WebType {
     
     public ActionDescriptor getAction(String name) {
         return actions.get(name);
-    }
-    
-    public WebAction getActionInstance(WebContext2 ctx, String name) throws WebException {
-        ActionDescriptor action = getAction(name);
-        if (action != null) {
-            try {
-                if (!action.getGuard().check(ctx)) {
-                    throw new WebSecurityException("Failed to get action: "+action.name+". Action is not accessible in the current context", action.name);
-                }
-                return action.newInstance();
-            } catch (Exception e) {
-                throw WebException.wrap(e);
-            }
-        }
-        throw new NoSuchResourceException("No Such Action: "+name);
-    }
+    }    
     
     public ActionDescriptor addAction(ActionDescriptor action) {
         return actions.put(action.name, action);
