@@ -19,10 +19,10 @@
 
 package org.nuxeo.ecm.webapp.note;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.myfaces.trinidad.model.UploadedFile;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -37,9 +37,13 @@ public interface EditorImageActions {
     String getSelectedTab();
 
     // image uploading related methods
-    void setUploadedImage(final UploadedFile uploadedImage);
+    void setUploadedImage(InputStream uploadedImage);
 
-    UploadedFile getUploadedImage();
+    InputStream getUploadedImage();
+
+    void setUploadedImageName(String uploadedImageName);
+
+    String getUploadedImageName();
 
     String uploadImage() throws ClientException;
 

@@ -38,7 +38,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntryBase;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 
@@ -49,14 +48,15 @@ import org.nuxeo.ecm.platform.events.api.DocumentMessage;
  */
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "listLogEntriesFor", query = "from LogEntryImpl log where log.docUUID=:docUUID ORDER BY log.eventDate DESC"),
+        @NamedQuery(name = "listLogEntriesFor",
+                query = "from LogEntryImpl log where log.docUUID=:docUUID ORDER BY log.eventDate DESC"),
         @NamedQuery(name = "allLogEntries", query = "from LogEntryImpl") })
 @Table(name = "NXP_LOGS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "DISCRIMINATOR", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("NXP")
 @EntityListeners(LogEntryCallbackListener.class)
-public class LogEntryImpl extends LogEntryBase implements LogEntry {
+public class LogEntryImpl extends LogEntryBase {
 
     private static final long serialVersionUID = 0L;
 

@@ -210,7 +210,6 @@ public class LdapTestServer implements ContextProvider {
         cfg.setPartitionConfigurations(partitions);
     }
 
-    @SuppressWarnings("unchecked")
     public void startLdapServer() {
         cfg = new MutableStartupConfiguration();
         cfg.setWorkingDirectory(workingDir);
