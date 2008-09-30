@@ -31,7 +31,7 @@ public class ReferenceList extends ArrayList<Reference> implements Operand {
 
 
     public void accept(IVisitor visitor) {
-        // TODO Auto-generated method stub
+        visitor.visitReferenceList(this);
     }
 
     @Override

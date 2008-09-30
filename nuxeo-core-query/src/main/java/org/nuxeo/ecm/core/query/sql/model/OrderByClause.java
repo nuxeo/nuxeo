@@ -54,7 +54,7 @@ public class OrderByClause extends Clause {
     }
 
     public void accept(IVisitor visitor) {
-        // TODO Auto-generated method stub
+        visitor.visitOrderByClause(this);
     }
 
 }

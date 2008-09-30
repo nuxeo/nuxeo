@@ -79,7 +79,7 @@ public class FromClause extends Clause {
     }
 
     public void accept(IVisitor visitor) {
-        // TODO Auto-generated method stub
+        visitor.visitFromClause(this);
     }
 
     @Override
