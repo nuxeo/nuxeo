@@ -45,10 +45,14 @@
       genral behaviour. A rule can hold several facets: it applies if current
       document in context has at least one of them.
 
-      - condition: EL expression that can be evaluated against the context. The
-      seam context is made available for conditions evaluation. A rule can hold
-      several conditions: it applies if at least on of the conditions is
-      verified.
+      - condition: expression that can be evaluated against the current context.
+      A rule can hold several conditions; it applies if at least one of the conditions
+      is verified. The condition can be of the form #{somevar} or #{somevar.somemethod},
+      or #{somevar.somemethod(arg)}, in which case it will be interpreted a Seam expression,
+      otherwise it will be interpreted as a Jexl expression. A reference for Jexl can be found at
+      http://commons.apache.org/jexl/reference/syntax.html
+      The Jexl context for the expression contains the variables "document", "principal",
+      and "SeamContext".
 
       - type: document type to check against current document in context. A rule
       can hold several types: it applies if current document is one of them. The
@@ -77,13 +81,13 @@
           <rule grant="">
             <permission>Write</permission>
             <facet>Folderish</facet>
-            <condition>EL condition</condition>
+            <condition>condition</condition>
             <type>Workspace</type>
             <type>Section</type>
           </rule>
           <rule grant="false">
-            <condition>EL condition 1</condition>
-            <condition>EL condition 2</condition>
+            <condition>condition 1</condition>
+            <condition>condition 2</condition>
           </rule>
         </filter>
       </code>
