@@ -51,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author ogrisel
- *
+ * 
  */
 public class LDAPDirectory extends AbstractDirectory {
 
@@ -148,7 +148,8 @@ public class LDAPDirectory extends AbstractDirectory {
             props.put("com.sun.jndi.ldap.connect.pool.protocol", "plain ssl");
             props.put("com.sun.jndi.ldap.connect.pool.authentication",
                     "none simple DIGEST-MD5");
-            props.put("com.sun.jndi.ldap.connect.pool.timeout", "1800000"); // 30 min
+            props.put("com.sun.jndi.ldap.connect.pool.timeout", "1800000"); // 30
+            // min
         }
         return props;
     }
@@ -159,7 +160,7 @@ public class LDAPDirectory extends AbstractDirectory {
 
     /**
      * Search controls that only fetch attributes defined by the schema
-     *
+     * 
      * @return common search controls to use for all LDAP search queries
      * @throws DirectoryException
      */
@@ -188,7 +189,9 @@ public class LDAPDirectory extends AbstractDirectory {
 
         scts.setReturningAttributes(attrs.toArray(new String[attrs.size()]));
 
-        // XXX: add count and time limits?
+        scts.setCountLimit(config.getQuerySizeLimit());
+        scts.setTimeLimit(config.getQueryTimeLimit());
+
         return scts;
     }
 

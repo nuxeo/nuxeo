@@ -109,10 +109,15 @@ public class LDAPDirectoryDescriptor {
     @XNode("missingIdFieldCase")
     public String missingIdFieldCase = "unchanged";
 
+    @XNode("querySizeLimit")
+    private int querySizeLimit = 200;
+
+    @XNode("queryTimeLimit")
+    private int queryTimeLimit = 0; // default to wait indefinitely
+
     // XXX: passwordEncryption?
     // XXX: ignoredFields?
     // XXX: referenceFields?
-
     public LDAPDirectoryDescriptor() {
         scopes.put("object", SearchControls.OBJECT_SCOPE);
         scopes.put("onelevel", SearchControls.ONELEVEL_SCOPE);
@@ -280,6 +285,22 @@ public class LDAPDirectoryDescriptor {
 
     public int getCacheMaxSize() {
         return cacheMaxSize;
+    }
+
+    public int getQuerySizeLimit() {
+        return querySizeLimit;
+    }
+
+    public void setQuerySizeLimit(int querySizeLimit) {
+        this.querySizeLimit = querySizeLimit;
+    }
+
+    public void setQueryTimeLimit(int queryTimeLimit) {
+        this.queryTimeLimit = queryTimeLimit;
+    }
+
+    public int getQueryTimeLimit() {
+        return queryTimeLimit;
     }
 
 }
