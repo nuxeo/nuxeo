@@ -31,7 +31,7 @@ public interface TypeDescriptorBase extends Cloneable {
     
     TypeDescriptor asTypeDescriptor();
     
-    ActionDescriptor asActionDescriptor();
+    ActionTypeImpl asActionDescriptor();
     
     boolean isMainFragment();
     

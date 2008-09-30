@@ -19,38 +19,26 @@
 
 package org.nuxeo.ecm.webengine.rest.model;
 
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.runtime.model.Adaptable;
+import org.nuxeo.ecm.webengine.rest.impl.ActionTypeImpl;
 
 /**
- * This interface must be implemented by any object that is dispatched on a web request through web engine.
- * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface WebResource extends Adaptable {
+public interface ObjectType extends ResourceType<ObjectResource> {
+    
+    public final static String ROOT_TYPE_NAME = "*";
 
-    WebResource initialize(WebContext2 ctx, WebResourceType<?> type) throws WebException;
-
-    void dispose();
-    
-    WebContext2 getContext();    
-    
-    WebApplication getApplication();
-    
-    WebResourceType<?> getType();
-    
-    String getPath();
-
-    WebResource getPrevious();
-    
-    WebResource getNext();
-    
-    boolean isAction();
-    
-    boolean isObject();
-    
-    WebView getView();
+    public ObjectType getSuperType();
+    public Class<? extends ObjectResource> getObjectType();
+    public ActionTypeImpl getAction(String name);
+    public ActionTypeImpl addAction(ActionTypeImpl action);
+    public void removeAction(String name);
+    public ActionTypeImpl[] getActions();
+    public ActionTypeImpl[] getActions(String category);
+    public ActionTypeImpl[] getEnabledActions(WebContext2 ctx);
+    public ActionTypeImpl[] getEnabledActions(String category, WebContext2 ctx);
+    public ActionTypeImpl[] getLocalActions();
     
 }

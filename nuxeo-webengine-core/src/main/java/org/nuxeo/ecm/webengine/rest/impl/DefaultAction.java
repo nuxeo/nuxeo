@@ -25,22 +25,22 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.model.ActionType;
-import org.nuxeo.ecm.webengine.rest.model.WebAction;
-import org.nuxeo.ecm.webengine.rest.model.WebObject;
-import org.nuxeo.ecm.webengine.rest.model.WebResource;
-import org.nuxeo.ecm.webengine.rest.model.WebResourceType;
+import org.nuxeo.ecm.webengine.rest.model.ActionResource;
+import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
+import org.nuxeo.ecm.webengine.rest.model.Resource;
+import org.nuxeo.ecm.webengine.rest.model.ResourceType;
 
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DefaultWebAction extends AbstractWebResource<ActionType> implements WebAction {
+public class DefaultAction extends AbstractResource<ActionType> implements ActionResource {
 
 
     
     @Override
-    public WebResource initialize(WebContext2 ctx, WebResourceType<?> type) throws WebException {
+    public Resource initialize(WebContext2 ctx, ResourceType<?> type) throws WebException {
         super.initialize(ctx, type);
         if (!this.type.getGuard().check(ctx)) {
             throw new WebSecurityException("Failed to get action: "+getName()+". Action is not accessible in the current context", getName());
@@ -52,8 +52,8 @@ public class DefaultWebAction extends AbstractWebResource<ActionType> implements
         return type.getName();
     }
     
-    public WebObject getTargetObject() {
-        return (WebObject)prev;
+    public ObjectResource getTargetObject() {
+        return (ObjectResource)prev;
     }
     
     public boolean isEnabled() {

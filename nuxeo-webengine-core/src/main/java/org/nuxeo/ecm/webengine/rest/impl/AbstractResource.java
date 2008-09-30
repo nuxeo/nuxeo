@@ -21,11 +21,11 @@ package org.nuxeo.ecm.webengine.rest.impl;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.model.WebAction;
+import org.nuxeo.ecm.webengine.rest.model.ActionResource;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
-import org.nuxeo.ecm.webengine.rest.model.WebObject;
-import org.nuxeo.ecm.webengine.rest.model.WebResource;
-import org.nuxeo.ecm.webengine.rest.model.WebResourceType;
+import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
+import org.nuxeo.ecm.webengine.rest.model.Resource;
+import org.nuxeo.ecm.webengine.rest.model.ResourceType;
 import org.nuxeo.ecm.webengine.rest.model.WebView;
 
 /**
@@ -34,17 +34,17 @@ import org.nuxeo.ecm.webengine.rest.model.WebView;
  */
 // DO NOT MODIFY class declaration! Cannot use WebResourceType<?> since groovy doesn't supports wildcards for now
 @SuppressWarnings("unchecked")
-public abstract class AbstractWebResource<T extends WebResourceType> implements WebResource {
+public abstract class AbstractResource<T extends ResourceType> implements Resource {
 
     protected WebContext2 ctx;
-    protected AbstractWebResource<?> next;
-    protected AbstractWebResource<?> prev;
+    protected AbstractResource<?> next;
+    protected AbstractResource<?> prev;
     protected String path;
     protected T type;
 
   
     
-    public WebResource initialize(WebContext2 ctx, WebResourceType<?> type) throws WebException {
+    public Resource initialize(WebContext2 ctx, ResourceType<?> type) throws WebException {
         this.ctx = ctx;
         this.type = (T)type;
         this.path = ctx.getUriInfo().getMatchedURIs().get(0);
@@ -71,11 +71,11 @@ public abstract class AbstractWebResource<T extends WebResourceType> implements 
     }
     
 
-    public WebResource getNext() {
+    public Resource getNext() {
         return next;
     }
 
-    public WebResource getPrevious() {
+    public Resource getPrevious() {
         return prev;
     }
 
@@ -95,10 +95,10 @@ public abstract class AbstractWebResource<T extends WebResourceType> implements 
         if (adapter == WebContext2.class) {
             return adapter.cast(ctx);
         }
-        if (adapter == WebObject.class) {
+        if (adapter == ObjectResource.class) {
             return isObject() ? adapter.cast(this) : null;
         }
-        if (adapter == WebAction.class) {
+        if (adapter == ActionResource.class) {
             return isAction() ? adapter.cast(this) : null;
         }
         return null;

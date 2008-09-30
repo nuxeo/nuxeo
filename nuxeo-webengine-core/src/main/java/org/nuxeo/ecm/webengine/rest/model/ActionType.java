@@ -28,7 +28,7 @@ import org.nuxeo.ecm.webengine.security.Guard;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ActionType extends WebResourceType<WebAction> {
+public interface ActionType extends ResourceType<ActionResource> {
     
     Set<String> getCategories();
     

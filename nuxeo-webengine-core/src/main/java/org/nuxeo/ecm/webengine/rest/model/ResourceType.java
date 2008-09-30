@@ -25,7 +25,7 @@ import org.nuxeo.ecm.webengine.WebException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface WebResourceType<T extends WebResource> {
+public interface ResourceType<T extends Resource> {
 
     String getName();
     

@@ -31,7 +31,7 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.RootDescriptor;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
-import org.nuxeo.ecm.webengine.rest.annotations.Application;
+import org.nuxeo.ecm.webengine.rest.annotations.WebApp;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 import org.nuxeo.runtime.model.Adaptable;
@@ -67,8 +67,8 @@ public class ApplicationDescriptor implements Cloneable {
     @XNodeList(value="types/type", componentType=TypeDescriptor.class, type=ArrayList.class, nullByDefault=false)
     public ArrayList<TypeDescriptor> types;
 
-    @XNodeList(value="actions/action", componentType=ActionDescriptor.class, type=ArrayList.class, nullByDefault=false)
-    public ArrayList<ActionDescriptor> actions;
+    @XNodeList(value="actions/action", componentType=ActionTypeImpl.class, type=ArrayList.class, nullByDefault=false)
+    public ArrayList<ActionTypeImpl> actions;
 
     @XNode("error-page")
     public String errorPage = "error.ftl";
@@ -134,7 +134,7 @@ public class ApplicationDescriptor implements Cloneable {
 
     
     public static ApplicationDescriptor fromAnnotation(Class<?> clazz) {
-        Application anno = clazz.getAnnotation(Application.class);
+        WebApp anno = clazz.getAnnotation(WebApp.class);
         if (anno == null) {
             return null;
         }
@@ -160,7 +160,7 @@ public class ApplicationDescriptor implements Cloneable {
             }
         }
         ad.properties = new HashMap<String, Object>();
-        ad.actions = new ArrayList<ActionDescriptor>();
+        ad.actions = new ArrayList<ActionTypeImpl>();
         ad.types = new ArrayList<TypeDescriptor>();        
         return ad;
     }

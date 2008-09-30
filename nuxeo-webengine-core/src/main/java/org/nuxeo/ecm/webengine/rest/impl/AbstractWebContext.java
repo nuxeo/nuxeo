@@ -41,11 +41,11 @@ import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.impl.model.DocumentObject;
 import org.nuxeo.ecm.webengine.rest.model.MainResource;
 import org.nuxeo.ecm.webengine.rest.model.NoSuchResourceException;
-import org.nuxeo.ecm.webengine.rest.model.WebAction;
+import org.nuxeo.ecm.webengine.rest.model.ActionResource;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
-import org.nuxeo.ecm.webengine.rest.model.WebObject;
-import org.nuxeo.ecm.webengine.rest.model.WebResource;
-import org.nuxeo.ecm.webengine.rest.model.WebType;
+import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
+import org.nuxeo.ecm.webengine.rest.model.Resource;
+import org.nuxeo.ecm.webengine.rest.model.ObjectType;
 import org.nuxeo.ecm.webengine.rest.model.WebView;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
@@ -65,8 +65,8 @@ public abstract class AbstractWebContext implements WebContext2 {
     protected WebApplication app;
     protected UserSession us;
     protected final LinkedList<File> scriptExecutionStack;
-    protected AbstractWebResource<?> head;
-    protected AbstractWebResource<?> tail;
+    protected AbstractResource<?> head;
+    protected AbstractResource<?> tail;
     protected MainResource root;
     
     public AbstractWebContext(UserSession userSession) {
@@ -80,7 +80,7 @@ public abstract class AbstractWebContext implements WebContext2 {
 
 
     public <T> T getAdapter(Class<T> adapter) {
-        if (WebObject.class == adapter) {
+        if (ObjectResource.class == adapter) {
             return (T)tail();
         } else if (WebEngine2.class == adapter) {
             return (T)this;
@@ -117,39 +117,39 @@ public abstract class AbstractWebContext implements WebContext2 {
     }
 
     
-    public WebObject newObject(String typeName) throws WebException {
-        WebType type = app.getType(typeName);
+    public ObjectResource newObject(String typeName) throws WebException {
+        ObjectType type = app.getType(typeName);
         if (type == null) {
             throw new NoSuchResourceException("No Such Object Type: "+typeName);
         }
         return newObject(type);
     }
 
-    public WebObject newObject(WebType type) throws WebException {
-        WebObject obj = type.newInstance();
+    public ObjectResource newObject(ObjectType type) throws WebException {
+        ObjectResource obj = type.newInstance();
         obj.initialize(this, type);
         push(obj);
         return obj;
     }
 
-    public WebAction newAction(String typeName, String actionName) throws WebException {
-        WebType type = app.getType(typeName);
+    public ActionResource newAction(String typeName, String actionName) throws WebException {
+        ObjectType type = app.getType(typeName);
         if (type == null) {
             throw new NoSuchResourceException("No Such Object Type: "+typeName);
         }
         return newAction(type, actionName);
     }
 
-    public WebAction newAction(WebObject obj, String actionName) throws WebException {
+    public ActionResource newAction(ObjectResource obj, String actionName) throws WebException {
         return newAction(obj.getType(), actionName);
     }
 
-    public WebAction newAction(WebType type, String actionName) throws WebException {
-        ActionDescriptor actionType = type.getAction(actionName);
+    public ActionResource newAction(ObjectType type, String actionName) throws WebException {
+        ActionTypeImpl actionType = type.getAction(actionName);
         if (actionType == null) {
             throw new NoSuchResourceException("No Such Action: "+actionName);
         }
-        WebAction action = actionType.newInstance();
+        ActionResource action = actionType.newInstance();
         action.initialize(this, actionType);
         push(action);
         return action;
@@ -167,8 +167,8 @@ public abstract class AbstractWebContext implements WebContext2 {
     }
     
     
-    public WebResource push(WebResource obj) {
-        AbstractWebResource<?> rs = (AbstractWebResource<?>)obj;
+    public Resource push(Resource obj) {
+        AbstractResource<?> rs = (AbstractResource<?>)obj;
         if (tail != null) {
             tail.next = rs;
             rs.prev = tail;
@@ -180,11 +180,11 @@ public abstract class AbstractWebContext implements WebContext2 {
         return obj;
     }
 
-    public WebResource pop() {        
+    public Resource pop() {        
         if (tail == null) {
             return null;
         }
-        AbstractWebResource<?> rs = (AbstractWebResource<?>)tail;
+        AbstractResource<?> rs = (AbstractResource<?>)tail;
         if (tail == head) {
             head = tail = null;
         } else {
@@ -195,11 +195,11 @@ public abstract class AbstractWebContext implements WebContext2 {
         return rs;
     }
 
-    public WebResource tail() {
+    public Resource tail() {
         return tail;
     }
 
-    public WebResource head() {
+    public Resource head() {
         return head;
     }
 
@@ -374,15 +374,15 @@ public abstract class AbstractWebContext implements WebContext2 {
         return bindings;
     }
 
-    public WebObject getTargetObject() {
+    public ObjectResource getTargetObject() {
         if (tail != null) {            
             if (tail.isObject()) {
-                return (WebObject)tail;
+                return (ObjectResource)tail;
             } else {
-                AbstractWebResource<?> rs = tail.prev;
+                AbstractResource<?> rs = tail.prev;
                 while (rs != null) {
                     if (rs.isObject()) {
-                        return (WebObject)rs;
+                        return (ObjectResource)rs;
                     }
                     rs = rs.prev;
                 } 
@@ -391,15 +391,15 @@ public abstract class AbstractWebContext implements WebContext2 {
         return null;        
     }
     
-    public WebAction getAction() {
+    public ActionResource getAction() {
         if (tail != null) {
-            return tail.isAction() ? (WebAction)tail : null;
+            return tail.isAction() ? (ActionResource)tail : null;
         }
         return null;
     }
     
     protected void initializeBindings(Bindings bindings) {
-        WebResource obj = getTargetObject();
+        Resource obj = getTargetObject();
         bindings.put("Context", this);
         //TODO uncomment for compatibility
         //bindings.put("Request", request);

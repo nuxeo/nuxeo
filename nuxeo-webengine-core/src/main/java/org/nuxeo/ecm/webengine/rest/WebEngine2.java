@@ -40,8 +40,8 @@ import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.webengine.WebClassLoader;
 import org.nuxeo.ecm.webengine.nl.ResourceComposite;
-import org.nuxeo.ecm.webengine.rest.annotations.Action;
-import org.nuxeo.ecm.webengine.rest.annotations.Type;
+import org.nuxeo.ecm.webengine.rest.annotations.WebAction;
+import org.nuxeo.ecm.webengine.rest.annotations.WebObject;
 import org.nuxeo.ecm.webengine.rest.impl.ApplicationDescriptor;
 import org.nuxeo.ecm.webengine.rest.impl.ApplicationRegistry;
 import org.nuxeo.ecm.webengine.rest.impl.GlobalTypesLoader;
@@ -100,8 +100,8 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
         scripting.addClassPath(cp);
         
         this.globalTypes = new GlobalTypesLoader(this);
-        BundleAnnotationsLoader.getInstance().addLoader(Type.class.getName(), globalTypes);
-        BundleAnnotationsLoader.getInstance().addLoader(Action.class.getName(), globalTypes);        
+        BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), globalTypes);
+        BundleAnnotationsLoader.getInstance().addLoader(WebAction.class.getName(), globalTypes);        
         
         loadApplications();
         

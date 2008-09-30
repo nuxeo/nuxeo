@@ -17,29 +17,28 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.model;
+package org.nuxeo.ecm.webengine.rest.annotations;
 
-import java.util.Collection;
-import java.util.Map;
-
-import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.rest.impl.ActionDescriptor;
-
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface WebObject extends WebResource {
-
-    WebType getType();
-
-    ActionDescriptor getAction(String action);
-
-    ActionDescriptor[] getActions();
-
-    ActionDescriptor[] getActions(String category);
-
-    Map<String, Collection<ActionDescriptor>> getActionsByCategory() throws WebException;
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+public @interface WebApp {
+    String name(); // application name    
+    String fragment() default "";
+    String base() default "";
+    String guard() default "";
+    String[] roots() default {};
+    String indexPage() default "index.ftl";
+    String errorPage() default "error.ftl";
+    String defaultPage() default "default.ftl";
+    String scriptExtension() default ".groovy";
+    String templateExtension() default ".ftl";
 }

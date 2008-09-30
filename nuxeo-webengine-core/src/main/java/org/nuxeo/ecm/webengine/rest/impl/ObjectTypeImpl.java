@@ -27,35 +27,35 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.model.WebObject;
-import org.nuxeo.ecm.webengine.rest.model.WebType;
+import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
+import org.nuxeo.ecm.webengine.rest.model.ObjectType;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DefaultWebType implements WebType {
+public class ObjectTypeImpl implements ObjectType {
         
     protected String name;
-    protected DefaultWebType superType;
-    protected ConcurrentMap<String, ActionDescriptor> actions;
-    protected Class<WebObject> clazz;
+    protected ObjectTypeImpl superType;
+    protected ConcurrentMap<String, ActionTypeImpl> actions;
+    protected Class<ObjectResource> clazz;
 
-    public DefaultWebType(DefaultWebType superType, String name, Class<WebObject> clazz, Map<String, ActionDescriptor> actions) {
+    public ObjectTypeImpl(ObjectTypeImpl superType, String name, Class<ObjectResource> clazz, Map<String, ActionTypeImpl> actions) {
         this.superType = superType;
         this.name = name;
         this.clazz = clazz;
-        this.actions = new ConcurrentHashMap<String, ActionDescriptor>();
+        this.actions = new ConcurrentHashMap<String, ActionTypeImpl>();
         if (actions != null) { // add own defined actions
             this.actions.putAll(actions);
         }
     }
     
-    public WebType getSuperType() {
+    public ObjectType getSuperType() {
         return superType;
     }
     
-    public Class<WebObject> getObjectType() {
+    public Class<ObjectResource> getObjectType() {
         return this.clazz; 
     }
     
@@ -66,11 +66,11 @@ public class DefaultWebType implements WebType {
         return name;
     }
     
-    public Class<WebObject> getResourceClass() {
+    public Class<ObjectResource> getResourceClass() {
         return clazz;
     }
     
-    public WebObject newInstance() throws WebException {
+    public ObjectResource newInstance() throws WebException {
         try {            
             return clazz.newInstance();
         } catch (Exception e) {
@@ -78,11 +78,11 @@ public class DefaultWebType implements WebType {
         }
     }
     
-    public ActionDescriptor getAction(String name) {
+    public ActionTypeImpl getAction(String name) {
         return actions.get(name);
     }    
     
-    public ActionDescriptor addAction(ActionDescriptor action) {
+    public ActionTypeImpl addAction(ActionTypeImpl action) {
         return actions.put(action.name, action);
     }
 
@@ -90,75 +90,75 @@ public class DefaultWebType implements WebType {
         actions.remove(name);
     }
     
-    public ActionDescriptor[] getActions() {
-        ArrayList<ActionDescriptor> result = new ArrayList<ActionDescriptor>();
+    public ActionTypeImpl[] getActions() {
+        ArrayList<ActionTypeImpl> result = new ArrayList<ActionTypeImpl>();
         collectActions(result);
-        return result.toArray(new ActionDescriptor[result.size()]);
+        return result.toArray(new ActionTypeImpl[result.size()]);
     }
     
-    public ActionDescriptor[] getActions(String category) {
-        ArrayList<ActionDescriptor> result = new ArrayList<ActionDescriptor>();
+    public ActionTypeImpl[] getActions(String category) {
+        ArrayList<ActionTypeImpl> result = new ArrayList<ActionTypeImpl>();
         collectActions(result, category);
-        return result.toArray(new ActionDescriptor[result.size()]);
+        return result.toArray(new ActionTypeImpl[result.size()]);
     }    
 
-    public ActionDescriptor[] getEnabledActions(WebContext2 ctx) {
-        ArrayList<ActionDescriptor> result = new ArrayList<ActionDescriptor>();
+    public ActionTypeImpl[] getEnabledActions(WebContext2 ctx) {
+        ArrayList<ActionTypeImpl> result = new ArrayList<ActionTypeImpl>();
         collectEnabledActions(result, ctx);
-        return result.toArray(new ActionDescriptor[result.size()]);
+        return result.toArray(new ActionTypeImpl[result.size()]);
     }
 
-    public ActionDescriptor[] getEnabledActions(String category, WebContext2 ctx) {
-        ArrayList<ActionDescriptor> result = new ArrayList<ActionDescriptor>();
+    public ActionTypeImpl[] getEnabledActions(String category, WebContext2 ctx) {
+        ArrayList<ActionTypeImpl> result = new ArrayList<ActionTypeImpl>();
         collectEnabledActions(result, category, ctx);
-        return result.toArray(new ActionDescriptor[result.size()]);
+        return result.toArray(new ActionTypeImpl[result.size()]);
     }
     
 
-    public ActionDescriptor[] getLocalActions() {
-        return actions.values().toArray(new ActionDescriptor[actions.size()]);
+    public ActionTypeImpl[] getLocalActions() {
+        return actions.values().toArray(new ActionTypeImpl[actions.size()]);
     }
         
-    protected void collectActions(List<ActionDescriptor> result) {
+    protected void collectActions(List<ActionTypeImpl> result) {
         if (superType != null) {
             superType.collectActions(result);
         }
-        ActionDescriptor[] actions = getLocalActions();
-        for (ActionDescriptor action : actions) {
+        ActionTypeImpl[] actions = getLocalActions();
+        for (ActionTypeImpl action : actions) {
             result.add(action);
         }    
     }
 
-    protected void collectEnabledActions(List<ActionDescriptor> result, WebContext2 ctx) {
+    protected void collectEnabledActions(List<ActionTypeImpl> result, WebContext2 ctx) {
         if (superType != null) {
             superType.collectEnabledActions(result, ctx);
         }
-        ActionDescriptor[] actions = getLocalActions();
-        for (ActionDescriptor action : actions) {
+        ActionTypeImpl[] actions = getLocalActions();
+        for (ActionTypeImpl action : actions) {
             if (action.isEnabled(ctx)) {
                 result.add(action);
             }
         }    
     }
 
-    protected void collectActions(List<ActionDescriptor> result, String category) {
+    protected void collectActions(List<ActionTypeImpl> result, String category) {
         if (superType != null) {
             superType.collectActions(result, category);
         }
-        ActionDescriptor[] actions = getLocalActions();
-        for (ActionDescriptor action : actions) {
+        ActionTypeImpl[] actions = getLocalActions();
+        for (ActionTypeImpl action : actions) {
             if (action.categories.contains(category)) {
                 result.add(action);
             }
         }        
     }
 
-    protected void collectEnabledActions(List<ActionDescriptor> result, String category, WebContext2 ctx) {
+    protected void collectEnabledActions(List<ActionTypeImpl> result, String category, WebContext2 ctx) {
         if (superType != null) {
             superType.collectEnabledActions(result, category, ctx);
         }
-        ActionDescriptor[] actions = getLocalActions();
-        for (ActionDescriptor action : actions) {
+        ActionTypeImpl[] actions = getLocalActions();
+        for (ActionTypeImpl action : actions) {
             if (action.categories.contains(category) && action.isEnabled(ctx)) {
                 result.add(action);
             }

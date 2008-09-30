@@ -30,15 +30,12 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-public @interface Application {
-    String name(); // application name    
-    String fragment() default "";
-    String base() default "";
+public @interface WebAction {
+
+    String value(); // action name
+    String type() default "*";
+    boolean enabled() default true;
+    String[] categories() default {};
     String guard() default "";
-    String[] roots() default {};
-    String indexPage() default "index.ftl";
-    String errorPage() default "error.ftl";
-    String defaultPage() default "default.ftl";
-    String scriptExtension() default ".groovy";
-    String templateExtension() default ".ftl";
+    
 }

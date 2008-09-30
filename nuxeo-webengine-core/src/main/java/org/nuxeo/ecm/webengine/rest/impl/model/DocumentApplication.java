@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.model.MainResource;
-import org.nuxeo.ecm.webengine.rest.model.WebObject;
+import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
 
 
 /**
@@ -37,13 +37,13 @@ import org.nuxeo.ecm.webengine.rest.model.WebObject;
 public class DocumentApplication extends MainResource {
 
     @Path(value="{path}")
-    protected WebObject resolveObject(String segment) throws WebException {
+    protected ObjectResource resolveObject(String segment) throws WebException {
         DocumentModel root = getRootDocument(ctx);       
         // push the root first
         //TODO we need the actual path not the path template
         ctx.push(getDocumentObject(ctx, root)); 
         DocumentModel doc = resolveDocument(ctx, segment);
-        return (WebObject)ctx.push(getDocumentObject(ctx, doc));
+        return (ObjectResource)ctx.push(getDocumentObject(ctx, doc));
     }
     
     public DocumentObject getDocumentObject(WebContext2 ctx, DocumentModel doc) throws WebException {

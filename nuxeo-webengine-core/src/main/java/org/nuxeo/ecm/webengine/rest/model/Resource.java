@@ -19,21 +19,38 @@
 
 package org.nuxeo.ecm.webengine.rest.model;
 
-import java.util.Set;
-
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.rest.WebContext2;
+import org.nuxeo.runtime.model.Adaptable;
 
 /**
+ * This interface must be implemented by any object that is dispatched on a web request through web engine.
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface WebAction extends WebResource {
+public interface Resource extends Adaptable {
+
+    Resource initialize(WebContext2 ctx, ResourceType<?> type) throws WebException;
+
+    void dispose();
     
-    ActionType getType();
+    WebContext2 getContext();    
     
-    public String getName();
+    WebApplication getApplication();
     
-    boolean isEnabled();
-     
-    Set<String> getCategories();
-   
+    ResourceType<?> getType();
+    
+    String getPath();
+
+    Resource getPrevious();
+    
+    Resource getNext();
+    
+    boolean isAction();
+    
+    boolean isObject();
+    
+    WebView getView();
+    
 }

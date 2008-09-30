@@ -32,7 +32,7 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
-import org.nuxeo.ecm.webengine.rest.model.WebType;
+import org.nuxeo.ecm.webengine.rest.model.ObjectType;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.util.DirectoryStack;
 import org.nuxeo.runtime.deploy.FileChangeListener;
@@ -45,7 +45,7 @@ import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DefaultWebApplication implements WebApplication, FileChangeListener  {
+public class WebApplicationImpl implements WebApplication, FileChangeListener  {
 
     
     protected WebEngine2 engine;
@@ -62,7 +62,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
     protected TypeConfigurationProvider localTypes;
 
 
-    public DefaultWebApplication(WebEngine2 engine, File root, ApplicationDescriptor descriptor) throws WebException {
+    public WebApplicationImpl(WebEngine2 engine, File root, ApplicationDescriptor descriptor) throws WebException {
         this.fileCache = new ConcurrentHashMap<String, ScriptFile>();
         this.root = root;
         this.descriptor = descriptor;
@@ -136,7 +136,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
             // if no roots are defined import base roots and add application directory
             if (roots == null || roots.isEmpty()) {  
                 if (descriptor.base != null) { 
-                    DefaultWebApplication parent = (DefaultWebApplication)engine.getApplication(descriptor.base);
+                    WebApplicationImpl parent = (WebApplicationImpl)engine.getApplication(descriptor.base);
                     if (parent != null && parent.dirStack != null) {                        
                         dirStack = new DirectoryStack(parent.dirStack.getEntries());
                         int size  = dirStack.getEntries().size();
@@ -221,7 +221,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         if (descriptor.types != null) {
             localTypes.types.addAll(descriptor.types); 
         }
-        localTypes.actions = new ArrayList<ActionDescriptor>();
+        localTypes.actions = new ArrayList<ActionTypeImpl>();
         if (descriptor.actions != null) {
             descriptor.actions.addAll(descriptor.actions);
         }
@@ -231,7 +231,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         return engine.getScripting().loadClass(className);
     }
 
-    public WebType getType(String typeName) throws TypeNotFoundException {
+    public ObjectType getType(String typeName) throws TypeNotFoundException {
         if (typeReg == null) { // create type registry if not already created
             synchronized (typeLock) {
                 if (typeReg == null) {
@@ -252,7 +252,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
                 }
             }
         }
-        WebType type = typeReg.getType(typeName);
+        ObjectType type = typeReg.getType(typeName);
         if (type == null) {
             throw new TypeNotFoundException(typeName);
         }

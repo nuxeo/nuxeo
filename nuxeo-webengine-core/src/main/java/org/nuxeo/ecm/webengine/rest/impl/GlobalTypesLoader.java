@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.annotations.Action;
-import org.nuxeo.ecm.webengine.rest.annotations.Type;
+import org.nuxeo.ecm.webengine.rest.annotations.WebAction;
+import org.nuxeo.ecm.webengine.rest.annotations.WebObject;
 import org.nuxeo.runtime.annotations.loader.AnnotationLoader;
 import org.nuxeo.runtime.annotations.loader.BundleAnnotationsLoader;
 import org.osgi.framework.Bundle;
@@ -45,8 +45,8 @@ public class GlobalTypesLoader  implements AnnotationLoader {
         this.engine = engine;
         this.providers = new ConcurrentHashMap<String, TypeConfigurationProvider>();
         this.mainProvider = new TypeConfigurationProvider();
-        BundleAnnotationsLoader.getInstance().addLoader(Type.class.getName(), this);
-        BundleAnnotationsLoader.getInstance().addLoader(Action.class.getName(), this);
+        BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), this);
+        BundleAnnotationsLoader.getInstance().addLoader(WebAction.class.getName(), this);
     }
     
     public static final String fcToUpperCase(String str) {
@@ -98,13 +98,13 @@ public class GlobalTypesLoader  implements AnnotationLoader {
     
     protected void loadClassFile(TypeConfigurationProvider provider, String className) throws ClassNotFoundException {
         Class<?> clazz = this.engine.getScripting().loadClass(className);
-        Type type = clazz.getAnnotation(Type.class);
+        WebObject type = clazz.getAnnotation(WebObject.class);
         if (type != null) {
             provider.registerType(TypeDescriptor.fromAnnotation(clazz, type));
         } else {            
-            Action action = clazz.getAnnotation(Action.class);
+            WebAction action = clazz.getAnnotation(WebAction.class);
             if (action != null) {
-                provider.registerAction(ActionDescriptor.fromAnnotation(clazz, action));    
+                provider.registerAction(ActionTypeImpl.fromAnnotation(clazz, action));    
             }
         }
     }
@@ -114,13 +114,13 @@ public class GlobalTypesLoader  implements AnnotationLoader {
     public void loadAnnotation(Bundle bundle, String annotationType, String className, String[] args) throws Exception {
         // args are ignored for now
         Class<?> clazz = bundle.loadClass(className);
-        if (annotationType.equals(Type.class.getName())) {
-            Type type = clazz.getAnnotation(Type.class);                 
+        if (annotationType.equals(WebObject.class.getName())) {
+            WebObject type = clazz.getAnnotation(WebObject.class);                 
             mainProvider.registerType(TypeDescriptor.fromAnnotation(clazz, type));
-        } else if (annotationType.equals(Action.class.getName())) {
+        } else if (annotationType.equals(WebAction.class.getName())) {
             //TODO: avoid loading clazz here - use the data from annotation ?
-            Action action = clazz.getAnnotation(Action.class);
-            mainProvider.registerAction(ActionDescriptor.fromAnnotation(clazz, action));
+            WebAction action = clazz.getAnnotation(WebAction.class);
+            mainProvider.registerAction(ActionTypeImpl.fromAnnotation(clazz, action));
         } else {
             throw new IllegalArgumentException(annotationType);
         }

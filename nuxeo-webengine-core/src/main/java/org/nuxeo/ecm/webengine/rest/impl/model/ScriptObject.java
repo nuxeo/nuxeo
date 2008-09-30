@@ -29,10 +29,10 @@ import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.annotations.Type;
-import org.nuxeo.ecm.webengine.rest.impl.DefaultWebObject;
-import org.nuxeo.ecm.webengine.rest.model.WebResource;
-import org.nuxeo.ecm.webengine.rest.model.WebResourceType;
+import org.nuxeo.ecm.webengine.rest.annotations.WebObject;
+import org.nuxeo.ecm.webengine.rest.impl.DefaultObject;
+import org.nuxeo.ecm.webengine.rest.model.Resource;
+import org.nuxeo.ecm.webengine.rest.model.ResourceType;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
 
@@ -42,8 +42,8 @@ import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Type("Script")
-public class ScriptObject extends DefaultWebObject {
+@WebObject("Script")
+public class ScriptObject extends DefaultObject {
 
     protected ScriptFile file;
 
@@ -51,7 +51,7 @@ public class ScriptObject extends DefaultWebObject {
     }
 
     @Override
-    public WebResource initialize(WebContext2 ctx, WebResourceType<?> type) throws WebException {
+    public Resource initialize(WebContext2 ctx, ResourceType<?> type) throws WebException {
         super.initialize(ctx, type);
         try {
             file = ctx.getApplication().getFile(path);

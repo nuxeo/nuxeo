@@ -99,7 +99,7 @@ public class ApplicationRegistry extends AbstractContributionRegistry<String, Ap
     @Override
     protected void installContribution(String key, ApplicationDescriptor object) {
         try {
-            WebApplication app = new DefaultWebApplication(engine, object.directory, object);
+            WebApplication app = new WebApplicationImpl(engine, object.directory, object);
             apps.put(key, app);
         } catch (Exception e) {
             e.printStackTrace(); //TODO

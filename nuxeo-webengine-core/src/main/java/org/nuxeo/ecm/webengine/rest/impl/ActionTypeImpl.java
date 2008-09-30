@@ -29,10 +29,10 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebRuntimeException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.annotations.Action;
+import org.nuxeo.ecm.webengine.rest.annotations.WebAction;
 import org.nuxeo.ecm.webengine.rest.model.ActionType;
-import org.nuxeo.ecm.webengine.rest.model.WebAction;
-import org.nuxeo.ecm.webengine.rest.model.WebType;
+import org.nuxeo.ecm.webengine.rest.model.ActionResource;
+import org.nuxeo.ecm.webengine.rest.model.ObjectType;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 
@@ -41,7 +41,7 @@ import org.nuxeo.ecm.webengine.security.PermissionService;
  * 
  */
 @XObject("action")
-public class ActionDescriptor implements TypeDescriptorBase, ActionType {
+public class ActionTypeImpl implements TypeDescriptorBase, ActionType {
 
     @XNode("@name")
     public String name;
@@ -50,7 +50,7 @@ public class ActionDescriptor implements TypeDescriptorBase, ActionType {
     public String fragment;
 
     @XNode("@type")
-    public String type = WebType.ROOT_TYPE_NAME;
+    public String type = ObjectType.ROOT_TYPE_NAME;
 
     @XNode("@enabled")
     public boolean enabled = true;
@@ -59,17 +59,17 @@ public class ActionDescriptor implements TypeDescriptorBase, ActionType {
     public String guardExpression;
 
     @XNode("@class")
-    public Class<WebAction> clazz;
+    public Class<ActionResource> clazz;
 
     @XNodeList(value = "category", type = HashSet.class, componentType = String.class, nullByDefault = false)
     public HashSet<String> categories;
 
     private volatile Guard guard;
 
-    public ActionDescriptor() {
+    public ActionTypeImpl() {
     }
 
-    public ActionDescriptor(Class<WebAction> klass, String name, String type,
+    public ActionTypeImpl(Class<ActionResource> klass, String name, String type,
             String guard, boolean enabled) {
         this.clazz = klass;
         this.name = name;
@@ -109,8 +109,8 @@ public class ActionDescriptor implements TypeDescriptorBase, ActionType {
             return true;
         if (obj == null)
             return false;
-        if (obj instanceof ActionDescriptor) {
-            ActionDescriptor ad = (ActionDescriptor) obj;
+        if (obj instanceof ActionTypeImpl) {
+            ActionTypeImpl ad = (ActionTypeImpl) obj;
             return name.equals(ad.name) && type.equals(ad.type)
                     && Utils.streq(fragment, ad.fragment);
         }
@@ -118,9 +118,9 @@ public class ActionDescriptor implements TypeDescriptorBase, ActionType {
     }
 
     @Override
-    public ActionDescriptor clone() {
+    public ActionTypeImpl clone() {
         try {
-            ActionDescriptor ad = (ActionDescriptor) super.clone();
+            ActionTypeImpl ad = (ActionTypeImpl) super.clone();
             ad.categories = new HashSet<String>(categories);
             return ad;
         } catch (CloneNotSupportedException e) {
@@ -136,7 +136,7 @@ public class ActionDescriptor implements TypeDescriptorBase, ActionType {
         return fragment;
     }
 
-    public ActionDescriptor asActionDescriptor() {
+    public ActionTypeImpl asActionDescriptor() {
         return this;
     }
 
@@ -149,8 +149,8 @@ public class ActionDescriptor implements TypeDescriptorBase, ActionType {
     }
 
     @SuppressWarnings("unchecked")
-    public static ActionDescriptor fromAnnotation(Class<?> clazz, Action action) {
-        ActionDescriptor ad = new ActionDescriptor((Class<WebAction>)clazz, action.value(),
+    public static ActionTypeImpl fromAnnotation(Class<?> clazz, WebAction action) {
+        ActionTypeImpl ad = new ActionTypeImpl((Class<ActionResource>)clazz, action.value(),
                 action.type(), Utils.nullIfEmpty(action.guard()), action.enabled());
         String[] cats = action.categories();
         if (cats != null) {
@@ -174,11 +174,11 @@ public class ActionDescriptor implements TypeDescriptorBase, ActionType {
         return name;
     }
 
-    public Class<WebAction> getResourceClass() {
+    public Class<ActionResource> getResourceClass() {
         return clazz;
     }
     
-    public WebAction newInstance() throws WebException {
+    public ActionResource newInstance() throws WebException {
         try {
             return clazz.newInstance();
         } catch (Exception e) {

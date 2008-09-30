@@ -21,8 +21,6 @@ package org.nuxeo.ecm.webengine.rest.model;
 
 import java.io.IOException;
 
-import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 
@@ -77,7 +75,7 @@ public interface WebApplication {
     Class<?> loadClass(String className) throws ClassNotFoundException;
 
     /**
-     * Get a {@link WebType} instance given it's name.
+     * Get a {@link ObjectType} instance given it's name.
      * The web type lookup is performed in the following order:
      * <ol>
      * <li> First the annotated Groovy classes are checked. (web/ directory)  
@@ -87,6 +85,6 @@ public interface WebApplication {
      * @return the web type instance
      * @throws TypeNotFoundException if no such web type was defined
      */
-    WebType getType(String typeName) throws TypeNotFoundException;
+    ObjectType getType(String typeName) throws TypeNotFoundException;
     
 }

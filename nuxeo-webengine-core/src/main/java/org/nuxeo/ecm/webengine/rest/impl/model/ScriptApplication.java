@@ -26,8 +26,8 @@ import javax.ws.rs.core.Context;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.model.MainResource;
-import org.nuxeo.ecm.webengine.rest.model.WebObject;
-import org.nuxeo.ecm.webengine.rest.model.WebResource;
+import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
+import org.nuxeo.ecm.webengine.rest.model.Resource;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -37,11 +37,11 @@ public class ScriptApplication extends MainResource {
 
     //@Path(value="{path}", limited=false)
     @Path(value="{path}")
-    public WebResource dispatch(@PathParam("path") String path, @Context WebContext2 ctx) throws Exception {
+    public Resource dispatch(@PathParam("path") String path, @Context WebContext2 ctx) throws Exception {
         return ctx.push(getScriptObject());
     }    
     
-    protected WebObject getScriptObject() throws WebException {
+    protected ObjectResource getScriptObject() throws WebException {
         return app.getType("Script").newInstance();
     }
 

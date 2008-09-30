@@ -19,26 +19,21 @@
 
 package org.nuxeo.ecm.webengine.rest.model;
 
-import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.impl.ActionDescriptor;
+import java.util.Set;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface WebType extends WebResourceType<WebObject> {
+public interface ActionResource extends Resource {
     
-    public final static String ROOT_TYPE_NAME = "*";
-
-    public WebType getSuperType();
-    public Class<? extends WebObject> getObjectType();
-    public ActionDescriptor getAction(String name);
-    public ActionDescriptor addAction(ActionDescriptor action);
-    public void removeAction(String name);
-    public ActionDescriptor[] getActions();
-    public ActionDescriptor[] getActions(String category);
-    public ActionDescriptor[] getEnabledActions(WebContext2 ctx);
-    public ActionDescriptor[] getEnabledActions(String category, WebContext2 ctx);
-    public ActionDescriptor[] getLocalActions();
+    ActionType getType();
     
+    public String getName();
+    
+    boolean isEnabled();
+     
+    Set<String> getCategories();
+   
 }

@@ -24,7 +24,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.nuxeo.ecm.webengine.rest.impl.DefaultWebType;
+import org.nuxeo.ecm.webengine.rest.impl.ObjectTypeImpl;
 import org.nuxeo.runtime.annotations.loader.Indexable;
 
 /**
@@ -34,9 +34,9 @@ import org.nuxeo.runtime.annotations.loader.Indexable;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @Indexable({"value"})
-public @interface Type {
+public @interface WebObject {
 
     String value(); // the type name
-    String superType() default DefaultWebType.ROOT_TYPE_NAME; // the super type name
+    String superType() default ObjectTypeImpl.ROOT_TYPE_NAME; // the super type name
     
 }

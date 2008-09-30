@@ -17,25 +17,29 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.annotations;
+package org.nuxeo.ecm.webengine.rest.model;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Collection;
+import java.util.Map;
+
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.rest.impl.ActionTypeImpl;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface Action {
+public interface ObjectResource extends Resource {
 
-    String value(); // action name
-    String type() default "*";
-    boolean enabled() default true;
-    String[] categories() default {};
-    String guard() default "";
-    
+    ObjectType getType();
+
+    ActionTypeImpl getAction(String action);
+
+    ActionTypeImpl[] getActions();
+
+    ActionTypeImpl[] getActions(String category);
+
+    Map<String, Collection<ActionTypeImpl>> getActionsByCategory() throws WebException;
+
 }

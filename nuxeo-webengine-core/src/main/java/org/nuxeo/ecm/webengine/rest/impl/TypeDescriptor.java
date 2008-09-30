@@ -25,8 +25,8 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.webengine.rest.annotations.Type;
-import org.nuxeo.ecm.webengine.rest.model.WebType;
+import org.nuxeo.ecm.webengine.rest.annotations.WebObject;
+import org.nuxeo.ecm.webengine.rest.model.ObjectType;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -45,10 +45,10 @@ public class TypeDescriptor implements TypeDescriptorBase {
     public String fragment;
     
     @XNode("@superType")
-    public String superType = WebType.ROOT_TYPE_NAME;
+    public String superType = ObjectType.ROOT_TYPE_NAME;
     
-    @XNodeMap(value="action", key="action@name", type=HashMap.class, componentType=ActionDescriptor.class)
-    public Map<String, ActionDescriptor> actions; 
+    @XNodeMap(value="action", key="action@name", type=HashMap.class, componentType=ActionTypeImpl.class)
+    public Map<String, ActionTypeImpl> actions; 
    
     
     /**
@@ -79,7 +79,7 @@ public class TypeDescriptor implements TypeDescriptorBase {
         try {
             TypeDescriptor td  = (TypeDescriptor)super.clone();
             if (actions != null) {
-                td.actions = new HashMap<String, ActionDescriptor>(actions);
+                td.actions = new HashMap<String, ActionTypeImpl>(actions);
             }
             return td;
         } catch (CloneNotSupportedException e) {
@@ -95,7 +95,7 @@ public class TypeDescriptor implements TypeDescriptorBase {
         return fragment;
     }
     
-    public ActionDescriptor asActionDescriptor() {
+    public ActionTypeImpl asActionDescriptor() {
         return null;
     }
     
@@ -108,7 +108,7 @@ public class TypeDescriptor implements TypeDescriptorBase {
     }
     
 
-    public static TypeDescriptor fromAnnotation(Class<?> clazz, Type type) {
+    public static TypeDescriptor fromAnnotation(Class<?> clazz, WebObject type) {
         return  new TypeDescriptor(clazz, type.value(), type.superType());
     }
 }

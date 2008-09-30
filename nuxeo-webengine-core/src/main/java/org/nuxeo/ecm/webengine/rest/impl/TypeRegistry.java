@@ -25,8 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.webengine.rest.impl.model.DocumentObject;
-import org.nuxeo.ecm.webengine.rest.model.WebObject;
-import org.nuxeo.ecm.webengine.rest.model.WebType;
+import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
+import org.nuxeo.ecm.webengine.rest.model.ObjectType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
 
@@ -37,30 +37,30 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
 public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescriptorBase>{
     
     //TODO: types map is useless - remove it?
-    protected Map<String, DefaultWebType> types;
+    protected Map<String, ObjectTypeImpl> types;
     
     
     public TypeRegistry() {
-        types = new ConcurrentHashMap<String, DefaultWebType>();
+        types = new ConcurrentHashMap<String, ObjectTypeImpl>();
         // register root type
-        TypeDescriptor root = new TypeDescriptor(WebObject.class, WebType.ROOT_TYPE_NAME, null); 
+        TypeDescriptor root = new TypeDescriptor(ObjectResource.class, ObjectType.ROOT_TYPE_NAME, null); 
         registerType(root);        
     }
     
 
-    public WebType getType(String name) {
+    public ObjectType getType(String name) {
         return types.get(name);
     }
     
-    public WebType[] getTypes() {
-        return types.values().toArray(new DefaultWebType[types.size()]);
+    public ObjectType[] getTypes() {
+        return types.values().toArray(new ObjectTypeImpl[types.size()]);
     }
     
-    public void registerAction(ActionDescriptor ad) {
+    public void registerAction(ActionTypeImpl ad) {
         addFragment(ad.getId(), ad, ad.type);
     }
     
-    public void unregisterAction(ActionDescriptor ad) {
+    public void unregisterAction(ActionTypeImpl ad) {
         removeFragment(ad.getId(), ad);
     }
     
@@ -81,7 +81,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             DocumentType doctype = mgr.getDocumentType(td.superType);
             if (doctype != null) { // this is a document type - register a default web type
                 DocumentType superSuperType = (DocumentType)doctype.getSuperType();
-                String superSuperTypeName = WebType.ROOT_TYPE_NAME;
+                String superSuperTypeName = ObjectType.ROOT_TYPE_NAME;
                 if (superSuperType != null) {
                     superSuperTypeName = superSuperType.getName();
                 }
@@ -138,7 +138,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     
     @SuppressWarnings("unchecked")
     protected void installTypeContribution(String key, TypeDescriptor td) {
-        DefaultWebType type = new DefaultWebType(null, td.name, (Class<WebObject>)td.clazz, td.actions);
+        ObjectTypeImpl type = new ObjectTypeImpl(null, td.name, (Class<ObjectResource>)td.clazz, td.actions);
         if (td.superType != null) {
             type.superType = types.get(td.superType);
             assert type.superType != null; // must never be null since the object is resolved 
@@ -146,8 +146,8 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         types.put(td.name, type);
     }
   
-    protected void installActionContribution(String key, ActionDescriptor ad) {
-        WebType type = types.get(ad.type);
+    protected void installActionContribution(String key, ActionTypeImpl ad) {
+        ObjectType type = types.get(ad.type);
         assert type != null;
         type.addAction(ad);
     }
@@ -161,7 +161,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         //TODO for now we don't allow fragments
     }
     
-    protected void applyActionFragment(ActionDescriptor object, ActionDescriptor fragment) {
+    protected void applyActionFragment(ActionTypeImpl object, ActionTypeImpl fragment) {
         //TODO
     }
 
@@ -172,7 +172,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         }
         String action = key.substring(0, p);
         String type = key.substring(p+1);
-        DefaultWebType wt = types.get(type);
+        ObjectTypeImpl wt = types.get(type);
         if (wt != null) {
             wt.removeAction(action);
         }

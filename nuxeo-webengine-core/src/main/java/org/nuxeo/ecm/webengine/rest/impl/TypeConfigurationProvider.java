@@ -30,13 +30,13 @@ import java.util.Vector;
 public class TypeConfigurationProvider {
     
     protected List<TypeDescriptor> types;
-    protected List<ActionDescriptor> actions;
+    protected List<ActionTypeImpl> actions;
     protected List<TypeRegistry> registries;
     
 
     public TypeConfigurationProvider() {
         types = new ArrayList<TypeDescriptor>();
-        actions = new ArrayList<ActionDescriptor>();
+        actions = new ArrayList<ActionTypeImpl>();
         registries = new Vector<TypeRegistry>();
     }
     
@@ -55,12 +55,12 @@ public class TypeConfigurationProvider {
         }
     }
     
-    public synchronized void registerAction(ActionDescriptor ad) {
+    public synchronized void registerAction(ActionTypeImpl ad) {
         actions.add(ad);
         fireActionRegistered(ad);
     }
     
-    public synchronized void unregisterAction(ActionDescriptor ad) {
+    public synchronized void unregisterAction(ActionTypeImpl ad) {
         if (actions.remove(ad)) {
             fireActionUnregistered(ad);
         }
@@ -78,7 +78,7 @@ public class TypeConfigurationProvider {
         for (TypeDescriptor td : types) {
             registry.registerType(td);
         }
-        for (ActionDescriptor ad : actions) {
+        for (ActionTypeImpl ad : actions) {
             registry.registerAction(ad);
         }
         addRegistry(registry);
@@ -86,7 +86,7 @@ public class TypeConfigurationProvider {
     
 
 
-    protected void fireActionRegistered(ActionDescriptor ad) {
+    protected void fireActionRegistered(ActionTypeImpl ad) {
         if (registries.isEmpty()) {
             return;
         }
@@ -95,7 +95,7 @@ public class TypeConfigurationProvider {
         }
     }
 
-    protected void fireActionUnregistered(ActionDescriptor ad) {
+    protected void fireActionUnregistered(ActionTypeImpl ad) {
         if (registries.isEmpty()) {
             return;
         }

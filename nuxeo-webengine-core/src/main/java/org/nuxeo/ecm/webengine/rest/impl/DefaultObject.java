@@ -32,11 +32,11 @@ import javax.ws.rs.core.UriInfo;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.model.NoSuchResourceException;
-import org.nuxeo.ecm.webengine.rest.model.WebAction;
+import org.nuxeo.ecm.webengine.rest.model.ActionResource;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
-import org.nuxeo.ecm.webengine.rest.model.WebObject;
-import org.nuxeo.ecm.webengine.rest.model.WebResource;
-import org.nuxeo.ecm.webengine.rest.model.WebType;
+import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
+import org.nuxeo.ecm.webengine.rest.model.Resource;
+import org.nuxeo.ecm.webengine.rest.model.ObjectType;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 
 
@@ -44,11 +44,11 @@ import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DefaultWebObject extends AbstractWebResource<WebType> implements WebObject {
+public class DefaultObject extends AbstractResource<ObjectType> implements ObjectResource {
 
     public final static String ACTION_PREFIX = ".";
 
-    public DefaultWebObject() {
+    public DefaultObject() {
     }
     
     public boolean isAction() {
@@ -73,17 +73,17 @@ public class DefaultWebObject extends AbstractWebResource<WebType> implements We
       return result;
     }
     
-    protected WebAction resolveAction(String actionName) throws WebException {
+    protected ActionResource resolveAction(String actionName) throws WebException {
         return ctx.newAction(type, actionName);
     }
     
-    protected WebObject resolveObject(String segment) throws WebException {
+    protected ObjectResource resolveObject(String segment) throws WebException {
         return null;
     }
     
 
     @Path(value="testPath")
-    public WebResource testInheritedPath() throws WebException {
+    public Resource testInheritedPath() throws WebException {
         return ctx.newObject(type);
     }
 
@@ -116,7 +116,7 @@ public class DefaultWebObject extends AbstractWebResource<WebType> implements We
         return path;
     }
 
-    public WebType getType() {
+    public ObjectType getType() {
         return type;
     }
 
@@ -159,19 +159,19 @@ public class DefaultWebObject extends AbstractWebResource<WebType> implements We
         }
     }
 
-    public ActionDescriptor getAction(String action) {
+    public ActionTypeImpl getAction(String action) {
         return type.getAction(action); 
     }
 
-    public ActionDescriptor[] getActions() {
+    public ActionTypeImpl[] getActions() {
         return type.getActions(); 
     }
 
-    public ActionDescriptor[] getActions(String category) {
+    public ActionTypeImpl[] getActions(String category) {
         return type.getActions(category);
     }
 
-    public Map<String, Collection<ActionDescriptor>> getActionsByCategory() throws WebException {
+    public Map<String, Collection<ActionTypeImpl>> getActionsByCategory() throws WebException {
         return null; //TODO
     }
 

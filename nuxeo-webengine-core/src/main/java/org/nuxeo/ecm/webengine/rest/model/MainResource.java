@@ -25,7 +25,7 @@ import javax.ws.rs.PathParam;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.annotations.Application;
+import org.nuxeo.ecm.webengine.rest.annotations.WebApp;
 
 
 /**
@@ -59,7 +59,7 @@ public class MainResource {
     }    
     
     protected String getApplicationName() {
-        Application anno = (Application)this.getClass().getAnnotation(Application.class);
+        WebApp anno = (WebApp)this.getClass().getAnnotation(WebApp.class);
         if (anno != null) {
             return anno.name();
         }
@@ -80,11 +80,11 @@ public class MainResource {
       return  result;
     }
     
-    protected WebAction resolveAction(String actionName) throws WebException {
+    protected ActionResource resolveAction(String actionName) throws WebException {
         throw new NoSuchResourceException("No Such Action: "+actionName);
     }
     
-    protected WebObject resolveObject(String segment) throws WebException {
+    protected ObjectResource resolveObject(String segment) throws WebException {
         throw new NoSuchResourceException("No Such Object: "+segment);
     }
     

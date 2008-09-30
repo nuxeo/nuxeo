@@ -28,11 +28,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.annotations.Type;
-import org.nuxeo.ecm.webengine.rest.impl.DefaultWebObject;
+import org.nuxeo.ecm.webengine.rest.annotations.WebObject;
+import org.nuxeo.ecm.webengine.rest.impl.DefaultObject;
 import org.nuxeo.ecm.webengine.rest.methods.LOCK;
-import org.nuxeo.ecm.webengine.rest.model.WebObject;
-import org.nuxeo.ecm.webengine.rest.model.WebResource;
+import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
+import org.nuxeo.ecm.webengine.rest.model.Resource;
 
 
 
@@ -40,8 +40,8 @@ import org.nuxeo.ecm.webengine.rest.model.WebResource;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Type(value="Document", superType="*")
-public class DocumentObject extends DefaultWebObject {
+@WebObject(value="Document", superType="*")
+public class DocumentObject extends DefaultObject {
 
     protected DocumentModel doc;
 
@@ -51,7 +51,7 @@ public class DocumentObject extends DefaultWebObject {
     }
 
     @Path(value="{path}")
-    public WebResource dispatch(@Context WebContext2 ctx, @PathParam("path") String path) throws WebException {
+    public Resource dispatch(@Context WebContext2 ctx, @PathParam("path") String path) throws WebException {
         try {
             DocumentModel doc = ctx.getCoreSession().getChild(((DocumentObject)ctx.tail()).getDocument().getRef(), path);
             DocumentObject obj = (DocumentObject)ctx.getApplication().getType(doc.getType()).newInstance();
@@ -72,7 +72,7 @@ public class DocumentObject extends DefaultWebObject {
     }
 
     @GET
-    public WebObject get() throws Exception {
+    public ObjectResource get() throws Exception {
         return this;
     }
 

@@ -29,12 +29,12 @@ import javax.ws.rs.core.UriInfo;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.rest.model.ActionResource;
 import org.nuxeo.ecm.webengine.rest.model.MainResource;
-import org.nuxeo.ecm.webengine.rest.model.WebAction;
+import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
+import org.nuxeo.ecm.webengine.rest.model.ObjectType;
+import org.nuxeo.ecm.webengine.rest.model.Resource;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
-import org.nuxeo.ecm.webengine.rest.model.WebObject;
-import org.nuxeo.ecm.webengine.rest.model.WebResource;
-import org.nuxeo.ecm.webengine.rest.model.WebType;
 import org.nuxeo.ecm.webengine.rest.model.WebView;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.session.UserSession;
@@ -63,31 +63,31 @@ public interface WebContext2 extends Adaptable {
     
     public String getApplicationPath();
 
-    public WebObject newObject(String typeName) throws WebException;
+    public ObjectResource newObject(String typeName) throws WebException;
 
-    public WebObject newObject(WebType type) throws WebException;
+    public ObjectResource newObject(ObjectType type) throws WebException;
 
-    public WebAction newAction(String typeName, String actionName) throws WebException;
+    public ActionResource newAction(String typeName, String actionName) throws WebException;
     
-    public WebAction newAction(WebObject obj, String actionName) throws WebException;
+    public ActionResource newAction(ObjectResource obj, String actionName) throws WebException;
     
-    public WebAction newAction(WebType type, String actionName) throws WebException;
+    public ActionResource newAction(ObjectType type, String actionName) throws WebException;
 
     /** object stack API */
     public void setRootResource(MainResource resource);
     public MainResource getRootResource();
     
-    public WebResource push(WebResource obj);
+    public Resource push(Resource obj);
 
-    public WebResource pop();
+    public Resource pop();
 
-    public WebResource tail();
+    public Resource tail();
 
-    public WebResource head();
+    public Resource head();
 
-    public WebObject getTargetObject();
+    public ObjectResource getTargetObject();
 
-    public WebAction getAction(); 
+    public ActionResource getAction(); 
 
     /** template and script resolver */
 
