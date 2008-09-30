@@ -729,17 +729,19 @@ public class LDAPSession implements Session, EntrySource {
                 List<String> referencedIds;
                 if (!fetchReferences) {
                     referencedIds = new ArrayList<String>();
-                }
-                if (reference instanceof LDAPReference) {
-                    // optim: use the current LDAPSession directly to provide
-                    // the LDAP reference with the needed backend entries
-                    LDAPReference ldapReference = (LDAPReference) reference;
-                    referencedIds = ldapReference.getLdapTargetIds(attributes);
                 } else {
-                    try {
-                        referencedIds = reference.getTargetIdsForSource(entryId);
-                    } catch (ClientException e) {
-                        throw new DirectoryException(e);
+                    if (reference instanceof LDAPReference) {
+                        // optim: use the current LDAPSession directly to
+                        // provide
+                        // the LDAP reference with the needed backend entries
+                        LDAPReference ldapReference = (LDAPReference) reference;
+                        referencedIds = ldapReference.getLdapTargetIds(attributes);
+                    } else {
+                        try {
+                            referencedIds = reference.getTargetIdsForSource(entryId);
+                        } catch (ClientException e) {
+                            throw new DirectoryException(e);
+                        }
                     }
                 }
                 fieldMap.put(fieldName, referencedIds);
