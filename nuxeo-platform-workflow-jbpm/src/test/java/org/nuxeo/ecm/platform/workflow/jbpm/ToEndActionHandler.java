@@ -32,9 +32,6 @@ public class ToEndActionHandler extends JbpmWorkflowActionHandler {
 
     public void execute(ExecutionContext executionContext) throws Exception {
         ProcessInstance processInstance = executionContext.getProcessInstance();
-        System.out.println("####################################");
-        System.out.println("PROCESS ENDED.............. !");
-        System.out.println("####################################");
         processInstance.end();
     }
 
