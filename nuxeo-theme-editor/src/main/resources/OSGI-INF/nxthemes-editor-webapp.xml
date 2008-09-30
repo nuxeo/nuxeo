@@ -112,6 +112,9 @@
        <mapping pattern="/delete_named_style">
           <script>/delete_named_style.groovy</script>
        </mapping>
+       <mapping pattern="/insert_fragment">
+          <script>/insert_fragment.groovy</script>
+       </mapping>
       </mappings>
     </webapp>
 
