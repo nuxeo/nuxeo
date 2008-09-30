@@ -302,8 +302,9 @@ public interface WorkflowEngine {
             int maxResult) throws WMWorkflowException;
 
     /**
-     * Returns the range of ordered work items for any of the
-     * given participants. The sort order is determined by the orderBy and orderAscending parameters
+     * Returns the range of ordered work items for any of the given
+     * participants. The sort order is determined by the orderBy and
+     * orderAscending parameters
      *
      * @param participants
      * @param state
@@ -318,6 +319,26 @@ public interface WorkflowEngine {
             List<WMParticipant> participants, String state, int firstResult,
             int maxResults, String orderBy, boolean orderAscending)
             throws WMWorkflowException;
+
+    /**
+     * Returns the range of ordered work items for any of the given participants
+     * and process names. The sort order is determined by the orderBy and
+     * orderAscending parameters
+     *
+     * @param participants
+     * @param state
+     * @param processNames allowed process names for the work item to fetch
+     * @param firstResult
+     * @param maxResults
+     * @param orderBy TaskInstance attribute name to sort
+     * @param orderAscending ascending order if true, descending if false
+     * @return
+     * @throws WMWorkflowException
+     */
+    ResultSlice<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participants, String state,
+            List<String> processNames, int firstResult, int maxResults,
+            String orderBy, boolean orderAscending) throws WMWorkflowException;
 
     /**
      * Returns the work items for a given process instance in a given state.

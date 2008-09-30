@@ -266,4 +266,11 @@ public class FakeWorkflowEngine extends AbstractWorkflowEngine {
         return null;
     }
 
+    public ResultSlice<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participants, String state,
+            List<String> processNames, int firstResult, int maxResults,
+            String orderBy, boolean orderAscending) throws WMWorkflowException {
+        return null;
+    }
+
 }
