@@ -21,6 +21,8 @@ package org.nuxeo.ecm.webengine.rest.model;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
@@ -86,6 +88,10 @@ public class MainResource {
     
     protected ObjectResource resolveObject(String segment) throws WebException {
         throw new NoSuchResourceException("No Such Object: "+segment);
+    }
+
+    public Object getErrorView(WebApplicationException e) {
+        return null;
     }
     
     public String getPath() {

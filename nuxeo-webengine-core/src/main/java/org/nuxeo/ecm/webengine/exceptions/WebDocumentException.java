@@ -28,8 +28,6 @@ import org.nuxeo.ecm.webengine.WebException;
  */
 public class WebDocumentException extends WebException {
 
-    public static final String ID = "document";
-
     private static final long serialVersionUID = 1L;
 
 
@@ -43,11 +41,6 @@ public class WebDocumentException extends WebException {
 
     public WebDocumentException(String message, ClientException cause) {
         super(message, cause);
-    }
-
-    @Override
-    public String getId() {
-        return ID;
     }
 
 }

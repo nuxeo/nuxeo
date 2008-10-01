@@ -42,12 +42,6 @@ public class ResourceBinding {
     @XNode("@path")
     public String path;
 
-    @XNode("@limited")
-    public boolean limited = true;
-
-    @XNode("@encode")
-    public boolean encode = true;
-
     @XNode("@singleton")
     public boolean singleton = false;
 

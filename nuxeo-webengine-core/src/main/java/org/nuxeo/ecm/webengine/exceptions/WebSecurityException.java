@@ -27,8 +27,6 @@ import org.nuxeo.ecm.webengine.WebException;
  */
 public class WebSecurityException extends WebException {
 
-    public static final String ID = "security";
-
     private static final long serialVersionUID = 1L;
 
     protected String action;
@@ -59,9 +57,5 @@ public class WebSecurityException extends WebException {
         return action;
     }
 
-    @Override
-    public String getId() {
-        return ID;
-    }
 
 }
