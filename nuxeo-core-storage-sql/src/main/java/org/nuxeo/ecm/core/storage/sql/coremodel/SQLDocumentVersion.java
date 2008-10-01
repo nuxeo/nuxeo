@@ -23,11 +23,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.DocumentIterator;
+import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
@@ -134,23 +138,23 @@ public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
     }
 
     @Override
-    public Document getChild(String name) {
-        throw new UnsupportedOperationException();
+    public Document getChild(String name) throws DocumentException {
+        throw new NoSuchDocumentException(name);
     }
 
     @Override
     public Iterator<Document> getChildren() {
-        throw new UnsupportedOperationException();
+        return EmptyDocumentIterator.INSTANCE;
     }
 
     @Override
     public boolean hasChild(String name) {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     @Override
     public boolean hasChildren() {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     /*
@@ -174,7 +178,7 @@ public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
 
     @Override
     public boolean isCheckedOut() {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     @Override
@@ -184,22 +188,40 @@ public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
 
     @Override
     public Document getVersion(String label) {
-        throw new UnsupportedOperationException();
+        return null;
     }
+
+    protected static DocumentVersionIterator EMPTY_VERSION_ITERATOR = new DocumentVersionIterator() {
+        public boolean hasNext() {
+            return false;
+        }
+
+        public DocumentVersion next() {
+            throw new NoSuchElementException();
+        }
+
+        public DocumentVersion nextDocumentVersion() {
+            throw new NoSuchElementException();
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+    };
 
     @Override
     public DocumentVersionIterator getVersions() {
-        throw new UnsupportedOperationException();
+        return EMPTY_VERSION_ITERATOR;
     }
 
     @Override
     public boolean hasVersions() {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     @Override
     public DocumentVersion getLastVersion() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     /*
