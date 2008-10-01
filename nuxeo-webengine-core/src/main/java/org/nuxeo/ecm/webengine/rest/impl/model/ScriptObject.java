@@ -33,7 +33,6 @@ import org.nuxeo.ecm.webengine.rest.annotations.WebObject;
 import org.nuxeo.ecm.webengine.rest.impl.DefaultObject;
 import org.nuxeo.ecm.webengine.rest.model.Resource;
 import org.nuxeo.ecm.webengine.rest.model.ResourceType;
-import org.nuxeo.ecm.webengine.rest.model.WebView;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
 

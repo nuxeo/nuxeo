@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webengine.rest.model;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 
 import org.nuxeo.ecm.webengine.WebException;
@@ -68,18 +67,6 @@ public class MainResource {
         throw new UnsupportedOperationException("This method must be implement by derived main resource classes");
     }
 
-    @Path(value="{segment}")
-    public Object dispatch(@PathParam("segment") String segment) throws WebException {
-        Object result = resolveObject(segment);        
-        if (result == null) {
-            throw new NoSuchResourceException(segment);
-        }
-        return  result;
-    }
-    
-    protected Object resolveObject(String segment) throws WebException {
-        throw new NoSuchResourceException("No Such Object: "+segment);
-    }
 
     public Object getErrorView(WebApplicationException e) {
         return null;

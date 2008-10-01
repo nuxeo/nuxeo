@@ -22,7 +22,6 @@ package org.nuxeo.ecm.webengine.rest.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -47,7 +46,7 @@ import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
  */
 public class WebApplicationImpl implements WebApplication, FileChangeListener  {
 
-    
+
     protected WebEngine2 engine;
     protected ApplicationDescriptor descriptor;
 
@@ -56,7 +55,7 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
     protected ConcurrentMap<String, ScriptFile> fileCache;
 
     protected final Object typeLock = new Object();
-    
+
     // these two members are lazy initialized when needed
     protected TypeRegistry typeReg;
     protected TypeConfigurationProvider localTypes;
@@ -68,13 +67,13 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
         this.descriptor = descriptor;
         this.engine = engine;
         loadDirectoryStack();
-    }    
-    
+    }
+
 
     public boolean isFragment() {
         return descriptor.fragment != null;
     }
-    
+
     public Object getProperty(String key) {
         return descriptor.properties.get(key);
     }
@@ -91,7 +90,7 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
     public String getName() {
         return descriptor.name;
     }
-    
+
     public WebEngine2 getEngine() {
         return engine;
     }
@@ -133,34 +132,16 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
     protected void loadDirectoryStack() throws WebException {
         try {
             List<RootDescriptor> roots = descriptor.roots;
-            // if no roots are defined import base roots and add application directory
-            if (roots == null || roots.isEmpty()) {  
-                if (descriptor.base != null) { 
-                    WebApplicationImpl parent = (WebApplicationImpl)engine.getApplication(descriptor.base);
-                    if (parent != null && parent.dirStack != null) {                        
-                        dirStack = new DirectoryStack(parent.dirStack.getEntries());
-                        int size  = dirStack.getEntries().size();
-                        int p = 0;
-                        if (size > 0) {
-                            DirectoryStack.Entry entry = dirStack.getEntries().get(size-1);
-                            p = entry.priority+1;
-                        }
-                        dirStack.addDirectory(root, p);
-                    }
-                } else {
-                    dirStack = new DirectoryStack();
-                    if (descriptor.roots != null && !descriptor.roots.isEmpty()) {
-                        for (RootDescriptor rd : descriptor.roots) {
-                            File file =new File(engine.getRootDirectory(), rd.path);
-                            dirStack.addDirectory(file, rd.priority);
-                        }
-                        Collections.sort(dirStack.getEntries()); //TODO priority is meaningless
-                    } else {
-                        dirStack.addDirectory(root, 0);
-                    }
+            // first add roots defined locally
+            dirStack = new DirectoryStack();
+            if (descriptor.roots != null && !descriptor.roots.isEmpty()) {
+                for (RootDescriptor rd : descriptor.roots) {
+                    File file =new File(engine.getRootDirectory(), rd.path);
+                    dirStack.addDirectory(file, rd.priority);//TODO: priority is meaningless
                 }
+            } else {
+                dirStack.addDirectory(root, 0);
             }
-
             // watch roots for modifications
             FileChangeNotifier notifier = engine.getFileChangeNotifier();
             if (notifier != null) {
@@ -168,6 +149,15 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
                     notifier.addListener(this);
                     for (DirectoryStack.Entry entry : dirStack.getEntries()) {
                         notifier.watch(entry.file);
+                    }
+                }
+            }
+            // then add roots from parent if any
+            if (roots == null || roots.isEmpty()) {
+                if (descriptor.base != null) {
+                    WebApplicationImpl parent = (WebApplicationImpl)engine.getApplication(descriptor.base);
+                    if (parent != null && parent.dirStack != null) {
+                        dirStack.getEntries().addAll(parent.dirStack.getEntries());
                     }
                 }
             }
@@ -189,12 +179,12 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
         if (len == 0) {
             return null;
         }
-//        char c = path.charAt(0);
-//        if (c == '.') { // avoid getting files outside the web root
-//            path = new org.nuxeo.common.utils.Path(path).makeAbsolute().toString();
-//        } else if (c != '/') {// avoid doing duplicate entries in document stack cache
-//            path = new StringBuilder(len+1).append("/").append(path).toString();
-//        }
+        char c = path.charAt(0);
+        if (c == '.') { // avoid getting files outside the web root
+            path = new org.nuxeo.common.utils.Path(path).makeAbsolute().toString();
+        } else if (c != '/') {// avoid doing duplicate entries in document stack cache
+            path = new StringBuilder(len+1).append("/").append(path).toString();
+        }
         return findFile(new org.nuxeo.common.utils.Path(path).makeAbsolute().toString());
     }
 
@@ -216,10 +206,10 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
 
     protected void loadConfiguredTypes() {
         localTypes = new TypeConfigurationProvider();
-        // load declared types and actions        
+        // load declared types and actions
         localTypes.types = new ArrayList<TypeDescriptor>();
         if (descriptor.types != null) {
-            localTypes.types.addAll(descriptor.types); 
+            localTypes.types.addAll(descriptor.types);
         }
         localTypes.actions = new ArrayList<ActionTypeImpl>();
         if (descriptor.actions != null) {
@@ -239,7 +229,7 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
                     // install global types
                     GlobalTypesLoader globalTypes = engine.getGlobalTypes();
                     globalTypes.getMainProvider().install(typeReg);
-                    // install types defined in script classes for each entry in directory stack 
+                    // install types defined in script classes for each entry in directory stack
                     for (DirectoryStack.Entry entry : dirStack.getEntries()) {
                         TypeConfigurationProvider provider = globalTypes.getProvider(entry.file.getName());
                         if (provider != null) {

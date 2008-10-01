@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine.rest.model;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;

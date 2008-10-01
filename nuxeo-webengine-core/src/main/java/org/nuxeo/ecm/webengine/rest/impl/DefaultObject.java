@@ -47,7 +47,6 @@ import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
  */
 public class DefaultObject extends AbstractResource<ObjectType> implements ObjectResource {
 
-    public final static String ACTION_PREFIX = ".";
 
     public DefaultObject() {
     }
@@ -60,28 +59,11 @@ public class DefaultObject extends AbstractResource<ObjectType> implements Objec
         return true;
     }
 
-    @Path(value="{segment}")
-    public Object dispatch(@PathParam("segment") String segment) throws WebException {
-      Object result = null; 
-      if (segment.startsWith(ACTION_PREFIX)) {
-          result = resolveAction(segment.substring(1));    
-      } else {
-          result = resolveObject(segment);
-      }
-      if (result == null) {
-          throw new NoSuchResourceException("No Such object "+segment);
-      }
-      return result;
-    }
     
-    protected ActionResource resolveAction(String actionName) throws WebException {
+    @Path(value=".{segment}")
+    public ActionResource disptachAction(@PathParam("segment") String actionName) throws WebException {
         return ctx.newAction(type, actionName);
-    }
-    
-    protected ObjectResource resolveObject(String segment) throws WebException {
-        return null;
-    }
-    
+    }    
 
 
     public void setContext(WebContext2 ctx) {
