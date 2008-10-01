@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webengine.rest.model;
 
+import java.util.Map;
+
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.runtime.model.Adaptable;
@@ -51,6 +53,8 @@ public interface Resource extends Adaptable {
     
     boolean isObject();
     
-    WebView getView();
+    WebView getView() throws WebException;
+    
+    WebView getView(Map<String,Object> args) throws WebException;
     
 }

@@ -19,10 +19,10 @@
 
 package org.nuxeo.ecm.webengine.rest.model;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
@@ -70,28 +70,29 @@ public class MainResource {
 
     @Path(value="{segment}")
     public Object dispatch(@PathParam("segment") String segment) throws WebException {
-      Object result = null; 
-      if (segment.startsWith("@")) {
-          result = resolveAction(segment.substring(1));    
-      } else {
-          result = resolveObject(segment);
-      }
-      if (result == null) {
-          throw new NoSuchResourceException(segment);
-      }
-      return  result;
+        Object result = resolveObject(segment);        
+        if (result == null) {
+            throw new NoSuchResourceException(segment);
+        }
+        return  result;
     }
     
-    protected ActionResource resolveAction(String actionName) throws WebException {
-        throw new NoSuchResourceException("No Such Action: "+actionName);
-    }
-    
-    protected ObjectResource resolveObject(String segment) throws WebException {
+    protected Object resolveObject(String segment) throws WebException {
         throw new NoSuchResourceException("No Such Object: "+segment);
     }
 
     public Object getErrorView(WebApplicationException e) {
         return null;
+    }
+    
+    
+    @GET
+    public Object getIndexView() {
+        try {
+            return app.getFile("index.ftl");
+        } catch (Throwable t) {
+            throw WebException.wrap("Failed to find index file", t);
+        }
     }
     
     public String getPath() {

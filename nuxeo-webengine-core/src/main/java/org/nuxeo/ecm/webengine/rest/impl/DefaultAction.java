@@ -19,16 +19,27 @@
 
 package org.nuxeo.ecm.webengine.rest.impl;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
+
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.model.ActionType;
 import org.nuxeo.ecm.webengine.rest.model.ActionResource;
+import org.nuxeo.ecm.webengine.rest.model.ActionType;
+import org.nuxeo.ecm.webengine.rest.model.NoSuchResourceException;
 import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
 import org.nuxeo.ecm.webengine.rest.model.Resource;
 import org.nuxeo.ecm.webengine.rest.model.ResourceType;
+import org.nuxeo.ecm.webengine.rest.model.WebView;
+import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 
 
 /**
@@ -71,4 +82,26 @@ public class DefaultAction extends AbstractResource<ActionType> implements Actio
     public boolean isObject() {
         return false;
     }
+    
+    @GET @POST @PUT @DELETE @HEAD
+    public WebView getView() throws WebException {
+        return getView(null);
+    }
+
+    public WebView getView(Map<String,Object> args) throws WebException{
+        try {
+            String typeName = Utils.fcToLowerCase(prev.getType().getName());
+            String method = ctx.getMethod().toLowerCase();
+            StringBuilder buf = new StringBuilder();
+            buf.append(typeName).append('/').append(method).append('-').append(getName()).append(getApplication().getTemplateExtension());        
+            ScriptFile file = getApplication().getFile(buf.toString());
+            if (file == null) {
+                throw new NoSuchResourceException("View not found: "+buf.toString());
+            }
+            return new WebView(this, file, args);
+        } catch (IOException e) {
+            throw WebException.wrap(e);
+        }
+    }
+
 }

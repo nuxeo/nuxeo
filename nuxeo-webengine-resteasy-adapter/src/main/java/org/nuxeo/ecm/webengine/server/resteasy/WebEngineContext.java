@@ -42,7 +42,7 @@ public class WebEngineContext extends AbstractWebContext {// extends HttpRequest
     protected UriInfo uri;
 
     public WebEngineContext(UriInfo uri, HttpServletRequest request) throws IOException {
-        super (UserSession.getCurrentSession(request.getSession(true)));
+        super (request);
         this.request = request;
         this.uri = uri;
     }

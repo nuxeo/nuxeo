@@ -19,9 +19,12 @@
 
 package org.nuxeo.ecm.webengine.rest.model;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
@@ -35,20 +38,48 @@ public class WebView extends HashMap<String, Object> {
 
     private static final long serialVersionUID = 1L;
 
-    protected WebContext2 ctx;
+    protected Resource resource;
     protected ScriptFile script;
+    protected Map<String,Object> args;
 
-    public WebView(WebContext2 ctx, ScriptFile script) {
-        this.ctx = ctx;
+//    public WebView(Resource resource) {
+//        this (resource, findScript(resource), null);
+//    }
+
+    public WebView(Resource resource, ScriptFile script) {
+        this (resource, script, null);
+    }
+
+    public WebView(Resource resource, ScriptFile script, Map<String,Object> args) {
+        this.resource = resource;
         this.script = script;
+        this.args = args;
+    }
+
+    public Resource getResource() {
+        return resource;
     }
 
     public WebContext2 getContext() {
-        return ctx;
+        return resource.getContext();
+    }
+    
+    public Map<String,Object> getArgs() {
+        return args;
+    }
+    
+    public void setArgs(Map<String,Object> args) {
+        this.args = args;
     }
 
     public void render(OutputStream out) throws WebException {
-        ctx.render(script, this, new OutputStreamWriter(out));
+        Writer w = new OutputStreamWriter(out);
+        try {
+            resource.getContext().render(script, args, w);
+            w.flush();
+        } catch (Exception e) {
+            WebException.wrap("Failed to write response", e);
+        }
     }
 
 }

@@ -25,6 +25,7 @@ import java.io.Writer;
 import java.security.Principal;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriInfo;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -35,7 +36,6 @@ import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
 import org.nuxeo.ecm.webengine.rest.model.ObjectType;
 import org.nuxeo.ecm.webengine.rest.model.Resource;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
-import org.nuxeo.ecm.webengine.rest.model.WebView;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.model.Adaptable;
@@ -60,6 +60,10 @@ public interface WebContext2 extends Adaptable {
     public Principal getPrincipal();
 
     UriInfo getUriInfo();
+    
+    public HttpServletRequest getHttpServletRequest();
+    
+    public String getMethod();
     
     public String getApplicationPath();
 
@@ -114,8 +118,5 @@ public interface WebContext2 extends Adaptable {
 
     public Object runScript(ScriptFile script, Map<String, Object> args) throws WebException;
 
-    public WebView getTemplate(String path) throws IOException;
-
-    public WebView getTemplate(ScriptFile script);
-
+    
 }

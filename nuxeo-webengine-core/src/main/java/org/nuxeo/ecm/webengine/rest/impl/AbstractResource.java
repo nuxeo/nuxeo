@@ -22,11 +22,10 @@ package org.nuxeo.ecm.webengine.rest.impl;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.model.ActionResource;
-import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
 import org.nuxeo.ecm.webengine.rest.model.Resource;
 import org.nuxeo.ecm.webengine.rest.model.ResourceType;
-import org.nuxeo.ecm.webengine.rest.model.WebView;
+import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -84,12 +83,6 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     }
 
 
-    public WebView getView() {
-//        String method = ctx.getMethod().toLowerCase();
-//        ScriptFile file = ctx.getApplication().getFile(method+getType().getName()+'.'+getApplication().getTemplateExtension());
-//        return new DefaultWebView(file, args);
-        return null;
-    }
 
     public <A> A getAdapter(Class<A> adapter) {
         if (adapter == WebContext2.class) {
@@ -104,5 +97,4 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return null;
     }
 
-    
 }

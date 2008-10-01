@@ -75,7 +75,7 @@ public class ScriptFileWriter implements MessageBodyWriter<ScriptFile> {
 
     public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
             MediaType arg3) {
-        return true;
+        return arg0 == ScriptFile.class;
     }
     
     

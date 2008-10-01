@@ -41,5 +41,20 @@ public class Utils {
         return str != null && str.length() == 0 ? null : str;
     }
 
+    public static final String fcToUpperCase(String str) {
+        char c = str.charAt(0);
+        if (Character.isLowerCase(c)) {
+            str = new StringBuilder().append(Character.toUpperCase(c)).append(str.substring(1)).toString();
+        }
+        return str;
+    }
+
+    public static final String fcToLowerCase(String str) {
+        char c = str.charAt(0);
+        if (Character.isUpperCase(c)) {
+            str = new StringBuilder().append(Character.toLowerCase(c)).append(str.substring(1)).toString();
+        }
+        return str;
+    }
     
 }

@@ -54,6 +54,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.nuxeo.ecm.webengine.rest.ResourceBinding;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
+import org.nuxeo.ecm.webengine.rest.io.ResourceWriter;
 import org.nuxeo.ecm.webengine.rest.io.ScriptFileWriter;
 import org.nuxeo.ecm.webengine.rest.io.WebViewWriter;
 import org.nuxeo.runtime.api.Framework;
@@ -101,6 +102,7 @@ public class WebEngineServlet extends HttpServlet {
     protected void initializeWebEngine(ResteasyProviderFactory providerFactory) throws ServletException {
         WebEngine2 engine = Framework.getLocalService(WebEngine2.class);
         try {
+            providerFactory.addMessageBodyWriter(new ResourceWriter());
             providerFactory.addMessageBodyWriter(new WebViewWriter());
             providerFactory.addMessageBodyWriter(new ScriptFileWriter());
             addRootResources(engine);

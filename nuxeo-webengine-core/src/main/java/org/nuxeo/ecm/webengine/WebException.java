@@ -108,7 +108,7 @@ public class WebException extends WebApplicationException {
     
     @Override
     public Response getResponse() {
-        Response response = getResponse();
+        Response response = super.getResponse(); 
         if (!byPassAppResponse) {
             WebContext2 ctx = WebEngine2.getActiveContext();
             if (ctx != null) {

@@ -33,6 +33,7 @@ import org.nuxeo.ecm.webengine.rest.annotations.WebObject;
 import org.nuxeo.ecm.webengine.rest.impl.DefaultObject;
 import org.nuxeo.ecm.webengine.rest.model.Resource;
 import org.nuxeo.ecm.webengine.rest.model.ResourceType;
+import org.nuxeo.ecm.webengine.rest.model.WebView;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
 
@@ -62,6 +63,7 @@ public class ScriptObject extends DefaultObject {
     }
 
     @GET
+    //TODO: scripts should be run by the writer?
     public Object get(@Context ServletContext servletCtx) throws WebException {
         if (file == null) {
             return null;
@@ -69,7 +71,7 @@ public class ScriptObject extends DefaultObject {
             String ext = file.getExtension();
             Scripting scripting = ctx.getEngine().getScripting();
             if (file.isTemplate()) {
-                return ctx.getTemplate(file);
+                return file;
             } else if (scripting.isScript(ext)) { // script
                 return ctx.runScript(file, null);
             } else { // regular file

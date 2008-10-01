@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webengine.rest.impl;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Writer;
 import java.security.Principal;
@@ -29,6 +28,7 @@ import java.util.Map;
 
 import javax.script.Bindings;
 import javax.script.SimpleBindings;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,14 +39,13 @@ import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.impl.model.DocumentObject;
+import org.nuxeo.ecm.webengine.rest.model.ActionResource;
 import org.nuxeo.ecm.webengine.rest.model.MainResource;
 import org.nuxeo.ecm.webengine.rest.model.NoSuchResourceException;
-import org.nuxeo.ecm.webengine.rest.model.ActionResource;
-import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
-import org.nuxeo.ecm.webengine.rest.model.Resource;
 import org.nuxeo.ecm.webengine.rest.model.ObjectType;
-import org.nuxeo.ecm.webengine.rest.model.WebView;
+import org.nuxeo.ecm.webengine.rest.model.Resource;
+import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
 import org.nuxeo.ecm.webengine.session.UserSession;
@@ -68,11 +67,14 @@ public abstract class AbstractWebContext implements WebContext2 {
     protected AbstractResource<?> head;
     protected AbstractResource<?> tail;
     protected MainResource root;
+    protected HttpServletRequest request;
+
     
-    public AbstractWebContext(UserSession userSession) {
-        this.us = userSession;
+    public AbstractWebContext(HttpServletRequest request) {
+        this.us = UserSession.getCurrentSession(request.getSession(true));
         this.engine = Framework.getLocalService(WebEngine2.class);
         this.scriptExecutionStack = new LinkedList<File>();
+        this.request = request;
     }
 
 //    public abstract HttpServletRequest getHttpServletRequest();
@@ -112,6 +114,14 @@ public abstract class AbstractWebContext implements WebContext2 {
         return us.getPrincipal();
     }
 
+    public HttpServletRequest getHttpServletRequest() {
+        return request;
+    }
+    
+    public String getMethod() {
+        return request.getMethod();
+    }
+    
     public String getApplicationPath() {
         return root.getPath();
     }
@@ -202,7 +212,6 @@ public abstract class AbstractWebContext implements WebContext2 {
     public Resource head() {
         return head;
     }
-
 
 
     /** template and script resolver */
@@ -318,7 +327,9 @@ public abstract class AbstractWebContext implements WebContext2 {
             e.printStackTrace();
             throw new WebException("Failed to render template: "+script.getAbsolutePath(), e);
         } finally {
-            popScriptFile();
+            if (!scriptExecutionStack.isEmpty()) {
+                popScriptFile();
+            }
         }
     }
 
@@ -349,21 +360,13 @@ public abstract class AbstractWebContext implements WebContext2 {
             e.printStackTrace();
             throw new WebException("Failed to run script "+script, e);
         } finally {
-            popScriptFile();
+            if (!scriptExecutionStack.isEmpty()) {
+                popScriptFile();
+            }
         }
     }
 
-    public WebView getTemplate(ScriptFile script) {
-        return new WebView(this, script);
-    }
 
-    public WebView getTemplate(String path) throws IOException {
-        ScriptFile script = getFile(path);
-        if (script == null) {
-            throw new FileNotFoundException(path);
-        }
-        return new WebView(this, script);
-    }
 
     public Bindings createBindings(Map<String, Object> vars) {
         Bindings bindings = new SimpleBindings();

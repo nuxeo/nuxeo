@@ -34,24 +34,18 @@ import com.sun.jersey.api.core.HttpContext;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebContextImpl extends AbstractWebContext {  //WebApplicationContext implements WebContext2 {
+public class WebContextImpl extends AbstractWebContext {
 
     protected static final Log log = LogFactory.getLog(WebContext2.class);
     
-    protected HttpServletRequest request;
     protected HttpContext ctx;
     protected UriInfo uri;
 
     public WebContextImpl(HttpContext ctx, HttpServletRequest request) {
-        super (UserSession.getCurrentSession(request.getSession(true)));
-        this.request = request;
+        super (request);
         this.ctx = ctx;
     }
 
-
-    public HttpServletRequest getHttpServletRequest() {
-        return  request;
-    }
 
     public UriInfo getUriInfo() {
         if (uri == null) {

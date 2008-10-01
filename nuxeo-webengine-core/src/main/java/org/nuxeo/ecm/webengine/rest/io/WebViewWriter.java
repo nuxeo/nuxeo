@@ -37,7 +37,7 @@ import org.nuxeo.ecm.webengine.rest.model.WebView;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Produces("text/html")
+@Produces({"text/html", "*/*"})
 public class WebViewWriter implements MessageBodyWriter<WebView> {
 
     public void writeTo(WebView t, Class<?> type, Type genericType,
@@ -47,10 +47,8 @@ public class WebViewWriter implements MessageBodyWriter<WebView> {
             WebApplicationException {
         try {
             t.render(entityStream);
-        } catch (WebException e) {
-            IOException ee = new IOException("Failed to render template");
-            ee.initCause(e);
-            throw ee;
+        } catch (Throwable e) {
+            throw WebException.wrap("Failed to render resource", e);
         }
     }
 

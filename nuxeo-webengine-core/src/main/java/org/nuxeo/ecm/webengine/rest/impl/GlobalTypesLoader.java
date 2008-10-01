@@ -49,12 +49,6 @@ public class GlobalTypesLoader  implements AnnotationLoader {
         BundleAnnotationsLoader.getInstance().addLoader(WebAction.class.getName(), this);
     }
     
-    public static final String fcToUpperCase(String str) {
-        if (Character.isLowerCase(str.charAt(0))) {
-            str = new StringBuilder().append(Character.toUpperCase(str.charAt(0))).append(str.substring(1)).toString();
-        }
-        return str;
-    }
  
     public TypeConfigurationProvider getMainProvider() {
         return mainProvider;
@@ -83,7 +77,7 @@ public class GlobalTypesLoader  implements AnnotationLoader {
     public TypeConfigurationProvider scanResourceDirectory(String parentName, File dir) throws ClassNotFoundException {
         TypeConfigurationProvider provider = new TypeConfigurationProvider();
         String pkgName = new StringBuilder().append(parentName).append('.').append(dir.getName()).toString();
-        String typeName = fcToUpperCase(dir.getName());
+        String typeName = Utils.fcToUpperCase(dir.getName());
         int extlen = ".groovy".length(); 
         for (File file : dir.listFiles()) {
             String name = file.getName();
