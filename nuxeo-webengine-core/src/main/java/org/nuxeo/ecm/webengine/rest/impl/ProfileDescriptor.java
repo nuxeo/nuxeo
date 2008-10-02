@@ -38,8 +38,8 @@ import org.nuxeo.runtime.model.Adaptable;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@XObject("application")
-public class ApplicationDescriptor implements Cloneable {
+@XObject("profile")
+public class ProfileDescriptor implements Cloneable {
 
     /**
      * The application directory
@@ -99,17 +99,17 @@ public class ApplicationDescriptor implements Cloneable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj.getClass() == ApplicationDescriptor.class) {
-            ApplicationDescriptor dd = (ApplicationDescriptor)obj;
+        if (obj.getClass() == ProfileDescriptor.class) {
+            ProfileDescriptor dd = (ProfileDescriptor)obj;
             return dd.name.equals(name) && Utils.streq(dd.fragment, fragment);
         }
         return false;
     }
     
     @Override
-    public ApplicationDescriptor clone() {
+    public ProfileDescriptor clone() {
         try {
-            ApplicationDescriptor cfg = (ApplicationDescriptor)super.clone();
+            ProfileDescriptor cfg = (ProfileDescriptor)super.clone();
             cfg.actions = (ArrayList)actions.clone();
             cfg.types = (ArrayList)types.clone();
             return cfg; 
@@ -119,12 +119,12 @@ public class ApplicationDescriptor implements Cloneable {
     }
 
     
-    public static ApplicationDescriptor fromAnnotation(Class<?> clazz) {
+    public static ProfileDescriptor fromAnnotation(Class<?> clazz) {
         WebProfile anno = clazz.getAnnotation(WebProfile.class);
         if (anno == null) {
             return null;
         }
-        ApplicationDescriptor ad = new ApplicationDescriptor();
+        ProfileDescriptor ad = new ProfileDescriptor();
         ad.name = anno.name();
         ad.templateExtension = anno.templateExtension();
         ad.scriptExtension = anno.scriptExtension();

@@ -45,7 +45,7 @@ public class WebApplication {
   
     public WebApplication() {
         ctx = WebEngine2.getActiveContext();
-        profile = ctx.getEngine().getApplication(getName());        
+        profile = ctx.getEngine().getProfile(getName());        
         path = guessPath();
         ctx.setApplication(this);
         

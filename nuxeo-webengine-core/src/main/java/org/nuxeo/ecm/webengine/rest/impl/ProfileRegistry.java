@@ -33,14 +33,14 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ApplicationRegistry extends AbstractContributionRegistry<String, ApplicationDescriptor> {
+public class ProfileRegistry extends AbstractContributionRegistry<String, ProfileDescriptor> {
 
-    protected Map<String, Profile> apps = new ConcurrentHashMap<String, Profile>();
+    protected Map<String, Profile> profiles = new ConcurrentHashMap<String, Profile>();
 
     protected WebEngine2 engine;
 
 
-    public ApplicationRegistry(WebEngine2 engine) {
+    public ProfileRegistry(WebEngine2 engine) {
         this.engine = engine;
     }
 
@@ -48,34 +48,34 @@ public class ApplicationRegistry extends AbstractContributionRegistry<String, Ap
         return engine;
     }
 
-    public void putApplication(Profile app) {
-        apps.put(app.getName(), app);
+    public void putProfile(Profile app) {
+        profiles.put(app.getName(), app);
     }
 
-    public Profile removeApplication(String id) {
-        return apps.remove(id);
+    public Profile removeProfile(String id) {
+        return profiles.remove(id);
     }
 
-    public Profile getApplication(String id) {
-        return apps.get(id);
+    public Profile getProfile(String id) {
+        return profiles.get(id);
     }
 
-    public Profile[] getApplications() {
-        return apps.values().toArray(new Profile[apps.size()]);
+    public Profile[] getProfiles() {
+        return profiles.values().toArray(new Profile[profiles.size()]);
     }
 
     @Override
     public synchronized void dispose() {
         super.dispose();
-        apps.clear();
+        profiles.clear();
     }
 
-    protected ApplicationDescriptor clone(ApplicationDescriptor descriptor) {
+    protected ProfileDescriptor clone(ProfileDescriptor descriptor) {
         return descriptor.clone();
     }
     
     @Override
-    protected void applyFragment(ApplicationDescriptor object, ApplicationDescriptor fragment) {
+    protected void applyFragment(ProfileDescriptor object, ProfileDescriptor fragment) {
         if (fragment.guardDescriptor != null) {
             object.guardDescriptor = fragment.guardDescriptor;
         }
@@ -88,36 +88,36 @@ public class ApplicationRegistry extends AbstractContributionRegistry<String, Ap
     }
 
     @Override
-    protected void installContribution(String key, ApplicationDescriptor object) {
+    protected void installContribution(String key, ProfileDescriptor object) {
         try {
             Profile app = new ProfileImpl(engine, object.directory, object);
-            apps.put(key, app);
+            profiles.put(key, app);
         } catch (Exception e) {
             e.printStackTrace(); //TODO
         }
     }
 
     @Override
-    protected void updateContribution(String key, ApplicationDescriptor object) {
+    protected void updateContribution(String key, ProfileDescriptor object) {
         installContribution(key, object);
     }
 
     @Override
     protected void uninstallContribution(String key) {
-        apps.remove(key);
+        profiles.remove(key);
     }
     
     @Override
-    protected boolean isMainFragment(ApplicationDescriptor object) {
+    protected boolean isMainFragment(ProfileDescriptor object) {
         return object.fragment == null || object.fragment.length() == 0;
     }
 
-    public void registerDescriptor(File root, ApplicationDescriptor desc) {
+    public void registerDescriptor(File root, ProfileDescriptor desc) {
         desc.directory = root;
         addFragment(desc.name, desc, desc.base);
     }
 
-    public void unregisterDescriptor(ApplicationDescriptor desc) {
+    public void unregisterDescriptor(ProfileDescriptor desc) {
         removeFragment(desc.name, desc);
     }
 

@@ -48,7 +48,7 @@ public class ProfileImpl implements Profile, FileChangeListener  {
 
 
     protected WebEngine2 engine;
-    protected ApplicationDescriptor descriptor;
+    protected ProfileDescriptor descriptor;
 
     protected File root;
     protected DirectoryStack dirStack;
@@ -65,7 +65,7 @@ public class ProfileImpl implements Profile, FileChangeListener  {
     protected TypeConfigurationProvider localTypes;
 
 
-    public ProfileImpl(WebEngine2 engine, File root, ApplicationDescriptor descriptor) throws WebException {
+    public ProfileImpl(WebEngine2 engine, File root, ProfileDescriptor descriptor) throws WebException {
         this.fileCache = new ConcurrentHashMap<String, ScriptFile>();
         this.root = root;
         this.descriptor = descriptor;
@@ -79,7 +79,7 @@ public class ProfileImpl implements Profile, FileChangeListener  {
     }
 
 
-    public ApplicationDescriptor getDescriptor() {
+    public ProfileDescriptor getDescriptor() {
         return descriptor;
     }
 
@@ -127,7 +127,7 @@ public class ProfileImpl implements Profile, FileChangeListener  {
             // then add roots from parent if any
             if (roots == null || roots.isEmpty()) {
                 if (descriptor.base != null) {
-                    ProfileImpl parent = (ProfileImpl)engine.getApplication(descriptor.base);
+                    ProfileImpl parent = (ProfileImpl)engine.getProfile(descriptor.base);
                     if (parent != null && parent.dirStack != null) {
                         dirStack.getDirectories().addAll(parent.dirStack.getDirectories());
                     }
