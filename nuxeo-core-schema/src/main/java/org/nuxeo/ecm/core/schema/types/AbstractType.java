@@ -198,23 +198,4 @@ public abstract class AbstractType implements Type {
         return null;
     }
 
-    public Object convert(Object object) throws TypeException {
-        if (converter != null) {
-            return converter.convert(object);
-        }
-        return object;
-    }
-
-    public void setConverter(ValueConverter converter) {
-        if (converter == null) {
-            this.converter = this;
-        } else {
-            this.converter = converter;
-        }
-    }
-
-    public ValueConverter getConverter() {
-        return converter;
-    }
-
 }
