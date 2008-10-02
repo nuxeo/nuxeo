@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +80,7 @@ public class UserManagerImpl implements UserManager {
 
     private String userEmailField;
 
-    private Set<String> userSearchFields;
+    private Map<String, MatchType> userSearchFields;
 
     private String groupDirectoryName;
 
@@ -154,11 +155,18 @@ public class UserManagerImpl implements UserManager {
     }
 
     public void setUserSearchFields(Set<String> userSearchFields) {
+        this.userSearchFields = new LinkedHashMap<String, MatchType>();
+        for (String searchField: userSearchFields) {
+            this.userSearchFields.put(searchField, MatchType.SUBSTRING);
+        }
+    }
+
+    public void setUserSearchFields(Map<String, MatchType> userSearchFields) {
         this.userSearchFields = userSearchFields;
     }
 
     public Set<String> getUserSearchFields() {
-        return Collections.unmodifiableSet(userSearchFields);
+        return Collections.unmodifiableSet(userSearchFields.keySet());
     }
 
     public void setGroupDirectoryName(String groupDirectoryName) {
@@ -781,11 +789,16 @@ public class UserManagerImpl implements UserManager {
             userDir = dirService.open(userDirectoryName);
             Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
 
-            for (String fieldName : userSearchFields) {
+            for (Map.Entry<String, MatchType> fieldEntry : userSearchFields.entrySet()) {
                 Map<String, Object> filter = new HashMap<String, Object>();
-                filter.put(fieldName, pattern);
-                DocumentModelList fetchedEntries = userDir.query(filter,
-                        filter.keySet());
+                filter.put(fieldEntry.getKey(), pattern);
+                DocumentModelList fetchedEntries;
+                if (fieldEntry.getValue() == MatchType.SUBSTRING) {
+                    fetchedEntries = userDir.query(filter,
+                            filter.keySet());
+                } else  {
+                    fetchedEntries = userDir.query(filter);
+                }
                 for (DocumentModel entry : fetchedEntries) {
                     uniqueEntries.put(entry.getId(), entry);
                 }

@@ -9,8 +9,10 @@
         <directory>somedir</directory>
         <emailField>mail</emailField>
         <searchFields append="true">
+          <!-- BBB: use substringMatchSearchField explicitely instead -->
           <searchField>first</searchField>
-          <searchField>last</searchField>
+          <exactMatchSearchField>last</exactMatchSearchField>
+          <substringMatchSearchField>email</substringMatchSearchField>
         </searchFields>
         <listingMode>search_only</listingMode>
         <anonymousUser id="Guest">
