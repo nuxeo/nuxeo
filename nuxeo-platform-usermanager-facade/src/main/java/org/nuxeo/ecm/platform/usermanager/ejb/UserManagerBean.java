@@ -322,6 +322,15 @@ public class UserManagerBean implements UserManager {
         }
     }
 
+    public void setUserSearchFields(Map<String, MatchType> userSearchFields)
+            throws ClientException {
+        try {
+            getUserManager().setUserSearchFields(userSearchFields);
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
+    }
+
     public Set<String> getUserSearchFields() throws ClientException {
         try {
             return getUserManager().getUserSearchFields();

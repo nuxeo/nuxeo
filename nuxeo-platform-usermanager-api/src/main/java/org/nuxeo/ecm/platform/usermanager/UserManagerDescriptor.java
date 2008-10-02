@@ -20,20 +20,29 @@
 package org.nuxeo.ecm.platform.usermanager;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections.MultiHashMap;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
 
 @XObject(value = "userManager", order = { "users/anonymousUser",
         "users/anonymousUser@id", "users/anonymousUser/property" })
 public class UserManagerDescriptor implements Serializable {
+
+    private static final Log log = LogFactory.getLog(UserManagerDescriptor.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -67,11 +76,10 @@ public class UserManagerDescriptor implements Serializable {
         this.userListingMode = userListingMode;
     }
 
-    protected boolean userSearchFieldsPresent;
+    protected boolean userSearchFieldsPresent = false;
 
     @XNode("users/searchFields")
-    protected void setUserSearchFieldsPresent(
-            @SuppressWarnings("unused")
+    protected void setUserSearchFieldsPresent(@SuppressWarnings("unused")
     String text) {
         userSearchFieldsPresent = true;
     }
@@ -79,8 +87,31 @@ public class UserManagerDescriptor implements Serializable {
     @XNode("users/searchFields@append")
     protected boolean userSearchFieldsAppend;
 
-    @XNodeList(value = "users/searchFields/searchField", type = HashSet.class, componentType = String.class)
-    Set<String> userSearchFields;
+    Map<String, MatchType> userSearchFields = new LinkedHashMap<String, MatchType>();
+
+    @XNodeList(value = "users/searchFields/exactMatchSearchField", componentType = String.class, type = String[].class)
+    protected void setExactMatchUserSearchFields(String[] fields) {
+        for (String field: fields) {
+            userSearchFields.put(field, MatchType.EXACT);
+        }
+    }
+
+
+    @XNodeList(value = "users/searchFields/substringMatchSearchField", componentType = String.class, type = String[].class)
+    protected void setSubstringMatchUserSearchFields(String[] fields) {
+        for (String field: fields) {
+            userSearchFields.put(field, MatchType.SUBSTRING);
+        }
+    }
+
+    /**
+     * @deprecated use setSubstringMatchUserSearchFields instead
+     */
+    @Deprecated
+    @XNodeList(value = "users/searchFields/searchField", componentType = String.class, type = String[].class)
+    protected void setUserSearchFields(String[] fields) {
+        setSubstringMatchUserSearchFields(fields);
+    }
 
     protected Pattern userPasswordPattern;
 
@@ -171,7 +202,7 @@ public class UserManagerDescriptor implements Serializable {
         }
         if (other.userSearchFieldsPresent) {
             if (other.userSearchFieldsAppend) {
-                userSearchFields.addAll(other.userSearchFields);
+                userSearchFields.putAll(other.userSearchFields);
             } else {
                 userSearchFields = other.userSearchFields;
             }

@@ -19,14 +19,14 @@
 
 package org.nuxeo.ecm.platform.usermanager;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -59,8 +59,12 @@ public class UserService extends DefaultComponent {
         // BBB backward compatibility defaults
         merged.userDirectoryName = "userDirectory";
         merged.userEmailField = "email";
-        merged.userSearchFields = new HashSet<String>(Arrays.asList("username",
-                "firstName", "lastName"));
+
+        merged.userSearchFields = new HashMap<String, MatchType>();
+        merged.userSearchFields.put("username", MatchType.SUBSTRING);
+        merged.userSearchFields.put("firstName", MatchType.SUBSTRING);
+        merged.userSearchFields.put("lastName", MatchType.SUBSTRING);
+
         merged.groupDirectoryName = "groupDirectory";
         merged.groupMembersField = "members";
         merged.groupSubGroupsField = "subGroups";

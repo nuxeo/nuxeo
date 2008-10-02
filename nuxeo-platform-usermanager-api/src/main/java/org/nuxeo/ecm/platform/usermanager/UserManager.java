@@ -31,6 +31,11 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 public interface UserManager {
 
+    public static enum MatchType {
+        EXACT, //
+        SUBSTRING;
+    }
+
     boolean checkUsernamePassword(String username, String password)
             throws ClientException;
 
@@ -144,7 +149,7 @@ public interface UserManager {
      * Sets the user directory name.
      *
      * @param userDirectoryName the user directory name.
-     * @throws ClientException 
+     * @throws ClientException
      */
     void setUserDirectoryName(String userDirectoryName) throws ClientException;
 
@@ -152,7 +157,7 @@ public interface UserManager {
      * Gets the user directory name.
      *
      * @return the user directory name.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getUserDirectoryName() throws ClientException;
 
@@ -160,7 +165,7 @@ public interface UserManager {
      * Sets the user email field.
      *
      * @param userEmailField the email field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     void setUserEmailField(String userEmailField) throws ClientException;
 
@@ -168,25 +173,34 @@ public interface UserManager {
      * Gets the user email field.
      *
      * @return the user email field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getUserEmailField() throws ClientException;
 
     /**
-     * Sets the user search fields, the fields to use when a fulltext search is
-     * done.
+     * Sets the user search fields, the fields to use when a user search is
+     * done. All fields use substring match by default.
      *
      * @param userSearchFields the search fields.
-     * @throws ClientException 
+     * @throws ClientException
      */
     void setUserSearchFields(Set<String> userSearchFields) throws ClientException;
 
+
     /**
-     * Gets the user search fields, the fields to use when a fulltext search is
+     * Sets the user search fields, the fields to use when a user search is
+     * done. The map values allow for selection between substring and exact match.
+     *
+     * @param userSearchFields map with field names as keys and values in exact / substring
+     */
+    void setUserSearchFields(Map<String, MatchType> userSearchFields) throws ClientException;
+
+    /**
+     * Gets the user search fields, the fields to use when a user search is
      * done.
      *
      * @return the search fields.
-     * @throws ClientException 
+     * @throws ClientException
      */
     Set<String> getUserSearchFields() throws ClientException;
 
@@ -194,7 +208,7 @@ public interface UserManager {
      * Sets the group directory name.
      *
      * @param groupDirectoryName the user directory name.
-     * @throws ClientException 
+     * @throws ClientException
      */
     void setGroupDirectoryName(String groupDirectoryName) throws ClientException;
 
@@ -202,7 +216,7 @@ public interface UserManager {
      * Gets the group directory name.
      *
      * @return the group directory name.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getGroupDirectoryName() throws ClientException;
 
@@ -210,7 +224,7 @@ public interface UserManager {
      * Sets the group members field.
      *
      * @param groupMembersField the members field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     void setGroupMembersField(String groupMembersField) throws ClientException;
 
@@ -218,7 +232,7 @@ public interface UserManager {
      * Gets the group members field.
      *
      * @return the group members field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getGroupMembersField() throws ClientException;
 
@@ -226,7 +240,7 @@ public interface UserManager {
      * Sets the group sub-groups field.
      *
      * @param groupSubGroupsField the sub-groups field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     void setGroupSubGroupsField(String groupSubGroupsField) throws ClientException;
 
@@ -234,7 +248,7 @@ public interface UserManager {
      * Gets the group sub-groups field.
      *
      * @return the sub-groups field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getGroupSubGroupsField() throws ClientException;
 
@@ -242,7 +256,7 @@ public interface UserManager {
      * Sets the group parentGroups field.
      *
      * @param groupParentGroupsField the parentGroups field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     void setGroupParentGroupsField(String groupParentGroupsField) throws ClientException;
 
@@ -250,7 +264,7 @@ public interface UserManager {
      * Gets the group parent-groups field.
      *
      * @return the parent-groups field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getGroupParentGroupsField() throws ClientException;
 
@@ -258,7 +272,7 @@ public interface UserManager {
      * Sets the anonymous user properties.
      *
      * @param anonymousUser the anonymous user properties.
-     * @throws ClientException 
+     * @throws ClientException
      */
     void setAnonymousUser(Map<String, String> anonymousUser) throws ClientException;
 
@@ -266,7 +280,7 @@ public interface UserManager {
      * Gets the anonymous user id.
      *
      * @return the anonymous user id, or null if none is defined.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getAnonymousUserId() throws ClientException;
 
@@ -274,4 +288,5 @@ public interface UserManager {
      * The key in the anonymous user map that hold its id.
      */
     String ANONYMOUS_USER_ID_KEY = "__id__";
+
 }
