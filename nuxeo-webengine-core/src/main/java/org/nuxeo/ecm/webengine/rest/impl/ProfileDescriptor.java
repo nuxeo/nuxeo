@@ -27,7 +27,6 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.webengine.RootDescriptor;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.rest.annotations.WebProfile;
 import org.nuxeo.ecm.webengine.security.Guard;
@@ -71,8 +70,8 @@ public class ProfileDescriptor implements Cloneable {
     @XNode("template-extension")
     public String templateExtension = "ftl";
 
-    @XNodeList(value="roots/root", type=ArrayList.class, componentType=RootDescriptor.class, nullByDefault=true)
-    public List<RootDescriptor> roots;
+    @XNodeList(value="roots/root", type=ArrayList.class, componentType=String.class, nullByDefault=true)
+    public List<String> roots;
 
     @XNode("permission")
     public  GuardDescriptor guardDescriptor;
@@ -137,9 +136,9 @@ public class ProfileDescriptor implements Cloneable {
         }
         String[] roots = anno.roots();
         if (roots.length > 0) {
-            ad.roots = new ArrayList<RootDescriptor>(); 
+            ad.roots = new ArrayList<String>(); 
             for (int i=0; i<roots.length; i++) {
-                ad.roots.add(new RootDescriptor(roots[i], i));
+                ad.roots.add(roots[i]);
             }
         }
         ad.actions = new ArrayList<ActionTypeImpl>();

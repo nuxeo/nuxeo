@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.nuxeo.ecm.webengine.RootDescriptor;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.model.Profile;
 import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
@@ -81,7 +80,7 @@ public class ProfileRegistry extends AbstractContributionRegistry<String, Profil
         }
         if (fragment.roots != null) {
             if (object.roots == null) {
-                object.roots = new ArrayList<RootDescriptor>();
+                object.roots = new ArrayList<String>();
             }
             object.roots.addAll(fragment.roots);
         }

@@ -26,13 +26,12 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.nuxeo.ecm.webengine.RootDescriptor;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
 import org.nuxeo.ecm.webengine.rest.model.ObjectType;
-import org.nuxeo.ecm.webengine.rest.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.rest.model.Profile;
+import org.nuxeo.ecm.webengine.rest.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.runtime.deploy.FileChangeListener;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
@@ -102,12 +101,12 @@ public class ProfileImpl implements Profile, FileChangeListener  {
 
     protected void loadDirectoryStack() throws WebException {
         try {
-            List<RootDescriptor> roots = descriptor.roots;
+            List<String> roots = descriptor.roots;
             // first add roots defined locally
             dirStack = new DirectoryStack();
             if (descriptor.roots != null && !descriptor.roots.isEmpty()) {
-                for (RootDescriptor rd : descriptor.roots) {
-                    File file =new File(engine.getRootDirectory(), rd.path);
+                for (String root : descriptor.roots) {
+                    File file =new File(engine.getRootDirectory(), root);
                     dirStack.addDirectory(file);//TODO: priority is meaningless
                 }
             } else {
