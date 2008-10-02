@@ -54,7 +54,7 @@ public class EnterNodeActionHandler extends
 
         Map tasks = taskNode.getTasksMap();
         for (Object k : tasks.keySet()) {
-            log.info("Create task =" + k);
+            log.debug("Create task =" + k);
             TaskInstance ti = tmi.createTaskInstance(
                     taskNode.getTask((String) k), token);
             ti.start();
