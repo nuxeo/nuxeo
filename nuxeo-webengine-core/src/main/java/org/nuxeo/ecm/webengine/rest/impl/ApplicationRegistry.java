@@ -76,15 +76,6 @@ public class ApplicationRegistry extends AbstractContributionRegistry<String, Ap
     
     @Override
     protected void applyFragment(ApplicationDescriptor object, ApplicationDescriptor fragment) {
-        if (fragment.defaultPage != "default.ftl") {
-            object.defaultPage = fragment.defaultPage;
-        }
-        if (fragment.errorPage != "error.ftl") {
-            object.errorPage = fragment.errorPage;
-        }
-        if (fragment.indexPage != "index.ftl") {
-            object.indexPage = fragment.indexPage;
-        }
         if (fragment.guardDescriptor != null) {
             object.guardDescriptor = fragment.guardDescriptor;
         }

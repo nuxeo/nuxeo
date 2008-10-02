@@ -22,12 +22,10 @@ package org.nuxeo.ecm.webengine.rest.impl;
 import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
-import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.RootDescriptor;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
@@ -61,23 +59,11 @@ public class ApplicationDescriptor implements Cloneable {
     @XNode("@extends")
     public String base;
 
-    @XNodeMap(value="property", key="property@name", componentType=String.class, type=HashMap.class, nullByDefault=false)
-    public HashMap<String, Object> properties;
-
     @XNodeList(value="types/type", componentType=TypeDescriptor.class, type=ArrayList.class, nullByDefault=false)
     public ArrayList<TypeDescriptor> types;
 
     @XNodeList(value="actions/action", componentType=ActionTypeImpl.class, type=ArrayList.class, nullByDefault=false)
     public ArrayList<ActionTypeImpl> actions;
-
-    @XNode("error-page")
-    public String errorPage = "error.ftl";
-
-    @XNode("index-page")
-    public String indexPage = "index.ftl";
-
-    @XNode("default-page")
-    public String defaultPage = "default.ftl";
 
     @XNode("script-extension")
     public String scriptExtension = "groovy";
@@ -140,9 +126,6 @@ public class ApplicationDescriptor implements Cloneable {
         }
         ApplicationDescriptor ad = new ApplicationDescriptor();
         ad.name = anno.name();
-        ad.defaultPage = anno.defaultPage();
-        ad.indexPage = anno.indexPage();
-        ad.errorPage = anno.errorPage();
         ad.templateExtension = anno.templateExtension();
         ad.scriptExtension = anno.scriptExtension();
         ad.fragment = Utils.nullIfEmpty(anno.fragment());
@@ -159,7 +142,6 @@ public class ApplicationDescriptor implements Cloneable {
                 ad.roots.add(new RootDescriptor(roots[i], i));
             }
         }
-        ad.properties = new HashMap<String, Object>();
         ad.actions = new ArrayList<ActionTypeImpl>();
         ad.types = new ArrayList<TypeDescriptor>();        
         return ad;

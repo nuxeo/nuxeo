@@ -33,7 +33,7 @@ import org.nuxeo.runtime.model.Adaptable;
  */
 public interface Resource extends Adaptable {
 
-    Resource initialize(WebContext2 ctx, ResourceType<?> type) throws WebException;
+    Resource initialize(WebContext2 ctx, ResourceType<?> type, Object ...  args) throws WebException;
 
     void dispose();
     

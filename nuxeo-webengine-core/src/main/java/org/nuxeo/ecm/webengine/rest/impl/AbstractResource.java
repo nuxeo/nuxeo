@@ -43,11 +43,10 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
 
   
     
-    public Resource initialize(WebContext2 ctx, ResourceType<?> type) throws WebException {
+    public Resource initialize(WebContext2 ctx, ResourceType<?> type, Object ...  args) throws WebException {
         this.ctx = ctx;
         this.type = (T)type;
         this.path = ctx.getUriInfo().getMatchedURIs().get(0);
-        System.out.println("@@@ RES: "+getClass().getSimpleName()+" >> "+path+" >> "+ctx.getUriInfo().getMatchedResources() + " => "+ctx.getUriInfo().getMatchedURIs());
         return this;
     }
     

@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine.rest.impl;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
@@ -51,8 +50,8 @@ public class DefaultAction extends AbstractResource<ActionType> implements Actio
 
     
     @Override
-    public Resource initialize(WebContext2 ctx, ResourceType<?> type) throws WebException {
-        super.initialize(ctx, type);
+    public Resource initialize(WebContext2 ctx, ResourceType<?> type, Object ...  args) throws WebException {
+        super.initialize(ctx, type, args);
         if (!this.type.getGuard().check(ctx)) {
             throw new WebSecurityException("Failed to get action: "+getName()+". Action is not accessible in the current context", getName());
         }
@@ -89,19 +88,11 @@ public class DefaultAction extends AbstractResource<ActionType> implements Actio
     }
 
     public WebView getView(Map<String,Object> args) throws WebException{
-        try {
-            String typeName = Utils.fcToLowerCase(prev.getType().getName());
-            String method = ctx.getMethod().toLowerCase();
-            StringBuilder buf = new StringBuilder();
-            buf.append(typeName).append('/').append(method).append('-').append(getName()).append(getApplication().getTemplateExtension());        
-            ScriptFile file = getApplication().getFile(buf.toString());
-            if (file == null) {
-                throw new NoSuchResourceException("View not found: "+buf.toString());
-            }
-            return new WebView(this, file, args);
-        } catch (IOException e) {
-            throw WebException.wrap(e);
+        ScriptFile file = getTargetObject().getTemplate(type.getName());
+        if (file == null) {
+            throw new NoSuchResourceException("Default template for action: "+type.getName()+"@"+getTargetObject().getType().getName()+" and method "+ctx.getMethod()+" was not found");
         }
+        return new WebView(this, file, args);
     }
 
 }

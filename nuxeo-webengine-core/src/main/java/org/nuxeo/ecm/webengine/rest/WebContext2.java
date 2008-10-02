@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine.rest;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.security.Principal;
@@ -28,8 +27,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.logging.Log;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.rest.model.ActionResource;
 import org.nuxeo.ecm.webengine.rest.model.MainResource;
 import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
@@ -47,35 +49,201 @@ import org.nuxeo.runtime.model.Adaptable;
  */
 public interface WebContext2 extends Adaptable {
 
+    /**
+     * Set the application instance. 
+     * TODO move this from interface toabstract implementation?
+     * @param config
+     */
     public void setApplication(WebApplication config);
 
+    /**
+     * Gets the current web application.
+     *
+     * @return the web root. Cannot return null.
+     */
     public WebApplication getApplication();
 
+    /**
+     * Gets the web engine instance.
+     *
+     * @return the web engine instance. Cannot return null
+     */
     public WebEngine2 getEngine();
 
-    public UserSession getUserSession();
+    /**
+     * Get the current user session.
+     * <p>
+     * The user session is a WebEngine abstraction for the current user session and can be
+     * used to retrieve current login, core session, and to set or get user session variables
+     *
+     * @return the user session. Never returns null.
+     */
+    UserSession getUserSession();
 
-    public CoreSession getCoreSession();
+    /**
+     * The Core Session (or Repository Session) corresponding to that request.
+     *
+     * @return the core session. Cannot return null
+     */
+    CoreSession getCoreSession() throws WebException;
 
-    public Principal getPrincipal();
+    /**
+     * Gets the principal identifying the user that originated the request.
+     *
+     * @return the current principal. Cannot return null.
+     */
+    Principal getPrincipal();
 
+    /**
+     * Get the JAX-RS UriInfo
+     * @return the uri info
+     */
     UriInfo getUriInfo();
     
-    public HttpServletRequest getHttpServletRequest();
     
-    public String getMethod();
+    /**
+     * Gets the underlying HTTP servlet request object.
+     *
+     * @return the HTTP Request object. Cannot return null
+     */
+    HttpServletRequest getRequest();
     
-    public String getApplicationPath();
+    /**
+     * Get HTTP Method
+     * @return the method
+     */
+    String getMethod();
+    
+    /**
+     * Gets the representation of the data form submitted by the user. This is
+     * providing access to both POST and GET parameters, or to multipart form
+     * data requests.
+     *
+     * @return the request form data. Cannot return null
+     */
+    FormData getForm();
+        
+    /**
+     * Gets the URL requested by the client. Same as
+     * {@link HttpServletRequest#getRequestURL()}
+     *
+     * @return the request URL. Cannot return null.
+     */
+    String getURL();
 
-    public ObjectResource newObject(String typeName) throws WebException;
+    /**
+     * Returns the part of this request's URL from the protocol name up to the
+     * query string in the first line of the HTTP request. This is the same as
+     * {@link HttpServletRequest#getRequestURI()}
+     *
+     * @return the request URI. Cannot return null.
+     */
+    String getURI();
 
-    public ObjectResource newObject(ObjectType type) throws WebException;
+    /**
+     * Gets the path portion of the request URL.
+     *
+     * @return the path portion of the request URL. Cannot return null.
+     */
+    String getUrlPath();
 
-    public ActionResource newAction(String typeName, String actionName) throws WebException;
+    /**
+     * Get the path prefix that identify the current web application.
+     * The application path will include the base path (context + servlet path)
+     * @return the application path. Cannot be null
+     */
+    String getApplicationPath();
+
+    /**
+     * Gets the path of the servlet. Same as servlet context path + servlet path
+     *
+     * @return the site path
+     */
+    String getBasePath();
+
+    /**
+     * Gets the URL of the base path. This is the same as {@link #getURL()}
+     * after removing the path segments over the base path.
+     *
+     * @return the base URL
+     */
+    String getBaseURL();
     
-    public ActionResource newAction(ObjectResource obj, String actionName) throws WebException;
+    /**
+     * TODO: should we remove this method from the context and create a specialized service to resolve document models to paths?
+     * Get a suitable URI path for the given Nuxeo document, that can be used to invoke this document.
+     *
+     * @param document the nuxeo document
+     * @return the path if any or null if no suitable path can be found
+     * XXX can this method return null?
+     */
+    String getUrlPath(DocumentModel document); // try to resolve a nuxeo doc to a web object path
     
-    public ActionResource newAction(ObjectType type, String actionName) throws WebException;
+    /**
+     * Sets a context variable.
+     *
+     * @param key the variable key
+     * @param value the variable value
+     * @see #getProperty(String)
+     */
+    void setProperty(String key, Object value); 
+    
+    /**
+     * Gets a context variable.
+     * <p>
+     * Context variables can be used to share data between the scripts that are
+     * called in that request (and between Java code too of course).
+     *
+     * @param key
+     *            the variable key
+     * @return the variable value or null if none
+     */
+    Object getProperty(String key);
+
+    /**
+     * Gets a context variable.
+     * <p>
+     * Context variables can be used to share data between the scripts that are
+     * called in that request (and between java code too of course).
+     *
+     * @param key
+     *            the variable key
+     * @param defaultValue
+     *            the default value to use if the property doesn't exists
+     * @return the variable value or the given default value if none
+     */
+    Object getProperty(String key, Object defaultValue);
+
+    /**
+     * Convenience method to get a cookie value
+     * @param name the cookie name
+     * @return the cookie value if any null otherwise
+     */
+    String getCookie(String name);
+
+    /**
+     * Convenience method to get a cookie value using a default value
+     * @param name the cookie name
+     * @param defaultValue the value to return when cookie is not set
+     * @return the cookie value if any or the default if none
+     */
+    String getCookie(String name, String defaultValue);
+
+    /**
+     * Get a logger to be used by scripts for logging
+     * @return a logger
+     */
+    Log getLog();
+
+    public ObjectResource newObject(String typeName, Object ...  args) throws WebException;
+
+    public ObjectResource newObject(ObjectType type, Object ...  args) throws WebException;
+
+    public ActionResource newAction(String typeName, String actionName, Object ...  args) throws WebException;
+    
+    public ActionResource newAction(ObjectResource obj, String actionName, Object ...  args) throws WebException;
+    
+    public ActionResource newAction(ObjectType type, String actionName, Object ...  args) throws WebException;
 
     /** object stack API */
     public void setRootResource(MainResource resource);
@@ -93,30 +261,120 @@ public interface WebContext2 extends Adaptable {
 
     public ActionResource getAction(); 
 
+
+    
     /** template and script resolver */
 
-    public ScriptFile getFile(String path) throws IOException;
-
-    public void pushScriptFile(File file);
-
-    public File popScriptFile();
-
+    /**
+     * Resolves the given path into a file.
+     * <p>
+     * The path is resolved as following:
+     * <ol>
+     * <li> if the path begin with a dot '.' then a local path is assumed and
+     * the path will be resolved relative to the current executed script if any.
+     * Note that the directory stack will be consulted as well. If there is no
+     * current executed script then the path will be transformed into an
+     * absolute path and next step is entered.
+     * <li> the resolving is delegated to the current
+     * {@link WebApplication#getFile(String)} that will try to resolve the path
+     * relative to each directory in the directory stack
+     * </ol>
+     *
+     * @param path
+     *            the path to resolve into a file
+     * @return the file or null if the path couldn't be resolved
+     * @throws IOException
+     */
+    ScriptFile getFile(String path) throws WebException;
 
 
     /** running scripts and rendering templates */
 
+    /**
+     * Renders the given template using the rendering engine registered in that
+     * web engine.
+     * <p>
+     * This is similar to the {@link #render(String, Map)} method with a null
+     * value for the <i>args</i> argument.
+     *
+     * @param template
+     *            the template to render. Can be a path absolute to the web
+     *            directory or relative to the caller script if any.
+     *  @param writer
+     *            the writer to use
+     * @see #render(String, Map)
+     */
     public void render(String template, Writer writer) throws WebException;
 
-    public void render(String template, Object ctx, Writer writer) throws WebException;
+    /**
+     * Renders the given template using the rendering engine registered in that
+     * web engine. The given arguments are passed to the rendering process as
+     * context variables
+     *
+     * @param template
+     *            the template to render
+     * @param args
+     *            the arguments to pass
+     *  @param writer
+     *            the writer to use
+     *            
+     * @throws WebException
+     */
+    public void render(String template, Object args, Writer writer) throws WebException;
 
-    @SuppressWarnings("unchecked")
-    public void render(ScriptFile script, Object ctx, Writer writer) throws WebException;
-
-    public Object runScript(String script) throws WebException;
-
-    public Object runScript(String script, Map<String, Object> args) throws WebException;
-
-    public Object runScript(ScriptFile script, Map<String, Object> args) throws WebException;
+    /**
+     * Renders the given template using the rendering engine registered in that
+     * web engine. The given arguments are passed to the rendering process as
+     * context variables
+     *
+     * @param script
+     *            the template to render
+     * @param args
+     *            the arguments to pass
+     *  @param writer
+     *            the writer to use
+     *            
+     * @throws WebException
+     */
+    public void render(ScriptFile script, Object args, Writer writer) throws WebException;
 
     
+    /**
+     * Runs the given script.
+     *
+     * @param script
+     *            the script path. Can be a path absolute to the web directory
+     *            or relative to the caller script if any.
+     * @param args
+     *            the arguments to pass
+     */
+    Object runScript(String script, Map<String, Object> args) throws WebException;
+
+    /**
+     * Runs the given script.
+     * <p>
+     * This is similar to {@link #runScript(String, Map)} with a null value for
+     * the <i>args</i> argument
+     *
+     * @param script
+     *            the script path. Can be a path absolute to the web directory
+     *            or relative to the caller script if any.
+     * @see #runScript(String, Map)
+     */
+    Object runScript(String script) throws WebException;
+
+    /**
+     * Runs the script using given arguments
+     * <p>
+     * This is similar to {@link #runScript(String, Map)} with a null value for
+     * the <i>args</i> argument
+     *
+     * @param script
+     *            the script path. Can be a path absolute to the web directory
+     *            or relative to the caller script if any.
+     * @param args
+     *            a map of arguments
+     * @see #runScript(String, Map)
+     */
+    Object runScript(ScriptFile script, Map<String, Object> args) throws WebException;
 }

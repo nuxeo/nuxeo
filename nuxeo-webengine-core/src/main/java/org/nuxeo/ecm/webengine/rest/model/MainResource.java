@@ -19,7 +19,11 @@
 
 package org.nuxeo.ecm.webengine.rest.model;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 
@@ -47,8 +51,6 @@ public class MainResource {
         ctx.setRootResource(this);
         
         //TODO: invoke application guard if any
-        
-        System.out.println("@@@ MAIN: "+getClass().getSimpleName()+" >> "+path+" >> "+ctx.getUriInfo().getMatchedResources().getClass().getSimpleName()+" => "+ctx.getUriInfo().getMatchedURIs());
     }
     
     public WebApplication getApplication() {
@@ -73,8 +75,8 @@ public class MainResource {
     }
     
     
-    @GET
-    public Object getIndexView() {
+    @GET @POST @PUT @DELETE @HEAD 
+    public Object getView() {
         try {
             return app.getFile("index.ftl");
         } catch (Throwable t) {

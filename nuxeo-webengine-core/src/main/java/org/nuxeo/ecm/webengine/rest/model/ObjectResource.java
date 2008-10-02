@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.impl.ActionTypeImpl;
+import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 
 
 /**
@@ -42,4 +43,8 @@ public interface ObjectResource extends Resource {
 
     Map<String, Collection<ActionTypeImpl>> getActionsByCategory() throws WebException;
 
+    ScriptFile getTemplate() throws WebException;
+    
+    ScriptFile getTemplate(String name) throws WebException;
+    
 }

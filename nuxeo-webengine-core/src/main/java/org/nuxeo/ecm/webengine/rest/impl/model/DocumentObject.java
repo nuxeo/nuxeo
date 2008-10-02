@@ -19,20 +19,18 @@
 
 package org.nuxeo.ecm.webengine.rest.impl.model;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.annotations.WebObject;
 import org.nuxeo.ecm.webengine.rest.impl.DefaultObject;
-import org.nuxeo.ecm.webengine.rest.methods.LOCK;
-import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
 import org.nuxeo.ecm.webengine.rest.model.Resource;
+import org.nuxeo.ecm.webengine.rest.model.ResourceType;
 
 
 
@@ -46,39 +44,36 @@ public class DocumentObject extends DefaultObject {
     protected DocumentModel doc;
 
 
-    public void setDocument(DocumentModel doc) {
-        this.doc = doc;
+    @Override
+    public Resource initialize(WebContext2 ctx, ResourceType<?> type,
+            Object... args) throws WebException {
+        assert args != null && args.length == 1;
+        doc = (DocumentModel)args[0];
+        return super.initialize(ctx, type, args);
     }
+    
 
     @Path(value="{path}")
-    public Resource dispatch(@Context WebContext2 ctx, @PathParam("path") String path) throws WebException {
+    public Resource traverse(@PathParam("path") String path) throws WebException {
+        return newObject(path);
+    }
+    
+    public DocumentObject newObject(String path) {
         try {
-            DocumentModel doc = ctx.getCoreSession().getChild(((DocumentObject)ctx.tail()).getDocument().getRef(), path);
-            DocumentObject obj = (DocumentObject)ctx.getApplication().getType(doc.getType()).newInstance();
-            obj.setDocument(doc);
-            return ctx.push(obj);
+            PathRef pathRef = new PathRef(doc.getPath().append(path).toString());
+            DocumentModel doc = ctx.getCoreSession().getDocument(pathRef);
+            return (DocumentObject)(ctx.newObject(doc.getType(), doc));
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
     }
-
-
+    
     public CoreSession getCoreSession() {
         return ctx.getCoreSession();
     }
 
     public DocumentModel getDocument() {
         return doc;
-    }
-
-    @GET
-    public ObjectResource get() throws Exception {
-        return this;
-    }
-
-    @LOCK
-    public String lock() throws Exception {
-        return "LockId";
     }
 
 }

@@ -26,7 +26,6 @@ import javax.ws.rs.core.Context;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.model.MainResource;
-import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
 import org.nuxeo.ecm.webengine.rest.model.Resource;
 
 /**
@@ -35,14 +34,13 @@ import org.nuxeo.ecm.webengine.rest.model.Resource;
  */
 public class ScriptApplication extends MainResource {
 
-    //@Path(value="{path}", limited=false)
     @Path(value="{path}")
     public Resource dispatch(@PathParam("path") String path, @Context WebContext2 ctx) throws Exception {
-        return ctx.push(getScriptObject());
+        return newScriptObject();
     }    
     
-    protected ObjectResource getScriptObject() throws WebException {
-        return app.getType("Script").newInstance();
+    protected ScriptObject newScriptObject() throws WebException {
+        return (ScriptObject)ctx.push(new ScriptObject()).initialize(ctx, null);
     }
 
 

@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine.rest.impl;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -112,19 +111,19 @@ public class DefaultObject extends AbstractResource<ObjectType> implements Objec
     }
         
     public WebView getView(Map<String,Object> args) throws WebException{
-        try {
-            String typeName = Utils.fcToLowerCase(getType().getName());
-            String method = ctx.getMethod().toLowerCase();
-            StringBuilder buf = new StringBuilder();
-            buf.append(typeName).append('/').append(method).append(getApplication().getTemplateExtension());
-            ScriptFile file = getApplication().getFile(buf.toString());
-            if (file == null) {
-                throw new NoSuchResourceException("View not found: "+buf.toString());
-            }
-            return new WebView(this, file, args);
-        } catch (IOException e) {
-            throw WebException.wrap(e);
+        ScriptFile file = getTemplate();
+        if (file == null) {
+            throw new NoSuchResourceException("Default template for type: "+type.getName()+" and method "+ctx.getMethod()+" was not found");
         }
+        return new WebView(this, file, args);
     }
-    
+  
+    public ScriptFile getTemplate() {
+        return ctx.getApplication().getObjectTemplate(this, null);
+    }
+
+    public ScriptFile getTemplate(String name) {
+        return ctx.getApplication().getObjectTemplate(this, name);
+    }
+
 }

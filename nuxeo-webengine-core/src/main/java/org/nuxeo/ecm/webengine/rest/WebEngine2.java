@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
@@ -61,6 +62,27 @@ import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
 public class WebEngine2 implements FileChangeListener, ResourceLocator {
 
     private final static ThreadLocal<WebContext2> CTX = new ThreadLocal<WebContext2>();
+    
+    protected static Map<Object, Object> mimeTypes = loadMimeTypes();
+    
+    static Map<Object, Object> loadMimeTypes() {
+        HashMap<Object,Object> mimeTypes = new HashMap<Object, Object>();
+        Properties p = new Properties();
+        URL url = WebEngine2.class.getClassLoader().getResource("/OSGI-INF/mime.properties");
+        InputStream in = null;
+        try {
+            in = url.openStream();
+            p.load(in);
+            mimeTypes.putAll(p);
+        } catch (IOException e) {
+            throw new Error("Failed to load mime types");
+        } finally {
+            if (in != null) {
+                try { in.close(); } catch (Exception e) {}
+            }
+        }
+        return mimeTypes;
+    }
     
     public final static WebContext2 getActiveContext() {
         return CTX.get();
@@ -126,6 +148,10 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
     
     public GlobalTypesLoader getGlobalTypes() {
         return globalTypes;
+    }
+    
+    public String getMimeType(String ext) {
+        return (String)mimeTypes.get(ext);
     }
 
     private void loadMessageBundle(boolean watch) throws IOException {
@@ -348,13 +374,10 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
     }
 
     public File getResourceFile(String key) {
-        try {
-            WebContext2 ctx = WebEngine2.getActiveContext();
-            ScriptFile file = ctx.getFile(key);
-            if (file != null) {
-                return file.getFile();
-            }
-        } catch (IOException e) {
+        WebContext2 ctx = WebEngine2.getActiveContext();
+        ScriptFile file = ctx.getFile(key);
+        if (file != null) {
+            return file.getFile();
         }
         return null;
     }

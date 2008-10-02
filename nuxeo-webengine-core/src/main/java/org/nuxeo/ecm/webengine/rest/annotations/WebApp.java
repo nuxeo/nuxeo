@@ -36,9 +36,6 @@ public @interface WebApp {
     String base() default "";
     String guard() default "";
     String[] roots() default {};
-    String indexPage() default "index.ftl";
-    String errorPage() default "error.ftl";
-    String defaultPage() default "default.ftl";
     String scriptExtension() default ".groovy";
     String templateExtension() default ".ftl";
 }

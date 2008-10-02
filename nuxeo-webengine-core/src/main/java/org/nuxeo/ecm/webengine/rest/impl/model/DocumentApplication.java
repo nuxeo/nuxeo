@@ -20,67 +20,42 @@
 package org.nuxeo.ecm.webengine.rest.impl.model;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.model.MainResource;
-import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
+import org.nuxeo.ecm.webengine.rest.model.Resource;
 
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *  
- *  TODO: use defined repository
+ *  TODO: be able to use other repositories than the default
  */
 public class DocumentApplication extends MainResource {
 
-    @Path(value="{path}")
-    protected ObjectResource resolveObject(String segment) throws WebException {
-        DocumentModel root = getRootDocument(ctx);       
-        // push the root first
-        //TODO we need the actual path not the path template
-        ctx.push(getDocumentObject(ctx, root)); 
-        DocumentModel doc = resolveDocument(ctx, segment);
-        return (ObjectResource)ctx.push(getDocumentObject(ctx, doc));
+    public DocumentObject newRoot(String path) throws WebException {
+        return newRoot(new PathRef(path));
     }
-    
-    public DocumentObject getDocumentObject(WebContext2 ctx, DocumentModel doc) throws WebException {
-        DocumentObject obj = (DocumentObject)(app.getType(doc.getType()).newInstance());
-        obj.setDocument(doc);
-        return obj;
-    }
-    
-    public DocumentModel resolveDocument(WebContext2 ctx, String path) throws WebException {
-        try {
-            String p = getContentRoot();
-            if (path.startsWith("/") || p.endsWith("/")) {
-                p = new StringBuilder().append(p).append(path).toString();
-            } else {
-                p = new StringBuilder().append(p).append('/').append(path).toString();
-            }
-            return ctx.getCoreSession().getDocument(new PathRef(p));
-        } catch(Exception e) {
-            throw WebException.wrap("Failed to get document: "+path, e);
-        }
-    }
-    
-    public DocumentModel getRootDocument(WebContext2 ctx) throws WebException {
-        try {
-            return ctx.getCoreSession().getDocument(new PathRef(getContentRoot()));
-        } catch(Exception e) {
-            throw WebException.wrap("Failed to get document: "+getContentRoot(), e);
-        }
-    }
-    
 
-    public String getRepository() {
-        return (String)app.getProperty("repository", "default");
+    public DocumentObject newRoot(DocumentRef doc) throws WebException {
+        try {
+            return newRoot(ctx.getCoreSession().getDocument(doc));
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
     }
     
-    public String getContentRoot() {
-        return (String)app.getProperty("content-root", "/");
+    public DocumentObject newRoot(DocumentModel doc) throws WebException {
+        return (DocumentObject)(ctx.newObject(doc.getType(), doc));
+    }
+        
+    @Path(value="{path}")
+    public Resource traverse(@PathParam("path") String path) throws WebException {
+        return newRoot("/").newObject(path);
     }
     
 }

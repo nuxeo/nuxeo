@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.nuxeo.ecm.webengine.RootDescriptor;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
+import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
 import org.nuxeo.ecm.webengine.rest.model.ObjectType;
 import org.nuxeo.ecm.webengine.rest.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
@@ -56,6 +57,7 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
     // how many roots are defined by this instance (ignore inherited roots)
     // can be used to iterate only over the local roots
     protected int localRootsCount = 0; 
+    // cache used for resolved files
     protected ConcurrentMap<String, ScriptFile> fileCache;
 
     protected final Object typeLock = new Object();
@@ -78,14 +80,6 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
         return descriptor.fragment != null;
     }
 
-    public Object getProperty(String key) {
-        return descriptor.properties.get(key);
-    }
-
-    public Object getProperty(String key, Object defValue) {
-        Object val = getProperty(key);
-        return val == null ? defValue : val;
-    }
 
     public ApplicationDescriptor getDescriptor() {
         return descriptor;
@@ -98,31 +92,6 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
     public WebEngine2 getEngine() {
         return engine;
     }
-
-    public ScriptFile getDefaultPage() {
-        try {
-            return getFile(descriptor.defaultPage);
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    public ScriptFile getErrorPage() {
-        try {
-            return getFile(descriptor.errorPage);
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    public ScriptFile getIndexPage() {
-        try {
-            return getFile(descriptor.indexPage);
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
 
     public void flushCache() {
         fileCache.clear();
@@ -179,7 +148,7 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
         return descriptor.templateExtension;
     }
 
-    public ScriptFile getFile(String path) throws IOException {
+    public ScriptFile getFile(String path) throws WebException {
         int len = path.length();
         if (len == 0) {
             return null;
@@ -189,8 +158,12 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
             path = new org.nuxeo.common.utils.Path(path).makeAbsolute().toString();
         } else if (c != '/') {// avoid doing duplicate entries in document stack cache
             path = new StringBuilder(len+1).append("/").append(path).toString();
+        } 
+        try {
+            return findFile(new org.nuxeo.common.utils.Path(path).makeAbsolute().toString());
+        } catch (IOException e) {
+            throw WebException.wrap(e);
         }
-        return findFile(new org.nuxeo.common.utils.Path(path).makeAbsolute().toString());
     }
 
     /**
@@ -208,6 +181,43 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
         }
         return file;
     }
+    
+    /**
+     * This is sharing the same cache as the {@link #getFile(String)} method so that cached object files will be  
+     *  visible through {@link #getFile(String)}. TODO: Do we really want this?
+     *  
+     * @param obj
+     * @param name
+     * @return
+     * @throws WebException
+     */
+    public ScriptFile getObjectTemplate(ObjectResource obj, String name) throws WebException {
+        ObjectType type = obj.getType();
+        StringBuilder buf = new StringBuilder();
+        buf.append('/').append(Utils.fcToLowerCase(type.getName()));
+        buf.append('/').append(obj.getContext().getMethod().toLowerCase());
+        if (name != null) {
+            buf.append('-').append(name);
+        }
+        buf.append(getTemplateExtension());
+        String key = buf.toString();
+        ScriptFile file = fileCache.get(key);
+        if (file == null) {
+            int len = type.getName().length()+1;
+            do {
+                buf.replace(1, len, Utils.fcToLowerCase(type.getName()));
+                file = getFile(buf.toString());
+                if (file != null) {
+                    fileCache.put(key, file);
+                    break;
+                }
+                type = type.getSuperType();
+                len = type.getName().length()+1;
+            } while (type != null);            
+        }        
+        return file;
+    }
+    
 
     protected void loadConfiguredTypes() {
         localTypes = new TypeConfigurationProvider();

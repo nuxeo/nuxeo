@@ -20,19 +20,19 @@
 package org.nuxeo.ecm.webengine.rest.impl.model;
 
 import java.io.File;
-import java.io.IOException;
 
-import javax.servlet.ServletContext;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.HEAD;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.annotations.WebObject;
 import org.nuxeo.ecm.webengine.rest.impl.DefaultObject;
-import org.nuxeo.ecm.webengine.rest.model.Resource;
-import org.nuxeo.ecm.webengine.rest.model.ResourceType;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
 
@@ -45,25 +45,15 @@ import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
 @WebObject("Script")
 public class ScriptObject extends DefaultObject {
 
-    protected ScriptFile file;
-
     public ScriptObject() {
     }
 
-    @Override
-    public Resource initialize(WebContext2 ctx, ResourceType<?> type) throws WebException {
-        super.initialize(ctx, type);
-        try {
-            file = ctx.getApplication().getFile(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return this;
-    }
-
-    @GET
-    //TODO: scripts should be run by the writer?
-    public Object get(@Context ServletContext servletCtx) throws WebException {
+    
+    @GET @POST @PUT @DELETE @HEAD
+    @Path("{path}")
+    public Object runScript(@PathParam("path") String path) throws WebException {
+        ScriptFile file = ctx.getApplication().getFile(path);
+        file = ctx.getApplication().getFile(path);
         if (file == null) {
             return null;
         } else {
@@ -75,7 +65,7 @@ public class ScriptObject extends DefaultObject {
                 return ctx.runScript(file, null);
             } else { // regular file
                 File f = file.getFile();
-                String ctype = servletCtx.getMimeType(f.getName());
+                String ctype = ctx.getEngine().getMimeType(f.getName());
                 return Response.ok(f, ctype).build();
             }
         }

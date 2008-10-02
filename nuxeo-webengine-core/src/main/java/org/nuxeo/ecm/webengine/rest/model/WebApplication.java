@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine.rest.model;
 
 import java.io.IOException;
 
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 
@@ -36,19 +37,9 @@ public interface WebApplication {
 
     WebEngine2 getEngine();
 
-    ScriptFile getIndexPage();
-
-    ScriptFile getErrorPage();
-
-    ScriptFile getDefaultPage();
-
     String getScriptExtension();
 
     String getTemplateExtension();
-    
-    Object getProperty(String key);
-    
-    Object getProperty(String key, Object defValue);
 
     void flushCache();
 
@@ -64,7 +55,21 @@ public interface WebApplication {
      * @return null if no file found otherwise the file
      * @throws IOException if any error occurs
      */
-    ScriptFile getFile(String path) throws IOException;    
+    ScriptFile getFile(String path) throws WebException;    
+    
+    /**
+     * Get an object template file. If the file is not found in the directory stack then the super types are used to resolve
+     * the file until the file is found or no more super types are available.
+     * <p>
+     * The file name is computed as following:
+     * /firstCharLowerCaseObjectTypeName/httpMethod-name.templateExtension 
+     * @param obj the object owning the file
+     * @param name the file name
+     * @return
+     * @throws WebException
+     */
+    ScriptFile getObjectTemplate(ObjectResource obj, String name) throws WebException;
+    
 
     /**
      * Load a class given it's name. The scripting class loader will be used to load the class. 
