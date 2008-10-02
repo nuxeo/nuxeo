@@ -34,8 +34,6 @@ import org.nuxeo.ecm.webengine.rest.model.ObjectType;
 import org.nuxeo.ecm.webengine.rest.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
-import org.nuxeo.ecm.webengine.util.DirectoryStack;
-import org.nuxeo.ecm.webengine.util.DirectoryStack.Entry;
 import org.nuxeo.runtime.deploy.FileChangeListener;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
 import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
@@ -110,19 +108,19 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
             if (descriptor.roots != null && !descriptor.roots.isEmpty()) {
                 for (RootDescriptor rd : descriptor.roots) {
                     File file =new File(engine.getRootDirectory(), rd.path);
-                    dirStack.addDirectory(file, rd.priority);//TODO: priority is meaningless
+                    dirStack.addDirectory(file);//TODO: priority is meaningless
                 }
             } else {
-                dirStack.addDirectory(root, 0);
+                dirStack.addDirectory(root);
             }
-            localRootsCount = dirStack.getEntries().size();
+            localRootsCount = dirStack.getDirectories().size();
             // watch roots for modifications
             FileChangeNotifier notifier = engine.getFileChangeNotifier();
             if (notifier != null) {
                 if (!dirStack.isEmpty()) {
                     notifier.addListener(this);
-                    for (DirectoryStack.Entry entry : dirStack.getEntries()) {
-                        notifier.watch(entry.file);
+                    for (File entry : dirStack.getDirectories()) {
+                        notifier.watch(entry);
                     }
                 }
             }
@@ -131,7 +129,7 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
                 if (descriptor.base != null) {
                     WebApplicationImpl parent = (WebApplicationImpl)engine.getApplication(descriptor.base);
                     if (parent != null && parent.dirStack != null) {
-                        dirStack.getEntries().addAll(parent.dirStack.getEntries());
+                        dirStack.getDirectories().addAll(parent.dirStack.getDirectories());
                     }
                 }
             }
@@ -236,9 +234,9 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
         return engine.getScripting().loadClass(className);
     }
     
-    public DirectoryStack.Entry[] getLocalRoots() {
-        DirectoryStack.Entry[] local = new DirectoryStack.Entry[localRootsCount];
-        List<Entry> entries = dirStack.getEntries();
+    public File[] getLocalRoots() {
+        File[] local = new File[localRootsCount];
+        List<File> entries = dirStack.getDirectories();
         assert localRootsCount <= entries.size();
         for (int i=0; i<localRootsCount; i++) {
             local[i] = entries.get(i);
@@ -255,12 +253,12 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
                     GlobalTypesLoader globalTypes = engine.getGlobalTypes();
                     globalTypes.getMainProvider().install(typeReg);
                     // install types defined in script classes for each entry in local directory stack
-                    List<Entry> entries = dirStack.getEntries();
+                    List<File> entries = dirStack.getDirectories();
                     // we need to install them in reverse order so that local roots are installed at 
                     // end to overwrite inherited types
                     for (int i=entries.size()-1; i>=0; i--) {
-                        DirectoryStack.Entry entry = entries.get(i);
-                        TypeConfigurationProvider provider = globalTypes.getProvider(entry.file.getName());
+                        File entry = entries.get(i);
+                        TypeConfigurationProvider provider = globalTypes.getProvider(entry.getName());
                         if (provider != null) {
                             provider.install(typeReg);
                         }
@@ -283,8 +281,8 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
      * Flush directory stack cache
      */
     public void fileChanged(FileEntry entry, long now) throws Exception {
-        for (DirectoryStack.Entry dir : dirStack.getEntries()) {
-            if (dir.file.getPath().equals(entry.file.getPath())) {
+        for (File dir : dirStack.getDirectories()) {
+            if (dir.getPath().equals(entry.file.getPath())) {
                 fileCache.clear(); // TODO optimize this do not flush entire cache
             }
         }
