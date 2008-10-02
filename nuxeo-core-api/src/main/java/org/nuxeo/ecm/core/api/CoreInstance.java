@@ -125,7 +125,6 @@ public class CoreInstance implements Serializable {
             // --------------------------------------------------------
             return session;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new ClientException(
                     "Failed to intialize core session on repository "
                             + repositoryName, e);

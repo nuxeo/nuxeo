@@ -24,6 +24,8 @@ import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * An iterator over a tree of documents
@@ -34,7 +36,9 @@ import java.util.Queue;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class DocumentTreeIterator implements Iterator<DocumentModel>{
+public class DocumentTreeIterator implements Iterator<DocumentModel> {
+
+    private static final Log log = LogFactory.getLog(DocumentTreeIterator.class);
 
     /**
      * The document manager session.
@@ -54,8 +58,7 @@ public class DocumentTreeIterator implements Iterator<DocumentModel>{
     /**
      * The sequence queue.
      */
-    protected final Queue<Iterator<DocumentModel>> queue
-            = new LinkedList<Iterator<DocumentModel>>();
+    protected final Queue<Iterator<DocumentModel>> queue = new LinkedList<Iterator<DocumentModel>>();
 
     /**
      * Creates the iterator given the tree root.
@@ -79,8 +82,8 @@ public class DocumentTreeIterator implements Iterator<DocumentModel>{
     /**
      * Gets next non empty sequence from queue.
      * <p>
-     * This will remove from the queue all traversed sequences
-     * (the empty ones and the first not empty sequence found).
+     * This will remove from the queue all traversed sequences (the empty ones
+     * and the first not empty sequence found).
      *
      * @return the first non empty sequence or null if no one was found
      */
@@ -96,7 +99,8 @@ public class DocumentTreeIterator implements Iterator<DocumentModel>{
     }
 
     public boolean hasNext() {
-        if (sequence == null || !sequence.hasNext()) { // no current valid sequence
+        if (sequence == null || !sequence.hasNext()) {
+            // no current valid sequence
             sequence = getNextNonEmptySequence();
             if (sequence == null) {
                 return false;
@@ -107,9 +111,11 @@ public class DocumentTreeIterator implements Iterator<DocumentModel>{
     }
 
     public DocumentModel next() {
-        // satisfy iterator contract - throw an exception if no more elements to iterate
+        // satisfy iterator contract - throw an exception if no more elements to
+        // iterate
         if (!hasNext()) {
-            throw new NoSuchElementException("no more documents to iterate over");
+            throw new NoSuchElementException(
+                    "no more documents to iterate over");
         }
         // we have a non empty sequence to iterate over
         DocumentModel doc = sequence.next();
@@ -119,8 +125,7 @@ public class DocumentTreeIterator implements Iterator<DocumentModel>{
             try {
                 queue.add(session.getChildrenIterator(doc.getRef()));
             } catch (ClientException e) {
-                //throw new
-                e.printStackTrace(); //TODO
+                log.error(e);
             }
         }
         return doc;
@@ -137,6 +142,7 @@ public class DocumentTreeIterator implements Iterator<DocumentModel>{
      */
     static class OneDocSequence implements Iterator<DocumentModel> {
         final DocumentModel doc;
+
         boolean hasNext = true;
 
         OneDocSequence(DocumentModel doc) {
@@ -149,14 +155,16 @@ public class DocumentTreeIterator implements Iterator<DocumentModel>{
 
         public DocumentModel next() {
             if (doc == null) {
-                throw new NoSuchElementException("no more documents to iterate over");
+                throw new NoSuchElementException(
+                        "no more documents to iterate over");
             }
             hasNext = false;
             return doc;
         }
 
         public void remove() {
-            throw new UnsupportedOperationException("remove is not yet supported");
+            throw new UnsupportedOperationException(
+                    "remove is not yet supported");
         }
     }
 

@@ -22,6 +22,8 @@ package org.nuxeo.ecm.core.api.model.impl.osm;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
@@ -36,6 +38,8 @@ import org.nuxeo.ecm.core.schema.types.Field;
 public class ComplexMemberProperty extends MapProperty implements Adaptable {
 
     private static final long serialVersionUID = 1537310098432620929L;
+
+    private static final Log log = LogFactory.getLog(ComplexMemberProperty.class);
 
     protected final ObjectAdapter adapter;
 
@@ -107,7 +111,7 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
                 return new ComplexMemberProperty(subAdapter, this, field, isPhantom() ? IS_PHANTOM : 0);
             }
         } catch (PropertyNotFoundException e) {
-            e.printStackTrace(); // should never happens
+            log.error(e);
             return null;
         }
     }

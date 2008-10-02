@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -51,9 +53,11 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
  */
 public class LazyBlob extends DefaultStreamBlob implements Serializable {
 
-    public static final InputStream EMPTY_INPUT_STREAM = new EmptyInputStream();
-
     private static final long serialVersionUID = -6138173743804682559L;
+
+    private static final Log log = LogFactory.getLog(LazyBlob.class);
+
+    public static final InputStream EMPTY_INPUT_STREAM = new EmptyInputStream();
 
     private static final Random RANDOM = new Random();
 
@@ -182,7 +186,7 @@ public class LazyBlob extends DefaultStreamBlob implements Serializable {
             } catch (IOException e) {
                 throw e;
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e);
                 throw new IOException("Failed to load lazy content for: "
                         + dataKey);
             } finally {

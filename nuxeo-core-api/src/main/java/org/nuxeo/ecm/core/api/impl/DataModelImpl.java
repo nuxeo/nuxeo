@@ -26,6 +26,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -36,12 +38,14 @@ import org.nuxeo.ecm.core.api.model.impl.DefaultPropertyFactory;
 /**
  * Data model implementation.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class DataModelImpl implements DataModel {
 
     private static final long serialVersionUID = -186670993439802490L;
+
+    private static final Log log = LogFactory.getLog(DataModelImpl.class);
 
     private DocumentPart dp;
 
@@ -66,9 +70,9 @@ public class DataModelImpl implements DataModel {
         dp = DefaultPropertyFactory.newDocumentPart(schema);
         if (!data.isEmpty()) {
             try {
-                dp.init((Serializable)data);
+                dp.init((Serializable) data);
             } catch (PropertyException e) {
-                e.printStackTrace(); //TODO
+                log.error(e);
             }
         }
     }
@@ -93,7 +97,7 @@ public class DataModelImpl implements DataModel {
         try {
             return dp.getValue(key);
         } catch (Exception e) {
-            e.printStackTrace(); //TODO
+            log.error(e);
             return null;
         }
     }
@@ -102,7 +106,7 @@ public class DataModelImpl implements DataModel {
         try {
             dp.setValue(key, value);
         } catch (Exception e) {
-            e.printStackTrace(); //TODO
+            log.error(e);
         }
     }
 
@@ -110,7 +114,7 @@ public class DataModelImpl implements DataModel {
         try {
             return (Map<String, Object>) dp.getValue();
         } catch (PropertyException e) {
-            e.printStackTrace(); //TODO
+            log.error(e);
             return null;
         }
     }
@@ -119,7 +123,7 @@ public class DataModelImpl implements DataModel {
         try {
             dp.setValue(data);
         } catch (PropertyException e) {
-            e.printStackTrace(); //TODO
+            log.error(e);
         }
     }
 
@@ -131,7 +135,7 @@ public class DataModelImpl implements DataModel {
         try {
             return dp.get(name).isDirty();
         } catch (Exception e) {
-            e.printStackTrace(); //TODO
+            log.error(e);
             return false;
         }
     }
@@ -148,40 +152,40 @@ public class DataModelImpl implements DataModel {
 
     @Override
     public String toString() {
-        // to make it easier to introspect DocumentModel contents with the debugger
+        // to make it easier to introspect DocumentModel contents with the
+        // debugger
         StringBuilder buf = new StringBuilder();
         buf.append(DocumentModelImpl.class.getSimpleName());
         buf.append(" {");
         buf.append(" schema: ");
         buf.append(getSchema());
         buf.append("- Details N/A yet }");
-//        try {
-//            Map<String,Object> map = (Map<String,Object>)dp.getValue();
-//            for (String fieldName : map.keySet()) {
-//                buf.append(", ");
-//                if (isDirty(fieldName)) {
-//                    buf.append('*');
-//                }
-//                buf.append(fieldName);
-//                buf.append('=');
-//                buf.append(map.get(fieldName));
-//            }
-//            buf.append(" }");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        // try {
+        // Map<String,Object> map = (Map<String,Object>)dp.getValue();
+        // for (String fieldName : map.keySet()) {
+        // buf.append(", ");
+        // if (isDirty(fieldName)) {
+        // buf.append('*');
+        // }
+        // buf.append(fieldName);
+        // buf.append('=');
+        // buf.append(map.get(fieldName));
+        // }
+        // buf.append(" }");
+        // } catch (Exception e) {
+        // log.error(e);
+        // }
 
         return buf.toString();
     }
 
     public void setDirty(String name) {
         try {
-            ((AbstractProperty)dp.get(name)).setIsModified();
+            ((AbstractProperty) dp.get(name)).setIsModified();
         } catch (Exception e) {
-            e.printStackTrace(); //TODO
+            log.error(e);
         }
     }
-
 
     public Object getValue(String path) throws ParseException {
         try {
@@ -200,7 +204,7 @@ public class DataModelImpl implements DataModel {
             prop.setValue(value);
             return oldValue;
         } catch (Exception e) {
-            e.printStackTrace(); //TODO
+            log.error(e);
             return null;
         }
     }
