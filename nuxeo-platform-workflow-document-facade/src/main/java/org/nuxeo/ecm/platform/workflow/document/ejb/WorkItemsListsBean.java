@@ -94,7 +94,7 @@ public class WorkItemsListsBean implements WorkItemsListsManager {
     }
 
     @SuppressWarnings("unchecked")
-    public List<WorkItemsListEntry> getWorkItemListsForAll(String processName) 
+    public List<WorkItemsListEntry> getWorkItemListsForAll(String processName)
             throws WorkItemsListException {
         try {
             Query query = em.createNamedQuery("getWorkItemsListEntriesForAll");
@@ -105,8 +105,7 @@ public class WorkItemsListsBean implements WorkItemsListsManager {
         }
     }
 
-    private void _saveWorkItemsList(WorkItemsListEntry entry)
-            throws WorkItemsListException {
+    private void _saveWorkItemsList(WorkItemsListEntry entry) {
         em.persist(entry);
         em.flush();
     }
@@ -120,7 +119,7 @@ public class WorkItemsListsBean implements WorkItemsListsManager {
 
     public void saveWorkItemsList(WorkItemsListEntry entry)
             throws WorkItemsListException {
-        _saveWorkItemsList((WorkItemsListEntryImpl) entry);
+        _saveWorkItemsList(entry);
     }
 
     public void restoreWorkItemsListFor(String pid, int wiListEntryId,
@@ -172,8 +171,7 @@ public class WorkItemsListsBean implements WorkItemsListsManager {
         return wiListEntry;
     }
 
-    private int getNextMaxReviewLevel(String pid) throws WorkItemsListException {
-        int level = 0;
+    private static int getNextMaxReviewLevel(String pid) throws WorkItemsListException {
         WAPI wapi;
         try {
             wapi = WAPIBusinessDelegate.getWAPI();
@@ -184,11 +182,13 @@ public class WorkItemsListsBean implements WorkItemsListsManager {
         String reviewType = (String) props.get(WorkflowConstants.WORKLFOW_REVIEW_TYPE);
         // small optimization: do not iterate on tasks if there is no relevant
         // level info
+
         if (WorkflowConstants.WORKFLOW_REVIEW_TYPE_PARALLEL.equals(reviewType)) {
-            return level;
+            return 0;
         }
         Collection<WMWorkItemInstance> taskInstances = wapi.listWorkItems(pid,
                 WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
+        int level = 0;
         if (taskInstances != null) {
             for (WMWorkItemInstance ti : taskInstances) {
                 if (ti.isCancelled()) {

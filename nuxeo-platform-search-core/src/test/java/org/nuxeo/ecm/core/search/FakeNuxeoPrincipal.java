@@ -118,13 +118,11 @@ public class FakeNuxeoPrincipal implements NuxeoPrincipal {
         return false;
     }
 
-    public String getOriginatingUser()
-    {
+    public String getOriginatingUser() {
         return null;
     }
 
-    public void setOriginatingUser(String originatingUser)
-    {
+    public void setOriginatingUser(String originatingUser) {
         // not implemented
     }
 
