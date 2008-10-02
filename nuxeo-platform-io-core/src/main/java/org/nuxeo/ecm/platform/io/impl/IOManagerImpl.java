@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.io.impl;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -96,6 +97,12 @@ public class IOManagerImpl implements IOManager {
                     "Failed to open core session to repository " + repo, e);
         }
         return systemSession;
+    }
+
+    private void closeStream(Closeable stream) throws IOException {
+        if (stream != null) {
+            stream.close();
+        }
     }
 
     public IOResourceAdapter getAdapter(String name) throws ClientException {
@@ -399,15 +406,20 @@ public class IOManagerImpl implements IOManager {
             throws ClientException {
         File tempFile = getLocalFile(uri);
 
+        InputStream in = null;
         try {
-            InputStream in = new FileInputStream(tempFile);
+            in = new FileInputStream(tempFile);
             importDocumentsAndResources(in, targetLocation.getServerName(),
                     targetLocation.getDocRef());
-            in.close();
         } catch (IOException e) {
             throw new ClientException(e);
         } finally {
             tempFile.delete();
+            try {
+                closeStream(in);
+            } catch (IOException e) {
+                throw new ClientException(e);
+            }
         }
     }
 
@@ -487,12 +499,13 @@ public class IOManagerImpl implements IOManager {
             Collection<DocumentRef> sources, String docReaderFactoryName,
             Map<String, Object> readerFactoryParams,
             Collection<String> ioAdapters) throws ClientException {
-        File tempFile;
+        File tempFile = null;
+        FileOutputStream fos = null;
         try {
             // copy via a temp file...
             tempFile = File.createTempFile("export-import", "zip");
 
-            FileOutputStream fos = new FileOutputStream(tempFile);
+            fos = new FileOutputStream(tempFile);
             // TODO specify format
             String format = null;
             if (docReaderFactoryName == null) {
@@ -511,31 +524,38 @@ public class IOManagerImpl implements IOManager {
                     throw new ClientException("bad class type: " + factoryObj);
                 }
             }
-            fos.close();
+
+            StreamManager localStreamManager = Framework.getLocalService(StreamManager.class);
+
+            if (localStreamManager == null) {
+                throw new ClientException(
+                        "StreamManager service not available locally");
+            }
+
+            StreamSource src = new FileSource(tempFile);
+            double start = System.currentTimeMillis();
+            String uri = null;
+            try {
+                uri = localStreamManager.addStream(src);
+                double end = System.currentTimeMillis();
+                log.info(">>> upload took " + ((end - start) / 1000) + " sec.");
+            } catch (IOException e) {
+                throw new ClientException(e);
+            }
+            return uri;
+
         } catch (Exception e) {
             throw new ClientException(e);
+        } finally {
+            try {
+                closeStream(fos);
+            } catch (IOException e) {
+                throw new ClientException(e);
+            }
+            if (tempFile != null) {
+                tempFile.delete();
+            }
         }
-
-        StreamManager localStreamManager = Framework.getLocalService(StreamManager.class);
-
-        if (localStreamManager == null) {
-            throw new ClientException(
-                    "StreamManager service not available locally");
-        }
-
-        StreamSource src = new FileSource(tempFile);
-        double start = System.currentTimeMillis();
-        String uri = null;
-        try {
-            uri = localStreamManager.addStream(src);
-            double end = System.currentTimeMillis();
-            log.info(">>> upload took " + ((end - start) / 1000) + " sec.");
-        } catch (IOException e) {
-            throw new ClientException(e);
-        }
-        tempFile.delete();
-
-        return uri;
     }
 
     public void disposeExport(String uri) throws ClientException {
@@ -557,16 +577,20 @@ public class IOManagerImpl implements IOManager {
                 factoryParams);
 
         File tempFile = getLocalFile(uri);
-
+        InputStream in = null;
         try {
-            InputStream in = new FileInputStream(tempFile);
+            in = new FileInputStream(tempFile);
             importDocumentsAndResources(in, targetLocation.getServerName(),
                     targetLocation.getDocRef(), customDocWriter);
-            in.close();
-            customDocWriter.close();
         } catch (IOException e) {
             throw new ClientException(e);
-        } finally  {
+        } finally {
+            customDocWriter.close();
+            try {
+                closeStream(in);
+            } catch (IOException e) {
+                throw new ClientException(e);
+            }
             tempFile.delete();
         }
     }
@@ -659,6 +683,8 @@ public class IOManagerImpl implements IOManager {
 
         DocumentWriter customDocWriter = createDocWriter(
                 docWriterFactoryClassName, wFactoryParams);
+        DocumentReader customDocReader = createDocReader(
+                docReaderFactoryClassName, rFactoryParams);
 
         File tempFile = getLocalFile(uri);
         InputStream in = null;
@@ -670,19 +696,16 @@ public class IOManagerImpl implements IOManager {
             }
             rFactoryParams.put("source_stream", in);
 
-            DocumentReader customDocReader = createDocReader(
-                    docReaderFactoryClassName, rFactoryParams);
-
             IODocumentManager docManager = new IODocumentManagerImpl();
             DocumentTranslationMap map = docManager.importDocuments(
                     customDocReader, customDocWriter);
-            customDocReader.close();
-            customDocWriter.close();
-
         } catch (IOException e) {
             String msg = "Cannot import from uri: " + uri;
             throw new ClientException(msg, e);
         } finally {
+            customDocReader.close();
+            customDocWriter.close();
+
             if (in != null) {
                 try {
                     in.close();
