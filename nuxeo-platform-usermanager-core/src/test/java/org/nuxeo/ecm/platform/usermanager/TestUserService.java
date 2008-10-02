@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -61,7 +62,13 @@ public class TestUserService extends NXRuntimeTestCase {
         assertEquals("mail", fum.userEmailField);
         // append mode:
         assertEquals(new HashSet<String>(Arrays.asList("first", "last",
-                "username", "firstName", "lastName")), fum.userSearchFields);
+                "username", "firstName", "lastName", "email")), fum.getUserSearchFields());
+        assertEquals(MatchType.SUBSTRING, fum.userSearchFields.get("username"));
+        assertEquals(MatchType.SUBSTRING, fum.userSearchFields.get("firstName"));
+        assertEquals(MatchType.SUBSTRING, fum.userSearchFields.get("lastName"));
+        assertEquals(MatchType.SUBSTRING, fum.userSearchFields.get("first"));
+        assertEquals(MatchType.EXACT, fum.userSearchFields.get("last"));
+        assertEquals(MatchType.SUBSTRING, fum.userSearchFields.get("email"));
         assertEquals("somegroupdir", fum.groupDirectoryName);
         assertEquals("members", fum.groupMembersField);
         assertEquals("subg", fum.groupSubGroupsField);
