@@ -100,6 +100,8 @@ public class MainResource {
         String path = p.value();
         if (path.indexOf('{') > -1) {
             path = _guessPath(); 
+        } else if (!path.startsWith("/")) {
+            path = new StringBuilder().append('/').append(path).toString();
         }
         return path;
     }

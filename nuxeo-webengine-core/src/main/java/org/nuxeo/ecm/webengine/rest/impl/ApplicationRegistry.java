@@ -107,7 +107,7 @@ public class ApplicationRegistry extends AbstractContributionRegistry<String, Ap
     }
 
     @Override
-    protected void reinstallContribution(String key, ApplicationDescriptor object) {
+    protected void updateContribution(String key, ApplicationDescriptor object) {
         installContribution(key, object);
     }
 

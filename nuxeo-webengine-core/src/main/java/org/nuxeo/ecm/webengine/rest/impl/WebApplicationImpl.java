@@ -34,6 +34,7 @@ import org.nuxeo.ecm.webengine.rest.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.util.DirectoryStack;
+import org.nuxeo.ecm.webengine.util.DirectoryStack.Entry;
 import org.nuxeo.runtime.deploy.FileChangeListener;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
 import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
@@ -52,6 +53,9 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
 
     protected File root;
     protected DirectoryStack dirStack;
+    // how many roots are defined by this instance (ignore inherited roots)
+    // can be used to iterate only over the local roots
+    protected int localRootsCount = 0; 
     protected ConcurrentMap<String, ScriptFile> fileCache;
 
     protected final Object typeLock = new Object();
@@ -142,6 +146,7 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
             } else {
                 dirStack.addDirectory(root, 0);
             }
+            localRootsCount = dirStack.getEntries().size();
             // watch roots for modifications
             FileChangeNotifier notifier = engine.getFileChangeNotifier();
             if (notifier != null) {
@@ -220,6 +225,16 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         return engine.getScripting().loadClass(className);
     }
+    
+    public DirectoryStack.Entry[] getLocalRoots() {
+        DirectoryStack.Entry[] local = new DirectoryStack.Entry[localRootsCount];
+        List<Entry> entries = dirStack.getEntries();
+        assert localRootsCount <= entries.size();
+        for (int i=0; i<localRootsCount; i++) {
+            local[i] = entries.get(i);
+        }
+        return local;
+    }
 
     public ObjectType getType(String typeName) throws TypeNotFoundException {
         if (typeReg == null) { // create type registry if not already created
@@ -229,8 +244,12 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
                     // install global types
                     GlobalTypesLoader globalTypes = engine.getGlobalTypes();
                     globalTypes.getMainProvider().install(typeReg);
-                    // install types defined in script classes for each entry in directory stack
-                    for (DirectoryStack.Entry entry : dirStack.getEntries()) {
+                    // install types defined in script classes for each entry in local directory stack
+                    List<Entry> entries = dirStack.getEntries();
+                    // we need to install them in reverse order so that local roots are installed at 
+                    // end to overwrite inherited types
+                    for (int i=entries.size()-1; i>=0; i--) {
+                        DirectoryStack.Entry entry = entries.get(i);
                         TypeConfigurationProvider provider = globalTypes.getProvider(entry.file.getName());
                         if (provider != null) {
                             provider.install(typeReg);

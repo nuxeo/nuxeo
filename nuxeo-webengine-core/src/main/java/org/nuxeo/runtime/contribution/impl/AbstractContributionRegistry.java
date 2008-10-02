@@ -113,7 +113,7 @@ public abstract class AbstractContributionRegistry<K, T> implements
         if (value == null) {
             throw new IllegalStateException("contribution is null");
         }
-        reinstallContribution(contrib.getId(), value);
+        updateContribution(contrib.getId(), value);
     }
 
 
@@ -144,7 +144,7 @@ public abstract class AbstractContributionRegistry<K, T> implements
         return true;
     }
     
-    protected void reinstallContribution(K key, T object) {
+    protected void updateContribution(K key, T object) {
         uninstallContribution(key);
         installContribution(key, object);
     }

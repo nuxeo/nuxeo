@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webengine.rest.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -39,16 +38,14 @@ public class ObjectTypeImpl implements ObjectType {
     protected String name;
     protected ObjectTypeImpl superType;
     protected ConcurrentMap<String, ActionTypeImpl> actions;
-    protected Class<ObjectResource> clazz;
+    // the class may be changed when a type is updated
+    protected volatile Class<ObjectResource> clazz;
 
-    public ObjectTypeImpl(ObjectTypeImpl superType, String name, Class<ObjectResource> clazz, Map<String, ActionTypeImpl> actions) {
+    public ObjectTypeImpl(ObjectTypeImpl superType, String name, Class<ObjectResource> clazz) {
         this.superType = superType;
         this.name = name;
         this.clazz = clazz;
         this.actions = new ConcurrentHashMap<String, ActionTypeImpl>();
-        if (actions != null) { // add own defined actions
-            this.actions.putAll(actions);
-        }
     }
     
     public ObjectType getSuperType() {
@@ -165,4 +162,5 @@ public class ObjectTypeImpl implements ObjectType {
         }        
     }
 
+    
 }

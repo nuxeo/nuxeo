@@ -126,6 +126,16 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             installActionContribution(key, object.asActionDescriptor());
         }        
     }
+    
+    @Override
+    protected void updateContribution(String key, TypeDescriptorBase object) {
+        TypeDescriptor td = object.asTypeDescriptor();
+        if (td != null) {
+            updateTypeContribution(key, td);
+        } else {
+            updateActionContribution(key, object.asActionDescriptor());
+        }        
+    }
 
     @Override
     protected void uninstallContribution(String key) {
@@ -138,7 +148,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     
     @SuppressWarnings("unchecked")
     protected void installTypeContribution(String key, TypeDescriptor td) {
-        ObjectTypeImpl type = new ObjectTypeImpl(null, td.name, (Class<ObjectResource>)td.clazz, td.actions);
+        ObjectTypeImpl type = new ObjectTypeImpl(null, td.name, (Class<ObjectResource>)td.clazz);
         if (td.superType != null) {
             type.superType = types.get(td.superType);
             assert type.superType != null; // must never be null since the object is resolved 
@@ -146,10 +156,29 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         types.put(td.name, type);
     }
   
+    protected void updateTypeContribution(String key, TypeDescriptor td) {
+        // when a type is updated (i.e. reinstalled) we must not replace the existing type since it may contains some contributed actions
+        // there are two methods to do this: 
+        // 1. update the existing type 
+        // 2. unresolve, reinstall then resolve the type contribution to force action reinstalling.
+        // we are using 1.
+        ObjectTypeImpl t = types.get(key);
+        if (t != null) { // update the type class
+            t.clazz = (Class<ObjectResource>)td.clazz;
+        } else { // install the type - this should never happen since it is an update!
+            throw new IllegalStateException("Updating a type which is not registered.");
+        }
+    }
+  
     protected void installActionContribution(String key, ActionTypeImpl ad) {
         ObjectType type = types.get(ad.type);
         assert type != null;
         type.addAction(ad);
+    }
+  
+    protected void updateActionContribution(String key, ActionTypeImpl ad) {
+        // no special handling required. updating an action is like re-installing
+        installActionContribution(key, ad);
     }
     
     @Override
@@ -158,11 +187,30 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void applyTypeFragment(TypeDescriptor object, TypeDescriptor fragment) {
-        //TODO for now we don't allow fragments
+        // a type fragment may be used to replace the type implementation class.
+        // Super type cannot be replaced 
+        if (fragment.clazz != null) {
+            object.clazz = fragment.clazz;
+        }
     }
     
     protected void applyActionFragment(ActionTypeImpl object, ActionTypeImpl fragment) {
-        //TODO
+        // for actions we may use fragments to add categories and replace implementation class, 
+        // guard and enabled state.
+        // Target type cannot be replaced.
+        if (fragment.categories != null && !fragment.categories.isEmpty()) {
+            object.categories.addAll(fragment.categories);
+        }
+        if (fragment.clazz != null) {
+            object.clazz = fragment.clazz;
+        }
+        if (object.enabled != fragment.enabled) {
+            object.enabled = fragment.enabled;
+        }
+        if (fragment.guardExpression != null && fragment.guardExpression.length() > 0) {
+            object.guardExpression = fragment.guardExpression;
+            // TODO use . to path the original expression? 
+        }
     }
 
     protected void uninstallActionContribution(String key) {

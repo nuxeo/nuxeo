@@ -19,11 +19,7 @@
 
 package org.nuxeo.ecm.webengine.rest.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.rest.annotations.WebObject;
 import org.nuxeo.ecm.webengine.rest.model.ObjectType;
@@ -47,9 +43,6 @@ public class TypeDescriptor implements TypeDescriptorBase {
     @XNode("@superType")
     public String superType = ObjectType.ROOT_TYPE_NAME;
     
-    @XNodeMap(value="action", key="action@name", type=HashMap.class, componentType=ActionTypeImpl.class)
-    public Map<String, ActionTypeImpl> actions; 
-   
     
     /**
      * 
@@ -77,11 +70,7 @@ public class TypeDescriptor implements TypeDescriptorBase {
     @Override
     public TypeDescriptor clone() {
         try {
-            TypeDescriptor td  = (TypeDescriptor)super.clone();
-            if (actions != null) {
-                td.actions = new HashMap<String, ActionTypeImpl>(actions);
-            }
-            return td;
+            return (TypeDescriptor)super.clone();
         } catch (CloneNotSupportedException e) {
             throw new Error("Canot happen");
         }

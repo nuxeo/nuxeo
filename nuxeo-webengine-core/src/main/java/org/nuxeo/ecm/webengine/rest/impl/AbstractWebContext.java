@@ -321,7 +321,6 @@ public abstract class AbstractWebContext implements WebContext2 {
                 log.debug("## Rendering: "+template);
             }
             pushScriptFile(script.getFile());
-            //TODO =========== fix rendering ============
             app.getEngine().getRendering().render(template, bindings, writer);
         } catch (Exception e) {
             e.printStackTrace();

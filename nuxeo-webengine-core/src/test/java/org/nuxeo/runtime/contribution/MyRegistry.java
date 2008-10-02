@@ -61,7 +61,7 @@ public class MyRegistry extends AbstractContributionRegistry<String,MyObject> {
     }
 
     @Override
-    protected void reinstallContribution(String key, MyObject object) {
+    protected void updateContribution(String key, MyObject object) {
         map.put(key, object);
     }
 

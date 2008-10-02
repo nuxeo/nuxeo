@@ -202,6 +202,7 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
      * the registry owning that contribution
      */
     protected void update() {
+        value = null;
         boolean canResolve = checkIsResolved();
         if (isResolved != canResolve) { // resolved state changed
             if (canResolve) {
