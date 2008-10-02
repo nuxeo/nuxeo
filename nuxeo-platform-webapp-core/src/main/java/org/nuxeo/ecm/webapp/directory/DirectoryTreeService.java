@@ -38,12 +38,11 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class DirectoryTreeService extends DefaultComponent {
 
-    public static final String NAME = "org.nuxeo.ecm.webapp.directory.DirectoryTreeService";
+    public static final String NAME = DirectoryTreeService.class.getName();
 
     private static final Log log = LogFactory.getLog(DirectoryTreeService.class);
 
     protected Map<String, DirectoryTreeDescriptor> registry;
-
 
     public DirectoryTreeDescriptor getDirectoryTreeDescriptor(String treeName) {
         return registry.get(treeName);

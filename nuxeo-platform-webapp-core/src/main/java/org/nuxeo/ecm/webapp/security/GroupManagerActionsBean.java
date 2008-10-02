@@ -43,14 +43,13 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
 import org.jboss.seam.contexts.Context;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -119,7 +118,6 @@ public class GroupManagerActionsBean extends InputController implements
     public void initialize() throws ClientException {
         log.debug("Initializing...");
         principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
-        // principalIsAdmin = principal.getGroups().contains("administrators");
         groupListingMode = userManager.getGroupListingMode();
     }
 
@@ -162,7 +160,7 @@ public class GroupManagerActionsBean extends InputController implements
             conversationContext.set("selectedGroup", selectedGroup);
             return "view_group";
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -171,7 +169,7 @@ public class GroupManagerActionsBean extends InputController implements
             selectedGroup = userManager.getGroup(groupName);
             return viewGroup();
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -188,7 +186,7 @@ public class GroupManagerActionsBean extends InputController implements
             conversationContext.set("selectedGroup", selectedGroup);
             return "edit_group";
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -203,7 +201,7 @@ public class GroupManagerActionsBean extends InputController implements
             }
             return "view_groups";
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -225,7 +223,7 @@ public class GroupManagerActionsBean extends InputController implements
 
             return viewGroup(selectedGroup.getName());
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -265,7 +263,7 @@ public class GroupManagerActionsBean extends InputController implements
             facesMessages.add(FacesMessage.SEVERITY_INFO, message);
             return null;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -278,7 +276,7 @@ public class GroupManagerActionsBean extends InputController implements
 
             return "create_group";
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -287,7 +285,7 @@ public class GroupManagerActionsBean extends InputController implements
             return principal.isAdministrator()
                     && !userManager.areGroupsReadOnly();
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -296,7 +294,7 @@ public class GroupManagerActionsBean extends InputController implements
             return principal.isAdministrator()
                     && !userManager.areGroupsReadOnly();
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -305,7 +303,7 @@ public class GroupManagerActionsBean extends InputController implements
             return principal.isAdministrator()
                     && !userManager.areGroupsReadOnly();
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 

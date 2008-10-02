@@ -50,7 +50,7 @@ public class EventFactory {
 
         int type = 0;
         DocumentRef targetRef = docModel.getRef();
-        Map info = coreEvent.getInfo();
+        Map<String, ?> info = coreEvent.getInfo();
 
         // TODO: should be Serializable
         Object details = null;
@@ -72,7 +72,7 @@ public class EventFactory {
             details = docModel.getParentRef();
         } else if (DocumentEventTypes.DOCUMENT_MOVED.equals(eventId)) {
             type = RepositoryChangeEvent.MOVED;
-            details = (DocumentRef) info.get(CoreEventConstants.PARENT_PATH);
+            details = info.get(CoreEventConstants.PARENT_PATH);
         } else if (LifeCycleEventTypes.LIFECYCLE_TRANSITION_EVENT.equals(eventId)) {
             type = RepositoryChangeEvent.LIFECYCLE;
             details = coreEvent.getInfo().get(LifeCycleEventTypes.OPTION_NAME_TRANSITION);
