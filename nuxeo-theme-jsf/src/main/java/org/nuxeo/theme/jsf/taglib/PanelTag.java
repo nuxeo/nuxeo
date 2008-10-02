@@ -48,7 +48,6 @@ public class PanelTag extends UIComponentELTag {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void setProperties(UIComponent component) {
         super.setProperties(component);
 

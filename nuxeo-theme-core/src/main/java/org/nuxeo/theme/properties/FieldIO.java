@@ -41,7 +41,7 @@ public class FieldIO {
 
             Class<?> c = object.getClass();
             Field field = c.getField(name);
-            Class fieldType = field.getType();
+            Class<?> fieldType = field.getType();
             Type fieldGenericType = field.getGenericType();
 
             // boolean fields
@@ -92,7 +92,7 @@ public class FieldIO {
 
         Class<?> c = object.getClass();
         for (Field field : c.getDeclaredFields()) {
-            Class fieldType = field.getType();
+            Class<?> fieldType = field.getType();
             String fieldName = field.getName();
 
             // boolean fields

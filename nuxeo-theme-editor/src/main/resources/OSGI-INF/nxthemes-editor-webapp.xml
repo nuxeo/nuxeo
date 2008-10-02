@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.theme.editor.webapp">
+
+  <documentation>
+    Theme editor
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="application-mapping">
+    <mapping path="/nxthemes/editor" webapp="nxthemes-editor" />
+  </extension>
+
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="application">
+
+    <webapp id="nxthemes-editor">
+      <roots>
+        <root priority="1">nxthemes-editor</root>
+      </roots>
+      <mappings>
+        <mapping pattern="/set_style_category">
+          <script>/set_style_category.groovy</script>
+       </mapping>
+       <mapping pattern="/set_preset_group">
+          <script>/set_preset_group.groovy</script>
+       </mapping>
+       <mapping pattern="/set_style_property_category">
+          <script>/set_style_property_category.groovy</script>
+       </mapping>
+       <mapping pattern="/assign_style_property">
+          <script>/assign_style_property.groovy</script>
+       </mapping>
+       <mapping pattern="/save_theme">
+          <script>/save_theme.groovy</script>
+       </mapping>
+       <mapping pattern="/load_theme">
+          <script>/load_theme.groovy</script>
+       </mapping>
+       <mapping pattern="/add_theme">
+          <script>/add_theme.groovy</script>
+       </mapping>
+       <mapping pattern="/add_page">
+          <script>/add_page.groovy</script>
+       </mapping>
+       <mapping pattern="/repair_theme">
+          <script>/repair_theme.groovy</script>
+       </mapping>
+       <mapping pattern="/expire_themes">
+          <script>/expire_themes.groovy</script>
+       </mapping>
+       <mapping pattern="/align_element">
+          <script>/align_element.groovy</script>
+       </mapping>
+       <mapping pattern="/select_element">
+          <script>/select_element.groovy</script>
+       </mapping>
+       <mapping pattern="/set_size">
+          <script>/set_size.groovy</script>
+       </mapping>
+       <mapping pattern="/update_element_widget">
+          <script>/update_element_widget.groovy</script>
+       </mapping>
+       <mapping pattern="/duplicate_element">
+          <script>/duplicate_element.groovy</script>
+       </mapping>
+       <mapping pattern="/delete_element">
+          <script>/delete_element.groovy</script>
+       </mapping>
+       <mapping pattern="/insert_section_after">
+          <script>/insert_section_after.groovy</script>
+       </mapping>
+       <mapping pattern="/insert_fragment">
+          <script>/insert_fragment.groovy</script>
+       </mapping>
+       <mapping pattern="/move_element">
+          <script>/move_element.groovy</script>
+       </mapping>
+       <mapping pattern="/update_element_description">
+          <script>/update_element_description.groovy</script>
+       </mapping>
+       <mapping pattern="/update_element_properties">
+          <script>/update_element_properties.groovy</script>
+       </mapping>
+       <mapping pattern="/update_element_style_css">
+          <script>/update_element_style_css.groovy</script>
+       </mapping>
+       <mapping pattern="/set_element_visibility">
+          <script>/set_element_visibility.groovy</script>
+       </mapping>
+       <mapping pattern="/split_element">
+          <script>/split_element.groovy</script>
+       </mapping>
+       <mapping pattern="/select_element">
+          <script>/select_element.groovy</script>
+       </mapping>
+       <mapping pattern="/render_css_preview">
+          <script>/render_css_preview.groovy</script>
+       </mapping>
+       <mapping pattern="/set_current_style_layer">
+          <script>/set_current_style_layer.groovy</script>
+       </mapping>
+       <mapping pattern="/set_style_edit_mode">
+          <script>/set_style_edit_mode.groovy</script>
+       </mapping>
+       <mapping pattern="/make_element_use_named_style">
+          <script>/make_element_use_named_style.groovy</script>
+       </mapping>
+       <mapping pattern="/create_named_style">
+          <script>/create_named_style.groovy</script>
+       </mapping>
+       <mapping pattern="/delete_named_style">
+          <script>/delete_named_style.groovy</script>
+       </mapping>
+       <mapping pattern="/insert_fragment">
+          <script>/insert_fragment.groovy</script>
+       </mapping>
+      </mappings>
+    </webapp>
+
+  </extension>
+
+</component>

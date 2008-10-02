@@ -94,7 +94,6 @@ public final class CompositionHandler extends TagHandler implements
 
     }
 
-    @SuppressWarnings("unchecked")
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, ELException {
         final VariableMapper orig = ctx.getVariableMapper();
@@ -120,11 +119,11 @@ public final class CompositionHandler extends TagHandler implements
             if (application != null) {
                 final NegotiationDef negotiation = application.getNegotiation();
                 if (negotiation != null) {
-                    requestMap.put("nxthemesDefaultTheme",
+                    requestMap.put("org.nuxeo.theme.default.theme",
                             negotiation.getDefaultTheme());
-                    requestMap.put("nxthemesDefaultEngine",
+                    requestMap.put("org.nuxeo.theme.default.engine",
                             negotiation.getDefaultEngine());
-                    requestMap.put("nxthemesDefaultPerspective",
+                    requestMap.put("org.nuxeo.theme.default.perspective",
                             negotiation.getDefaultPerspective());
                     strategy = negotiation.getStrategy();
                 }
@@ -140,7 +139,7 @@ public final class CompositionHandler extends TagHandler implements
                     final String spec = new JSFNegotiator(strategy,
                             facesContext).getSpec();
                     final URL themeUrl = new URL(spec);
-                    requestMap.put("nxthemesThemeUrl", themeUrl);
+                    requestMap.put("org.nuxeo.theme.url", themeUrl);
                     ctx.includeFacelet(parent, themeUrl);
                 } catch (NegotiationException e) {
                     log.error("Could not get default negotiation settings.", e);

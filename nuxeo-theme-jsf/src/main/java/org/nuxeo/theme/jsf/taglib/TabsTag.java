@@ -35,7 +35,6 @@ public class TabsTag extends UIComponentELTag {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void setProperties(UIComponent component) {
         super.setProperties(component);
 

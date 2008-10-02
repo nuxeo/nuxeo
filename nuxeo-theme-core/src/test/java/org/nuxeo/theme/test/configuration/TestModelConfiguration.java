@@ -30,15 +30,15 @@ public class TestModelConfiguration extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "model-config.xml");
         ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
                 ThemeService.ID);
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");
     }
 
-    public void testRegisterModel() throws Exception {
+    public void testRegisterModel() {
         // model 1
         model1 = (ModelType) typeRegistry.lookup(TypeFamily.MODEL,
                 "test model 1");

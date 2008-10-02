@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.theme</groupId>
     <artifactId>nuxeo-theme-parent</artifactId>
-    <version>5.1.6-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-theme-jsf</artifactId>
@@ -23,6 +23,10 @@
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.theme</groupId>
+      <artifactId>nuxeo-theme-html</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
@@ -45,6 +49,16 @@
     <dependency>
       <groupId>javax.el</groupId>
       <artifactId>el-api</artifactId>
+    </dependency>
+    <!--dependency>
+      <groupId>javax.el</groupId>
+      <artifactId>el-ri</artifactId>
+      </dependency-->
+
+    <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -99,7 +113,7 @@
         <groupId>net.sourceforge.maven-taglib</groupId>
         <artifactId>maven-taglib-plugin</artifactId>
         <configuration>
-          <taglib.src.dir>src/main/resources/META-INF</taglib.src.dir>
+          <taglib.src.dir>${project.build.directory}/classes/META-INF</taglib.src.dir>
         </configuration>
       </plugin>
     </plugins>

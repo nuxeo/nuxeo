@@ -20,8 +20,8 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.formats.styles.StyleFormat;
-import org.nuxeo.theme.jsf.JSUtils;
-import org.nuxeo.theme.jsf.Utils;
+import org.nuxeo.theme.html.JSUtils;
+import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.presets.PresetType;
 
 public class TestUtils extends NXRuntimeTestCase {
@@ -29,8 +29,8 @@ public class TestUtils extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.jsf.tests", "nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.jsf.tests", "nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
     }
 
     @Override
