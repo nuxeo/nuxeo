@@ -32,7 +32,7 @@ import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
 import org.nuxeo.ecm.webengine.rest.model.ObjectType;
 import org.nuxeo.ecm.webengine.rest.model.TypeNotFoundException;
-import org.nuxeo.ecm.webengine.rest.model.WebApplication;
+import org.nuxeo.ecm.webengine.rest.model.Profile;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.runtime.deploy.FileChangeListener;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
@@ -44,7 +44,7 @@ import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebApplicationImpl implements WebApplication, FileChangeListener  {
+public class ProfileImpl implements Profile, FileChangeListener  {
 
 
     protected WebEngine2 engine;
@@ -65,7 +65,7 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
     protected TypeConfigurationProvider localTypes;
 
 
-    public WebApplicationImpl(WebEngine2 engine, File root, ApplicationDescriptor descriptor) throws WebException {
+    public ProfileImpl(WebEngine2 engine, File root, ApplicationDescriptor descriptor) throws WebException {
         this.fileCache = new ConcurrentHashMap<String, ScriptFile>();
         this.root = root;
         this.descriptor = descriptor;
@@ -127,7 +127,7 @@ public class WebApplicationImpl implements WebApplication, FileChangeListener  {
             // then add roots from parent if any
             if (roots == null || roots.isEmpty()) {
                 if (descriptor.base != null) {
-                    WebApplicationImpl parent = (WebApplicationImpl)engine.getApplication(descriptor.base);
+                    ProfileImpl parent = (ProfileImpl)engine.getApplication(descriptor.base);
                     if (parent != null && parent.dirStack != null) {
                         dirStack.getDirectories().addAll(parent.dirStack.getDirectories());
                     }

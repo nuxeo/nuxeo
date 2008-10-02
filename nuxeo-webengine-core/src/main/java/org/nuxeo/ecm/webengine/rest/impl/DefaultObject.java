@@ -119,11 +119,11 @@ public class DefaultObject extends AbstractResource<ObjectType> implements Objec
     }
   
     public ScriptFile getTemplate() {
-        return ctx.getApplication().getObjectTemplate(this, null);
+        return ctx.getProfile().getObjectTemplate(this, null);
     }
 
     public ScriptFile getTemplate(String name) {
-        return ctx.getApplication().getObjectTemplate(this, name);
+        return ctx.getProfile().getObjectTemplate(this, name);
     }
 
 }

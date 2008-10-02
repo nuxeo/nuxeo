@@ -25,7 +25,7 @@ import org.nuxeo.ecm.webengine.rest.model.ActionResource;
 import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
 import org.nuxeo.ecm.webengine.rest.model.Resource;
 import org.nuxeo.ecm.webengine.rest.model.ResourceType;
-import org.nuxeo.ecm.webengine.rest.model.WebApplication;
+import org.nuxeo.ecm.webengine.rest.model.Profile;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -64,8 +64,8 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return ctx;
     }
     
-    public WebApplication getApplication() {
-        return ctx.getApplication();
+    public Profile getApplication() {
+        return ctx.getProfile();
     }
     
 

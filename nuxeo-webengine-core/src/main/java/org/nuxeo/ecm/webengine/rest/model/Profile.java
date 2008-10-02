@@ -29,7 +29,7 @@ import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface WebApplication {
+public interface Profile {
     
     String getName();
     

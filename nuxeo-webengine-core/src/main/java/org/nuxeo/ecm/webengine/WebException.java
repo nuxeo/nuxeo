@@ -29,7 +29,7 @@ import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.model.MainResource;
+import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 
 public class WebException extends WebApplicationException {
 
@@ -112,7 +112,7 @@ public class WebException extends WebApplicationException {
         if (!byPassAppResponse) {
             WebContext2 ctx = WebEngine2.getActiveContext();
             if (ctx != null) {
-                MainResource rs = ctx.getRootResource();
+                WebApplication rs = ctx.getApplication();
                 Object result = rs.getErrorView(this);
                 if (result instanceof Response) {
                     response  = (Response)result;

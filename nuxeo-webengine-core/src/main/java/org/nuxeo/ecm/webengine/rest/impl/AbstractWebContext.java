@@ -43,10 +43,10 @@ import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.impl.model.DocumentObject;
 import org.nuxeo.ecm.webengine.rest.model.ActionResource;
-import org.nuxeo.ecm.webengine.rest.model.MainResource;
 import org.nuxeo.ecm.webengine.rest.model.NoSuchResourceException;
 import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
 import org.nuxeo.ecm.webengine.rest.model.ObjectType;
+import org.nuxeo.ecm.webengine.rest.model.Profile;
 import org.nuxeo.ecm.webengine.rest.model.Resource;
 import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
@@ -64,12 +64,11 @@ public abstract class AbstractWebContext implements WebContext2 {
     protected static final Log log = LogFactory.getLog(WebContext2.class);
 
     protected WebEngine2 engine;
-    protected WebApplication app;
     protected UserSession us;
     protected final LinkedList<File> scriptExecutionStack;
     protected AbstractResource<?> head;
     protected AbstractResource<?> tail;
-    protected MainResource root;
+    protected WebApplication app;
     protected HttpServletRequest request;
     protected HashMap<String,Object> vars;
     protected FormData form;
@@ -95,13 +94,9 @@ public abstract class AbstractWebContext implements WebContext2 {
         }
         return null;
     }
-    
-    public void setApplication(WebApplication config) {
-        this.app = config;
-    }
 
-    public WebApplication getApplication() {
-        return app;
+    public Profile getProfile() {
+        return app.getProfile();
     }
 
     public WebEngine2 getEngine() {
@@ -129,12 +124,12 @@ public abstract class AbstractWebContext implements WebContext2 {
     }
     
     public String getApplicationPath() {
-        return root.getPath();
+        return app.getPath();
     }
 
     
     public ObjectResource newObject(String typeName, Object ...  args) throws WebException {
-        ObjectType type = app.getType(typeName);
+        ObjectType type = app.getProfile().getType(typeName);
         if (type == null) {
             throw new NoSuchResourceException("No Such Object Type: "+typeName);
         }
@@ -149,7 +144,7 @@ public abstract class AbstractWebContext implements WebContext2 {
     }
 
     public ActionResource newAction(String typeName, String actionName, Object ...  args) throws WebException {
-        ObjectType type = app.getType(typeName);
+        ObjectType type = app.getProfile().getType(typeName);
         if (type == null) {
             throw new NoSuchResourceException("No Such Object Type: "+typeName);
         }
@@ -275,12 +270,12 @@ public abstract class AbstractWebContext implements WebContext2 {
     
     /** object stack API */
 
-    public void setRootResource(MainResource root) {
-        this.root = root;
+    public void setApplication(WebApplication root) {
+        this.app = root;
     }
     
-    public MainResource getRootResource() {
-        return root;
+    public WebApplication getApplication() {
+        return app;
     }
     
     
@@ -341,7 +336,7 @@ public abstract class AbstractWebContext implements WebContext2 {
                     WebException.wrap(e);
                 }
                 // try using stacked roots
-                String rootPath = app.getEngine().getRootDirectory().getAbsolutePath();
+                String rootPath = engine.getRootDirectory().getAbsolutePath();
                 String filePath = file.getAbsolutePath();
                 path = filePath.substring(rootPath.length());
             } else {
@@ -357,7 +352,7 @@ public abstract class AbstractWebContext implements WebContext2 {
 //                return script;
 //            }
         }
-        return app.getFile(path);
+        return app.getProfile().getFile(path);
     }
 
     public void pushScriptFile(File file) {
@@ -428,7 +423,7 @@ public abstract class AbstractWebContext implements WebContext2 {
                 log.debug("## Rendering: "+template);
             }
             pushScriptFile(script.getFile());
-            app.getEngine().getRendering().render(template, bindings, writer);
+            engine.getRendering().render(template, bindings, writer);
         } catch (Exception e) {
             e.printStackTrace();
             throw new WebException("Failed to render template: "+script.getAbsolutePath(), e);
@@ -455,7 +450,7 @@ public abstract class AbstractWebContext implements WebContext2 {
     public Object runScript(ScriptFile script, Map<String, Object> args) throws WebException {
         try {
             pushScriptFile(script.getFile());
-            return app.getEngine().getScripting().runScript(script, createBindings(args));
+            return engine.getScripting().runScript(script, createBindings(args));
         } catch (WebException e) {
             throw e;
         } catch (Exception e) {
@@ -517,7 +512,7 @@ public abstract class AbstractWebContext implements WebContext2 {
             }
         }
         bindings.put("Config", app);
-        bindings.put("Engine", app.getEngine());
+        bindings.put("Engine", engine);
         //TODO
         //bindings.put("basePath", getBasePath());
         //bindings.put("appPath", getApplicationPath());

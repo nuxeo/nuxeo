@@ -33,11 +33,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.rest.model.ActionResource;
-import org.nuxeo.ecm.webengine.rest.model.MainResource;
+import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.model.ObjectResource;
 import org.nuxeo.ecm.webengine.rest.model.ObjectType;
 import org.nuxeo.ecm.webengine.rest.model.Resource;
-import org.nuxeo.ecm.webengine.rest.model.WebApplication;
+import org.nuxeo.ecm.webengine.rest.model.Profile;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.model.Adaptable;
@@ -50,18 +50,11 @@ import org.nuxeo.runtime.model.Adaptable;
 public interface WebContext2 extends Adaptable {
 
     /**
-     * Set the application instance. 
-     * TODO move this from interface toabstract implementation?
-     * @param config
-     */
-    public void setApplication(WebApplication config);
-
-    /**
      * Gets the current web application.
      *
      * @return the web root. Cannot return null.
      */
-    public WebApplication getApplication();
+    public Profile getProfile();
 
     /**
      * Gets the web engine instance.
@@ -246,8 +239,9 @@ public interface WebContext2 extends Adaptable {
     public ActionResource newAction(ObjectType type, String actionName, Object ...  args) throws WebException;
 
     /** object stack API */
-    public void setRootResource(MainResource resource);
-    public MainResource getRootResource();
+    public void setApplication(WebApplication resource);
+    
+    public WebApplication getApplication();
     
     public Resource push(Resource obj);
 
@@ -276,7 +270,7 @@ public interface WebContext2 extends Adaptable {
      * current executed script then the path will be transformed into an
      * absolute path and next step is entered.
      * <li> the resolving is delegated to the current
-     * {@link WebApplication#getFile(String)} that will try to resolve the path
+     * {@link Profile#getFile(String)} that will try to resolve the path
      * relative to each directory in the directory stack
      * </ol>
      *

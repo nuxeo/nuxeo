@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.rest.model.MainResource;
+import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.model.Resource;
 
 
@@ -35,7 +35,7 @@ import org.nuxeo.ecm.webengine.rest.model.Resource;
  *  
  *  TODO: be able to use other repositories than the default
  */
-public class DocumentApplication extends MainResource {
+public class DocumentApplication extends WebApplication {
 
     public DocumentObject newRoot(String path) throws WebException {
         return newRoot(new PathRef(path));

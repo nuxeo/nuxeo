@@ -29,7 +29,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.RootDescriptor;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
-import org.nuxeo.ecm.webengine.rest.annotations.WebApp;
+import org.nuxeo.ecm.webengine.rest.annotations.WebProfile;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 import org.nuxeo.runtime.model.Adaptable;
@@ -120,7 +120,7 @@ public class ApplicationDescriptor implements Cloneable {
 
     
     public static ApplicationDescriptor fromAnnotation(Class<?> clazz) {
-        WebApp anno = clazz.getAnnotation(WebApp.class);
+        WebProfile anno = clazz.getAnnotation(WebProfile.class);
         if (anno == null) {
             return null;
         }

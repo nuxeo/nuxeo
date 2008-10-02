@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-public @interface WebApp {
+public @interface WebProfile {
     String name(); // application name    
     String fragment() default "";
     String base() default "";

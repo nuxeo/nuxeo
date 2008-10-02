@@ -46,7 +46,7 @@ import org.nuxeo.ecm.webengine.rest.annotations.WebObject;
 import org.nuxeo.ecm.webengine.rest.impl.ApplicationDescriptor;
 import org.nuxeo.ecm.webengine.rest.impl.ApplicationRegistry;
 import org.nuxeo.ecm.webengine.rest.impl.GlobalTypesLoader;
-import org.nuxeo.ecm.webengine.rest.model.WebApplication;
+import org.nuxeo.ecm.webengine.rest.model.Profile;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
 import org.nuxeo.runtime.annotations.loader.BundleAnnotationsLoader;
@@ -298,7 +298,7 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
         return appReg;
     }
     
-    public WebApplication getApplication(String name) {
+    public Profile getApplication(String name) {
         return appReg.getApplication(name); 
     }
         

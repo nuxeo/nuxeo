@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuxeo.ecm.webengine.RootDescriptor;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.model.WebApplication;
+import org.nuxeo.ecm.webengine.rest.model.Profile;
 import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
 
 /**
@@ -35,7 +35,7 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
  */
 public class ApplicationRegistry extends AbstractContributionRegistry<String, ApplicationDescriptor> {
 
-    protected Map<String, WebApplication> apps = new ConcurrentHashMap<String, WebApplication>();
+    protected Map<String, Profile> apps = new ConcurrentHashMap<String, Profile>();
 
     protected WebEngine2 engine;
 
@@ -48,20 +48,20 @@ public class ApplicationRegistry extends AbstractContributionRegistry<String, Ap
         return engine;
     }
 
-    public void putApplication(WebApplication app) {
+    public void putApplication(Profile app) {
         apps.put(app.getName(), app);
     }
 
-    public WebApplication removeApplication(String id) {
+    public Profile removeApplication(String id) {
         return apps.remove(id);
     }
 
-    public WebApplication getApplication(String id) {
+    public Profile getApplication(String id) {
         return apps.get(id);
     }
 
-    public WebApplication[] getApplications() {
-        return apps.values().toArray(new WebApplication[apps.size()]);
+    public Profile[] getApplications() {
+        return apps.values().toArray(new Profile[apps.size()]);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ApplicationRegistry extends AbstractContributionRegistry<String, Ap
     @Override
     protected void installContribution(String key, ApplicationDescriptor object) {
         try {
-            WebApplication app = new WebApplicationImpl(engine, object.directory, object);
+            Profile app = new ProfileImpl(engine, object.directory, object);
             apps.put(key, app);
         } catch (Exception e) {
             e.printStackTrace(); //TODO

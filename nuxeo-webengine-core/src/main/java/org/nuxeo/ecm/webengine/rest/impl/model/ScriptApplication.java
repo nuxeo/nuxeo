@@ -25,14 +25,14 @@ import javax.ws.rs.core.Context;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.model.MainResource;
+import org.nuxeo.ecm.webengine.rest.model.WebApplication;
 import org.nuxeo.ecm.webengine.rest.model.Resource;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ScriptApplication extends MainResource {
+public class ScriptApplication extends WebApplication {
 
     @Path(value="{path}")
     public Resource dispatch(@PathParam("path") String path, @Context WebContext2 ctx) throws Exception {

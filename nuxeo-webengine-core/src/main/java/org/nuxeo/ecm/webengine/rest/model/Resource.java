@@ -39,7 +39,7 @@ public interface Resource extends Adaptable {
     
     WebContext2 getContext();    
     
-    WebApplication getApplication();
+    Profile getApplication();
     
     ResourceType<?> getType();
     

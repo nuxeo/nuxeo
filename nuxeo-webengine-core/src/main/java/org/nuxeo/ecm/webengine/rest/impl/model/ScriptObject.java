@@ -52,8 +52,8 @@ public class ScriptObject extends DefaultObject {
     @GET @POST @PUT @DELETE @HEAD
     @Path("{path}")
     public Object runScript(@PathParam("path") String path) throws WebException {
-        ScriptFile file = ctx.getApplication().getFile(path);
-        file = ctx.getApplication().getFile(path);
+        ScriptFile file = ctx.getProfile().getFile(path);
+        file = ctx.getProfile().getFile(path);
         if (file == null) {
             return null;
         } else {
