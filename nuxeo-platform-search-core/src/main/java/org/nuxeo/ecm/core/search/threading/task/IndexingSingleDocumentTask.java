@@ -145,4 +145,9 @@ class IndexingSingleDocumentTask extends AbstractIndexingTask implements Task {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "IndexingSingleDocumentTask for document: " + docRef;
+    }
+
 }

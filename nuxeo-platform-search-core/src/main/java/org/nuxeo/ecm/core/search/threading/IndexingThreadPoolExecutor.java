@@ -68,11 +68,19 @@ public class IndexingThreadPoolExecutor extends ThreadPoolExecutor {
     }
 
     @Override
+    public void execute(Runnable command) {
+        // assure we have all the threads started before executing a task
+        prestartAllCoreThreads();
+        super.execute(command);
+    }
+
+    @Override
     protected void beforeExecute(Thread t, Runnable r) {
         super.beforeExecute(t, r);
         currentRunningIndexingTasks.add(r);
         log.debug("Adding a task to the running tasks list: "
-                + currentRunningIndexingTasks.size());
+                + currentRunningIndexingTasks.size() + " -- Running tasks: "
+                + currentRunningIndexingTasks);
     }
 
     @Override
@@ -80,7 +88,8 @@ public class IndexingThreadPoolExecutor extends ThreadPoolExecutor {
         super.afterExecute(r, t);
         currentRunningIndexingTasks.remove(r);
         log.debug("Removing a task from the running tasks list: "
-                + currentRunningIndexingTasks.size());
+                + currentRunningIndexingTasks.size() + " -- Running tasks: "
+                + currentRunningIndexingTasks);
     }
 
 }

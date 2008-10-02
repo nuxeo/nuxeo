@@ -159,8 +159,12 @@ public class IndexingTaskQueue extends LinkedBlockingQueue<Runnable> {
                     if (awaitingTasks.isEmpty()) {
                         // no more awaiting task, call the default take
                         r = super.take();
-                        removeTask(r);
-                        return r;
+                        if (canRunTask(r)) {
+                            removeTask(r);
+                            return r;
+                        } else {
+                            addAwaitingTask(r);
+                        }
                     } else {
                         // see if we can run an awaiting task
                         r = getAwaitingTask();
@@ -254,7 +258,10 @@ public class IndexingTaskQueue extends LinkedBlockingQueue<Runnable> {
     }
 
     private boolean canRunTask(Runnable r) {
-        return !currentRunningIndexingTasks.contains(r);
+        boolean canRun = !currentRunningIndexingTasks.contains(r);
+        log.debug("Can run task? " + canRun + " -- Running tasks: "
+                + currentRunningIndexingTasks);
+        return canRun;
     }
 
     private void removeTask(Runnable r) {
