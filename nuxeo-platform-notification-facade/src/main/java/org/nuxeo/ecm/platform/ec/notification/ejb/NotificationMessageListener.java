@@ -433,12 +433,10 @@ public class NotificationMessageListener implements MessageListener {
 
         try {
             EmailHelper.sendmail(mail);
+        } catch (MessagingException e) {
+            log.error("Failed to send notification email to '" + email + "': " +
+                    e.getClass().getName() + ": " + e.getMessage());
         } catch (Exception e) {
-            if (e instanceof MessagingException) {
-                log.error("Failed to send notification email to '" + email +
-                        "': " + e.getClass().getName() + ": " + e.getMessage());
-                return;
-            }
             throw new ClientException("Failed to send notification email ", e);
         }
     }
