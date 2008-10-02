@@ -31,6 +31,7 @@ import javax.ejb.MessageDriven;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
+import javax.mail.MessagingException;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
@@ -433,6 +434,11 @@ public class NotificationMessageListener implements MessageListener {
         try {
             EmailHelper.sendmail(mail);
         } catch (Exception e) {
+            if (e instanceof MessagingException) {
+                log.error("Failed to send notification email to '" + email +
+                        "': " + e.getClass().getName() + ": " + e.getMessage());
+                return;
+            }
             throw new ClientException("Failed to send notification email ", e);
         }
     }
