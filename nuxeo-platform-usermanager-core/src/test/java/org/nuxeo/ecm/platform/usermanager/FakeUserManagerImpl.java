@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.usermanager;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,7 +54,7 @@ public class FakeUserManagerImpl implements UserManager {
 
     String userEmailField;
 
-    Set<String> userSearchFields;
+    Map<String, MatchType> userSearchFields;
 
     Pattern userPasswordPattern;
 
@@ -131,11 +132,19 @@ public class FakeUserManagerImpl implements UserManager {
     }
 
     public void setUserSearchFields(Set<String> userSearchFields) {
+        this.userSearchFields = new LinkedHashMap<String, MatchType>();
+        for (String searchField: userSearchFields) {
+            this.userSearchFields.put(searchField, MatchType.SUBSTRING);
+        }
+    }
+
+
+    public void setUserSearchFields(Map<String, MatchType> userSearchFields) {
         this.userSearchFields = userSearchFields;
     }
 
     public Set<String> getUserSearchFields() {
-        return userSearchFields;
+        return userSearchFields.keySet();
     }
 
     public void setGroupDirectoryName(String groupDirectoryName) {

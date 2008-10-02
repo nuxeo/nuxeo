@@ -31,6 +31,11 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 public interface UserManager {
 
+    public static enum MatchType {
+        EXACT, //
+        SUBSTRING;
+    }
+
     boolean checkUsernamePassword(String username, String password)
             throws ClientException;
 
@@ -146,7 +151,7 @@ public interface UserManager {
     String getUserEmailField() throws ClientException;
 
     /**
-     * Gets the user search fields, the fields to use when a fulltext search is
+     * Gets the user search fields, the fields to use when a principal search is
      * done.
      *
      * @return the search fields.
