@@ -21,6 +21,8 @@
   </xsl:template>
   <xsl:template match="category[@name='org.jboss.ejb3.cache.simple.StatefulSessionFilePersistenceManager']">
   </xsl:template>
+  <xsl:template match="category[@name='org.jboss.seam.contexts.Lifecycle']">
+  </xsl:template>
   <xsl:template match="category[@name='org.jboss.mx.loading']">
   </xsl:template>
   <xsl:template match="category[@name='org.ajax4jsf']">
@@ -40,6 +42,8 @@
   <xsl:template match="category[@name='org.compass.core.transaction']">
   </xsl:template>
   <xsl:template match="category[@name='org.compass.core.lucene.engine.optimizer.ScheduledLuceneSearchEngineOptimizer']">
+  </xsl:template>
+  <xsl:template match="category[@name='org.apache.jackrabbit.core.query.lucene.IndexMerger']">
   </xsl:template>
   <xsl:template match="category[@name='org.nuxeo.ecm.platform.ui.web.auth']">
   </xsl:template>
@@ -65,6 +69,11 @@
    </xsl:text>
     <category name="org.jboss.ejb3.cache.simple.StatefulSessionFilePersistenceManager">
       <priority value="DEBUG"/>
+    </category>
+    <xsl:text>
+   </xsl:text>
+    <category name="org.jboss.seam.contexts.Lifecycle">
+      <priority value="WARN"/>
     </category>
     <xsl:text>
    </xsl:text>
@@ -115,6 +124,11 @@
    </xsl:text>
     <category name="org.compass.core.lucene.engine.optimizer.ScheduledLuceneSearchEngineOptimizer">
       <priority value="INFO"/>
+    </category>
+    <xsl:text>
+   </xsl:text>
+    <category name="org.apache.jackrabbit.core.query.lucene.IndexMerger">
+      <priority value="WARN"/>
     </category>
     <xsl:text>
    </xsl:text>
