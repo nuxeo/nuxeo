@@ -36,23 +36,21 @@ import org.nuxeo.runtime.annotations.loader.BundleAnnotationsLoader;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.deploy.ConfigurationChangedListener;
 import org.nuxeo.runtime.deploy.ConfigurationDeployer;
-import org.nuxeo.runtime.deploy.ContributionManager;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
-import org.nuxeo.runtime.deploy.ManagedComponent;
 import org.nuxeo.runtime.deploy.ConfigurationDeployer.Entry;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
 
 /**
  * TODO remove old WebEngine references and rename WebEngine2 to WebEngine
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebEngineComponent extends ManagedComponent implements ConfigurationChangedListener {
+public class WebEngineComponent extends DefaultComponent implements ConfigurationChangedListener {
 
     public static final ComponentName NAME = new ComponentName(WebEngineComponent.class.getName());
 
@@ -71,7 +69,6 @@ public class WebEngineComponent extends ManagedComponent implements Configuratio
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
     private WebEngine2 engine2;
-    private WebEngine engine; //TODO REMOVE
     private FileChangeNotifier notifier;
     private ComponentContext ctx;
 
@@ -106,15 +103,10 @@ public class WebEngineComponent extends ManagedComponent implements Configuratio
             }
         }
 
-        // register contrib managers
-        registerContributionManager(APPLICATION_XP, new ContributionManager(this));
-        registerContributionManager(WEB_OBJ_XP, new ContributionManager(this));
-
         // load message bundle
         notifier = new FileChangeNotifier();
         notifier.start();
 
-        engine = new DefaultWebEngine(root, notifier); //TODO remove
         engine2 = new WebEngine2(root, notifier);
         deployer = new ConfigurationDeployer(notifier);
         deployer.addConfigurationChangedListener(this);
@@ -129,8 +121,6 @@ public class WebEngineComponent extends ManagedComponent implements Configuratio
         
         notifier.stop();
         deployer.removeConfigurationChangedListener(this);
-        engine.destroy();
-        engine = null;
         deployer = null;
         notifier = null;
         ctx = null;
@@ -145,15 +135,12 @@ public class WebEngineComponent extends ManagedComponent implements Configuratio
         return engine2;
     }
 
-    public WebEngine getEngine() {
-        return engine;
-    }
-
     public void loadConfiguration(RuntimeContext context, File file, boolean trackChanges) throws Exception {
         try {
             deployer.deploy(context, file, trackChanges);
         } finally {
-            engine.fireConfigurationChanged();
+            //TODO engine2 ?
+            //engine.fireConfigurationChanged();
         }
     }
 
@@ -161,7 +148,8 @@ public class WebEngineComponent extends ManagedComponent implements Configuratio
         try {
             deployer.undeploy(file);
         } finally {
-            engine.fireConfigurationChanged();
+            //TODO engine2 ?
+            //engine.fireConfigurationChanged();
         }
     }
 
@@ -175,26 +163,21 @@ public class WebEngineComponent extends ManagedComponent implements Configuratio
             PermissionService.getInstance().registerGuard(gd.getId(), gd.getGuard());
         } else if (RESOURCE_BINDING_XP.equals(extensionPoint)) {
             engine2.addResourceBinding((ResourceBinding)contribution);
-        } else if (BINDING_XP.equals(extensionPoint)) {
-            WebObjectBindingDescriptor binding = (WebObjectBindingDescriptor)contribution;
-            engine.registerBinding(binding.type, binding.objectId);
-        } else if (APP_MAPPING_XP.equals(extensionPoint)) {
-            engine.addApplicationMapping((WebApplicationMapping)contribution);
         } else if (extensionPoint.equals(RENDERING_EXTENSION_XP)) {
             RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor)contribution;
             try {
-                engine.registerRenderingExtension(fed.name, fed.newInstance());
+                engine2.registerRenderingExtension(fed.name, fed.newInstance());
             } catch (Exception e) {
                 throw new RuntimeServiceException(
                         "Deployment Error. Failed to contribute freemarker template extension: "+fed.name);
             }
         } else if (extensionPoint.equals(INSTALL_XP)) {
             Installer installer = (Installer)contribution;
-            installer.install(contributor.getContext(), engine.getRootDirectory());
+            installer.install(contributor.getContext(), engine2.getRootDirectory());
         } else if (extensionPoint.equals(CONFIG_XP)) {
             ConfigurationFileDescriptor cfg = (ConfigurationFileDescriptor)contribution;
             if (cfg.path != null) {
-                loadConfiguration(contributor.getContext(), new File(engine.getRootDirectory(), cfg.path), cfg.trackChanges);
+                loadConfiguration(contributor.getContext(), new File(engine2.getRootDirectory(), cfg.path), cfg.trackChanges);
             } else if (cfg.entry != null) {
                 throw new UnsupportedOperationException("Entry is not supported for now");
             } else {
@@ -217,21 +200,16 @@ public class WebEngineComponent extends ManagedComponent implements Configuratio
             PermissionService.getInstance().unregisterGuard(gd.getId());
         } else if (RESOURCE_BINDING_XP.equals(extensionPoint)) {
             engine2.removeResourceBinding((ResourceBinding)contribution);
-        } else if (BINDING_XP.equals(extensionPoint)) {
-            WebObjectBindingDescriptor binding = (WebObjectBindingDescriptor)contribution;
-            engine.unregisterBinding(binding.type);
-        } else if (APP_MAPPING_XP.equals(extensionPoint)) {
-            engine.removeApplicationMapping((WebApplicationMapping)contribution);
         } else if (extensionPoint.equals(RENDERING_EXTENSION_XP)) {
             RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor)contribution;
-            engine.unregisterRenderingExtension(fed.name);
+            engine2.unregisterRenderingExtension(fed.name);
         } else if (extensionPoint.equals(INSTALL_XP)) {
             Installer installer = (Installer)contribution;
-            installer.uninstall(contributor.getContext(), engine.getRootDirectory());
+            installer.uninstall(contributor.getContext(), engine2.getRootDirectory());
         } else if (extensionPoint.equals(CONFIG_XP)) {
             ConfigurationFileDescriptor cfg = (ConfigurationFileDescriptor)contribution;
             if (cfg.path != null) {
-                unloadConfiguration(new File(engine.getRootDirectory(), cfg.path));
+                unloadConfiguration(new File(engine2.getRootDirectory(), cfg.path));
             } else if (cfg.entry != null) {
                 throw new UnsupportedOperationException("Entry is not supported for now");
             } else {
@@ -246,9 +224,7 @@ public class WebEngineComponent extends ManagedComponent implements Configuratio
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (adapter == WebEngine.class) { // TODO remove this
-            return adapter.cast(engine);
-        } else if (adapter == WebEngine2.class) {
+        if (adapter == WebEngine2.class) {
             return adapter.cast(engine2);
         } else if (adapter == FileChangeNotifier.class) {
             return adapter.cast(notifier);
@@ -258,11 +234,9 @@ public class WebEngineComponent extends ManagedComponent implements Configuratio
 
 
     public void configurationChanged(Entry entry) throws Exception {
-        if (engine != null) {
-            engine.fireConfigurationChanged();
-        }
         if (engine2 != null) {
             engine2.reload();
+            //engine.fireConfigurationChanged(); ?
         }
     }
 

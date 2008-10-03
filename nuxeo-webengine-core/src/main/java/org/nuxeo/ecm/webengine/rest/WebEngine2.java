@@ -39,13 +39,13 @@ import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
+import org.nuxeo.ecm.platform.rendering.fm.i18n.ResourceComposite;
 import org.nuxeo.ecm.webengine.WebClassLoader;
-import org.nuxeo.ecm.webengine.nl.ResourceComposite;
 import org.nuxeo.ecm.webengine.rest.annotations.WebAction;
 import org.nuxeo.ecm.webengine.rest.annotations.WebObject;
+import org.nuxeo.ecm.webengine.rest.impl.GlobalTypesLoader;
 import org.nuxeo.ecm.webengine.rest.impl.ProfileDescriptor;
 import org.nuxeo.ecm.webengine.rest.impl.ProfileRegistry;
-import org.nuxeo.ecm.webengine.rest.impl.GlobalTypesLoader;
 import org.nuxeo.ecm.webengine.rest.model.Profile;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
@@ -68,7 +68,7 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
     static Map<Object, Object> loadMimeTypes() {
         HashMap<Object,Object> mimeTypes = new HashMap<Object, Object>();
         Properties p = new Properties();
-        URL url = WebEngine2.class.getClassLoader().getResource("/OSGI-INF/mime.properties");
+        URL url = WebEngine2.class.getClassLoader().getResource("OSGI-INF/mime.properties");
         InputStream in = null;
         try {
             in = url.openStream();

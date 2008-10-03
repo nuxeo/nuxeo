@@ -25,7 +25,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
-import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public final class ScriptFile {
 
-    public static final String ROOT_PATH = Framework.getLocalService(WebEngine.class)
+    public static final String ROOT_PATH = Framework.getLocalService(WebEngine2.class)
         .getRootDirectory().getAbsolutePath();
 
     protected File file;

@@ -27,7 +27,6 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.WebRuntimeException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.annotations.WebAction;
 import org.nuxeo.ecm.webengine.rest.model.ActionResource;
@@ -87,7 +86,7 @@ public class ActionTypeImpl implements TypeDescriptorBase, ActionType {
                 try {
                     guard = PermissionService.parse(guardExpression);
                 } catch (ParseException e) {
-                    throw new WebRuntimeException(
+                    throw new WebException(
                             "Parse error for action guard: " + guardExpression,
                             e);
                 }
