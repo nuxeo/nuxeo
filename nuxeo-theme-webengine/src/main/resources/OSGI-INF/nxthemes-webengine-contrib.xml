@@ -50,6 +50,9 @@
     <rendering-extension name="nxthemes_controller"
       class="org.nuxeo.theme.webengine.fm.extensions.NXThemesControllerDirective"/>
 
+    <rendering-extension name="nxthemes_tabs"
+      class="org.nuxeo.theme.webengine.fm.extensions.NXThemesTabsDirective"/>
+
   </extension>
 
 
