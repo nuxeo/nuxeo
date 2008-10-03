@@ -36,7 +36,6 @@ import org.nuxeo.ecm.core.model.Document;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class TestCoreEvent extends MockObjectTestCase {
-
     private final static String COMMENT = "comment";
 
     private final static String CATEGORY = "category";
@@ -93,8 +92,7 @@ public class TestCoreEvent extends MockObjectTestCase {
     }
 
     // ::FIXME:
-    @SuppressWarnings("unchecked")
-    public void testCoreEventWithInfoMap() throws Exception {
+    public void testCoreEventWithInfoMap() {
         String eventId = "someEvent";
 
         Map<String, Serializable> info = new HashMap<String, Serializable>();
@@ -116,7 +114,7 @@ public class TestCoreEvent extends MockObjectTestCase {
     }
 
     // :FIXME:
-    public void testCoreEventWithInfo() throws Exception {
+    public void testCoreEventWithInfo() {
         String eventId = "someEvent";
         Document source = (Document) new Mock(Document.class).proxy();
 

@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * type, and each field of a document can be instantiated (if the schema
  * permits) as a {@link Property} object.
  * <p>
- * Properties are allways bound to a schema field that provides the type and constraints on the property values.
+ * Properties are always bound to a schema field that provides the type and constraints on the property values.
  * An exception is the root property the {@link DocumentPart} object which is not bound to a field but to a schema.
  * <p>
  * So properties are holding the actual values for each defined field.
@@ -57,7 +57,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * property value. For each schema field type there is only one java serializable object representation that will be used
  * as the normalized value.
  * The property API is giving you the possibility to use different compatible objects when setting or getting property values.
- * Each property implementation will automatically convert the given value into a normalized one; so internaly only
+ * Each property implementation will automatically convert the given value into a normalized one; so internally only
  * the normalized value is stored. For example for date properties you may use either <code>Date</code> or <code>Calendar</code>
  * when setting or retrieving a property value but the normalized value will be the <code>Calendar</code> one.
  * <p>
@@ -75,17 +75,20 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * <ul>
  * <li> Root Property (or <code>DocumentPart</code>) - this is a special property that is bound to a schema instead of a field
  * And it is the root of the property tree.
- * <li> Complex Properties - container properties that are bound to complex field types that can be represented as java <code>Map</code> objects.
- * These properties cotnains a set of schema defined properties.
+ * <li> Complex Properties - container properties that are bound to complex field types
+ * that can be represented as java <code>Map</code> objects.
+ * These properties contains a set of schema defined properties.
  * You cannot add new child properties. You can only modify existing child  properties.
  * Complex property values are expressed as java <code>Map</code> objects.
  *      <ul>
- *          <li> Structured Properties - this is a special case of complex properties. The difference is that structured property values
+ *          <li> Structured Properties - this is a special case of complex properties.
+ *          The difference is that structured property values
  *          are expressed as <i>scalar</i> java objects instead of java maps.
  *          By scalar java objects we mean any well structured object which is not a container
  *          like a <code>Map</code> or a <code>Collection</code>.
- *          These objects are usually as scalar values - it doesn't make sense for example to set only some parts of that objects
- *          without creating the object completely. An example os usage are Blob properties that use {@link Blob} values.
+ *          These objects are usually as scalar values - it doesn't make sense for example
+ *          to set only some parts of that objects without creating the object completely.
+ *          An example of usage are Blob properties that use {@link Blob} values.
  *      </ul>
  * <li> List Properties - container properties that are bound to list field types.
  * <li> Scalar Properties - atomic properties that are bound to scalar field types and that are using as values
@@ -101,7 +104,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * The following flags are supported:
  * <ul>
  *   <li> <code>IS_PHANTOM</code> - whether the property is existing in the storage
- *   (was explicitely set by the user) or it was dynamically generated using the default value
+ *   (was explicitly set by the user) or it was dynamically generated using the default value
  *   by the implementation to fulfill schema definition.
  *   This applies to all property types
  *   <li> <code>IS_MODIFIED</code> - whether the property value was modified.
@@ -130,12 +133,14 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * <li> MODIFIED + MODIFIED =&gt; MODIFIED
  * </ul>
  * <p>
- * The combinations not listed above are not permited.
+ * The combinations not listed above are not permitted.
  * <p>
- * In case of list items the REMOVED flag is not used since the property will be physically removed from the property tree
+ * In case of list items, the REMOVED flag is not used since the property will be physically removed
+ * from the property tree.
  * <p>
- * Also when the dirty flag of a children property changes its parent is informed to update its MODIFIED flag if needed.
- * This way a modification on a children property is probagated to parents in the form of a MODIFIED flag.
+ * Also when the dirty flag of a children property changes, its parent is informed to update
+ * its MODIFIED flag if needed.
+ * This way a modification on a children property is propagated to parents in the form of a MODIFIED flag.
  * <p>
  * <p>
  * <b>Internal Flags</b>
@@ -144,7 +149,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * <p>
  *  Apart flags properties can also hold some random user data using
  *  {@link Property#setData(Object)} and {@link Property#getData()} methods.
- *  This can be used for examnple to keep a context attached to a property.
+ *  This can be used for example to keep a context attached to a property.
  *  But be aware when using this you should provide serializable objects as the data you are attaching
  *  otherwise if properties are serialized / unserialized this will generate errors.
  *  The API is not forcing you to use serializable values since you can also use this feature to store temporary
@@ -153,7 +158,6 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * @see <code>TestPropertyModel</code> for usage of property API
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface Property extends Cloneable, Serializable, Iterable<Property> {
 
@@ -319,11 +323,13 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     boolean isScalar();
 
     /**
-     * Whether this property is a container - this means the property value
-     * is a map or a list.
+     * Whether this property is a container - this means the property value is a
+     * map or a list.
      * <p>
-     * Container properties don't have a scalar values. Container values are computed each time they are
-     * requested - by calling on of the <code>getValue</code> methods - by collecting the values of the child properties.
+     * Container properties don't have a scalar values. Container values are
+     * computed each time they are requested - by calling on of the
+     * <code>getValue</code> methods - by collecting the values of the child
+     * properties.
      *
      * @return true if scalar false otherwise
      */
@@ -360,7 +366,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      *
      * @return
      */
-    Field getField() throws UnsupportedOperationException;
+    Field getField();
 
     /**
      * Gets the property parent.
@@ -370,9 +376,9 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      */
     Property getParent();
 
-
     /**
-     * Gets the document schema defining the property tree from which the property belongs.
+     * Gets the document schema defining the property tree from which the
+     * property belongs.
      *
      * @return the document schema owning the field corresponding to the
      *         property
@@ -387,13 +393,13 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     DocumentPart getRoot();
 
     /**
-     * Intializes the property with the given normalized value.
+     * Initializes the property with the given normalized value.
      * <p>
      * The given value must be normalized - note that no check is done on that.
      * <p>
-     * The phantom flag is unset by tthis operation.
+     * The phantom flag is unset by this operation.
      * <p>
-     * This method should be used to initializate properties.
+     * This method should be used to initialize properties.
      *
      * @param value the normalized value to set
      *
@@ -408,18 +414,17 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      *
      * @param value the value to set
      *
-     * @throws {@link InvalidPropertyValueException} if the given value type is not compatible with the expected value type
+     * @throws {@link InvalidPropertyValueException} if the given value type
+     * is not compatible with the expected value type
      */
     void setValue(Object value) throws PropertyException;
-
 
     /**
      * Gets the property normalized value.
      * <p>
-     * Normalized values are of the java type that correspond to the field type
+     * Normalized values are of the java type that correspond to the field type.
      *
-     * @return the property value, or null if {@link Property#isNull()} return
-     *         true
+     * @return the property value, which may be null
      */
     Serializable getValue() throws PropertyException;
 
@@ -430,15 +435,14 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * <p>
      * If conversion is not supported a runtime exception will be triggered.
      *
-     * @return the property value or null if {@link Property#isNull()} return
-     *         true
-     * @throws TODO
+     * @return the property value, which may be null
      */
     <T> T getValue(Class<T> type) throws PropertyException;
 
     /**
-     * Remove this property from the tree.
-     * This method is marking the property as dirty and setting it's value to null
+     * Removes this property from the tree.
+     * <p>
+     * This method marks the property as dirty and sets its value to null.
      *
      * @return the old property value
      */
@@ -447,48 +451,51 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     /**
      * Gets the child property having the given name.
      * <p>
-     * If the property is a scalar this will return allways null
+     * If the property is a scalar, this will return always null.
      * <p>
-     * The given name should be the full name (i.e. prefixed name if any prefix exists)
+     * The given name should be the full name (i.e. prefixed name if any prefix exists).
      * <p>
-     * If a non prefixed name is given the first child property having the given local name will be returned
+     * If a non prefixed name is given, the first child property having the given
+     * local name will be returned.
      * <p>
-     * Relative paths are not resolved. THis method is intended to lookup direct childs.
-     * For path lookups use {@link Property#resolvePath(String)} instead
+     * Relative paths are not resolved. THis method is intended to lookup direct children.
+     * For path lookups use {@link Property#resolvePath(String)} instead.
+     *
      * @param name the child property name (the full name including the prefix if any)
      * @return the child property if any null if no child property with that name is found or if the property is a scalar
      * @throws {@link UnsupportedOperationException} if the property is a scalar property (doesn't have children)
      * @throws {@link PropertyNotFoundException} if the child property is not found in the type definition
      */
-    Property get(String name) throws PropertyNotFoundException, UnsupportedOperationException;
+    Property get(String name) throws PropertyNotFoundException;
 
     /**
      * Set the child property value
      * <p>
-     * Thsi method will mark the child value as dirty for existing values
-     * and in the case of map properties it will mark phantom properties as new properties
+     * This method will mark the child value as dirty for existing values
+     * and, in the case of map properties, it will mark phantom properties as new properties.
      *
-     * @param name
+     * @param name the child property name (the full name including the prefix if any)
      * @param value the new value
      * @return the property that was set
      * @throws {@link UnsupportedOperationException} if the property is a scalar property (doesn't have children)
      * @throws {@link PropertyNotFoundException} if the child property is not found in the type definition
      */
-    Property set(String name, Object value) throws  PropertyException;
+    Property set(String name, Object value) throws PropertyException;
 
     /**
      * Get the child property given it's index. This operation is mandatory for List properties.
      * <p>
      *  If this method is not supported an {@link UnsupportedOperationException} must be thrown
      * <p>
-     * Relative paths are not resolved. THis method is intended to lookup direct childs.
-     * For path lookups use {@link Property#resolvePath(String)} instead
-     * @param name the child property name (the full name including the prefix if any)
+     * Relative paths are not resolved. THis method is intended to lookup direct chilren.
+     * For path lookups, use {@link Property#resolvePath(String)} instead.
+     *
+     * @param index
      * @return the child property if any null if no child property with that name is found or if the property is a scalar
      * @throws {@link UnsupportedOperationException} if the property is a scalar property (doesn't have children)
      * @throws {@link PropertyNotFoundException} if the child property is not found in the type definition
      */
-    Property get(int index) throws PropertyNotFoundException, UnsupportedOperationException;
+    Property get(int index) throws PropertyNotFoundException;
 
     /**
      * Sets a child property value given its index. This method is required only for List properties.
@@ -498,7 +505,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * This method will mark the child value as dirty for existing values
      * and in the case of map properties it will mark phantom properties as new properties.
      *
-     * @param name
+     * @param index
      * @param value the new value
      * @return the property that was set
      * @throws {@link UnsupportedOperationException} if the property is a scalar property (doesn't have children)
@@ -514,16 +521,16 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * unordered for complex properties
      * <p>
      * Be aware that this method is creating phantom child properties for all
-     * schema fileds that are not yet set.
+     * schema fields that are not yet set.
      *
      * @return the children properties
      */
     Collection<Property> getChildren();
 
     /**
-     * Get the count of the children properties. This includes phatom properties.
-     * So the returned size will be equal to the onbe returned by the property
-     * {@link ComplexType#getFieldsCount()}
+     * Get the count of the children properties. This includes phantom properties.
+     * So the returned size will be equal to the one returned by the property
+     * {@link ComplexType#getFieldsCount()}.
      *
      * @return the children properties count
      */
@@ -533,7 +540,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * Appends a new value to the list. A new property will be created to store
      * the given value and appended to the children list.
      * <p>
-     * The created property will be marcked as {@link Property#isNew()}.
+     * The created property will be marked as {@link Property#isNew()}.
      *
      * @param value
      * @return the added property
@@ -569,10 +576,10 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * This method applies only for list item properties.
      * The given index includes removed properties.
      *
-     * @param property the move it before this property
+     * @param index the position in the parent container to move this property
      * @throws UnsupportedOperationException if the operation is not supported by the target property
      */
-    void moveTo(int index) throws UnsupportedOperationException;
+    void moveTo(int index);
 
     /**
      * Same as {@link Property#resolvePath(Path)} but with a string path as argument.
@@ -613,7 +620,6 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      *
      * @param path the path to the property
      * @return the property value
-     * @throws PropertyNotFoundException
      */
     Serializable getValue(String path) throws PropertyException;
 
@@ -629,7 +635,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * @param type the class of the value
      * @param path the java path of the property value
      * @return the value
-     * @throws PropertyNotFoundException
+     * @throws PropertyException
      */
     <T> T getValue(Class<T> type, String path)  throws PropertyException;
 
@@ -640,23 +646,21 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      *
      * @param path the property path
      * @param value the value
-     * @throws PropertyNotFoundException if the named peroperty doesn't exists
-     * @throws InvalidPropertyValueException if the given value cannot be normalized
+     * @throws PropertyException
      */
-    void setValue(String path, Object value)  throws PropertyException;
+    void setValue(String path, Object value) throws PropertyException;
 
     /**
      * Normalizes the given value as dictated by the property type.
      * <p>
      * Normalized values are the ones that are used for transportation over the net
-     * and that are givenm to the storage implementation to be stored in the repository
+     * and that are given to the storage implementation to be stored in the repository
      * <p>
      * Normalized values must be {@link Serializable}
      * <p>
      * If the given value is already normalized it will be returned back.
      *
-     * @param value the value to normalize acordying to the property type
-     *
+     * @param value the value to normalize according to the property type
      * @return the normalized value
      */
     Serializable normalize(Object value) throws PropertyConversionException;
@@ -668,7 +672,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * Null values are considered as normalized.
      *
      * @param value the value to check
-     * @return true if the value is nriomalized false otherwise
+     * @return true if the value is normalized false otherwise
      */
     boolean isNormalized(Object value);
 
@@ -680,9 +684,9 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      *
      * @param value the normalized value to convert
      * @param toType the conversion type
-     * @return the converted value
+     * @return the converted value, which may be null
      *
-     * @throws PropertyConversionException If the conversion cannot be made
+     * @throws PropertyConversionException if the conversion cannot be made
      * because of type incompatibilities
      */
     <T> T convertTo(Serializable value, Class<T> toType) throws PropertyConversionException;
@@ -691,10 +695,10 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * Validates the given value type.
      * <p>
      * Tests if the given value type can be converted to a normalized type and thus
-     * a value of this type can be set to tthat property.
+     * a value of this type can be set to that property.
      *
      * @param type the type to validate
-     * @return true if the type is valide false otherwise
+     * @return true if the type is valid, false otherwise
      */
     boolean validateType(Class<?> type);
 
@@ -715,24 +719,23 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     /**
      * Creates a new and empty instance of a normalized value.
      * <p>
-     * Empty is used in the sense of a vbalue that has not been initialized
-     * or can be considered as an emtpy value. For example for the {@link String} type the empty value
+     * Empty is used in the sense of a value that has not been initialized
+     * or can be considered as an empty value. For example for the {@link String} type the empty value
      * will be the empty string ""
      *
-     * @return the empty instance the empty instance
+     * @return the empty instance the empty instance, or null for some implementations
      */
-    Object newInstance() throws InstantiationException, IllegalAccessException;
-
+    Object newInstance();
 
     /**
      * Method that implement the visitor pattern.
      * <p>
-     * The visitor must return null to stop visiting children otherwise a context object that will be passed as the arg
-     * argument to children
+     * The visitor must return null to stop visiting children otherwise a
+     * context object that will be passed as the arg argument to children
      *
      * @param visitor the visitor to accept
-     * @param arg an argument passed to the visitor. This should be used by the visitor
-     * to carry on the visiting context.
+     * @param arg an argument passed to the visitor. This should be used by the
+     *            visitor to carry on the visiting context.
      */
     void accept(PropertyVisitor visitor, Object arg) throws PropertyException;
 
@@ -740,7 +743,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * Compare the two properties by content.
      *
      * @param property
-     * @return true If the properties have a similar content otherwsie false
+     * @return true If the properties have a similar content, otherwise false
      * @throws PropertyException
      */
     boolean isSameAs(Property property) throws PropertyException;
@@ -764,12 +767,13 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     void setData(Object value);
 
     /**
-     * Sets the application defined data associated
-     * with the receiver under the given key.
+     * Sets the application defined data associated with the receiver under the
+     * given key.
      * <p>
-     * The property data is reserved for the implementation and you must not directly set it.
-     * Data attached with properties must be {@link Serializable} objects if
-     * you want to serialize them along with the property
+     * The property data is reserved for the implementation and you must not
+     * directly set it. Data attached with properties must be
+     * {@link Serializable} objects if you want to serialize them along with the
+     * property.
      *
      * @param key
      * @param value
@@ -777,22 +781,23 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     void setData(String key, Object value);
 
     /**
-     * Returns the application defined data associated
-     * with the receiver, or null if it has not been set.
+     * Returns the application defined data associated with the receiver, or
+     * null if it has not been set.
      * <p>
-     * The property data is reserved for the implementation and you must not directly set it.
-     * Data attached with properties must be {@link Serializable} objects if
-     * you want to serialize them along with the property
+     * The property data is reserved for the implementation and you must not
+     * directly set it. Data attached with properties must be
+     * {@link Serializable} objects if you want to serialize them along with the
+     * property.
      */
     Object getData();
 
     /**
-     * Returns the application defined data associated
-     * with the receiver under the given key, or null if it has not been set.
+     * Returns the application defined data associated with the receiver under
+     * the given key, or null if it has not been set.
      * <p>
-     * You are free to set any data you want on properties but be aware to
-     * use {@link Serializable} objects if you want to serialize them along
-     * with the property
+     * You are free to set any data you want on properties but be aware to use
+     * {@link Serializable} objects if you want to serialize them along with the
+     * property.
      *
      * @param key
      */

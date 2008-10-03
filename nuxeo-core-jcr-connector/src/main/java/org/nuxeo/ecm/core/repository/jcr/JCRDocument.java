@@ -515,6 +515,7 @@ public class JCRDocument extends AbstractDocument implements JCRNodeProxy {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends Serializable> T getSystemProp(String name, Class<T> type)
             throws DocumentException {
         try {
