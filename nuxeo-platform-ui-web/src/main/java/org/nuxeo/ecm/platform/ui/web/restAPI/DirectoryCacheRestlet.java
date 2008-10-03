@@ -37,19 +37,18 @@ import org.restlet.data.Response;
 
 /**
  * Restlet to invalidate the cache of directories from an external application.
- *
- * Warning, this restlet can only be used on the JVM that hosts the
+ * <p>
+ * Warning: this restlet can only be used on the JVM that hosts the
  * DirectoryService instance since it is using non-remotable API. This means
- * this restlet will not work with the multi machine steups of Nuxeo.
+ * this restlet will not work with the multi machine setups of Nuxeo.
  *
  * @author ogrisel
- *
  */
 public class DirectoryCacheRestlet extends BaseNuxeoRestlet {
 
     private static final Log log = LogFactory.getLog(DirectoryCacheRestlet.class);
 
-    final static public String DIRECTORY_NAME_QUERY_PARAM = "directory";
+    public static final String DIRECTORY_NAME_QUERY_PARAM = "directory";
 
     @Override
     public void handle(Request req, Response res) {

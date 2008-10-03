@@ -100,7 +100,6 @@ public class UIDirectorySelectItem extends UISelectItem {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected SelectItem createSelectItem(Object value) {
         SelectItem item = null;
 

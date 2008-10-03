@@ -30,16 +30,16 @@
 
   <extension target="web#FILTER-MAPPING">
 
-    <!-- Seam servlet filter is declared in org.nuxeo.ecm.platform.ui.web
+    <!-- Seam Context Filter is declared in org.nuxeo.ecm.platform.ui.web
       deployment fragment -->
 
     <filter-mapping>
-      <filter-name>Seam Servlet Filter</filter-name>
+      <filter-name>Seam Context Filter</filter-name>
       <url-pattern>/ws/FileManageWS</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
-      <filter-name>Seam Servlet Filter</filter-name>
+      <filter-name>Seam Context Filter</filter-name>
       <url-pattern>/DocumentManagerWS</url-pattern>
     </filter-mapping>
 
@@ -48,54 +48,9 @@
 
   <extension target="web#SERVLET">
 
-
-    <servlet>
-      <servlet-name>FileManageWS</servlet-name>
-      <servlet-class>
-        org.nuxeo.jbossws.wrapper.NuxeoServiceEndpointServlet
-      </servlet-class>
-      <init-param>
-        <param-name>ServiceEndpointImpl</param-name>
-        <param-value>
-          org.nuxeo.ecm.webapp.filemanager.FileManageWS
-        </param-value>
-        <param-name>ServiceEndpointID</param-name>
-        <param-value>
-          jboss.ws:di=nuxeo.ear/${nuxeo-platform-webapp-core-artifact.name},port=FileManageInterfacePort,service=FileManageService
-        </param-value>
-      </init-param>
-    </servlet>
-
-    <servlet>
-      <servlet-name>DocumentManagerWS</servlet-name>
-      <servlet-class>
-        org.nuxeo.jbossws.wrapper.NuxeoServiceEndpointServlet
-      </servlet-class>
-      <init-param>
-        <param-name>ServiceEndpointImpl</param-name>
-        <param-value>
-          org.nuxeo.ecm.core.api.ejb.DocumentManagerBean
-        </param-value>
-          <param-name>ServiceEndpointID</param-name>
-        <param-value>
-          jboss.ws:di=nuxeo.ear/NXCoreFacade.jar,port=DocumentManagerInterfacePort,service=DocumentManagerService
-        </param-value>
-      </init-param>
-    </servlet>
-
   </extension>
 
   <extension target="web#SERVLET-MAPPING">
-
-    <servlet-mapping>
-      <servlet-name>FileManageWS</servlet-name>
-      <url-pattern>/ws/FileManageWS</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-      <servlet-name>DocumentManagerWS</servlet-name>
-      <url-pattern>/DocumentManagerWS</url-pattern>
-    </servlet-mapping>
 
   </extension>
 

@@ -19,9 +19,11 @@
 
 package org.nuxeo.ecm.platform.ui.web.util.files;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.myfaces.trinidad.model.UploadedFile;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
@@ -36,59 +38,75 @@ public class FileUtils {
     }
 
     /**
-     * Creates a Blob with content and mime/type.
+     * Creates a serializable blob from a stream, with filename and mimetype
+     * detection.
      *
-     * @param file
-     * @return the content in byte[]
-     * @throws MimetypeDetectionException
+     * <p>
+     * Creates an in-memory blob if data is under 64K, otherwise constructs a
+     * serializable FileBlob which stores data in a temporary file on the hard
+     * disk.
+     * </p>
+     *
+     * @param file the input stream holding data
+     * @param filename the file name. Will be set on the blob and will used for
+     *            mimetype detection.
+     * @param mimeType the detected mimetype at upload. Can be null. Will be
+     *            verified by the mimetype service.
      */
-    public static Blob fetchContent(UploadedFile file) {
-
-        Blob blob = createSerializableBlob(file, null);
+    public static Blob createSerializableBlob(InputStream file,
+            String filename, String mimeType) {
+        Blob blob = null;
         try {
-            MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
-            String mimeType = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
-                    file.getFilename(), blob, file.getContentType());
-            blob.setMimeType(mimeType);
-        } catch (MimetypeDetectionException e) {
-            log.error(String.format("could not fetch mimetype for %s: %s",
-                    file.getFilename(), e.getMessage()));
-        } catch (Exception e) {
-            log.error("Error whil accessible mimetype service "
-                    + e.getMessage());
+            // persisting the blob makes it possible to read the binary content
+            // of the request stream several times (mimetype sniffing, digest
+            // computation, core binary storage)
+            blob = StreamingBlob.createFromStream(file, mimeType).persist();
+            // filename
+            if (filename != null) {
+                filename = getCleanFileName(filename);
             }
+            blob.setFilename(filename);
+            // mimetype detection
+            MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
+            String detectedMimeType = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
+                    filename, blob, null);
+            if (detectedMimeType == null) {
+                if (mimeType != null) {
+                    detectedMimeType = mimeType;
+                } else {
+                    // default
+                    detectedMimeType = "application/octet-stream";
+                }
+            }
+            blob.setMimeType(detectedMimeType);
+        } catch (MimetypeDetectionException e) {
+            log.error(String.format("could not fetch mimetype for file %s",
+                    filename), e);
+        } catch (IOException e) {
+            log.error(e);
+        } catch (Exception e) {
+            log.error(e);
+        }
         return blob;
     }
 
     /**
-     * To be used to create a serializable blob from a UploadedFile creates a
-     * in-memory blob if data is under 64K otherwise constructs a serializable
-     * FileBlob which stores data in a temporary file on the hard disk.
-     *
-     * @param uf
-     * @return
-     */
-    public static Blob createSerializableBlob(UploadedFile uf) {
-        return createSerializableBlob(uf, null);
-    }
-
-    /**
-     * To be used to create a serializable blob from a UploadedFile creates a
-     * in-memory blob if data is under 64K otherwise constructs a serializable
-     * FileBlob which stores data in a temporary file on the hard disk.
+     * Returns a clean filename, stripping upload path on client side.
      * <p>
-     * If mime type is null or too generic, get it from the uploaded file.
-     *
-     * @param file
-     * @param mimeType
-     * @return
+     * Fixes NXP-544
+     * </p>
      */
-    public static Blob createSerializableBlob(UploadedFile file, String mimeType) {
-        if (mimeType == null || mimeType.equals("application/octet-stream")) {
-            mimeType = file.getContentType();
+    public static String getCleanFileName(String filename) {
+        String res = null;
+        int lastWinSeparator = filename.lastIndexOf("\\");
+        int lastUnixSeparator = filename.lastIndexOf("/");
+        int lastSeparator = Math.max(lastWinSeparator, lastUnixSeparator);
+        if (lastSeparator != -1) {
+            res = filename.substring(lastSeparator + 1, filename.length());
+        } else {
+            res = filename;
         }
-        UploadedFileStreamSource src = new UploadedFileStreamSource(file);
-        return new StreamingBlob(src, mimeType);
+        return res;
     }
 
 }

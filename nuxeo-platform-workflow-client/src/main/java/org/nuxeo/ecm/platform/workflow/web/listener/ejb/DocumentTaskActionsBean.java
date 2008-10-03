@@ -42,11 +42,11 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -661,7 +661,6 @@ public class DocumentTaskActionsBean extends InputController implements
         Events.instance().raiseEvent(EventNames.DOCUMENT_SELECTION_CHANGED);
         Events.instance().raiseEvent(
                 EventNames.CURRENT_DOCUMENT_LIFE_CYCLE_CHANGED);
-
     }
 
     public String removeOneTask(ActionEvent event) {
@@ -839,7 +838,6 @@ public class DocumentTaskActionsBean extends InputController implements
         Events.instance().raiseEvent(EventNames.DOCUMENT_SELECTION_CHANGED);
         Events.instance().raiseEvent(
                 EventNames.CURRENT_DOCUMENT_LIFE_CYCLE_CHANGED);
-
     }
 
     public String rejectOneTask() {
