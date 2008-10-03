@@ -22,8 +22,6 @@ package org.nuxeo.common.collections;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import org.jetbrains.annotations.NotNull;
-
 
 /**
  * Internal class to maintain a list of listeners. This class is a thread-safe
@@ -68,7 +66,7 @@ public class ListenerList {
     /**
      * Used to order listeners
      */
-    private Comparator<?> comparator;
+    private final Comparator<?> comparator;
 
 
     /**
@@ -100,7 +98,7 @@ public class ListenerList {
      *
      * @param listener the listener to add
      */
-    public synchronized void add(@NotNull Object listener) {
+    public synchronized void add(Object listener) {
         // check for duplicates
         final int oldSize = listeners.length;
         for (int i = 0; i < oldSize; ++i) {
@@ -113,7 +111,7 @@ public class ListenerList {
         System.arraycopy(listeners, 0, newListeners, 0, oldSize);
         newListeners[oldSize] = listener;
         if (comparator != null) {
-        	Arrays.sort(newListeners, (Comparator<Object>)comparator);
+            Arrays.sort(newListeners, (Comparator<Object>) comparator);
         }
         //atomic assignment
         listeners = newListeners;
@@ -162,7 +160,7 @@ public class ListenerList {
      *
      * @param listener the listener
      */
-    public synchronized void remove(@NotNull Object listener) {
+    public synchronized void remove(Object listener) {
         int oldSize = listeners.length;
         for (int i = 0; i < oldSize; ++i) {
             if (same(listener, listeners[i])) {

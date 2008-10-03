@@ -93,18 +93,20 @@ public final class IdUtils {
         if (wordsList.isEmpty()) {
             return generateStringId();
         }
+        StringBuilder sb = new StringBuilder();
         String id;
         if (maxChars > 0) {
             // be sure at least one word is used
-            id = wordsList.get(0);
+            sb.append(wordsList.get(0));
             for (int i = 1; i < wordsList.size(); i++) {
                 String newWord = wordsList.get(i);
-                if (id.length() + newWord.length() > maxChars) {
+                if (sb.length() + newWord.length() > maxChars) {
                     break;
                 } else {
-                    id += wordSeparator + newWord;
+                    sb.append(wordSeparator).append(newWord);
                 }
             }
+            id = sb.toString();
             id = id.substring(0, Math.min(id.length(), maxChars));
         } else {
             id = StringUtils.join(wordsList.toArray(), wordSeparator);

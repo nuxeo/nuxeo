@@ -22,8 +22,6 @@ package org.nuxeo.common.collections;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * A mixture of an array list and a map used to store small table of elements
  * using both indices and keys.
@@ -68,12 +66,11 @@ public class SerializableArrayMap<K, V>  implements Serializable {
         System.arraycopy(map.elements, 0, elements, 0, count * 2);
     }
 
-    public void putAll(Map map) {
-        for (Object ob : map.entrySet()) {
-            Serializable o = (Serializable) ob;
-            Map.Entry entry = (Map.Entry) o;
-            K key = (K) entry.getKey();
-            V value = (V) entry.getValue();
+    public void putAll(Map<K, V> map) {
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            Serializable o = (Serializable) entry;
+            K key = entry.getKey();
+            V value = entry.getValue();
             add(key, value);
         }
     }
@@ -149,7 +146,7 @@ public class SerializableArrayMap<K, V>  implements Serializable {
         return (K) elements[i << 1];
     }
 
-    public V put(@NotNull K key, V value) {
+    public V put(K key, V value) {
 
         // handle the case where we don't have any attributes yet
         if (elements == null) {
@@ -183,7 +180,7 @@ public class SerializableArrayMap<K, V>  implements Serializable {
         return null;
     }
 
-    public void add(@NotNull K key, V value) {
+    public void add(K key, V value) {
         // handle the case where we don't have any attributes yet
         int insertIndex;
         if (elements == null) {

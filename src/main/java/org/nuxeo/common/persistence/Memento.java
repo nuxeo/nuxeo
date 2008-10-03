@@ -103,7 +103,7 @@ public interface Memento {
      * Returns the id for this memento.
      *
      * @return the memento id, or <code>null</code> if none
-     * @see #createChild(java.lang.String,java.lang.String)
+     * @see #createChild(String, String)
      */
     String getID();
 

@@ -25,8 +25,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -197,8 +195,8 @@ public final class PrimitiveArrays {
         }
     }
 
-    public static List<?> toList(@NotNull Object array) {
-        @NotNull Class<?> arrType = array.getClass().getComponentType();
+    public static List<?> toList(Object array) {
+        Class<?> arrType = array.getClass().getComponentType();
         if (arrType.isPrimitive()) {
             if (arrType == Integer.TYPE) {
                 int[] ar = (int[]) array;
