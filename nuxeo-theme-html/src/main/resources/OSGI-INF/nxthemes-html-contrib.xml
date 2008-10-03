@@ -20,7 +20,7 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="resources">
 
-    <!-- Prototype 1.6.0.2 -->
+    <!-- Prototype 1.6.0.3 -->
     <resource name="prototype.js">
       <path>nxthemes/html/scripts/prototype.js</path>
       <shrinkable>false</shrinkable>
