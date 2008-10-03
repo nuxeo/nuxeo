@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -52,7 +52,7 @@ public class ResourceServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         try {
-            WebEngine2 mgr = Framework.getService(WebEngine2.class);
+            WebEngine mgr = Framework.getService(WebEngine.class);
             root = mgr.getRootDirectory();
         } catch (Exception e) {
             throw new ServletException("Failed to get WebEngine", e);

@@ -51,12 +51,12 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.nuxeo.ecm.webengine.rest.ResourceBinding;
-import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.io.ResourceWriter;
-import org.nuxeo.ecm.webengine.rest.io.ScriptFileWriter;
-import org.nuxeo.ecm.webengine.rest.io.WebViewWriter;
+import org.nuxeo.ecm.webengine.ResourceBinding;
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.model.io.ResourceWriter;
+import org.nuxeo.ecm.webengine.model.io.ScriptFileWriter;
+import org.nuxeo.ecm.webengine.model.io.WebViewWriter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -100,7 +100,7 @@ public class WebEngineServlet extends HttpServlet {
 
 
     protected void initializeWebEngine(ResteasyProviderFactory providerFactory) throws ServletException {
-        WebEngine2 engine = Framework.getLocalService(WebEngine2.class);
+        WebEngine engine = Framework.getLocalService(WebEngine.class);
         try {
             providerFactory.addMessageBodyWriter(new ResourceWriter());
             providerFactory.addMessageBodyWriter(new WebViewWriter());
@@ -113,7 +113,7 @@ public class WebEngineServlet extends HttpServlet {
     }
 
     //TODO: refactor webapplication and rename it as ResourceContainer ?
-    protected void addRootResources(WebEngine2 engine) throws Exception {
+    protected void addRootResources(WebEngine engine) throws Exception {
         Registry registry = dispatcher.getRegistry();
         // TODO if (registry.getClass() == WebEngineDispatcher.class) {...}
         // add first annotated JAX-RS resources?? 
@@ -204,8 +204,8 @@ public class WebEngineServlet extends HttpServlet {
        try
        {
            //bs: initialize webengine context
-           WebContext2 ctx = new WebEngineContext(uriInfo, request);
-           WebEngine2.setActiveContext(ctx);
+           WebContext ctx = new WebEngineContext(uriInfo, request);
+           WebEngine.setActiveContext(ctx);
            
           ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
           ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
@@ -216,7 +216,7 @@ public class WebEngineServlet extends HttpServlet {
        {
           ResteasyProviderFactory.clearContextData();
           //bs: cleanup webengine context
-          WebEngine2.setActiveContext(null);
+          WebEngine.setActiveContext(null);
        }
     }
 

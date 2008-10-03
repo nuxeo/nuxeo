@@ -27,8 +27,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.install.Installer;
 import org.nuxeo.ecm.webengine.rendering.RenderingExtensionDescriptor;
-import org.nuxeo.ecm.webengine.rest.ResourceBinding;
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.RuntimeServiceException;
@@ -68,7 +66,7 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
 
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
-    private WebEngine2 engine2;
+    private WebEngine engine2;
     private FileChangeNotifier notifier;
     private ComponentContext ctx;
 
@@ -107,7 +105,7 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
         notifier = new FileChangeNotifier();
         notifier.start();
 
-        engine2 = new WebEngine2(root, notifier);
+        engine2 = new WebEngine(root, notifier);
         deployer = new ConfigurationDeployer(notifier);
         deployer.addConfigurationChangedListener(this);
 
@@ -131,7 +129,7 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
         Installer.copyResources(bundle, "web", root);
     }
 
-    public WebEngine2 getEngine2() {
+    public WebEngine getEngine2() {
         return engine2;
     }
 
@@ -224,7 +222,7 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (adapter == WebEngine2.class) {
+        if (adapter == WebEngine.class) {
             return adapter.cast(engine2);
         } else if (adapter == FileChangeNotifier.class) {
             return adapter.cast(notifier);

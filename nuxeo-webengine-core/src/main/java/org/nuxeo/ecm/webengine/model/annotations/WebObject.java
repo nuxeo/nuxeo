@@ -17,27 +17,26 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.ui.tree.document;
+package org.nuxeo.ecm.webengine.model.annotations;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.ui.tree.JSonTreeSerializer;
-import org.nuxeo.ecm.webengine.ui.tree.TreeItem;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.nuxeo.ecm.webengine.model.impl.ObjectTypeImpl;
+import org.nuxeo.runtime.annotations.loader.Indexable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class JSonDocumentTreeSerializer extends JSonTreeSerializer {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+@Indexable({"value"})
+public @interface WebObject {
 
-    protected WebContext ctx;
-
-    public JSonDocumentTreeSerializer(WebContext ctx) {
-        this.ctx = ctx;
-    }
-
-    public String getUrl(TreeItem item) {
-        return ctx.getUrlPath((DocumentModel)item.getObject());
-    }
-
+    String value(); // the type name
+    String superType() default ObjectTypeImpl.ROOT_TYPE_NAME; // the super type name
+    
 }

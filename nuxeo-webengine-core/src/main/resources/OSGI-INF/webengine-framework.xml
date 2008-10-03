@@ -15,7 +15,7 @@
   	<provide
   		interface="org.nuxeo.ecm.webengine.util.FileChangeNotifier" />
     <!-- temporary entry remove it -->
-    <provide interface="org.nuxeo.ecm.webengine.rest.WebEngine2" />
+    <provide interface="org.nuxeo.ecm.webengine.WebEngine" />
   </service>
 
   <extension-point name="rendering-extension">
@@ -86,7 +86,7 @@
   </documentation>
 
     <object
-      class="org.nuxeo.ecm.webengine.rest.ResourceBinding" />
+      class="org.nuxeo.ecm.webengine.ResourceBinding" />
   </extension-point>
 
 </component>

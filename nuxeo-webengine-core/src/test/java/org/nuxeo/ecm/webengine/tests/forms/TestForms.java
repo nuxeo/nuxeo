@@ -23,14 +23,13 @@ import java.net.URL;
 
 import net.sf.json.JSONObject;
 import org.nuxeo.common.xmap.XMap;
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.forms.FormManager;
 import org.nuxeo.ecm.webengine.forms.TestFormInstance;
 import org.nuxeo.ecm.webengine.forms.validation.Field;
 import org.nuxeo.ecm.webengine.forms.validation.Form;
 import org.nuxeo.ecm.webengine.forms.validation.MultiStatus;
 import org.nuxeo.ecm.webengine.forms.validation.Status;
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -52,7 +51,7 @@ public class TestForms extends NXRuntimeTestCase {
         deployBundle("nuxeo-core");
         deployBundle("nuxeo-webengine-core");
         deployContrib("OSGI-INF/test-forms.xml");
-        WebEngine2 engine = Framework.getLocalService(WebEngine2.class);
+        WebEngine engine = Framework.getLocalService(WebEngine.class);
         //TODO
         //formMgr = engine.getFormManager();
     }

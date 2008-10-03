@@ -22,10 +22,10 @@ package org.nuxeo.ecm.webengine.rendering;
 import java.io.IOException;
 import java.util.Map;
 
-import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.impl.AbstractWebContext;
-import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
+import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 import freemarker.core.Environment;
 import freemarker.template.SimpleScalar;
@@ -57,7 +57,7 @@ public class RenderDirective implements TemplateDirectiveModel {
         }
         src = val.getAsString();
 
-        WebContext2 ctx = WebEngine2.getActiveContext();
+        WebContext ctx = WebEngine.getActiveContext();
         if (ctx != null) {
             ScriptFile script = ctx.getFile(src);
             Template tpl = env.getConfiguration().getTemplate(script.getURL());

@@ -17,40 +17,31 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.server.jersey;
+package org.nuxeo.ecm.webengine.model.impl;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.Resource;
+import org.nuxeo.ecm.webengine.model.WebApplication;
 import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
-
-import com.sun.jersey.api.core.HttpContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebContextImpl extends AbstractWebContext {
+public class ScriptApplication extends WebApplication {
 
-    protected static final Log log = LogFactory.getLog(WebContext.class);
+    @Path(value="{path}")
+    public Resource dispatch(@PathParam("path") String path, @Context WebContext ctx) throws Exception {
+        return newScriptObject();
+    }    
     
-    protected HttpContext ctx;
-    protected UriInfo uri;
-
-    public WebContextImpl(HttpContext ctx, HttpServletRequest request) {
-        super (request);
-        this.ctx = ctx;
+    protected ScriptObject newScriptObject() throws WebException {
+        return (ScriptObject)ctx.push(new ScriptObject()).initialize(ctx, null);
     }
 
 
-    public UriInfo getUriInfo() {
-        if (uri == null) {
-            uri = ctx.getUriInfo();
-        }
-        return uri;
-    }
-    
 }

@@ -23,9 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
+import org.nuxeo.ecm.webengine.model.WebContext;
 
 import freemarker.template.AdapterTemplateModel;
 import freemarker.template.SimpleScalar;
@@ -84,7 +84,7 @@ public class ScriptMethod implements TemplateMethodModelEx {
             }
         }
 
-        WebContext2 ctx = WebEngine2.getActiveContext();
+        WebContext ctx = WebEngine.getActiveContext();
         if (ctx != null) {
             try {
                 return args == null ? ctx.runScript(src) : ctx.runScript(src, args);

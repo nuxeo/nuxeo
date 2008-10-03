@@ -26,9 +26,8 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.impl.AbstractWebContext;
-import org.nuxeo.ecm.webengine.session.UserSession;
+import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -36,7 +35,7 @@ import org.nuxeo.ecm.webengine.session.UserSession;
  */
 public class WebEngineContext extends AbstractWebContext {// extends HttpRequestImpl implements WebContext2 {
 
-    protected static final Log log = LogFactory.getLog(WebContext2.class);
+    protected static final Log log = LogFactory.getLog(WebContext.class);
 
     protected HttpServletRequest request;
     protected UriInfo uri;

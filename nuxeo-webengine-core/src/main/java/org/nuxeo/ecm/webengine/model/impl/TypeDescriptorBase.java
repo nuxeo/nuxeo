@@ -17,27 +17,23 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.ui.tree.document;
-
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.ui.tree.JSonTreeSerializer;
-import org.nuxeo.ecm.webengine.ui.tree.TreeItem;
+package org.nuxeo.ecm.webengine.model.impl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class JSonDocumentTreeSerializer extends JSonTreeSerializer {
+public interface TypeDescriptorBase extends Cloneable {
 
-    protected WebContext ctx;
-
-    public JSonDocumentTreeSerializer(WebContext ctx) {
-        this.ctx = ctx;
-    }
-
-    public String getUrl(TreeItem item) {
-        return ctx.getUrlPath((DocumentModel)item.getObject());
-    }
-
+    String getId(); 
+    
+    String getFragment();    
+    
+    TypeDescriptor asTypeDescriptor();
+    
+    ActionTypeImpl asActionDescriptor();
+    
+    boolean isMainFragment();
+    
+    public TypeDescriptorBase clone();
 }

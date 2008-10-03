@@ -17,27 +17,20 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.ui.tree.document;
+package org.nuxeo.ecm.webengine.model;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.ui.tree.JSonTreeSerializer;
-import org.nuxeo.ecm.webengine.ui.tree.TreeItem;
+import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class JSonDocumentTreeSerializer extends JSonTreeSerializer {
+public interface ResourceType<T extends Resource> {
 
-    protected WebContext ctx;
-
-    public JSonDocumentTreeSerializer(WebContext ctx) {
-        this.ctx = ctx;
-    }
-
-    public String getUrl(TreeItem item) {
-        return ctx.getUrlPath((DocumentModel)item.getObject());
-    }
-
+    String getName();
+    
+    Class<T> getResourceClass();
+    
+    T newInstance() throws WebException;
+    
 }

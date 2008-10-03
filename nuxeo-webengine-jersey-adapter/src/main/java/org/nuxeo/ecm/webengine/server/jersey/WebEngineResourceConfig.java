@@ -22,8 +22,8 @@ package org.nuxeo.ecm.webengine.server.jersey;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.nuxeo.ecm.webengine.rest.ResourceBinding;
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
+import org.nuxeo.ecm.webengine.ResourceBinding;
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.jersey.api.core.DefaultResourceConfig;
@@ -44,7 +44,7 @@ public class WebEngineResourceConfig extends DefaultResourceConfig {
     
     @Override
     public Set<Class<?>> getResourceClasses() {
-        WebEngine2 engine = Framework.getLocalService(WebEngine2.class);
+        WebEngine engine = Framework.getLocalService(WebEngine.class);
         HashSet<Class<?>> result = new HashSet<Class<?>>();
         for (ResourceBinding binding : engine.getBindings()) {
             try {

@@ -17,27 +17,28 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.ui.tree.document;
+package org.nuxeo.ecm.webengine.model;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.ui.tree.JSonTreeSerializer;
-import org.nuxeo.ecm.webengine.ui.tree.TreeItem;
+import java.util.Set;
+
+import org.nuxeo.ecm.webengine.security.Guard;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class JSonDocumentTreeSerializer extends JSonTreeSerializer {
-
-    protected WebContext ctx;
-
-    public JSonDocumentTreeSerializer(WebContext ctx) {
-        this.ctx = ctx;
-    }
-
-    public String getUrl(TreeItem item) {
-        return ctx.getUrlPath((DocumentModel)item.getObject());
-    }
-
+public interface ActionType extends ResourceType<ActionResource> {
+    
+    Set<String> getCategories();
+    
+    boolean isEnabled();
+    
+    boolean isEnabled(WebContext ctx);
+    
+    /**
+     * TODO use guard into WebType too?
+     * @return
+     */
+    Guard getGuard();
+    
 }

@@ -19,13 +19,11 @@
 
 package org.nuxeo.ecm.webengine.ui.tree;
 
-import java.io.IOException;
-
 import net.sf.json.JSONArray;
 
-import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.session.AbstractComponent;
 import org.nuxeo.ecm.webengine.session.SessionException;
 import org.nuxeo.ecm.webengine.session.UserSession;
@@ -77,7 +75,7 @@ public abstract class JSonTree extends AbstractComponent {
     root=ID   - enter node ID
     toggle=ID - toggle expanded state for node ID
     */
-    public synchronized void updateSelection(WebContext ctx, ContentProvider provider, JSonTreeSerializer serializer) throws WebException {
+    public synchronized String updateSelection(WebContext ctx, ContentProvider provider, JSonTreeSerializer serializer) throws WebException {
         try {
             tree.setContentProvider(provider);
             if (!tree.hasInput()) {
@@ -93,12 +91,7 @@ public abstract class JSonTree extends AbstractComponent {
             } else {
                 String result = enter(ctx, selection, serializer);
                 if (result != null) {
-                    try {
-                      System.out.println(result);
-                        ctx.print(result);
-                    } catch (IOException e) {
-                        throw WebException.wrap(e);
-                    }
+                    return result;
                 } else {
                     ctx.getLog().warn("TreeItem: "+selection+" not found");
                 }
@@ -106,6 +99,7 @@ public abstract class JSonTree extends AbstractComponent {
         } finally {
             tree.setContentProvider(null);
         }
+        return null;
     }
 
     protected String enter(WebContext ctx, String path, JSonTreeSerializer serializer) throws WebException {

@@ -17,27 +17,22 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.ui.tree.document;
+package org.nuxeo.ecm.webengine.model.methods;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.ui.tree.JSonTreeSerializer;
-import org.nuxeo.ecm.webengine.ui.tree.TreeItem;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import javax.ws.rs.HttpMethod;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class JSonDocumentTreeSerializer extends JSonTreeSerializer {
-
-    protected WebContext ctx;
-
-    public JSonDocumentTreeSerializer(WebContext ctx) {
-        this.ctx = ctx;
-    }
-
-    public String getUrl(TreeItem item) {
-        return ctx.getUrlPath((DocumentModel)item.getObject());
-    }
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@HttpMethod("LOCK")
+public @interface LOCK {
 
 }

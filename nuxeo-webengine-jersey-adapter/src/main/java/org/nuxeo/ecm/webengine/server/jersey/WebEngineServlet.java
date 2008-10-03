@@ -61,7 +61,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
+import org.nuxeo.ecm.webengine.WebEngine;
 
 import com.sun.jersey.api.container.ContainerException;
 import com.sun.jersey.api.core.ApplicationConfigAdapter;
@@ -301,12 +301,12 @@ public class WebEngineServlet extends HttpServlet implements ContainerListener {
            responseInvoker.set(response);
 
            WebContextImpl ctx = new WebContextImpl(_application.getThreadLocalHttpContext(), request);
-           WebEngine2.setActiveContext(ctx);
+           WebEngine.setActiveContext(ctx);
            _application.handleRequest(cRequest, new Writer(response));
        } catch (ContainerException e) {
            throw new ServletException(e);
        } finally {
-           WebEngine2.setActiveContext(null);
+           WebEngine.setActiveContext(null);
            requestInvoker.set(null);
            responseInvoker.set(null);
        }
