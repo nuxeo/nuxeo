@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DateProperty extends JCRScalarProperty  {
+class DateProperty extends JCRScalarProperty  {
 
     DateProperty(JCRNodeProxy parent, Property property, Field field) {
         super(parent, property, field);
