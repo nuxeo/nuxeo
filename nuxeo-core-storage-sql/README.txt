@@ -14,13 +14,13 @@ Install Nuxeo in a directory called $JBOSS in this document.
 
 rm $JBOSS/server/default/deploy/nuxeo.ear/config/default-repository-config.xml
 rm $JBOSS/server/default/deploy/nuxeo.ear/config/default-versioning-config.xml
-rm $JBOSS/server/default/deploy/nuxeo.ear/system/nuxeo-core-jcr-connector-1.4.3-SNAPSHOT.jar
-rm $JBOSS/server/default/deploy/nuxeo.ear/system/nuxeo-core-jca-1.4.3-SNAPSHOT.rar
+rm $JBOSS/server/default/deploy/nuxeo.ear/system/nuxeo-core-jcr-connector-1.4.3.jar
+rm $JBOSS/server/default/deploy/nuxeo.ear/system/nuxeo-core-jca-1.4.3.rar
   
 3. Install the SQL connector
 
-cp nuxeo-core-storage-sql-ra-1.4.3-SNAPSHOT.rar $JBOSS/server/default/deploy/nuxeo.ear/system
-cp nuxeo-core-storage-sql-1.4.3-SNAPSHOT.jar $JBOSS/server/default/deploy/nuxeo.ear/system
+cp nuxeo-core-storage-sql-ra-1.4.3.rar $JBOSS/server/default/deploy/nuxeo.ear/system
+cp nuxeo-core-storage-sql-1.4.3.jar $JBOSS/server/default/deploy/nuxeo.ear/system
 
 4. Configure the SQL connector
 
