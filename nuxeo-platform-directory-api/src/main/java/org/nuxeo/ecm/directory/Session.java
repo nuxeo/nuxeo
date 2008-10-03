@@ -43,38 +43,46 @@ public interface Session {
      * Retrieves a directory entry using its id.
      * <p>
      * TODO what happens when the entry is not found? return null if not found?
+     * </p>
      *
-     * @param id
-     *            the entry id
+     * @param id the entry id
      * @return a DocumentModel representing the entry
      * @throws DirectoryException
      */
     DocumentModel getEntry(String id) throws DirectoryException;
 
     /**
+     * Retrieves a directory entry using its id.
+     *
+     * @param id the entry id
+     * @param fetchReferences boolean stating if references have to be fetched
+     * @return a DocumentModel representing the entry
+     * @throws DirectoryException
+     */
+    DocumentModel getEntry(String id, boolean fetchReferences)
+            throws DirectoryException;
+
+    /**
      * Retrieves all the entries in the directory.
      *
      * @return a collection with all the entries in the directory
      * @throws DirectoryException
-     * @throws SizeLimitExceededException
-     *             if the number of results is larger than the limit
-     *             configured for the directory
+     * @throws SizeLimitExceededException if the number of results is larger
+     *             than the limit configured for the directory
      */
     DocumentModelList getEntries() throws ClientException, DirectoryException;
 
     /**
      * Creates an entry in a directory.
      *
-     * @param fieldMap
-     *            A map with keys and values that should be stored in a
+     * @param fieldMap A map with keys and values that should be stored in a
      *            directory
      *            <p>
      *            Note: The values in the map should be of type String
      * @return The new entry created in the directory
-     * @throws UnsupportedOperationException
-     *             if the directory does not allow the creation of new entries
-     * @throws DirectoryException
-     *             if a communication exception occurs
+     * @throws UnsupportedOperationException if the directory does not allow the
+     *             creation of new entries
+     * @throws DirectoryException if a communication exception occurs
      */
 
     DocumentModel createEntry(Map<String, Object> fieldMap)
@@ -83,37 +91,32 @@ public interface Session {
     /**
      * Updates a directory entry.
      *
-     * @param docModel
-     *            The entry to update
-     * @throws UnsupportedOperationException
-     *             if the directory does not support entry updating
-     * @throws DirectoryException
-     *             if a communication error occurs
+     * @param docModel The entry to update
+     * @throws UnsupportedOperationException if the directory does not support
+     *             entry updating
+     * @throws DirectoryException if a communication error occurs
      */
-    void updateEntry(DocumentModel docModel)
-            throws ClientException, DirectoryException;
+    void updateEntry(DocumentModel docModel) throws ClientException,
+            DirectoryException;
 
     /**
      * Deletes a directory entry.
      *
-     * @param docModel
-     *            The entry to delete
-     * @throws UnsupportedOperationException
-     *             if the directory does not support entry deleting
-     * @throws DirectoryException
-     *             if a communication error occurs
+     * @param docModel The entry to delete
+     * @throws UnsupportedOperationException if the directory does not support
+     *             entry deleting
+     * @throws DirectoryException if a communication error occurs
      */
-    void deleteEntry(DocumentModel docModel)
-            throws ClientException, DirectoryException;
+    void deleteEntry(DocumentModel docModel) throws ClientException,
+            DirectoryException;
 
     /**
      * Deletes a directory entry by id.
      *
      * @param id the id of the entry to delete
-     * @throws UnsupportedOperationException
-     *             if the directory does not support entry deleting
-     * @throws DirectoryException
-     *             if a communication error occurs
+     * @throws UnsupportedOperationException if the directory does not support
+     *             entry deleting
+     * @throws DirectoryException if a communication error occurs
      */
     void deleteEntry(String id) throws ClientException, DirectoryException;
 
@@ -142,51 +145,30 @@ public interface Session {
      */
 
     /**
-     * Executes a simple query. The conditions will be 'AND'-ed.
-     * Search is done with exact match.
+     * Executes a simple query. The conditions will be 'AND'-ed. Search is done
+     * with exact match.
+     * <p>
+     * Does not fetch reference fields.
+     * </p>
      *
      * @param filter a filter to apply to entries in directory
      * @return a list of document models containing the entries matched by the
      *         query
-     * @throws DirectoryException
-     *             if a communication error occurs
-     * @throws SizeLimitExceededException
-     *             if the number of results is larger than the limit
-     *             configured for the directory
+     * @throws DirectoryException if a communication error occurs
+     * @throws SizeLimitExceededException if the number of results is larger
+     *             than the limit configured for the directory
      */
-    DocumentModelList query(Map<String, Object> filter)
-            throws ClientException, DirectoryException;
+    DocumentModelList query(Map<String, Object> filter) throws ClientException,
+            DirectoryException;
 
     /**
      * Executes a simple query. The conditions will be 'AND'-ed.
      * <p>
      * fieldNames present in the fulltext set are treated as a fulltext match.
-     *
-     * @param filter
-     *            a filter to apply to entries in directory
-     * @param fulltext
-     *            a set of field that should be treated as a fulltext search
-     * @return a list of document models containing the entries matched by the
-     *         query
-     * @throws DirectoryException
-     *             if a communication error occurs
-     * @throws SizeLimitExceededException
-     *             if the number of results is larger than the limit
-     *             configured for the directory
-     */
-    DocumentModelList query(Map<String, Object> filter,
-            Set<String> fulltext) throws ClientException, DirectoryException;
-
-    /**
-     * Executes a simple query. The conditions will be 'AND'-ed and the result
-     * will be sorted by the orderBy criteria list.
-     * <p>
-     * fieldNames present in the fulltext set are treated as a fulltext match.
+     * Does not fetch reference fields.
+     * </p>
      *
      * @param filter a filter to apply to entries in directory
-     * @param orderBy a LinkedHashMap with the 'order by' criterias.The key of an entry of this map
-     *                represents the column name and the value of the same
-     *                entry represent the column order,which may be 'asc' or 'desc'.
      * @param fulltext a set of field that should be treated as a fulltext
      *            search
      * @return a list of document models containing the entries matched by the
@@ -195,8 +177,41 @@ public interface Session {
      * @throws SizeLimitExceededException if the number of results is larger
      *             than the limit configured for the directory
      */
-    DocumentModelList query(Map<String, Object> filter,
-            Set<String> fulltext, Map<String, String> orderBy)
+    DocumentModelList query(Map<String, Object> filter, Set<String> fulltext)
+            throws ClientException, DirectoryException;
+
+    /**
+     * Executes a simple query. The conditions will be 'AND'-ed and the result
+     * will be sorted by the orderBy criteria list.
+     * <p>
+     * fieldNames present in the fulltext set are treated as a fulltext match.
+     * Does not fetch reference fields.
+     * </p>
+     *
+     * @param filter a filter to apply to entries in directory
+     * @param orderBy a LinkedHashMap with the 'order by' criterias.The key of
+     *            an entry of this map represents the column name and the value
+     *            of the same entry represent the column order,which may be
+     *            'asc' or 'desc'.
+     * @param fulltext a set of field that should be treated as a fulltext
+     *            search
+     * @return a list of document models containing the entries matched by the
+     *         query
+     * @throws DirectoryException if a communication error occurs
+     * @throws SizeLimitExceededException if the number of results is larger
+     *             than the limit configured for the directory
+     */
+    DocumentModelList query(Map<String, Object> filter, Set<String> fulltext,
+            Map<String, String> orderBy) throws ClientException,
+            DirectoryException;
+
+    /**
+     * Executes a query with the possibility to fetch references
+     *
+     * @see #query(Map, Set, Map)
+     */
+    DocumentModelList query(Map<String, Object> filter, Set<String> fulltext,
+            Map<String, String> orderBy, boolean fetchReferences)
             throws ClientException, DirectoryException;
 
     // TODO: create an API to allow sql AND/OR/NOT/LIKE conditions
@@ -206,10 +221,9 @@ public interface Session {
     /**
      * Commits any changes on this session.
      *
-     * @throws UnsupportedOperationException
-     *             if the directory does not support transactions
-     * @throws DirectoryException
-     *             if a communication error occurs
+     * @throws UnsupportedOperationException if the directory does not support
+     *             transactions
+     * @throws DirectoryException if a communication error occurs
      *             <p>
      *             In this case the session will be automatically rollbacked
      */
@@ -218,10 +232,9 @@ public interface Session {
     /**
      * Rollbacks any changes on this session.
      *
-     * @throws UnsupportedOperationException
-     *             if the associated directory does not support transactions
-     * @throws DirectoryException
-     *             if a communication error occurs
+     * @throws UnsupportedOperationException if the associated directory does
+     *             not support transactions
+     * @throws DirectoryException if a communication error occurs
      *             <p>
      *             In this case, the session will be automatically rollbacked
      *             anyway
@@ -236,31 +249,27 @@ public interface Session {
      * <p>
      * TODO: should this operation auto-commit pending changes?
      *
-     * @throws DirectoryException
-     *             if a communication error occurs
+     * @throws DirectoryException if a communication error occurs
      */
     void close() throws DirectoryException;
 
     /**
      * Executes a query using filter and return only the column <b>columnName</b>.
      *
-     * @param filter
-     *            the filter for the query
-     * @param columnName
-     *            the column whose content should be returned
+     * @param filter the filter for the query
+     * @param columnName the column whose content should be returned
      * @return the list with the values of <b>columnName</b> for the entries
      *         matching <b>filter</b>
      * @throws DirectoryException
-     * @throws SizeLimitExceededException
-     *             if the number of results is larger than the limit
-     *             configured for the directory
+     * @throws SizeLimitExceededException if the number of results is larger
+     *             than the limit configured for the directory
      */
-    List<String> getProjection(Map<String, Object> filter,
-            String columnName) throws ClientException, DirectoryException;
+    List<String> getProjection(Map<String, Object> filter, String columnName)
+            throws ClientException, DirectoryException;
 
     List<String> getProjection(Map<String, Object> filter,
-            Set<String>fulltext, String columnName)
-            throws ClientException, DirectoryException;
+            Set<String> fulltext, String columnName) throws ClientException,
+            DirectoryException;
 
     /**
      * Tells whether the directory implementation can be used as an
@@ -274,8 +283,8 @@ public interface Session {
 
     /**
      * Checks that the credentials provided by the UserManager match those
-     * registered in the directory. If username is not in the directory,
-     * this should return false instead of throrwing an exception.
+     * registered in the directory. If username is not in the directory, this
+     * should return false instead of throrwing an exception.
      *
      * @param username
      * @param password
@@ -285,9 +294,9 @@ public interface Session {
             throws ClientException, DirectoryException;
 
     /**
-     * The Id field is the name of the field that is used a primary key:
-     * unique and not null value in the whole directory. This field is also
-     * used as login field if the directory is authenticating.
+     * The Id field is the name of the field that is used a primary key: unique
+     * and not null value in the whole directory. This field is also used as
+     * login field if the directory is authenticating.
      *
      * @return the name of the id field
      */
@@ -295,7 +304,7 @@ public interface Session {
 
     /**
      * @return the name of the field to store the password if the directory is
-     * authenticating (can be null)
+     *         authenticating (can be null)
      */
     String getPasswordField() throws ClientException;
 
