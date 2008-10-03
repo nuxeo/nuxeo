@@ -60,7 +60,7 @@ public class SQLComplexListProperty extends SQLBaseProperty {
      */
 
     public String getName() {
-        return node.getName();
+        return name;
     }
 
     public List<Property> getValue() throws DocumentException {

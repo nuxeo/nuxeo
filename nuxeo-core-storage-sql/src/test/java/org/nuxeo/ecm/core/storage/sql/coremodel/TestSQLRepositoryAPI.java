@@ -190,6 +190,12 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(0, children.size());
     }
 
+    public void testComplexType() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
+        doc = session.createDocument(doc);
+        session.save();
+    }
+
     //
     //
     // ----------------------------------------------------
