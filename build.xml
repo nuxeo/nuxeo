@@ -284,7 +284,7 @@
       <fileset file="nuxeo-platform/nuxeo-platform-ear/target/postgresql-jdbc-lib/*.jar" />
     </copy>
     <!-- XXX: find a way not to depend on the version number of nxsearch compass -->
-    <copy todir="${jboss.nuxeo.ear}/system/nuxeo-platform-search-compass-plugin-5.1.6-SNAPSHOT.jar" failonerror="false" overwrite="true">
+    <copy todir="${jboss.nuxeo.ear}/system/nuxeo-platform-search-compass-plugin-5.1.6.jar" failonerror="false" overwrite="true">
       <fileset file="${basedir}/${postgresql.config}/compass.cfg.xml" />
     </copy>
   </target>
@@ -303,7 +303,7 @@
       <fileset file="${basedir}/${oracle.config}/lib/*.jar" />
     </copy>
     <!-- XXX: find a way not to depend on the version number of nxsearch compass -->
-    <copy todir="${jboss.nuxeo.ear}/system/nuxeo-platform-search-compass-plugin-5.1.6-SNAPSHOT.jar" failonerror="false" overwrite="true">
+    <copy todir="${jboss.nuxeo.ear}/system/nuxeo-platform-search-compass-plugin-5.1.6.jar" failonerror="false" overwrite="true">
       <fileset file="${basedir}/${oracle.config}/compass.cfg.xml" />
     </copy>
   </target>
@@ -318,7 +318,7 @@
       <fileset file="${basedir}/${derby.config}/datasources/*.xml" />
     </copy>
     <!-- XXX: find a way not to depend on the version number of nxsearch compass -->
-    <copy todir="${jboss.nuxeo.ear}/system/nuxeo-platform-search-compass-plugin-5.1.6-SNAPSHOT.jar" failonerror="false" overwrite="true">
+    <copy todir="${jboss.nuxeo.ear}/system/nuxeo-platform-search-compass-plugin-5.1.6.jar" failonerror="false" overwrite="true">
       <fileset file="${basedir}/${derby.config}/compass.cfg.xml" />
     </copy>
     <!-- TODO: maven config to get derby lib -->
