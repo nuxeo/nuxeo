@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.NoSuchResourceException;
 import org.nuxeo.ecm.webengine.model.ObjectResource;
 import org.nuxeo.ecm.webengine.model.ObjectType;
 import org.nuxeo.ecm.webengine.model.Profile;
@@ -188,13 +189,16 @@ public class ProfileImpl implements Profile, FileChangeListener  {
      * @return
      * @throws WebException
      */
-    public ScriptFile getObjectTemplate(ObjectResource obj, String name) throws WebException {
+    public ScriptFile getTemplate(ObjectResource obj, String name, String mediaType) throws WebException {
+        if (name == null) {
+            name = "view"; 
+        }
         ObjectType type = obj.getType();
         StringBuilder buf = new StringBuilder();
         buf.append('/').append(Utils.fcToLowerCase(type.getName()));
-        buf.append('/').append(obj.getContext().getMethod().toLowerCase());
-        if (name != null) {
-            buf.append('-').append(name);
+        buf.append('/').append(name);
+        if (mediaType != null) {
+            buf.append('.').append(mediaType);
         }
         buf.append(getTemplateExtension());
         String key = buf.toString();
@@ -211,7 +215,10 @@ public class ProfileImpl implements Profile, FileChangeListener  {
                 type = type.getSuperType();
                 len = type.getName().length()+1;
             } while (type != null);            
-        }        
+        }
+        if (file == null) {
+            throw new NoSuchResourceException("No Such Template: "+key);
+        }
         return file;
     }
     

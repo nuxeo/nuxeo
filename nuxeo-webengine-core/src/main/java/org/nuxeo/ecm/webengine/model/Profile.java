@@ -68,7 +68,7 @@ public interface Profile {
      * @return
      * @throws WebException
      */
-    ScriptFile getObjectTemplate(ObjectResource obj, String name) throws WebException;
+    ScriptFile getTemplate(ObjectResource obj, String name, String mediaType) throws WebException;
     
 
     /**

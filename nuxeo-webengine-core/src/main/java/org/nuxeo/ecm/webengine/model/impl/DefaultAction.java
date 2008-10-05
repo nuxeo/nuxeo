@@ -22,23 +22,17 @@ package org.nuxeo.ecm.webengine.model.impl;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.ActionResource;
 import org.nuxeo.ecm.webengine.model.ActionType;
-import org.nuxeo.ecm.webengine.model.NoSuchResourceException;
 import org.nuxeo.ecm.webengine.model.ObjectResource;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.model.WebView;
-import org.nuxeo.ecm.webengine.scripting.ScriptFile;
+import org.nuxeo.ecm.webengine.model.View;
 
 
 /**
@@ -82,17 +76,13 @@ public class DefaultAction extends AbstractResource<ActionType> implements Actio
         return false;
     }
     
-    @GET @POST @PUT @DELETE @HEAD
-    public WebView getView() throws WebException {
-        return getView(null);
+    @GET
+    public View getView() throws WebException {
+        return getView(null, null, null);
     }
 
-    public WebView getView(Map<String,Object> args) throws WebException{
-        ScriptFile file = getTargetObject().getTemplate(type.getName());
-        if (file == null) {
-            throw new NoSuchResourceException("Default template for action: "+type.getName()+"@"+getTargetObject().getType().getName()+" and method "+ctx.getMethod()+" was not found");
-        }
-        return new WebView(this, file, args);
+    public View getView(String name, String mediaType, Map<String,Object> args) throws WebException{
+        return new View(getTargetObject(), getName(),  null, args);
     }
 
 }

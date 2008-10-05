@@ -33,6 +33,8 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
+import javax.ws.rs.Path;
+
 import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.url.URLFactory;
@@ -41,25 +43,27 @@ import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.platform.rendering.fm.i18n.ResourceComposite;
 import org.nuxeo.ecm.webengine.model.Profile;
+import org.nuxeo.ecm.webengine.model.WebAction;
 import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.model.annotations.WebAction;
-import org.nuxeo.ecm.webengine.model.annotations.WebObject;
+import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.GlobalTypesLoader;
 import org.nuxeo.ecm.webengine.model.impl.ProfileDescriptor;
 import org.nuxeo.ecm.webengine.model.impl.ProfileRegistry;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
+import org.nuxeo.runtime.annotations.loader.AnnotationLoader;
 import org.nuxeo.runtime.annotations.loader.BundleAnnotationsLoader;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.deploy.FileChangeListener;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
 import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
+import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebEngine implements FileChangeListener, ResourceLocator {
+public class WebEngine implements FileChangeListener, ResourceLocator, AnnotationLoader {
 
     private final static ThreadLocal<WebContext> CTX = new ThreadLocal<WebContext>();
     
@@ -144,6 +148,8 @@ public class WebEngine implements FileChangeListener, ResourceLocator {
         if (notifier != null) {
             notifier.addListener(this);
         }
+        // register annotation loader
+        BundleAnnotationsLoader.getInstance().addLoader(Path.class.getName(), this);
     }
     
     public GlobalTypesLoader getGlobalTypes() {
@@ -363,6 +369,19 @@ public class WebEngine implements FileChangeListener, ResourceLocator {
         lastMessagesUpdate = now;        
     }
 
+    public void loadAnnotation(Bundle bundle, String annoType,
+            String className, String[] args) throws Exception {
+        if (Path.class.getName().equals(annoType)) {
+            Class<?> clazz = bundle.loadClass(className);
+            Path p = clazz.getAnnotation(Path.class);
+            ResourceBinding rb = new ResourceBinding();
+            rb.path = p.value();
+            rb.className = className;
+            bindings.add(rb);
+            //TODO hot deploy
+        }
+    }
+    
     /** ResourceLocator API */
 
     public URL getResourceURL(String key) {

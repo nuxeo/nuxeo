@@ -29,7 +29,7 @@ import javax.ws.rs.WebApplicationException;
 
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.annotations.WebProfile;
+import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 
 /**
@@ -76,7 +76,7 @@ public class WebApplication {
     @GET @POST @PUT @DELETE @HEAD 
     public Object getView() {
         try {
-            return profile.getFile("index.ftl");
+            return getFile("index.ftl");
         } catch (Throwable t) {
             throw WebException.wrap("Failed to find index file", t);
         }
@@ -112,5 +112,22 @@ public class WebApplication {
      */
     protected String _guessPath() {
         return ctx.getUriInfo().getMatchedURIs().get(0);
+    }
+    
+    
+    public ScriptFile getFile(String path) throws WebException {
+        return profile.getFile(path);
+    }
+    
+    public ScriptFile getTemplate(ObjectResource obj, String name, String mediaType) throws WebException {
+        return profile.getTemplate(obj, name, mediaType);
+    }    
+
+    public Class<?> loadClass(String className) throws ClassNotFoundException {
+        return profile.loadClass(className);
+    }
+
+    public ObjectType getType(String typeName) throws TypeNotFoundException {
+        return profile.getType(typeName);
     }
 }

@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webengine.model.impl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.webengine.model.ObjectResource;

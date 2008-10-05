@@ -31,17 +31,19 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.annotations.WebObject;
+import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 
 
 
 /**
+ * TODO remove this object and make a Helper that return a scripts given a path
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebObject("Script")
+@WebObject(name = "Script")
 public class ScriptObject extends DefaultObject {
 
     public ScriptObject() {
@@ -51,8 +53,7 @@ public class ScriptObject extends DefaultObject {
     @GET @POST @PUT @DELETE @HEAD
     @Path("{path}")
     public Object runScript(@PathParam("path") String path) throws WebException {
-        ScriptFile file = ctx.getProfile().getFile(path);
-        file = ctx.getProfile().getFile(path);
+        ScriptFile file = ctx.getApplication().getFile(path);
         if (file == null) {
             return null;
         } else {

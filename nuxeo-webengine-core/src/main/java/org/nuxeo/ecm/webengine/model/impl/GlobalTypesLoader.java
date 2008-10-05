@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.model.annotations.WebAction;
-import org.nuxeo.ecm.webengine.model.annotations.WebObject;
+import org.nuxeo.ecm.webengine.model.WebAction;
+import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.annotations.loader.AnnotationLoader;
 import org.nuxeo.runtime.annotations.loader.BundleAnnotationsLoader;
 import org.osgi.framework.Bundle;
@@ -40,7 +40,7 @@ public class GlobalTypesLoader  implements AnnotationLoader {
     
     protected TypeConfigurationProvider mainProvider;
     protected Map<String, TypeConfigurationProvider> providers;
-
+    
     public GlobalTypesLoader(WebEngine engine) {
         this.engine = engine;
         this.providers = new ConcurrentHashMap<String, TypeConfigurationProvider>();

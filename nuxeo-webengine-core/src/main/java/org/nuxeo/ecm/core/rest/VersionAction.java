@@ -17,26 +17,38 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.model.annotations;
+package org.nuxeo.ecm.core.rest;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 
-import org.nuxeo.ecm.webengine.model.impl.ObjectTypeImpl;
-import org.nuxeo.runtime.annotations.loader.Indexable;
+import org.nuxeo.ecm.webengine.model.WebAction;
+import org.nuxeo.ecm.webengine.model.impl.DefaultAction;
 
 /**
+ * Version a document
+ * <p>
+ * Accepts the following methods:
+ * <ul>
+ * <li> GET - get the document version 
+ * <li> POST - create a new version
+ * </ul>
+ *  
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-@Indexable({"value"})
-public @interface WebObject {
-
-    String value(); // the type name
-    String superType() default ObjectTypeImpl.ROOT_TYPE_NAME; // the super type name
+@WebAction(name="version", type="Document", guard="WRITE")
+public class VersionAction extends DefaultAction {
     
+    @GET
+    public Object doGet() {
+        return getView();
+    }
+    
+    @POST
+    public Object doPost() {
+        //TODO
+        return null;
+    }
+  
 }

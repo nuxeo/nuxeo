@@ -30,8 +30,8 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.ActionResource;
 import org.nuxeo.ecm.webengine.model.ActionType;
 import org.nuxeo.ecm.webengine.model.ObjectType;
+import org.nuxeo.ecm.webengine.model.WebAction;
 import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.model.annotations.WebAction;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 
@@ -149,7 +149,7 @@ public class ActionTypeImpl implements TypeDescriptorBase, ActionType {
 
     @SuppressWarnings("unchecked")
     public static ActionTypeImpl fromAnnotation(Class<?> clazz, WebAction action) {
-        ActionTypeImpl ad = new ActionTypeImpl((Class<ActionResource>)clazz, action.value(),
+        ActionTypeImpl ad = new ActionTypeImpl((Class<ActionResource>)clazz, action.name(),
                 action.type(), Utils.nullIfEmpty(action.guard()), action.enabled());
         String[] cats = action.categories();
         if (cats != null) {

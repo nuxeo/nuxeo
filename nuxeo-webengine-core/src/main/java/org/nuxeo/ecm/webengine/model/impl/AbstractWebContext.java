@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
@@ -128,7 +129,7 @@ public abstract class AbstractWebContext implements WebContext {
 
     
     public ObjectResource newObject(String typeName, Object ...  args) throws WebException {
-        ObjectType type = app.getProfile().getType(typeName);
+        ObjectType type = app.getType(typeName);
         if (type == null) {
             throw new NoSuchResourceException("No Such Object Type: "+typeName);
         }
@@ -143,7 +144,7 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public ActionResource newAction(String typeName, String actionName, Object ...  args) throws WebException {
-        ObjectType type = app.getProfile().getType(typeName);
+        ObjectType type = app.getType(typeName);
         if (type == null) {
             throw new NoSuchResourceException("No Such Object Type: "+typeName);
         }
@@ -351,7 +352,7 @@ public abstract class AbstractWebContext implements WebContext {
 //                return script;
 //            }
         }
-        return app.getProfile().getFile(path);
+        return app.getFile(path);
     }
 
     public void pushScriptFile(File file) {

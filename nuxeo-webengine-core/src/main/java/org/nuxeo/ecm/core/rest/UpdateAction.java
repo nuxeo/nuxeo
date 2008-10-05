@@ -17,25 +17,38 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.model.annotations;
+package org.nuxeo.ecm.core.rest;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+
+import org.nuxeo.ecm.webengine.model.WebAction;
+import org.nuxeo.ecm.webengine.model.impl.DefaultAction;
 
 /**
+ * Edit a document.
+ * <p>
+ * Accepts 2 methods: 
+ * <ul>
+ * <li>GET - GET the form to edit the document
+ * <li>POST - modify the document (same as PUT on the document resource)
+ * </ul>
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface WebAction {
-
-    String value(); // action name
-    String type() default "*";
-    boolean enabled() default true;
-    String[] categories() default {};
-    String guard() default "";
+@WebAction(name="update", type="Document", guard="WRITE")
+public class UpdateAction extends DefaultAction {
+    
+    @GET
+    public Object doGet() {
+        return getView();
+    }
+    
+    @POST
+    public Object doPost() {
+        return ((DocumentObject)prev).doPut();
+    }
     
 }

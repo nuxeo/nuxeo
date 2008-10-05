@@ -19,41 +19,24 @@
 
 package org.nuxeo.ecm.webengine.model;
 
-import java.util.Map;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.runtime.model.Adaptable;
+import org.nuxeo.ecm.webengine.model.impl.ObjectTypeImpl;
+import org.nuxeo.runtime.annotations.loader.Indexable;
 
 /**
- * This interface must be implemented by any object that is dispatched on a web request through web engine.
- * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Resource extends Adaptable {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+@Indexable({"name"})
+public @interface WebObject {
 
-    Resource initialize(WebContext ctx, ResourceType<?> type, Object ...  args) throws WebException;
-
-    void dispose();
+    String name(); // the type name
+    String superType() default ObjectTypeImpl.ROOT_TYPE_NAME; // the super type name
     
-    WebContext getContext();    
-    
-    Profile getApplication();
-    
-    ResourceType<?> getType();
-    
-    String getPath();
-
-    Resource getPrevious();
-    
-    Resource getNext();
-    
-    boolean isAction();
-    
-    boolean isObject();
-    
-    View getView() throws WebException;
-    
-    View getView(String name, String mimeType, Map<String,Object> args) throws WebException;
-
 }

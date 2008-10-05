@@ -17,17 +17,13 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.model.impl;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+package org.nuxeo.ecm.core.rest;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.Resource;
-import org.nuxeo.ecm.webengine.model.WebApplication;
+import org.nuxeo.ecm.webengine.model.WebContext;
 
 
 /**
@@ -35,27 +31,26 @@ import org.nuxeo.ecm.webengine.model.WebApplication;
  *  
  *  TODO: be able to use other repositories than the default
  */
-public class DocumentApplication extends WebApplication {
+public class DocumentRoot extends DocumentObject {
 
-    public DocumentObject newRoot(String path) throws WebException {
-        return newRoot(new PathRef(path));
+    
+    public DocumentRoot(WebContext ctx, String uri) {
+        this (ctx, new PathRef(uri));
     }
 
-    public DocumentObject newRoot(DocumentRef doc) throws WebException {
+    public DocumentRoot(WebContext ctx, DocumentRef root) {
         try {
-            return newRoot(ctx.getCoreSession().getDocument(doc));
+            DocumentModel doc = ctx.getCoreSession().getDocument(root);
+            initialize(ctx, ctx.getApplication().getType(doc.getType()), doc);
+            ctx.push(this);
         } catch (Exception e) {
-            throw WebException.wrap(e);
+            throw WebException.wrap(e); 
         }
     }
-    
-    public DocumentObject newRoot(DocumentModel doc) throws WebException {
-        return (DocumentObject)(ctx.newObject(doc.getType(), doc));
-    }
-        
-    @Path(value="{path}")
-    public Resource traverse(@PathParam("path") String path) throws WebException {
-        return newRoot("/").newObject(path);
+
+    public DocumentRoot(WebContext ctx, DocumentModel root) {
+        initialize(ctx, ctx.getApplication().getType(root.getType()), root);
+        ctx.push(this);
     }
     
 }

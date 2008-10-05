@@ -28,7 +28,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
-import org.nuxeo.ecm.webengine.model.annotations.WebProfile;
+import org.nuxeo.ecm.webengine.model.WebProfile;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 import org.nuxeo.runtime.model.Adaptable;

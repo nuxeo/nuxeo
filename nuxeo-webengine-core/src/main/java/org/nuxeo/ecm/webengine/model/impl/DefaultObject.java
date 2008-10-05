@@ -22,22 +22,16 @@ package org.nuxeo.ecm.webengine.model.impl;
 import java.util.Collection;
 import java.util.Map;
 
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.ActionResource;
-import org.nuxeo.ecm.webengine.model.NoSuchResourceException;
 import org.nuxeo.ecm.webengine.model.ObjectResource;
 import org.nuxeo.ecm.webengine.model.ObjectType;
 import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.model.WebView;
-import org.nuxeo.ecm.webengine.scripting.ScriptFile;
+import org.nuxeo.ecm.webengine.model.View;
 
 
 /**
@@ -105,25 +99,13 @@ public class DefaultObject extends AbstractResource<ObjectType> implements Objec
         return null; //TODO
     }
     
-    @GET @POST @PUT @DELETE @HEAD
-    public WebView getView() throws WebException {
-        return getView(null);
+    @GET
+    public View getView() throws WebException {
+        return getView(null, null, null);
     }
         
-    public WebView getView(Map<String,Object> args) throws WebException{
-        ScriptFile file = getTemplate();
-        if (file == null) {
-            throw new NoSuchResourceException("Default template for type: "+type.getName()+" and method "+ctx.getMethod()+" was not found");
-        }
-        return new WebView(this, file, args);
-    }
-  
-    public ScriptFile getTemplate() {
-        return ctx.getProfile().getObjectTemplate(this, null);
-    }
-
-    public ScriptFile getTemplate(String name) {
-        return ctx.getProfile().getObjectTemplate(this, name);
+    public View getView(String name, String mimeType, Map<String,Object> args) throws WebException{
+        return new View(this, name, mimeType, args);
     }
 
 }

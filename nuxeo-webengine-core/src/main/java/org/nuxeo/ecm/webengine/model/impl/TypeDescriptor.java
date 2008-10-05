@@ -22,7 +22,7 @@ package org.nuxeo.ecm.webengine.model.impl;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.model.ObjectType;
-import org.nuxeo.ecm.webengine.model.annotations.WebObject;
+import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -98,6 +98,6 @@ public class TypeDescriptor implements TypeDescriptorBase {
     
 
     public static TypeDescriptor fromAnnotation(Class<?> clazz, WebObject type) {
-        return  new TypeDescriptor(clazz, type.value(), type.superType());
+        return  new TypeDescriptor(clazz, type.name(), type.superType());
     }
 }

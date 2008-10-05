@@ -31,16 +31,16 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.WebView;
+import org.nuxeo.ecm.webengine.model.View;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 @Produces({"text/html", "*/*"})
-public class WebViewWriter implements MessageBodyWriter<WebView> {
+public class WebViewWriter implements MessageBodyWriter<View> {
 
-    public void writeTo(WebView t, Class<?> type, Type genericType,
+    public void writeTo(View t, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException,
@@ -52,7 +52,7 @@ public class WebViewWriter implements MessageBodyWriter<WebView> {
         }
     }
 
-    public long getSize(WebView arg0, Class<?> arg1, Type arg2,
+    public long getSize(View arg0, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4) {
         // TODO Auto-generated method stub
         return -1;
@@ -60,7 +60,7 @@ public class WebViewWriter implements MessageBodyWriter<WebView> {
 
     public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
             MediaType arg3) {
-        return WebView.class.isAssignableFrom(arg0);
+        return View.class.isAssignableFrom(arg0);
     }
 
 }

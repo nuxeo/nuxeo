@@ -17,30 +17,37 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.model;
+package org.nuxeo.ecm.core.rest;
 
-import java.util.Collection;
-import java.util.Map;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 
-import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.impl.ActionTypeImpl;
-import org.nuxeo.ecm.webengine.scripting.ScriptFile;
-
+import org.nuxeo.ecm.webengine.model.WebAction;
+import org.nuxeo.ecm.webengine.model.impl.DefaultAction;
 
 /**
+ * Create a document
+ * <p>
+ * Accepts the following methods:
+ * <ul>
+ * <li> GET - get the form to create the document 
+ * <li> POST - create the document (same as POST on a document resource)
+ * </ul>
+ *  
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ObjectResource extends Resource {
+@WebAction(name="create", type="Document", guard="WRITE")
+public class CreateAction extends DefaultAction {
 
-    ObjectType getType();
-
-    ActionTypeImpl getAction(String action);
-
-    ActionTypeImpl[] getActions();
-
-    ActionTypeImpl[] getActions(String category);
-
-    Map<String, Collection<ActionTypeImpl>> getActionsByCategory() throws WebException;
-
+    @GET
+    public Object doGet() {
+        return getView();
+    }
+    
+    @POST
+    public Object doPost() {
+        return ((DocumentObject)prev).doPost();
+    }
+    
 }
