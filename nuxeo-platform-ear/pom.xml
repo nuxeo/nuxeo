@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-parent</artifactId>
-    <version>5.1.7-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-ear</artifactId>
@@ -350,6 +350,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-ui-web-compat</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-usermanager-api</artifactId>
     </dependency>
     <dependency>
@@ -461,16 +465,16 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
+      <artifactId>nuxeo-theme-html</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-jsf</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
-      <artifactId>nuxeo-theme-jsf-editor</artifactId>
+      <artifactId>nuxeo-theme-editor</artifactId>
       <type>ejb</type>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.theme</groupId>
-      <artifactId>nuxeo-theme-jsf-editor-web</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -647,6 +651,10 @@
               <artifactId>nuxeo-runtime-jboss-extensions</artifactId>
               <version>${nuxeo.runtime.version}</version>
               <overWrite>true</overWrite>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.apache.derby</groupId>
+              <artifactId>derby</artifactId>
             </artifactItem>
           </artifactItems>
         </configuration>
