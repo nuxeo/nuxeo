@@ -14,12 +14,12 @@
     rendered="#{provider.nextPageAvailable or provider.previousPageAvailable}">
 
     <h:commandButton action="#{provider.rewind}"
-                     alt="rewind"
+                     alt="#{messages['command.navigation.rewind']}"
                      image="/icons/action_page_rewind.gif" >
       <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
     </h:commandButton>
     <h:commandButton action="#{provider.previous}"
-                     alt="previous"
+                     alt="#{messages['command.navigation.previous']}"
                      image="/icons/action_page_previous.gif" >
       <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
     </h:commandButton>
@@ -29,13 +29,13 @@
     </h:panelGroup>
 
     <h:commandButton action="#{provider.next}"
-                     alt="next"
+                     alt="#{messages['command.navigation.next']}"
                      image="/icons/action_page_next.gif" >
       <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
     </h:commandButton>
 
     <h:commandButton action="#{provider.last}"
-                     alt="fast forward"
+                     alt="#{messages['command.navigation.fastforward']}"
                      image="/icons/action_page_fastforward.gif" >
       <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
     </h:commandButton>
