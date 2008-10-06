@@ -50,6 +50,14 @@ public class DocumentObject extends DefaultObject {
 
 
     @Override
+    public <A> A getAdapter(Class<A> adapter) {
+        if (adapter == DocumentModel.class) {
+            return adapter.cast(doc);   
+        }
+        return super.getAdapter(adapter);
+    }
+    
+    @Override
     public Resource initialize(WebContext ctx, ResourceType type,
             Object... args) throws WebException {
         assert args != null && args.length == 1;

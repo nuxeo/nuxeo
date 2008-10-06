@@ -46,7 +46,7 @@ public class WebApplication {
   
     public WebApplication() {
         ctx = WebEngine.getActiveContext();
-        profile = ctx.getEngine().getProfile(getName());        
+        profile = ctx.getEngine().getProfile(getClass().getAnnotation(WebProfile.class).name());        
         path = guessPath();
         ctx.setApplication(this);
         
@@ -61,12 +61,8 @@ public class WebApplication {
         return ctx; 
     }    
     
-    protected String getName() {
-        WebProfile anno = (WebProfile)this.getClass().getAnnotation(WebProfile.class);
-        if (anno != null) {
-            return anno.name();
-        }
-        throw new UnsupportedOperationException("This method must be implement by derived main resource classes");
+    public String getName() {
+        return profile.getName();
     }
 
 

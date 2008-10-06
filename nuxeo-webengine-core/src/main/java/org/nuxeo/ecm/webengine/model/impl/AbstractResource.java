@@ -19,17 +19,15 @@
 
 package org.nuxeo.ecm.webengine.model.impl;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Set;
-
-import javax.ws.rs.GET;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.Profile;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
-import org.nuxeo.ecm.webengine.model.ServiceResource;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.ViewDescriptor;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -122,7 +120,6 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         this.template = template;
     }
     
-    @GET
     public Template getTemplate() throws WebException {
         if (template == null) {
             template = new Template(this).resolve();
@@ -131,14 +128,14 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     }
 
     public <A> A getAdapter(Class<A> adapter) {
+        if (adapter == Principal.class) {
+            return adapter.cast(ctx.getPrincipal());   
+        }
         if (adapter == WebContext.class) {
             return adapter.cast(ctx);
         }
-        if (adapter == Resource.class) {
-            return isService() ? adapter.cast(this) : null;
-        }
-        if (adapter == ServiceResource.class) {
-            return isService() ? adapter.cast(this) : null;
+        if (Resource.class.isAssignableFrom(adapter)) {
+            return adapter.cast(this);
         }
         return null;
     }

@@ -464,6 +464,7 @@ public abstract class AbstractWebContext implements WebContext {
             if (!t.isService()) {
                 return t;
             }
+            t = t.getPrevious();
         }
         return null;        
     }

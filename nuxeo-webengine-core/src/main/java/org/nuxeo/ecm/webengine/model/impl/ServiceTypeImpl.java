@@ -28,7 +28,6 @@ import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.ServiceType;
 import org.nuxeo.ecm.webengine.model.WebService;
-import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.annotations.AnnotationManager;
 
