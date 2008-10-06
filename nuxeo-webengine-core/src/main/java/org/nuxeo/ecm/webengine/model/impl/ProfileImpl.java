@@ -29,9 +29,11 @@ import java.util.concurrent.ConcurrentMap;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.NoSuchResourceException;
-import org.nuxeo.ecm.webengine.model.ObjectResource;
-import org.nuxeo.ecm.webengine.model.ObjectType;
 import org.nuxeo.ecm.webengine.model.Profile;
+import org.nuxeo.ecm.webengine.model.Resource;
+import org.nuxeo.ecm.webengine.model.ResourceType;
+import org.nuxeo.ecm.webengine.model.ServiceNotFoundException;
+import org.nuxeo.ecm.webengine.model.ServiceType;
 import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.runtime.deploy.FileChangeListener;
@@ -181,7 +183,10 @@ public class ProfileImpl implements Profile, FileChangeListener  {
     }
     
     /**
-     * This is sharing the same cache as the {@link #getFile(String)} method so that cached object files will be  
+     * Resolve the file name in the context of the given resource. This will use inheritance if no file 
+     * is found in the current context.
+     * <p>  
+     * TODO: This is sharing the same cache as the {@link #getFile(String)} method so that cached object files will be  
      *  visible through {@link #getFile(String)}. TODO: Do we really want this?
      *  
      * @param obj
@@ -189,23 +194,19 @@ public class ProfileImpl implements Profile, FileChangeListener  {
      * @return
      * @throws WebException
      */
-    public ScriptFile getTemplate(ObjectResource obj, String name, String mediaType) throws WebException {
+    public ScriptFile getFile(Resource obj, String name) throws WebException {
         if (name == null) {
             name = "view"; 
         }
-        ObjectType type = obj.getType();
+        ResourceType type = obj.getType();
         StringBuilder buf = new StringBuilder();
         buf.append('/').append(Utils.fcToLowerCase(type.getName()));
         buf.append('/').append(name);
-        if (mediaType != null) {
-            buf.append('.').append(mediaType);
-        }
-        buf.append(getTemplateExtension());
         String key = buf.toString();
         ScriptFile file = fileCache.get(key);
-        if (file == null) {
-            int len = type.getName().length()+1;
+        if (file == null) {            
             do {
+                int len = type.getName().length()+1;
                 buf.replace(1, len, Utils.fcToLowerCase(type.getName()));
                 file = getFile(buf.toString());
                 if (file != null) {
@@ -213,7 +214,6 @@ public class ProfileImpl implements Profile, FileChangeListener  {
                     break;
                 }
                 type = type.getSuperType();
-                len = type.getName().length()+1;
             } while (type != null);            
         }
         if (file == null) {
@@ -230,7 +230,7 @@ public class ProfileImpl implements Profile, FileChangeListener  {
         if (descriptor.types != null) {
             localTypes.types.addAll(descriptor.types);
         }
-        localTypes.actions = new ArrayList<ActionTypeImpl>();
+        localTypes.services = new ArrayList<ServiceDescriptor>();
         if (descriptor.actions != null) {
             descriptor.actions.addAll(descriptor.actions);
         }
@@ -250,11 +250,11 @@ public class ProfileImpl implements Profile, FileChangeListener  {
         return local;
     }
 
-    public ObjectType getType(String typeName) throws TypeNotFoundException {
+    public TypeRegistry getTypeRegistry() {
         if (typeReg == null) { // create type registry if not already created
             synchronized (typeLock) {
                 if (typeReg == null) {
-                    typeReg = new TypeRegistry();
+                    typeReg = new TypeRegistry(engine);
                     // install global types
                     GlobalTypesLoader globalTypes = engine.getGlobalTypes();
                     globalTypes.getMainProvider().install(typeReg);
@@ -275,13 +275,50 @@ public class ProfileImpl implements Profile, FileChangeListener  {
                 }
             }
         }
-        ObjectType type = typeReg.getType(typeName);
+        return typeReg;
+    }
+    
+    public ResourceType getType(String typeName) throws TypeNotFoundException {
+        ResourceType type = getTypeRegistry().getType(typeName);
         if (type == null) {
             throw new TypeNotFoundException(typeName);
         }
         return type;
     }
 
+    public ResourceType[] getTypes() {
+        return getTypeRegistry().getTypes();
+    }
+
+    public ServiceType[] getServices() {
+        return getTypeRegistry().getServices();
+    }
+
+    public ServiceType getService(Resource ctx, String name)
+            throws ServiceNotFoundException {
+        ServiceType type = getTypeRegistry().getService(ctx, name);
+        if (type == null) {
+            throw new ServiceNotFoundException(ctx, name);
+        }
+        return type;
+    }
+    
+    public List<String> getServiceNames(Resource ctx) {
+        return getTypeRegistry().getServiceNames(ctx);
+    }
+    
+    public List<ServiceType> getServices(Resource ctx) {
+        return getTypeRegistry().getServices(ctx);
+    }
+    
+    public List<String> getEnabledServiceNames(Resource ctx) {
+        return getTypeRegistry().getEnabledServiceNames(ctx);
+    }
+    
+    public List<ServiceType> getEnabledServices(Resource ctx) {
+        return getTypeRegistry().getEnabledServices(ctx);
+    }
+    
     /**
      * A tracked file changed.
      * Flush directory stack cache

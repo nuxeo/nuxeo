@@ -19,14 +19,19 @@
 
 package org.nuxeo.ecm.webengine.model.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.webengine.model.ObjectResource;
-import org.nuxeo.ecm.webengine.model.ObjectType;
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.model.Resource;
+import org.nuxeo.ecm.webengine.model.ResourceType;
+import org.nuxeo.ecm.webengine.model.ServiceType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
 
@@ -34,41 +39,163 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescriptorBase>{
+public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescriptor>{
     
     //TODO: types map is useless - remove it?
     protected Map<String, ObjectTypeImpl> types;
+    protected Map<String, ServiceTypeImpl> services;
+    protected Map<String, ServiceTypeImpl[]> serviceBindings;
+    protected WebEngine engine;
+    protected Class<?> docObjectClass = null;
     
-    
-    public TypeRegistry() {
+    public TypeRegistry(WebEngine engine) {
         types = new ConcurrentHashMap<String, ObjectTypeImpl>();
+        services = new ConcurrentHashMap<String, ServiceTypeImpl>();
+        serviceBindings = new ConcurrentHashMap<String, ServiceTypeImpl[]>();
+        this.engine = engine;
         // register root type
-        TypeDescriptor root = new TypeDescriptor(ObjectResource.class, ObjectType.ROOT_TYPE_NAME, null); 
+        TypeDescriptor root = new TypeDescriptor(Resource.class, ResourceType.ROOT_TYPE_NAME, null); 
         registerType(root);        
     }
     
 
-    public ObjectType getType(String name) {
+    public ResourceType getType(String name) {
         return types.get(name);
     }
     
-    public ObjectType[] getTypes() {
+    public ServiceType getService(String name) {
+        return services.get(name);
+    }    
+
+
+    public ServiceType getService(Resource target, String name) {
+        ServiceTypeImpl service = services.get(name);
+        if (service != null && service.acceptResource(target)) {
+            return service;
+        }
+        return null;
+    }
+    
+    public List<ServiceType> getServices(Resource resource) {
+        ArrayList<ServiceType> result = new ArrayList<ServiceType>();
+        collectServicesFor(resource, resource.getType(), result);
+        return result;
+    }
+
+    public List<String> getServiceNames(Resource resource) {
+        ArrayList<String> result = new ArrayList<String>();
+        collectServiceNamesFor(resource, resource.getType(), result);
+        return result;
+    }
+    
+    public List<ServiceType> getEnabledServices(Resource resource) {
+        ArrayList<ServiceType> result = new ArrayList<ServiceType>();
+        collectEnabledServicesFor(resource, resource.getType(), result);
+        return result;
+    }
+
+    public List<String> getEnabledServiceNames(Resource resource) {
+        ArrayList<String> result = new ArrayList<String>();
+        collectEnabledServiceNamesFor(resource, resource.getType(), result);
+        return result;
+    }
+        
+    
+    protected void collectServicesFor(Resource ctx, ResourceType type, List<ServiceType> result) {
+        ServiceType[] services = serviceBindings.get(type.getName());
+        if (services != null && services.length > 0) {
+            for (int i=0; i<services.length; i++) {
+                ServiceType service = services[i];
+                if (service.acceptResource(ctx)) {
+                    result.add(service);
+                }
+            }
+        }
+        ResourceType superType = type.getSuperType();
+        if (superType != null) {
+            collectServicesFor(ctx, superType, result);
+        }
+    }
+
+    protected void collectServiceNamesFor(Resource ctx, ResourceType type, List<String> result) {
+        ServiceType[] services = serviceBindings.get(type.getName());
+        if (services != null && services.length > 0) {
+            for (int i=0; i<services.length; i++) {
+                ServiceType service = services[i];
+                if (service.acceptResource(ctx)) {
+                    result.add(service.getName());
+                }
+            }
+        }
+        ResourceType superType = type.getSuperType();
+        if (superType != null) {
+            collectServiceNamesFor(ctx, superType, result);
+        }
+    }
+
+    protected void collectEnabledServicesFor(Resource ctx, ResourceType type, List<ServiceType> result) {
+        ServiceType[] services = serviceBindings.get(type.getName());
+        if (services != null && services.length > 0) {
+            for (int i=0; i<services.length; i++) {
+                ServiceType service = services[i];
+                if (service.acceptResource(ctx)) {
+                    if (service.isEnabled(ctx)) {
+                        result.add(service);
+                    }
+                }
+            }
+        }
+        ResourceType superType = type.getSuperType();
+        if (superType != null) {
+            collectEnabledServicesFor(ctx, superType, result);
+        }
+    }
+
+    protected void collectEnabledServiceNamesFor(Resource ctx, ResourceType type, List<String> result) {
+        ServiceType[] services = serviceBindings.get(type.getName());
+        if (services != null && services.length > 0) {
+            for (int i=0; i<services.length; i++) {
+                ServiceType service = services[i];
+                if (service.acceptResource(ctx)) {
+                    if (service.isEnabled(ctx)) {
+                        result.add(service.getName());
+                    }
+                }
+            }
+        }
+        ResourceType superType = type.getSuperType();
+        if (superType != null) {
+            collectEnabledServiceNamesFor(ctx, superType, result);
+        }
+    }
+
+    
+    public ResourceType[] getTypes() {
         return types.values().toArray(new ObjectTypeImpl[types.size()]);
     }
     
-    public void registerAction(ActionTypeImpl ad) {
-        addFragment(ad.getId(), ad, ad.type);
+    public ServiceType[] getServices() {
+        return services.values().toArray(new ServiceTypeImpl[services.size()]);
     }
     
-    public void unregisterAction(ActionTypeImpl ad) {
-        removeFragment(ad.getId(), ad);
-    }
     
     public synchronized void registerType(TypeDescriptor td) {
         if (td.superType != null && !types.containsKey(td.superType)) {
             registerMissingSuperTypeIfNeeded(td);
         }
         addFragment(td.name, td, td.superType);
+    }
+    
+    public synchronized void registerService(ServiceDescriptor td) {
+        addFragment(td.name, td, td.superType);
+    }
+    
+    public void unregisterType(TypeDescriptor td) {
+        removeFragment(td.name, td);
+    }
+
+    public void unregisterService(TypeDescriptor td) {
+        removeFragment(td.name, td);
     }
     
     protected void registerMissingSuperTypeIfNeeded(TypeDescriptor td) {
@@ -81,155 +208,210 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             DocumentType doctype = mgr.getDocumentType(td.superType);
             if (doctype != null) { // this is a document type - register a default web type
                 DocumentType superSuperType = (DocumentType)doctype.getSuperType();
-                String superSuperTypeName = ObjectType.ROOT_TYPE_NAME;
+                String superSuperTypeName = ResourceType.ROOT_TYPE_NAME;
                 if (superSuperType != null) {
                     superSuperTypeName = superSuperType.getName();
                 }
-                TypeDescriptor superWebType = new TypeDescriptor(DocumentObject.class, td.superType, superSuperTypeName);
-                registerType(superWebType);
+                try {
+                    if (docObjectClass == null) {
+                        docObjectClass = Class.forName("org.nuxeo.ecm.core.rest.DocumentObject");
+                    }
+                    TypeDescriptor superWebType = new TypeDescriptor(docObjectClass, td.superType, superSuperTypeName);
+                    registerType(superWebType);                    
+                } catch (ClassNotFoundException e) {
+                    //TODO
+                    System.err.println("Cannot find document resource class. Automatic Core Type support will be disabled ");
+                }
             }
         }
     }
     
-    public void unregisterType(TypeDescriptor td) {
-        removeFragment(td.name, td);
-    }
-    
+
     
     @Override
-    protected TypeDescriptorBase clone(TypeDescriptorBase object) {
+    protected TypeDescriptor clone(TypeDescriptor object) {
         return object.clone();
     }
     
     @Override
-    protected void applyFragment(TypeDescriptorBase object, TypeDescriptorBase fragment) {
-        TypeDescriptor td = object.asTypeDescriptor();
-        if (td != null) {
-            applyTypeFragment(td, fragment.asTypeDescriptor());
-        } else {
-            applyActionFragment(object.asActionDescriptor(), fragment.asActionDescriptor());
+    protected void applyFragment(TypeDescriptor object, TypeDescriptor fragment) {
+        // a type fragment may be used to replace the type implementation class.
+        // Super type cannot be replaced 
+        if (fragment.clazz != null) {
+            object.clazz = fragment.clazz;
+        }
+        if (object.isService()) {
+            ServiceDescriptor so = (ServiceDescriptor)object;
+            ServiceDescriptor sf = (ServiceDescriptor)fragment;
+            if (sf.facets != null && sf.facets.length > 0) {
+                ArrayList<String> list = new ArrayList<String>();
+                if (so.facets != null && so.facets.length > 0) {
+                    list.addAll(Arrays.asList(so.facets));    
+                }
+                list.addAll(Arrays.asList(sf.facets));
+            }
+            if (sf.targetTypes != null && sf.targetTypes.length > 0) {
+                ArrayList<String> list = new ArrayList<String>();
+                if (so.targetTypes != null && so.targetTypes.length > 0) {
+                    list.addAll(Arrays.asList(so.targetTypes));    
+                }
+                list.addAll(Arrays.asList(sf.targetTypes));
+            }
         }
     }
+    
 
     @Override
-    protected void applySuperFragment(TypeDescriptorBase object,
-            TypeDescriptorBase superFragment) {
+    protected void applySuperFragment(TypeDescriptor object,
+            TypeDescriptor superFragment) {
         // do not inherit from parents
     }
     
     @Override
-    protected void installContribution(String key, TypeDescriptorBase object) {
-        TypeDescriptor td = object.asTypeDescriptor();
-        if (td != null) {
-            installTypeContribution(key, td);
+    protected void installContribution(String key, TypeDescriptor object) {
+        if (object.isService()) {
+            installServiceContribution(key, (ServiceDescriptor)object);
         } else {
-            installActionContribution(key, object.asActionDescriptor());
-        }        
-    }
-    
-    @Override
-    protected void updateContribution(String key, TypeDescriptorBase object) {
-        TypeDescriptor td = object.asTypeDescriptor();
-        if (td != null) {
-            updateTypeContribution(key, td);
-        } else {
-            updateActionContribution(key, object.asActionDescriptor());
-        }        
-    }
-
-    @Override
-    protected void uninstallContribution(String key) {
-        if (key.indexOf('@') > -1) { // an action
-            uninstallActionContribution(key);
-        } else {
-            uninstallTypeContribution(key);
+            installTypeContribution(key, object);
         }
-    }    
+    }
     
-    @SuppressWarnings("unchecked")
-    protected void installTypeContribution(String key, TypeDescriptor td) {
-        ObjectTypeImpl type = new ObjectTypeImpl(null, td.name, (Class<ObjectResource>)td.clazz);
-        if (td.superType != null) {
-            type.superType = types.get(td.superType);
+    protected void installTypeContribution(String key, TypeDescriptor object) {        
+        ObjectTypeImpl type = new ObjectTypeImpl(this, null, object.name, (Class<Resource>)object.clazz);
+        if (object.superType != null) {
+            type.superType = types.get(object.superType);
             assert type.superType != null; // must never be null since the object is resolved 
         }
-        types.put(td.name, type);
+        // import document facets if this type wraps a document type
+        SchemaManager mgr = Framework.getLocalService(SchemaManager.class);
+        if (mgr != null) {
+            DocumentType doctype = mgr.getDocumentType(type.getName());
+            if (doctype != null) {
+                if (type.facets == null) {
+                    type.facets = new HashSet<String>();
+                }
+                type.facets.addAll(doctype.getFacets());
+            }
+        }
+        // register the type
+        types.put(object.name, type);  
     }
-  
-    protected void updateTypeContribution(String key, TypeDescriptor td) {
-        // when a type is updated (i.e. reinstalled) we must not replace the existing type since it may contains some contributed actions
+
+    protected void installServiceContribution(String key, ServiceDescriptor object) {
+        ServiceTypeImpl type = new ServiceTypeImpl(this, null, object.name, (Class<Resource>)object.clazz);
+        if (object.superType != null) {
+            type.superType = types.get(object.superType);
+            assert type.superType != null; // must never be null since the object is resolved 
+        }
+        services.put(object.name, type);  
+        // install bindings
+        if (object.targetTypes != null && object.targetTypes.length > 0) {
+            installServiceBindings(type, object.targetTypes);
+        }
+    }
+    
+    protected void installServiceBindings(ServiceTypeImpl service, String ... targetTypes) {
+        for (String t : targetTypes) {
+            ServiceTypeImpl[] bindings = serviceBindings.get(t);
+            if (bindings == null) {
+                bindings = new ServiceTypeImpl[] {service};
+            } else {
+                ServiceTypeImpl[] ar = new ServiceTypeImpl[bindings.length+1];
+                System.arraycopy(bindings, 0, ar, 0, bindings.length);
+                ar[bindings.length] = service;
+            }
+            serviceBindings.put(t, bindings);
+        }
+    }
+    
+    
+    @Override
+    protected void updateContribution(String key, TypeDescriptor object) {
+          if (object.isService()) {
+              updateServiceContribution(key, (ServiceDescriptor)object);
+          } else {
+              updateTypeContribution(key, object);
+          }
+    }
+    
+    protected void updateTypeContribution(String key, TypeDescriptor object) {
+     // when a type is updated (i.e. reinstalled) we must not replace the existing type since it may contains some contributed actions
         // there are two methods to do this: 
         // 1. update the existing type 
         // 2. unresolve, reinstall then resolve the type contribution to force action reinstalling.
         // we are using 1.
         ObjectTypeImpl t = types.get(key);
         if (t != null) { // update the type class
-            t.clazz = (Class<ObjectResource>)td.clazz;
+            t.clazz = (Class<Resource>)object.clazz;
+            t.loadAnnotations(engine.getAnnotationManager());
         } else { // install the type - this should never happen since it is an update!
-            throw new IllegalStateException("Updating a type which is not registered.");
+            throw new IllegalStateException("Updating an object type which is not registered.");
         }
     }
-  
-    protected void installActionContribution(String key, ActionTypeImpl ad) {
-        ObjectType type = types.get(ad.type);
-        assert type != null;
-        type.addAction(ad);
+
+    protected void updateServiceContribution(String key, ServiceDescriptor object) {
+        ObjectTypeImpl t = types.get(key);
+        if (t instanceof ServiceTypeImpl) { // update the type class
+            ServiceTypeImpl service = (ServiceTypeImpl)t;
+            String[] targetTypes = service.targetTypes;
+            service.clazz = (Class<Resource>)object.clazz;
+            service.loadAnnotations(engine.getAnnotationManager());
+            // update bindings
+            if (service.targetTypes != targetTypes) {
+                if (!Arrays.equals(targetTypes, service.targetTypes)) {
+                    if (targetTypes != null && targetTypes.length > 0) {
+                        removeServiceBindings(key, service);
+                    }
+                    if (service.targetTypes != null && service.targetTypes.length > 0) {
+                        installServiceBindings(service, service.targetTypes);
+                    }
+                }
+            }            
+        } else { // install the type - this should never happen since it is an update!
+            throw new IllegalStateException("Updating a service type which is not registered.");
+        }        
     }
-  
-    protected void updateActionContribution(String key, ActionTypeImpl ad) {
-        // no special handling required. updating an action is like re-installing
-        installActionContribution(key, ad);
-    }
+
     
     @Override
-    protected boolean isMainFragment(TypeDescriptorBase object) {
+    protected void uninstallContribution(String key) {
+        //TODO use "@" prefix for services in fragment registry?
+        ObjectTypeImpl t = types.remove(key);
+        if (t == null) {
+            ServiceTypeImpl s = services.remove(key);
+            if (s != null) {
+                removeServiceBindings(key, (ServiceTypeImpl)t);    
+            }
+        }
+    }
+    
+    protected void removeServiceBindings(String key, ServiceTypeImpl service) {
+        key = key.substring(1);
+        if (service.targetTypes != null && service.targetTypes.length > 0) {
+            for (String t : service.targetTypes) {
+                // remove bindings
+                ServiceTypeImpl[] ar = serviceBindings.get(t);
+                if (ar != null) {
+                    ArrayList<ServiceTypeImpl> list = new ArrayList<ServiceTypeImpl>(ar.length);
+                    for (int i=0; i<ar.length; i++) {
+                        if (!key.equals(ar[i].getName())) {
+                            list.add(ar[i]);
+                        }
+                    }
+                    if (list.isEmpty()) {
+                        serviceBindings.remove(key);
+                    } else if (list.size() < ar.length) {
+                        ar = list.toArray(new ServiceTypeImpl[list.size()]);
+                        serviceBindings.put(key, ar);
+                    }
+                }
+            }
+        }
+    }    
+      
+    @Override
+    protected boolean isMainFragment(TypeDescriptor object) {
         return object.isMainFragment();
     }
-
-    protected void applyTypeFragment(TypeDescriptor object, TypeDescriptor fragment) {
-        // a type fragment may be used to replace the type implementation class.
-        // Super type cannot be replaced 
-        if (fragment.clazz != null) {
-            object.clazz = fragment.clazz;
-        }
-    }
-    
-    protected void applyActionFragment(ActionTypeImpl object, ActionTypeImpl fragment) {
-        // for actions we may use fragments to add categories and replace implementation class, 
-        // guard and enabled state.
-        // Target type cannot be replaced.
-        if (fragment.categories != null && !fragment.categories.isEmpty()) {
-            object.categories.addAll(fragment.categories);
-        }
-        if (fragment.clazz != null) {
-            object.clazz = fragment.clazz;
-        }
-        if (object.enabled != fragment.enabled) {
-            object.enabled = fragment.enabled;
-        }
-        if (fragment.guardExpression != null && fragment.guardExpression.length() > 0) {
-            object.guardExpression = fragment.guardExpression;
-            // TODO use . to path the original expression? 
-        }
-    }
-
-    protected void uninstallActionContribution(String key) {
-        int p = key.indexOf('@');
-        if (p == -1) {
-            throw new IllegalArgumentException("Invalid action key: "+key);
-        }
-        String action = key.substring(0, p);
-        String type = key.substring(p+1);
-        ObjectTypeImpl wt = types.get(type);
-        if (wt != null) {
-            wt.removeAction(action);
-        }
-    }
-    
-    protected void uninstallTypeContribution(String key) {
-        types.remove(key);
-    }
-
-
-    
+            
 }

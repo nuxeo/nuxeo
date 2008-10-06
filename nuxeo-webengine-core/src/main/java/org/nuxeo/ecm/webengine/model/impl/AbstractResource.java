@@ -19,12 +19,19 @@
 
 package org.nuxeo.ecm.webengine.model.impl;
 
+import java.util.List;
+import java.util.Set;
+
+import javax.ws.rs.GET;
+
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.ActionResource;
-import org.nuxeo.ecm.webengine.model.ObjectResource;
+import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.Profile;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
+import org.nuxeo.ecm.webengine.model.ServiceResource;
+import org.nuxeo.ecm.webengine.model.Template;
+import org.nuxeo.ecm.webengine.model.ViewDescriptor;
 import org.nuxeo.ecm.webengine.model.WebContext;
 
 /**
@@ -40,13 +47,15 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     protected AbstractResource<?> prev;
     protected String path;
     protected T type;
-
-  
+    protected Template template;
     
-    public Resource initialize(WebContext ctx, ResourceType<?> type, Object ...  args) throws WebException {
+    public Resource initialize(WebContext ctx, ResourceType type, Object ...  args) throws WebException {
         this.ctx = ctx;
         this.type = (T)type;
         this.path = ctx.getUriInfo().getMatchedURIs().get(0);
+        if (!this.type.getGuard().check(ctx)) {
+            throw new WebSecurityException("Failed to initialize object: "+getPath()+". Object is not accessible in the current context", getPath());
+        }
         return this;
     }
     
@@ -54,6 +63,14 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         this.ctx = null;
         this.type = null;
         this.path = null;
+    }
+
+    public Set<String> getFacets() {
+        return type.getFacets();
+    }
+    
+    public boolean hasFacet(String facet) {
+        return type.hasFacet(facet);
     }
 
     public T getType() {
@@ -81,17 +98,47 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return path;
     }
 
-
+    public List<ViewDescriptor> getViews() {
+        return type.getEnabledViews(this); 
+    }
+    
+    public List<ViewDescriptor> getViews(String category) {
+        return type.getEnabledViews(this, category); 
+    }
+    
+    public List<String> getViewNames() {
+        return type.getEnabledViewNames(this); 
+    }
+    
+    public List<String> getViewNames(String category) {
+        return type.getEnabledViewNames(this, category); 
+    }
+    
+    public ViewDescriptor getView(String name) {
+        return type.getView(name);
+    }
+    
+    public void setTemplate(Template template) {
+        this.template = template;
+    }
+    
+    @GET
+    public Template getTemplate() throws WebException {
+        if (template == null) {
+            template = new Template(this).resolve();
+        }
+        return template;
+    }
 
     public <A> A getAdapter(Class<A> adapter) {
         if (adapter == WebContext.class) {
             return adapter.cast(ctx);
         }
-        if (adapter == ObjectResource.class) {
-            return isObject() ? adapter.cast(this) : null;
+        if (adapter == Resource.class) {
+            return isService() ? adapter.cast(this) : null;
         }
-        if (adapter == ActionResource.class) {
-            return isAction() ? adapter.cast(this) : null;
+        if (adapter == ServiceResource.class) {
+            return isService() ? adapter.cast(this) : null;
         }
         return null;
     }

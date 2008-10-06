@@ -61,8 +61,8 @@ public class ProfileDescriptor implements Cloneable {
     @XNodeList(value="types/type", componentType=TypeDescriptor.class, type=ArrayList.class, nullByDefault=false)
     public ArrayList<TypeDescriptor> types;
 
-    @XNodeList(value="actions/action", componentType=ActionTypeImpl.class, type=ArrayList.class, nullByDefault=false)
-    public ArrayList<ActionTypeImpl> actions;
+    @XNodeList(value="actions/action", componentType=ServiceTypeImpl.class, type=ArrayList.class, nullByDefault=false)
+    public ArrayList<ServiceTypeImpl> actions;
 
     @XNode("script-extension")
     public String scriptExtension = "groovy";
@@ -141,7 +141,7 @@ public class ProfileDescriptor implements Cloneable {
                 ad.roots.add(roots[i]);
             }
         }
-        ad.actions = new ArrayList<ActionTypeImpl>();
+        ad.actions = new ArrayList<ServiceTypeImpl>();
         ad.types = new ArrayList<TypeDescriptor>();        
         return ad;
     }

@@ -50,7 +50,7 @@ public class DocumentObject extends DefaultObject {
 
 
     @Override
-    public Resource initialize(WebContext ctx, ResourceType<?> type,
+    public Resource initialize(WebContext ctx, ResourceType type,
             Object... args) throws WebException {
         assert args != null && args.length == 1;
         doc = (DocumentModel)args[0];
@@ -59,7 +59,7 @@ public class DocumentObject extends DefaultObject {
     
     @GET
     public Object doGet() {
-        return getView();
+        return getTemplate();
     }
     
     @DELETE
@@ -72,7 +72,7 @@ public class DocumentObject extends DefaultObject {
             throw WebException.wrap("Failed to delete document "+doc.getPathAsString(), e);
         }
         if (prev != null) { // show parent ? TODO: add getView(method) to be able to change the view method
-            return prev.getView();
+            return prev.getTemplate();
         }
         return "Root removed :)"; //TODO
     }
@@ -87,7 +87,7 @@ public class DocumentObject extends DefaultObject {
     @PUT
     public Object doPut() {        
         doc = DocumentHelper.updateDocument(ctx, doc);
-        return getView();
+        return getTemplate();
     }
     
     //TODO implement HEAD

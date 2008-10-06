@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.model.WebAction;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.WebService;
 import org.nuxeo.runtime.annotations.loader.AnnotationLoader;
 import org.nuxeo.runtime.annotations.loader.BundleAnnotationsLoader;
 import org.osgi.framework.Bundle;
@@ -46,7 +46,7 @@ public class GlobalTypesLoader  implements AnnotationLoader {
         this.providers = new ConcurrentHashMap<String, TypeConfigurationProvider>();
         this.mainProvider = new TypeConfigurationProvider();
         BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), this);
-        BundleAnnotationsLoader.getInstance().addLoader(WebAction.class.getName(), this);
+        BundleAnnotationsLoader.getInstance().addLoader(WebService.class.getName(), this);
     }
     
  
@@ -77,11 +77,10 @@ public class GlobalTypesLoader  implements AnnotationLoader {
     public TypeConfigurationProvider scanResourceDirectory(String parentName, File dir) throws ClassNotFoundException {
         TypeConfigurationProvider provider = new TypeConfigurationProvider();
         String pkgName = new StringBuilder().append(parentName).append('.').append(dir.getName()).toString();
-        String typeName = Utils.fcToUpperCase(dir.getName());
         int extlen = ".groovy".length(); 
         for (File file : dir.listFiles()) {
             String name = file.getName();
-            if (name.endsWith(".groovy") && name.startsWith(typeName)) {
+            if (name.endsWith(".groovy")) {
                 loadClassFile(provider, new StringBuilder()
                     .append(pkgName).append('.')
                     .append(name.substring(0, name.length()-extlen)).toString());
@@ -96,9 +95,9 @@ public class GlobalTypesLoader  implements AnnotationLoader {
         if (type != null) {
             provider.registerType(TypeDescriptor.fromAnnotation(clazz, type));
         } else {            
-            WebAction action = clazz.getAnnotation(WebAction.class);
-            if (action != null) {
-                provider.registerAction(ActionTypeImpl.fromAnnotation(clazz, action));    
+            WebService ws = clazz.getAnnotation(WebService.class);
+            if (ws != null) {
+                provider.registerType(ServiceDescriptor.fromAnnotation(clazz, ws));    
             }
         }
     }
@@ -111,10 +110,10 @@ public class GlobalTypesLoader  implements AnnotationLoader {
         if (annotationType.equals(WebObject.class.getName())) {
             WebObject type = clazz.getAnnotation(WebObject.class);                 
             mainProvider.registerType(TypeDescriptor.fromAnnotation(clazz, type));
-        } else if (annotationType.equals(WebAction.class.getName())) {
+        } else if (annotationType.equals(WebService.class.getName())) {
             //TODO: avoid loading clazz here - use the data from annotation ?
-            WebAction action = clazz.getAnnotation(WebAction.class);
-            mainProvider.registerAction(ActionTypeImpl.fromAnnotation(clazz, action));
+            WebService service = clazz.getAnnotation(WebService.class);
+            mainProvider.registerType(ServiceDescriptor.fromAnnotation(clazz, service));
         } else {
             throw new IllegalArgumentException(annotationType);
         }

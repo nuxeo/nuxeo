@@ -38,5 +38,7 @@ public @interface WebObject {
 
     String name(); // the type name
     String superType() default ObjectTypeImpl.ROOT_TYPE_NAME; // the super type name
+    String guard() default ""; // a security guard if any
+    String[] facets() default {};
     
 }

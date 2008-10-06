@@ -43,14 +43,15 @@ import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.platform.rendering.fm.i18n.ResourceComposite;
 import org.nuxeo.ecm.webengine.model.Profile;
-import org.nuxeo.ecm.webengine.model.WebAction;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.WebService;
 import org.nuxeo.ecm.webengine.model.impl.GlobalTypesLoader;
 import org.nuxeo.ecm.webengine.model.impl.ProfileDescriptor;
 import org.nuxeo.ecm.webengine.model.impl.ProfileRegistry;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
+import org.nuxeo.runtime.annotations.AnnotationManager;
 import org.nuxeo.runtime.annotations.loader.AnnotationLoader;
 import org.nuxeo.runtime.annotations.loader.BundleAnnotationsLoader;
 import org.nuxeo.runtime.api.Framework;
@@ -111,6 +112,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     protected GlobalTypesLoader globalTypes;
     protected List<ResourceBinding> bindings = new Vector<ResourceBinding>();
 
+    protected AnnotationManager annoMgr;
 
 
     public WebEngine(File root, FileChangeNotifier notifier) throws IOException {
@@ -118,6 +120,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         this.root = root;
         this.notifier = notifier;
         this.scripting = new Scripting(isDebug);
+        this.annoMgr = new AnnotationManager();
         String cp = System.getProperty("groovy.classpath");
         if (cp == null) {
             cp = new File(root, "classes").getAbsolutePath();        
@@ -127,7 +130,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         
         this.globalTypes = new GlobalTypesLoader(this);
         BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), globalTypes);
-        BundleAnnotationsLoader.getInstance().addLoader(WebAction.class.getName(), globalTypes);        
+        BundleAnnotationsLoader.getInstance().addLoader(WebService.class.getName(), globalTypes);        
         
         loadProfiles();
         
@@ -176,6 +179,9 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         }
     }
     
+    public AnnotationManager getAnnotationManager() {
+        return annoMgr;
+    }
 
     protected Context createXMapContext() {
         return new Context() {
@@ -400,4 +406,5 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         }
         return null;
     }
+    
 }

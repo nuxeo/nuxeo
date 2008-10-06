@@ -19,20 +19,20 @@
 
 package org.nuxeo.ecm.webengine.model;
 
-import java.util.Map;
+import java.util.List;
+import java.util.Set;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.runtime.model.Adaptable;
 
+
 /**
- * This interface must be implemented by any object that is dispatched on a web request through web engine.
- * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public interface Resource extends Adaptable {
 
-    Resource initialize(WebContext ctx, ResourceType<?> type, Object ...  args) throws WebException;
+    Resource initialize(WebContext ctx, ResourceType type, Object ...  args) throws WebException;
 
     void dispose();
     
@@ -40,20 +40,26 @@ public interface Resource extends Adaptable {
     
     Profile getApplication();
     
-    ResourceType<?> getType();
+    ResourceType getType();
     
     String getPath();
 
     Resource getPrevious();
     
     Resource getNext();
+        
+    boolean isService();
     
-    boolean isAction();
-    
-    boolean isObject();
-    
-    View getView() throws WebException;
-    
-    View getView(String name, String mimeType, Map<String,Object> args) throws WebException;
+    void setTemplate(Template template);
+    Template getTemplate() throws WebException;
 
+    Set<String> getFacets();
+    boolean hasFacet(String facet);
+
+    ViewDescriptor getView(String name);
+    List<ViewDescriptor> getViews();
+    List<ViewDescriptor> getViews(String category);
+    List<String> getViewNames();
+    List<String> getViewNames(String category);
+    
 }

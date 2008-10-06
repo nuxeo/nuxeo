@@ -25,6 +25,7 @@ import java.security.Principal;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.logging.Log;
@@ -88,6 +89,11 @@ public interface WebContext extends Adaptable {
      */
     UriInfo getUriInfo();
     
+    /**
+     * Get HTTP Headers as defined by JAX-RS
+     * @return HTTP headers object
+     */
+    HttpHeaders getHttpHeaders();
     
     /**
      * Gets the underlying HTTP servlet request object.
@@ -223,16 +229,12 @@ public interface WebContext extends Adaptable {
      */
     Log getLog();
 
-    public ObjectResource newObject(String typeName, Object ...  args) throws WebException;
+    public Resource newObject(String typeName, Object ...  args) throws WebException;
 
-    public ObjectResource newObject(ObjectType type, Object ...  args) throws WebException;
+    public Resource newObject(ResourceType type, Object ...  args) throws WebException;
 
-    public ActionResource newAction(String typeName, String actionName, Object ...  args) throws WebException;
+    public ServiceResource newService(Resource ctx, String serviceName, Object ...  args) throws WebException;
     
-    public ActionResource newAction(ObjectResource obj, String actionName, Object ...  args) throws WebException;
-    
-    public ActionResource newAction(ObjectType type, String actionName, Object ...  args) throws WebException;
-
     /** object stack API */
     public void setApplication(WebApplication resource);
     
@@ -246,9 +248,7 @@ public interface WebContext extends Adaptable {
 
     public Resource head();
 
-    public ObjectResource getTargetObject();
-
-    public ActionResource getAction(); 
+    public Resource getTargetObject();
 
 
     

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.server.jersey;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.logging.Log;
@@ -27,7 +28,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
 
-import com.sun.jersey.api.core.HttpContext;
+import com.sun.jersey.impl.application.WebApplicationContext;
+import com.sun.jersey.spi.container.ContainerRequest;
+import com.sun.jersey.spi.container.WebApplication;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -36,13 +39,15 @@ import com.sun.jersey.api.core.HttpContext;
 public class WebContextImpl extends AbstractWebContext {
 
     protected static final Log log = LogFactory.getLog(WebContext.class);
-    
-    protected HttpContext ctx;
+
+    protected WebApplicationContext ctx;
+    protected ContainerRequest req;
     protected UriInfo uri;
 
-    public WebContextImpl(HttpContext ctx, HttpServletRequest request) {
-        super (request);
-        this.ctx = ctx;
+    public WebContextImpl(WebApplication app, ContainerRequest creq, HttpServletRequest request) {
+        super (request); 
+        this.ctx = (WebApplicationContext)app.getThreadLocalHttpContext();
+        this.req = creq;
     }
 
 
@@ -52,5 +57,9 @@ public class WebContextImpl extends AbstractWebContext {
         }
         return uri;
     }
-    
+
+    public HttpHeaders getHttpHeaders() {
+        return req;
+    }
+
 }

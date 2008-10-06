@@ -19,17 +19,18 @@
 
 package org.nuxeo.ecm.webengine.model.impl;
 
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.webengine.model.ObjectType;
+import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@XObject("type")
-public class TypeDescriptor implements TypeDescriptorBase {
+@XObject("web-object")
+public class TypeDescriptor implements Cloneable {
 
     @XNode("@class")
     public Class<?> clazz;
@@ -41,7 +42,7 @@ public class TypeDescriptor implements TypeDescriptorBase {
     public String fragment;
     
     @XNode("@superType")
-    public String superType = ObjectType.ROOT_TYPE_NAME;
+    public String superType = ResourceType.ROOT_TYPE_NAME;
     
     
     /**
@@ -84,7 +85,7 @@ public class TypeDescriptor implements TypeDescriptorBase {
         return fragment;
     }
     
-    public ActionTypeImpl asActionDescriptor() {
+    public ServiceTypeImpl asActionDescriptor() {
         return null;
     }
     
@@ -96,6 +97,9 @@ public class TypeDescriptor implements TypeDescriptorBase {
         return fragment == null;
     }
     
+    public boolean isService() {
+        return false;
+    }
 
     public static TypeDescriptor fromAnnotation(Class<?> clazz, WebObject type) {
         return  new TypeDescriptor(clazz, type.name(), type.superType());

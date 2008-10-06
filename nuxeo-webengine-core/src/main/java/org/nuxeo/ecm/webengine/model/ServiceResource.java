@@ -17,37 +17,17 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.core.rest;
+package org.nuxeo.ecm.webengine.model;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 
-import org.nuxeo.ecm.webengine.model.WebAction;
-import org.nuxeo.ecm.webengine.model.impl.DefaultAction;
 
 /**
- * Create a document
- * <p>
- * Accepts the following methods:
- * <ul>
- * <li> GET - get the form to create the document 
- * <li> POST - create the document (same as POST on a document resource)
- * </ul>
- *  
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebAction(name="create", type="Document", guard="WRITE")
-public class CreateAction extends DefaultAction {
-
-    @GET
-    public Object doGet() {
-        return getView();
-    }
+public interface ServiceResource extends Resource {
     
-    @POST
-    public Object doPost() {
-        return ((DocumentObject)prev).doPost();
-    }
+    Resource getTarget();
     
 }

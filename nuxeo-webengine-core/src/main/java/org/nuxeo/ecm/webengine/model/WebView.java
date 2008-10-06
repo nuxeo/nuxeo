@@ -19,21 +19,23 @@
 
 package org.nuxeo.ecm.webengine.model;
 
-import java.util.Set;
-
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ActionResource extends Resource {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+public @interface WebView {
+
+    String name();
+    String[] categories() default {};
+    String guard() default "";
+    String fileName() default "";
+    boolean auto() default true;
     
-    ActionType getType();
-    
-    public String getName();
-    
-    boolean isEnabled();
-     
-    Set<String> getCategories();
-   
 }

@@ -22,10 +22,12 @@ package org.nuxeo.ecm.webengine.server.resteasy;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.resteasy.spi.HttpRequest;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
 
@@ -39,11 +41,12 @@ public class WebEngineContext extends AbstractWebContext {// extends HttpRequest
 
     protected HttpServletRequest request;
     protected UriInfo uri;
+    protected HttpRequest jaxReq;
 
-    public WebEngineContext(UriInfo uri, HttpServletRequest request) throws IOException {
+    public WebEngineContext(HttpRequest jaxReq, HttpServletRequest request) throws IOException {
         super (request);
         this.request = request;
-        this.uri = uri;
+        this.jaxReq = jaxReq;
     }
     
     public HttpServletRequest getHttpServletRequest() {
@@ -51,7 +54,14 @@ public class WebEngineContext extends AbstractWebContext {// extends HttpRequest
     }
 
     public UriInfo getUriInfo() {
-        return uri;
+        return jaxReq.getUri();
     }
     
+    public HttpHeaders getHttpHeaders() {
+        return jaxReq.getHttpHeaders();
+    }    
+    
+    public HttpRequest getHttpRequest() {
+        return jaxReq;
+    }
 }

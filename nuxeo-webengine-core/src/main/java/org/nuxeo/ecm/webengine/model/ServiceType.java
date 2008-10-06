@@ -17,38 +17,17 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.core.rest;
-
-
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-
-import org.nuxeo.ecm.webengine.model.WebAction;
-import org.nuxeo.ecm.webengine.model.impl.DefaultAction;
+package org.nuxeo.ecm.webengine.model;
 
 /**
- * Edit a document.
- * <p>
- * Accepts 2 methods: 
- * <ul>
- * <li>GET - GET the form to edit the document
- * <li>POST - modify the document (same as PUT on the document resource)
- * </ul>
- * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebAction(name="update", type="Document", guard="WRITE")
-public class UpdateAction extends DefaultAction {
+public interface ServiceType extends ResourceType {
+
+    String[] getTargetFacets();
     
-    @GET
-    public Object doGet() {
-        return getView();
-    }
+    String[] getTargetTypes();
     
-    @POST
-    public Object doPost() {
-        return ((DocumentObject)prev).doPut();
-    }
-    
+    boolean acceptResource(Resource resource);
 }

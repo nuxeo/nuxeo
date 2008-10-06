@@ -30,18 +30,18 @@ import java.util.Vector;
 public class TypeConfigurationProvider {
     
     protected List<TypeDescriptor> types;
-    protected List<ActionTypeImpl> actions;
+    protected List<ServiceDescriptor> services;
     protected List<TypeRegistry> registries;
     
 
     public TypeConfigurationProvider() {
         types = new ArrayList<TypeDescriptor>();
-        actions = new ArrayList<ActionTypeImpl>();
+        services = new ArrayList<ServiceDescriptor>();
         registries = new Vector<TypeRegistry>();
     }
     
     public synchronized boolean isEmpty() {
-        return types.isEmpty() && actions.isEmpty();
+        return types.isEmpty() && services.isEmpty();
     }
     
     public synchronized void registerType(TypeDescriptor td) {
@@ -55,17 +55,17 @@ public class TypeConfigurationProvider {
         }
     }
     
-    public synchronized void registerAction(ActionTypeImpl ad) {
-        actions.add(ad);
-        fireActionRegistered(ad);
+    public synchronized void registerAction(ServiceDescriptor ad) {
+        services.add(ad);
+        fireServiceRegistered(ad);
     }
-    
-    public synchronized void unregisterAction(ActionTypeImpl ad) {
-        if (actions.remove(ad)) {
-            fireActionUnregistered(ad);
+
+    public synchronized void unregisterAction(ServiceDescriptor ad) {
+        if (services.remove(ad)) {
+            fireServiceUnregistered(ad);
         }
     }
-    
+
     public void addRegistry(TypeRegistry registry) {
         registries.add(registry);
     }
@@ -78,29 +78,29 @@ public class TypeConfigurationProvider {
         for (TypeDescriptor td : types) {
             registry.registerType(td);
         }
-        for (ActionTypeImpl ad : actions) {
-            registry.registerAction(ad);
+        for (ServiceDescriptor ad : services) {
+            registry.registerService(ad);
         }
         addRegistry(registry);
     }
     
 
 
-    protected void fireActionRegistered(ActionTypeImpl ad) {
+    protected void fireServiceRegistered(ServiceDescriptor ad) {
         if (registries.isEmpty()) {
             return;
         }
-        for (TypeRegistry listener : registries.toArray(new TypeRegistry[registries.size()])) {
-           listener.registerAction(ad);
+        for (TypeRegistry reg : registries.toArray(new TypeRegistry[registries.size()])) {
+           reg.registerService(ad);
         }
     }
 
-    protected void fireActionUnregistered(ActionTypeImpl ad) {
+    protected void fireServiceUnregistered(ServiceDescriptor ad) {
         if (registries.isEmpty()) {
             return;
         }
-        for (TypeRegistry listener : registries.toArray(new TypeRegistry[registries.size()])) {
-           listener.unregisterAction(ad);
+        for (TypeRegistry reg : registries.toArray(new TypeRegistry[registries.size()])) {
+           reg.unregisterService(ad);
         }
     }
     

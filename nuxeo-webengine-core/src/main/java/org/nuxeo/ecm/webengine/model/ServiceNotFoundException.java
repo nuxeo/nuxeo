@@ -19,26 +19,17 @@
 
 package org.nuxeo.ecm.webengine.model;
 
-import java.util.Set;
-
-import org.nuxeo.ecm.webengine.security.Guard;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ActionType extends ResourceType<ActionResource> {
-    
-    Set<String> getCategories();
-    
-    boolean isEnabled();
-    
-    boolean isEnabled(WebContext ctx);
-    
-    /**
-     * TODO use guard into WebType too?
-     * @return
-     */
-    Guard getGuard();
-    
+public class ServiceNotFoundException extends TypeException {
+
+    private static final long serialVersionUID = 1L;
+
+    public ServiceNotFoundException(Resource ctx, String service) {
+        super ("Service "+service+" not found for object: "+ctx.getPath()+" of type "+ctx.getType().getName());
+    }
+
 }

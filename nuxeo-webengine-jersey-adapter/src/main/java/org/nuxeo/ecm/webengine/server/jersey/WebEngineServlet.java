@@ -300,7 +300,7 @@ public class WebEngineServlet extends HttpServlet implements ContainerListener {
            requestInvoker.set(request);
            responseInvoker.set(response);
 
-           WebContextImpl ctx = new WebContextImpl(_application.getThreadLocalHttpContext(), request);
+           WebContextImpl ctx = new WebContextImpl(_application, cRequest, request);
            WebEngine.setActiveContext(ctx);
            _application.handleRequest(cRequest, new Writer(response));
        } catch (ContainerException e) {

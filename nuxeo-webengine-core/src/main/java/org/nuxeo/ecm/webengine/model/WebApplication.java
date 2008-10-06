@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webengine.model;
 
+import java.util.List;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
@@ -119,15 +121,44 @@ public class WebApplication {
         return profile.getFile(path);
     }
     
-    public ScriptFile getTemplate(ObjectResource obj, String name, String mediaType) throws WebException {
-        return profile.getTemplate(obj, name, mediaType);
+    public ScriptFile getFile(Resource obj, String name) throws WebException {
+        return profile.getFile(obj, name);
     }    
 
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         return profile.loadClass(className);
     }
 
-    public ObjectType getType(String typeName) throws TypeNotFoundException {
+    public ResourceType getType(String typeName) throws TypeNotFoundException {
         return profile.getType(typeName);
+    }
+    
+    
+    public ResourceType[] getTypes() {
+        return profile.getTypes();
+    }
+    
+    public ServiceType[] getServices() {
+      return profile.getServices();  
+    }
+    
+    public ServiceType getService(Resource ctx, String name) throws ServiceNotFoundException {
+        return profile.getService(ctx, name);  
+    }
+    
+    public List<ServiceType> getServices(Resource ctx) {
+        return profile.getServices(ctx);
+    }
+    
+    public List<String> getServiceNames(Resource ctx) {
+        return profile.getServiceNames(ctx);        
+    }
+
+    public List<ServiceType> getEnabledServices(Resource ctx) {
+        return profile.getEnabledServices(ctx);
+    }
+    
+    public List<String> getEnabledServiceNames(Resource ctx) {
+        return profile.getEnabledServiceNames(ctx);        
     }
 }

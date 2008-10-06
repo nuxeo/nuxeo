@@ -19,41 +19,70 @@
 
 package org.nuxeo.ecm.webengine.model.impl;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.ObjectResource;
-import org.nuxeo.ecm.webengine.model.ObjectType;
-import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.model.Resource;
+import org.nuxeo.ecm.webengine.model.ResourceType;
+import org.nuxeo.ecm.webengine.model.ViewDescriptor;
+import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.WebView;
+import org.nuxeo.ecm.webengine.security.Guard;
+import org.nuxeo.ecm.webengine.security.PermissionService;
+import org.nuxeo.runtime.annotations.AnnotatedClass;
+import org.nuxeo.runtime.annotations.AnnotatedMethod;
+import org.nuxeo.runtime.annotations.AnnotationManager;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ObjectTypeImpl implements ObjectType {
-        
+public class ObjectTypeImpl implements ResourceType {
+    
+    protected TypeRegistry reg;
     protected String name;
     protected ObjectTypeImpl superType;
-    protected ConcurrentMap<String, ActionTypeImpl> actions;
-    // the class may be changed when a type is updated
-    protected volatile Class<ObjectResource> clazz;
-
-    public ObjectTypeImpl(ObjectTypeImpl superType, String name, Class<ObjectResource> clazz) {
+    // the views and class may be changed when a type is updated
+    protected volatile Map<String,ViewDescriptor> views;
+    protected volatile Class<Resource> clazz;
+    protected volatile Guard guard = Guard.DEFAULT;
+    protected volatile Set<String> facets;
+    
+    
+    public ObjectTypeImpl(TypeRegistry reg, ObjectTypeImpl superType, String name, Class<Resource> clazz) {
+        this.reg = reg;
         this.superType = superType;
         this.name = name;
         this.clazz = clazz;
-        this.actions = new ConcurrentHashMap<String, ActionTypeImpl>();
+        AnnotationManager mgr = reg.engine.getAnnotationManager();        
+        loadAnnotations(mgr);
     }
     
-    public ObjectType getSuperType() {
+    public ResourceType getSuperType() {
         return superType;
     }
     
-    public Class<ObjectResource> getObjectType() {
+    public Class<Resource> getObjectType() {
         return this.clazz; 
+    }
+    
+    public Guard getGuard() {
+        return guard;
+    }
+    
+    public Set<String> getFacets() {
+        return facets;
+    }
+    
+    public boolean hasFacet(String facet) {
+        return facets != null && facets.contains(facet);
     }
     
     /**
@@ -63,104 +92,130 @@ public class ObjectTypeImpl implements ObjectType {
         return name;
     }
     
-    public Class<ObjectResource> getResourceClass() {
+    public Class<Resource> getResourceClass() {
         return clazz;
     }
     
-    public ObjectResource newInstance() throws WebException {
+    public <T extends Resource> T newInstance() throws WebException {
         try {            
-            return clazz.newInstance();
+            return (T)clazz.newInstance();
         } catch (Exception e) {
             throw WebException.wrap("Failed to instantiate web object: "+clazz, e);
         }
     }
     
-    public ActionTypeImpl getAction(String name) {
-        return actions.get(name);
-    }    
-    
-    public ActionTypeImpl addAction(ActionTypeImpl action) {
-        return actions.put(action.name, action);
+    public ViewDescriptor getView(String name) {
+        return views.get(name);
     }
 
-    public void removeAction(String name) {
-        actions.remove(name);
+    public List<ViewDescriptor> getViews() {
+        return new ArrayList<ViewDescriptor>(views.values());  
     }
     
-    public ActionTypeImpl[] getActions() {
-        ArrayList<ActionTypeImpl> result = new ArrayList<ActionTypeImpl>();
-        collectActions(result);
-        return result.toArray(new ActionTypeImpl[result.size()]);
-    }
-    
-    public ActionTypeImpl[] getActions(String category) {
-        ArrayList<ActionTypeImpl> result = new ArrayList<ActionTypeImpl>();
-        collectActions(result, category);
-        return result.toArray(new ActionTypeImpl[result.size()]);
-    }    
-
-    public ActionTypeImpl[] getEnabledActions(WebContext ctx) {
-        ArrayList<ActionTypeImpl> result = new ArrayList<ActionTypeImpl>();
-        collectEnabledActions(result, ctx);
-        return result.toArray(new ActionTypeImpl[result.size()]);
-    }
-
-    public ActionTypeImpl[] getEnabledActions(String category, WebContext ctx) {
-        ArrayList<ActionTypeImpl> result = new ArrayList<ActionTypeImpl>();
-        collectEnabledActions(result, category, ctx);
-        return result.toArray(new ActionTypeImpl[result.size()]);
-    }
-    
-
-    public ActionTypeImpl[] getLocalActions() {
-        return actions.values().toArray(new ActionTypeImpl[actions.size()]);
-    }
-        
-    protected void collectActions(List<ActionTypeImpl> result) {
-        if (superType != null) {
-            superType.collectActions(result);
+    public List<ViewDescriptor> getViews(String category) {
+        ArrayList<ViewDescriptor> result = new ArrayList<ViewDescriptor>();
+        for (ViewDescriptor vd : views.values()) {
+            if (vd.getCategories().contains(category)) {
+                result.add(vd);
+            }            
         }
-        ActionTypeImpl[] actions = getLocalActions();
-        for (ActionTypeImpl action : actions) {
-            result.add(action);
-        }    
+        return result;  
+    }
+    
+    public List<ViewDescriptor> getEnabledViews(Resource obj) {
+        ArrayList<ViewDescriptor> result = new ArrayList<ViewDescriptor>();
+        for (ViewDescriptor vd : views.values()) {
+            if (vd.isEnabled(obj)) {
+                result.add(vd);
+            }            
+        }
+        return result;
+    }
+    
+    public List<ViewDescriptor> getEnabledViews(Resource obj, String category) {
+        ArrayList<ViewDescriptor> result = new ArrayList<ViewDescriptor>();
+        for (ViewDescriptor vd : views.values()) {
+            if (vd.getCategories().contains(category) && vd.isEnabled(obj)) {
+                result.add(vd);
+            }            
+        }
+        return result;  
     }
 
-    protected void collectEnabledActions(List<ActionTypeImpl> result, WebContext ctx) {
-        if (superType != null) {
-            superType.collectEnabledActions(result, ctx);
+    public List<String> getViewNames() {
+        ArrayList<String> result = new ArrayList<String>();
+        for (ViewDescriptor vd : views.values()) {
+            result.add(vd.getName());
         }
-        ActionTypeImpl[] actions = getLocalActions();
-        for (ActionTypeImpl action : actions) {
-            if (action.isEnabled(ctx)) {
-                result.add(action);
+        return result;    
+    }
+    
+    public List<String> getViewNames(String category) {
+        ArrayList<String> result = new ArrayList<String>();
+        for (ViewDescriptor vd : views.values()) {
+            if (vd.getCategories().contains(category)) {
+                result.add(vd.getName());
+            }            
+        }
+        return result;  
+    }
+    
+    public List<String> getEnabledViewNames(Resource obj) {
+        ArrayList<String> result = new ArrayList<String>();
+        for (ViewDescriptor vd : views.values()) {
+            if (vd.isEnabled(obj)) {
+                result.add(vd.getName());
+            }            
+        }
+        return result;
+    }
+    
+    public List<String> getEnabledViewNames(Resource obj, String category) {
+        ArrayList<String> result = new ArrayList<String>();
+        for (ViewDescriptor vd : views.values()) {
+            if (vd.getCategories().contains(category) && vd.isEnabled(obj)) {
+                result.add(vd.getName());
+            }            
+        }
+        return result;  
+    }
+
+    public boolean isEnabled(Resource ctx) {
+        return guard.check(ctx);
+    }
+    
+
+    protected void loadViews(AnnotationManager annoMgr) {
+        views = new HashMap<String, ViewDescriptor>();
+        AnnotatedClass<?> ac = annoMgr.load(clazz);
+        AnnotatedMethod[] methods = ac.getAnnotatedMethods(WebView.class);
+        for (AnnotatedMethod m : methods) {
+            WebView anno = m.getAnnotation(WebView.class);
+            try {
+                ViewDescriptor vd = new ViewDescriptor(anno);
+                views.put(vd.getName(), vd);
+            } catch (ParseException e) {
+                WebException.wrap("Failed to parse view guard "+anno.guard(), e);
             }
-        }    
-    }
-
-    protected void collectActions(List<ActionTypeImpl> result, String category) {
-        if (superType != null) {
-            superType.collectActions(result, category);
         }
-        ActionTypeImpl[] actions = getLocalActions();
-        for (ActionTypeImpl action : actions) {
-            if (action.categories.contains(category)) {
-                result.add(action);
-            }
-        }        
     }
-
-    protected void collectEnabledActions(List<ActionTypeImpl> result, String category, WebContext ctx) {
-        if (superType != null) {
-            superType.collectEnabledActions(result, category, ctx);
+     
+    protected void loadAnnotations(AnnotationManager annoMgr) {
+        loadViews(annoMgr);
+        WebObject wo = clazz.getAnnotation(WebObject.class);
+        if (wo == null) return;
+        String g = wo.guard();
+        if (g != null && g.length() > 0) {
+            try {
+                guard = PermissionService.parse(g);
+            } catch (ParseException e) {
+                throw WebException.wrap("Failed to parse guard: "+g+" on WebObject "+clazz.getName(), e);
+            }
         }
-        ActionTypeImpl[] actions = getLocalActions();
-        for (ActionTypeImpl action : actions) {
-            if (action.categories.contains(category) && action.isEnabled(ctx)) {
-                result.add(action);
-            }
-        }        
+        String[] facets = wo.facets();
+        if (facets != null && facets.length > 0) {
+            this.facets = new HashSet<String>(Arrays.asList(facets));
+        }
     }
-
     
 }

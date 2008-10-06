@@ -36,17 +36,16 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.forms.FormData;
-import org.nuxeo.ecm.webengine.model.ActionResource;
 import org.nuxeo.ecm.webengine.model.NoSuchResourceException;
-import org.nuxeo.ecm.webengine.model.ObjectResource;
-import org.nuxeo.ecm.webengine.model.ObjectType;
 import org.nuxeo.ecm.webengine.model.Profile;
 import org.nuxeo.ecm.webengine.model.Resource;
+import org.nuxeo.ecm.webengine.model.ResourceType;
+import org.nuxeo.ecm.webengine.model.ServiceResource;
+import org.nuxeo.ecm.webengine.model.ServiceType;
 import org.nuxeo.ecm.webengine.model.WebApplication;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
@@ -87,7 +86,7 @@ public abstract class AbstractWebContext implements WebContext {
 
 
     public <T> T getAdapter(Class<T> adapter) {
-        if (ObjectResource.class == adapter) {
+        if (Resource.class == adapter) {
             return (T)tail();
         } else if (WebEngine.class == adapter) {
             return (T)this;
@@ -128,42 +127,27 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     
-    public ObjectResource newObject(String typeName, Object ...  args) throws WebException {
-        ObjectType type = app.getType(typeName);
+    public Resource newObject(String typeName, Object ...  args) throws WebException {
+        ResourceType type = app.getType(typeName);
         if (type == null) {
             throw new NoSuchResourceException("No Such Object Type: "+typeName);
         }
         return newObject(type);
     }
 
-    public ObjectResource newObject(ObjectType type, Object ...  args) throws WebException {
-        ObjectResource obj = type.newInstance();
+    public Resource newObject(ResourceType type, Object ...  args) throws WebException {
+        Resource obj = type.newInstance();
         obj.initialize(this, type);
         push(obj);
         return obj;
     }
 
-    public ActionResource newAction(String typeName, String actionName, Object ...  args) throws WebException {
-        ObjectType type = app.getType(typeName);
-        if (type == null) {
-            throw new NoSuchResourceException("No Such Object Type: "+typeName);
-        }
-        return newAction(type, actionName);
-    }
-
-    public ActionResource newAction(ObjectResource obj, String actionName, Object ...  args) throws WebException {
-        return newAction(obj.getType(), actionName);
-    }
-
-    public ActionResource newAction(ObjectType type, String actionName, Object ...  args) throws WebException {
-        ActionTypeImpl actionType = type.getAction(actionName);
-        if (actionType == null) {
-            throw new NoSuchResourceException("No Such Action: "+actionName);
-        }
-        ActionResource action = actionType.newInstance();
-        action.initialize(this, actionType);
-        push(action);
-        return action;
+    public ServiceResource newService(Resource ctx, String serviceName, Object ...  args) throws WebException {
+        ServiceType st = getApplication().getService(ctx, serviceName);
+        ServiceResource service = (ServiceResource)st.newInstance();
+        service.initialize(this, st, args);
+        push(service);
+        return service;
     }
 
     public void setProperty(String key, Object value) {
@@ -474,29 +458,16 @@ public abstract class AbstractWebContext implements WebContext {
         return bindings;
     }
 
-    public ObjectResource getTargetObject() {
-        if (tail != null) {            
-            if (tail.isObject()) {
-                return (ObjectResource)tail;
-            } else {
-                AbstractResource<?> rs = tail.prev;
-                while (rs != null) {
-                    if (rs.isObject()) {
-                        return (ObjectResource)rs;
-                    }
-                    rs = rs.prev;
-                } 
+    public Resource getTargetObject() {
+        Resource t = tail;
+        while (t != null) {
+            if (!t.isService()) {
+                return t;
             }
         }
         return null;        
     }
     
-    public ActionResource getAction() {
-        if (tail != null) {
-            return tail.isAction() ? (ActionResource)tail : null;
-        }
-        return null;
-    }
     
     protected void initializeBindings(Bindings bindings) {
         Resource obj = getTargetObject();
@@ -507,8 +478,9 @@ public abstract class AbstractWebContext implements WebContext {
         if (obj != null) {
             bindings.put("This", obj);
             bindings.put("Root", head());
-            if (obj instanceof DocumentObject) {
-                bindings.put("Document", ((DocumentObject)obj).getDocument());
+            DocumentModel doc = obj.getAdapter(DocumentModel.class);
+            if (doc != null) {
+                bindings.put("Document", doc);
             }
         }
         bindings.put("Config", app);

@@ -20,9 +20,11 @@
 package org.nuxeo.ecm.webengine.model;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 /**
@@ -58,18 +60,15 @@ public interface Profile {
     ScriptFile getFile(String path) throws WebException;    
     
     /**
-     * Get an object template file. If the file is not found in the directory stack then the super types are used to resolve
-     * the file until the file is found or no more super types are available.
-     * <p>
-     * The file name is computed as following:
-     * /firstCharLowerCaseObjectTypeName/httpMethod-name.templateExtension 
-     * @param obj the object owning the file
-     * @param name the file name
+     * Get a file using the configured directory stack and the inheritance defined by the context object.
+     * This is resolving the file name in the context of the given resource. This will use inheritance if no file 
+     * is found in the current context. 
+     * @param ctx
+     * @param path
      * @return
      * @throws WebException
      */
-    ScriptFile getTemplate(ObjectResource obj, String name, String mediaType) throws WebException;
-    
+    ScriptFile getFile(Resource ctx, String path) throws WebException;    
 
     /**
      * Load a class given it's name. The scripting class loader will be used to load the class. 
@@ -80,7 +79,7 @@ public interface Profile {
     Class<?> loadClass(String className) throws ClassNotFoundException;
 
     /**
-     * Get a {@link ObjectType} instance given it's name.
+     * Get a {@link ResourceType} instance given it's name.
      * The web type lookup is performed in the following order:
      * <ol>
      * <li> First the annotated Groovy classes are checked. (web/ directory)  
@@ -90,6 +89,59 @@ public interface Profile {
      * @return the web type instance
      * @throws TypeNotFoundException if no such web type was defined
      */
-    ObjectType getType(String typeName) throws TypeNotFoundException;
+    ResourceType getType(String typeName) throws TypeNotFoundException;
     
+    /**
+     * Get the types registered within this profile
+     * @return the types. Cannot be null.
+     */
+    ResourceType[] getTypes();
+    
+    /**
+     * Get the services registered within this profile
+     * @return the services. Cannot be null. 
+     */
+    ServiceType[] getServices();
+    
+    /**
+     * Get the named service definition for the given resource.   
+     * @param ctx the target resource 
+     * @param name the service name
+     * @return the service if any service with that name applies for that resource otherwise throws an exception
+     * 
+     * @throws WebSecurityException if the service exists but cannot be accessed in the context of that resource
+     * @throws ServiceNotFoundException if no such service exists for that resource
+     */
+    ServiceType getService(Resource ctx, String name) throws ServiceNotFoundException;
+    
+    /**
+     * Get the list of services that applies to the given resource  
+     * @param ctx the context resource
+     * @return the list of service.s Cannot be null.
+     */
+    List<ServiceType> getServices(Resource ctx);
+    
+    /**
+     * Get the list of service names that applies to the given resource.  
+     * @param ctx the context resource
+     * @return the list of service.s Cannot be null.
+     */
+    List<String> getServiceNames(Resource ctx);
+
+    /**
+     * Get the list of services that are enabled for the given context.
+     * Enabled services are those services which can be accessed in the current security context
+     * @param ctx the context resource
+     * @return the list of service.s Cannot be null.
+     */
+    List<ServiceType> getEnabledServices(Resource ctx);
+    
+    /**
+     * Get the list of service names that are enabled for the given context.
+     * Enabled services are those services which can be accessed in the current security context  
+     * @param ctx the context resource
+     * @return the list of service.s Cannot be null.
+     */
+    List<String> getEnabledServiceNames(Resource ctx);
+
 }

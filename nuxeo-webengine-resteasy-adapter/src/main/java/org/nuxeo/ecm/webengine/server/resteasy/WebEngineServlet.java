@@ -56,7 +56,7 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.io.ResourceWriter;
 import org.nuxeo.ecm.webengine.model.io.ScriptFileWriter;
-import org.nuxeo.ecm.webengine.model.io.WebViewWriter;
+import org.nuxeo.ecm.webengine.model.io.TemplateWriter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -103,9 +103,10 @@ public class WebEngineServlet extends HttpServlet {
         WebEngine engine = Framework.getLocalService(WebEngine.class);
         try {
             providerFactory.addMessageBodyWriter(new ResourceWriter());
-            providerFactory.addMessageBodyWriter(new WebViewWriter());
+            providerFactory.addMessageBodyWriter(new TemplateWriter());
             providerFactory.addMessageBodyWriter(new ScriptFileWriter());
             addRootResources(engine);
+            addInterceptors();
         } catch (Throwable e) {
             e.printStackTrace();
             throw new ServletException("Failed to initialize WebEngine Root Resources", e);
@@ -204,7 +205,7 @@ public class WebEngineServlet extends HttpServlet {
        try
        {
            //bs: initialize webengine context
-           WebContext ctx = new WebEngineContext(uriInfo, request);
+           WebContext ctx = new WebEngineContext(in, request);
            WebEngine.setActiveContext(ctx);
            
           ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
@@ -220,4 +221,7 @@ public class WebEngineServlet extends HttpServlet {
        }
     }
 
+    protected void addInterceptors() {
+        dispatcher.getProviderFactory().getInterceptorRegistry().registerResourceMethodInterceptor(new SecurityInterceptor());
+    }
 }
