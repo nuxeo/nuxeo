@@ -41,7 +41,7 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.NoSuchResourceException;
-import org.nuxeo.ecm.webengine.model.Profile;
+import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.ServiceResource;
@@ -94,7 +94,7 @@ public abstract class AbstractWebContext implements WebContext {
         return null;
     }
 
-    public Profile getProfile() {
+    public Module getProfile() {
         return app.getProfile();
     }
 

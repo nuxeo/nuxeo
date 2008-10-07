@@ -42,7 +42,7 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.platform.rendering.fm.i18n.ResourceComposite;
-import org.nuxeo.ecm.webengine.model.Profile;
+import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.WebService;
@@ -318,7 +318,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         return profileReg;
     }
     
-    public Profile getProfile(String name) {
+    public Module getProfile(String name) {
         return profileReg.getProfile(name); 
     }
         

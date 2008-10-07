@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webengine.model.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,13 +29,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
+import org.nuxeo.ecm.webengine.model.TemplateNotFoundException;
 import org.nuxeo.ecm.webengine.model.ViewDescriptor;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.WebView;
+import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.annotations.AnnotatedClass;
@@ -46,7 +52,7 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
  */
 public class ObjectTypeImpl implements ResourceType {
     
-    protected TypeRegistry reg;
+    protected ModuleImpl module;
     protected String name;
     protected ObjectTypeImpl superType;
     // the views and class may be changed when a type is updated
@@ -55,13 +61,15 @@ public class ObjectTypeImpl implements ResourceType {
     protected volatile Guard guard = Guard.DEFAULT;
     protected volatile Set<String> facets;
     
+    protected ConcurrentMap<String, ScriptFile> templateCache;
     
-    public ObjectTypeImpl(TypeRegistry reg, ObjectTypeImpl superType, String name, Class<Resource> clazz) {
-        this.reg = reg;
+    public ObjectTypeImpl(ModuleImpl module, ObjectTypeImpl superType, String name, Class<Resource> clazz) {
+        this.templateCache = new ConcurrentHashMap<String, ScriptFile>();
+        this.module = module;
         this.superType = superType;
         this.name = name;
         this.clazz = clazz;
-        AnnotationManager mgr = reg.engine.getAnnotationManager();        
+        AnnotationManager mgr = module.engine.getAnnotationManager();        
         loadAnnotations(mgr);
     }
     
@@ -218,4 +226,65 @@ public class ObjectTypeImpl implements ResourceType {
         }
     }
     
+    
+    public ScriptFile getTemplate(String name) throws WebException {
+        if (name == null) {
+            name = "view.ftl"; 
+        }
+        ScriptFile file = templateCache.get(name);
+        if (file != null) {
+            return file;
+        }
+        boolean abs = name.startsWith("/");
+        try {
+        if (abs) {
+            file = module.getFile(name);
+        } else {
+            file = findTemplate(name);
+        }
+        } catch (IOException e) {
+            throw WebException.wrap(e);
+        }        
+        if (file != null) {
+            templateCache.put(name, file);
+        } else {
+            throw new TemplateNotFoundException(this, name);
+        }
+        return file;
+    }
+    
+    protected ScriptFile findTemplate(String name) throws IOException {
+        String path = resolveResourcePath(clazz, name);
+        File f = new File(module.getEngine().getRootDirectory(), path);
+        if (f.isFile()) {
+            return new ScriptFile(f);
+        }
+        ScriptFile file = null;
+        ResourceType t =getSuperType();
+        while (t != null) {
+            file = t.getTemplate(name);
+            if (file != null) {
+                break;
+            }
+            t = t.getSuperType();
+        }     
+        return file;
+    }
+
+    protected String resolveResourcePath(Class<?> resClass, String fileName) {
+        // compute resource path for resource class name
+        String path = resClass.getName();
+        int p = path.lastIndexOf('.');
+        if (p > -1) {
+            path = path.substring(0, p);
+        }
+        path = path.replace('.', '/');
+        return new StringBuilder()
+        .append("/")
+        .append(path)
+        .append('/')
+        .append(fileName)
+        .toString();        
+    }
+
 }

@@ -40,8 +40,8 @@ public class ServiceTypeImpl extends ObjectTypeImpl implements ServiceType {
     protected String[] targetTypes;
     protected String[] targetFacets;
     
-    public ServiceTypeImpl(TypeRegistry reg, ObjectTypeImpl superType, String name, Class<Resource> clazz) {
-        super (reg, superType, name, clazz);
+    public ServiceTypeImpl(ModuleImpl module, ObjectTypeImpl superType, String name, Class<Resource> clazz) {
+        super (module, superType, name, clazz);
     }
     
     public String[] getTargetTypes() {

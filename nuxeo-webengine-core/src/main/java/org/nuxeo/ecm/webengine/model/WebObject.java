@@ -33,7 +33,7 @@ import org.nuxeo.runtime.annotations.loader.Indexable;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@Indexable({"name"})
+@Indexable({"name", "superType"})
 public @interface WebObject {
 
     String name(); // the type name

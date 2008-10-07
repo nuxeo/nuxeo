@@ -25,7 +25,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
-import org.nuxeo.ecm.webengine.model.Profile;
+import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.Template;
@@ -79,7 +79,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return ctx;
     }
     
-    public Profile getApplication() {
+    public Module getApplication() {
         return ctx.getProfile();
     }
     

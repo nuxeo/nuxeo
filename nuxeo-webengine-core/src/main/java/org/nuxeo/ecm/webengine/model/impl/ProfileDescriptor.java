@@ -28,7 +28,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
-import org.nuxeo.ecm.webengine.model.WebProfile;
+import org.nuxeo.ecm.webengine.model.WebModule;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 import org.nuxeo.runtime.model.Adaptable;
@@ -119,7 +119,7 @@ public class ProfileDescriptor implements Cloneable {
 
     
     public static ProfileDescriptor fromAnnotation(Class<?> clazz) {
-        WebProfile anno = clazz.getAnnotation(WebProfile.class);
+        WebModule anno = clazz.getAnnotation(WebModule.class);
         if (anno == null) {
             return null;
         }

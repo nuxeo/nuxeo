@@ -31,7 +31,7 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Profile {
+public interface Module {
     
     String getName();
     
@@ -59,16 +59,6 @@ public interface Profile {
      */
     ScriptFile getFile(String path) throws WebException;    
     
-    /**
-     * Get a file using the configured directory stack and the inheritance defined by the context object.
-     * This is resolving the file name in the context of the given resource. This will use inheritance if no file 
-     * is found in the current context. 
-     * @param ctx
-     * @param path
-     * @return
-     * @throws WebException
-     */
-    ScriptFile getFile(Resource ctx, String path) throws WebException;    
 
     /**
      * Load a class given it's name. The scripting class loader will be used to load the class. 

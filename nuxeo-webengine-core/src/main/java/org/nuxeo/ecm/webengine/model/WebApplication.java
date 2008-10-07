@@ -41,19 +41,19 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 public class WebApplication {
 
     protected WebContext ctx;
-    protected Profile profile;
+    protected Module profile;
     protected String path;
   
     public WebApplication() {
         ctx = WebEngine.getActiveContext();
-        profile = ctx.getEngine().getProfile(getClass().getAnnotation(WebProfile.class).name());        
+        profile = ctx.getEngine().getProfile(getClass().getAnnotation(WebModule.class).name());        
         path = guessPath();
         ctx.setApplication(this);
         
         //TODO: invoke application guard if any
     }
     
-    public Profile getProfile() {
+    public Module getProfile() {
         return profile;
     }
     
@@ -116,10 +116,6 @@ public class WebApplication {
     public ScriptFile getFile(String path) throws WebException {
         return profile.getFile(path);
     }
-    
-    public ScriptFile getFile(Resource obj, String name) throws WebException {
-        return profile.getFile(obj, name);
-    }    
 
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         return profile.loadClass(className);

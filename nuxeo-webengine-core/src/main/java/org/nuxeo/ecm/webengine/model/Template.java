@@ -85,7 +85,7 @@ public class Template {
     }
     
     public Template fileName(String fileName) throws WebException {
-        script = resource.getApplication().getFile(resource, fileName);
+        script = resource.getType().getTemplate(fileName);
         return this;
     }
     
@@ -117,7 +117,7 @@ public class Template {
             } else {
                 fileName.append(name).append('.').append(ext);
             }
-            script = resource.getApplication().getFile(resource, fileName.toString());
+            script = resource.getType().getTemplate(fileName.toString());
         }
         return this;
     }

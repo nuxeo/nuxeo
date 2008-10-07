@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.security.Guard;
 
 /**
@@ -56,5 +57,7 @@ public interface ResourceType {
     public List<String> getEnabledViewNames(Resource obj);
     public List<String> getEnabledViewNames(Resource obj, String category);
 
+    public ScriptFile getTemplate(String name) throws WebException;
+    
     boolean isEnabled(Resource ctx);
 }

@@ -28,12 +28,11 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.Profile;
+import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.ServiceNotFoundException;
 import org.nuxeo.ecm.webengine.model.ServiceType;
-import org.nuxeo.ecm.webengine.model.TemplateNotFoundException;
 import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.runtime.deploy.FileChangeListener;
@@ -46,7 +45,7 @@ import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ProfileImpl implements Profile, FileChangeListener  {
+public class ModuleImpl implements Module, FileChangeListener  {
 
 
     protected WebEngine engine;
@@ -69,7 +68,7 @@ public class ProfileImpl implements Profile, FileChangeListener  {
     protected TypeConfigurationProvider localTypes;
 
 
-    public ProfileImpl(WebEngine engine, File root, ProfileDescriptor descriptor) throws WebException {
+    public ModuleImpl(WebEngine engine, File root, ProfileDescriptor descriptor) throws WebException {
         this.fileCache = new ConcurrentHashMap<String, ScriptFile>();
         this.templateCache = new ConcurrentHashMap<String, ScriptFile>();
         this.root = root;
@@ -132,7 +131,7 @@ public class ProfileImpl implements Profile, FileChangeListener  {
             // then add roots from parent if any
             if (roots == null || roots.isEmpty()) {
                 if (descriptor.base != null) {
-                    ProfileImpl parent = (ProfileImpl)engine.getProfile(descriptor.base);
+                    ModuleImpl parent = (ModuleImpl)engine.getProfile(descriptor.base);
                     if (parent != null && parent.dirStack != null) {
                         dirStack.getDirectories().addAll(parent.dirStack.getDirectories());
                     }
@@ -185,70 +184,6 @@ public class ProfileImpl implements Profile, FileChangeListener  {
         return file;
     }
     
-    protected ScriptFile findTemplate(String path) throws IOException {
-        File file = new File(engine.getRootDirectory(), path);
-        return file.isFile() ? new ScriptFile(file) : null;
-    }
-    
-    /**
-     * Resolve the file name in the context of the given resource. This will use type inheritance if no file 
-     * is found in the current context.
-\     *  
-     * @param obj
-     * @param name
-     * @return
-     * @throws WebException
-     */
-    public ScriptFile getFile(Resource obj, String name) throws WebException {
-        if (name == null) {
-            name = "view"; 
-        }
-        boolean abs = name.startsWith("/");
-        String path = abs ? name : resolveResourcePath(obj.getClass(), name);         
-        ScriptFile file = templateCache.get(path);
-        if (file != null) {
-            return file;
-        }
-        try {
-            file = findTemplate(path);
-            if (file == null) {
-                ResourceType t = obj.getType().getSuperType();
-                while (t != null) {
-                    path = abs ? name : resolveResourcePath(t.getResourceClass(), name);
-                    file = findTemplate(path);
-                    if (file != null) {
-                        break;
-                    }
-                    t = t.getSuperType();
-                }
-            }     
-        } catch (IOException e) {
-            WebException.wrap(e);
-        }
-        if (file != null) {
-            templateCache.put(path, file);
-        } else {
-            throw new TemplateNotFoundException(obj, name);
-        }
-        return file;
-    }
-
-    protected String resolveResourcePath(Class<?> resClass, String fileName) {
-        // compute resource path for resource class name
-        String path = resClass.getName();
-        int p = path.lastIndexOf('.');
-        if (p > -1) {
-            path = path.substring(0, p);
-        }
-        path = path.replace('.', '/');
-        return new StringBuilder()
-        .append("/")
-        .append(path)
-        .append('/')
-        .append(fileName)
-        .toString();        
-    }
-
     protected void loadConfiguredTypes() {
         localTypes = new TypeConfigurationProvider();
         // load declared types and actions
@@ -281,7 +216,7 @@ public class ProfileImpl implements Profile, FileChangeListener  {
             synchronized (typeLock) {
                 double s = System.currentTimeMillis();
                 if (typeReg == null) {
-                    typeReg = new TypeRegistry(engine);
+                    typeReg = new TypeRegistry(this);
                     // install global types
                     BundleTypeProvider bundleTypeProvider = engine.getBundleTypeProvider();
                     bundleTypeProvider.install(typeReg);

@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.model.Profile;
+import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
 
 /**
@@ -34,7 +34,7 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
  */
 public class ProfileRegistry extends AbstractContributionRegistry<String, ProfileDescriptor> {
 
-    protected Map<String, Profile> profiles = new ConcurrentHashMap<String, Profile>();
+    protected Map<String, Module> profiles = new ConcurrentHashMap<String, Module>();
 
     protected WebEngine engine;
 
@@ -47,20 +47,20 @@ public class ProfileRegistry extends AbstractContributionRegistry<String, Profil
         return engine;
     }
 
-    public void putProfile(Profile app) {
+    public void putProfile(Module app) {
         profiles.put(app.getName(), app);
     }
 
-    public Profile removeProfile(String id) {
+    public Module removeProfile(String id) {
         return profiles.remove(id);
     }
 
-    public Profile getProfile(String id) {
+    public Module getProfile(String id) {
         return profiles.get(id);
     }
 
-    public Profile[] getProfiles() {
-        return profiles.values().toArray(new Profile[profiles.size()]);
+    public Module[] getProfiles() {
+        return profiles.values().toArray(new Module[profiles.size()]);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class ProfileRegistry extends AbstractContributionRegistry<String, Profil
     @Override
     protected void installContribution(String key, ProfileDescriptor object) {
         try {
-            Profile app = new ProfileImpl(engine, object.directory, object);
+            Module app = new ModuleImpl(engine, object.directory, object);
             profiles.put(key, app);
         } catch (Exception e) {
             e.printStackTrace(); //TODO
