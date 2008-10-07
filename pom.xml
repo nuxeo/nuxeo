@@ -11,7 +11,7 @@
 
   <groupId>org.nuxeo.ecm.webengine</groupId>
   <artifactId>nuxeo-webengine-parent</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>5.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Nuxeo WebEngine</name>
   <description>Nuxeo WebEngine is the lightweight content-centric web framework.</description>
@@ -26,7 +26,7 @@
   </modules>
 
   <properties>
-    <nuxeo.webengine.version>1.0-SNAPSHOT</nuxeo.webengine.version>
+    <nuxeo.webengine.version>5.2-SNAPSHOT</nuxeo.webengine.version>
   </properties>
 
   <dependencyManagement>

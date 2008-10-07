@@ -21,7 +21,7 @@
   <properties>
     <application.name>nuxeo-app</application.name>
     <nuxeo.shell.version>5.2-SNAPSHOT</nuxeo.shell.version>
-    <nuxeo.webengine.version>1.0-SNAPSHOT</nuxeo.webengine.version>
+    <nuxeo.webengine.version>5.2-SNAPSHOT</nuxeo.webengine.version>
     <!--nuxeo.core.version>1.5-SNAPSHOT</nuxeo.core.version-->
   </properties>
 
