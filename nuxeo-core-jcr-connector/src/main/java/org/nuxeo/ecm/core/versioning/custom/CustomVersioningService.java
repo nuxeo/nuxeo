@@ -43,10 +43,13 @@ import org.nuxeo.ecm.core.repository.jcr.JCRDocument;
 import org.nuxeo.ecm.core.repository.jcr.JCRName;
 import org.nuxeo.ecm.core.repository.jcr.JCRQueryXPath;
 import org.nuxeo.ecm.core.repository.jcr.JCRSession;
+import org.nuxeo.ecm.core.repository.jcr.ModelAdapter;
 import org.nuxeo.ecm.core.repository.jcr.NodeConstants;
 import org.nuxeo.ecm.core.repository.jcr.versioning.VersioningService;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;
 import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
+
+import sun.misc.Cleaner;
 
 /**
  * Implementation of the {@link VersioningService} interface.
@@ -97,7 +100,7 @@ public class CustomVersioningService implements VersioningService {
     }
 
     public void checkin(Document doc, String label, String description)
-            throws DocumentException {
+    throws DocumentException {
 
         JCRDocument jdoc = (JCRDocument) doc;
 
@@ -206,7 +209,7 @@ public class CustomVersioningService implements VersioningService {
     }
 
     public DocumentVersion getLastVersion(Document doc)
-            throws DocumentException {
+    throws DocumentException {
         JCRDocument jdoc = (JCRDocument) doc;
         Node docNode = jdoc.getNode();
 
@@ -228,7 +231,7 @@ public class CustomVersioningService implements VersioningService {
     }
 
     public Document getVersion(Document doc, String label)
-            throws DocumentException {
+    throws DocumentException {
         // TODO Auto-generated method stub
         // XXX
         // Version version = getVersionNode(jdoc, label);
@@ -255,7 +258,7 @@ public class CustomVersioningService implements VersioningService {
      *
      */
     public DocumentVersionIterator getVersions(Document doc)
-            throws DocumentException {
+    throws DocumentException {
 
         final String logPrefix = "<getVersions> ";
 
@@ -345,12 +348,12 @@ public class CustomVersioningService implements VersioningService {
     }
 
     public Calendar getCreated(DocumentVersion version)
-            throws DocumentException {
+    throws DocumentException {
         return version.getCreated();
     }
 
     public String getDescription(DocumentVersion version)
-            throws DocumentException {
+    throws DocumentException {
         return version.getDescription();
     }
 
@@ -372,7 +375,7 @@ public class CustomVersioningService implements VersioningService {
     }
 
     public JCRDocument newDocumentVersion(JCRSession session, Node node)
-            throws RepositoryException {
+    throws RepositoryException {
         // FIXME the parent node should be of type ecm:version
         Node versionNode = node.getParent();
         return new CustomDocumentVersion(session, versionNode);
@@ -389,11 +392,11 @@ public class CustomVersioningService implements VersioningService {
      * @throws RepositoryException
      */
     private static void checkVersionable(JCRDocument jdoc) throws DocumentException,
-            RepositoryException {
+    RepositoryException {
         if (!jdoc.getNode().isNodeType(
                 NodeConstants.ECM_VERSIONABLE_MIXIN.rawname)) {
             String msg = "Unable to perform versioning operation on non versionable node: "
-                    + jdoc.getPath();
+                + jdoc.getPath();
             log.debug(msg);
             throw new DocumentException(msg);
         }
@@ -409,7 +412,7 @@ public class CustomVersioningService implements VersioningService {
     }
 
     public void removeDocumentVersion(JCRDocument doc, String versionLabel)
-            throws RepositoryException {
+    throws RepositoryException {
         if (log.isDebugEnabled()) {
             try {
                 log.info("remove document (" + doc.getName()
@@ -421,29 +424,32 @@ public class CustomVersioningService implements VersioningService {
         VerServUtils.removeVersion(doc, versionLabel);
     }
 
-    /*
-     * Make sure that after a copy we create new version histories for all
-     * versionable documents.
-     */
+
+    // PATXT-559
+    // avoid using XPATH ; long time to execute path query 
     public void fixupAfterCopy(JCRDocument doc) throws RepositoryException {
-        String queryString = String.format("/jcr:root%s//element(*, %s)[%s]",
-                JCRQueryXPath.quotePath(doc.getNode().getPath()),
-                NodeConstants.ECM_VERSIONABLE_MIXIN.rawname,
-                NodeConstants.ECM_VERSION_HISTORY.rawname);
-        QueryManager queryManager = doc.jcrSession().getSession().getWorkspace().getQueryManager();
-        Query query = queryManager.createQuery(queryString, Query.XPATH);
-        NodeIterator nodes = query.execute().getNodes();
-        while (nodes.hasNext()) {
-            clearHistoryReference(nodes.nextNode());
-        }
-        // then doc itself (not found by XPath descendant search)
+//        long t1, t2, t;
+//        t1 = System.currentTimeMillis();
         clearHistoryReference(doc.getNode());
+//        t2 = System.currentTimeMillis();
+//        System.out.println("DEBUG: fixAfterCopy: fixAfterCopy : took" + (t2 - t1));
     }
 
-    protected void clearHistoryReference(Node node) throws RepositoryException {
+    protected void clearHistoryReference(Node parent) throws RepositoryException {
+        removeHistoryReference(parent);
+        if ( ModelAdapter.isContainerNode(parent)) {
+            Node container = ModelAdapter.getContainerNode(parent);
+            for ( NodeIterator it = container.getNodes() ; it.hasNext(); ) {
+                clearHistoryReference(it.nextNode());
+            }
+        }
+    }
+
+    protected void removeHistoryReference(Node node) throws RepositoryException {
         if (node.hasProperty(NodeConstants.ECM_VERSION_HISTORY.rawname)) {
             node.getProperty(NodeConstants.ECM_VERSION_HISTORY.rawname).remove();
         }
     }
+
 
 }
