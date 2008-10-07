@@ -82,13 +82,13 @@ public interface Module {
     ResourceType getType(String typeName) throws TypeNotFoundException;
     
     /**
-     * Get the types registered within this profile
+     * Get the types registered within this module
      * @return the types. Cannot be null.
      */
     ResourceType[] getTypes();
     
     /**
-     * Get the services registered within this profile
+     * Get the services registered within this module
      * @return the services. Cannot be null. 
      */
     ServiceType[] getServices();

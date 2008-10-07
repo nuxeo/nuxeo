@@ -48,8 +48,8 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.WebService;
 import org.nuxeo.ecm.webengine.model.impl.BundleTypeProvider;
 import org.nuxeo.ecm.webengine.model.impl.DirectoryTypeProvider;
-import org.nuxeo.ecm.webengine.model.impl.ProfileDescriptor;
-import org.nuxeo.ecm.webengine.model.impl.ProfileRegistry;
+import org.nuxeo.ecm.webengine.model.impl.ModuleDescriptor;
+import org.nuxeo.ecm.webengine.model.impl.ModuleRegistry;
 import org.nuxeo.ecm.webengine.model.impl.TypeConfigurationProvider;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
@@ -101,7 +101,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
 
     
     protected File root;
-    protected ProfileRegistry profileReg;
+    protected ModuleRegistry moduleReg;
     protected FileChangeNotifier notifier;
     protected volatile long lastMessagesUpdate = 0;
     protected Scripting scripting;
@@ -136,7 +136,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), bundleTypeProvider);
         BundleAnnotationsLoader.getInstance().addLoader(WebService.class.getName(), bundleTypeProvider);        
         
-        loadProfiles();
+        loadModules();
         
         this.renderingExtensions = new Hashtable<String, Object>();
         this.env = new HashMap<String, Object>();
@@ -206,23 +206,23 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         };
     }
 
-    protected  void loadProfiles() {
-        profileReg = new ProfileRegistry(this);
+    protected  void loadModules() {
+        moduleReg = new ModuleRegistry(this);
         for (File file : root.listFiles()) {
             if (file.isDirectory()) {
-                ProfileDescriptor ad = null;
+                ModuleDescriptor ad = null;
                 File appFile = new File(file, "Main.groovy");
                 if (appFile.isFile()) {       
-                    ad = loadProfileDescriptor(file.getName()+".Main");                   
+                    ad = loadModuleDescriptor(file.getName()+".Main");                   
                 } else {
                     appFile = new File(file, "application.xml");
                     if (appFile.isFile()) {
-                        ad = loadProfileDescriptor(appFile);
+                        ad = loadModuleDescriptor(appFile);
                     }
                 }
                 if (ad != null) {
                     try {
-                        profileReg.registerDescriptor(file, ad);
+                        moduleReg.registerDescriptor(file, ad);
                         notifier.watch(appFile); // always track the file
                     } catch (Exception e) {                
                         e.printStackTrace(); // TODO log
@@ -234,13 +234,13 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
 
     
     /**
-     * Load an profile given its annotated class 
+     * Load an module given its annotated class 
      * @param clazz
      */
-    protected synchronized ProfileDescriptor loadProfileDescriptor(String className) {
+    protected synchronized ModuleDescriptor loadModuleDescriptor(String className) {
         try {
             Class<?> clazz = scripting.loadClass(className);
-            ProfileDescriptor ad = ProfileDescriptor.fromAnnotation(clazz);
+            ModuleDescriptor ad = ModuleDescriptor.fromAnnotation(clazz);
             if (ad != null) {
                 ResourceBinding binding = ResourceBinding.fromAnnotation(clazz);
                 if (binding != null) {
@@ -256,16 +256,16 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     }
     
     /**
-     * load an profile given its configuration file
+     * load an module given its configuration file
      * @param ctx
      * @param cfgFile
      */
-    protected synchronized ProfileDescriptor loadProfileDescriptor(File cfgFile) {
+    protected synchronized ModuleDescriptor loadModuleDescriptor(File cfgFile) {
         try {
             XMap xmap = new XMap();
-            xmap.register(ProfileDescriptor.class);
+            xmap.register(ModuleDescriptor.class);
             InputStream in = new BufferedInputStream(new FileInputStream(cfgFile));            
-            return (ProfileDescriptor)xmap.load(createXMapContext(), in);
+            return (ModuleDescriptor)xmap.load(createXMapContext(), in);
         } catch (Exception e) {
             e.printStackTrace(); // TODO log exception
         }
@@ -314,12 +314,12 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         return scripting;
     }
 
-    public ProfileRegistry getProfileRegistry() {
-        return profileReg;
+    public ModuleRegistry getModuleRegistry() {
+        return moduleReg;
     }
     
-    public Module getProfile(String name) {
-        return profileReg.getProfile(name); 
+    public Module getModule(String name) {
+        return moduleReg.getModule(name); 
     }
         
     public File getRootDirectory() {
@@ -378,7 +378,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
             return;
         } 
         if (path.endsWith("/Main.groovy") || path.endsWith("/application.xml")) {
-            loadProfiles(); // TODO optimize reloading
+            loadModules(); // TODO optimize reloading
         } else {
             loadMessageBundle(false);
         }

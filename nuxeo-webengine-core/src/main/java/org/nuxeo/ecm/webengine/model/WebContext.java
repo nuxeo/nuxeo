@@ -50,7 +50,7 @@ public interface WebContext extends Adaptable {
      *
      * @return the web root. Cannot return null.
      */
-    public Module getProfile();
+    public Module getModule();
 
     /**
      * Gets the web engine instance.

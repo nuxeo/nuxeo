@@ -94,8 +94,8 @@ public abstract class AbstractWebContext implements WebContext {
         return null;
     }
 
-    public Module getProfile() {
-        return app.getProfile();
+    public Module getModule() {
+        return app.getModule();
     }
 
     public WebEngine getEngine() {

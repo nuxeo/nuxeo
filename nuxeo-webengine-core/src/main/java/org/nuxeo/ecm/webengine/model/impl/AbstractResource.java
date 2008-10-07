@@ -80,7 +80,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     }
     
     public Module getApplication() {
-        return ctx.getProfile();
+        return ctx.getModule();
     }
     
 

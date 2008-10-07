@@ -49,7 +49,7 @@ public class ModuleImpl implements Module, FileChangeListener  {
 
 
     protected WebEngine engine;
-    protected ProfileDescriptor descriptor;
+    protected ModuleDescriptor descriptor;
 
     protected File root;
     protected DirectoryStack dirStack;
@@ -68,7 +68,7 @@ public class ModuleImpl implements Module, FileChangeListener  {
     protected TypeConfigurationProvider localTypes;
 
 
-    public ModuleImpl(WebEngine engine, File root, ProfileDescriptor descriptor) throws WebException {
+    public ModuleImpl(WebEngine engine, File root, ModuleDescriptor descriptor) throws WebException {
         this.fileCache = new ConcurrentHashMap<String, ScriptFile>();
         this.templateCache = new ConcurrentHashMap<String, ScriptFile>();
         this.root = root;
@@ -83,7 +83,7 @@ public class ModuleImpl implements Module, FileChangeListener  {
     }
 
 
-    public ProfileDescriptor getDescriptor() {
+    public ModuleDescriptor getDescriptor() {
         return descriptor;
     }
 
@@ -131,7 +131,7 @@ public class ModuleImpl implements Module, FileChangeListener  {
             // then add roots from parent if any
             if (roots == null || roots.isEmpty()) {
                 if (descriptor.base != null) {
-                    ModuleImpl parent = (ModuleImpl)engine.getProfile(descriptor.base);
+                    ModuleImpl parent = (ModuleImpl)engine.getModule(descriptor.base);
                     if (parent != null && parent.dirStack != null) {
                         dirStack.getDirectories().addAll(parent.dirStack.getDirectories());
                     }

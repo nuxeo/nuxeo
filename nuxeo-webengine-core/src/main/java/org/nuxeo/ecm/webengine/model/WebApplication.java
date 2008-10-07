@@ -41,20 +41,20 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 public class WebApplication {
 
     protected WebContext ctx;
-    protected Module profile;
+    protected Module module;
     protected String path;
   
     public WebApplication() {
         ctx = WebEngine.getActiveContext();
-        profile = ctx.getEngine().getProfile(getClass().getAnnotation(WebModule.class).name());        
+        module = ctx.getEngine().getModule(getClass().getAnnotation(WebModule.class).name());        
         path = guessPath();
         ctx.setApplication(this);
         
         //TODO: invoke application guard if any
     }
     
-    public Module getProfile() {
-        return profile;
+    public Module getModule() {
+        return module;
     }
     
     public WebContext getContext() {
@@ -62,7 +62,7 @@ public class WebApplication {
     }    
     
     public String getName() {
-        return profile.getName();
+        return module.getName();
     }
 
 
@@ -114,43 +114,43 @@ public class WebApplication {
     
     
     public ScriptFile getFile(String path) throws WebException {
-        return profile.getFile(path);
+        return module.getFile(path);
     }
 
     public Class<?> loadClass(String className) throws ClassNotFoundException {
-        return profile.loadClass(className);
+        return module.loadClass(className);
     }
 
     public ResourceType getType(String typeName) throws TypeNotFoundException {
-        return profile.getType(typeName);
+        return module.getType(typeName);
     }
     
     
     public ResourceType[] getTypes() {
-        return profile.getTypes();
+        return module.getTypes();
     }
     
     public ServiceType[] getServices() {
-      return profile.getServices();  
+      return module.getServices();  
     }
     
     public ServiceType getService(Resource ctx, String name) throws ServiceNotFoundException {
-        return profile.getService(ctx, name);  
+        return module.getService(ctx, name);  
     }
     
     public List<ServiceType> getServices(Resource ctx) {
-        return profile.getServices(ctx);
+        return module.getServices(ctx);
     }
     
     public List<String> getServiceNames(Resource ctx) {
-        return profile.getServiceNames(ctx);        
+        return module.getServiceNames(ctx);        
     }
 
     public List<ServiceType> getEnabledServices(Resource ctx) {
-        return profile.getEnabledServices(ctx);
+        return module.getEnabledServices(ctx);
     }
     
     public List<String> getEnabledServiceNames(Resource ctx) {
-        return profile.getEnabledServiceNames(ctx);        
+        return module.getEnabledServiceNames(ctx);        
     }
 }
