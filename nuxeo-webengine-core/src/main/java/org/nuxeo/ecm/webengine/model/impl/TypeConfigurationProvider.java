@@ -39,6 +39,10 @@ public class TypeConfigurationProvider {
         services = new ArrayList<ServiceDescriptor>();
         registries = new Vector<TypeRegistry>();
     }
+
+    public void flushCache() {
+        // do nothing
+    }
     
     public synchronized boolean isEmpty() {
         return types.isEmpty() && services.isEmpty();

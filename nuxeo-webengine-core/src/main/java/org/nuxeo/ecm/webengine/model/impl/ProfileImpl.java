@@ -28,12 +28,12 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.NoSuchResourceException;
 import org.nuxeo.ecm.webengine.model.Profile;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.ServiceNotFoundException;
 import org.nuxeo.ecm.webengine.model.ServiceType;
+import org.nuxeo.ecm.webengine.model.TemplateNotFoundException;
 import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.runtime.deploy.FileChangeListener;
@@ -59,7 +59,9 @@ public class ProfileImpl implements Profile, FileChangeListener  {
     protected int localRootsCount = 0; 
     // cache used for resolved files
     protected ConcurrentMap<String, ScriptFile> fileCache;
-
+    // template cache
+    protected ConcurrentMap<String, ScriptFile> templateCache;
+    
     protected final Object typeLock = new Object();
 
     // these two members are lazy initialized when needed
@@ -69,6 +71,7 @@ public class ProfileImpl implements Profile, FileChangeListener  {
 
     public ProfileImpl(WebEngine engine, File root, ProfileDescriptor descriptor) throws WebException {
         this.fileCache = new ConcurrentHashMap<String, ScriptFile>();
+        this.templateCache = new ConcurrentHashMap<String, ScriptFile>();
         this.root = root;
         this.descriptor = descriptor;
         this.engine = engine;
@@ -170,7 +173,7 @@ public class ProfileImpl implements Profile, FileChangeListener  {
      * @param path a normalized path (absolute path)
      * @return
      */
-    private ScriptFile findFile(String path) throws IOException {
+    protected ScriptFile findFile(String path) throws IOException {
         ScriptFile file = fileCache.get(path);
         if (file == null) {
             File f = dirStack.getFile(path);
@@ -182,13 +185,15 @@ public class ProfileImpl implements Profile, FileChangeListener  {
         return file;
     }
     
+    protected ScriptFile findTemplate(String path) throws IOException {
+        File file = new File(engine.getRootDirectory(), path);
+        return file.isFile() ? new ScriptFile(file) : null;
+    }
+    
     /**
-     * Resolve the file name in the context of the given resource. This will use inheritance if no file 
+     * Resolve the file name in the context of the given resource. This will use type inheritance if no file 
      * is found in the current context.
-     * <p>  
-     * TODO: This is sharing the same cache as the {@link #getFile(String)} method so that cached object files will be  
-     *  visible through {@link #getFile(String)}. TODO: Do we really want this?
-     *  
+\     *  
      * @param obj
      * @param name
      * @return
@@ -198,30 +203,51 @@ public class ProfileImpl implements Profile, FileChangeListener  {
         if (name == null) {
             name = "view"; 
         }
-        ResourceType type = obj.getType();
-        StringBuilder buf = new StringBuilder();
-        buf.append('/').append(Utils.fcToLowerCase(type.getName()));
-        buf.append('/').append(name);
-        String key = buf.toString();
-        ScriptFile file = fileCache.get(key);
-        if (file == null) {            
-            do {
-                int len = type.getName().length()+1;
-                buf.replace(1, len, Utils.fcToLowerCase(type.getName()));
-                file = getFile(buf.toString());
-                if (file != null) {
-                    fileCache.put(key, file);
-                    break;
-                }
-                type = type.getSuperType();
-            } while (type != null);            
+        boolean abs = name.startsWith("/");
+        String path = abs ? name : resolveResourcePath(obj.getClass(), name);         
+        ScriptFile file = templateCache.get(path);
+        if (file != null) {
+            return file;
         }
-        if (file == null) {
-            throw new NoSuchResourceException("No Such Template: "+key);
+        try {
+            file = findTemplate(path);
+            if (file == null) {
+                ResourceType t = obj.getType().getSuperType();
+                while (t != null) {
+                    path = abs ? name : resolveResourcePath(t.getResourceClass(), name);
+                    file = findTemplate(path);
+                    if (file != null) {
+                        break;
+                    }
+                    t = t.getSuperType();
+                }
+            }     
+        } catch (IOException e) {
+            WebException.wrap(e);
+        }
+        if (file != null) {
+            templateCache.put(path, file);
+        } else {
+            throw new TemplateNotFoundException(obj, name);
         }
         return file;
     }
-    
+
+    protected String resolveResourcePath(Class<?> resClass, String fileName) {
+        // compute resource path for resource class name
+        String path = resClass.getName();
+        int p = path.lastIndexOf('.');
+        if (p > -1) {
+            path = path.substring(0, p);
+        }
+        path = path.replace('.', '/');
+        return new StringBuilder()
+        .append("/")
+        .append(path)
+        .append('/')
+        .append(fileName)
+        .toString();        
+    }
 
     protected void loadConfiguredTypes() {
         localTypes = new TypeConfigurationProvider();
@@ -253,26 +279,20 @@ public class ProfileImpl implements Profile, FileChangeListener  {
     public TypeRegistry getTypeRegistry() {
         if (typeReg == null) { // create type registry if not already created
             synchronized (typeLock) {
+                double s = System.currentTimeMillis();
                 if (typeReg == null) {
                     typeReg = new TypeRegistry(engine);
                     // install global types
-                    GlobalTypesLoader globalTypes = engine.getGlobalTypes();
-                    globalTypes.getMainProvider().install(typeReg);
-                    // install types defined in script classes for each entry in local directory stack
-                    List<File> entries = dirStack.getDirectories();
-                    // we need to install them in reverse order so that local roots are installed at 
-                    // end to overwrite inherited types
-                    for (int i=entries.size()-1; i>=0; i--) {
-                        File entry = entries.get(i);
-                        TypeConfigurationProvider provider = globalTypes.getProvider(entry.getName());
-                        if (provider != null) {
-                            provider.install(typeReg);
-                        }
-                    }
-                    // install local configured types (in XML configuration)
+                    BundleTypeProvider bundleTypeProvider = engine.getBundleTypeProvider();
+                    bundleTypeProvider.install(typeReg);
+                    DirectoryTypeProvider directoryTypeProvider = engine.getDirectoryTypeProvider();
+                    directoryTypeProvider.load();
+                    directoryTypeProvider.install(typeReg);
+                    // install local configured types (in XML configuration) - TODO remove this?
                     loadConfiguredTypes();
                     localTypes.install(typeReg);
                 }
+                System.out.println(">>>>>>>>>>>>>"+((System.currentTimeMillis()-s)/1000));
             }
         }
         return typeReg;

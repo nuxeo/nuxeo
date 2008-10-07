@@ -46,9 +46,11 @@ import org.nuxeo.ecm.webengine.model.Profile;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.WebService;
-import org.nuxeo.ecm.webengine.model.impl.GlobalTypesLoader;
+import org.nuxeo.ecm.webengine.model.impl.BundleTypeProvider;
+import org.nuxeo.ecm.webengine.model.impl.DirectoryTypeProvider;
 import org.nuxeo.ecm.webengine.model.impl.ProfileDescriptor;
 import org.nuxeo.ecm.webengine.model.impl.ProfileRegistry;
+import org.nuxeo.ecm.webengine.model.impl.TypeConfigurationProvider;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.runtime.annotations.AnnotationManager;
@@ -109,7 +111,8 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     protected Map<String, Object> renderingExtensions; //TODO this should be moved in rendering project
     protected boolean isDebug = false;
 
-    protected GlobalTypesLoader globalTypes;
+    protected BundleTypeProvider bundleTypeProvider;
+    protected DirectoryTypeProvider directoryTypeProvider;
     protected List<ResourceBinding> bindings = new Vector<ResourceBinding>();
 
     protected AnnotationManager annoMgr;
@@ -128,9 +131,10 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         scripting.addClassPath(new File(root,".").getAbsolutePath());
         scripting.addClassPath(cp);
         
-        this.globalTypes = new GlobalTypesLoader(this);
-        BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), globalTypes);
-        BundleAnnotationsLoader.getInstance().addLoader(WebService.class.getName(), globalTypes);        
+        this.bundleTypeProvider = new BundleTypeProvider();
+        this.directoryTypeProvider = new DirectoryTypeProvider(root, scripting.getGroovyScripting().getGroovyClassLoader());
+        BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), bundleTypeProvider);
+        BundleAnnotationsLoader.getInstance().addLoader(WebService.class.getName(), bundleTypeProvider);        
         
         loadProfiles();
         
@@ -155,8 +159,12 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         BundleAnnotationsLoader.getInstance().addLoader(Path.class.getName(), this);
     }
     
-    public GlobalTypesLoader getGlobalTypes() {
-        return globalTypes;
+    public BundleTypeProvider getBundleTypeProvider() {
+        return bundleTypeProvider;
+    }
+    
+    public DirectoryTypeProvider getDirectoryTypeProvider() {
+        return directoryTypeProvider;
     }
     
     public String getMimeType(String ext) {
@@ -344,6 +352,8 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
      */
     public void reload() {
         bindings.clear();
+        bundleTypeProvider.flushCache();
+        directoryTypeProvider.flushCache();
         //TODO
         //defaultApplication = null;
         //for (WebApplication app : apps.values()) {
