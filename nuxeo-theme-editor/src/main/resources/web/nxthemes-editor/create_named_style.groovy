@@ -11,12 +11,12 @@ import org.nuxeo.theme.types.TypeFamily
 import org.nuxeo.theme.formats.styles.Style
 
 id = Request.getParameter("id")
-theme_name = Request.getParameter("theme_name")
-style_name = Request.getParameter("style_name")
+themeName = Request.getParameter("theme_name")
+styleName = Request.getParameter("style_name")
 
 ThemeManager themeManager = Manager.getThemeManager()
 
-if (themeManager.getNamedObject(theme_name, "style", style_name) == null) {
+if (themeManager.getNamedObject(themeName, "style", styleName) == null) {
     Style style = (Style) FormatFactory.create("style");
     style.setName(styleName);
     themeManager.setNamedObject(themeName, "style", style);

@@ -5,12 +5,12 @@ import org.nuxeo.theme.editor.Events
 import org.nuxeo.theme.events.EventContext
 import org.nuxeo.theme.events.EventManager
 
-src_id = Request.getParameter("src_id")
-dest_id = Request.getParameter("dest_id")
+srcId = Request.getParameter("src_id")
+destId = Request.getParameter("dest_id")
 order = new Integer(Request.getParameter("order"))
 
-Element srcElement = ThemeManager.getElementById(src_id);
-Element destElement = ThemeManager.getElementById(dest_id);
+Element srcElement = ThemeManager.getElementById(src_I);
+Element destElement = ThemeManager.getElementById(destId);
 
 // move the element
 srcElement.moveTo(destElement, order);

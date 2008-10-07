@@ -9,7 +9,7 @@ import org.nuxeo.theme.formats.FormatType
 import org.nuxeo.theme.types.TypeFamily
 import org.nuxeo.theme.formats.styles.Style
 
-theme_name = Request.getParameter("theme_name")
+themeName = Request.getParameter("theme_name")
 id = Request.getParameter("id")
 
 Element element = ThemeManager.getElementById(id);
@@ -22,8 +22,8 @@ ThemeManager themeManager = Manager.getThemeManager()
 if (inheritedName == null) {
     ThemeManager.removeInheritanceTowards(style);
 } else {
-    themeName = theme_name.split("/")[0];
-    Style inheritedStyle = (Style) themeManager.getNamedObject(themeName, "style", inheritedName);
+    themeId = themeName.split("/")[0];
+    Style inheritedStyle = (Style) themeManager.getNamedObject(themeId, "style", inheritedName);
     if (inheritedStyle != null) {
         themeManager.makeFormatInherit(style, inheritedStyle);
     }

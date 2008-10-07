@@ -1,1 +1,7 @@
-return Request.getSession(true).getAttribute("nxthemes.editor.selected_style_layer")
+
+selectedStyleLayerId = Context.runScript("getSelectedStyleLayerId.groovy")
+if (selectedStyleLayerId == null) {
+  return null
+}
+
+return ...

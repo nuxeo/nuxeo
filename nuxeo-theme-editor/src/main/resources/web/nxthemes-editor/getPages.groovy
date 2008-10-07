@@ -4,11 +4,9 @@ import org.nuxeo.theme.editor.PageInfo
 
 themeManager = Manager.getThemeManager()
 
-applicationPath = Request.getParameter("org.nuxeo.theme.application.path")
-defaultTheme = ThemeManager.getDefaultTheme(applicationPath)
-defaultPageName = defaultTheme.split("/")[1]
-
 currentPagePath = Context.getCookie("nxthemes.theme")
+defaultTheme = Context.runScript("getDefaultTheme.groovy")
+defaultPageName = defaultTheme.split("/")[1]
 
 pages = []
 if (!currentPagePath || !currentPagePath.contains("/")) {

@@ -1,4 +1,4 @@
-<#assign selected_element = script("getSelectedElement.groovy") />
+<#assign selected_element_id = script("getSelectedElementId.groovy") />
 
 <div>
 
@@ -15,7 +15,7 @@ window.scrollTo(0,0);
 
 <h1 class="nxthemesEditor">Element editor</h1>
 
-<#if selected_element>
+<#if selected_element_id>
 
 <@nxthemes_tabs identifier="element editor tabs" styleClass="nxthemesEditTabs">
   <item switchTo="element editor perspectives/edit properties" label="Properties"  />
@@ -29,32 +29,32 @@ window.scrollTo(0,0);
 
   <@nxthemes_panel
   identifier="element properties"
-  url="/nuxeo/nxthemes/editor/elementProperties.faces"
+  url="/nxthemes/editor/elementProperties.ftl"
   controlledBy="element editor perspectives,element form actions"
   visibleInPerspectives="edit properties" />
 
   <@nxthemes_panel
   identifier="element widget"
-  url="/nuxeo/nxthemes/editor/elementWidget.faces"
+  url="/nxthemes/editor/elementWidget.ftl"
   controlledBy="element editor perspectives,element form actions"
   visibleInPerspectives="assign widget" />
 
   <@nxthemes_panel
   identifier="element style"
-  url="/nuxeo/nxthemes/editor/elementStyle.faces"
+  url="/nxthemes/editor/elementStyle.ftl"
   controlledBy="element editor perspectives,element form actions,style editor actions"
   javascript="/nuxeo/nxthemes-lib/nxthemes-style-editor.js"
   visibleInPerspectives="edit style" />
 
   <@nxthemes_panel
   identifier="element visibility"
-  url="/nuxeo/nxthemes/editor/elementVisibility.faces"
+  url="/nxthemes/editor/elementVisibility.ftl"
   controlledBy="element editor perspectives,element form actions"
   visibleInPerspectives="set visibility" />
 
   <@nxthemes_panel
   identifier="element description"
-  url="/nuxeo/nxthemes/editor/elementDescription.faces"
+  url="/nxthemes/editor/elementDescription.ftl"
   controlledBy="element editor perspectives,element form actions"
   visibleInPerspectives="set description" />
 

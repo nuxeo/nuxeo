@@ -7,9 +7,12 @@ import org.nuxeo.theme.formats.styles.Style
 import org.nuxeo.theme.themes.ThemeManager
 import org.nuxeo.theme.formats.styles.Style
 
+themeName = Request.getParameter("theme_name")
+styleName = Request.getParameter("style_name")
+
 ThemeManager themeManager = Manager.getThemeManager()
 
-Style inheritedStyle = (Style) themeManager.getNamedObject(theme_name, "style", style_name);
+Style inheritedStyle = (Style) themeManager.getNamedObject(themeName, "style", styleName);
 themeManager.deleteFormat(inheritedStyle);
 
 themeManager.makeElementUseNamedStyle(id, null, themeName);

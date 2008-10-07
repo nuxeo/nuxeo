@@ -2,8 +2,7 @@ import org.nuxeo.theme.Manager
 import org.nuxeo.theme.themes.ThemeManager
 import org.nuxeo.theme.editor.ThemeInfo
 
-applicationPath = Request.getParameter("org.nuxeo.theme.application.path")
-defaultTheme = ThemeManager.getDefaultTheme(applicationPath)
+defaultTheme = Context.runScript("getDefaultTheme.groovy")
 
 themes = []
 if (!defaultTheme.contains("/")) {
@@ -12,13 +11,10 @@ if (!defaultTheme.contains("/")) {
 
 defaultThemeName = defaultTheme.split("/")[0]
 defaultPageName = defaultTheme.split("/")[1]
-
 currentPagePath = Context.getCookie("nxthemes.theme", defaultTheme)
-
 currentThemeName = currentPagePath.split("/")[0]
 
-themeManager = Manager.getThemeManager()
-for (themeName in themeManager.getThemeNames()) {
+for (themeName in Manager.getThemeManager().getThemeNames()) {
   link = String.format("%s/%s", themeName, defaultPageName)
   className = themeName.equals(currentThemeName) ? "selected" : ""
   if (link.equals(defaultThemeName)) {

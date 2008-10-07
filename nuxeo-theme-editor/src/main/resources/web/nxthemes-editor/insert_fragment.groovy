@@ -13,19 +13,19 @@ import org.nuxeo.theme.editor.Events
 import org.nuxeo.theme.events.EventContext
 import org.nuxeo.theme.events.EventManager
 
-dest_id = Request.getParameter("dest_id")
-type_name = Request.getParameter("type_name")
+destId = Request.getParameter("dest_id")
+typeName = Request.getParameter("type_name")
 
 ThemeManager themeManager = Manager.getThemeManager()
-Element destElement = ThemeManager.getElementById(dest_id)
+Element destElement = ThemeManager.getElementById(destId)
 
 // create the new fragment
-fragmentTypeName = type_name.split("/")[0]
+fragmentTypeName = typeName.split("/")[0]
 Fragment fragment = FragmentFactory.create(fragmentTypeName)
 
 // add a temporary view to the fragment
 Format widget = FormatFactory.create("widget")
-viewTypeName = type_name.split("/")[1]
+viewTypeName = typeName.split("/")[1]
 widget.setName(viewTypeName)
 themeManager.registerFormat(widget)
 ElementFormatter.setFormat(fragment, widget)

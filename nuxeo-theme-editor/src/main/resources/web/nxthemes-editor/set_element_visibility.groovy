@@ -8,12 +8,12 @@ import org.nuxeo.theme.perspectives.PerspectiveManager
 
 id = Request.getParameter("id")
 perspectives = Request.getParameter("perspectives")
-always_visible = Request.getParameter("always_visible")
+alwaysVisible = Request.getParameter("always_visible")
 
 Element element = ThemeManager.getElementById(id)
 PerspectiveManager perspectiveManager = Manager.getPerspectiveManager()
 
-if (always_visible) {
+if (alwaysVisible) {
     perspectiveManager.setAlwaysVisible(element)
 } else {
     // initially make the element visible in all perspectives

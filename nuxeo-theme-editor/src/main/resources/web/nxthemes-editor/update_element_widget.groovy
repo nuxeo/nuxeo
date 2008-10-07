@@ -10,7 +10,7 @@ import org.nuxeo.theme.types.TypeFamily
 import org.nuxeo.theme.elements.ElementFormatter
 
 id = Request.getParameter("id")
-view_name = Request.getParameter("view_name")
+viewName = Request.getParameter("view_name")
 
 Element element = ThemeManager.getElementById(id)
 FormatType widgetType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "widget")
@@ -20,7 +20,7 @@ if (widget == null) {
     themeManager.registerFormat(widget)
 }
 
-widget.setName(view_name)
+widget.setName(viewName)
 ElementFormatter.setFormat(element, widget)
 
 EventManager eventManager = Manager.getEventManager()

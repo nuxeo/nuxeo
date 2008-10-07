@@ -6,7 +6,7 @@ import org.nuxeo.theme.fragments.FragmentType
 import org.nuxeo.theme.editor.FragmentInfo
 
 fragments = []
-applicationPath = Request.getParameter("org.nuxeo.theme.application.path")
+applicationPath = Context.runScript("getApplicationPath.groovy")
 templateEngine = ThemeManager.getTemplateEngine(applicationPath)
 
 for (f in Manager.getTypeRegistry().getTypes(TypeFamily.FRAGMENT)) {

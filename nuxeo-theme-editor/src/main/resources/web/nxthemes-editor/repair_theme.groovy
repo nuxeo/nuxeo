@@ -2,7 +2,7 @@ import org.nuxeo.theme.Manager
 import org.nuxeo.theme.editor.Events
 import org.nuxeo.theme.events.EventContext
 
-themeName = Request.getParameter("themeName")
+themeName = Request.getParameter("theme_name")
 theme = Manager.getThemeManager().getThemeByName(themeName)
 
 res = true

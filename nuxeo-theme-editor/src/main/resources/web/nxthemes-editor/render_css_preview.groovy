@@ -1,8 +1,8 @@
 
-selected_element_id = Context.runScript("getSelectedElement.groovy")
-selected_layer_id = Context.runScript("getSelectedStyleLayer.groovy")
+selectedElementId = Context.runScript("getSelectedElementId.groovy")
+selectedLayerId = Context.runScript("getSelectedStyleLayerId.groovy")
 
-Element selectedElement = Manager.getElementById(selected_element_id);
+Element selectedElement = Manager.getElementById(selectedElementId);
 FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "style");
 Style style = (Style) ElementFormatter.getFormatByType(selectedElement, styleType);
 
