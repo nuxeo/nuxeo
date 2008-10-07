@@ -115,7 +115,7 @@ public class ModuleImpl implements Module, FileChangeListener  {
                     dirStack.addDirectory(file);//TODO: priority is meaningless
                 }
             } else {
-                dirStack.addDirectory(root);
+                dirStack.addDirectory(new File(root, "skin"));
             }
             localRootsCount = dirStack.getDirectories().size();
             // watch roots for modifications

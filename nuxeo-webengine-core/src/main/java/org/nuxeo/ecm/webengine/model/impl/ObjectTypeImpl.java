@@ -59,9 +59,8 @@ public class ObjectTypeImpl implements ResourceType {
     protected volatile Map<String,ViewDescriptor> views;
     protected volatile Class<Resource> clazz;
     protected volatile Guard guard = Guard.DEFAULT;
-    protected volatile Set<String> facets;
-    
-    protected ConcurrentMap<String, ScriptFile> templateCache;
+    protected volatile Set<String> facets;    
+    protected volatile ConcurrentMap<String, ScriptFile> templateCache;
     
     public ObjectTypeImpl(ModuleImpl module, ObjectTypeImpl superType, String name, Class<Resource> clazz) {
         this.templateCache = new ConcurrentHashMap<String, ScriptFile>();
@@ -235,16 +234,14 @@ public class ObjectTypeImpl implements ResourceType {
         if (file != null) {
             return file;
         }
-        boolean abs = name.startsWith("/");
         try {
-        if (abs) {
-            file = module.getFile(name);
-        } else {
-            file = findTemplate(name);
-        }
+            file = findSkinTemplate(name);
+            if (file == null) {
+                file = findTypeTemplate(name);
+            }
         } catch (IOException e) {
-            throw WebException.wrap(e);
-        }        
+            WebException.wrap("Failed to find template: "+name, e);
+        }
         if (file != null) {
             templateCache.put(name, file);
         } else {
@@ -253,7 +250,11 @@ public class ObjectTypeImpl implements ResourceType {
         return file;
     }
     
-    protected ScriptFile findTemplate(String name) throws IOException {
+    protected ScriptFile findSkinTemplate(String name) throws IOException {
+        return module.getFile("templates/"+name);
+    }
+    
+    protected ScriptFile findTypeTemplate(String name) throws IOException {
         String path = resolveResourcePath(clazz, name);
         File f = new File(module.getEngine().getRootDirectory(), path);
         if (f.isFile()) {
@@ -287,4 +288,7 @@ public class ObjectTypeImpl implements ResourceType {
         .toString();        
     }
 
+    public void flushCache() {
+        this.templateCache = new ConcurrentHashMap<String, ScriptFile>();
+    }
 }

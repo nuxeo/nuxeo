@@ -349,6 +349,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         if (t != null) { // update the type class
             t.clazz = (Class<Resource>)object.clazz;
             t.loadAnnotations(module.getEngine().getAnnotationManager());
+            t.flushCache();
         } else { // install the type - this should never happen since it is an update!
             throw new IllegalStateException("Updating an object type which is not registered.");
         }
@@ -361,6 +362,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             String[] targetTypes = service.targetTypes;
             service.clazz = (Class<Resource>)object.clazz;
             service.loadAnnotations(module.getEngine().getAnnotationManager());
+            t.flushCache();
             // update bindings
             if (service.targetTypes != targetTypes) {
                 if (!Arrays.equals(targetTypes, service.targetTypes)) {

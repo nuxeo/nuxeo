@@ -34,6 +34,8 @@ public interface ResourceType {
     
     public final static String ROOT_TYPE_NAME = "*";
 
+    void flushCache();
+    
     Guard getGuard();
     
     String getName();
