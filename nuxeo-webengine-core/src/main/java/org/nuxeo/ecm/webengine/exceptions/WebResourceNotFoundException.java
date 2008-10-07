@@ -27,8 +27,6 @@ import org.nuxeo.ecm.webengine.WebException;
  */
 public class WebResourceNotFoundException extends WebException {
 
-    public static final String ID="notfound";
-
     private static final long serialVersionUID = 1L;
 
 
@@ -38,11 +36,6 @@ public class WebResourceNotFoundException extends WebException {
 
     public WebResourceNotFoundException(String message, Throwable cause) {
         super (message, cause);
-    }
-
-    @Override
-    public String getId() {
-        return ID;
     }
 
 }

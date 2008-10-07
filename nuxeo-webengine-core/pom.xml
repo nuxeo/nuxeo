@@ -104,6 +104,27 @@
       <artifactId>nuxeo-platform-usermanager-api</artifactId>
     </dependency>
 
+
+    <!-- this is needed when compiling against jersey -->
+    <!--dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
+      <version>0.8</version>
+    </dependency-->
+    <dependency>
+      <groupId>org.resteasy</groupId>
+      <artifactId>jaxrs-api</artifactId>
+      <version>1.0-beta-8</version>
+    </dependency>
+
+<!-- needed for distribution 
+      <dependency>
+         <groupId>javax.annotation</groupId>
+         <artifactId>jsr250-api</artifactId>
+         <version>1.0</version>
+      </dependency>
+-->
+
     <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -132,4 +153,16 @@
     </dependency>
   </dependencies>
 
+  <repositories>
+    <repository>
+      <id>jboss</id>
+      <url>http://repository.jboss.org/maven2</url>
+    </repository>
+    <repository>
+      <id>m2.dev.java.net</id>
+      <url>http://download.java.net/maven/2</url>
+      <layout>default</layout>
+    </repository>
+
+  </repositories>
 </project>
