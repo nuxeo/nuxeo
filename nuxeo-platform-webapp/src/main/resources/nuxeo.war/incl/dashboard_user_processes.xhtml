@@ -16,10 +16,10 @@
         </a>
       </h3>
       <div class="boxBody">
-        <a4j:region>
-          <a4j:outputPanel id="dashboardDocumentProcessTable">
-            <h:form
-              rendered="#{! empty dashboardActions_documentProcessItems}">
+      <h:form>
+        <a4j:region renderRegionOnly="true">
+          <a4j:outputPanel id="dashboardDocumentProcessTable" rendered="#{! empty dashboardActions_documentProcessItems}">
+            
               <h:outputText value="#{messages['label.user.processes']}"
                 class="infoMessage" />
               <h:dataTable var="item"
@@ -54,7 +54,6 @@
                   </h:outputText>
                 </h:column>
               </h:dataTable>
-            </h:form>
             <div class="emptyDashboardContent">
               <h:outputText class="emptyDashBoardLabel"
                 value="#{messages['label.dashboard.user.document.process.empty']}"
@@ -62,19 +61,18 @@
             </div>
           </a4j:outputPanel>
 
-          <h:form>
-            <div class="buttonsGroup">
-              <h:commandButton type="submit"
-                value="#{messages['label.browse.back']}"
-                styleClass="button"
-                action="#{navigationContext.goBack()}" />
-              <a4j:commandButton value="#{messages['label.refresh']}"
-                action="#{dashboardActions.refreshDocumentProcessItems}"
-                reRender="dashboardDocumentProcessTable"
-                styleClass="button" />
-            </div>
-          </h:form>
+          <div class="buttonsGroup">
+            <h:commandButton type="submit"
+              value="#{messages['label.browse.back']}"
+              styleClass="button"
+              action="#{navigationContext.goBack()}" />
+            <a4j:commandButton value="#{messages['label.refresh']}"
+              action="#{dashboardActions.refreshDocumentProcessItems}"
+              reRender="dashboardDocumentProcessTable"
+              styleClass="button" />
+          </div>
         </a4j:region>
+      </h:form>
       </div>
     </div>
   </h:panelGroup>
