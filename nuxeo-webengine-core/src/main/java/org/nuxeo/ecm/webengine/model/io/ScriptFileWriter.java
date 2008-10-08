@@ -19,25 +19,26 @@
 
 package org.nuxeo.ecm.webengine.model.io;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+@Produces({"text/html", "*/*"})
 public class ScriptFileWriter implements MessageBodyWriter<ScriptFile> {
 
 
@@ -47,25 +48,9 @@ public class ScriptFileWriter implements MessageBodyWriter<ScriptFile> {
             OutputStream entityStream) throws IOException,
             WebApplicationException {
 
-        //TODO
-        InputStream in = null;
-        try {
-            in = new FileInputStream(t.getFile());
-            FileUtils.copy(in, entityStream);
-        } catch (IOException e) {
-            if (in != null) {
-                in.close();
-            }
-        }
+        new Template(WebEngine.getActiveContext(), t).render(entityStream);
+        entityStream.flush();
 
-    }
-
-    public ScriptFile readFrom(Class<ScriptFile> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     public long getSize(ScriptFile arg0, Class<?> arg1, Type arg2,

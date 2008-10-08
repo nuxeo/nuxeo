@@ -40,8 +40,8 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.forms.FormData;
-import org.nuxeo.ecm.webengine.model.NoSuchResourceException;
 import org.nuxeo.ecm.webengine.model.Module;
+import org.nuxeo.ecm.webengine.model.NoSuchResourceException;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.ServiceResource;
@@ -67,7 +67,7 @@ public abstract class AbstractWebContext implements WebContext {
     protected final LinkedList<File> scriptExecutionStack;
     protected AbstractResource<?> head;
     protected AbstractResource<?> tail;
-    protected WebApplication app;
+    protected WebApplication module;
     protected HttpServletRequest request;
     protected HashMap<String,Object> vars;
     protected FormData form;
@@ -95,7 +95,7 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public Module getModule() {
-        return app.getModule();
+        return module.getModule();
     }
 
     public WebEngine getEngine() {
@@ -122,13 +122,13 @@ public abstract class AbstractWebContext implements WebContext {
         return request.getMethod();
     }
     
-    public String getApplicationPath() {
-        return app.getPath();
+    public String getModulePath() {
+        return module.getPath();
     }
 
     
     public Resource newObject(String typeName, Object ...  args) throws WebException {
-        ResourceType type = app.getType(typeName);
+        ResourceType type = module.getType(typeName);
         if (type == null) {
             throw new NoSuchResourceException("No Such Object Type: "+typeName);
         }
@@ -255,11 +255,11 @@ public abstract class AbstractWebContext implements WebContext {
     /** object stack API */
 
     public void setApplication(WebApplication root) {
-        this.app = root;
+        this.module = root;
     }
     
     public WebApplication getApplication() {
-        return app;
+        return module;
     }
     
     
@@ -336,7 +336,7 @@ public abstract class AbstractWebContext implements WebContext {
 //                return script;
 //            }
         }
-        return app.getFile(path);
+        return module.getFile(path);
     }
 
     public void pushScriptFile(File file) {
@@ -473,6 +473,10 @@ public abstract class AbstractWebContext implements WebContext {
     protected void initializeBindings(Bindings bindings) {
         Resource obj = getTargetObject();
         bindings.put("Context", this);
+        bindings.put("Module", module);
+        bindings.put("Engine", engine);
+        bindings.put("basePath", getBasePath());
+
         //TODO uncomment for compatibility
         //bindings.put("Request", request);
         //bindings.put("Response", response);
@@ -484,11 +488,7 @@ public abstract class AbstractWebContext implements WebContext {
                 bindings.put("Document", doc);
             }
         }
-        bindings.put("Config", app);
-        bindings.put("Engine", engine);
         //TODO
-        //bindings.put("basePath", getBasePath());
-        //bindings.put("appPath", getApplicationPath());
         try {
             bindings.put("Session", getCoreSession());
         } catch (Exception e) {

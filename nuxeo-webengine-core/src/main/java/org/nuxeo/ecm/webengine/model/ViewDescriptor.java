@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine.model;
 
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 
 import org.nuxeo.ecm.webengine.model.impl.Utils;
@@ -35,7 +36,7 @@ public class ViewDescriptor {
     protected String name;
     protected String fileName;
     protected Guard guard;
-    protected Set<String> cats;
+    protected Set<String> cats = Collections.emptySet();
     protected boolean auto;
     
     public ViewDescriptor(WebView anno) throws ParseException {

@@ -50,7 +50,50 @@ public class Template {
     protected Resource resource;
     protected Map<String,Object> args;
     protected ScriptFile script;
+    protected WebContext ctx;
+
+    public Template(WebContext ctx) {
+        this (ctx, null, null, null);
+    }
+
+    public Template(WebContext ctx, Map<String,Object> args) {
+        this (ctx, null, null, args);
+    }
+
+    public Template(WebContext ctx, ScriptFile script) {
+        this (ctx, null, script, null);
+    }
     
+    public Template(WebContext ctx, ScriptFile script, Map<String,Object> args) {
+        this (ctx, null, script, args);
+    }
+    
+    public Template(Resource resource) {
+        this (resource.getContext(), resource, null, null);
+    }
+
+    public Template(Resource resource, Map<String,Object> args) {
+        this (resource.getContext(), resource, null, null);
+    }
+
+    public Template(Resource resource, ScriptFile script, Map<String,Object> args) {
+        this (resource.getContext(), resource, script, args);
+    }
+    
+    public Template(Resource resource, ScriptFile script) {
+        this (resource.getContext(), resource, script, null);
+    }
+
+    public Template(WebContext ctx, Resource resource, ScriptFile script, Map<String,Object> args) {
+        this.ctx = ctx;
+        this.resource = resource;
+        this.script = script;
+        this.args = args;
+        if (this.ctx == null && this.resource != null) {
+            this.ctx = this.resource.getContext();
+        }
+        this.mediaType = ctx.getHttpHeaders().getMediaType();
+    }
 
     public Template mediaType(MediaType mediaType) {
         this.mediaType = mediaType;
@@ -85,7 +128,11 @@ public class Template {
     }
     
     public Template fileName(String fileName) throws WebException {
-        script = resource.getType().getTemplate(fileName);
+        if (resource != null) {
+            script = resource.getType().getTemplate(fileName);
+        } else {
+            script = ctx.getModule().getFile(fileName);
+        }
         return this;
     }
     
@@ -117,31 +164,21 @@ public class Template {
             } else {
                 fileName.append(name).append('.').append(ext);
             }
-            script = resource.getType().getTemplate(fileName.toString());
+            if (resource != null) {
+                script = resource.getType().getTemplate(fileName.toString());
+            } else {
+                script = ctx.getModule().getFile(fileName.toString());
+            }
         }
         return this;
     }
     
-    public Template(Resource resource) {
-        this (resource, null);
-    }
-
-    public Template(Resource resource, Map<String,Object> args) {
-        this (resource, null, null);
-    }
-
-    public Template(Resource resource, ScriptFile script, Map<String,Object> args) {
-        this.resource = resource;
-        this.script = script;
-        this.args = args;
-        this.mediaType = resource.getContext().getHttpHeaders().getMediaType();
-    }
 
     
     public void render(OutputStream out) throws WebException {        
         Writer w = new OutputStreamWriter(out);
         try {
-            resource.getContext().render(resolve().script(), args, w);
+            ctx.render(resolve().script(), args, w);
             w.flush();
         } catch (Exception e) {
             WebException.wrap("Failed to write response", e);

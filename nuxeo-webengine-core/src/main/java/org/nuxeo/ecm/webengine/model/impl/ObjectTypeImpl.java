@@ -63,7 +63,7 @@ public class ObjectTypeImpl implements ResourceType {
     protected volatile ConcurrentMap<String, ScriptFile> templateCache;
     
     public ObjectTypeImpl(ModuleImpl module, ObjectTypeImpl superType, String name, Class<Resource> clazz) {
-        this.templateCache = new ConcurrentHashMap<String, ScriptFile>();
+        this.templateCache = new ConcurrentHashMap<String, ScriptFile>();        
         this.module = module;
         this.superType = superType;
         this.name = name;

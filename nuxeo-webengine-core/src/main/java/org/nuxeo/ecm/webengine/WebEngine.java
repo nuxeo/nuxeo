@@ -108,7 +108,6 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     protected RenderingEngine rendering;
     protected Map<String, Object> env;
     protected ResourceBundle messages;
-    protected Map<String, Object> renderingExtensions; //TODO this should be moved in rendering project
     protected boolean isDebug = false;
 
     protected BundleTypeProvider bundleTypeProvider;
@@ -138,7 +137,6 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         
         loadModules();
         
-        this.renderingExtensions = new Hashtable<String, Object>();
         this.env = new HashMap<String, Object>();
         env.put("installDir", root);
         env.put("engine", "Nuxeo Web Engine");
@@ -147,10 +145,6 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         rendering = new FreemarkerEngine();
         rendering.setResourceLocator(this);
         rendering.setSharedVariable("env", getEnvironment());
-        Map<String, Object> renderingExtensions = getRenderingExtensions();
-        for (Map.Entry<String, Object> entry : renderingExtensions.entrySet()) {
-            rendering.setSharedVariable(entry.getKey(), entry.getValue());
-        }
         loadMessageBundle(true);
         if (notifier != null) {
             notifier.addListener(this);
@@ -283,20 +277,12 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         this.isDebug = isDebug;
     }
 
-    public Map<String, Object> getRenderingExtensions() {
-        return renderingExtensions;
-    }
-
-    public Object getRenderingExtension(String id) {
-        return renderingExtensions.get(id);
-    }
-
     public void registerRenderingExtension(String id, Object obj) {
-        renderingExtensions.put(id, obj);
+        rendering.setSharedVariable(id, obj);
     }
 
     public void unregisterRenderingExtension(String id) {
-        renderingExtensions.remove(id);
+        rendering.setSharedVariable(id, null);
     }
 
     public Map<String, Object> getEnvironment() {
