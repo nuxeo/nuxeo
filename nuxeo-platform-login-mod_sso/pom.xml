@@ -15,7 +15,6 @@
     Nuxeo Enterprise Platform: Login module using Apache's mod_sso plugin to
     authenticate users.
   </description>
-  <version>5.1.7-SNAPSHOT</version>
 
   <dependencies>
 

@@ -14,7 +14,6 @@
     Nuxeo Enterprise Platform: Authentication Plugin to handle anonymous
     authentication
   </description>
-  <version>5.1.7-SNAPSHOT</version>
 
   <dependencies>
     <dependency>

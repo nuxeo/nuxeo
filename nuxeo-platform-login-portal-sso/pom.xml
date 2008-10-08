@@ -13,7 +13,6 @@
   <name>Nuxeo portal authentication plugin for LoginModule</name>
   <description>Nuxeo Enterprise Platform: Login module
     using sso headers to validate authentication of requests coming from a portal.</description>
-  <version>5.1.7-SNAPSHOT</version>
 
   <dependencies>
 

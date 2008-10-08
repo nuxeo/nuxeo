@@ -15,7 +15,6 @@
     Nuxeo Enterprise Platform: Plugin for Nuxeo5 authentication system to
     support NTLM authentication
   </description>
-  <version>5.1.7-SNAPSHOT</version>
 
   <dependencies>
 
