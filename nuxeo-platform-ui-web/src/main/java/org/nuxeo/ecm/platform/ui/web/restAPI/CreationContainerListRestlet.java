@@ -38,8 +38,9 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Get the list of containers that are suitable for new document creation. The
- * actual logic is delegated to the FileManagerService.
+ * This restlet gets the list of containers that are suitable for new document creation.
+ * <p>
+ * The actual logic is delegated to the FileManagerService.
  *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */

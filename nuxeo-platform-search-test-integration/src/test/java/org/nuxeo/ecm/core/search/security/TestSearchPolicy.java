@@ -126,7 +126,7 @@ public class TestSearchPolicy extends RepositoryOSGITestCase {
         return file;
     }
 
-    private DocumentModel getUserModel(Long accessLevel) {
+    private static DocumentModel getUserModel(Long accessLevel) {
         DocumentModelImpl documentModelImpl = new DocumentModelImpl("User");
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("accessLevel", Long.valueOf(3));
