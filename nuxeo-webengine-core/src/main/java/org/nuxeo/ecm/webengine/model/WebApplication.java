@@ -21,11 +21,6 @@ package org.nuxeo.ecm.webengine.model;
 
 import java.util.List;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 
@@ -69,17 +64,7 @@ public class WebApplication {
     public Object getErrorView(WebApplicationException e) {
         return null;
     }
-    
-    
-    @GET @POST @PUT @DELETE @HEAD 
-    public Object getView() {
-        try {
-            return getFile("index.ftl");
-        } catch (Throwable t) {
-            throw WebException.wrap("Failed to find index file", t);
-        }
-    }
-    
+        
     public String getPath() {
         return path; 
     }
@@ -97,7 +82,7 @@ public class WebApplication {
         Path p = getClass().getAnnotation(Path.class);
         String path = p.value();
         if (path.indexOf('{') > -1) {
-            path = _guessPath(); 
+            path = _guessPath();
         } else if (!path.startsWith("/")) {
             path = new StringBuilder().append('/').append(path).toString();
         }
@@ -114,7 +99,11 @@ public class WebApplication {
     
     
     public ScriptFile getFile(String path) throws WebException {
-        return module.getFile(path);
+        ScriptFile file = module.getFile(path);
+        if (file == null) {
+            throw new NoSuchResourceException("File not found: "+path);
+        }
+        return file;
     }
 
     public Class<?> loadClass(String className) throws ClassNotFoundException {

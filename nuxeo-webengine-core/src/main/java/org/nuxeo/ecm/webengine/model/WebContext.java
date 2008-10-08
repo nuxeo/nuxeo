@@ -146,7 +146,7 @@ public interface WebContext extends Adaptable {
      * The application path will include the base path (context + servlet path)
      * @return the application path. Cannot be null
      */
-    String getApplicationPath();
+    String getModulePath();
 
     /**
      * Gets the path of the servlet. Same as servlet context path + servlet path
