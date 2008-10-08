@@ -683,8 +683,7 @@ public class IOManagerImpl implements IOManager {
 
         DocumentWriter customDocWriter = createDocWriter(
                 docWriterFactoryClassName, wFactoryParams);
-        DocumentReader customDocReader = createDocReader(
-                docReaderFactoryClassName, rFactoryParams);
+        DocumentReader customDocReader = null;
 
         File tempFile = getLocalFile(uri);
         InputStream in = null;
@@ -695,6 +694,8 @@ public class IOManagerImpl implements IOManager {
                 rFactoryParams = new HashMap<String, Object>();
             }
             rFactoryParams.put("source_stream", in);
+            customDocReader = createDocReader(docReaderFactoryClassName,
+                    rFactoryParams);
 
             IODocumentManager docManager = new IODocumentManagerImpl();
             DocumentTranslationMap map = docManager.importDocuments(
@@ -703,7 +704,9 @@ public class IOManagerImpl implements IOManager {
             String msg = "Cannot import from uri: " + uri;
             throw new ClientException(msg, e);
         } finally {
-            customDocReader.close();
+            if (customDocReader != null) {
+                customDocReader.close();
+            }
             customDocWriter.close();
 
             if (in != null) {
