@@ -1,4 +1,4 @@
-package app1;
+package nuxeo;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;

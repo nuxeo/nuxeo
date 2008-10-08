@@ -50,11 +50,11 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ObjectTypeImpl implements ResourceType {
+public class ResourceTypeImpl implements ResourceType {
     
     protected ModuleImpl module;
     protected String name;
-    protected ObjectTypeImpl superType;
+    protected ResourceTypeImpl superType;
     // the views and class may be changed when a type is updated
     protected volatile Map<String,ViewDescriptor> views;
     protected volatile Class<Resource> clazz;
@@ -62,14 +62,14 @@ public class ObjectTypeImpl implements ResourceType {
     protected volatile Set<String> facets;    
     protected volatile ConcurrentMap<String, ScriptFile> templateCache;
     
-    public ObjectTypeImpl(ModuleImpl module, ObjectTypeImpl superType, String name, Class<Resource> clazz) {
+    public ResourceTypeImpl(ModuleImpl module, ResourceTypeImpl superType, String name, Class<Resource> clazz) {
         this.templateCache = new ConcurrentHashMap<String, ScriptFile>();        
         this.module = module;
         this.superType = superType;
         this.name = name;
-        this.clazz = clazz;
+        this.clazz = clazz;        
         AnnotationManager mgr = module.engine.getAnnotationManager();        
-        loadAnnotations(mgr);
+        loadAnnotations(mgr);        
     }
     
     public ResourceType getSuperType() {
@@ -103,6 +103,7 @@ public class ObjectTypeImpl implements ResourceType {
         return clazz;
     }
     
+    @SuppressWarnings("unchecked")
     public <T extends Resource> T newInstance() throws WebException {
         try {            
             return (T)clazz.newInstance();
@@ -122,7 +123,7 @@ public class ObjectTypeImpl implements ResourceType {
     public List<ViewDescriptor> getViews(String category) {
         ArrayList<ViewDescriptor> result = new ArrayList<ViewDescriptor>();
         for (ViewDescriptor vd : views.values()) {
-            if (vd.getCategories().contains(category)) {
+            if (vd.hasCategory(category)) {
                 result.add(vd);
             }            
         }
@@ -142,7 +143,7 @@ public class ObjectTypeImpl implements ResourceType {
     public List<ViewDescriptor> getEnabledViews(Resource obj, String category) {
         ArrayList<ViewDescriptor> result = new ArrayList<ViewDescriptor>();
         for (ViewDescriptor vd : views.values()) {
-            if (vd.getCategories().contains(category) && vd.isEnabled(obj)) {
+            if (vd.hasCategory(category) && vd.isEnabled(obj)) {
                 result.add(vd);
             }            
         }
@@ -160,7 +161,7 @@ public class ObjectTypeImpl implements ResourceType {
     public List<String> getViewNames(String category) {
         ArrayList<String> result = new ArrayList<String>();
         for (ViewDescriptor vd : views.values()) {
-            if (vd.getCategories().contains(category)) {
+            if (vd.hasCategory(category)) {
                 result.add(vd.getName());
             }            
         }
@@ -180,7 +181,7 @@ public class ObjectTypeImpl implements ResourceType {
     public List<String> getEnabledViewNames(Resource obj, String category) {
         ArrayList<String> result = new ArrayList<String>();
         for (ViewDescriptor vd : views.values()) {
-            if (vd.getCategories().contains(category) && vd.isEnabled(obj)) {
+            if (vd.hasCategory(category) && vd.isEnabled(obj)) {
                 result.add(vd.getName());
             }            
         }
@@ -200,7 +201,8 @@ public class ObjectTypeImpl implements ResourceType {
             WebView anno = m.getAnnotation(WebView.class);
             try {
                 ViewDescriptor vd = new ViewDescriptor(anno);
-                views.put(vd.getName(), vd);
+                // register the view
+                views.put(vd.getName(), vd);                
             } catch (ParseException e) {
                 WebException.wrap("Failed to parse view guard "+anno.guard(), e);
             }
@@ -230,6 +232,14 @@ public class ObjectTypeImpl implements ResourceType {
         if (name == null) {
             name = "view.ftl"; 
         }
+        ScriptFile file = findTemplate(name);
+        if (file == null) {
+            throw new TemplateNotFoundException(this, name);
+        }
+        return file;
+    }
+    
+    public ScriptFile findTemplate(String name) throws WebException {
         ScriptFile file = templateCache.get(name);
         if (file != null) {
             return file;
@@ -244,14 +254,13 @@ public class ObjectTypeImpl implements ResourceType {
         }
         if (file != null) {
             templateCache.put(name, file);
-        } else {
-            throw new TemplateNotFoundException(this, name);
         }
         return file;
     }
     
     protected ScriptFile findSkinTemplate(String name) throws IOException {
-        return module.getFile("templates/"+name);
+        return module.getFile(new StringBuilder().append("templates/")
+                .append(this.name).append("/").append(name).toString());
     }
     
     protected ScriptFile findTypeTemplate(String name) throws IOException {
@@ -261,13 +270,13 @@ public class ObjectTypeImpl implements ResourceType {
             return new ScriptFile(f);
         }
         ScriptFile file = null;
-        ResourceType t =getSuperType();
+        ResourceTypeImpl t =(ResourceTypeImpl)getSuperType();
         while (t != null) {
-            file = t.getTemplate(name);
+            file = t.findTemplate(name);
             if (file != null) {
                 break;
             }
-            t = t.getSuperType();
+            t = (ResourceTypeImpl)t.getSuperType();
         }     
         return file;
     }
@@ -288,7 +297,18 @@ public class ObjectTypeImpl implements ResourceType {
         .toString();        
     }
 
+    public boolean isDerivedFrom(String type) {
+        if (type.equals(name)) {
+            return true; 
+        }
+        if (superType != null) {
+            return superType.isDerivedFrom(type);
+        }
+        return false;
+    }
+    
     public void flushCache() {
         this.templateCache = new ConcurrentHashMap<String, ScriptFile>();
     }
+
 }

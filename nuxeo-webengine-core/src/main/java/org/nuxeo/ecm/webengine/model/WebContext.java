@@ -53,6 +53,15 @@ public interface WebContext extends Adaptable {
     public Module getModule();
 
     /**
+     * Get the root resource if any resource was defined as being the root
+     * <p>
+     * A root resource can be any resource from the resource chain.
+     * 
+     * @return the root resource or null if no root was defined
+     */
+    public Resource getRoot();
+    
+    /**
      * Gets the web engine instance.
      *
      * @return the web engine instance. Cannot return null

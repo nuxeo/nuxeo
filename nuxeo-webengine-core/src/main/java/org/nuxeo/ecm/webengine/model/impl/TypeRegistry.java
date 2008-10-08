@@ -40,15 +40,14 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
  */
 public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescriptor>{
     
-    //TODO: types map is useless - remove it?
-    protected Map<String, ObjectTypeImpl> types;
+    protected Map<String, ResourceTypeImpl> types;
     protected Map<String, ServiceTypeImpl> services;
     protected Map<String, ServiceTypeImpl[]> serviceBindings;
     protected ModuleImpl module;
     protected Class<?> docObjectClass = null;
     
     public TypeRegistry(ModuleImpl module) {
-        types = new ConcurrentHashMap<String, ObjectTypeImpl>();
+        types = new ConcurrentHashMap<String, ResourceTypeImpl>();
         services = new ConcurrentHashMap<String, ServiceTypeImpl>();
         serviceBindings = new ConcurrentHashMap<String, ServiceTypeImpl[]>();
         this.module = module;
@@ -65,7 +64,13 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     public ResourceType getType(String name) {
-        return types.get(name);
+        ResourceType type = types.get(name); 
+        if (type == null) { // check for a non registered document type
+            if (registerDocumentTypeIfNeeded(name)) {
+                type = types.get(name);
+            }
+        }
+        return type;
     }
     
     public ServiceType getService(String name) {
@@ -176,7 +181,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
 
     
     public ResourceType[] getTypes() {
-        return types.values().toArray(new ObjectTypeImpl[types.size()]);
+        return types.values().toArray(new ResourceTypeImpl[types.size()]);
     }
     
     public ServiceType[] getServices() {
@@ -186,7 +191,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     
     public synchronized void registerType(TypeDescriptor td) {
         if (td.superType != null && !types.containsKey(td.superType)) {
-            registerMissingSuperTypeIfNeeded(td);
+            registerDocumentTypeIfNeeded(td.superType);
         }
         addFragment(td.name, td, td.superType);
     }
@@ -202,15 +207,15 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     public void unregisterService(TypeDescriptor td) {
         removeFragment(td.name, td);
     }
-    
-    protected void registerMissingSuperTypeIfNeeded(TypeDescriptor td) {
+        
+    protected boolean registerDocumentTypeIfNeeded(String typeName) {
         // we have a special case for document types. 
         // If a web document type is not resolved then use a default web document type
         // This avoid defining web types for every document type in the system. 
         // The web document type use by default the same type hierarchy as document types
         SchemaManager mgr = Framework.getLocalService(SchemaManager.class);
         if (mgr != null) {
-            DocumentType doctype = mgr.getDocumentType(td.superType);
+            DocumentType doctype = mgr.getDocumentType(typeName);
             if (doctype != null) { // this is a document type - register a default web type
                 DocumentType superSuperType = (DocumentType)doctype.getSuperType();
                 String superSuperTypeName = ResourceType.ROOT_TYPE_NAME;
@@ -221,17 +226,17 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
                     if (docObjectClass == null) {
                         docObjectClass = Class.forName("org.nuxeo.ecm.core.rest.DocumentObject");
                     }
-                    TypeDescriptor superWebType = new TypeDescriptor(docObjectClass, td.superType, superSuperTypeName);
-                    registerType(superWebType);                    
+                    TypeDescriptor superWebType = new TypeDescriptor(docObjectClass, typeName, superSuperTypeName);
+                    registerType(superWebType);
+                    return true;
                 } catch (ClassNotFoundException e) {
                     //TODO
                     System.err.println("Cannot find document resource class. Automatic Core Type support will be disabled ");
                 }
             }
         }
+        return false;
     }
-    
-
     
     @Override
     protected TypeDescriptor clone(TypeDescriptor object) {
@@ -282,7 +287,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
     
     protected void installTypeContribution(String key, TypeDescriptor object) {        
-        ObjectTypeImpl type = new ObjectTypeImpl(module, null, object.name, (Class<Resource>)object.clazz);
+        ResourceTypeImpl type = new ResourceTypeImpl(module, null, object.name, (Class<Resource>)object.clazz);
         if (object.superType != null) {
             type.superType = types.get(object.superType);
             assert type.superType != null; // must never be null since the object is resolved 
@@ -331,7 +336,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     
     
     @Override
-    protected void updateContribution(String key, TypeDescriptor object) {
+    protected void updateContribution(String key, TypeDescriptor object, TypeDescriptor oldValue) {
           if (object.isService()) {
               updateServiceContribution(key, (ServiceDescriptor)object);
           } else {
@@ -345,7 +350,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         // 1. update the existing type 
         // 2. unresolve, reinstall then resolve the type contribution to force action reinstalling.
         // we are using 1.
-        ObjectTypeImpl t = types.get(key);
+        ResourceTypeImpl t = types.get(key);
         if (t != null) { // update the type class
             t.clazz = (Class<Resource>)object.clazz;
             t.loadAnnotations(module.getEngine().getAnnotationManager());
@@ -356,7 +361,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void updateServiceContribution(String key, ServiceDescriptor object) {
-        ObjectTypeImpl t = types.get(key);
+        ResourceTypeImpl t = types.get(key);
         if (t instanceof ServiceTypeImpl) { // update the type class
             ServiceTypeImpl service = (ServiceTypeImpl)t;
             String[] targetTypes = service.targetTypes;
@@ -381,9 +386,9 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
 
     
     @Override
-    protected void uninstallContribution(String key) {
+    protected void uninstallContribution(String key, TypeDescriptor value) {
         //TODO use "@" prefix for services in fragment registry?
-        ObjectTypeImpl t = types.remove(key);
+        ResourceTypeImpl t = types.remove(key);
         if (t == null) {
             ServiceTypeImpl s = services.remove(key);
             if (s != null) {

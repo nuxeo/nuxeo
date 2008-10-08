@@ -17,38 +17,22 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.model.impl;
+package org.nuxeo.ecm.webengine.model;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-
-import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.Resource;
-import org.nuxeo.ecm.webengine.model.ServiceResource;
-
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DefaultService extends AbstractResource<ResourceTypeImpl> implements ServiceResource {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface Guard {
 
-
-    public DefaultService() {
-    }
-        
-    public boolean isService() {
-        return true;
-    }
-
-    public Resource getTarget() {
-        return prev;
-    }
+    String value();
+    Class<?> type() default org.nuxeo.ecm.webengine.security.Guard.class;
     
-    @Path(value=".{segment}")
-    public ServiceResource disptachService(@PathParam("segment") String serviceName) throws WebException {
-        return ctx.newService(this, serviceName);
-    }    
-
-
 }

@@ -40,6 +40,8 @@ public interface ResourceType {
     
     String getName();
     
+    boolean isDerivedFrom(String type);
+    
     Class<? extends Resource> getResourceClass();
     
     <T extends Resource> T newInstance() throws WebException;

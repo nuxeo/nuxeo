@@ -18,7 +18,7 @@ function doLogin(username, password) {
       result = true;
     },    
     error: function(html, status) {
-      result = false;
+      result = html.status != 401;
     }
   });
   return result;

@@ -97,12 +97,12 @@ public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleD
     }
 
     @Override
-    protected void updateContribution(String key, ModuleDescriptor object) {
+    protected void updateContribution(String key, ModuleDescriptor object, ModuleDescriptor oldValue) {
         installContribution(key, object);
     }
 
     @Override
-    protected void uninstallContribution(String key) {
+    protected void uninstallContribution(String key, ModuleDescriptor value) {
         modules.remove(key);
     }
     

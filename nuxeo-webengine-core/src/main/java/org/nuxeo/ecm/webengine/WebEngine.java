@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -50,7 +49,6 @@ import org.nuxeo.ecm.webengine.model.impl.BundleTypeProvider;
 import org.nuxeo.ecm.webengine.model.impl.DirectoryTypeProvider;
 import org.nuxeo.ecm.webengine.model.impl.ModuleDescriptor;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRegistry;
-import org.nuxeo.ecm.webengine.model.impl.TypeConfigurationProvider;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.runtime.annotations.AnnotationManager;
@@ -207,9 +205,15 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
                 ModuleDescriptor ad = null;
                 File appFile = new File(file, "Main.groovy");
                 if (appFile.isFile()) {       
-                    ad = loadModuleDescriptor(file.getName()+".Main");                   
+                    ad = loadModuleDescriptor(file.getName()+".Main");
+                    appFile = new File(file, "module.xml");
+                    if (appFile.isFile()) {
+                        ModuleDescriptor ad2 = loadModuleDescriptor(appFile);
+                        ad.links = ad2.links;
+                        ad2.links = null;
+                    }
                 } else {
-                    appFile = new File(file, "application.xml");
+                    appFile = new File(file, "module.xml");
                     if (appFile.isFile()) {
                         ad = loadModuleDescriptor(appFile);
                     }

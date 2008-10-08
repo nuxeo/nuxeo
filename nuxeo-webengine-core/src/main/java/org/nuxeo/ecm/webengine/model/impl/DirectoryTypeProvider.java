@@ -74,7 +74,7 @@ public class DirectoryTypeProvider extends TypeConfigurationProvider {
                 }
             }
         } catch (Exception e) {
-            WebException.wrap(e);
+            throw WebException.wrap(e);
         }
     }    
     
@@ -82,7 +82,7 @@ public class DirectoryTypeProvider extends TypeConfigurationProvider {
     protected void scan(File root, String path, Writer cache) {
         for (File file : root.listFiles()) {
             String name = file.getName();
-            if (file.isDirectory() && !name.equals("skin")) {
+            if (file.isDirectory() && !name.equals("skin") && !name.equals("WEB-INF") && !name.equals("resources")) {
                 scan(file, path == null ? name : 
                     new StringBuilder().append(path).append('.').append(name).toString(), 
                     cache);

@@ -17,39 +17,33 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.core.rest;
+package org.nuxeo.ecm.webengine.model.impl;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import org.nuxeo.ecm.webengine.model.WebService;
-import org.nuxeo.ecm.webengine.model.impl.DefaultService;
 
 /**
- * Version Service - manage document versions
- * TODO not yet implemented
- * <p>
- * Accepts the following methods:
- * <ul>
- * <li> GET - get the last document version
- * <li> DELETE - delete a version 
- * <li> POST - create a new version
- * </ul>
- *  
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebService(name="versions", targetTypes={"Document"}, targetFacets={"Versionable"})
-public class VersionService extends DefaultService {
-    
+@WebService(name="views")
+public class ViewsService extends DefaultService {
+
     @GET
-    public Object getLastVersion() {
-        return "versions"; // handled by interceptor
+    public Object disptachViews() {
+        String cat = (String)ctx.getProperty("cat");
+        if (cat != null) {
+            return prev.getViewNames(cat);
+        }
+        return prev.getViewNames();
     }
 
-    @POST
-    public Object doPost() {
-        return null;
+    @Path("{view}")
+    public Object dispatchView(@PathParam("view") String name) {
+        return prev.getView(name);
     }
-  
+    
 }

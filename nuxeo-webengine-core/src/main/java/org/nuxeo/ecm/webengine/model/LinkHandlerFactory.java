@@ -17,38 +17,14 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.model.impl;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-
-import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.Resource;
-import org.nuxeo.ecm.webengine.model.ServiceResource;
-
+package org.nuxeo.ecm.webengine.model;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DefaultService extends AbstractResource<ResourceTypeImpl> implements ServiceResource {
+public interface LinkHandlerFactory {
 
-
-    public DefaultService() {
-    }
+    public LinkHandler getHandler(LinkDescriptor link, Resource resource);
         
-    public boolean isService() {
-        return true;
-    }
-
-    public Resource getTarget() {
-        return prev;
-    }
-    
-    @Path(value=".{segment}")
-    public ServiceResource disptachService(@PathParam("segment") String serviceName) throws WebException {
-        return ctx.newService(this, serviceName);
-    }    
-
-
 }

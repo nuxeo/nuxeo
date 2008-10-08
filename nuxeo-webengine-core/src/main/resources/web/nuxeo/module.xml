@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<module>
+  <links>
+    <link id="link.edit" path="/@actions/edit">
+      <!--guard>user=titi</guard-->
+    <category>TABVIEW</category>
+    </link>
+    
+  </links>
+</module>

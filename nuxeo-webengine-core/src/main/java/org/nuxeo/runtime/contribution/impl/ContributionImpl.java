@@ -202,6 +202,7 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
      * the registry owning that contribution
      */
     protected void update() {
+        T oldValue = value;
         value = null;
         boolean canResolve = checkIsResolved();
         if (isResolved != canResolve) { // resolved state changed
@@ -211,7 +212,7 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
                 unresolve();
             }
         } else if (isResolved) {
-            registry.fireUpdated(this);
+            registry.fireUpdated(oldValue, this);
         }
     }
 
@@ -231,7 +232,7 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
         for (Contribution<K,T> dep : dependents) {
             dep.unresolve();
         }
-        registry.fireUnresolved(this);
+        registry.fireUnresolved(this, value);
         value = null;
     }
 

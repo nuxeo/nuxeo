@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
+import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
@@ -51,10 +52,29 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         this.ctx = ctx;
         this.type = (T)type;
         this.path = ctx.getUriInfo().getMatchedURIs().get(0);
-        if (!this.type.getGuard().check(ctx)) {
+        if (!this.type.getGuard().check(this)) {
             throw new WebSecurityException("Failed to initialize object: "+getPath()+". Object is not accessible in the current context", getPath());
         }
         return this;
+    }
+    
+    public boolean isRoot() {
+        return this == ctx.getRoot();
+    }    
+    
+    public void setRoot(boolean isRoot) {
+        AbstractWebContext ctx = (AbstractWebContext)this.ctx;
+        if (isRoot) {
+            ctx.root = this;
+        } else {
+            if (ctx.root == this) {
+                ctx.root = null;
+            }
+        }
+    }
+    
+    public boolean isInstanceOf(String type) {
+        return this.type.isDerivedFrom(type);
     }
     
     public void dispose() {
@@ -79,7 +99,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return ctx;
     }
     
-    public Module getApplication() {
+    public Module getModule() {
         return ctx.getModule();
     }
     
@@ -94,6 +114,10 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
 
     public String getPath() {
         return path;
+    }
+
+    public List<LinkDescriptor> getLinks(String category) {
+        return ctx.getModule().getActiveLinks(this, category);
     }
 
     public List<ViewDescriptor> getViews() {

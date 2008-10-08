@@ -28,6 +28,8 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
+import org.nuxeo.ecm.webengine.model.LinkDescriptor;
+import org.nuxeo.ecm.webengine.model.Utils;
 import org.nuxeo.ecm.webengine.model.WebModule;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
@@ -64,15 +66,12 @@ public class ModuleDescriptor implements Cloneable {
     @XNodeList(value="actions/action", componentType=ServiceTypeImpl.class, type=ArrayList.class, nullByDefault=false)
     public ArrayList<ServiceTypeImpl> actions;
 
-    @XNode("script-extension")
-    public String scriptExtension = "groovy";
-
-    @XNode("template-extension")
-    public String templateExtension = "ftl";
-
     @XNodeList(value="roots/root", type=ArrayList.class, componentType=String.class, nullByDefault=true)
     public List<String> roots;
 
+    @XNodeList(value="links/link", type=ArrayList.class, componentType=LinkDescriptor.class, nullByDefault=true)
+    public List<LinkDescriptor> links;
+    
     @XNode("permission")
     public  GuardDescriptor guardDescriptor;
 
@@ -125,8 +124,6 @@ public class ModuleDescriptor implements Cloneable {
         }
         ModuleDescriptor ad = new ModuleDescriptor();
         ad.name = anno.name();
-        ad.templateExtension = anno.templateExtension();
-        ad.scriptExtension = anno.scriptExtension();
         ad.fragment = Utils.nullIfEmpty(anno.fragment());
         ad.base = Utils.nullIfEmpty(anno.base());
         String guard = Utils.nullIfEmpty(anno.guard());

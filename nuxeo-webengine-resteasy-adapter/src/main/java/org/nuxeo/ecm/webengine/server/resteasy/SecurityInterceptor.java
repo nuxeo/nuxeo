@@ -58,7 +58,9 @@ public class SecurityInterceptor implements ResourceMethodInterceptor {
                     if (!vd.isEnabled(rs)) {
                         throw new WebSecurityException(wv.name());                    
                     } 
-                    if (vd.getAuto()) {
+                    Response response = ctx.proceed();
+                    if (response.getEntity() == null) { // automatic response handling
+                        //TODO must check that response is not build by nuxeo code!!!
                         Template tpl = vd.getTemplate(rs);
                         if (!tpl.isResolved()) {
                             // get media type information
@@ -68,8 +70,9 @@ public class SecurityInterceptor implements ResourceMethodInterceptor {
                             }
                             tpl.resolve(); 
                         }
-                        return Response.ok().entity(tpl).build(); 
+                        response = Response.ok().entity(tpl).build();             
                     }
+                    return response;
                 }
             }
         }

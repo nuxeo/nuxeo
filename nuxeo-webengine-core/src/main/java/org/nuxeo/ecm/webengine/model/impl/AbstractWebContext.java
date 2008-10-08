@@ -62,11 +62,12 @@ public abstract class AbstractWebContext implements WebContext {
 
     protected static final Log log = LogFactory.getLog(WebContext.class);
 
-    protected WebEngine engine;
+    protected WebEngine engine;    
     protected UserSession us;
     protected final LinkedList<File> scriptExecutionStack;
     protected AbstractResource<?> head;
     protected AbstractResource<?> tail;
+    protected AbstractResource<?> root;
     protected WebApplication module;
     protected HttpServletRequest request;
     protected HashMap<String,Object> vars;
@@ -85,11 +86,21 @@ public abstract class AbstractWebContext implements WebContext {
 //    public abstract HttpServletResponse getHttpServletResponse();
 
 
+    public Resource getRoot() {
+        return root;
+    }
+    
     public <T> T getAdapter(Class<T> adapter) {
-        if (Resource.class == adapter) {
-            return (T)tail();
+        if (Principal.class == adapter) {
+            return adapter.cast(getPrincipal());
+        } else if (Resource.class == adapter) {
+            return adapter.cast(tail());
+        } else if (WebContext.class == adapter) {
+            return adapter.cast(this);
+        } else if (Module.class == adapter) {
+            return adapter.cast(module);
         } else if (WebEngine.class == adapter) {
-            return (T)this;
+            return adapter.cast(engine);
         }
         return null;
     }
@@ -317,7 +328,7 @@ public abstract class AbstractWebContext implements WebContext {
                         return new ScriptFile(file);
                     }
                 } catch (Exception e) {
-                    WebException.wrap(e);
+                    throw WebException.wrap(e);
                 }
                 // try using stacked roots
                 String rootPath = engine.getRootDirectory().getAbsolutePath();
@@ -476,13 +487,12 @@ public abstract class AbstractWebContext implements WebContext {
         bindings.put("Module", module);
         bindings.put("Engine", engine);
         bindings.put("basePath", getBasePath());
-
+        bindings.put("Root", getRoot());
         //TODO uncomment for compatibility
         //bindings.put("Request", request);
         //bindings.put("Response", response);
         if (obj != null) {
             bindings.put("This", obj);
-            bindings.put("Root", head());
             DocumentModel doc = obj.getAdapter(DocumentModel.class);
             if (doc != null) {
                 bindings.put("Document", doc);

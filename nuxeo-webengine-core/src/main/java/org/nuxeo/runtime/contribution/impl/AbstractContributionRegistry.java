@@ -96,8 +96,8 @@ public abstract class AbstractContributionRegistry<K, T> implements
         return contrib;
     }
 
-    public void fireUnresolved(Contribution<K, T> contrib) {
-        uninstallContribution(contrib.getId());
+    public void fireUnresolved(Contribution<K, T> contrib, T value) {
+        uninstallContribution(contrib.getId(), value);
     }
 
     public void fireResolved(Contribution<K, T> contrib) {
@@ -108,12 +108,12 @@ public abstract class AbstractContributionRegistry<K, T> implements
         installContribution(contrib.getId(), value);
     }
 
-    public void fireUpdated(Contribution<K, T> contrib) {
+    public void fireUpdated(T oldValue, Contribution<K, T> contrib) {
         T value = contrib.getValue();
         if (value == null) {
             throw new IllegalStateException("contribution is null");
         }
-        updateContribution(contrib.getId(), value);
+        updateContribution(contrib.getId(), value, oldValue);
     }
 
 
@@ -138,14 +138,14 @@ public abstract class AbstractContributionRegistry<K, T> implements
     
     protected abstract void installContribution(K key, T object);
 
-    protected abstract void uninstallContribution(K key);
+    protected abstract void uninstallContribution(K key, T object);
 
     protected boolean isMainFragment(T object) {
         return true;
     }
     
-    protected void updateContribution(K key, T object) {
-        uninstallContribution(key);
+    protected void updateContribution(K key, T object, T oldValue) {
+        uninstallContribution(key, oldValue);
         installContribution(key, object);
     }
     

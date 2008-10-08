@@ -35,12 +35,12 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class ServiceTypeImpl extends ObjectTypeImpl implements ServiceType {
+public class ServiceTypeImpl extends ResourceTypeImpl implements ServiceType {
     // we are using arrays and not sets since the targetTypes and targetFacets have usually very small sizes  
     protected String[] targetTypes;
     protected String[] targetFacets;
     
-    public ServiceTypeImpl(ModuleImpl module, ObjectTypeImpl superType, String name, Class<Resource> clazz) {
+    public ServiceTypeImpl(ModuleImpl module, ResourceTypeImpl superType, String name, Class<Resource> clazz) {
         super (module, superType, name, clazz);
     }
     
@@ -58,33 +58,25 @@ public class ServiceTypeImpl extends ObjectTypeImpl implements ServiceType {
             if (targetFacets != null && targetFacets.length > 0) {
                 String[] facets = this.targetFacets; // make a local copy to avoid parallel type definition updates
                 for (String f : facets) {
-                    if (resource.hasFacet(f)) {
-                        return true;
+                    if (!resource.hasFacet(f)) {
+                        return false;
                     }
                 }
-            } else {
-                return true; // no facets check needed
             }
         }
-        return false;
+        return true;
     }
     
     public boolean acceptType(ResourceType type) {
         if (targetTypes == null || targetTypes.length == 0) {
             return true;
         }
-        String name = type.getName();
         for (int i=0; i<targetTypes.length; i++) {
-            if (targetTypes[i].equals(name)) {
-                return true;
+            if (!type.isDerivedFrom(targetTypes[i])) {
+                return false;
             }
         }
-        ResourceType superType = type.getSuperType();
-        if (superType != null) {
-            //TODO use cache ?
-            return acceptType(superType);
-        }
-        return false;
+        return true;
     }
 
         

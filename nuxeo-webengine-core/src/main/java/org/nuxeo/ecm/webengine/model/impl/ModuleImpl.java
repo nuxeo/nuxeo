@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
@@ -50,7 +51,7 @@ public class ModuleImpl implements Module, FileChangeListener  {
 
     protected WebEngine engine;
     protected ModuleDescriptor descriptor;
-
+    
     protected File root;
     protected DirectoryStack dirStack;
     // how many roots are defined by this instance (ignore inherited roots)
@@ -67,6 +68,8 @@ public class ModuleImpl implements Module, FileChangeListener  {
     protected TypeRegistry typeReg;
     protected TypeConfigurationProvider localTypes;
 
+    protected LinkRegistry linkReg; 
+    
 
     public ModuleImpl(WebEngine engine, File root, ModuleDescriptor descriptor) throws WebException {
         this.fileCache = new ConcurrentHashMap<String, ScriptFile>();
@@ -75,6 +78,7 @@ public class ModuleImpl implements Module, FileChangeListener  {
         this.descriptor = descriptor;
         this.engine = engine;
         loadDirectoryStack();
+        loadLinks();
     }
 
 
@@ -142,13 +146,6 @@ public class ModuleImpl implements Module, FileChangeListener  {
         }
     }
 
-    public String getScriptExtension() {
-        return descriptor.scriptExtension;
-    }
-
-    public String getTemplateExtension() {
-        return descriptor.templateExtension;
-    }
 
     public ScriptFile getFile(String path) throws WebException {
         int len = path.length();
@@ -272,6 +269,28 @@ public class ModuleImpl implements Module, FileChangeListener  {
     
     public List<ServiceType> getEnabledServices(Resource ctx) {
         return getTypeRegistry().getEnabledServices(ctx);
+    }
+
+    protected void loadLinks() {
+        linkReg = new LinkRegistry();
+        if (descriptor.links != null) {
+            for (LinkDescriptor link : descriptor.links) {
+                linkReg.registerLink(link);
+            }
+        }
+        descriptor.links = null; // avoid storing unused data
+    }
+    
+    public List<LinkDescriptor> getLinks(String category) {
+        return linkReg.getLinks(category);
+    }
+    
+    public List<LinkDescriptor> getActiveLinks(Resource context, String category) {
+        return linkReg.getActiveLinks(context, category);
+    }
+    
+    public LinkRegistry getLinkRegistry() {
+        return linkReg;
     }
     
     /**

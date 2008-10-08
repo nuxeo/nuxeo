@@ -26,7 +26,6 @@ import javax.ws.rs.POST;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebService;
-import org.nuxeo.ecm.webengine.model.WebView;
 import org.nuxeo.ecm.webengine.model.impl.DefaultService;
 
 /**
@@ -46,7 +45,6 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultService;
 public class LockService extends DefaultService {
 
     @GET
-    @WebView(name="get", auto=false)
     public Object getView() {
         try {
             DocumentModel  doc =getTarget().getAdapter(DocumentModel.class);
@@ -58,7 +56,6 @@ public class LockService extends DefaultService {
     
     
     @DELETE
-    @WebView(name="delete", auto=false)
     public Object removeLock() {        
         try {
             DocumentModel  doc =getTarget().getAdapter(DocumentModel.class);
@@ -71,7 +68,6 @@ public class LockService extends DefaultService {
     }
     
     @POST
-    @WebView(name="set", auto=false)
     public Object doPost() {
         try {
             DocumentModel  doc =getTarget().getAdapter(DocumentModel.class);

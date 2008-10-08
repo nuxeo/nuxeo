@@ -39,10 +39,6 @@ public interface Module {
 
     WebEngine getEngine();
 
-    String getScriptExtension();
-
-    String getTemplateExtension();
-
     void flushCache();
 
     
@@ -133,5 +129,9 @@ public interface Module {
      * @return the list of service.s Cannot be null.
      */
     List<String> getEnabledServiceNames(Resource ctx);
+
+    public List<LinkDescriptor> getLinks(String category);
+    
+    public List<LinkDescriptor> getActiveLinks(Resource context, String category);
 
 }

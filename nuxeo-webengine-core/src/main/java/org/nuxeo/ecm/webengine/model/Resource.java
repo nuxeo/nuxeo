@@ -38,9 +38,11 @@ public interface Resource extends Adaptable {
     
     WebContext getContext();    
     
-    Module getApplication();
+    Module getModule();
     
     ResourceType getType();
+    
+    boolean isInstanceOf(String type);
     
     String getPath();
 
@@ -50,12 +52,16 @@ public interface Resource extends Adaptable {
         
     boolean isService();
     
+    boolean isRoot();
+    public void setRoot(boolean isRoot);
+    
     void setTemplate(Template template);
     Template getTemplate() throws WebException;
 
     Set<String> getFacets();
     boolean hasFacet(String facet);
 
+    public List<LinkDescriptor> getLinks(String category);
     ViewDescriptor getView(String name);
     List<ViewDescriptor> getViews();
     List<ViewDescriptor> getViews(String category);

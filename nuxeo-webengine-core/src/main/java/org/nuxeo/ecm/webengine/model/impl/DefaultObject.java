@@ -30,7 +30,7 @@ import org.nuxeo.ecm.webengine.model.ServiceResource;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DefaultObject extends AbstractResource<ObjectTypeImpl> {
+public class DefaultObject extends AbstractResource<ResourceTypeImpl> {
 
 
     public DefaultObject() {

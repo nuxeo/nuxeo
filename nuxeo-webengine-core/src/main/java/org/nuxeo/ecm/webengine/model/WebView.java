@@ -29,13 +29,14 @@ import java.lang.annotation.Target;
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
+@Target({ElementType.TYPE})
 public @interface WebView {
 
     String name();
     String[] categories() default {};
     String guard() default "";
     String fileName() default "";
-    boolean auto() default true;
-    
+    String[] types() default {}; 
+    String[] facets() default {};
+    String fragment() default "";
 }

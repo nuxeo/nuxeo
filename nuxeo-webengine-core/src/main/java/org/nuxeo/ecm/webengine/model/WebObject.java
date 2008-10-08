@@ -24,7 +24,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.nuxeo.ecm.webengine.model.impl.ObjectTypeImpl;
+import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 import org.nuxeo.runtime.annotations.loader.Indexable;
 
 /**
@@ -37,7 +37,7 @@ import org.nuxeo.runtime.annotations.loader.Indexable;
 public @interface WebObject {
 
     String name(); // the type name
-    String superType() default ObjectTypeImpl.ROOT_TYPE_NAME; // the super type name
+    String superType() default ResourceTypeImpl.ROOT_TYPE_NAME; // the super type name
     String guard() default ""; // a security guard if any
     String[] facets() default {};
     

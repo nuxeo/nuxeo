@@ -39,6 +39,4 @@ public @interface WebModule {
     String base() default "";
     String guard() default "";
     String[] roots() default {};
-    String scriptExtension() default ".groovy";
-    String templateExtension() default ".ftl";
 }

@@ -224,7 +224,7 @@ public class UserSession extends HashMap<String, Object> implements Serializable
                 log.error("Failed to destroy component: "+entry.getKey(), e);
             }
         }
-        comps = null;
+        comps = new HashMap<Class<?>, ComponentMap<?>>();
         // destroy core session
         if (coreSession != null) {
             coreSession.destroy();

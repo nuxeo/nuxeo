@@ -17,7 +17,7 @@
     <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/cookie.js"></script>
     <script type="text/javascript" src="/nuxeo/site/files/resources/script/json.js"></script>
     <script type="text/javascript" src="/nuxeo/site/files/resources/script/webengine.js"></script>
-    <#if Root??> <#-- we are in a document context: search is enabled -->
+    <#if Document??> <#-- we are in a document context: search is enabled -->
           <script>
            $(document).ready(function(){
              $('#q').focus(function() {
@@ -37,17 +37,14 @@
     <div id="header">
       <div class="webEngineRoot"><a href="${appPath}"><img src="/nuxeo/site/files/resources/image/dots.png" width="16" height="16" alt=""/></a></div>
        <@block name="header">
-       <#if Root??>
+       <#if Document??>
         <div class="searchBox">
-         <form action="${Root.urlPath}@@search" method="get" accept-charset="utf-8">
+         <form action="${This.path}@@search" method="get" accept-charset="utf-8">
            <input type="search" name="q" id="q" results="5" value="Search">
            <input type="hidden" name="p" value="${Root.repositoryPath}">
          </form>
         </div>
-        <#--
-        <h1><a href="${appPath}/${Root.document.name}">${Root.document.title}</a></h1>
-        -->
-        <h1>TODO title</h1>
+        <h1><a href="${Root.path}">${Root.document.title}</a></h1>
        </#if>
        </@block>
     </div>

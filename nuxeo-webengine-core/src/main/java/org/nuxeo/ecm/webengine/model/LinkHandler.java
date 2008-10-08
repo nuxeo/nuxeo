@@ -17,31 +17,14 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.model.impl;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
-
-import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.Resource;
-import org.nuxeo.ecm.webengine.model.WebApplication;
-import org.nuxeo.ecm.webengine.model.WebContext;
+package org.nuxeo.ecm.webengine.model;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ScriptApplication extends WebApplication {
+public interface LinkHandler {
 
-    @Path(value="{path}")
-    public Resource dispatch(@PathParam("path") String path, @Context WebContext ctx) throws Exception {
-        return newScriptObject();
-    }    
+    public String getCode(LinkDescriptor link, Resource resource);        
     
-    protected ScriptObject newScriptObject() throws WebException {
-        return (ScriptObject)ctx.push(new ScriptObject()).initialize(ctx, null);
-    }
-
-
 }
