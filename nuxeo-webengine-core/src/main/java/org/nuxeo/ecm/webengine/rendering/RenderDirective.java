@@ -22,10 +22,10 @@ package org.nuxeo.ecm.webengine.rendering;
 import java.io.IOException;
 import java.util.Map;
 
-import org.nuxeo.ecm.webengine.DefaultWebContext;
-import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
-import org.nuxeo.ecm.webengine.servlet.WebServlet;
 
 import freemarker.core.Environment;
 import freemarker.template.SimpleScalar;
@@ -57,15 +57,15 @@ public class RenderDirective implements TemplateDirectiveModel {
         }
         src = val.getAsString();
 
-        WebContext ctx = WebServlet.getContext();
+        WebContext ctx = WebEngine.getActiveContext();
         if (ctx != null) {
             ScriptFile script = ctx.getFile(src);
             Template tpl = env.getConfiguration().getTemplate(script.getURL());
             try {
-                ((DefaultWebContext)ctx).pushScriptFile(script.getFile());
+                ((AbstractWebContext)ctx).pushScriptFile(script.getFile());
                 env.include(tpl);
             } finally {
-                ((DefaultWebContext)ctx).popScriptFile();
+                ((AbstractWebContext)ctx).popScriptFile();
             }
         } else {
             throw new IllegalStateException("Not In a Web Context");

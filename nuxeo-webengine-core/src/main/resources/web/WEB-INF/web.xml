@@ -23,7 +23,7 @@
   <servlet>
     <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
     <servlet-class>
-    org.nuxeo.ecm.webengine.servlet.WebServlet
+    org.nuxeo.ecm.webengine.server.resteasy.WebEngineServlet
     </servlet-class>
   </servlet>
   <servlet-mapping>

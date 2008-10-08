@@ -22,12 +22,11 @@ package org.nuxeo.ecm.webengine.ui.tree.directory;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.ui.tree.ContentProvider;
 import org.nuxeo.ecm.webengine.ui.tree.JSonTree;
 import org.nuxeo.ecm.webengine.ui.tree.JSonTreeSerializer;
-import org.nuxeo.ecm.webengine.ui.tree.document.DocumentTree;
 import org.nuxeo.runtime.api.Framework;
 
 /**
