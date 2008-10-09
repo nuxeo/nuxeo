@@ -38,11 +38,6 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
         deployContrib(WEB_BUNDLE, "OSGI-INF/authentication-contrib.xml");
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     private PluggableAuthenticationService getAuthService() {
         if (authService == null) {
             authService = (PluggableAuthenticationService) Framework.getRuntime().getComponent(

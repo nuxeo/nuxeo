@@ -14,6 +14,10 @@ public class VirtualHostHelper {
 
     private static final String VH_HEADER = "nuxeo-virtual-host";
 
+    // Utility class.
+    private VirtualHostHelper() {
+    }
+
     private static HttpServletRequest getHttpServletRequest(
             ServletRequest request) {
         if (request instanceof HttpServletRequest) {
@@ -26,12 +30,12 @@ public class VirtualHostHelper {
      * @return WebApp name : ie : nuxeo
      */
     public static String getWebAppName(ServletRequest request) {
-
         HttpServletRequest httpRequest = getHttpServletRequest(request);
-        if (httpRequest == null)
+        if (httpRequest == null) {
             return "nuxeo";
-        else
+        } else {
             return httpRequest.getContextPath().replace("/", "");
+        }
     }
 
     /**

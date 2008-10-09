@@ -135,49 +135,41 @@ public class PluggableAuthenticationService extends DefaultComponent {
         } else if (extensionPoint.equals(EP_STARTURL)) {
             StartURLPatternDescriptor startupURLContrib = (StartURLPatternDescriptor) contribution;
             startupURLs.addAll(startupURLContrib.getStartURLPatterns());
-        }
-        else if (extensionPoint.equals(EP_PROPAGATOR)) {
+        } else if (extensionPoint.equals(EP_PROPAGATOR)) {
             AuthenticationPropagatorDescriptor propagationContrib = (AuthenticationPropagatorDescriptor) contribution;
 
             // create the new instance
             try {
-                propagator = (NuxeoAuthenticationPropagator) propagationContrib.getClassName().newInstance();
+                propagator = propagationContrib.getClassName().newInstance();
             } catch (InstantiationException e) {
                 log.error("Unable to creeate propagator", e);
             } catch (IllegalAccessException e) {
                 log.error("Unable to creeate propagator", e);
             }
-        }
-        else if (extensionPoint.equals(EP_CBFACTORY)) {
+        } else if (extensionPoint.equals(EP_CBFACTORY)) {
             CallbackHandlerFactoryDescriptor cbhfContrib = (CallbackHandlerFactoryDescriptor) contribution;
 
             // create the new instance
             try {
-                cbhFactory = (NuxeoCallbackHandlerFactory) cbhfContrib.getClassName().newInstance();
+                cbhFactory = cbhfContrib.getClassName().newInstance();
             } catch (InstantiationException e) {
                 log.error("Unable to create callback handler factory", e);
             } catch (IllegalAccessException e) {
                 log.error("Unable to creeate callback handler factory", e);
             }
-        }
-        else if (extensionPoint.equals(EP_SESSIONMANAGER)) {
+        } else if (extensionPoint.equals(EP_SESSIONMANAGER)) {
             SessionManagerDescriptor smContrib = (SessionManagerDescriptor) contribution;
-            if (smContrib.enabled)
-            {
+            if (smContrib.enabled) {
                 try {
                     NuxeoAuthenticationSessionManager sm = smContrib.getClassName().newInstance();
                     sessionManagers.put(smContrib.getName(), sm);
+                } catch (Exception e) {
+                    log.error("Unable to create session manager", e);
                 }
-                catch (Exception e) {
-                log.error("Unable to create session manager", e);
-                }
-            }
-            else
-            {
+            } else {
                 sessionManagers.remove(smContrib.getName());
             }
         }
-
     }
 
     @Override
@@ -270,40 +262,31 @@ public class PluggableAuthenticationService extends DefaultComponent {
         }
     }
 
-    protected NuxeoAuthenticationSessionManager getSM(ServletRequest request)
-    {
-        if (sessionManagers.size()>0)
-        {
-            for (String smName : sessionManagers.keySet())
-            {
-                NuxeoAuthenticationSessionManager sm  = sessionManagers.get(smName);
-                if (sm.isAvalaible(request))
+    protected NuxeoAuthenticationSessionManager getSM(ServletRequest request) {
+        if (sessionManagers.size() > 0) {
+            for (String smName : sessionManagers.keySet()) {
+                NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
+                if (sm.isAvalaible(request)) {
                     return sm;
+                }
             }
         }
         return defaultSessionManager;
     }
 
-    public void invalidateSession(ServletRequest request)
-    {
+    public void invalidateSession(ServletRequest request) {
         getSM(request).invalidateSession(request);
     }
 
-
-    public  HttpSession reinitSession(ServletRequest request)
-    {
+    public HttpSession reinitSession(ServletRequest request) {
         return getSM(request).reinitSession(request);
     }
 
-
-    public boolean bypassRequest(ServletRequest request)
-    {
+    public boolean bypassRequest(ServletRequest request) {
         return getSM(request).bypassRequest(request);
     }
 
-
-    public String getBaseURL(ServletRequest request)
-    {
+    public String getBaseURL(ServletRequest request) {
         return VirtualHostHelper.getBaseURL(request);
     }
 

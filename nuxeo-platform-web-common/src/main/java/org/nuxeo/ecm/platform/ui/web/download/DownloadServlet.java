@@ -50,17 +50,11 @@ public class DownloadServlet extends HttpServlet {
 
     protected static final int BUFFER_SIZE = 1024 * 512;
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 986876871L;
 
-    private CoreSession getCoreSession(String repoName) throws Exception {
-
+    private static CoreSession getCoreSession(String repoName) throws Exception {
         RepositoryManager rm = Framework.getService(RepositoryManager.class);
-
         Repository repo = rm.getRepository(repoName);
-
         if (repo == null) {
             throw new ClientException("Unable to get " + repoName
                     + " repository");
