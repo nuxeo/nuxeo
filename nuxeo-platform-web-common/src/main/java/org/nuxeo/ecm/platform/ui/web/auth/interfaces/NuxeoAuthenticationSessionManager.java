@@ -46,5 +46,4 @@ public interface NuxeoAuthenticationSessionManager {
      */
     HttpSession reinitSession(ServletRequest request);
 
-
 }

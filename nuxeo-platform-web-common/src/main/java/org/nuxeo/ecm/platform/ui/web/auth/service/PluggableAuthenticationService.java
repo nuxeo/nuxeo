@@ -90,8 +90,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
         authenticatorsDescriptors = null;
         authenticators = null;
         authChain = null;
-        sessionManagers=null;
-        defaultSessionManager=null;
+        sessionManagers = null;
+        defaultSessionManager = null;
     }
 
     @Override
@@ -142,9 +142,9 @@ public class PluggableAuthenticationService extends DefaultComponent {
             try {
                 propagator = propagationContrib.getClassName().newInstance();
             } catch (InstantiationException e) {
-                log.error("Unable to creeate propagator", e);
+                log.error("Unable to create propagator", e);
             } catch (IllegalAccessException e) {
-                log.error("Unable to creeate propagator", e);
+                log.error("Unable to create propagator", e);
             }
         } else if (extensionPoint.equals(EP_CBFACTORY)) {
             CallbackHandlerFactoryDescriptor cbhfContrib = (CallbackHandlerFactoryDescriptor) contribution;
@@ -155,7 +155,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
             } catch (InstantiationException e) {
                 log.error("Unable to create callback handler factory", e);
             } catch (IllegalAccessException e) {
-                log.error("Unable to creeate callback handler factory", e);
+                log.error("Unable to create callback handler factory", e);
             }
         } else if (extensionPoint.equals(EP_SESSIONMANAGER)) {
             SessionManagerDescriptor smContrib = (SessionManagerDescriptor) contribution;
