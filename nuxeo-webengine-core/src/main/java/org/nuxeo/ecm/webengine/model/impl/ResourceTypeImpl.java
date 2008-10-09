@@ -22,12 +22,8 @@ package org.nuxeo.ecm.webengine.model.impl;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -36,14 +32,10 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.TemplateNotFoundException;
-import org.nuxeo.ecm.webengine.model.ViewDescriptor;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.WebView;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.PermissionService;
-import org.nuxeo.runtime.annotations.AnnotatedClass;
-import org.nuxeo.runtime.annotations.AnnotatedMethod;
 import org.nuxeo.runtime.annotations.AnnotationManager;
 
 /**
@@ -55,8 +47,6 @@ public class ResourceTypeImpl implements ResourceType {
     protected ModuleImpl module;
     protected String name;
     protected ResourceTypeImpl superType;
-    // the views and class may be changed when a type is updated
-    protected volatile Map<String,ViewDescriptor> views;
     protected volatile Class<Resource> clazz;
     protected volatile Guard guard = Guard.DEFAULT;
     protected volatile Set<String> facets;    
@@ -112,105 +102,13 @@ public class ResourceTypeImpl implements ResourceType {
         }
     }
     
-    public ViewDescriptor getView(String name) {
-        return views.get(name);
-    }
-
-    public List<ViewDescriptor> getViews() {
-        return new ArrayList<ViewDescriptor>(views.values());  
-    }
-    
-    public List<ViewDescriptor> getViews(String category) {
-        ArrayList<ViewDescriptor> result = new ArrayList<ViewDescriptor>();
-        for (ViewDescriptor vd : views.values()) {
-            if (vd.hasCategory(category)) {
-                result.add(vd);
-            }            
-        }
-        return result;  
-    }
-    
-    public List<ViewDescriptor> getEnabledViews(Resource obj) {
-        ArrayList<ViewDescriptor> result = new ArrayList<ViewDescriptor>();
-        for (ViewDescriptor vd : views.values()) {
-            if (vd.isEnabled(obj)) {
-                result.add(vd);
-            }            
-        }
-        return result;
-    }
-    
-    public List<ViewDescriptor> getEnabledViews(Resource obj, String category) {
-        ArrayList<ViewDescriptor> result = new ArrayList<ViewDescriptor>();
-        for (ViewDescriptor vd : views.values()) {
-            if (vd.hasCategory(category) && vd.isEnabled(obj)) {
-                result.add(vd);
-            }            
-        }
-        return result;  
-    }
-
-    public List<String> getViewNames() {
-        ArrayList<String> result = new ArrayList<String>();
-        for (ViewDescriptor vd : views.values()) {
-            result.add(vd.getName());
-        }
-        return result;    
-    }
-    
-    public List<String> getViewNames(String category) {
-        ArrayList<String> result = new ArrayList<String>();
-        for (ViewDescriptor vd : views.values()) {
-            if (vd.hasCategory(category)) {
-                result.add(vd.getName());
-            }            
-        }
-        return result;  
-    }
-    
-    public List<String> getEnabledViewNames(Resource obj) {
-        ArrayList<String> result = new ArrayList<String>();
-        for (ViewDescriptor vd : views.values()) {
-            if (vd.isEnabled(obj)) {
-                result.add(vd.getName());
-            }            
-        }
-        return result;
-    }
-    
-    public List<String> getEnabledViewNames(Resource obj, String category) {
-        ArrayList<String> result = new ArrayList<String>();
-        for (ViewDescriptor vd : views.values()) {
-            if (vd.hasCategory(category) && vd.isEnabled(obj)) {
-                result.add(vd.getName());
-            }            
-        }
-        return result;  
-    }
 
     public boolean isEnabled(Resource ctx) {
         return guard.check(ctx);
     }
     
-
-    protected void loadViews(AnnotationManager annoMgr) {
-        views = new HashMap<String, ViewDescriptor>();
-        AnnotatedClass<?> ac = annoMgr.load(clazz);
-        AnnotatedMethod[] methods = ac.getAnnotatedMethods(WebView.class);
-        for (AnnotatedMethod m : methods) {
-            WebView anno = m.getAnnotation(WebView.class);
-            try {
-                ViewDescriptor vd = new ViewDescriptor(anno);
-                // register the view
-                views.put(vd.getName(), vd);                
-            } catch (ParseException e) {
-                WebException.wrap("Failed to parse view guard "+anno.guard(), e);
-            }
-        }
-    }
      
     protected void loadAnnotations(AnnotationManager annoMgr) {
-        loadViews(annoMgr);
         WebObject wo = clazz.getAnnotation(WebObject.class);
         if (wo == null) return;
         String g = wo.guard();

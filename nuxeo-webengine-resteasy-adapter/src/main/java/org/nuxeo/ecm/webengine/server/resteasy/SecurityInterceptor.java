@@ -19,8 +19,11 @@
 
 package org.nuxeo.ecm.webengine.server.resteasy;
 
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.core.ResourceMethod;
@@ -28,11 +31,12 @@ import org.jboss.resteasy.core.interception.ResourceMethodContext;
 import org.jboss.resteasy.core.interception.ResourceMethodInterceptor;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.Resource;
-import org.nuxeo.ecm.webengine.model.Template;
-import org.nuxeo.ecm.webengine.model.ViewDescriptor;
-import org.nuxeo.ecm.webengine.model.WebView;
+import org.nuxeo.ecm.webengine.security.Guard;
+import org.nuxeo.ecm.webengine.security.PermissionService;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -40,43 +44,49 @@ import org.nuxeo.ecm.webengine.model.WebView;
  */
 public class SecurityInterceptor implements ResourceMethodInterceptor {
 
+    protected volatile Map<Method, Guard> cache = new ConcurrentHashMap<Method, Guard>();
+    
+    public void flushCache() {
+        cache = new ConcurrentHashMap<Method, Guard>();
+    }
+    
     public boolean accepted(ResourceMethod method) {
-        //Guard guard = method.getMethod().getAnnotation(Guard.class);
-        WebView view = method.getMethod().getAnnotation(WebView.class);
-        return view != null;
+        return null != method.getMethod().getAnnotation(org.nuxeo.ecm.webengine.model.Guard.class);
     }
 
     public Response invoke(ResourceMethodContext ctx) throws Failure,
     ApplicationException, WebApplicationException {
         Object target = ctx.getTarget();
         if (target instanceof Resource) {
-            WebView wv = ctx.getMethod().getMethod().getAnnotation(WebView.class);
-            if (wv != null) {                
-                Resource rs = (Resource)target;
-                ViewDescriptor vd = rs.getView(wv.name());
-                if (vd != null) { 
-                    if (!vd.isEnabled(rs)) {
-                        throw new WebSecurityException(wv.name());                    
-                    } 
-                    Response response = ctx.proceed();
-                    if (response.getEntity() == null) { // automatic response handling
-                        //TODO must check that response is not build by nuxeo code!!!
-                        Template tpl = vd.getTemplate(rs);
-                        if (!tpl.isResolved()) {
-                            // get media type information
-                            MediaType[] produces = ctx.getMethod().getProduces();
-                            if (produces != null && produces.length > 0) {
-                                tpl.mediaType(produces[0]);
-                            }
-                            tpl.resolve(); 
-                        }
-                        response = Response.ok().entity(tpl).build();             
-                    }
-                    return response;
-                }
+            Method m = ctx.getMethod().getMethod();
+            org.nuxeo.ecm.webengine.model.Guard ganno = m.getAnnotation(org.nuxeo.ecm.webengine.model.Guard.class);
+            if (ganno != null) {
+                checkAccess(ctx, ganno, m, (Resource)target);
             }
         }
         return ctx.proceed();
+    }
+
+    protected void checkAccess(ResourceMethodContext ctx, org.nuxeo.ecm.webengine.model.Guard ganno, Method m, Resource rs) {
+        Guard guard = null;
+        try {
+            guard = cache.get(m);
+            if (guard == null) {
+                String expr = ganno.value();
+                if (expr.length() > 0) {
+                    guard = PermissionService.parse(ganno.value());
+                } else {
+                    guard = (Guard)ganno.type().newInstance(); 
+                }
+                cache.put(m , guard);
+            }
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to check guard", e);
+        }
+        if (!guard.check(rs)) {
+            throw new WebSecurityException("Access denied to method "
+                    +ctx.getRequest().getHttpMethod()+" of resource "+ rs.getPath());
+        }
     }
 
 }

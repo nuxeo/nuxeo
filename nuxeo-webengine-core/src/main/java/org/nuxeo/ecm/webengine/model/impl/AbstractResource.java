@@ -30,7 +30,6 @@ import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.Template;
-import org.nuxeo.ecm.webengine.model.ViewDescriptor;
 import org.nuxeo.ecm.webengine.model.WebContext;
 
 /**
@@ -120,26 +119,6 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return ctx.getModule().getActiveLinks(this, category);
     }
 
-    public List<ViewDescriptor> getViews() {
-        return type.getEnabledViews(this); 
-    }
-    
-    public List<ViewDescriptor> getViews(String category) {
-        return type.getEnabledViews(this, category); 
-    }
-    
-    public List<String> getViewNames() {
-        return type.getEnabledViewNames(this); 
-    }
-    
-    public List<String> getViewNames(String category) {
-        return type.getEnabledViewNames(this, category); 
-    }
-    
-    public ViewDescriptor getView(String name) {
-        return type.getView(name);
-    }
-    
     public void setTemplate(Template template) {
         this.template = template;
     }

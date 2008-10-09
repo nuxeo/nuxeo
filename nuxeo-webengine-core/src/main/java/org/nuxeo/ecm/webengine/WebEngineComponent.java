@@ -109,6 +109,8 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
         deployer = new ConfigurationDeployer(notifier);
         deployer.addConfigurationChangedListener(this);
 
+        //TODO: this should be moved into runtime - loads annotations from current bundle
+        BundleAnnotationsLoader.getInstance().loadAnnotations(context.getRuntimeContext().getBundle());
     }
 
 

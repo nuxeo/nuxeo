@@ -62,10 +62,5 @@ public interface Resource extends Adaptable {
     boolean hasFacet(String facet);
 
     public List<LinkDescriptor> getLinks(String category);
-    ViewDescriptor getView(String name);
-    List<ViewDescriptor> getViews();
-    List<ViewDescriptor> getViews(String category);
-    List<String> getViewNames();
-    List<String> getViewNames(String category);
     
 }

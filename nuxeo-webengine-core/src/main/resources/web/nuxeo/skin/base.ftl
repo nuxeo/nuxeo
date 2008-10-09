@@ -72,11 +72,11 @@
     <h3>Toolbox</h3>
     <div class="sideblock-content">
       <ul>
-        <#list This.getViews("TOOLBOX") as action>
-        <#if action.id == "print">
-          <li><a href="${This.urlPath}@@${action.id}" target="_blank">${message('action.' + action.id)}</a></li>
+        <#list This.getLinks("TOOLBOX") as link>
+        <#if link.id == "print">
+          <li><a href="${link.getCode(This)}" target="_blank">${message('link.' + link.id)}</a></li>
         <#else>
-          <li><a href="${This.urlPath}@@${action.id}">${message('action.' + action.id)}</a></li>
+          <li><a href="${link.getCode(This)}">${message('link.' + link.id)}</a></li>
         </#if>
         </#list>
       </ul>

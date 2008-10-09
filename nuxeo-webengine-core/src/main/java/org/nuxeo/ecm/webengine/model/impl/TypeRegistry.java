@@ -361,7 +361,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void updateServiceContribution(String key, ServiceDescriptor object) {
-        ResourceTypeImpl t = types.get(key);
+        ResourceTypeImpl t = services.get(key);
         if (t instanceof ServiceTypeImpl) { // update the type class
             ServiceTypeImpl service = (ServiceTypeImpl)t;
             String[] targetTypes = service.targetTypes;

@@ -82,7 +82,6 @@ public class ServiceTypeImpl extends ResourceTypeImpl implements ServiceType {
         
     @Override
     protected void loadAnnotations(AnnotationManager annoMgr) {
-        loadViews(annoMgr);
         WebService ws = clazz.getAnnotation(WebService.class);
         if (ws == null) return;
         String g = ws.guard();

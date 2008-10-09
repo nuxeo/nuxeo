@@ -23,6 +23,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebService;
 
 /**
@@ -30,20 +31,19 @@ import org.nuxeo.ecm.webengine.model.WebService;
  *
  */
 @WebService(name="views")
-public class ViewsService extends DefaultService {
+public class ViewService extends DefaultService {
 
     @GET
     public Object disptachViews() {
-        String cat = (String)ctx.getProperty("cat");
-        if (cat != null) {
-            return prev.getViewNames(cat);
-        }
-        return prev.getViewNames();
+        //TODO: display a list of templates
+        //ctx.getModule().getFiles();
+        return "View Service: TODO - display the list of existing views";
     }
 
+    @GET
     @Path("{view}")
     public Object dispatchView(@PathParam("view") String name) {
-        return prev.getView(name);
+        return new Template(prev).name(name).resolve();
     }
     
 }

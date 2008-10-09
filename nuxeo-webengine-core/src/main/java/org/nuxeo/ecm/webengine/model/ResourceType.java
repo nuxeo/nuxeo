@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine.model;
 
-import java.util.List;
 import java.util.Set;
 
 import org.nuxeo.ecm.webengine.WebException;
@@ -51,16 +50,6 @@ public interface ResourceType {
     Set<String> getFacets();
     boolean hasFacet(String facet);
     
-    public ViewDescriptor getView(String name);
-    public List<ViewDescriptor> getViews();
-    public List<ViewDescriptor> getViews(String category);
-    public List<ViewDescriptor> getEnabledViews(Resource obj);
-    public List<ViewDescriptor> getEnabledViews(Resource obj, String category);
-    public List<String> getViewNames();
-    public List<String> getViewNames(String category);
-    public List<String> getEnabledViewNames(Resource obj);
-    public List<String> getEnabledViewNames(Resource obj, String category);
-
     public ScriptFile getTemplate(String name) throws WebException;
     
     boolean isEnabled(Resource ctx);
