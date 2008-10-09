@@ -28,8 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -45,9 +43,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.Seam;
-import org.jboss.seam.contexts.ServletLifecycle;
-import org.jboss.seam.core.Manager;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
@@ -60,9 +55,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
-import org.nuxeo.ecm.platform.ui.web.rest.FancyURLRequestWrapper;
-import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
-import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -96,6 +89,8 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected List<String> unAuthenticatedURLPrefix;
 
     protected static List<String> validStartURLs;
+
+    protected static final String URLPolicyService_DISABLE_REDIRECT_REQUEST_KEY = "nuxeo.disable.redirect.wrapper";
 
     public void destroy() {
     }
@@ -254,25 +249,9 @@ public class NuxeoAuthenticationFilter implements Filter {
                     + e1.getMessage());
         }
 
-        // destroy session
-        // because of Seam Phase Listener we can't use Seam.invalidateSession()
-        // because the session would be invalidated at the end of the request !
         HttpSession session = httpRequest.getSession(false);
-        if (session != null) {
-            ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-            // Make long-running conversation temporary
-            Manager.instance().endConversation(true);
+        session = service.reinitSession(request);
 
-            Manager.instance().endRequest(externalContext.getSessionMap());
-            ServletLifecycle.endRequest(httpRequest);
-            session.invalidate();
-
-            session = httpRequest.getSession(false);
-            if (session != null) {
-                session.invalidate();
-            }
-        }
-        // create new one
         session = httpRequest.getSession(true);
 
         CachableUserIdentificationInfo newCachableUserIdent = new CachableUserIdentificationInfo(
@@ -291,12 +270,12 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
 
         // reinit Seam so the afterResponseComplete does not crash
-        ServletLifecycle.beginRequest(httpRequest);
+        //ServletLifecycle.beginRequest(httpRequest);
 
         // flag redirect to not be catched by URLPolicy
-        request.setAttribute(URLPolicyService.DISABLE_REDIRECT_REQUEST_KEY,
+        request.setAttribute(URLPolicyService_DISABLE_REDIRECT_REQUEST_KEY,
                 Boolean.TRUE);
-        String baseURL = BaseURL.getBaseURL(request);
+        String baseURL = service.getBaseURL(request);
         ((HttpServletResponse) response).sendRedirect(baseURL
                 + DEFAULT_START_PAGE);
 
@@ -313,12 +292,11 @@ public class NuxeoAuthenticationFilter implements Filter {
                 return;
             }
         }
-
         if (request instanceof NuxeoSecuredRequestWrapper) {
             log.debug("ReEntering Nuxeo Authentication Filter ... exiting directly");
             chain.doFilter(request, response);
             return;
-        } else if (request instanceof FancyURLRequestWrapper) {
+        } else if (service.bypassRequest(request)) {
             log.debug("ReEntering Nuxeo Authentication Filter after URL rewrite ... exiting directly");
             chain.doFilter(request, response);
             return;
@@ -405,7 +383,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         if (principal != null) {
             if (targetPageURL != null) {
                 // forward to target page
-                String baseURL = BaseURL.getBaseURL(httpRequest);
+                String baseURL = service.getBaseURL(request);
 
                 // httpRequest.getRequestDispatcher(targetPageURL).forward(new
                 // NuxeoSecuredRequestWrapper(httpRequest, principal),
@@ -549,17 +527,8 @@ public class NuxeoAuthenticationFilter implements Filter {
             CachableUserIdentificationInfo cachedUserInfo) {
         logLogout(cachedUserInfo.getUserInfo());
 
-        // invalidate Seam Session !
-        try {
-            Seam.invalidateSession();
-        } catch (IllegalStateException e) {
-            // invalidate by hand
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
-            HttpSession session = httpRequest.getSession(false);
-            if (session != null) {
-                session.invalidate();
-            }
-        }
+        // invalidate Session !
+        service.invalidateSession(request);
 
         String pluginName = cachedUserInfo.getUserInfo().getAuthPluginName();
 
@@ -578,7 +547,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
 
         if (!redirected) {
-            String baseURL = BaseURL.getBaseURL(request);
+            String baseURL = service.getBaseURL(request);
             try {
                 ((HttpServletResponse) response).sendRedirect(baseURL
                         + DEFAULT_START_PAGE);
@@ -634,7 +603,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected boolean handleLoginPrompt(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
 
-        String baseURL = BaseURL.getBaseURL(httpRequest);
+        String baseURL = service.getBaseURL(httpRequest);
 
         // go through plugins to get UserIndentity
         for (String pluginName : service.getAuthChain()) {

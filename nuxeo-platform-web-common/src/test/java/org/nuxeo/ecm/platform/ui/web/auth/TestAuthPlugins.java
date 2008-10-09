@@ -28,14 +28,14 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
 
     private PluggableAuthenticationService authService;
 
-    private static final String UIWEB_BUNDLE = "org.nuxeo.ecm.platform.ui";
+    private static final String WEB_BUNDLE = "org.nuxeo.ecm.platform.web.common";
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        deployContrib(UIWEB_BUNDLE, "OSGI-INF/authentication-framework.xml");
-        deployContrib(UIWEB_BUNDLE, "OSGI-INF/authentication-contrib.xml");
+        deployContrib(WEB_BUNDLE, "OSGI-INF/authentication-framework.xml");
+        deployContrib(WEB_BUNDLE, "OSGI-INF/authentication-contrib.xml");
     }
 
     @Override

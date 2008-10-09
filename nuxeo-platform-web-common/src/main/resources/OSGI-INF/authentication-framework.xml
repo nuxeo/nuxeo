@@ -78,4 +78,14 @@
       class="org.nuxeo.ecm.platform.ui.web.auth.service.CallbackHandlerFactoryDescriptor" />
   </extension-point>
 
+ <extension-point name="sessionManager">
+  <documentation>
+    Contribute a SessionManager to handle Session and url manipulation
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ui.web.auth.service.SessionManagerDescriptor" />
+  </extension-point>
+
 </component>

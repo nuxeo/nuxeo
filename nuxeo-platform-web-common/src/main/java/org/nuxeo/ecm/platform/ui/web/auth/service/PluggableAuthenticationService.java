@@ -24,6 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
@@ -31,7 +34,10 @@ import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallbackHandler;
 import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPropagator;
+import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationSessionManager;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoCallbackHandlerFactory;
+import org.nuxeo.ecm.platform.ui.web.auth.plugins.DefaultSessionManager;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -41,6 +47,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
     public static final String NAME = "org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService";
 
     public static final String EP_AUTHENTICATOR = "authenticators";
+
+    public static final String EP_SESSIONMANAGER = "sessionManager";
 
     public static final String EP_CHAIN = "chain";
 
@@ -56,6 +64,10 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     private Map<String, NuxeoAuthenticationPlugin> authenticators;
 
+    private Map<String, NuxeoAuthenticationSessionManager> sessionManagers;
+
+    private NuxeoAuthenticationSessionManager  defaultSessionManager;
+
     private NuxeoAuthenticationPropagator propagator=null;
 
     private NuxeoCallbackHandlerFactory cbhFactory=null;
@@ -69,6 +81,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
         authenticatorsDescriptors = new HashMap<String, AuthenticationPluginDescriptor>();
         authChain = new ArrayList<String>();
         authenticators = new HashMap<String, NuxeoAuthenticationPlugin>();
+        sessionManagers = new HashMap<String, NuxeoAuthenticationSessionManager>();
+        defaultSessionManager = new DefaultSessionManager();
     }
 
     @Override
@@ -76,6 +90,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
         authenticatorsDescriptors = null;
         authenticators = null;
         authChain = null;
+        sessionManagers=null;
+        defaultSessionManager=null;
     }
 
     @Override
@@ -143,7 +159,23 @@ public class PluggableAuthenticationService extends DefaultComponent {
             } catch (IllegalAccessException e) {
                 log.error("Unable to creeate callback handler factory", e);
             }
-
+        }
+        else if (extensionPoint.equals(EP_SESSIONMANAGER)) {
+            SessionManagerDescriptor smContrib = (SessionManagerDescriptor) contribution;
+            if (smContrib.enabled)
+            {
+                try {
+                    NuxeoAuthenticationSessionManager sm = smContrib.getClassName().newInstance();
+                    sessionManagers.put(smContrib.getName(), sm);
+                }
+                catch (Exception e) {
+                log.error("Unable to create session manager", e);
+                }
+            }
+            else
+            {
+                sessionManagers.remove(smContrib.getName());
+            }
         }
 
     }
@@ -236,6 +268,43 @@ public class PluggableAuthenticationService extends DefaultComponent {
             log.error("Plugin " + pluginName + " not registered or not created");
             return null;
         }
+    }
+
+    protected NuxeoAuthenticationSessionManager getSM(ServletRequest request)
+    {
+        if (sessionManagers.size()>0)
+        {
+            for (String smName : sessionManagers.keySet())
+            {
+                NuxeoAuthenticationSessionManager sm  = sessionManagers.get(smName);
+                if (sm.isAvalaible(request))
+                    return sm;
+            }
+        }
+        return defaultSessionManager;
+    }
+
+    public void invalidateSession(ServletRequest request)
+    {
+        getSM(request).invalidateSession(request);
+    }
+
+
+    public  HttpSession reinitSession(ServletRequest request)
+    {
+        return getSM(request).reinitSession(request);
+    }
+
+
+    public boolean bypassRequest(ServletRequest request)
+    {
+        return getSM(request).bypassRequest(request);
+    }
+
+
+    public String getBaseURL(ServletRequest request)
+    {
+        return VirtualHostHelper.getBaseURL(request);
     }
 
 }
