@@ -789,6 +789,11 @@
         <version>${nuxeo.runtime.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-jboss-extensions</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-core</artifactId>
         <version>${nuxeo.theme.version}</version>
