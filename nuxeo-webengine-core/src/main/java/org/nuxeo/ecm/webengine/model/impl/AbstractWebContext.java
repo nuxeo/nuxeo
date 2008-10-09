@@ -143,12 +143,12 @@ public abstract class AbstractWebContext implements WebContext {
         if (type == null) {
             throw new NoSuchResourceException("No Such Object Type: "+typeName);
         }
-        return newObject(type);
+        return newObject(type, args);
     }
 
     public Resource newObject(ResourceType type, Object ...  args) throws WebException {
         Resource obj = type.newInstance();
-        obj.initialize(this, type);
+        obj.initialize(this, type, args);
         push(obj);
         return obj;
     }

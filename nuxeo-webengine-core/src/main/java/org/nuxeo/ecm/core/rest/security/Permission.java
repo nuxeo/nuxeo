@@ -17,34 +17,42 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.model.impl;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-
-import org.nuxeo.ecm.webengine.model.Template;
-import org.nuxeo.ecm.webengine.model.WebService;
+package org.nuxeo.ecm.core.rest.security;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebService(name="views")
-public class ViewService extends DefaultService {
+public class Permission {
 
-    @GET
-    public Object disptachViews() {
-        //TODO: display a list of templates
-        //ctx.getModule().getFiles();
-        return "View Service: TODO - display the list of existing views";
-    }
+    public String name;
+    public boolean granted;
+    public String permission;
 
-    @GET @POST
-    @Path("{view}")
-    public Object dispatchView(@PathParam("view") String name) {
-        return new Template(prev).name(name).resolve();
+    public Permission(String name, String permission, boolean granted) {
+        this.name = name;
+        this.permission = permission;
+        this.granted = granted;
     }
     
+    /**
+     * @return the name.
+     */
+    public String getName() {
+        return name;
+    }
+    
+    /**
+     * @return the permission.
+     */
+    public String getPermission() {
+        return permission;
+    }
+    
+    /**
+     * @return the granted.
+     */
+    public boolean isGranted() {
+        return granted;
+    }
 }

@@ -2,19 +2,30 @@
 
 <module>
   <links>
-    <link id="content" path="/.views/content">
+    <link id="tab_content" path="/.views/content">
       <!--guard>Write</guard-->
       <category>TABVIEW</category>
     </link>
-    <link id="edit" path="/.views/edit">
+    <link id="tab_edit" path="/.views/edit">
       <category>TABVIEW</category>
     </link>
-    <link id="versions" path="/.views/versions">
+    <link id="tab_versions" path="/.views/versions">
+      <category>TABVIEW</category>
+    </link>
+    <link id="tab_permissions" path="/.permissions">
+      <guard>user=Administrator</guard>
       <category>TABVIEW</category>
     </link>
     
-    <link id="print" path="/.views/print">
+    <link id="link_print" path="/.views/print">
       <category>TOOLBOX</category>
     </link>
+    <link id="link_delete" path="/.views/delete">
+      <category>TOOLBOX</category>
+    </link>
+    <link id="link_create" path="/.views/create">
+      <category>TOOLBOX</category>
+    </link>
+
   </links>
 </module>

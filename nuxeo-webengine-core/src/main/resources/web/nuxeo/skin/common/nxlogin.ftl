@@ -12,9 +12,10 @@ function doLogin(username, password) {
   var req = jQuery.ajax({
     type: "POST",
     async: false,
-    url: document.location.pathname,
+    url: "/login",
     data: {caller: "login", nuxeo_login : "true", userid : username, password : password},
     success: function(html, status) {
+      document.location.reload();
       result = true;
     },    
     error: function(html, status) {
@@ -64,10 +65,7 @@ function showLoginError(errtext) {
       }
       
       loggedin = doLogin(username, password);
-      if (loggedin) {
-        //login success      
-        document.location.reload();
-      } else {
+      if (!loggedin) {
         //login failed
         showLoginError("Username or password incorrect.")
       }

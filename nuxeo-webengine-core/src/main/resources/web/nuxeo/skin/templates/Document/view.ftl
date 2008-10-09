@@ -3,7 +3,7 @@
 <script>
 $(document).ready(function(){
   $("#entry-actions > ul").tabs({
-    select: function(item) {        
+    select: function(item) {
         setContextData("tab", item.tab.title);
     }
   });
@@ -13,8 +13,8 @@ $(document).ready(function(){
 
 <div id="entry-actions">
 <ul>
-  <#list This.getLinks("TABVIEW")?sort as link>
-    <li><a href="${link.getCode(This)}?context=tab" title="${link.id}"><span>${message('link.' + link.id)}</span></a></li>
+  <#list This.getLinks("TABVIEW") as link>
+    <li><a href="${link.getCode(This)}?context=tab" title="${link.id}"><span>${message(link.id)}</span></a></li>
   </#list>
 </ul>
 

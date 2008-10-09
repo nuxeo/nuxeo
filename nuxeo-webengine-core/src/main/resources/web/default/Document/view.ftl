@@ -3,7 +3,7 @@
 <script>
 $(document).ready(function(){
   $("#entry-actions > ul").tabs({
-    select: function(item) {        
+    select: function(item) {
         setContextData("tab", item.tab.title);
     }
   });
@@ -14,7 +14,7 @@ $(document).ready(function(){
 <div id="entry-actions">
 <ul>
   <#list Context.getActions("TABVIEW")?sort as action>
-    <li><a href="${This.urlPath}@@${action.id}?context=tab" title="${action.id}"><span>${message('action.' + action.id)}</span></a></li>
+    <li><a href="${This.urlPath}@@${action.id}?context=tab" title="${action.id}_tab"><span>${message('action.' + action.id)}</span></a></li>
   </#list>
 </ul>
 

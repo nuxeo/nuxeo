@@ -41,10 +41,33 @@ public class Main extends WebApplication {
     return new Template(ctx).fileName("help/about.ftl")
   }
 
+  // the login service used to redirect to a wanted page after login / logout
+  // which is done in the authentication filter
+  @GET @POST
+  @Path("login")
+  public Response login() {
+ctx.log.info("@@@@@@@@@@@@@@@@@@@@@@@@ root");
+    return login("/");
+  }
+  @GET @POST
+  @Path("login/{target:.*}")
+  public Response login(@PathParam("target") String target) {
+ctx.log.info("@@@@@@@@@@@@@@@@@@@@@@@@ "+target);
+    if (target != null) {
+      ctx.log.info("@@@@@@@@@@@@@@@@@@@@@@@@1 "+target);
+      return Response.seeOther(new java.net.URI(target)).build();
+    } else {
+ctx.log.info("@@@@@@@@@@@@@@@@@@@@@@@@2 "+target);
+return Response.ok().noContent().build();
+    }
+  }
+
   // handle errors
   public Object getErrorView(WebApplicationException e) {
     if (e instanceof WebSecurityException) {
       return Response.status(401).entity(new Template(ctx, getFile("error/error_401.ftl"))).build();
+    } else if (e instanceof WebResourceNotFoundException) {
+      return Response.status(404).entity(new Template(ctx, getFile("error/error_404.ftl"))).build();
     } else {
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter(sw);
