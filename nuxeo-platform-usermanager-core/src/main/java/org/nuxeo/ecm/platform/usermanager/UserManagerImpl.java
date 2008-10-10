@@ -63,13 +63,13 @@ public class UserManagerImpl implements UserManager {
 
     private static final Log log = LogFactory.getLog(UserManagerImpl.class);
 
-    private static final String USERMANAGER_TOPIC = "usermanager";
+    public static final String USERMANAGER_TOPIC = "usermanager";
 
-    private static final String USERCHANGED_EVENT_ID = "user_changed";
+    public static final String USERCHANGED_EVENT_ID = "user_changed";
 
-    private static final String GROUPCHANGED_EVENT_ID = "group_changed";
+    public static final String GROUPCHANGED_EVENT_ID = "group_changed";
 
-    private static final String DEFAULT_ANONYMOUS_USER_ID = "Anonymous";
+    public static final String DEFAULT_ANONYMOUS_USER_ID = "Anonymous";
 
     private final DirectoryService dirService;
 
@@ -135,7 +135,7 @@ public class UserManagerImpl implements UserManager {
 
     public void setUserSearchFields(Set<String> userSearchFields) {
         this.userSearchFields = new LinkedHashMap<String, MatchType>();
-        for (String searchField: userSearchFields) {
+        for (String searchField : userSearchFields) {
             this.userSearchFields.put(searchField, MatchType.SUBSTRING);
         }
     }
@@ -715,9 +715,8 @@ public class UserManagerImpl implements UserManager {
                 filter.put(fieldEntry.getKey(), pattern);
                 DocumentModelList fetchedEntries;
                 if (fieldEntry.getValue() == MatchType.SUBSTRING) {
-                    fetchedEntries = userDir.query(filter,
-                            filter.keySet());
-                } else  {
+                    fetchedEntries = userDir.query(filter, filter.keySet());
+                } else {
                     fetchedEntries = userDir.query(filter);
                 }
                 for (DocumentModel entry : fetchedEntries) {
@@ -904,6 +903,10 @@ public class UserManagerImpl implements UserManager {
     public void setGroupSortField(String sortField) {
     }
 
+    /**
+     * Notifies user has changed so that the JaasCacheFlusher listener can make
+     * sure principals cache is reset.
+     */
     private void notifyUserChanged(NuxeoPrincipal principal) {
         EventService eventService = (EventService) Framework.getRuntime().getComponent(
                 EventService.NAME);
@@ -911,6 +914,10 @@ public class UserManagerImpl implements UserManager {
                 USERCHANGED_EVENT_ID, this, principal.getName()));
     }
 
+    /**
+     * Notifies group has changed so that the JaasCacheFlusher listener can make
+     * sure principals cache is reset.
+     */
     private void notifyGroupChanged(NuxeoGroup group) {
         EventService eventService = (EventService) Framework.getRuntime().getComponent(
                 EventService.NAME);
