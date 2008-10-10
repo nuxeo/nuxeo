@@ -814,6 +814,14 @@ public class TestJbpmEngine extends AbstractJbmTestCase {
         } catch (WMWorkflowException e) {
         }
 
+        // test escaping
+        participants = new ArrayList<WMParticipant>();
+        participants.add(new WMParticipantImpl("ain't the user"));
+
+        rSlice = engine.getWorkItemsFor(participants,
+                WMWorkItemState.WORKFLOW_TASK_STATE_ALL, 0, -1);
+        assertEquals(0, rSlice.totalResult);
+
         for (String pid : pids) {
             engine.terminateProcess(pid);
         }
@@ -1633,6 +1641,25 @@ public class TestJbpmEngine extends AbstractJbmTestCase {
                         WMFilter.NE, "Joy")).size());
 
     }
+
+    public void testListProcessInstanceForCreators() throws Exception {
+        deployOne(RPATH_PD3);
+        String wdefID3 = getDefinitionFor(RPATH_PD3).getId();
+
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(WorkflowConstants.WORKFLOW_CREATOR, "Administrator");
+        engine.startProcess(wdefID3, props, null);
+
+        List<String> creators = new ArrayList<String>();
+        assertEquals(0, engine.listProcessInstanceForCreators(creators).size());
+
+        creators.add("Admins' group");
+        assertEquals(0, engine.listProcessInstanceForCreators(creators).size());
+
+        creators.add("administrators");
+        assertEquals(0, engine.listProcessInstanceForCreators(creators).size());
+    }
+
 
     public void testNoteTransitionsLoop01() throws Exception {
 
