@@ -20,8 +20,8 @@
 package org.nuxeo.ecm.webengine.ui.tree.document;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.ui.tree.ContentProvider;
 import org.nuxeo.ecm.webengine.ui.tree.JSonTree;
 import org.nuxeo.ecm.webengine.ui.tree.JSonTreeSerializer;

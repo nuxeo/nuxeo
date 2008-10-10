@@ -12,7 +12,7 @@
     </filter-class>
     <init-param>
       <param-name>exclude</param-name>
-      <param-value>/files</param-value>
+      <param-value>/nuxeo/site/files</param-value>
     </init-param>
   </filter>
   <filter-mapping>
@@ -23,7 +23,7 @@
   <servlet>
     <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
     <servlet-class>
-    org.nuxeo.ecm.webengine.servlet.WebServlet
+    org.nuxeo.ecm.webengine.server.resteasy.WebEngineServlet
     </servlet-class>
   </servlet>
   <servlet-mapping>

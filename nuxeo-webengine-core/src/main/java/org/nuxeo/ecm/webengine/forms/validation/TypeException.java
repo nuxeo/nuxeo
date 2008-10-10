@@ -31,7 +31,6 @@ public class TypeException extends Exception {
      *
      */
     public TypeException() {
-        // TODO Auto-generated constructor stub
     }
 
     public TypeException(String message) {
