@@ -498,8 +498,8 @@ public class Model {
         // fragmentName may be null, to just create the entry
         if (fragmentName != null) {
             fragments.add(fragmentName);
-            addTypeFragment(typeName, fragmentName);
         }
+        addTypeFragment(typeName, fragmentName);
     }
 
     protected void addTypeCollectionFragment(String typeName,
@@ -519,7 +519,10 @@ public class Model {
             fragments = new HashSet<String>();
             typeFragments.put(typeName, fragments);
         }
-        fragments.add(fragmentName);
+        // fragmentName may be null, to just create the entry
+        if (fragmentName != null) {
+            fragments.add(fragmentName);
+        }
     }
 
     public Set<String> getTypeSimpleFragments(String typeName) {
@@ -528,6 +531,10 @@ public class Model {
 
     public Set<String> getTypeFragments(String typeName) {
         return typeFragments.get(typeName);
+    }
+
+    public boolean isType(String typeName) {
+        return typeFragments.containsKey(typeName);
     }
 
     /**
@@ -711,9 +718,7 @@ public class Model {
                 ComplexType fieldComplexType = (ComplexType) fieldType;
                 String subTypeName = fieldComplexType.getName();
                 String subFragmentName = initTypeModel(fieldComplexType);
-                if (subFragmentName != null) {
-                    addTypeSimpleFragment(subTypeName, subFragmentName);
-                }
+                addTypeSimpleFragment(subTypeName, subFragmentName);
             } else {
                 String propertyName = field.getName().getPrefixedName();
                 if (fieldType.isListType()) {

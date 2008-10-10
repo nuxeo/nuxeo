@@ -65,6 +65,13 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
 
+        try {
+            session.addChildNode(root, "foo", null, "not_a_type", false);
+            fail("Should not allow illegal type");
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+
         // root doc /foo
         Node nodefoo = session.addChildNode(root, "foo", null, "TestDoc", false);
         assertEquals(root.getId(), session.getParentNode(nodefoo).getId());
@@ -484,6 +491,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Serializable prevNodeaId = nodea.getId();
         Node nodeac = session.addChildNode(nodea, "node_a_complex", null,
                 "TestDoc", true);
+        Node nodead = session.addChildNode(nodea, "node_a_duo", null, "duo",
+                true);
         Serializable prevNodeacId = nodeac.getId();
         nodea.setSingleProperty("tst:title", "hello world");
         nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",

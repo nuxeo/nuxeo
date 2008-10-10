@@ -303,6 +303,9 @@ public class SessionImpl implements Session {
                 name.equals("..")) {
             throw new IllegalArgumentException("Illegal name: " + name);
         }
+        if (!model.isType(typeName)) {
+            throw new IllegalArgumentException("Unknown type: " + typeName);
+        }
 
         Serializable id = context.generateNewId();
 
