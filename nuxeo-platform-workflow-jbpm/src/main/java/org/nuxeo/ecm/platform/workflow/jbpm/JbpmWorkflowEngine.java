@@ -1545,22 +1545,26 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         }
         JbpmWorkflowExecutionContext ctx = getExecutionContext();
         Session session = ctx.getContext().getSession();
-        StringBuilder values = new StringBuilder();
-        for (String group : groupNames) {
-            values.append("'" + group + "',");
-        }
-        values.deleteCharAt(values.length() - 1);
-        String query = "select si.processInstance, si.value "
+
+        String queryStr = "select si.processInstance, si.value "
                 + "from org.jbpm.context.exe.variableinstance.StringInstance si "
-                + "where si.name = '" + WorkflowConstants.WORKFLOW_CREATOR
-                + "' " + "and si.value in (" + values + ") "
+                + "where si.name = :siName "
+                + "and si.value in (:groupNames) "
                 + "and si.processInstance.end is null ";
-        List<Object[]> list = session.createQuery(query).list();
-        for (Object[] objects : list) {
-            processes.add(WAPIGenerator.createProcessInstance(
-                    (ProcessInstance) objects[0], (String) objects[1]));
+        Query query;
+        try {
+            query = session.createQuery(queryStr);
+            query.setParameter("siName", WorkflowConstants.WORKFLOW_CREATOR);
+            query.setParameterList("groupNames", groupNames);
+            List<Object[]> list = query.list();
+            for (Object[] objects : list) {
+                processes.add(WAPIGenerator.createProcessInstance(
+                        (ProcessInstance) objects[0], (String) objects[1]));
+            }
+            ctx.closeContext();
+        } catch (HibernateException e) {
+            log.error(e);
         }
-        ctx.closeContext();
         return processes;
     }
 }
