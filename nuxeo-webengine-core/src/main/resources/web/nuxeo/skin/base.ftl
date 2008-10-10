@@ -74,9 +74,9 @@
       <ul>
         <#list This.getLinks("TOOLBOX") as link>
         <#if link.id == "print">
-          <li><a href="${link.getCode(This)}" target="_blank">${message('link.' + link.id)}</a></li>
+          <li><a href="${link.getCode(This)}" target="_blank">${message(link.id)}</a></li>
         <#else>
-          <li><a href="${link.getCode(This)}">${message('link.' + link.id)}</a></li>
+          <li><a href="${link.getCode(This)}">${message(link.id)}</a></li>
         </#if>
         </#list>
       </ul>

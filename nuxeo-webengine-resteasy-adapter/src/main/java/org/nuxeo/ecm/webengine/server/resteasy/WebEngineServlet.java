@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.webengine.server.resteasy;
 
-import groovy.lang.GroovyClassLoader;
-
 import java.io.IOException;
 
 import javax.servlet.ServletConfig;
@@ -54,14 +52,11 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.loader.GroovyClassProxy;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.io.ResourceWriter;
 import org.nuxeo.ecm.webengine.model.io.ScriptFileWriter;
 import org.nuxeo.ecm.webengine.model.io.TemplateWriter;
-import org.nuxeo.ecm.webengine.server.resteasy.registry.WebEngineRegistry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -84,7 +79,7 @@ public class WebEngineServlet extends HttpServlet {
     protected Dispatcher dispatcher;
     private String servletMappingPrefix = "";
 
-    protected WebEngineRegistry registry;
+    protected WebEngineResourceLoader registry;
     
     protected void initProviders(ResteasyProviderFactory providerFactory) {
         //RegisterBuiltin.register(providerFactory);
@@ -112,47 +107,14 @@ public class WebEngineServlet extends HttpServlet {
             providerFactory.addMessageBodyWriter(new ResourceWriter());
             providerFactory.addMessageBodyWriter(new TemplateWriter());
             providerFactory.addMessageBodyWriter(new ScriptFileWriter());
-            addRootResources(engine);
+            registry = new WebEngineResourceLoader(engine, (ResourceMethodRegistry)dispatcher.getRegistry());
+            registry.load();
             addInterceptors();
         } catch (Throwable e) {
             e.printStackTrace();
             throw new ServletException("Failed to initialize WebEngine Root Resources", e);
         }
     }
-
-    //TODO: refactor webapplication and rename it as ResourceContainer ?
-    protected void addRootResources(WebEngine engine) throws Exception {        
-        registry = new WebEngineRegistry((ResourceMethodRegistry)dispatcher.getRegistry());
-        engine.setRegistry(registry); //TODO register registry earlier in booting process
-        GroovyClassLoader loader = engine.getScripting().getGroovyScripting().getGroovyClassLoader();
-        // TODO if (registry.getClass() == WebEngineDispatcher.class) {...}
-        // add first annotated JAX-RS resources?? 
-        for (ResourceBinding binding : engine.getBindings()) {
-            Object rc = null;
-            if (binding.className != null && binding.path != null) {
-                if (engine.isDebug()) {
-                    if (binding.singleton) {
-                        GroovyClassProxy cp = new GroovyClassProxy(loader, binding.className, registry);
-                        registry.registerSingletonResource(cp);    
-                    } else {
-                        GroovyClassProxy cp = new GroovyClassProxy(loader, binding.className, registry);
-                        registry.registerPerRequestResource(cp);                            
-                    }
-                } else {
-                    if (binding.singleton) {
-                        Class<?> c = loader.loadClass(binding.className);
-                        registry.registerSingletonResource(c.newInstance());    
-                    } else {
-                        registry.registerPerRequestResource(rc);  
-                    }
-                }
-            } else {
-                log.error("Invalid resource binding: "+binding.path+" -> "+binding.className+". No resource path / class specified.");
-                continue;
-            }            
-        }
-    }
-
 
     public Dispatcher getDispatcher()
     {

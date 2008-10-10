@@ -24,7 +24,6 @@ import groovy.lang.GroovyClassLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.classgen.Verifier;
-import org.nuxeo.ecm.webengine.ResourceRegistry;
 import org.nuxeo.ecm.webengine.WebException;
 
 /**
@@ -38,16 +37,11 @@ public class GroovyClassProxy implements ClassProxy {
     protected GroovyClassLoader loader;
     protected String className;
     protected long timestamp = 0;
-    protected ResourceRegistry registry;
     
-    public GroovyClassProxy(GroovyClassLoader loader, String className) {
-        this (loader, className, null);
-    }
 
-    public GroovyClassProxy(GroovyClassLoader loader, String className, ResourceRegistry registry) {
+    public GroovyClassProxy(GroovyClassLoader loader, String className) {
         this.loader = loader;
         this.className = className;
-        this.registry = registry;
     }
 
     /**
@@ -62,13 +56,11 @@ public class GroovyClassProxy implements ClassProxy {
              Class<?> clazz = loader.loadClass(className, true, false);
              long tm = Verifier.getTimestamp(clazz); 
              if (timestamp > 0 && timestamp < tm) {
-                 timestamp = tm; // timestamp must be updated before registry reload to avoid infinite loop
-                 if (registry != null) {
-                     registry.reload();
+                 if (log.isDebugEnabled()) {
+                     log.debug("CLASS CHANGED: "+clazz.getName());
                  }
-                 log.debug("CLASS CHANGED: "+clazz.getName());
              }
-             timestamp = tm;// second call is not a pb -> this is to avoid infinite loop
+             timestamp = tm;
              return clazz;
          } catch (Exception e) {
              throw WebException.wrap(e);

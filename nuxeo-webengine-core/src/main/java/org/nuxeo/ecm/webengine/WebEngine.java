@@ -118,10 +118,13 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     protected ResourceRegistry registry;
 
     
-    public WebEngine(File root, FileChangeNotifier notifier) throws IOException {
+    public WebEngine(File root) throws IOException {
         isDebug = Boolean.parseBoolean(Framework.getProperty("debug", "false"));
         this.root = root;
-        this.notifier = notifier;
+        if (isDebug) { // TODO notifier must be intialized by WebEngine
+            this.notifier = new FileChangeNotifier();
+            notifier.start();
+        }
         this.scripting = new Scripting(isDebug);
         this.annoMgr = new AnnotationManager();
         String cp = System.getProperty("groovy.classpath");
@@ -166,6 +169,10 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
      */
     public ResourceRegistry getRegistry() {
         return registry;
+    }
+    
+    public Class<?> loadClass(String className) throws ClassNotFoundException {
+        return scripting.loadClass(className);
     }
     
     public BundleTypeProvider getBundleTypeProvider() {
@@ -218,35 +225,54 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     protected  void loadModules() {
         moduleReg = new ModuleRegistry(this);
         for (File file : root.listFiles()) {
-            if (file.isDirectory()) {
-                ModuleDescriptor ad = null;
-                File appFile = new File(file, "Main.groovy");
-                if (appFile.isFile()) {       
-                    ad = loadModuleDescriptor(file.getName()+".Main");
-                    appFile = new File(file, "module.xml");
-                    if (appFile.isFile()) {
-                        ModuleDescriptor ad2 = loadModuleDescriptor(appFile);
-                        ad.links = ad2.links;
-                        ad2.links = null;
+            try {
+                if (file.isDirectory()) {
+                    ModuleDescriptor ad = null;
+                    File appFile = new File(file, "Main.groovy");
+                    if (appFile.isFile()) {       
+                        ad = loadModuleDescriptor(file.getName()+".Main");
+                        if (notifier != null) { 
+                            notifier.watch(appFile);
+                        }
+                        appFile = new File(file, "module.xml");
+                        if (appFile.isFile()) {
+                            ModuleDescriptor ad2 = loadModuleDescriptor(appFile);
+                            ad.links = ad2.links;
+                            ad2.links = null;
+                            if (notifier != null) { 
+                                notifier.watch(appFile);
+                            }
+                        }
+                    } else {
+                        appFile = new File(file, "module.xml");
+                        if (appFile.isFile()) {
+                            ad = loadModuleDescriptor(appFile);
+                        }
                     }
-                } else {
-                    appFile = new File(file, "module.xml");
-                    if (appFile.isFile()) {
-                        ad = loadModuleDescriptor(appFile);
-                    }
-                }
-                if (ad != null) {
-                    try {
-                        moduleReg.registerDescriptor(file, ad);
+                    if (ad != null) {
+                        moduleReg.registerDescriptor(file, ad);                       
+                        if (notifier != null) {
+                            watchModule(file);
+                        }
                         notifier.watch(appFile); // always track the file
-                    } catch (Exception e) {                
-                        e.printStackTrace(); // TODO log
-                    }                    
+                    }
                 }
-            }
+            } catch (Exception e) {                
+                e.printStackTrace(); // TODO log
+            }                    
         }
     }
 
+    
+
+    protected void watchModule(File root) throws IOException {
+        notifier.watch(root);
+        for (File f : root.listFiles()) {
+            if (f.isDirectory()) {
+                watchModule(f);
+            }
+        }
+    }
     
     /**
      * Load an module given its annotated class 
@@ -383,12 +409,26 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         String rootPath = root.getAbsolutePath();
         if (!path.startsWith(rootPath)) {
             return;
-        } 
-        if (path.endsWith("/Main.groovy") || path.endsWith("/application.xml")) {
-            loadModules(); // TODO optimize reloading
-        } else {
+        }         
+        //TODO improve reloading
+        if (path.endsWith("/Main.groovy")) {
+            if (registry != null) {
+                registry.reload();
+            }
+        } else if (path.contains("i18n")) {
             loadMessageBundle(false);
-        }
+        } else {
+            path = path.substring(rootPath.length()+1);
+            int p = path.indexOf('/');
+            String moduleName = path; 
+            if (p > -1) {
+              moduleName = path.substring(0, p); 
+            }
+            Module module = getModule(moduleName);
+            if (module != null) {
+                module.flushCache();
+            }
+        } // else{ // do nothing
         lastMessagesUpdate = now;        
     }
 

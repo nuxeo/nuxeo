@@ -24,7 +24,7 @@
 
 <div class="userSearch">
   <h2>Users</h2>
-  <form method="POST" action="${Context.URL}" accept-charset="utf-8">
+  <form method="POST" action="${Context.URL}/search" accept-charset="utf-8">
     <input type="text" name="query" value=""/>
     <input type="submit" value="Search"/>
   </form>
@@ -32,8 +32,9 @@
 
 <div class="groupSearch">
   <h2>Groups</h2>
-  <form method="POST" action="${Context.URL}" accept-charset="utf-8">
-    <input type="text" name="gquery" value=""/>
+  <form method="POST" action="${Context.URL}/search" accept-charset="utf-8">
+    <input type="text" name="query" value=""/>
+    <input type="hidden" name="group" value="true"/>
     <input type="submit" value="Search"/>
   </form>
 </div>

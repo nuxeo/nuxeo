@@ -102,10 +102,11 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
         }
 
         // load message bundle
+        //TODO: remove notifier
         notifier = new FileChangeNotifier();
         notifier.start();
 
-        engine2 = new WebEngine(root, notifier);
+        engine2 = new WebEngine(root);
         deployer = new ConfigurationDeployer(notifier);
         deployer.addConfigurationChangedListener(this);
 

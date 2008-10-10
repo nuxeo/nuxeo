@@ -10,10 +10,9 @@ import org.nuxeo.ecm.webengine.*;
 @Produces(["text/html", "*/*"])
 public class Admin extends DefaultObject {
 
-  @GET
   @Path("users")  
   public Object getUserManagement() {
-    return ctx.newService(this, "UserService");
+    return ctx.newService(this, "users");
   }
 
   @GET

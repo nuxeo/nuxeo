@@ -13,7 +13,15 @@ import org.nuxeo.ecm.webengine.*;
 @Path("/")
 @Produces(["text/html", "*/*"])
 public class Main extends WebApplication {
-  
+
+@Path("kk")
+@GET
+public String testkk() {return "kk";}
+
+@Path("kk2")
+@GET
+public String testkk2() {return "kk   22";}
+
   @Path("admin")
   public Object getAdmin() {
     return ctx.newObject("Admin");
@@ -46,19 +54,15 @@ public class Main extends WebApplication {
   @GET @POST
   @Path("login")
   public Response login() {
-ctx.log.info("@@@@@@@@@@@@@@@@@@@@@@@@ root");
     return login("/");
   }
   @GET @POST
   @Path("login/{target:.*}")
   public Response login(@PathParam("target") String target) {
-ctx.log.info("@@@@@@@@@@@@@@@@@@@@@@@@ "+target);
     if (target != null) {
-      ctx.log.info("@@@@@@@@@@@@@@@@@@@@@@@@1 "+target);
       return Response.seeOther(new java.net.URI(target)).build();
     } else {
-ctx.log.info("@@@@@@@@@@@@@@@@@@@@@@@@2 "+target);
-return Response.ok().noContent().build();
+      return Response.ok().noContent().build();
     }
   }
 

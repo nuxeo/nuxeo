@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine;
 
-import org.nuxeo.ecm.webengine.loader.ClassProxy;
 
 /**
  * To be implemented by backends to allow WebEngine dynamically register/unregister resources
@@ -29,17 +28,12 @@ import org.nuxeo.ecm.webengine.loader.ClassProxy;
  */
 public interface ResourceRegistry {
 
-    void registerSingletonResource(String path, Object resource);
+    void addResourceBinding(ResourceBinding binding) throws WebException;
+        
+    void removeResourceBinding(ResourceBinding binding) throws WebException;
     
-    void registerSingletonResource(Object resource);
-    
-    void registerPerRequestResource(String path, Object resource);
-    
-    void registerPerRequestResource(Object resource);
-    
-    void unregisterResource(String path);
-    
-    void unregisterResource(Class<?> clazz);
+    void load();
     
     void reload();
+    
 }

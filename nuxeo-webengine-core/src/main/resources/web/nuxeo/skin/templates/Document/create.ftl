@@ -4,7 +4,7 @@
 
 <#if Document.facets?seq_contains("Folderish")>
   <div id="create_form">
-  <form action="${This.urlPath}/@@create">
+  <form action="${This.path}" method="POST">
     Create a new child named <input type="text" name="name" value="">
     of type
 <select name="doctype">
