@@ -61,4 +61,7 @@ public class Reference implements Operand {
         return name.hashCode();
     }
 
+    public boolean isPathReference() {
+        return false;
+    }
 }

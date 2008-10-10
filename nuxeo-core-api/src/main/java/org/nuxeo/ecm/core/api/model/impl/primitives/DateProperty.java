@@ -36,11 +36,9 @@ public class DateProperty extends ScalarProperty {
 
     private static final long serialVersionUID = -7344978155078073495L;
 
-
     public DateProperty(Property parent, Field field, int flags) {
-        super (parent, field, flags);
+        super(parent, field, flags);
     }
-
 
     @Override
     public boolean isNormalized(Object value) {
@@ -58,24 +56,27 @@ public class DateProperty extends ScalarProperty {
             cal.setTime((Date)value);
             return cal;
         }
+        if (value instanceof CharSequence) {
+            return (Calendar)field.getType().decode(value.toString());
+        }
         throw new PropertyConversionException(value.getClass(), Calendar.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {
         if (value == null || toType == Calendar.class) {
-            return (T)value;
+            return (T) value;
         }
         if (toType == Date.class) {
-            return (T)((Calendar)value).getTime();
+            return (T) ((Calendar) value).getTime();
         }
         throw new PropertyConversionException(value.getClass(), toType);
     }
 
     @Override
-    public Object newInstance() throws InstantiationException,
-            IllegalAccessException {
+    public Object newInstance() {
         return Calendar.getInstance();
     }
 
