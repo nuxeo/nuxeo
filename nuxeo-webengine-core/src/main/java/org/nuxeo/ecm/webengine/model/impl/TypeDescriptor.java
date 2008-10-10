@@ -22,6 +22,8 @@ package org.nuxeo.ecm.webengine.model.impl;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.webengine.loader.ClassProxy;
+import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.Utils;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -34,7 +36,10 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 public class TypeDescriptor implements Cloneable {
 
     @XNode("@class")
-    public Class<?> clazz;
+    void setClassProxy(Class<?> clazz) {
+        this.clazz = new StaticClassProxy(clazz);
+    }
+    public ClassProxy clazz;
     
     @XNode("@name")
     public String name;
@@ -52,8 +57,8 @@ public class TypeDescriptor implements Cloneable {
     public TypeDescriptor() {
     }
     
-    public TypeDescriptor(Class<?> klass, String name, String superType) {
-        this.clazz = klass;
+    public TypeDescriptor(ClassProxy clazz, String name, String superType) {
+        this.clazz = clazz;
         this.name = name;
         this.superType = superType;
     }
@@ -102,7 +107,7 @@ public class TypeDescriptor implements Cloneable {
         return false;
     }
 
-    public static TypeDescriptor fromAnnotation(Class<?> clazz, WebObject type) {
+    public static TypeDescriptor fromAnnotation(ClassProxy clazz, WebObject type) {
         return  new TypeDescriptor(clazz, type.name(), type.superType());
     }
 }

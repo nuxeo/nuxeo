@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine;
+package org.nuxeo.ecm.webengine.loader;
 
 import java.io.File;
 import java.net.URL;

@@ -41,6 +41,7 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.platform.rendering.fm.i18n.ResourceComposite;
+import org.nuxeo.ecm.webengine.loader.WebClassLoader;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -114,7 +115,9 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
 
     protected AnnotationManager annoMgr;
 
+    protected ResourceRegistry registry;
 
+    
     public WebEngine(File root, FileChangeNotifier notifier) throws IOException {
         isDebug = Boolean.parseBoolean(Framework.getProperty("debug", "false"));
         this.root = root;
@@ -129,7 +132,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         scripting.addClassPath(cp);
         
         this.bundleTypeProvider = new BundleTypeProvider();
-        this.directoryTypeProvider = new DirectoryTypeProvider(root, scripting.getGroovyScripting().getGroovyClassLoader());
+        this.directoryTypeProvider = new DirectoryTypeProvider(this);
         BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), bundleTypeProvider);
         BundleAnnotationsLoader.getInstance().addLoader(WebService.class.getName(), bundleTypeProvider);        
         
@@ -149,6 +152,20 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         }
         // register annotation loader
         BundleAnnotationsLoader.getInstance().addLoader(Path.class.getName(), this);
+    }
+    
+    /**
+     * @param registry the registry to set.
+     */
+    public void setRegistry(ResourceRegistry registry) {
+        this.registry = registry;
+    }
+    
+    /**
+     * @return the registry.
+     */
+    public ResourceRegistry getRegistry() {
+        return registry;
     }
     
     public BundleTypeProvider getBundleTypeProvider() {
@@ -407,4 +424,5 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         return null;
     }
     
+            
 }

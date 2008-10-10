@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webengine.model.impl;
 
+import org.nuxeo.ecm.webengine.loader.ClassProxy;
+import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.WebService;
 import org.nuxeo.runtime.annotations.loader.AnnotationLoader;
@@ -40,13 +42,13 @@ public class BundleTypeProvider extends TypeConfigurationProvider implements Ann
     // support for loading annotations from descriptor files 
     public void loadAnnotation(Bundle bundle, String annotationType, String className, String[] args) throws Exception {
         // args are ignored for now
-        Class<?> clazz = bundle.loadClass(className);
+        ClassProxy clazz = new StaticClassProxy(bundle.loadClass(className));
         if (annotationType.equals(WebObject.class.getName())) {
-            WebObject type = clazz.getAnnotation(WebObject.class);                 
+            WebObject type = clazz.get().getAnnotation(WebObject.class);                 
             registerType(TypeDescriptor.fromAnnotation(clazz, type));
         } else if (annotationType.equals(WebService.class.getName())) {
             //TODO: avoid loading clazz here - use the data from annotation ?
-            WebService service = clazz.getAnnotation(WebService.class);
+            WebService service = clazz.get().getAnnotation(WebService.class);
             registerType(ServiceDescriptor.fromAnnotation(clazz, service));
         } else {
             throw new IllegalArgumentException(annotationType);

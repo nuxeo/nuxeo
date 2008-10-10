@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webengine.model.impl;
 
+import groovy.lang.GroovyClassLoader;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -26,7 +28,11 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.loader.ClassProxy;
+import org.nuxeo.ecm.webengine.loader.GroovyClassProxy;
+import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.WebService;
 
@@ -38,13 +44,15 @@ public class DirectoryTypeProvider extends TypeConfigurationProvider {
 
     public static final String CRLF = System.getProperty("line.separator");
     
-    protected ClassLoader loader;
+    protected GroovyClassLoader loader;
     protected File root;
     protected boolean isLoaded = false;
+    protected WebEngine engine;
     
-    public DirectoryTypeProvider(File root, ClassLoader loader) {
-        this.loader = loader;
-        this.root = root;
+    public DirectoryTypeProvider(WebEngine engine) {
+        this.engine = engine;
+        this.loader = engine.getScripting().getGroovyScripting().getGroovyClassLoader();
+        this.root = engine.getRootDirectory();
     }
     
     @Override
@@ -112,13 +120,18 @@ public class DirectoryTypeProvider extends TypeConfigurationProvider {
     }
 
     protected boolean loadClassFile(String className) throws ClassNotFoundException {
-        Class<?> clazz = loader.loadClass(className);
-        WebObject type = clazz.getAnnotation(WebObject.class);
+        ClassProxy clazz = null;
+        if (engine.isDebug()) {
+            clazz = new GroovyClassProxy(loader, className);
+        } else {            
+            clazz = new StaticClassProxy(loader.loadClass(className));
+        }
+        WebObject type = clazz.get().getAnnotation(WebObject.class);
         if (type != null) {
             registerType(TypeDescriptor.fromAnnotation(clazz, type));
             return true;
         } else {            
-            WebService ws = clazz.getAnnotation(WebService.class);
+            WebService ws = clazz.get().getAnnotation(WebService.class);
             if (ws != null) {
                 registerType(ServiceDescriptor.fromAnnotation(clazz, ws));
                 return true;

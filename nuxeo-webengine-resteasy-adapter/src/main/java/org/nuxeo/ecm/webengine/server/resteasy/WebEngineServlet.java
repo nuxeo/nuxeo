@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webengine.server.resteasy;
 
+import groovy.lang.GroovyClassLoader;
+
 import java.io.IOException;
 
 import javax.servlet.ServletConfig;
@@ -34,6 +36,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.providers.ByteArrayProvider;
 import org.jboss.resteasy.plugins.providers.DefaultTextPlain;
@@ -53,10 +56,12 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.loader.GroovyClassProxy;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.io.ResourceWriter;
 import org.nuxeo.ecm.webengine.model.io.ScriptFileWriter;
 import org.nuxeo.ecm.webengine.model.io.TemplateWriter;
+import org.nuxeo.ecm.webengine.server.resteasy.registry.WebEngineRegistry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -79,6 +84,8 @@ public class WebEngineServlet extends HttpServlet {
     protected Dispatcher dispatcher;
     private String servletMappingPrefix = "";
 
+    protected WebEngineRegistry registry;
+    
     protected void initProviders(ResteasyProviderFactory providerFactory) {
         //RegisterBuiltin.register(providerFactory);
         try {
@@ -114,20 +121,30 @@ public class WebEngineServlet extends HttpServlet {
     }
 
     //TODO: refactor webapplication and rename it as ResourceContainer ?
-    protected void addRootResources(WebEngine engine) throws Exception {
-        Registry registry = dispatcher.getRegistry();
+    protected void addRootResources(WebEngine engine) throws Exception {        
+        registry = new WebEngineRegistry((ResourceMethodRegistry)dispatcher.getRegistry());
+        engine.setRegistry(registry); //TODO register registry earlier in booting process
+        GroovyClassLoader loader = engine.getScripting().getGroovyScripting().getGroovyClassLoader();
         // TODO if (registry.getClass() == WebEngineDispatcher.class) {...}
         // add first annotated JAX-RS resources?? 
         for (ResourceBinding binding : engine.getBindings()) {
-            Class<?> rc = null;
+            Object rc = null;
             if (binding.className != null && binding.path != null) {
-                rc = engine.getScripting().loadClass(binding.className);
-                if (binding.singleton) { // TODO use a factory to create singletons and remove singleton property
-//                    registry.addSingletonResource(rc.newInstance(), binding.path, binding.encode, binding.limited);
-                    registry.addSingletonResource(rc.newInstance());
+                if (engine.isDebug()) {
+                    if (binding.singleton) {
+                        GroovyClassProxy cp = new GroovyClassProxy(loader, binding.className, registry);
+                        registry.registerSingletonResource(cp);    
+                    } else {
+                        GroovyClassProxy cp = new GroovyClassProxy(loader, binding.className, registry);
+                        registry.registerPerRequestResource(cp);                            
+                    }
                 } else {
-//                    registry.addPojoResource(rc, binding.path, binding.encode, binding.limited);
-                    registry.addPerRequestResource(rc);
+                    if (binding.singleton) {
+                        Class<?> c = loader.loadClass(binding.className);
+                        registry.registerSingletonResource(c.newInstance());    
+                    } else {
+                        registry.registerPerRequestResource(rc);  
+                    }
                 }
             } else {
                 log.error("Invalid resource binding: "+binding.path+" -> "+binding.className+". No resource path / class specified.");

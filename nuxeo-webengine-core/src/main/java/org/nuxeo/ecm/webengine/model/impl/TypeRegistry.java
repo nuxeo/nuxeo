@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.ServiceType;
@@ -52,7 +53,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         serviceBindings = new ConcurrentHashMap<String, ServiceTypeImpl[]>();
         this.module = module;
         // register root type
-        TypeDescriptor root = new TypeDescriptor(Resource.class, ResourceType.ROOT_TYPE_NAME, null); 
+        TypeDescriptor root = new TypeDescriptor(new StaticClassProxy(Resource.class), ResourceType.ROOT_TYPE_NAME, null); 
         registerType(root);        
     }
     
@@ -226,7 +227,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
                     if (docObjectClass == null) {
                         docObjectClass = Class.forName("org.nuxeo.ecm.core.rest.DocumentObject");
                     }
-                    TypeDescriptor superWebType = new TypeDescriptor(docObjectClass, typeName, superSuperTypeName);
+                    TypeDescriptor superWebType = new TypeDescriptor(new StaticClassProxy(docObjectClass), typeName, superSuperTypeName);
                     registerType(superWebType);
                     return true;
                 } catch (ClassNotFoundException e) {
@@ -287,7 +288,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
     
     protected void installTypeContribution(String key, TypeDescriptor object) {        
-        ResourceTypeImpl type = new ResourceTypeImpl(module, null, object.name, (Class<Resource>)object.clazz);
+        ResourceTypeImpl type = new ResourceTypeImpl(module, null, object.name, object.clazz);
         if (object.superType != null) {
             type.superType = types.get(object.superType);
             assert type.superType != null; // must never be null since the object is resolved 
@@ -308,7 +309,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void installServiceContribution(String key, ServiceDescriptor object) {
-        ServiceTypeImpl type = new ServiceTypeImpl(module, null, object.name, (Class<Resource>)object.clazz);
+        ServiceTypeImpl type = new ServiceTypeImpl(module, null, object.name, object.clazz);
         if (object.superType != null) {
             type.superType = types.get(object.superType);
             assert type.superType != null; // must never be null since the object is resolved 
@@ -352,7 +353,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         // we are using 1.
         ResourceTypeImpl t = types.get(key);
         if (t != null) { // update the type class
-            t.clazz = (Class<Resource>)object.clazz;
+            t.clazz = object.clazz;
             t.loadAnnotations(module.getEngine().getAnnotationManager());
             t.flushCache();
         } else { // install the type - this should never happen since it is an update!
@@ -365,7 +366,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         if (t instanceof ServiceTypeImpl) { // update the type class
             ServiceTypeImpl service = (ServiceTypeImpl)t;
             String[] targetTypes = service.targetTypes;
-            service.clazz = (Class<Resource>)object.clazz;
+            service.clazz = object.clazz;
             service.loadAnnotations(module.getEngine().getAnnotationManager());
             t.flushCache();
             // update bindings

@@ -22,6 +22,8 @@ package org.nuxeo.ecm.webengine.model.impl;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.webengine.loader.ClassProxy;
+import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
 import org.nuxeo.ecm.webengine.model.Utils;
 import org.nuxeo.ecm.webengine.model.WebService;
 
@@ -33,7 +35,7 @@ import org.nuxeo.ecm.webengine.model.WebService;
 public class ServiceDescriptor extends TypeDescriptor {
 
     @XNode("@class")
-    void setClass(Class<?> clazz) { this.clazz = clazz; }
+    void setClass(Class<?> clazz) { this.clazz = new StaticClassProxy(clazz); }
     
     @XNode("@name")
     void setName(String name) { this.name = name; }
@@ -58,12 +60,12 @@ public class ServiceDescriptor extends TypeDescriptor {
         super ();
     }
     
-    public ServiceDescriptor(Class<?> klass, String name, String superType) {
-        super (klass, name, superType);
+    public ServiceDescriptor(ClassProxy clazz, String name, String superType) {
+        super (clazz, name, superType);
     }
 
-    public ServiceDescriptor(Class<?> klass, String name, String superType, String[] types, String[] facets) {
-        super (klass, name, superType);
+    public ServiceDescriptor(ClassProxy clazz, String name, String superType, String[] types, String[] facets) {
+        super (clazz, name, superType);
         if (facets != null && facets.length > 0) {
             this.facets = facets;
         }
@@ -100,7 +102,7 @@ public class ServiceDescriptor extends TypeDescriptor {
     }
     
 
-    public static ServiceDescriptor fromAnnotation(Class<?> clazz, WebService type) {
+    public static ServiceDescriptor fromAnnotation(ClassProxy clazz, WebService type) {
         return  new ServiceDescriptor(clazz, type.name(), type.superType(), type.targetTypes(), type.facets());
     }
 }

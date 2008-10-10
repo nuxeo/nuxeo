@@ -63,6 +63,9 @@ public class GroovyScripting {
     public GroovyScripting(ClassLoader parent, boolean debug) {
         CompilerConfiguration cfg = new CompilerConfiguration();
         cfg.setDebug(debug);
+        if (debug) {
+            cfg.setRecompileGroovySource(true);
+        }
         loader = new GroovyClassLoader(parent, cfg);
         cache = new ConcurrentHashMap<File, Entry>();
     }

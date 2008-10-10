@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.ServiceType;
@@ -40,7 +41,7 @@ public class ServiceTypeImpl extends ResourceTypeImpl implements ServiceType {
     protected String[] targetTypes;
     protected String[] targetFacets;
     
-    public ServiceTypeImpl(ModuleImpl module, ResourceTypeImpl superType, String name, Class<Resource> clazz) {
+    public ServiceTypeImpl(ModuleImpl module, ResourceTypeImpl superType, String name, ClassProxy clazz) {
         super (module, superType, name, clazz);
     }
     
@@ -82,14 +83,14 @@ public class ServiceTypeImpl extends ResourceTypeImpl implements ServiceType {
         
     @Override
     protected void loadAnnotations(AnnotationManager annoMgr) {
-        WebService ws = clazz.getAnnotation(WebService.class);
+        WebService ws = clazz.get().getAnnotation(WebService.class);
         if (ws == null) return;
         String g = ws.guard();
         if (g != null && g.length() > 0) {
             try {
                 this.guard = PermissionService.parse(g);
             } catch (ParseException e) {
-                throw WebException.wrap("Failed to parse guard: "+g+" on WebObject "+clazz.getName(), e);
+                throw WebException.wrap("Failed to parse guard: "+g+" on WebObject "+clazz.get().getName(), e);
             }
         }
         String[] facets = ws.facets();

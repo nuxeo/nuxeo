@@ -28,7 +28,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.TemplateNotFoundException;
@@ -47,12 +49,12 @@ public class ResourceTypeImpl implements ResourceType {
     protected ModuleImpl module;
     protected String name;
     protected ResourceTypeImpl superType;
-    protected volatile Class<Resource> clazz;
+    protected volatile ClassProxy clazz;
     protected volatile Guard guard = Guard.DEFAULT;
     protected volatile Set<String> facets;    
     protected volatile ConcurrentMap<String, ScriptFile> templateCache;
     
-    public ResourceTypeImpl(ModuleImpl module, ResourceTypeImpl superType, String name, Class<Resource> clazz) {
+    public ResourceTypeImpl(ModuleImpl module, ResourceTypeImpl superType, String name, ClassProxy clazz) {
         this.templateCache = new ConcurrentHashMap<String, ScriptFile>();        
         this.module = module;
         this.superType = superType;
@@ -64,10 +66,6 @@ public class ResourceTypeImpl implements ResourceType {
     
     public ResourceType getSuperType() {
         return superType;
-    }
-    
-    public Class<Resource> getObjectType() {
-        return this.clazz; 
     }
     
     public Guard getGuard() {
@@ -90,13 +88,13 @@ public class ResourceTypeImpl implements ResourceType {
     }
     
     public Class<Resource> getResourceClass() {
-        return clazz;
+        return (Class<Resource>)clazz.get();
     }
     
     @SuppressWarnings("unchecked")
     public <T extends Resource> T newInstance() throws WebException {
-        try {            
-            return (T)clazz.newInstance();
+        try {           
+            return (T)clazz.get().newInstance();
         } catch (Exception e) {
             throw WebException.wrap("Failed to instantiate web object: "+clazz, e);
         }
@@ -109,14 +107,14 @@ public class ResourceTypeImpl implements ResourceType {
     
      
     protected void loadAnnotations(AnnotationManager annoMgr) {
-        WebObject wo = clazz.getAnnotation(WebObject.class);
+        WebObject wo = clazz.get().getAnnotation(WebObject.class);
         if (wo == null) return;
         String g = wo.guard();
         if (g != null && g.length() > 0) {
             try {
                 guard = PermissionService.parse(g);
             } catch (ParseException e) {
-                throw WebException.wrap("Failed to parse guard: "+g+" on WebObject "+clazz.getName(), e);
+                throw WebException.wrap("Failed to parse guard: "+g+" on WebObject "+clazz.get().getName(), e);
             }
         }
         String[] facets = wo.facets();
@@ -162,7 +160,7 @@ public class ResourceTypeImpl implements ResourceType {
     }
     
     protected ScriptFile findTypeTemplate(String name) throws IOException {
-        String path = resolveResourcePath(clazz, name);
+        String path = resolveResourcePath(clazz.getClassName(), name);
         File f = new File(module.getEngine().getRootDirectory(), path);
         if (f.isFile()) {
             return new ScriptFile(f);
@@ -179,9 +177,9 @@ public class ResourceTypeImpl implements ResourceType {
         return file;
     }
 
-    protected String resolveResourcePath(Class<?> resClass, String fileName) {
+    protected String resolveResourcePath(String className, String fileName) {
         // compute resource path for resource class name
-        String path = resClass.getName();
+        String path = className;
         int p = path.lastIndexOf('.');
         if (p > -1) {
             path = path.substring(0, p);
