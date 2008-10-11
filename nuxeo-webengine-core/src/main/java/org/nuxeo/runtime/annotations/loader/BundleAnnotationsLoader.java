@@ -173,7 +173,6 @@ public class BundleAnnotationsLoader implements BundleListener {
         }
     }
 
-
     public void bundleChanged(BundleEvent event) {
         try {
             switch (event.getType()) {
@@ -202,11 +201,9 @@ public class BundleAnnotationsLoader implements BundleListener {
     }
 
     public static void main(String[] args) {
-
         System.out.println("ac|sd|ddd|fg|qw\\|a\\\\sf|d|");
-
         String[] ar = parse("ac|sd|ddd|fg|qw\\|a\\\\sf|d|");
-
         System.out.println(">> "+Arrays.toString(ar));
     }
+
 }

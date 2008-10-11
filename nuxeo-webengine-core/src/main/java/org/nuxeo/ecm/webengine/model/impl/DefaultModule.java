@@ -59,8 +59,9 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
         path = guessPath();
         setRoot(true);
         ctx.push(this);
-        if (!this.type.getGuard().check(this)) {
-            throw new WebSecurityException("Failed to initialize object: "+getPath()+". Object is not accessible in the current context", getPath());
+        if (!type.getGuard().check(this)) {
+            throw new WebSecurityException(
+                    "Failed to initialize object: "+getPath()+". Object is not accessible in the current context", getPath());
         }
     }
 
@@ -75,6 +76,7 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
         return module;
     }
 
+    @Override
     public boolean isService() {
         return false;
     }

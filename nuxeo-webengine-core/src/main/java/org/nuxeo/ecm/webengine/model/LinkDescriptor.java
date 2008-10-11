@@ -110,7 +110,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
 
     public String getCode(Resource resource) {
         try {
-            if (this.handler == null) {
+            if (handler == null) {
                 if (handlerClass != null) {
                     Object obj = resource.getModule().loadClass(handlerClass).newInstance();
                     if (obj instanceof LinkHandlerFactory) {
@@ -147,7 +147,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     }
 
     public void addCategory(String category) {
-        this.categories.add(category);
+        categories.add(category);
     }
 
     /**
@@ -160,7 +160,6 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     public boolean hasCategory(String category) {
         return categories != null && categories.contains(category);
     }
-
 
     public boolean acceptResource(Resource context) {
         if (types == null && facets == null) {
@@ -247,10 +246,14 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
         if (obj instanceof LinkDescriptor) {
-            LinkDescriptor ld = (LinkDescriptor)obj;
+            LinkDescriptor ld = (LinkDescriptor) obj;
             return id.equals(ld.id) && Utils.streq(fragment, ld.fragment);
         }
         return false;

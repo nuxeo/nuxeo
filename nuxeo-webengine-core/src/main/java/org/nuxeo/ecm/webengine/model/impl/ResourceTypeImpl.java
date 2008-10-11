@@ -36,12 +36,15 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
 public class ResourceTypeImpl extends AbstractResourceType {
 
     public ResourceTypeImpl(ModuleImpl module, ResourceTypeImpl superType, String name, ClassProxy clazz) {
-        super (module, superType, name, clazz);
+        super(module, superType, name, clazz);
     }
 
+    @Override
     protected void loadAnnotations(AnnotationManager annoMgr) {
         WebObject wo = clazz.get().getAnnotation(WebObject.class);
-        if (wo == null) return;
+        if (wo == null) {
+            return;
+        }
         String g = wo.guard();
         if (g != null && g.length() > 0) {
             try {

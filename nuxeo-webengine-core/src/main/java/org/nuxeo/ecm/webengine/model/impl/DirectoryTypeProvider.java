@@ -51,8 +51,8 @@ public class DirectoryTypeProvider extends TypeConfigurationProvider {
 
     public DirectoryTypeProvider(WebEngine engine) {
         this.engine = engine;
-        this.loader = engine.getScripting().getGroovyScripting().getGroovyClassLoader();
-        this.root = engine.getRootDirectory();
+        loader = engine.getScripting().getGroovyScripting().getGroovyClassLoader();
+        root = engine.getRootDirectory();
     }
 
     @Override
@@ -63,7 +63,9 @@ public class DirectoryTypeProvider extends TypeConfigurationProvider {
     }
 
     public synchronized void load() {
-        if (isLoaded) return;
+        if (isLoaded) {
+            return;
+        }
         try {
             File cache = new File(root, "resources.cache");
             if (cache.isFile()) {

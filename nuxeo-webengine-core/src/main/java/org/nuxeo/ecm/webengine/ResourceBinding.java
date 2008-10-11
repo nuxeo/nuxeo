@@ -59,7 +59,9 @@ public class ResourceBinding {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
+        if (obj == this) {
+            return true;
+        }
         if (obj instanceof ResourceBinding) {
             ResourceBinding binding = (ResourceBinding)obj;
             return binding.path.equals(path) && binding.clazz == clazz;

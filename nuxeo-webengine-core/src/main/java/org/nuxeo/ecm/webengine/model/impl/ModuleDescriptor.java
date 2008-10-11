@@ -44,7 +44,7 @@ import org.nuxeo.runtime.model.Adaptable;
 public class ModuleDescriptor implements Cloneable {
 
     /**
-     * The application directory
+     * The application directory.
      * Must be set by the client before registering the descriptor.
      */
     public File directory;
@@ -107,15 +107,14 @@ public class ModuleDescriptor implements Cloneable {
     @Override
     public ModuleDescriptor clone() {
         try {
-            ModuleDescriptor cfg = (ModuleDescriptor)super.clone();
-            cfg.actions = (ArrayList)actions.clone();
-            cfg.types = (ArrayList)types.clone();
+            ModuleDescriptor cfg = (ModuleDescriptor) super.clone();
+            cfg.actions = (ArrayList) actions.clone();
+            cfg.types = (ArrayList) types.clone();
             return cfg;
         } catch (CloneNotSupportedException e) {
             throw new Error("Should never happen");
         }
     }
-
 
     public static ModuleDescriptor fromAnnotation(Class<?> clazz) {
         WebModule anno = clazz.getAnnotation(WebModule.class);

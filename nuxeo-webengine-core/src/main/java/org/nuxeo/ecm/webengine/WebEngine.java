@@ -69,7 +69,7 @@ import org.osgi.framework.Bundle;
  */
 public class WebEngine implements FileChangeListener, ResourceLocator, AnnotationLoader {
 
-    private final static ThreadLocal<WebContext> CTX = new ThreadLocal<WebContext>();
+    private static final ThreadLocal<WebContext> CTX = new ThreadLocal<WebContext>();
 
     protected static Map<Object, Object> mimeTypes = loadMimeTypes();
 
@@ -124,11 +124,11 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         isDebug = Boolean.parseBoolean(Framework.getProperty("debug", "false"));
         this.root = root;
         if (isDebug) { // TODO notifier must be intialized by WebEngine
-            this.notifier = new FileChangeNotifier();
+            notifier = new FileChangeNotifier();
             notifier.start();
         }
-        this.scripting = new Scripting(isDebug);
-        this.annoMgr = new AnnotationManager();
+        scripting = new Scripting(isDebug);
+        annoMgr = new AnnotationManager();
         String cp = System.getProperty("groovy.classpath");
         if (cp == null) {
             cp = new File(root, "classes").getAbsolutePath();
@@ -136,14 +136,14 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         scripting.addClassPath(new File(root,".").getAbsolutePath());
         scripting.addClassPath(cp);
 
-        this.bundleTypeProvider = new BundleTypeProvider();
-        this.directoryTypeProvider = new DirectoryTypeProvider(this);
+        bundleTypeProvider = new BundleTypeProvider();
+        directoryTypeProvider = new DirectoryTypeProvider(this);
         BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), bundleTypeProvider);
         BundleAnnotationsLoader.getInstance().addLoader(WebService.class.getName(), bundleTypeProvider);
 
         loadModules();
 
-        this.env = new HashMap<String, Object>();
+        env = new HashMap<String, Object>();
         env.put("installDir", root);
         env.put("engine", "Nuxeo Web Engine");
         env.put("version", "1.0.0.b1"); //TODO this should be put in the MANIFEST
@@ -275,8 +275,9 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     }
 
     /**
-     * Load an module given its annotated class
-     * @param clazz
+     * Loads a module given its annotated class.
+     *
+     * @param className
      */
     protected synchronized ModuleDescriptor loadModuleDescriptor(String className) {
         try {
@@ -297,8 +298,8 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     }
 
     /**
-     * load an module given its configuration file
-     * @param ctx
+     * Loads an module given its configuration file.
+     *
      * @param cfgFile
      */
     protected synchronized ModuleDescriptor loadModuleDescriptor(File cfgFile) {
@@ -317,9 +318,6 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         return isDebug;
     }
 
-    /**
-     * @param isDebug the isDebug to set.
-     */
     public void setDebug(boolean isDebug) {
         this.isDebug = isDebug;
     }
@@ -340,9 +338,6 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         return messages;
     }
 
-    /**
-     * @return the scripting.
-     */
     public Scripting getScripting() {
         return scripting;
     }
@@ -381,7 +376,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     }
 
     /**
-     * Reload configuration
+     * Reloads configuration.
      */
     public synchronized void reload() {
         bundleTypeProvider.flushCache();
@@ -474,6 +469,5 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         }
         return null;
     }
-
 
 }

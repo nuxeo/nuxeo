@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webengine.tests.forms;
 
 import java.net.URL;
 
-import net.sf.json.JSONObject;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.forms.FormManager;
@@ -37,7 +36,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TestForms extends NXRuntimeTestCase {
+public abstract class TestForms extends NXRuntimeTestCase {
 
     protected FormManager formMgr = null;
 

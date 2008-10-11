@@ -204,7 +204,6 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         }
     }
 
-
     public ResourceType[] getTypes() {
         return types.values().toArray(new ResourceTypeImpl[types.size()]);
     }
@@ -212,7 +211,6 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     public ServiceType[] getServices() {
         return services.values().toArray(new ServiceTypeImpl[services.size()]);
     }
-
 
     public synchronized void registerType(TypeDescriptor td) {
         if (td.superType != null && !types.containsKey(td.superType)) {
@@ -251,7 +249,8 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
                     if (docObjectClass == null) {
                         docObjectClass = Class.forName("org.nuxeo.ecm.core.rest.DocumentObject");
                     }
-                    TypeDescriptor superWebType = new TypeDescriptor(new StaticClassProxy(docObjectClass), typeName, superSuperTypeName);
+                    TypeDescriptor superWebType = new TypeDescriptor(
+                            new StaticClassProxy(docObjectClass), typeName, superSuperTypeName);
                     registerType(superWebType);
                     return true;
                 } catch (ClassNotFoundException e) {
@@ -294,7 +293,6 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             }
         }
     }
-
 
     @Override
     protected void applySuperFragment(TypeDescriptor object,
@@ -364,7 +362,6 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         }
     }
 
-
     @Override
     protected void updateContribution(String key, TypeDescriptor object, TypeDescriptor oldValue) {
           if (object.isService()) {
@@ -375,7 +372,8 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void updateTypeContribution(String key, TypeDescriptor object) {
-     // when a type is updated (i.e. reinstalled) we must not replace the existing type since it may contains some contributed actions
+        // when a type is updated (i.e. reinstalled) we must not replace the existing type
+        // since it may contains some contributed actions
         // there are two methods to do this:
         // 1. update the existing type
         // 2. unresolve, reinstall then resolve the type contribution to force action reinstalling.
@@ -413,7 +411,6 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             throw new IllegalStateException("Updating a service type which is not registered.");
         }
     }
-
 
     @Override
     protected void uninstallContribution(String key, TypeDescriptor value) {

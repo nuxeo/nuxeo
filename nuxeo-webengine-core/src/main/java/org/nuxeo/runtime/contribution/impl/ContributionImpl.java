@@ -169,7 +169,7 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
             T result = registry.clone(mainFragments.get(mainFragments.size()-1));
             // first apply its super objects if any
             for (Contribution<K,T> key : dependencies) {
-                T superObject = (T)registry.getContribution(key.getId()).getValue();
+                T superObject = registry.getContribution(key.getId()).getValue();
                 registry.applySuperFragment(result, superObject);
             }
             // and now apply fragments
@@ -238,7 +238,8 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
 
     public void resolve() {
         if (isResolved || isPhantom()) {
-            throw new IllegalStateException("Cannot resolve. Invalid state. phantom: "+isPhantom()+"; resolved: "+isResolved);
+            throw new IllegalStateException(
+                    "Cannot resolve. Invalid state. phantom: "+isPhantom()+"; resolved: "+isResolved);
         }
         if (checkIsResolved()) { // resolve dependents
             isResolved = true;
@@ -254,9 +255,11 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
     @Override
     @SuppressWarnings("unchecked")
     public boolean equals(Object obj) {
-        if (obj == this) return true;
+        if (obj == this) {
+            return true;
+        }
         if (obj instanceof Contribution) {
-            return primaryKey.equals(((Contribution)obj).getId());
+            return primaryKey.equals(((Contribution) obj).getId());
         }
         return false;
     }
@@ -265,4 +268,5 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
     public String toString() {
         return primaryKey.toString()+" [ phantom: "+isPhantom()+"; resolved: "+isResolved+"]";
     }
+
 }

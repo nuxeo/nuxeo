@@ -55,7 +55,8 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         this.type = (T)type;
         this.path = ctx.getUriInfo().getMatchedURIs().get(0);
         if (!this.type.getGuard().check(this)) {
-            throw new WebSecurityException("Failed to initialize object: "+getPath()+". Object is not accessible in the current context", getPath());
+            throw new WebSecurityException(
+                    "Failed to initialize object: "+getPath()+". Object is not accessible in the current context", getPath());
         }
         return this;
     }
