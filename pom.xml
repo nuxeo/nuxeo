@@ -57,6 +57,11 @@
         <artifactId>nuxeo-webengine-wiki-jsf</artifactId>
         <version>${nuxeo.webengine.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-resteasy-adapter</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
 
       <!-- was missing in nuxeo-platform-parent:pom -->
       <dependency>

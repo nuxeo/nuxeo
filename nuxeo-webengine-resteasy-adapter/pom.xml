@@ -13,7 +13,6 @@
   <name>Nuxeo WebEngine RestEasy Adapter</name>
   <description>WebEngine's RestEasy Adapter.</description>
 
-
   <build>
     <plugins>
       <plugin>
@@ -37,10 +36,13 @@
   </build>
 
   <dependencies>
-
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-scripting</artifactId>
     </dependency>
 
     <dependency>
@@ -56,23 +58,15 @@
     </dependency>
 
     <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-scripting</artifactId>
-    </dependency>
-
-
-    <dependency>
       <groupId>org.resteasy</groupId>
       <artifactId>resteasy-jaxrs</artifactId>
       <version>1.0-beta-8</version>
     </dependency>
-
     <dependency>
       <groupId>org.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
       <version>1.0-beta-8</version>
     </dependency>
-
 
 <!-- needed for distribution 
       <dependency>
@@ -81,7 +75,6 @@
          <version>1.0</version>
       </dependency>
 -->
-
 
   </dependencies>
 
