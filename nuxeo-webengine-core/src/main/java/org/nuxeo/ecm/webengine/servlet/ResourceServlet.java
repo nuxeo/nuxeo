@@ -100,7 +100,12 @@ public class ResourceServlet extends HttpServlet {
     protected static void sendBinaryContent(File file, HttpServletResponse resp) throws IOException {
         OutputStream out = resp.getOutputStream();
         InputStream in = new FileInputStream(file);
-        FileUtils.copy(in, out);
+        try {
+            FileUtils.copy(in, out);
+        }
+        finally {
+            in.close();
+        }
         out.flush();
     }
 
@@ -108,7 +113,12 @@ public class ResourceServlet extends HttpServlet {
         //Writer out = resp.getWriter();
         OutputStream out = resp.getOutputStream();
         InputStream in = new FileInputStream(file);
-        FileUtils.copy(in, out);
+        try {
+            FileUtils.copy(in, out);
+        }
+        finally {
+            in.close();
+        }
         out.flush();
     }
 
