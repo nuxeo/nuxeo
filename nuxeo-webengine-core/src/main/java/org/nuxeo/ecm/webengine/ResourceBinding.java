@@ -50,8 +50,8 @@ public class ResourceBinding {
      */
     @XNode("@class")
     public Class<?> clazz;
-    
-    
+
+
     @Override
     public int hashCode() {
         return path.hashCode();
@@ -66,7 +66,7 @@ public class ResourceBinding {
         }
         return false;
     }
-    
+
     public static final ResourceBinding fromAnnotation(Class<?> clazz) {
         Path path = clazz.getAnnotation(Path.class);
         ResourceBinding binding = null;

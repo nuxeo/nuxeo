@@ -46,5 +46,5 @@ public class ViewService extends DefaultService {
     public Object dispatchView(@PathParam("view") String name) {
         return new Template(prev).name(name).resolve();
     }
-    
+
 }

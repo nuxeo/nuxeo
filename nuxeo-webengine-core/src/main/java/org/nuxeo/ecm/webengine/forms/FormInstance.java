@@ -50,5 +50,3 @@ public interface FormInstance {
 
     void fillDocument(DocumentModel doc) throws WebException;
 }
-
-

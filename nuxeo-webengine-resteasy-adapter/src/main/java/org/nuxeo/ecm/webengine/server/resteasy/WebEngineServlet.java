@@ -65,10 +65,10 @@ public class WebEngineServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    
+
     protected Dispatcher dispatcher;
     protected ResourceRegistryImpl registry;
-    
+
     protected void initializeBuiltinProviders(ResteasyProviderFactory providerFactory) {
         //RegisterBuiltin.register(providerFactory);
         try {
@@ -83,11 +83,11 @@ public class WebEngineServlet extends HttpServlet {
         providerFactory.addMessageBodyReader(new FormUrlEncodedProvider());
         providerFactory.addMessageBodyWriter(new FormUrlEncodedProvider());
         providerFactory.addMessageBodyWriter(new StreamingOutputProvider());
-        } catch (Throwable t) { 
+        } catch (Throwable t) {
             t.printStackTrace();
         }
     }
-    
+
     public Dispatcher getDispatcher()
     {
        return dispatcher;
@@ -96,7 +96,7 @@ public class WebEngineServlet extends HttpServlet {
 
     public void init(ServletConfig servletConfig) throws ServletException
     {
-        ResourceContainer rc = (ResourceContainer)Framework.getRuntime().getComponent(ResourceContainer.NAME);       
+        ResourceContainer rc = (ResourceContainer)Framework.getRuntime().getComponent(ResourceContainer.NAME);
         dispatcher = rc.getDispatcher();
         //bs: initialize webegnine
         initializeBuiltinProviders(dispatcher.getProviderFactory());
@@ -122,7 +122,7 @@ public class WebEngineServlet extends HttpServlet {
        HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
        //UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, servletMappingPrefix);
        //bs: using real servlet path
-       UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, request.getServletPath());       
+       UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, request.getServletPath());
 
        HttpRequest in;
        try
@@ -140,7 +140,7 @@ public class WebEngineServlet extends HttpServlet {
            //bs: initialize webengine context
            WebContext ctx = new WebEngineContext(in, request);
            WebEngine.setActiveContext(ctx);
-           
+
           ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
           ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
           ResteasyProviderFactory.pushContext(SecurityContext.class, new ServletSecurityContext(request));

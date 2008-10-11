@@ -102,10 +102,10 @@ public class AnnotationTest {
         System.out.println("Annotation "+annoClass+" on class "+ac.getAnnotatedClass()+" is present on methods:");
         if (ams.length == 0) {
             System.out.println("N/A");
-        } else {           
-            for (AnnotatedMethod am : ams) { 
-                System.out.println(am.getMethod() +" => "+ am.getAnnotation(annoClass));    
-            }           
+        } else {
+            for (AnnotatedMethod am : ams) {
+                System.out.println(am.getMethod() +" => "+ am.getAnnotation(annoClass));
+            }
         }
     }
 

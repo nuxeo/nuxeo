@@ -32,16 +32,16 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultService;
  * Accepts the following methods:
  * <ul>
  * <li> GET - get the last document version
- * <li> DELETE - delete a version 
+ * <li> DELETE - delete a version
  * <li> POST - create a new version
  * </ul>
- *  
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 @WebService(name="versions", targetTypes={"Document"}, targetFacets={"Versionable"})
 public class VersionService extends DefaultService {
-    
+
     @GET
     public Object getLastVersion() {
         return "versions"; // handled by interceptor
@@ -51,5 +51,5 @@ public class VersionService extends DefaultService {
     public Object doPost() {
         return null;
     }
-  
+
 }

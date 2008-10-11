@@ -34,15 +34,15 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
  *
  */
 public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescriptor>{
-    
+
     // type to view bindings
     protected Map<String, LinkDescriptor[]> links; // category to links mapping
-    
+
     public LinkRegistry() {
         links = new ConcurrentHashMap<String, LinkDescriptor[]>();
     }
 
-    
+
     public List<LinkDescriptor> getLinks(String category) {
         LinkDescriptor[] descriptors = links.get(category);
         if (descriptors != null && descriptors.length > 0) {
@@ -50,28 +50,28 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
         }
         return new ArrayList<LinkDescriptor>();
     }
-    
+
     public List<LinkDescriptor> getActiveLinks(Resource context, String category) {
         ArrayList<LinkDescriptor> result = new ArrayList<LinkDescriptor>();
         LinkDescriptor[] descriptors = links.get(category);
-        if (descriptors != null && descriptors.length > 0) {            
+        if (descriptors != null && descriptors.length > 0) {
             for (int i=0; i<descriptors.length; i++) {
                 if (descriptors[i].isEnabled(context)) {
                     result.add(descriptors[i]);
                 }
-            }        
+            }
         }
         return result;
     }
-            
+
     public synchronized void registerLink(LinkDescriptor td) {
         addFragment(td.getId(), td);
     }
-    
+
     public void unregisterLink(LinkDescriptor td) {
         removeFragment(td.getId(), td);
     }
-    
+
     @Override
     protected LinkDescriptor clone(LinkDescriptor object) {
         try {
@@ -80,36 +80,36 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
             throw new Error("Must never happens");
         }
     }
-    
+
     @Override
     protected void applyFragment(LinkDescriptor object, LinkDescriptor fragment) {
-        // a view fragment may be used to replace the view implementation class and optionally the guard 
-        // and/or to add new categories 
-        object.applyFragment(fragment);        
+        // a view fragment may be used to replace the view implementation class and optionally the guard
+        // and/or to add new categories
+        object.applyFragment(fragment);
     }
-    
+
 
     @Override
     protected void applySuperFragment(LinkDescriptor object,
             LinkDescriptor superFragment) {
         // links are not using inheritance
     }
-    
+
     @Override
     protected void installContribution(String key, LinkDescriptor object) {
         List<String> cats = object.getCategories();
         for (String cat : cats) {
-            installLink(cat, object);    
+            installLink(cat, object);
         }
     }
 
-    
+
     @Override
-    protected void updateContribution(String key, LinkDescriptor object, LinkDescriptor oldValue) {        
+    protected void updateContribution(String key, LinkDescriptor object, LinkDescriptor oldValue) {
         removeLink(oldValue);
         installContribution(key, object);
     }
-        
+
     @Override
     protected void uninstallContribution(String key, LinkDescriptor value) {
         removeLink(value);
@@ -119,7 +119,7 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
     protected boolean isMainFragment(LinkDescriptor object) {
         return !object.isFragment();
     }
-    
+
     protected void installLink(String category, LinkDescriptor link) {
         LinkDescriptor[] descriptors = links.get(category);
         if (descriptors == null) {
@@ -132,14 +132,14 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
         }
         links.put(category, descriptors);
     }
-    
+
     protected void removeLink(LinkDescriptor link) {
         List<String> cats = link.getCategories();
         for (String cat : cats) {
-            removeLink(cat, link);    
+            removeLink(cat, link);
         }
     }
-    
+
     protected void removeLink(String category, LinkDescriptor link) {
         LinkDescriptor[] descriptors = links.get(category);
         if (descriptors == null) {
@@ -157,13 +157,13 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
                     }
                     if (i < descriptors.length-1) {
                         System.arraycopy(descriptors, i+1, tmp, i, descriptors.length-i-1);
-                    }        
+                    }
                     links.put(category, tmp);
                     return;
                 }
             }
         }
     }
-      
-    
+
+
 }

@@ -29,20 +29,20 @@ import java.util.Map;
 
 /**
  * Used to collect method annotations from inheritance tree.
- *  
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 class MethodAnnotations {
 
     protected List<Entry> entries = new ArrayList<Entry>();
-    
+
     public void addMethods(Class<?> clazz) {
         for (Method m : clazz.getDeclaredMethods()) {
             addMethod(m);
         }
     }
-    
+
     public void addMethod(Method m) {
         int mod = m.getModifiers();
         if (!Modifier.isPublic(mod) && !Modifier.isProtected(mod)) {
@@ -54,7 +54,7 @@ class MethodAnnotations {
         }
         for (int i=0, len=entries.size();i<len; i++) {
             Entry entry = entries.get(i);
-            if (entry.isSameAs(m)) {        
+            if (entry.isSameAs(m)) {
                 for (int k=0;k<annos.length;k++) {
                     Class<?> annoType = annos[k].annotationType();
                     Annotation a = entry.annos.get(annoType);
@@ -73,12 +73,12 @@ class MethodAnnotations {
         entries.add(new Entry(m, annos));
         return;
     }
-    
+
     public void addSuperMethod(AnnotatedMethod am) {
         for (int i=0, len=entries.size();i<len; i++) {
             Entry entry = entries.get(i);
             if (entry.isSameAs(am.method)) {
-                Annotation[] annos = am.getAnnotations();        
+                Annotation[] annos = am.getAnnotations();
                 for (int k=0;k<annos.length;k++) {
                     Class<?> annoType = annos[k].annotationType();
                     Annotation a = entry.annos.get(annoType);
@@ -122,9 +122,7 @@ class MethodAnnotations {
                     }
                 }
             }
-            return false;            
+            return false;
         }
     }
 }
-
-

@@ -29,11 +29,11 @@ import java.util.Map;
  *
  */
 public class AnnotatedMethod {
-    
+
     protected AnnotatedClass<?> aclass;
     protected Method method;
     protected Map<Class<? extends Annotation>, Annotation> annotations;
-    
+
     AnnotatedMethod(AnnotatedClass<?> aclass, Method method) {
         this (aclass, method, new HashMap<Class<? extends Annotation>, Annotation>());
     }
@@ -54,18 +54,18 @@ public class AnnotatedMethod {
     public Method getMethod() {
         return method;
     }
-    
+
     /**
      * @return the annotations.
      */
     public Annotation[] getAnnotations() {
         return annotations.values().toArray(new Annotation[annotations.size()]);
     }
-    
+
     public Annotation[] getDeclaredAnnotations() {
         return method.getDeclaredAnnotations();
     }
-    
+
     @SuppressWarnings("unchecked")
     public <A extends  Annotation> A getAnnotation(Class<A> annotationClass) {
         return (A)annotations.get(annotationClass);
@@ -78,11 +78,11 @@ public class AnnotatedMethod {
     public boolean isAnnotationPresent(Class<? extends  Annotation> annotationClass) {
         return annotations.containsKey(annotationClass);
     }
-    
+
     public boolean isDeclaringAnnotation(Class<? extends  Annotation> annotationClass) {
         return method.isAnnotationPresent(annotationClass);
     }
 
-    
-    
+
+
 }

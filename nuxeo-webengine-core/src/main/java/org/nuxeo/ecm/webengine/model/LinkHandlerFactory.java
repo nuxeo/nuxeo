@@ -25,6 +25,6 @@ package org.nuxeo.ecm.webengine.model;
  */
 public interface LinkHandlerFactory {
 
-    public LinkHandler getHandler(LinkDescriptor link, Resource resource);
-        
+    LinkHandler getHandler(LinkDescriptor link, Resource resource);
+
 }

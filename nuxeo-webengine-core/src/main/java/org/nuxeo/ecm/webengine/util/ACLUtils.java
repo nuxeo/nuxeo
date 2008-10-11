@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
  *
  */
 public class ACLUtils {
-    
+
     private ACLUtils() {
     }
 

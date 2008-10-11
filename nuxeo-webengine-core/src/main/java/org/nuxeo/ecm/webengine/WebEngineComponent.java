@@ -80,7 +80,7 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
         context.getRuntimeContext().getBundle().getBundleContext().addBundleListener(BundleAnnotationsLoader.getInstance());
         BundleAnnotationsLoader.getInstance().loadAnnotations(context.getRuntimeContext().getBundle());
 
-        
+
         String webDir = Framework.getProperty("org.nuxeo.ecm.web.root");
         File root = null;
         if (webDir != null) {
@@ -105,7 +105,7 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
 
         ResourceRegistry registry = Framework.getLocalService(ResourceRegistry.class);
         if (registry == null) {
-            throw new Error("Could not find a server implementation"); 
+            throw new Error("Could not find a server implementation");
         }
         engine = new WebEngine(registry, root);
         deployer = new ConfigurationDeployer(notifier);
@@ -118,7 +118,7 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
     public void deactivate(ComponentContext context) throws Exception {
         //TODO: move this in runtime
         context.getRuntimeContext().getBundle().getBundleContext().removeBundleListener(BundleAnnotationsLoader.getInstance());
-        
+
         notifier.stop();
         deployer.removeConfigurationChangedListener(this);
         deployer = null;

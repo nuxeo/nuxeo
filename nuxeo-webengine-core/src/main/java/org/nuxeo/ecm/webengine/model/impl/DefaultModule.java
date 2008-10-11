@@ -51,8 +51,8 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 public class DefaultModule extends AbstractResource<ModuleType> implements ModuleResource {
 
     protected Module module;
-  
-    public DefaultModule() {        
+
+    public DefaultModule() {
         ctx = WebEngine.getActiveContext();
         module = ctx.getEngine().getModule(getClass().getAnnotation(WebModule.class).name());
         type = module.getModuleType();
@@ -61,24 +61,24 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
         ctx.push(this);
         if (!this.type.getGuard().check(this)) {
             throw new WebSecurityException("Failed to initialize object: "+getPath()+". Object is not accessible in the current context", getPath());
-        }        
+        }
     }
-    
+
     @Override
     public Resource initialize(WebContext ctx, ResourceType type,
             Object... args) throws WebException {
         return this; // initialization is done in constructor
     }
-    
+
     @Override
     public Module getModule() {
         return module;
     }
-    
+
     public boolean isService() {
         return false;
     }
-    
+
     public String getName() {
         return module.getName();
     }
@@ -90,7 +90,7 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
         pw.close();
         return Response.status(500).entity(sw.toString()).build();
     }
-        
+
 
     /**
      * This method try to guess the actual path under this resource was called.
@@ -111,7 +111,7 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
         }
         return path;
     }
-    
+
     /**
      * The correct method to guess the path that is not working for now because of a bug in RestEasy
      * @return
@@ -119,8 +119,8 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
     protected String _guessPath() {
         return ctx.getUriInfo().getMatchedURIs().get(0);
     }
-    
-    
+
+
     public ScriptFile getFile(String path) throws WebException {
         ScriptFile file = module.getFile(path);
         if (file == null) {
@@ -136,33 +136,33 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
     public ResourceType getType(String typeName) throws TypeNotFoundException {
         return module.getType(typeName);
     }
-    
-    
+
+
     public ResourceType[] getTypes() {
         return module.getTypes();
     }
-    
+
     public ServiceType[] getServices() {
-      return module.getServices();  
+      return module.getServices();
     }
-    
+
     public ServiceType getService(Resource ctx, String name) throws ServiceNotFoundException {
-        return module.getService(ctx, name);  
+        return module.getService(ctx, name);
     }
-    
+
     public List<ServiceType> getServices(Resource ctx) {
         return module.getServices(ctx);
     }
-    
+
     public List<String> getServiceNames(Resource ctx) {
-        return module.getServiceNames(ctx);        
+        return module.getServiceNames(ctx);
     }
 
     public List<ServiceType> getEnabledServices(Resource ctx) {
         return module.getEnabledServices(ctx);
     }
-    
+
     public List<String> getEnabledServiceNames(Resource ctx) {
-        return module.getEnabledServiceNames(ctx);        
+        return module.getEnabledServiceNames(ctx);
     }
 }

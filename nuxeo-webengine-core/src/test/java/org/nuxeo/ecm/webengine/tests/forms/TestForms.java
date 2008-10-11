@@ -56,7 +56,7 @@ public class TestForms extends NXRuntimeTestCase {
         //formMgr = engine.getFormManager();
     }
 
-// TODO migrate tests    
+// TODO migrate tests
 //    public void testDeploy() throws Exception {
 //        Form form = formMgr.getForm("MyForm");
 //        assertNotNull(form);

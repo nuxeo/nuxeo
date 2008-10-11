@@ -33,11 +33,11 @@ import org.nuxeo.ecm.webengine.WebException;
 public class GroovyClassProxy implements ClassProxy {
 
     private static final Log log = LogFactory.getLog(GroovyClassLoader.class);
-    
+
     protected GroovyClassLoader loader;
     protected String className;
     protected long timestamp = 0;
-    
+
 
     public GroovyClassProxy(GroovyClassLoader loader, String className) {
         this.loader = loader;
@@ -50,11 +50,11 @@ public class GroovyClassProxy implements ClassProxy {
     public String getClassName() {
         return className;
     }
-    
+
      public Class<?> get() {
          try {
              Class<?> clazz = loader.loadClass(className, true, false);
-             long tm = Verifier.getTimestamp(clazz); 
+             long tm = Verifier.getTimestamp(clazz);
              if (timestamp > 0 && timestamp < tm) {
                  if (log.isDebugEnabled()) {
                      log.debug("CLASS CHANGED: "+clazz.getName());
@@ -66,5 +66,5 @@ public class GroovyClassProxy implements ClassProxy {
              throw WebException.wrap(e);
          }
     }
-     
+
 }

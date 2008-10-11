@@ -41,29 +41,29 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
  *
  */
 public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescriptor>{
-    
+
     protected Map<String, AbstractResourceType> types;
     protected Map<String, ServiceTypeImpl> services;
     protected Map<String, ServiceTypeImpl[]> serviceBindings;
     protected ModuleImpl module;
     protected Class<?> docObjectClass = null;
-    
+
     public TypeRegistry(ModuleImpl module) {
         types = new ConcurrentHashMap<String, AbstractResourceType>();
         services = new ConcurrentHashMap<String, ServiceTypeImpl>();
         serviceBindings = new ConcurrentHashMap<String, ServiceTypeImpl[]>();
         this.module = module;
         // register root type
-        TypeDescriptor root = new TypeDescriptor(new StaticClassProxy(Resource.class), ResourceType.ROOT_TYPE_NAME, null); 
+        TypeDescriptor root = new TypeDescriptor(new StaticClassProxy(Resource.class), ResourceType.ROOT_TYPE_NAME, null);
         registerType(root);
         // register module type and its parents if any
-        registerModuleType(module);        
+        registerModuleType(module);
     }
-    
+
     protected void registerModuleType(ModuleImpl m) {
         TypeDescriptor td = new ModuleTypeDescriptor(
-                new StaticClassProxy(m.descriptor.binding.clazz), 
-                m.descriptor.name, 
+                new StaticClassProxy(m.descriptor.binding.clazz),
+                m.descriptor.name,
                 ResourceType.ROOT_TYPE_NAME);
         ModuleImpl sm = m.getSuperModule();
         if (sm != null) {
@@ -72,15 +72,15 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         }
         registerType(td);
     }
-    
+
     public ModuleType getModuleType() {
         return (ModuleType)types.get(module.descriptor.name);
     }
-    
+
     public ResourceType getRootType() {
         return types.get(ResourceType.ROOT_TYPE_NAME);
     }
-    
+
     /**
      * @return the engine.
      */
@@ -89,7 +89,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     public ResourceType getType(String name) {
-        ResourceType type = types.get(name); 
+        ResourceType type = types.get(name);
         if (type == null) { // check for a non registered document type
             if (registerDocumentTypeIfNeeded(name)) {
                 type = types.get(name);
@@ -97,10 +97,10 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         }
         return type;
     }
-    
+
     public ServiceType getService(String name) {
         return services.get(name);
-    }    
+    }
 
 
     public ServiceType getService(Resource target, String name) {
@@ -110,7 +110,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         }
         return null;
     }
-    
+
     public List<ServiceType> getServices(Resource resource) {
         ArrayList<ServiceType> result = new ArrayList<ServiceType>();
         collectServicesFor(resource, resource.getType(), result);
@@ -122,7 +122,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         collectServiceNamesFor(resource, resource.getType(), result);
         return result;
     }
-    
+
     public List<ServiceType> getEnabledServices(Resource resource) {
         ArrayList<ServiceType> result = new ArrayList<ServiceType>();
         collectEnabledServicesFor(resource, resource.getType(), result);
@@ -134,8 +134,8 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         collectEnabledServiceNamesFor(resource, resource.getType(), result);
         return result;
     }
-        
-    
+
+
     protected void collectServicesFor(Resource ctx, ResourceType type, List<ServiceType> result) {
         ServiceType[] services = serviceBindings.get(type.getName());
         if (services != null && services.length > 0) {
@@ -204,27 +204,27 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         }
     }
 
-    
+
     public ResourceType[] getTypes() {
         return types.values().toArray(new ResourceTypeImpl[types.size()]);
     }
-    
+
     public ServiceType[] getServices() {
         return services.values().toArray(new ServiceTypeImpl[services.size()]);
     }
-    
-    
+
+
     public synchronized void registerType(TypeDescriptor td) {
         if (td.superType != null && !types.containsKey(td.superType)) {
             registerDocumentTypeIfNeeded(td.superType);
         }
         addFragment(td.name, td, td.superType);
     }
-    
+
     public synchronized void registerService(ServiceDescriptor td) {
         addFragment(td.name, td, td.superType);
     }
-    
+
     public void unregisterType(TypeDescriptor td) {
         removeFragment(td.name, td);
     }
@@ -232,11 +232,11 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     public void unregisterService(TypeDescriptor td) {
         removeFragment(td.name, td);
     }
-        
+
     protected boolean registerDocumentTypeIfNeeded(String typeName) {
-        // we have a special case for document types. 
+        // we have a special case for document types.
         // If a web document type is not resolved then use a default web document type
-        // This avoid defining web types for every document type in the system. 
+        // This avoid defining web types for every document type in the system.
         // The web document type use by default the same type hierarchy as document types
         SchemaManager mgr = Framework.getLocalService(SchemaManager.class);
         if (mgr != null) {
@@ -262,16 +262,16 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         }
         return false;
     }
-    
+
     @Override
     protected TypeDescriptor clone(TypeDescriptor object) {
         return object.clone();
     }
-    
+
     @Override
     protected void applyFragment(TypeDescriptor object, TypeDescriptor fragment) {
         // a type fragment may be used to replace the type implementation class.
-        // Super type cannot be replaced 
+        // Super type cannot be replaced
         if (fragment.clazz != null) {
             object.clazz = fragment.clazz;
         }
@@ -281,27 +281,27 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             if (sf.facets != null && sf.facets.length > 0) {
                 ArrayList<String> list = new ArrayList<String>();
                 if (so.facets != null && so.facets.length > 0) {
-                    list.addAll(Arrays.asList(so.facets));    
+                    list.addAll(Arrays.asList(so.facets));
                 }
                 list.addAll(Arrays.asList(sf.facets));
             }
             if (sf.targetTypes != null && sf.targetTypes.length > 0) {
                 ArrayList<String> list = new ArrayList<String>();
                 if (so.targetTypes != null && so.targetTypes.length > 0) {
-                    list.addAll(Arrays.asList(so.targetTypes));    
+                    list.addAll(Arrays.asList(so.targetTypes));
                 }
                 list.addAll(Arrays.asList(sf.targetTypes));
             }
         }
     }
-    
+
 
     @Override
     protected void applySuperFragment(TypeDescriptor object,
             TypeDescriptor superFragment) {
         // do not inherit from parents
     }
-    
+
     @Override
     protected void installContribution(String key, TypeDescriptor object) {
         if (object.isService()) {
@@ -310,17 +310,17 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             installTypeContribution(key, object);
         }
     }
-    
+
     protected void installTypeContribution(String key, TypeDescriptor object) {
         AbstractResourceType type = new ResourceTypeImpl(module, null, object.name, object.clazz);
         if (object.isModule()) {
-            type = new ModuleTypeImpl(module, null, object.name, object.clazz);    
+            type = new ModuleTypeImpl(module, null, object.name, object.clazz);
         } else {
             type = new ResourceTypeImpl(module, null, object.name, object.clazz);
         }
         if (object.superType != null) {
             type.superType = types.get(object.superType);
-            assert type.superType != null; // must never be null since the object is resolved 
+            assert type.superType != null; // must never be null since the object is resolved
         }
         // import document facets if this type wraps a document type
         SchemaManager mgr = Framework.getLocalService(SchemaManager.class);
@@ -334,22 +334,22 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             }
         }
         // register the type
-        types.put(object.name, type);  
+        types.put(object.name, type);
     }
 
     protected void installServiceContribution(String key, ServiceDescriptor object) {
         ServiceTypeImpl type = new ServiceTypeImpl(module, null, object.name, object.clazz);
         if (object.superType != null) {
             type.superType = types.get(object.superType);
-            assert type.superType != null; // must never be null since the object is resolved 
+            assert type.superType != null; // must never be null since the object is resolved
         }
-        services.put(object.name, type);  
+        services.put(object.name, type);
         // install bindings
         if (object.targetTypes != null && object.targetTypes.length > 0) {
             installServiceBindings(type, object.targetTypes);
         }
     }
-    
+
     protected void installServiceBindings(ServiceTypeImpl service, String ... targetTypes) {
         for (String t : targetTypes) {
             ServiceTypeImpl[] bindings = serviceBindings.get(t);
@@ -363,8 +363,8 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             serviceBindings.put(t, bindings);
         }
     }
-    
-    
+
+
     @Override
     protected void updateContribution(String key, TypeDescriptor object, TypeDescriptor oldValue) {
           if (object.isService()) {
@@ -373,11 +373,11 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
               updateTypeContribution(key, object);
           }
     }
-    
+
     protected void updateTypeContribution(String key, TypeDescriptor object) {
      // when a type is updated (i.e. reinstalled) we must not replace the existing type since it may contains some contributed actions
-        // there are two methods to do this: 
-        // 1. update the existing type 
+        // there are two methods to do this:
+        // 1. update the existing type
         // 2. unresolve, reinstall then resolve the type contribution to force action reinstalling.
         // we are using 1.
         AbstractResourceType t = types.get(key);
@@ -408,13 +408,13 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
                         installServiceBindings(service, service.targetTypes);
                     }
                 }
-            }            
+            }
         } else { // install the type - this should never happen since it is an update!
             throw new IllegalStateException("Updating a service type which is not registered.");
-        }        
+        }
     }
 
-    
+
     @Override
     protected void uninstallContribution(String key, TypeDescriptor value) {
         //TODO use "@" prefix for services in fragment registry?
@@ -422,11 +422,11 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         if (t == null) {
             ServiceTypeImpl s = services.remove(key);
             if (s != null) {
-                removeServiceBindings(key, (ServiceTypeImpl)t);    
+                removeServiceBindings(key, (ServiceTypeImpl)t);
             }
         }
     }
-    
+
     protected void removeServiceBindings(String key, ServiceTypeImpl service) {
         key = key.substring(1);
         if (service.targetTypes != null && service.targetTypes.length > 0) {
@@ -449,11 +449,11 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
                 }
             }
         }
-    }    
-      
+    }
+
     @Override
     protected boolean isMainFragment(TypeDescriptor object) {
         return object.isMainFragment();
     }
-            
+
 }

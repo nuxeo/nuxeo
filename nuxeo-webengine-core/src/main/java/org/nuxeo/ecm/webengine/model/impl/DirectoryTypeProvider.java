@@ -43,32 +43,32 @@ import org.nuxeo.ecm.webengine.model.WebService;
 public class DirectoryTypeProvider extends TypeConfigurationProvider {
 
     public static final String CRLF = System.getProperty("line.separator");
-    
+
     protected GroovyClassLoader loader;
     protected File root;
     protected boolean isLoaded = false;
     protected WebEngine engine;
-    
+
     public DirectoryTypeProvider(WebEngine engine) {
         this.engine = engine;
         this.loader = engine.getScripting().getGroovyScripting().getGroovyClassLoader();
         this.root = engine.getRootDirectory();
     }
-    
+
     @Override
     public synchronized void flushCache() {
         File cache = new File(root, "resources.cache");
         cache.delete();
         isLoaded = false;
     }
-    
+
     public synchronized void load() {
         if (isLoaded) return;
         try {
             File cache = new File(root, "resources.cache");
             if (cache.isFile()) {
                 for (String line : FileUtils.readLines(cache)) {
-                    loadClassFile(line);    
+                    loadClassFile(line);
                 }
             } else {
                 Writer w = new BufferedWriter(new FileWriter(cache));
@@ -84,15 +84,15 @@ public class DirectoryTypeProvider extends TypeConfigurationProvider {
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
-    }    
-    
+    }
+
 
     protected void scan(File root, String path, Writer cache) {
         for (File file : root.listFiles()) {
             String name = file.getName();
             if (file.isDirectory() && !name.equals("skin") && !name.equals("WEB-INF") && !name.equals("resources")) {
-                scan(file, path == null ? name : 
-                    new StringBuilder().append(path).append('.').append(name).toString(), 
+                scan(file, path == null ? name :
+                    new StringBuilder().append(path).append('.').append(name).toString(),
                     cache);
             } else if (name.endsWith(".groovy") && Character.isUpperCase(name.charAt(0))) {
                 String className = null;
@@ -111,7 +111,7 @@ public class DirectoryTypeProvider extends TypeConfigurationProvider {
             }
         }
     }
-    
+
     protected void loadClassFileAndRecord(Writer cache, String className) throws ClassNotFoundException, IOException  {
         if (loadClassFile(className)) {
             cache.write(className);
@@ -123,14 +123,14 @@ public class DirectoryTypeProvider extends TypeConfigurationProvider {
         ClassProxy clazz = null;
         if (engine.isDebug()) {
             clazz = new GroovyClassProxy(loader, className);
-        } else {            
+        } else {
             clazz = new StaticClassProxy(loader.loadClass(className));
         }
         WebObject type = clazz.get().getAnnotation(WebObject.class);
         if (type != null) {
             registerType(TypeDescriptor.fromAnnotation(clazz, type));
             return true;
-        } else {            
+        } else {
             WebService ws = clazz.get().getAnnotation(WebService.class);
             if (ws != null) {
                 registerType(ServiceDescriptor.fromAnnotation(clazz, ws));

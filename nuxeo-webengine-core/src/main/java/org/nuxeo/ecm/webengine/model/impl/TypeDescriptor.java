@@ -40,22 +40,22 @@ public class TypeDescriptor implements Cloneable {
         this.clazz = new StaticClassProxy(clazz);
     }
     public ClassProxy clazz;
-    
+
     @XNode("@name")
     public String name;
-    
+
     @XNode("@fragment")
     public String fragment;
-    
+
     @XNode("@superType")
     public String superType = ResourceType.ROOT_TYPE_NAME;
-    
+
     /**
-     * 
+     *
      */
     public TypeDescriptor() {
     }
-    
+
     public TypeDescriptor(ClassProxy clazz, String name, String superType) {
         this.clazz = clazz;
         this.name = name;
@@ -72,7 +72,7 @@ public class TypeDescriptor implements Cloneable {
         }
         return false;
     }
-    
+
     @Override
     public TypeDescriptor clone() {
         try {
@@ -85,27 +85,27 @@ public class TypeDescriptor implements Cloneable {
     public String getId() {
         return name;
     }
-    
+
     public String getFragment() {
         return fragment;
     }
-    
+
     public ServiceTypeImpl asActionDescriptor() {
         return null;
     }
-    
+
     public TypeDescriptor asTypeDescriptor() {
         return this;
     }
-    
+
     public boolean isMainFragment() {
         return fragment == null;
     }
-    
+
     public boolean isService() {
         return false;
     }
-    
+
     public boolean isModule() {
         return false;
     }

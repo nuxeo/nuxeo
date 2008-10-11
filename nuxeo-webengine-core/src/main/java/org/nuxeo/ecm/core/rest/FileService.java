@@ -39,15 +39,15 @@ import org.nuxeo.ecm.webengine.model.WebService;
 import org.nuxeo.ecm.webengine.model.impl.DefaultService;
 
 /**
- * File Service - manage attachments on a document 
- 
+ * File Service - manage attachments on a document
+
  * <p>
  * Accepts the following methods:
  * <ul>
- * <li> GET - get the attached file 
+ * <li> GET - get the attached file
  * <li> POST - create an attachment
  * </ul>
- *  
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -56,7 +56,7 @@ public class FileService extends DefaultService {
 
     @GET
     public Object doGet() {
-        DocumentModel doc = getTarget().getAdapter(DocumentModel.class);        
+        DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         FormData form = ctx.getForm();
         String xpath = form.getString(FormData.PROPERTY);
         if (xpath == null) {
@@ -69,7 +69,7 @@ public class FileService extends DefaultService {
         }
         try {
             Property p = doc.getProperty(xpath);
-            Blob blob = (Blob)p.getValue();            
+            Blob blob = (Blob)p.getValue();
             if (blob == null) {
                 throw new NoSuchResourceException("No attached file at "+xpath);
             }
@@ -140,5 +140,5 @@ public class FileService extends DefaultService {
         }
     }
 
-    
+
 }

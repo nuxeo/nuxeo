@@ -50,4 +50,3 @@ public class ComponentMap<T extends Component> extends HashMap<String, T> {
         }
     }
 }
-

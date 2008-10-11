@@ -25,6 +25,6 @@ package org.nuxeo.ecm.webengine.model;
  */
 public interface LinkHandler {
 
-    public String getCode(LinkDescriptor link, Resource resource);        
-    
+    String getCode(LinkDescriptor link, Resource resource);
+
 }

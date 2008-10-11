@@ -64,4 +64,3 @@ public class TemplateWriter implements MessageBodyWriter<Template> {
     }
 
 }
-

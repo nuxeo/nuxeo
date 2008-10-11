@@ -45,7 +45,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
 
     @XNode("@path")
     protected String path;
-    
+
     @XNode("@fragment")
     protected String fragment = null;
 
@@ -66,7 +66,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     protected org.nuxeo.ecm.webengine.security.Guard guard = org.nuxeo.ecm.webengine.security.Guard.DEFAULT;
 
     /**
-     * 
+     *
      */
     public LinkDescriptor() {
     }
@@ -84,7 +84,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     @XNode("guard")
     public void setGuard(String expr) throws ParseException {
         guard = PermissionService.parse(expr);
-    }    
+    }
 
 
     /**
@@ -100,7 +100,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     public String getPath() {
         return path;
     }
-    
+
     /**
      * @param handler the handler to set.
      */
@@ -111,8 +111,8 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     public String getCode(Resource resource) {
         try {
             if (this.handler == null) {
-                if (handlerClass != null) {            
-                    Object obj = resource.getModule().loadClass(handlerClass).newInstance();            
+                if (handlerClass != null) {
+                    Object obj = resource.getModule().loadClass(handlerClass).newInstance();
                     if (obj instanceof LinkHandlerFactory) {
                         handler = ((LinkHandlerFactory)obj).getHandler(this, resource);
                     } else {
@@ -182,18 +182,18 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
         }
         return true;
     }
-    
+
     public boolean isEnabled(Resource context) {
-        if (acceptResource(context)) {        
+        if (acceptResource(context)) {
             return guard == null || guard.check(context);
-        } 
+        }
         return false;
     }
 
     public String getCode(LinkDescriptor link, Resource resource) {
         return new StringBuilder().append(resource.getPath()).append(path).toString();
     }
-    
+
     public boolean isFragment() {
         return fragment != null;
     }
@@ -205,7 +205,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
                 categories = new ArrayList<String>(fragment.categories);
             } else {
                 categories.addAll(fragment.categories);
-            }            
+            }
         }
         if (fragment.types != null && fragment.types.length > 0) {
             if (types == null) {
@@ -229,7 +229,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
         }
         if (fragment.handlerClass != null) {
             handler = null;
-            handlerClass = fragment.handlerClass;            
+            handlerClass = fragment.handlerClass;
         }
         if (fragment.guard != null) {
             guard = fragment.guard;
@@ -239,7 +239,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
         }
         this.fragment = fragment.fragment;
     }
-    
+
     @Override
     public LinkDescriptor clone() throws CloneNotSupportedException {
         return (LinkDescriptor)super.clone();
@@ -251,7 +251,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
         if (obj == null) return false;
         if (obj instanceof LinkDescriptor) {
             LinkDescriptor ld = (LinkDescriptor)obj;
-            return id.equals(ld.id) && Utils.streq(fragment, ld.fragment); 
+            return id.equals(ld.id) && Utils.streq(fragment, ld.fragment);
         }
         return false;
     }

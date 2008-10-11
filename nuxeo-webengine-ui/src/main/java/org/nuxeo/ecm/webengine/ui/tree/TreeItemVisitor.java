@@ -30,6 +30,6 @@ public interface TreeItemVisitor {
      * @param item the item to visit
      *
      */
-    public Object visit(TreeItem item);
+    Object visit(TreeItem item);
 
 }

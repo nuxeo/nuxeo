@@ -39,7 +39,7 @@ public class ModuleTypeImpl extends AbstractResourceType implements ModuleType {
     public ModuleTypeImpl(ModuleImpl module, AbstractResourceType superType, String name, ClassProxy clazz) {
         super(module, superType, ROOT_TYPE_NAME, clazz);
     }
-    
+
     @Override
     protected void loadAnnotations(AnnotationManager annoMgr) {
 //        WebObject wo = clazz.get().getAnnotation(WebObject.class);

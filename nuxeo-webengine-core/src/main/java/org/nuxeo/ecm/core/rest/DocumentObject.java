@@ -53,11 +53,11 @@ public class DocumentObject extends DefaultObject {
     @Override
     public <A> A getAdapter(Class<A> adapter) {
         if (adapter == DocumentModel.class) {
-            return adapter.cast(doc);   
+            return adapter.cast(doc);
         }
         return super.getAdapter(adapter);
     }
-    
+
     @Override
     public Resource initialize(WebContext ctx, ResourceType type,
             Object... args) throws WebException {
@@ -65,12 +65,12 @@ public class DocumentObject extends DefaultObject {
         doc = (DocumentModel)args[0];
         return super.initialize(ctx, type, args);
     }
-    
+
     @GET
     public Object doGet() {
         return newTemplate("index.ftl");
     }
-    
+
     @DELETE
     public Object doDelete() {
         try {
@@ -85,30 +85,30 @@ public class DocumentObject extends DefaultObject {
         }
         return redirect(ctx.getBasePath());
     }
-    
+
     @POST
-    public Response doPost() {        
+    public Response doPost() {
         String name = ctx.getForm().getString("name");
         DocumentModel newDoc = DocumentHelper.createDocument(ctx, doc, name);
         return redirect(getPath()+'/'+newDoc.getName());
     }
 
     @PUT
-    public Response doPut() {        
+    public Response doPut() {
         doc = DocumentHelper.updateDocument(ctx, doc);
         return redirect(getPath());
     }
-    
+
     //TODO implement HEAD
     public Object doHead() {
         return null; //TODO
     }
-    
+
     @Path(value="{path}")
     public Resource traverse(@PathParam("path") String path) throws WebException {
         return newObject(path);
     }
-    
+
     public DocumentObject newObject(String path) {
         try {
             PathRef pathRef = new PathRef(doc.getPath().append(path).toString());
@@ -147,5 +147,5 @@ public class DocumentObject extends DefaultObject {
     public String getTitle() {
         return doc.getTitle();
     }
-    
+
 }

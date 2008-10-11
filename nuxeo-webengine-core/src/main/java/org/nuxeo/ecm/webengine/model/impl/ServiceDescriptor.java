@@ -36,30 +36,30 @@ public class ServiceDescriptor extends TypeDescriptor {
 
     @XNode("@class")
     void setClass(Class<?> clazz) { this.clazz = new StaticClassProxy(clazz); }
-    
+
     @XNode("@name")
     void setName(String name) { this.name = name; }
-    
+
     @XNode("@fragment")
     void setFragment(String fragment) { this.fragment = fragment; }
-    
+
     @XNode("@superType")
     void setSuperType(String superType) { this.superType = superType; }
-    
+
     @XNodeList(value="targetType", type=String[].class, componentType=String.class, nullByDefault=true)
     public String[] targetTypes;
-    
+
     @XNodeList(value="facet", type=String[].class, componentType=String.class, nullByDefault=true)
     public String[] facets;
-    
-    
+
+
     /**
-     * 
+     *
      */
     public ServiceDescriptor() {
         super ();
     }
-    
+
     public ServiceDescriptor(ClassProxy clazz, String name, String superType) {
         super (clazz, name, superType);
     }
@@ -71,7 +71,7 @@ public class ServiceDescriptor extends TypeDescriptor {
         }
         if (types != null && types.length > 0) {
             this.targetTypes = types;
-        }        
+        }
     }
 
     public boolean isService() {
@@ -88,19 +88,19 @@ public class ServiceDescriptor extends TypeDescriptor {
         }
         return false;
     }
-    
+
     public String getId() {
         return name;
     }
-    
+
     public String getFragment() {
         return fragment;
     }
-    
+
     public boolean isMainFragment() {
         return fragment == null;
     }
-    
+
 
     public static ServiceDescriptor fromAnnotation(ClassProxy clazz, WebService type) {
         return  new ServiceDescriptor(clazz, type.name(), type.superType(), type.targetTypes(), type.facets());

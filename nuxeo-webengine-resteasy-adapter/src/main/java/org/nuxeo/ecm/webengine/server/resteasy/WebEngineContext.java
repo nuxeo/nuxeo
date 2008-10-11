@@ -46,7 +46,7 @@ public class WebEngineContext extends AbstractWebContext {// extends HttpRequest
         super (request);
         this.jaxReq = jaxReq;
     }
-    
+
     public HttpServletRequest getHttpServletRequest() {
         return request;
     }
@@ -54,11 +54,11 @@ public class WebEngineContext extends AbstractWebContext {// extends HttpRequest
     public UriInfo getUriInfo() {
         return jaxReq.getUri();
     }
-    
+
     public HttpHeaders getHttpHeaders() {
         return jaxReq.getHttpHeaders();
-    }    
-    
+    }
+
     public HttpRequest getHttpRequest() {
         return jaxReq;
     }

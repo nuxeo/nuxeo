@@ -30,26 +30,26 @@ import java.util.Map;
  *
  */
 public class AnnotatedClass<T> {
-   
+
     protected AnnotatedClass<?> superClass;
     protected Class<T> clazz;
     protected Map<Class<? extends Annotation>, Annotation> annotations;
     protected Map<Method, AnnotatedMethod> methods;
-    
+
     /**
-     * 
+     *
      */
     public AnnotatedClass(Class<T> clazz) {
         this.clazz = clazz;
         this.methods = new HashMap<Method, AnnotatedMethod>();
         this.annotations = new HashMap<Class<? extends Annotation>, Annotation>();
     }
-   
+
     public Class<?> getAnnotatedClass() {
         return clazz;
     }
 
-    
+
     @SuppressWarnings("unchecked")
     public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
         return (A)annotations.get(annotationClass);
@@ -58,9 +58,9 @@ public class AnnotatedClass<T> {
     public <A extends Annotation> A getDeclaredAnnotation(Class<A> annotationClass) {
         return clazz.getAnnotation(annotationClass);
     }
-    
+
     public Annotation[] getAnnotations() {
-        return annotations.values().toArray(new Annotation[annotations.size()]); 
+        return annotations.values().toArray(new Annotation[annotations.size()]);
     }
 
     public Annotation[] getDeclaredAnnotations() {
@@ -87,7 +87,7 @@ public class AnnotatedClass<T> {
         AnnotatedMethod am = methods.get(method);
         return am != null && am.method.getDeclaringClass() == clazz ? am : null;
     }
-    
+
     public boolean hasAnnotatedMethods() {
         return !methods.isEmpty();
     }
@@ -115,7 +115,7 @@ public class AnnotatedClass<T> {
                 result.add(am);
             }
         }
-        return result.toArray(new AnnotatedMethod[result.size()]); 
+        return result.toArray(new AnnotatedMethod[result.size()]);
     }
 
     //TODO: cache this?
@@ -126,20 +126,20 @@ public class AnnotatedClass<T> {
                 result.add(am);
             }
         }
-        return result.toArray(new AnnotatedMethod[result.size()]); 
+        return result.toArray(new AnnotatedMethod[result.size()]);
     }
-    
+
     public AnnotatedMethod[] getDeclaredAnnotatedMethods(Class<? extends Annotation> annotationClass) {
         ArrayList<AnnotatedMethod> result = new ArrayList<AnnotatedMethod>();
         for (AnnotatedMethod am : methods.values()) {
-            if (am.method.getDeclaringClass() == clazz 
+            if (am.method.getDeclaringClass() == clazz
                     && am.annotations.containsKey(annotationClass)) {
                 result.add(am);
             }
         }
-        return result.toArray(new AnnotatedMethod[result.size()]); 
+        return result.toArray(new AnnotatedMethod[result.size()]);
     }
-    
+
     public void addMethod(AnnotatedMethod method) {
         methods.put(method.method, method);
         //TODO cache annotations to annotated method?
@@ -149,17 +149,17 @@ public class AnnotatedClass<T> {
     public int hashCode() {
         return clazz.hashCode();
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
-        if (obj == null) return false;        
+        if (obj == null) return false;
         if (obj.getClass() == AnnotatedClass.class) {
             return ((AnnotatedClass<?>)obj).clazz == clazz;
         }
         return false;
     }
-    
+
     @Override
     public String toString() {
         return "AnnotatedCass: "+clazz;

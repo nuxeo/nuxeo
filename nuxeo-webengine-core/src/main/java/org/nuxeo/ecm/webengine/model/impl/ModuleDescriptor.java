@@ -48,7 +48,7 @@ public class ModuleDescriptor implements Cloneable {
      * Must be set by the client before registering the descriptor.
      */
     public File directory;
-    
+
     @XNode("@name")
     public String name;
 
@@ -69,12 +69,12 @@ public class ModuleDescriptor implements Cloneable {
 
     @XNodeList(value="links/link", type=ArrayList.class, componentType=LinkDescriptor.class, nullByDefault=true)
     public List<LinkDescriptor> links;
-    
+
     @XNode("permission")
     public  GuardDescriptor guardDescriptor;
 
     public ResourceBinding binding;
-    
+
     private Guard guard;
 
     public void checkPermission(Adaptable adaptable) throws WebSecurityException {
@@ -103,20 +103,20 @@ public class ModuleDescriptor implements Cloneable {
         }
         return false;
     }
-    
+
     @Override
     public ModuleDescriptor clone() {
         try {
             ModuleDescriptor cfg = (ModuleDescriptor)super.clone();
             cfg.actions = (ArrayList)actions.clone();
             cfg.types = (ArrayList)types.clone();
-            return cfg; 
+            return cfg;
         } catch (CloneNotSupportedException e) {
             throw new Error("Should never happen");
         }
     }
 
-    
+
     public static ModuleDescriptor fromAnnotation(Class<?> clazz) {
         WebModule anno = clazz.getAnnotation(WebModule.class);
         if (anno == null) {
@@ -132,7 +132,7 @@ public class ModuleDescriptor implements Cloneable {
             ad.guardDescriptor.setExpression(guard);
         }
         ad.actions = new ArrayList<ServiceTypeImpl>();
-        ad.types = new ArrayList<TypeDescriptor>();        
+        ad.types = new ArrayList<TypeDescriptor>();
         return ad;
     }
 

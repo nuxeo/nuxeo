@@ -43,26 +43,26 @@ import edu.emory.mathcs.backport.java.util.Arrays;
  */
 public class BundleAnnotationsLoader implements BundleListener {
 
-    private static final Log log = LogFactory.getLog(BundleAnnotationsLoader.class);    
-    
+    private static final Log log = LogFactory.getLog(BundleAnnotationsLoader.class);
+
     protected static BundleAnnotationsLoader instance = new BundleAnnotationsLoader();
-    
+
     public static BundleAnnotationsLoader getInstance() {
         return instance;
     }
-    
+
     protected Map<String, AnnotationLoader> loaders;
     protected Map<String, List<Entry>> pendings;
-    
-    
+
+
     public BundleAnnotationsLoader() {
         loaders = new HashMap<String, AnnotationLoader>();
         pendings = new HashMap<String, List<Entry>>();
     }
-    
+
     public synchronized void addLoader(String annotationType, AnnotationLoader loader) {
         loaders.put(annotationType, loader);
-        List<Entry> entries = pendings.remove(annotationType); 
+        List<Entry> entries = pendings.remove(annotationType);
         if (entries != null) {
             for (Entry entry : entries) {
                 try {
@@ -73,21 +73,21 @@ public class BundleAnnotationsLoader implements BundleListener {
             }
         }
     }
-    
+
     public void loadAnnotations(Bundle bundle) throws IOException {
         URL url = bundle.getEntry("OSGI-INF/annotations");
-        if (url != null) {            
+        if (url != null) {
             InputStream in = url.openStream();
             try {
                 for (String line : readLines(in)) {
-                    loadAnnotation(bundle, line);    
+                    loadAnnotation(bundle, line);
                 }
             } finally {
                 in.close();
             }
         }
     }
-    
+
     protected void loadAnnotation(Bundle bundle, String line) {
         String ar[] = parse(line);
         if (ar.length < 2) {
@@ -103,7 +103,7 @@ public class BundleAnnotationsLoader implements BundleListener {
         }
         loadAnnotation(bundle, annoType, className, ar);
     }
-        
+
     public static String[] parse(String str) {
         ArrayList<String> list = new ArrayList<String>();
         char[] chars = str.toCharArray();
@@ -142,7 +142,7 @@ public class BundleAnnotationsLoader implements BundleListener {
         }
         return list.toArray(new String[list.size()]);
     }
-    
+
     protected synchronized void loadAnnotation(Bundle bundle, String annotationType, String className, String[] args) {
         AnnotationLoader loader = loaders.get(annotationType);
         if (loader != null) {
@@ -161,7 +161,7 @@ public class BundleAnnotationsLoader implements BundleListener {
         }
     }
 
-    
+
     static class Entry {
         Bundle bundle;
         String className;
@@ -172,12 +172,12 @@ public class BundleAnnotationsLoader implements BundleListener {
             this.args = args;
         }
     }
-    
-    
+
+
     public void bundleChanged(BundleEvent event) {
         try {
             switch (event.getType()) {
-            case BundleEvent.RESOLVED : 
+            case BundleEvent.RESOLVED :
                 loadAnnotations(event.getBundle());
                 break;
             case BundleEvent.UNRESOLVED :

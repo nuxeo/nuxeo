@@ -34,26 +34,26 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class ServiceTypeImpl extends AbstractResourceType implements ServiceType {
-    // we are using arrays and not sets since the targetTypes and targetFacets have usually very small sizes  
+    // we are using arrays and not sets since the targetTypes and targetFacets have usually very small sizes
     protected String[] targetTypes;
     protected String[] targetFacets;
-    
+
     public ServiceTypeImpl(ModuleImpl module, ResourceTypeImpl superType, String name, ClassProxy clazz) {
         super (module, superType, name, clazz);
     }
-    
+
     public String[] getTargetTypes() {
         return targetTypes;
     }
-    
+
     public String[] getTargetFacets() {
         return targetFacets;
     }
-    
-    
+
+
     public boolean acceptResource(Resource resource) {
         if (acceptType(resource.getType())) {
             if (targetFacets != null && targetFacets.length > 0) {
@@ -67,7 +67,7 @@ public class ServiceTypeImpl extends AbstractResourceType implements ServiceType
         }
         return true;
     }
-    
+
     public boolean acceptType(ResourceType type) {
         if (targetTypes == null || targetTypes.length == 0) {
             return true;
@@ -80,7 +80,7 @@ public class ServiceTypeImpl extends AbstractResourceType implements ServiceType
         return true;
     }
 
-        
+
     @Override
     protected void loadAnnotations(AnnotationManager annoMgr) {
         WebService ws = clazz.get().getAnnotation(WebService.class);

@@ -35,25 +35,25 @@ public interface ModuleResource extends Resource{
     public String getName();
 
     public Object getErrorView(WebApplicationException e);
-        
+
     public ScriptFile getFile(String path) throws WebException;
 
     public Class<?> loadClass(String className) throws ClassNotFoundException;
 
     public ResourceType getType(String typeName) throws TypeNotFoundException;
-        
+
     public ResourceType[] getTypes();
-    
+
     public ServiceType[] getServices();
-    
+
     public ServiceType getService(Resource ctx, String name) throws ServiceNotFoundException;
-    
+
     public List<ServiceType> getServices(Resource ctx);
-    
+
     public List<String> getServiceNames(Resource ctx);
 
     public List<ServiceType> getEnabledServices(Resource ctx);
-    
+
     public List<String> getEnabledServiceNames(Resource ctx);
 
 }

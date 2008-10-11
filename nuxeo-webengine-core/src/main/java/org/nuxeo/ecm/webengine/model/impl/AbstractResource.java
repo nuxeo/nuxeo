@@ -49,7 +49,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     protected AbstractResource<?> prev;
     protected String path;
     protected T type;
-    
+
     public Resource initialize(WebContext ctx, ResourceType type, Object ...  args) throws WebException {
         this.ctx = ctx;
         this.type = (T)type;
@@ -59,7 +59,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         }
         return this;
     }
-    
+
     public boolean isService() {
         return type.getClass() == ServiceTypeImpl.class;
     }
@@ -67,11 +67,11 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public boolean isModule() {
         return type.getClass() == ModuleTypeImpl.class;
     }
-        
+
     public boolean isRoot() {
         return this == ctx.getRoot();
-    }    
-    
+    }
+
     public void setRoot(boolean isRoot) {
         AbstractWebContext ctx = (AbstractWebContext)this.ctx;
         if (isRoot) {
@@ -82,11 +82,11 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
             }
         }
     }
-    
+
     public boolean isInstanceOf(String type) {
         return this.type.isDerivedFrom(type);
     }
-    
+
     public Response redirect(String uri) {
         try {
             return Response.seeOther(new URI(uri)).build();
@@ -94,7 +94,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
             throw WebException.wrap(e);
         }
     }
-    
+
     public void dispose() {
         this.ctx = null;
         this.type = null;
@@ -104,7 +104,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public Set<String> getFacets() {
         return type.getFacets();
     }
-    
+
     public boolean hasFacet(String facet) {
         return type.hasFacet(facet);
     }
@@ -112,15 +112,15 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public T getType() {
         return type;
     }
-    
+
     public WebContext getContext() {
         return ctx;
     }
-    
+
     public Module getModule() {
         return ctx.getModule();
     }
-    
+
 
     public Resource getNext() {
         return next;
@@ -141,7 +141,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
 
     public <A> A getAdapter(Class<A> adapter) {
         if (adapter == Principal.class) {
-            return adapter.cast(ctx.getPrincipal());   
+            return adapter.cast(ctx.getPrincipal());
         }
         if (adapter == WebContext.class) {
             return adapter.cast(ctx);
@@ -155,7 +155,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public Resource newObject(String type, Object... args) {
         return ctx.newObject(type, args);
     }
-    
+
     public ServiceResource newService(String type, Object... args) {
         return ctx.newService(this, type, args);
     }
@@ -163,5 +163,5 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public Template newTemplate(String fileName) {
         return new Template(this).fileName(fileName);
     }
-    
+
 }

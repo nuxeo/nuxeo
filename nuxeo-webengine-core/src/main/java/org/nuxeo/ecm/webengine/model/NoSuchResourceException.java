@@ -32,9 +32,9 @@ public class NoSuchResourceException extends WebException {
     public NoSuchResourceException(String msg) {
         super(msg);
     }
-    
+
     public NoSuchResourceException(String msg, Throwable cause) {
         super(msg, cause);
     }
-    
+
 }

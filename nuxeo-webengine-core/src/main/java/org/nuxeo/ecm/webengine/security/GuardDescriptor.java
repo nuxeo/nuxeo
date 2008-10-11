@@ -66,14 +66,14 @@ public class GuardDescriptor {
     public Map<String, Guard> getGuards() {
         return guards;
     }
-    
+
     /**
      * @param expression the expression to set.
      */
     public void setExpression(String expression) {
         this.expression = expression;
     }
-    
+
     /**
      * @return the expression.
      */

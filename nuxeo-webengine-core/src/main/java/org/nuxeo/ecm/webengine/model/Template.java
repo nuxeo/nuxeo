@@ -38,12 +38,12 @@ public class Template {
 
     private static final long serialVersionUID = 1L;
 
-    protected static final Map<String,String> mediaTypeNames = new HashMap<String, String>();    
+    protected static final Map<String,String> mediaTypeNames = new HashMap<String, String>();
     static {
         mediaTypeNames.put(MediaType.APPLICATION_ATOM_XML, "atom");
         mediaTypeNames.put(MediaType.APPLICATION_JSON, "json");
     }
-    
+
     protected String name = "view";
     protected String ext = "ftl";
     protected MediaType mediaType;
@@ -63,11 +63,11 @@ public class Template {
     public Template(WebContext ctx, ScriptFile script) {
         this (ctx, null, script, null);
     }
-    
+
     public Template(WebContext ctx, ScriptFile script, Map<String,Object> args) {
         this (ctx, null, script, args);
     }
-    
+
     public Template(Resource resource) {
         this (resource.getContext(), resource, null, null);
     }
@@ -79,7 +79,7 @@ public class Template {
     public Template(Resource resource, ScriptFile script, Map<String,Object> args) {
         this (resource.getContext(), resource, script, args);
     }
-    
+
     public Template(Resource resource, ScriptFile script) {
         this (resource.getContext(), resource, script, null);
     }
@@ -99,7 +99,7 @@ public class Template {
         this.mediaType = mediaType;
         return this;
     }
-    
+
     public MediaType mediaType() {
         return mediaType;
     }
@@ -112,21 +112,21 @@ public class Template {
     public Map<String,Object> args() {
         return args;
     }
-    
+
     public Resource resource() {
         return resource;
     }
-    
+
     public Template name(String name) {
         this.name = name;
-       return this; 
+       return this;
     }
 
     public Template extension(String ext) {
         this.ext = ext;
         return this;
     }
-    
+
     public Template fileName(String fileName) throws WebException {
         if (resource != null) {
             script = resource.getType().getTemplate(fileName);
@@ -135,16 +135,16 @@ public class Template {
         }
         return this;
     }
-    
+
     public Template script(ScriptFile script) {
         this.script = script;
         return this;
     }
-    
+
     public ScriptFile script() {
         return script;
     }
-    
+
     public boolean isResolved() {
         return script != null;
     }
@@ -157,9 +157,9 @@ public class Template {
                 buf.append(mediaType.getType().toLowerCase()).append('/').append(mediaType.getSubtype().toLowerCase());
                 String type = mediaTypeNames.get(buf.toString());
                 if (type != null) {
-                    fileName.append(name).append('-').append(type).append('.').append(ext);        
+                    fileName.append(name).append('-').append(type).append('.').append(ext);
                 } else {
-                    fileName.append(name).append('.').append(ext);    
+                    fileName.append(name).append('.').append(ext);
                 }
             } else {
                 fileName.append(name).append('.').append(ext);
@@ -172,10 +172,10 @@ public class Template {
         }
         return this;
     }
-    
 
-    
-    public void render(OutputStream out) throws WebException {        
+
+
+    public void render(OutputStream out) throws WebException {
         Writer w = new OutputStreamWriter(out);
         try {
             ctx.render(resolve().script(), args, w);
@@ -186,4 +186,3 @@ public class Template {
     }
 
 }
-

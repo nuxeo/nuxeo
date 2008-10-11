@@ -38,6 +38,6 @@ public @interface Indexable {
      * The name of annotation arguments that should be indexed
      * @return
      */
-    public String[] value();
-    
+    String[] value();
+
 }

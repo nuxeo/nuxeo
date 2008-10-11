@@ -37,38 +37,38 @@ public interface Resource extends Adaptable {
     Resource initialize(WebContext ctx, ResourceType type, Object ...  args) throws WebException;
 
     void dispose();
-    
-    WebContext getContext();    
-    
+
+    WebContext getContext();
+
     Module getModule();
-    
+
     ResourceType getType();
-    
+
     boolean isInstanceOf(String type);
-    
+
     String getPath();
 
     Resource getPrevious();
-    
+
     Resource getNext();
-        
+
     boolean isService();
-    
+
     boolean isModule();
-    
+
     boolean isRoot();
-    public void setRoot(boolean isRoot);
+    void setRoot(boolean isRoot);
 
     Set<String> getFacets();
     boolean hasFacet(String facet);
 
-    public List<LinkDescriptor> getLinks(String category);
+    List<LinkDescriptor> getLinks(String category);
 
-    
+
     Resource newObject(String type, Object ... args);
     ServiceResource newService(String type, Object ... args);
     Template newTemplate(String fileName);
 
     Response redirect(String uri);
-    
+
 }
