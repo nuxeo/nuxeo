@@ -36,9 +36,6 @@ public class AnnotatedClass<T> {
     protected Map<Class<? extends Annotation>, Annotation> annotations;
     protected Map<Method, AnnotatedMethod> methods;
 
-    /**
-     *
-     */
     public AnnotatedClass(Class<T> clazz) {
         this.clazz = clazz;
         this.methods = new HashMap<Method, AnnotatedMethod>();
@@ -48,7 +45,6 @@ public class AnnotatedClass<T> {
     public Class<?> getAnnotatedClass() {
         return clazz;
     }
-
 
     @SuppressWarnings("unchecked")
     public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
@@ -152,8 +148,12 @@ public class AnnotatedClass<T> {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
         if (obj.getClass() == AnnotatedClass.class) {
             return ((AnnotatedClass<?>)obj).clazz == clazz;
         }
