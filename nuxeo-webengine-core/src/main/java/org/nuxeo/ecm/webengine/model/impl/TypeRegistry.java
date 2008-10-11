@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
+import org.nuxeo.ecm.webengine.model.ModuleType;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.ServiceType;
@@ -41,20 +42,43 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
  */
 public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescriptor>{
     
-    protected Map<String, ResourceTypeImpl> types;
+    protected Map<String, AbstractResourceType> types;
     protected Map<String, ServiceTypeImpl> services;
     protected Map<String, ServiceTypeImpl[]> serviceBindings;
     protected ModuleImpl module;
     protected Class<?> docObjectClass = null;
     
     public TypeRegistry(ModuleImpl module) {
-        types = new ConcurrentHashMap<String, ResourceTypeImpl>();
+        types = new ConcurrentHashMap<String, AbstractResourceType>();
         services = new ConcurrentHashMap<String, ServiceTypeImpl>();
         serviceBindings = new ConcurrentHashMap<String, ServiceTypeImpl[]>();
         this.module = module;
         // register root type
         TypeDescriptor root = new TypeDescriptor(new StaticClassProxy(Resource.class), ResourceType.ROOT_TYPE_NAME, null); 
-        registerType(root);        
+        registerType(root);
+        // register module type and its parents if any
+        registerModuleType(module);        
+    }
+    
+    protected void registerModuleType(ModuleImpl m) {
+        TypeDescriptor td = new ModuleTypeDescriptor(
+                new StaticClassProxy(m.descriptor.binding.clazz), 
+                m.descriptor.name, 
+                ResourceType.ROOT_TYPE_NAME);
+        ModuleImpl sm = m.getSuperModule();
+        if (sm != null) {
+            registerModuleType(sm);
+            td.superType = sm.getName();
+        }
+        registerType(td);
+    }
+    
+    public ModuleType getModuleType() {
+        return (ModuleType)types.get(module.descriptor.name);
+    }
+    
+    public ResourceType getRootType() {
+        return types.get(ResourceType.ROOT_TYPE_NAME);
     }
     
     /**
@@ -287,8 +311,13 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         }
     }
     
-    protected void installTypeContribution(String key, TypeDescriptor object) {        
-        ResourceTypeImpl type = new ResourceTypeImpl(module, null, object.name, object.clazz);
+    protected void installTypeContribution(String key, TypeDescriptor object) {
+        AbstractResourceType type = new ResourceTypeImpl(module, null, object.name, object.clazz);
+        if (object.isModule()) {
+            type = new ModuleTypeImpl(module, null, object.name, object.clazz);    
+        } else {
+            type = new ResourceTypeImpl(module, null, object.name, object.clazz);
+        }
         if (object.superType != null) {
             type.superType = types.get(object.superType);
             assert type.superType != null; // must never be null since the object is resolved 
@@ -351,7 +380,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         // 1. update the existing type 
         // 2. unresolve, reinstall then resolve the type contribution to force action reinstalling.
         // we are using 1.
-        ResourceTypeImpl t = types.get(key);
+        AbstractResourceType t = types.get(key);
         if (t != null) { // update the type class
             t.clazz = object.clazz;
             t.loadAnnotations(module.getEngine().getAnnotationManager());
@@ -362,7 +391,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void updateServiceContribution(String key, ServiceDescriptor object) {
-        ResourceTypeImpl t = services.get(key);
+        AbstractResourceType t = services.get(key);
         if (t instanceof ServiceTypeImpl) { // update the type class
             ServiceTypeImpl service = (ServiceTypeImpl)t;
             String[] targetTypes = service.targetTypes;
@@ -389,7 +418,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     @Override
     protected void uninstallContribution(String key, TypeDescriptor value) {
         //TODO use "@" prefix for services in fragment registry?
-        ResourceTypeImpl t = types.remove(key);
+        AbstractResourceType t = types.remove(key);
         if (t == null) {
             ServiceTypeImpl s = services.remove(key);
             if (s != null) {

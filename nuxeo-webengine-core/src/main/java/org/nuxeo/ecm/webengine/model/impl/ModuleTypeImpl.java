@@ -25,6 +25,7 @@ import java.util.HashSet;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
+import org.nuxeo.ecm.webengine.model.ModuleType;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.annotations.AnnotationManager;
@@ -33,27 +34,29 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ResourceTypeImpl extends AbstractResourceType {
-    
-    public ResourceTypeImpl(ModuleImpl module, ResourceTypeImpl superType, String name, ClassProxy clazz) {
-        super (module, superType, name, clazz);
+public class ModuleTypeImpl extends AbstractResourceType implements ModuleType {
+
+    public ModuleTypeImpl(ModuleImpl module, AbstractResourceType superType, String name, ClassProxy clazz) {
+        super(module, superType, ROOT_TYPE_NAME, clazz);
     }
-     
+    
+    @Override
     protected void loadAnnotations(AnnotationManager annoMgr) {
-        WebObject wo = clazz.get().getAnnotation(WebObject.class);
-        if (wo == null) return;
-        String g = wo.guard();
-        if (g != null && g.length() > 0) {
-            try {
-                guard = PermissionService.parse(g);
-            } catch (ParseException e) {
-                throw WebException.wrap("Failed to parse guard: "+g+" on WebObject "+clazz.get().getName(), e);
-            }
-        }
-        String[] facets = wo.facets();
-        if (facets != null && facets.length > 0) {
-            this.facets = new HashSet<String>(Arrays.asList(facets));
-        }
+//        WebObject wo = clazz.get().getAnnotation(WebObject.class);
+//        if (wo == null) return;
+//        String g = wo.guard();
+//        if (g != null && g.length() > 0) {
+//            try {
+//                guard = PermissionService.parse(g);
+//            } catch (ParseException e) {
+//                throw WebException.wrap("Failed to parse guard: "+g+" on WebObject "+clazz.get().getName(), e);
+//            }
+//        }
+//        String[] facets = wo.facets();
+//        if (facets != null && facets.length > 0) {
+//            this.facets = new HashSet<String>(Arrays.asList(facets));
+//        }
+
     }
 
 }

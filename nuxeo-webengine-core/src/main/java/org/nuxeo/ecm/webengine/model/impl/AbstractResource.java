@@ -19,9 +19,12 @@
 
 package org.nuxeo.ecm.webengine.model.impl;
 
+import java.net.URI;
 import java.security.Principal;
 import java.util.List;
 import java.util.Set;
+
+import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
@@ -29,6 +32,7 @@ import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
+import org.nuxeo.ecm.webengine.model.ServiceResource;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebContext;
 
@@ -45,7 +49,6 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     protected AbstractResource<?> prev;
     protected String path;
     protected T type;
-    protected Template template;
     
     public Resource initialize(WebContext ctx, ResourceType type, Object ...  args) throws WebException {
         this.ctx = ctx;
@@ -57,6 +60,14 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return this;
     }
     
+    public boolean isService() {
+        return type.getClass() == ServiceTypeImpl.class;
+    }
+
+    public boolean isModule() {
+        return type.getClass() == ModuleTypeImpl.class;
+    }
+        
     public boolean isRoot() {
         return this == ctx.getRoot();
     }    
@@ -74,6 +85,14 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     
     public boolean isInstanceOf(String type) {
         return this.type.isDerivedFrom(type);
+    }
+    
+    public Response redirect(String uri) {
+        try {
+            return Response.seeOther(new URI(uri)).build();
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
     }
     
     public void dispose() {
@@ -119,16 +138,6 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return ctx.getModule().getActiveLinks(this, category);
     }
 
-    public void setTemplate(Template template) {
-        this.template = template;
-    }
-    
-    public Template getTemplate() throws WebException {
-        if (template == null) {
-            template = new Template(this).resolve();
-        }
-        return template;
-    }
 
     public <A> A getAdapter(Class<A> adapter) {
         if (adapter == Principal.class) {
@@ -143,4 +152,16 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return null;
     }
 
+    public Resource newObject(String type, Object... args) {
+        return ctx.newObject(type, args);
+    }
+    
+    public ServiceResource newService(String type, Object... args) {
+        return ctx.newService(this, type, args);
+    }
+
+    public Template newTemplate(String fileName) {
+        return new Template(this).fileName(fileName);
+    }
+    
 }

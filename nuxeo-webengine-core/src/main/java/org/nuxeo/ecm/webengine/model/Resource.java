@@ -22,6 +22,8 @@ package org.nuxeo.ecm.webengine.model;
 import java.util.List;
 import java.util.Set;
 
+import javax.ws.rs.core.Response;
+
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.runtime.model.Adaptable;
 
@@ -52,15 +54,21 @@ public interface Resource extends Adaptable {
         
     boolean isService();
     
+    boolean isModule();
+    
     boolean isRoot();
     public void setRoot(boolean isRoot);
-    
-    void setTemplate(Template template);
-    Template getTemplate() throws WebException;
 
     Set<String> getFacets();
     boolean hasFacet(String facet);
 
     public List<LinkDescriptor> getLinks(String category);
+
+    
+    Resource newObject(String type, Object ... args);
+    ServiceResource newService(String type, Object ... args);
+    Template newTemplate(String fileName);
+
+    Response redirect(String uri);
     
 }

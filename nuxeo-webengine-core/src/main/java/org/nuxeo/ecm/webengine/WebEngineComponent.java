@@ -66,19 +66,20 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
 
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
-    private WebEngine engine2;
+    private WebEngine engine;
     private FileChangeNotifier notifier;
-    private ComponentContext ctx;
 
     private ConfigurationDeployer deployer;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
-        ctx = context;
-        
+
+        //TODO: this should be moved into runtime - loads annotations from current bundle
         //TODO: move this into runtime
         context.getRuntimeContext().getBundle().getBundleContext().addBundleListener(BundleAnnotationsLoader.getInstance());
+        BundleAnnotationsLoader.getInstance().loadAnnotations(context.getRuntimeContext().getBundle());
+
         
         String webDir = Framework.getProperty("org.nuxeo.ecm.web.root");
         File root = null;
@@ -90,15 +91,11 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
         root = root.getCanonicalFile();
         log.info("Using web root: "+root);
 
-        if (!new File(root, "default").exists()) {
-            try {
-                root.mkdirs();
-                // runtime predeployment is not supporting conditional unziping so we do the predeployment here:
-                deployWebDir(context.getRuntimeContext().getBundle(), root);
-            } catch (Exception e) { // delete incomplete files
-                FileUtils.deleteTree(root);
-                throw e;
-            }
+        try {
+            deployWebDir(context.getRuntimeContext().getBundle(), root);
+        } catch (Exception e) { // delete incomplete files
+            FileUtils.deleteTree(root);
+            throw e;
         }
 
         // load message bundle
@@ -106,12 +103,14 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
         notifier = new FileChangeNotifier();
         notifier.start();
 
-        engine2 = new WebEngine(root);
+        ResourceRegistry registry = Framework.getLocalService(ResourceRegistry.class);
+        if (registry == null) {
+            throw new Error("Could not find a server implementation"); 
+        }
+        engine = new WebEngine(registry, root);
         deployer = new ConfigurationDeployer(notifier);
         deployer.addConfigurationChangedListener(this);
 
-        //TODO: this should be moved into runtime - loads annotations from current bundle
-        BundleAnnotationsLoader.getInstance().loadAnnotations(context.getRuntimeContext().getBundle());
     }
 
 
@@ -124,16 +123,18 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
         deployer.removeConfigurationChangedListener(this);
         deployer = null;
         notifier = null;
-        ctx = null;
         super.deactivate(context);
     }
 
     private static void deployWebDir(Bundle bundle, File root) throws IOException {
-        Installer.copyResources(bundle, "web", root);
+        if (!new File(root, "nuxeo").exists()) {
+            root.mkdirs();
+            Installer.copyResources(bundle, "web", root);
+        }
     }
 
     public WebEngine getEngine2() {
-        return engine2;
+        return engine;
     }
 
     public void loadConfiguration(RuntimeContext context, File file, boolean trackChanges) throws Exception {
@@ -163,22 +164,22 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
             GuardDescriptor gd = (GuardDescriptor)contribution;
             PermissionService.getInstance().registerGuard(gd.getId(), gd.getGuard());
         } else if (RESOURCE_BINDING_XP.equals(extensionPoint)) {
-            engine2.addResourceBinding((ResourceBinding)contribution);
+            engine.addResourceBinding((ResourceBinding)contribution);
         } else if (extensionPoint.equals(RENDERING_EXTENSION_XP)) {
             RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor)contribution;
             try {
-                engine2.registerRenderingExtension(fed.name, fed.newInstance());
+                engine.registerRenderingExtension(fed.name, fed.newInstance());
             } catch (Exception e) {
                 throw new RuntimeServiceException(
                         "Deployment Error. Failed to contribute freemarker template extension: "+fed.name);
             }
         } else if (extensionPoint.equals(INSTALL_XP)) {
             Installer installer = (Installer)contribution;
-            installer.install(contributor.getContext(), engine2.getRootDirectory());
+            installer.install(contributor.getContext(), engine.getRootDirectory());
         } else if (extensionPoint.equals(CONFIG_XP)) {
             ConfigurationFileDescriptor cfg = (ConfigurationFileDescriptor)contribution;
             if (cfg.path != null) {
-                loadConfiguration(contributor.getContext(), new File(engine2.getRootDirectory(), cfg.path), cfg.trackChanges);
+                loadConfiguration(contributor.getContext(), new File(engine.getRootDirectory(), cfg.path), cfg.trackChanges);
             } else if (cfg.entry != null) {
                 throw new UnsupportedOperationException("Entry is not supported for now");
             } else {
@@ -200,17 +201,17 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
             GuardDescriptor gd = (GuardDescriptor)contribution;
             PermissionService.getInstance().unregisterGuard(gd.getId());
         } else if (RESOURCE_BINDING_XP.equals(extensionPoint)) {
-            engine2.removeResourceBinding((ResourceBinding)contribution);
+            engine.removeResourceBinding((ResourceBinding)contribution);
         } else if (extensionPoint.equals(RENDERING_EXTENSION_XP)) {
             RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor)contribution;
-            engine2.unregisterRenderingExtension(fed.name);
+            engine.unregisterRenderingExtension(fed.name);
         } else if (extensionPoint.equals(INSTALL_XP)) {
             Installer installer = (Installer)contribution;
-            installer.uninstall(contributor.getContext(), engine2.getRootDirectory());
+            installer.uninstall(contributor.getContext(), engine.getRootDirectory());
         } else if (extensionPoint.equals(CONFIG_XP)) {
             ConfigurationFileDescriptor cfg = (ConfigurationFileDescriptor)contribution;
             if (cfg.path != null) {
-                unloadConfiguration(new File(engine2.getRootDirectory(), cfg.path));
+                unloadConfiguration(new File(engine.getRootDirectory(), cfg.path));
             } else if (cfg.entry != null) {
                 throw new UnsupportedOperationException("Entry is not supported for now");
             } else {
@@ -226,7 +227,7 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter == WebEngine.class) {
-            return adapter.cast(engine2);
+            return adapter.cast(engine);
         } else if (adapter == FileChangeNotifier.class) {
             return adapter.cast(notifier);
         }
@@ -235,8 +236,8 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
 
 
     public void configurationChanged(Entry entry) throws Exception {
-        if (engine2 != null) {
-            engine2.reload();
+        if (engine != null) {
+            engine.reload();
             //engine.fireConfigurationChanged(); ?
         }
     }

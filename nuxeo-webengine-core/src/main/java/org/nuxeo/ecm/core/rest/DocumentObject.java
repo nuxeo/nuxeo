@@ -25,6 +25,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -67,7 +68,7 @@ public class DocumentObject extends DefaultObject {
     
     @GET
     public Object doGet() {
-        return getTemplate();
+        return newTemplate("index.ftl");
     }
     
     @DELETE
@@ -80,22 +81,22 @@ public class DocumentObject extends DefaultObject {
             throw WebException.wrap("Failed to delete document "+doc.getPathAsString(), e);
         }
         if (prev != null) { // show parent ? TODO: add getView(method) to be able to change the view method
-            return prev.getTemplate();
+            return redirect(prev.getPath());
         }
-        return "Root removed :)"; //TODO
+        return redirect(ctx.getBasePath());
     }
     
     @POST
-    public Object doPost() {        
+    public Response doPost() {        
         String name = ctx.getForm().getString("name");
         DocumentModel newDoc = DocumentHelper.createDocument(ctx, doc, name);
-        return newObject(newDoc);
+        return redirect(getPath()+'/'+newDoc.getName());
     }
 
     @PUT
-    public Object doPut() {        
+    public Response doPut() {        
         doc = DocumentHelper.updateDocument(ctx, doc);
-        return getTemplate();
+        return redirect(getPath());
     }
     
     //TODO implement HEAD

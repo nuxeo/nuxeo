@@ -167,6 +167,7 @@ public class BundleAnnotationsLoader implements BundleListener {
         String className;
         String[] args;
         Entry(Bundle bundle, String className, String[] args) {
+            this.bundle = bundle;
             this.className = className;
             this.args = args;
         }

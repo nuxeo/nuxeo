@@ -19,39 +19,41 @@
 
 package org.nuxeo.ecm.webengine.model;
 
-import java.util.Set;
+import java.util.List;
+
+import javax.ws.rs.WebApplicationException;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
-import org.nuxeo.ecm.webengine.security.Guard;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ResourceType {
-    
-    public final static String ROOT_TYPE_NAME = "*";
+public interface ModuleResource extends Resource{
 
-    void flushCache();
-    
-    Guard getGuard();
-    
-    String getName();
-    
-    boolean isDerivedFrom(String type);
-    
-    Class<? extends Resource> getResourceClass();
-    
-    <T extends Resource> T newInstance() throws WebException;
+    public String getName();
 
-    public ResourceType getSuperType();    
+    public Object getErrorView(WebApplicationException e);
+        
+    public ScriptFile getFile(String path) throws WebException;
+
+    public Class<?> loadClass(String className) throws ClassNotFoundException;
+
+    public ResourceType getType(String typeName) throws TypeNotFoundException;
+        
+    public ResourceType[] getTypes();
     
-    Set<String> getFacets();
+    public ServiceType[] getServices();
     
-    boolean hasFacet(String facet);
+    public ServiceType getService(Resource ctx, String name) throws ServiceNotFoundException;
     
-    public ScriptFile getTemplate(String name) throws WebException;
+    public List<ServiceType> getServices(Resource ctx);
     
-    boolean isEnabled(Resource ctx);
+    public List<String> getServiceNames(Resource ctx);
+
+    public List<ServiceType> getEnabledServices(Resource ctx);
+    
+    public List<String> getEnabledServiceNames(Resource ctx);
+
 }

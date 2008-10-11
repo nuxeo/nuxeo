@@ -47,13 +47,11 @@ public class ResourceBinding {
 
     /**
      * Use this to specify the resource class.
-     * This should not be used in the same with domain.
-     * If both of them are used class is winning.
      */
     @XNode("@class")
-    public String className;
-
-
+    public Class<?> clazz;
+    
+    
     @Override
     public int hashCode() {
         return path.hashCode();
@@ -64,7 +62,7 @@ public class ResourceBinding {
         if (obj == this) return true;
         if (obj instanceof ResourceBinding) {
             ResourceBinding binding = (ResourceBinding)obj;
-            return binding.path.equals(path) && binding.className.equals(className);
+            return binding.path.equals(path) && binding.clazz == clazz;
         }
         return false;
     }
@@ -75,12 +73,9 @@ public class ResourceBinding {
         if (path != null) {
             binding = new ResourceBinding();
             binding.path = path.value();
-//TODO: these methods were removed in latest specs
-//            binding.encode = path.encode();
-//            binding.limited = path.limited();
-            binding.className = clazz.getName();
+            binding.clazz = clazz;
         }
         return binding;
     }
-    
+
 }

@@ -48,7 +48,7 @@ public class WebEngineResourceConfig extends DefaultResourceConfig {
         HashSet<Class<?>> result = new HashSet<Class<?>>();
         for (ResourceBinding binding : engine.getBindings()) {
             try {
-                result.add(engine.getScripting().loadClass(binding.className));
+                result.add(binding.clazz);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }

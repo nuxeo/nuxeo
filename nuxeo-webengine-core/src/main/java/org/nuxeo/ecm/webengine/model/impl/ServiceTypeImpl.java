@@ -36,7 +36,7 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class ServiceTypeImpl extends ResourceTypeImpl implements ServiceType {
+public class ServiceTypeImpl extends AbstractResourceType implements ServiceType {
     // we are using arrays and not sets since the targetTypes and targetFacets have usually very small sizes  
     protected String[] targetTypes;
     protected String[] targetFacets;

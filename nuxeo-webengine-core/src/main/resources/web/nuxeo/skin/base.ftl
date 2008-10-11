@@ -44,7 +44,7 @@
            <input type="hidden" name="p" value="${Root.repositoryPath}">
          </form>
         </div>
-        <h1><a href="${Root.path}">${Root.document.title}</a></h1>
+        <h1><a href="${Context.modulePath}">${Root.document.title}</a></h1>
        </#if>
        </@block>
     </div>

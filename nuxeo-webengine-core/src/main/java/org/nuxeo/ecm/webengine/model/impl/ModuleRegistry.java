@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webengine.model.impl;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -77,12 +76,6 @@ public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleD
     protected void applyFragment(ModuleDescriptor object, ModuleDescriptor fragment) {
         if (fragment.guardDescriptor != null) {
             object.guardDescriptor = fragment.guardDescriptor;
-        }
-        if (fragment.roots != null) {
-            if (object.roots == null) {
-                object.roots = new ArrayList<String>();
-            }
-            object.roots.addAll(fragment.roots);
         }
     }
 

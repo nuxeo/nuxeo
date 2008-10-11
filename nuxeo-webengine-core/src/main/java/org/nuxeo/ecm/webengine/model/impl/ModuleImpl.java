@@ -26,19 +26,18 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Module;
+import org.nuxeo.ecm.webengine.model.ModuleType;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.ServiceNotFoundException;
 import org.nuxeo.ecm.webengine.model.ServiceType;
 import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
-import org.nuxeo.runtime.deploy.FileChangeListener;
-import org.nuxeo.runtime.deploy.FileChangeNotifier;
-import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
 
 /**
  * The default implementation for a web configuration
@@ -46,21 +45,15 @@ import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ModuleImpl implements Module, FileChangeListener  {
-
+public class ModuleImpl implements Module {
 
     protected WebEngine engine;
     protected ModuleDescriptor descriptor;
     
     protected File root;
-    protected DirectoryStack dirStack;
-    // how many roots are defined by this instance (ignore inherited roots)
-    // can be used to iterate only over the local roots
-    protected int localRootsCount = 0; 
+    protected DirectoryStack dirStack; 
     // cache used for resolved files
     protected ConcurrentMap<String, ScriptFile> fileCache;
-    // template cache
-    protected ConcurrentMap<String, ScriptFile> templateCache;
     
     protected final Object typeLock = new Object();
 
@@ -70,13 +63,17 @@ public class ModuleImpl implements Module, FileChangeListener  {
 
     protected LinkRegistry linkReg; 
     
-
+    protected ModuleTypeImpl type;
+    protected ModuleImpl superModule;
+    
     public ModuleImpl(WebEngine engine, File root, ModuleDescriptor descriptor) throws WebException {
         this.fileCache = new ConcurrentHashMap<String, ScriptFile>();
-        this.templateCache = new ConcurrentHashMap<String, ScriptFile>();
         this.root = root;
         this.descriptor = descriptor;
         this.engine = engine;
+        if (descriptor.base != null) {
+            superModule = (ModuleImpl)engine.getModule(descriptor.base);
+        }
         loadDirectoryStack();
         loadLinks();
     }
@@ -99,6 +96,10 @@ public class ModuleImpl implements Module, FileChangeListener  {
         return engine;
     }
 
+    public void flushSkinCache() {
+        fileCache.clear();
+    }
+   
     public void flushCache() {
         fileCache.clear();
         synchronized (typeLock) {
@@ -108,44 +109,39 @@ public class ModuleImpl implements Module, FileChangeListener  {
         engine.getScripting().flushCache();
     }
 
+    public ModuleType getModuleType() {
+        if (type == null) {
+            getTypeRegistry();
+        }
+        return type;
+    }
+    
+    public ResourceBinding getModuleBinding() {
+        return descriptor.binding;
+    }
+    
+    public static File getSkinDir(File moduleDir) {
+        return new File(moduleDir, "skin");
+    }
+    
     protected void loadDirectoryStack() throws WebException {
+        dirStack = new DirectoryStack();
         try {
-            List<String> roots = descriptor.roots;
-            // first add roots defined locally
-            dirStack = new DirectoryStack();
-            if (descriptor.roots != null && !descriptor.roots.isEmpty()) {
-                for (String root : descriptor.roots) {
-                    File file =new File(engine.getRootDirectory(), root);
-                    dirStack.addDirectory(file);//TODO: priority is meaningless
-                }
-            } else {
-                dirStack.addDirectory(new File(root, "skin"));
+            File skin = getSkinDir(root);
+            if (skin.isDirectory()) {
+                dirStack.addDirectory(skin);
             }
-            localRootsCount = dirStack.getDirectories().size();
-            // watch roots for modifications
-            FileChangeNotifier notifier = engine.getFileChangeNotifier();
-            if (notifier != null) {
-                if (!dirStack.isEmpty()) {
-                    notifier.addListener(this);
-                    for (File entry : dirStack.getDirectories()) {
-                        notifier.watch(entry);
-                    }
-                }
-            }
-            // then add roots from parent if any
-            if (roots == null || roots.isEmpty()) {
-                if (descriptor.base != null) {
-                    ModuleImpl parent = (ModuleImpl)engine.getModule(descriptor.base);
-                    if (parent != null && parent.dirStack != null) {
-                        dirStack.getDirectories().addAll(parent.dirStack.getDirectories());
-                    }
-                }
+            if (superModule != null && superModule.dirStack != null) {
+                dirStack.getDirectories().addAll(superModule.dirStack.getDirectories());
             }
         } catch (IOException e) {
             WebException.wrap("Failed to load directories stack", e);
         }
     }
 
+    public ModuleImpl getSuperModule() {
+        return superModule;               
+    }
 
     public ScriptFile getFile(String path) throws WebException {
         int len = path.length();
@@ -197,21 +193,11 @@ public class ModuleImpl implements Module, FileChangeListener  {
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         return engine.getScripting().loadClass(className);
     }
-    
-    public File[] getLocalRoots() {
-        File[] local = new File[localRootsCount];
-        List<File> entries = dirStack.getDirectories();
-        assert localRootsCount <= entries.size();
-        for (int i=0; i<localRootsCount; i++) {
-            local[i] = entries.get(i);
-        }
-        return local;
-    }
 
     public TypeRegistry getTypeRegistry() {
         if (typeReg == null) { // create type registry if not already created
             synchronized (typeLock) {
-                double s = System.currentTimeMillis();
+//                double s = System.currentTimeMillis();
                 if (typeReg == null) {
                     typeReg = new TypeRegistry(this);
                     // install global types
@@ -223,8 +209,9 @@ public class ModuleImpl implements Module, FileChangeListener  {
                     // install local configured types (in XML configuration) - TODO remove this?
                     loadConfiguredTypes();
                     localTypes.install(typeReg);
+                    type = (ModuleTypeImpl)typeReg.getModuleType();
                 }
-                System.out.println(">>>>>>>>>>>>>"+((System.currentTimeMillis()-s)/1000));
+//                System.out.println(">>>>>>>>>>>>>"+((System.currentTimeMillis()-s)/1000));
             }
         }
         return typeReg;
@@ -291,18 +278,6 @@ public class ModuleImpl implements Module, FileChangeListener  {
     
     public LinkRegistry getLinkRegistry() {
         return linkReg;
-    }
-    
-    /**
-     * A tracked file changed.
-     * Flush directory stack cache
-     */
-    public void fileChanged(FileEntry entry, long now) throws Exception {
-        for (File dir : dirStack.getDirectories()) {
-            if (dir.getPath().equals(entry.file.getPath())) {
-                fileCache.clear(); // TODO optimize this do not flush entire cache
-            }
-        }
     }
 
 }

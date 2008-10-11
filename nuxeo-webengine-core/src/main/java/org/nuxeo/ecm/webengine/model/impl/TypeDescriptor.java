@@ -50,7 +50,6 @@ public class TypeDescriptor implements Cloneable {
     @XNode("@superType")
     public String superType = ResourceType.ROOT_TYPE_NAME;
     
-    
     /**
      * 
      */
@@ -104,6 +103,10 @@ public class TypeDescriptor implements Cloneable {
     }
     
     public boolean isService() {
+        return false;
+    }
+    
+    public boolean isModule() {
         return false;
     }
 

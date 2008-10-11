@@ -5,3 +5,4 @@ Bundle-SymbolicName: org.nuxeo.ecm.webengine.resteasy.adapter;singleton:=true
 Require-Bundle: org.nuxeo.ecm.webengine.core,
  javax.servlet
 Nuxeo-Require: org.nuxeo.ecm.webengine.core
+NUxeo-Component: OSGI-INF/resource-container.xml

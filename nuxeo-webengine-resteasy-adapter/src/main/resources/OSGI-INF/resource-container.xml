@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webengine.server">
+  <implementation
+          class="org.nuxeo.ecm.webengine.server.resteasy.ResourceContainer" />
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Provides a RestEasy based JAX-RS server
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.webengine.ResourceRegistry" />
+  </service>
+
+</component>

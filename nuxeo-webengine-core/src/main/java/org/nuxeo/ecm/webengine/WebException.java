@@ -27,8 +27,8 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.webengine.exceptions.WebDocumentException;
 import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
-import org.nuxeo.ecm.webengine.model.WebApplication;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.model.impl.DefaultModule;
 
 public class WebException extends WebApplicationException {
 
@@ -111,7 +111,7 @@ public class WebException extends WebApplicationException {
         if (!byPassAppResponse) {
             WebContext ctx = WebEngine.getActiveContext();
             if (ctx != null) {
-                WebApplication rs = ctx.getApplication();
+                DefaultModule rs = ctx.getModuleInstance();
                 Object result = rs.getErrorView(this);
                 if (result instanceof Response) {
                     response  = (Response)result;

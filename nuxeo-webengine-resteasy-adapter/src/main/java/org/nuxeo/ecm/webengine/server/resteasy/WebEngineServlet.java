@@ -29,13 +29,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.ext.RuntimeDelegate;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.providers.ByteArrayProvider;
 import org.jboss.resteasy.plugins.providers.DefaultTextPlain;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
@@ -50,13 +45,9 @@ import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.model.io.ResourceWriter;
-import org.nuxeo.ecm.webengine.model.io.ScriptFileWriter;
-import org.nuxeo.ecm.webengine.model.io.TemplateWriter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -74,14 +65,11 @@ public class WebEngineServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private final static Log log = LogFactory.getLog(WebEngineServlet.class); 
     
     protected Dispatcher dispatcher;
-    private String servletMappingPrefix = "";
-
-    protected WebEngineResourceLoader registry;
+    protected ResourceRegistryImpl registry;
     
-    protected void initProviders(ResteasyProviderFactory providerFactory) {
+    protected void initializeBuiltinProviders(ResteasyProviderFactory providerFactory) {
         //RegisterBuiltin.register(providerFactory);
         try {
         providerFactory.addMessageBodyReader(new DefaultTextPlain());
@@ -99,23 +87,7 @@ public class WebEngineServlet extends HttpServlet {
             t.printStackTrace();
         }
     }
-
-
-    protected void initializeWebEngine(ResteasyProviderFactory providerFactory) throws ServletException {
-        WebEngine engine = Framework.getLocalService(WebEngine.class);
-        try {
-            providerFactory.addMessageBodyWriter(new ResourceWriter());
-            providerFactory.addMessageBodyWriter(new TemplateWriter());
-            providerFactory.addMessageBodyWriter(new ScriptFileWriter());
-            registry = new WebEngineResourceLoader(engine, (ResourceMethodRegistry)dispatcher.getRegistry());
-            registry.load();
-            addInterceptors();
-        } catch (Throwable e) {
-            e.printStackTrace();
-            throw new ServletException("Failed to initialize WebEngine Root Resources", e);
-        }
-    }
-
+    
     public Dispatcher getDispatcher()
     {
        return dispatcher;
@@ -124,29 +96,11 @@ public class WebEngineServlet extends HttpServlet {
 
     public void init(ServletConfig servletConfig) throws ServletException
     {
-       //bs: initialize runtime delegate
-       RuntimeDelegate.setInstance(new ResteasyProviderFactory());
-       
-       ResteasyProviderFactory providerFactory = (ResteasyProviderFactory) servletConfig.getServletContext().getAttribute(ResteasyProviderFactory.class.getName());
-       if (providerFactory == null)
-       {
-          providerFactory = new ResteasyProviderFactory();
-          servletConfig.getServletContext().setAttribute(ResteasyProviderFactory.class.getName(), providerFactory);
-       }
-
-       dispatcher = (Dispatcher) servletConfig.getServletContext().getAttribute(Dispatcher.class.getName());
-       if (dispatcher == null)
-       {
-          dispatcher = new SynchronousDispatcher(providerFactory);
-          servletConfig.getServletContext().setAttribute(Dispatcher.class.getName(), dispatcher);
-          servletConfig.getServletContext().setAttribute(Registry.class.getName(), dispatcher.getRegistry());
-       }
-       servletMappingPrefix = servletConfig.getServletContext().getInitParameter("resteasy.servlet.mapping.prefix");
-       if (servletMappingPrefix == null) servletMappingPrefix = "";
-       servletMappingPrefix.trim();
-       //bs: initialize webegnine
-       initProviders(providerFactory);
-       initializeWebEngine(providerFactory);
+        ResourceContainer rc = (ResourceContainer)Framework.getRuntime().getComponent(ResourceContainer.NAME);       
+        dispatcher = rc.getDispatcher();
+        //bs: initialize webegnine
+        initializeBuiltinProviders(dispatcher.getProviderFactory());
+        addInterceptors();
     }
 
     public void setDispatcher(Dispatcher dispatcher)

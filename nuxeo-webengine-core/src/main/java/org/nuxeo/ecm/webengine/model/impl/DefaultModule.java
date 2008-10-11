@@ -17,15 +17,30 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.model;
+package org.nuxeo.ecm.webengine.model.impl;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
+import org.nuxeo.ecm.webengine.model.Module;
+import org.nuxeo.ecm.webengine.model.ModuleResource;
+import org.nuxeo.ecm.webengine.model.ModuleType;
+import org.nuxeo.ecm.webengine.model.NoSuchResourceException;
+import org.nuxeo.ecm.webengine.model.Resource;
+import org.nuxeo.ecm.webengine.model.ResourceType;
+import org.nuxeo.ecm.webengine.model.ServiceNotFoundException;
+import org.nuxeo.ecm.webengine.model.ServiceType;
+import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
+import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.model.WebModule;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 
@@ -33,41 +48,49 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebApplication {
+public class DefaultModule extends AbstractResource<ModuleType> implements ModuleResource {
 
-    protected WebContext ctx;
     protected Module module;
-    protected String path;
   
-    public WebApplication() {
+    public DefaultModule() {        
         ctx = WebEngine.getActiveContext();
-        module = ctx.getEngine().getModule(getClass().getAnnotation(WebModule.class).name());        
+        module = ctx.getEngine().getModule(getClass().getAnnotation(WebModule.class).name());
+        type = module.getModuleType();
         path = guessPath();
-        ctx.setApplication(this);
-        
-        //TODO: invoke application guard if any
+        setRoot(true);
+        ctx.push(this);
+        if (!this.type.getGuard().check(this)) {
+            throw new WebSecurityException("Failed to initialize object: "+getPath()+". Object is not accessible in the current context", getPath());
+        }        
     }
     
+    @Override
+    public Resource initialize(WebContext ctx, ResourceType type,
+            Object... args) throws WebException {
+        return this; // initialization is done in constructor
+    }
+    
+    @Override
     public Module getModule() {
         return module;
     }
     
-    public WebContext getContext() {
-        return ctx; 
-    }    
+    public boolean isService() {
+        return false;
+    }
     
     public String getName() {
         return module.getName();
     }
 
-
     public Object getErrorView(WebApplicationException e) {
-        return null;
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        pw.close();
+        return Response.status(500).entity(sw.toString()).build();
     }
         
-    public String getPath() {
-        return path; 
-    }
 
     /**
      * This method try to guess the actual path under this resource was called.

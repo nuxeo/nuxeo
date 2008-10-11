@@ -27,6 +27,7 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Utils;
@@ -66,15 +67,14 @@ public class ModuleDescriptor implements Cloneable {
     @XNodeList(value="actions/action", componentType=ServiceTypeImpl.class, type=ArrayList.class, nullByDefault=false)
     public ArrayList<ServiceTypeImpl> actions;
 
-    @XNodeList(value="roots/root", type=ArrayList.class, componentType=String.class, nullByDefault=true)
-    public List<String> roots;
-
     @XNodeList(value="links/link", type=ArrayList.class, componentType=LinkDescriptor.class, nullByDefault=true)
     public List<LinkDescriptor> links;
     
     @XNode("permission")
     public  GuardDescriptor guardDescriptor;
 
+    public ResourceBinding binding;
+    
     private Guard guard;
 
     public void checkPermission(Adaptable adaptable) throws WebSecurityException {
@@ -130,13 +130,6 @@ public class ModuleDescriptor implements Cloneable {
         if (guard != null) {
             ad.guardDescriptor = new GuardDescriptor();
             ad.guardDescriptor.setExpression(guard);
-        }
-        String[] roots = anno.roots();
-        if (roots.length > 0) {
-            ad.roots = new ArrayList<String>(); 
-            for (int i=0; i<roots.length; i++) {
-                ad.roots.add(roots[i]);
-            }
         }
         ad.actions = new ArrayList<ServiceTypeImpl>();
         ad.types = new ArrayList<TypeDescriptor>();        

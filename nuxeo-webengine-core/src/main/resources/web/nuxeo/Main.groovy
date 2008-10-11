@@ -12,15 +12,7 @@ import org.nuxeo.ecm.webengine.*;
 @WebModule(name="default")
 @Path("/")
 @Produces(["text/html", "*/*"])
-public class Main extends WebApplication {
-
-@Path("kk")
-@GET
-public String testkk() {return "kk";}
-
-@Path("kk2")
-@GET
-public String testkk2() {return "kk   22";}
+public class Main extends DefaultModule {
 
   @Path("admin")
   public Object getAdmin() {
@@ -60,7 +52,7 @@ public String testkk2() {return "kk   22";}
   @Path("login/{target:.*}")
   public Response login(@PathParam("target") String target) {
     if (target != null) {
-      return Response.seeOther(new java.net.URI(target)).build();
+      return redirect(target);
     } else {
       return Response.ok().noContent().build();
     }
@@ -73,11 +65,7 @@ public String testkk2() {return "kk   22";}
     } else if (e instanceof WebResourceNotFoundException) {
       return Response.status(404).entity(new Template(ctx, getFile("error/error_404.ftl"))).build();
     } else {
-      StringWriter sw = new StringWriter();
-      PrintWriter pw = new PrintWriter(sw);
-      e.printStackTrace(pw);
-      pw.close();
-      return Response.status(500).entity(sw.toString()).build();
+      return super.getErrorView(e);
     }
   }
   

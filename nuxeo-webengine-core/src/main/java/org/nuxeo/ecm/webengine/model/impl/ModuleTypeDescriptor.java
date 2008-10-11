@@ -17,31 +17,23 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine;
+package org.nuxeo.ecm.webengine.model.impl;
 
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-
+import org.nuxeo.ecm.webengine.loader.ClassProxy;
 
 /**
- * To be implemented by backends to allow WebEngine dynamically register/unregister resources
- * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ResourceRegistry {
+public class ModuleTypeDescriptor extends TypeDescriptor {
 
-    void addBinding(ResourceBinding binding) throws WebException;
-        
-    void removeBinding(ResourceBinding binding) throws WebException;
-
-    void clear();
+    public ModuleTypeDescriptor(ClassProxy clazz, String name, String superType) {
+        super (clazz, name, superType);
+    }
     
-    void reload();
-    
-    ResourceBinding[] getBindings();
-   
-    void addMessageBodyWriter(MessageBodyWriter<?> writer);
-    void addMessageBodyReader(MessageBodyReader<?> reader);
+    @Override
+    public boolean isModule() {
+        return true;
+    }
     
 }

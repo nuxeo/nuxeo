@@ -26,11 +26,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.Vector;
 
 import javax.ws.rs.Path;
 
@@ -49,7 +47,11 @@ import org.nuxeo.ecm.webengine.model.WebService;
 import org.nuxeo.ecm.webengine.model.impl.BundleTypeProvider;
 import org.nuxeo.ecm.webengine.model.impl.DirectoryTypeProvider;
 import org.nuxeo.ecm.webengine.model.impl.ModuleDescriptor;
+import org.nuxeo.ecm.webengine.model.impl.ModuleImpl;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRegistry;
+import org.nuxeo.ecm.webengine.model.io.ResourceWriter;
+import org.nuxeo.ecm.webengine.model.io.ScriptFileWriter;
+import org.nuxeo.ecm.webengine.model.io.TemplateWriter;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.runtime.annotations.AnnotationManager;
@@ -110,15 +112,15 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     protected boolean isDebug = false;
 
     protected BundleTypeProvider bundleTypeProvider;
-    protected DirectoryTypeProvider directoryTypeProvider;
-    protected List<ResourceBinding> bindings = new Vector<ResourceBinding>();
+    protected DirectoryTypeProvider directoryTypeProvider;    
 
     protected AnnotationManager annoMgr;
 
     protected ResourceRegistry registry;
 
     
-    public WebEngine(File root) throws IOException {
+    public WebEngine(ResourceRegistry registry, File root) throws IOException {
+        this.registry = registry;
         isDebug = Boolean.parseBoolean(Framework.getProperty("debug", "false"));
         this.root = root;
         if (isDebug) { // TODO notifier must be intialized by WebEngine
@@ -155,13 +157,11 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         }
         // register annotation loader
         BundleAnnotationsLoader.getInstance().addLoader(Path.class.getName(), this);
-    }
-    
-    /**
-     * @param registry the registry to set.
-     */
-    public void setRegistry(ResourceRegistry registry) {
-        this.registry = registry;
+        
+        // register writers
+        registry.addMessageBodyWriter(new ResourceWriter());
+        registry.addMessageBodyWriter(new TemplateWriter());
+        registry.addMessageBodyWriter(new ScriptFileWriter());
     }
     
     /**
@@ -283,9 +283,9 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
             Class<?> clazz = scripting.loadClass(className);
             ModuleDescriptor ad = ModuleDescriptor.fromAnnotation(clazz);
             if (ad != null) {
-                ResourceBinding binding = ResourceBinding.fromAnnotation(clazz);
-                if (binding != null) {
-                    bindings.add(binding);
+                ad.binding = ResourceBinding.fromAnnotation(clazz);
+                if (ad.binding != null) {
+                    addResourceBinding(ad.binding);
                 }
             }            
             return ad;
@@ -369,29 +369,32 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
 
     /** Manage jax-rs root resource bindings */
     public void addResourceBinding(ResourceBinding binding) {
-        bindings.add(binding);
+        registry.addBinding(binding);
     }
 
     public void removeResourceBinding(ResourceBinding binding) {
-        bindings.remove(binding);
+        registry.removeBinding(binding);
     }
 
     public ResourceBinding[] getBindings() {
-        return bindings.toArray(new ResourceBinding[bindings.size()]);
+        return registry.getBindings();
     }
 
     /**
      * Reload configuration
      */
-    public void reload() {
-        bindings.clear();
+    public synchronized void reload() {
         bundleTypeProvider.flushCache();
         directoryTypeProvider.flushCache();
-        //TODO
-        //defaultApplication = null;
-        //for (WebApplication app : apps.values()) {
-        //    app.flushCache();
-        //}
+        reloadModules();
+    }
+
+    public synchronized void reloadModules() {
+        for (Module module : moduleReg.getModules()) {
+            ResourceBinding binding = module.getModuleBinding();
+            registry.removeBinding(binding);
+        }
+        loadModules();
     }
 
     public void destroy() {
@@ -399,6 +402,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
             notifier.removeListener(this);
             notifier = null;
         }
+        registry.clear();
     }
 
     public void fileChanged(FileEntry entry, long now) throws Exception {
@@ -409,26 +413,34 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         String rootPath = root.getAbsolutePath();
         if (!path.startsWith(rootPath)) {
             return;
-        }         
-        //TODO improve reloading
-        if (path.endsWith("/Main.groovy")) {
-            if (registry != null) {
-                registry.reload();
-            }
-        } else if (path.contains("i18n")) {
+        }
+        if (entry.file.isFile()) {
+            return;
+        }
+        if (entry.file.getParentFile().equals(root)) {
+            reload();
+        } else if (path.endsWith("/i18n")) {
             loadMessageBundle(false);
         } else {
             path = path.substring(rootPath.length()+1);
             int p = path.indexOf('/');
             String moduleName = path; 
             if (p > -1) {
-              moduleName = path.substring(0, p); 
+                moduleName = path.substring(0, p); 
             }
             Module module = getModule(moduleName);
             if (module != null) {
-                module.flushCache();
+                if (path.contains("/skin")) {
+                    if (module instanceof ModuleImpl) {
+                        ((ModuleImpl)module).flushSkinCache();
+                    } else {
+                        module.flushCache();    
+                    }
+                } else {
+                    module.flushCache();
+                }
             }
-        } // else{ // do nothing
+        }
         lastMessagesUpdate = now;        
     }
 
@@ -439,9 +451,8 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
             Path p = clazz.getAnnotation(Path.class);
             ResourceBinding rb = new ResourceBinding();
             rb.path = p.value();
-            rb.className = className;
-            bindings.add(rb);
-            //TODO hot deploy
+            rb.clazz = clazz;
+            addResourceBinding(rb);
         }
     }
     

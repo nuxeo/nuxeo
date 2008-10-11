@@ -46,7 +46,6 @@ import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.ServiceResource;
 import org.nuxeo.ecm.webengine.model.ServiceType;
-import org.nuxeo.ecm.webengine.model.WebApplication;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
@@ -68,7 +67,7 @@ public abstract class AbstractWebContext implements WebContext {
     protected AbstractResource<?> head;
     protected AbstractResource<?> tail;
     protected AbstractResource<?> root;
-    protected WebApplication module;
+    protected Module module;
     protected HttpServletRequest request;
     protected HashMap<String,Object> vars;
     protected FormData form;
@@ -106,7 +105,7 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public Module getModule() {
-        return module.getModule();
+        return module;
     }
 
     public WebEngine getEngine() {
@@ -134,7 +133,7 @@ public abstract class AbstractWebContext implements WebContext {
     }
     
     public String getModulePath() {
-        return module.getPath();
+        return head.getPath();
     }
 
     
@@ -154,7 +153,7 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public ServiceResource newService(Resource ctx, String serviceName, Object ...  args) throws WebException {
-        ServiceType st = getApplication().getService(ctx, serviceName);
+        ServiceType st = getModuleInstance().getService(ctx, serviceName);
         ServiceResource service = (ServiceResource)st.newInstance();
         service.initialize(this, st, args);
         push(service);
@@ -265,12 +264,9 @@ public abstract class AbstractWebContext implements WebContext {
     
     /** object stack API */
 
-    public void setApplication(WebApplication root) {
-        this.module = root;
-    }
     
-    public WebApplication getApplication() {
-        return module;
+    public DefaultModule getModuleInstance() {
+        return (DefaultModule)head;
     }
     
     
@@ -281,6 +277,7 @@ public abstract class AbstractWebContext implements WebContext {
             rs.prev = tail;
             tail = rs;
         } else {
+            module = obj.getModule();
             rs.prev = tail;
             head = tail = rs;
         }
@@ -480,6 +477,17 @@ public abstract class AbstractWebContext implements WebContext {
         return null;        
     }
     
+    public ServiceResource getTargetService() {
+        Resource t = tail;
+        while (t != null) {
+            if (t.isService()) {
+                return (ServiceResource)t;
+            }
+            t = t.getPrevious();
+        }
+        return null;        
+    }
+    
     
     protected void initializeBindings(Bindings bindings) {
         Resource obj = getTargetObject();
@@ -488,9 +496,6 @@ public abstract class AbstractWebContext implements WebContext {
         bindings.put("Engine", engine);
         bindings.put("basePath", getBasePath());
         bindings.put("Root", getRoot());
-        //TODO uncomment for compatibility
-        //bindings.put("Request", request);
-        //bindings.put("Response", response);
         if (obj != null) {
             bindings.put("This", obj);
             DocumentModel doc = obj.getAdapter(DocumentModel.class);

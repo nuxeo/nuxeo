@@ -18,6 +18,7 @@
 
   <modules>
     <module>nuxeo-platform-rendering</module>
+    <module>nuxeo-webengine-resteasy-adapter</module>    
     <module>nuxeo-webengine-core</module>
     <module>nuxeo-webengine-ui</module>
     <module>nuxeo-webengine-wiki</module>

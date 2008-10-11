@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webengine.model;
 import java.io.IOException;
 import java.util.List;
 
+import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
@@ -41,6 +42,19 @@ public interface Module {
 
     void flushCache();
 
+    Module getSuperModule();
+    
+    /**
+     * The root resource  type
+     * @return
+     */
+    ModuleType getModuleType(); 
+    
+    /**
+     * Get the root binding of this module
+     * @return
+     */
+    ResourceBinding getModuleBinding();
     
     /**
      * Get a file using the configured directory stack. Each directory in the stack is asked for the file
