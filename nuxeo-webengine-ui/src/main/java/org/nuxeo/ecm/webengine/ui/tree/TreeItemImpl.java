@@ -34,8 +34,8 @@ public class TreeItemImpl implements TreeItem {
     public static final int F_CONTAINER = 4;
     public static final int F_EXPANDED = 8;
 
-    public final static TreeItem[] EMPTY_CHILDREN = new TreeItem[0];
-    public final static TreeItem[] HAS_CHILDREN = new TreeItem[0];
+    public static final TreeItem[] EMPTY_CHILDREN = new TreeItem[0];
+    public static final TreeItem[] HAS_CHILDREN = new TreeItem[0];
 
     protected ContentProvider provider;
     protected TreeItem parent;
@@ -59,15 +59,15 @@ public class TreeItemImpl implements TreeItem {
     public TreeItemImpl(TreeItem parent, ContentProvider provider, Object data) {
         this.parent = parent;
         this.provider = provider;
-        this.obj = data;
+        obj = data;
         String name = provider.getName(obj);
         if (parent != null) {
-            this.path = parent.getPath().append(name);
+            path = parent.getPath().append(name);
         } else {
-            this.path = new Path("/");
+            path = new Path("/");
         }
         if (provider.isContainer(obj)) {
-            this.state |= F_CONTAINER; // set container flag and invalidate children
+            state |= F_CONTAINER; // set container flag and invalidate children
         }
     }
 
@@ -179,8 +179,8 @@ public class TreeItemImpl implements TreeItem {
     }
 
     protected void loadData() {
-        this.label = provider.getLabel(obj);
-        this.facets = provider.getFacets(obj);
+        label = provider.getLabel(obj);
+        facets = provider.getFacets(obj);
     }
 
     public void validateData() {
@@ -198,7 +198,9 @@ public class TreeItemImpl implements TreeItem {
     }
 
     protected void loadChildren() {
-        if (!isContainer()) return;
+        if (!isContainer()) {
+            return;
+        }
         Object[] objects = parent == null
             ? provider.getElements(obj) : provider.getChildren(obj);
         if (objects == null) {
@@ -221,7 +223,7 @@ public class TreeItemImpl implements TreeItem {
         return (state & F_EXPANDED) != 0;
     }
 
-    /**
+    /*
      * TODO not completely implemented
      */
     public void refresh(int type) {
@@ -242,7 +244,7 @@ public class TreeItemImpl implements TreeItem {
         state |= type;
     }
 
-    /**
+    /*
      * TODO not implemented
      */
     public int getValidationState() {
@@ -260,7 +262,9 @@ public class TreeItemImpl implements TreeItem {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
+        if (obj == this) {
+            return true;
+        }
         if (obj instanceof TreeItem) {
             return obj.equals(((TreeItem)obj).getObject());
         }

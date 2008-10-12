@@ -51,110 +51,110 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Copied from {@link HttpServletDispatcher}. Modifications:
+ * Mostly copied from {@link HttpServletDispatcher}.
+ * <p>
+ * Modifications:
  * <ul>
- * <li> Changed Dispatcher implementation.
- * <li> Added methods to register root resources without {@link Path} annotation.
- * <li> Added WebEngine initialization
+ * <li>Changed Dispatcher implementation.
+ * <li>Added methods to register root resources without {@link Path} annotation.
+ * <li>Added WebEngine initialization
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WebEngineServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-
     protected Dispatcher dispatcher;
     protected ResourceRegistryImpl registry;
 
-    protected void initializeBuiltinProviders(ResteasyProviderFactory providerFactory) {
-        //RegisterBuiltin.register(providerFactory);
+    protected void initializeBuiltinProviders(
+            ResteasyProviderFactory providerFactory) {
+        // RegisterBuiltin.register(providerFactory);
         try {
-        providerFactory.addMessageBodyReader(new DefaultTextPlain());
-        providerFactory.addMessageBodyWriter(new DefaultTextPlain());
-        providerFactory.addMessageBodyReader(new StringTextStar());
-        providerFactory.addMessageBodyWriter(new StringTextStar());
-        providerFactory.addMessageBodyReader(new InputStreamProvider());
-        providerFactory.addMessageBodyWriter(new InputStreamProvider());
-        providerFactory.addMessageBodyReader(new ByteArrayProvider());
-        providerFactory.addMessageBodyWriter(new ByteArrayProvider());
-        providerFactory.addMessageBodyReader(new FormUrlEncodedProvider());
-        providerFactory.addMessageBodyWriter(new FormUrlEncodedProvider());
-        providerFactory.addMessageBodyWriter(new StreamingOutputProvider());
+            providerFactory.addMessageBodyReader(new DefaultTextPlain());
+            providerFactory.addMessageBodyWriter(new DefaultTextPlain());
+            providerFactory.addMessageBodyReader(new StringTextStar());
+            providerFactory.addMessageBodyWriter(new StringTextStar());
+            providerFactory.addMessageBodyReader(new InputStreamProvider());
+            providerFactory.addMessageBodyWriter(new InputStreamProvider());
+            providerFactory.addMessageBodyReader(new ByteArrayProvider());
+            providerFactory.addMessageBodyWriter(new ByteArrayProvider());
+            providerFactory.addMessageBodyReader(new FormUrlEncodedProvider());
+            providerFactory.addMessageBodyWriter(new FormUrlEncodedProvider());
+            providerFactory.addMessageBodyWriter(new StreamingOutputProvider());
         } catch (Throwable t) {
             t.printStackTrace();
         }
     }
 
-    public Dispatcher getDispatcher()
-    {
-       return dispatcher;
+    public Dispatcher getDispatcher() {
+        return dispatcher;
     }
 
-
-    public void init(ServletConfig servletConfig) throws ServletException
-    {
-        ResourceContainer rc = (ResourceContainer)Framework.getRuntime().getComponent(ResourceContainer.NAME);
+    @Override
+    public void init(ServletConfig servletConfig) throws ServletException {
+        ResourceContainer rc = (ResourceContainer) Framework.getRuntime().getComponent(ResourceContainer.NAME);
         dispatcher = rc.getDispatcher();
-        //bs: initialize webegnine
+        // bs: initialize webegnine
         initializeBuiltinProviders(dispatcher.getProviderFactory());
         addInterceptors();
     }
 
-    public void setDispatcher(Dispatcher dispatcher)
-    {
-       this.dispatcher = dispatcher;
+    public void setDispatcher(Dispatcher dispatcher) {
+        this.dispatcher = dispatcher;
     }
 
-    protected void service(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException
-    {
-       service(httpServletRequest.getMethod(), httpServletRequest, httpServletResponse);
+    @Override
+    protected void service(HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse) throws ServletException,
+            IOException {
+        service(httpServletRequest.getMethod(), httpServletRequest, httpServletResponse);
     }
 
-    public void service(String httpMethod, HttpServletRequest request, HttpServletResponse response) throws IOException
-    {
-//bs: is this needed anymore?
-//        String path = request.getPathInfo();
-//        if (path == null) path = "/";
+    public void service(String httpMethod, HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        // bs: is this needed anymore?
+        // String path = request.getPathInfo();
+        // if (path == null) path = "/";
 
-       HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
-       //UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, servletMappingPrefix);
-       //bs: using real servlet path
-       UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, request.getServletPath());
+        HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
+        // UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request,
+        // servletMappingPrefix);
+        // bs: using real servlet path
+        UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, request.getServletPath());
 
-       HttpRequest in;
-       try
-       {
-          in = new HttpServletInputMessage(headers, request.getInputStream(), uriInfo, httpMethod.toUpperCase());
-       }
-       catch (IOException e)
-       {
-          throw new RuntimeException(e);
-       }
-       HttpResponse theResponse = new HttpServletResponseWrapper(response, dispatcher.getProviderFactory());
+        HttpRequest in;
+        try {
+            in = new HttpServletInputMessage(headers, request.getInputStream(),
+                    uriInfo, httpMethod.toUpperCase());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        HttpResponse theResponse = new HttpServletResponseWrapper(response,
+                dispatcher.getProviderFactory());
 
-       try
-       {
-           //bs: initialize webengine context
-           WebContext ctx = new WebEngineContext(in, request);
-           WebEngine.setActiveContext(ctx);
+        try {
+            // bs: initialize webengine context
+            WebContext ctx = new WebEngineContext(in, request);
+            WebEngine.setActiveContext(ctx);
 
-          ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
-          ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
-          ResteasyProviderFactory.pushContext(SecurityContext.class, new ServletSecurityContext(request));
-          dispatcher.invoke(in, theResponse);
-       }
-       finally
-       {
-          ResteasyProviderFactory.clearContextData();
-          //bs: cleanup webengine context
-          WebEngine.setActiveContext(null);
-       }
+            ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
+            ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
+            ResteasyProviderFactory.pushContext(SecurityContext.class, new ServletSecurityContext(
+                    request));
+            dispatcher.invoke(in, theResponse);
+        } finally {
+            ResteasyProviderFactory.clearContextData();
+            // bs: cleanup webengine context
+            WebEngine.setActiveContext(null);
+        }
     }
 
     protected void addInterceptors() {
-        dispatcher.getProviderFactory().getInterceptorRegistry().registerResourceMethodInterceptor(new SecurityInterceptor());
+        dispatcher.getProviderFactory().getInterceptorRegistry().registerResourceMethodInterceptor(
+                new SecurityInterceptor());
     }
+
 }

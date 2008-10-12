@@ -35,11 +35,10 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class ResourceContainer extends DefaultComponent {
 
-    public final static ComponentName NAME = new ComponentName("org.nuxeo.ecm.webengine.server");
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.webengine.server");
 
     protected Dispatcher dispatcher;
     protected ResourceRegistryImpl registry;
-
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -55,16 +54,10 @@ public class ResourceContainer extends DefaultComponent {
         dispatcher = null;
     }
 
-    /**
-     * @return the dispatcher.
-     */
     public Dispatcher getDispatcher() {
         return dispatcher;
     }
 
-    /**
-     * @return the registry.
-     */
     public ResourceRegistryImpl getRegistry() {
         return registry;
     }

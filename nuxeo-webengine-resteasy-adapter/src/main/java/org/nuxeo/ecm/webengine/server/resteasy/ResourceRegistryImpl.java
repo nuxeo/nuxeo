@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.server.resteasy;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,19 +48,21 @@ public class ResourceRegistryImpl implements ResourceRegistry {
     protected List<ResourceBinding> bindings;
 
     public ResourceRegistryImpl(Dispatcher dispatcher) {
-        this.registry = (ResourceMethodRegistry)dispatcher.getRegistry();
-        this.bindings = new ArrayList<ResourceBinding>();
+        registry = (ResourceMethodRegistry)dispatcher.getRegistry();
+        bindings = new ArrayList<ResourceBinding>();
         this.dispatcher = dispatcher;
     }
 
     public synchronized void addBinding(ResourceBinding binding) throws WebException {
         registerBinding(binding);
-        this.bindings.add(binding);
+        bindings.add(binding);
     }
 
     public void registerBinding(ResourceBinding binding) throws WebException {
         if (binding.clazz == null || binding.path == null) {
-            throw new WebException("Invalid resource binding: "+binding.path+" -> "+binding.clazz+". No resource path / class specified.");
+            throw new WebException(
+                    "Invalid resource binding: "+binding.path
+                    +" -> "+binding.clazz+". No resource path / class specified.");
         }
 
         if (binding.singleton) {
@@ -83,12 +86,12 @@ public class ResourceRegistryImpl implements ResourceRegistry {
         }
     }
 
-    public synchronized void removeBinding(ResourceBinding binding)  throws WebException {
+    public synchronized void removeBinding(ResourceBinding binding) throws WebException {
         unregisterBinding(binding);
         bindings.remove(binding);
     }
 
-    public void unregisterBinding(ResourceBinding binding)  throws WebException {
+    public void unregisterBinding(ResourceBinding binding) throws WebException {
         try {
             if (binding.clazz.getAnnotation(Path.class) == null) {
                 removeRegistration(binding.path, binding.clazz);
@@ -131,11 +134,9 @@ public class ResourceRegistryImpl implements ResourceRegistry {
     }
 
     protected void removeRegistration(String base, Class<?> clazz) throws Exception {
-        java.lang.reflect.Method m = registry.getClass().getDeclaredMethod("removeRegistration", String.class, Class.class);
+        Method m = registry.getClass().getDeclaredMethod("removeRegistration", String.class, Class.class);
         m.invoke(registry, base, clazz);
     }
-
-
 
     public void addMessageBodyReader(MessageBodyReader<?> reader) {
         dispatcher.getProviderFactory().addMessageBodyReader(reader);
