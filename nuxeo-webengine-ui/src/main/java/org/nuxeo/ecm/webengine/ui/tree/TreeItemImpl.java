@@ -21,8 +21,6 @@ package org.nuxeo.ecm.webengine.ui.tree;
 
 import org.nuxeo.common.utils.Path;
 
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -51,9 +49,8 @@ public class TreeItemImpl implements TreeItem {
     // TODO: use a map?
     //protected Map<String, TreeItem> childrenMap;
 
-
     public TreeItemImpl(ContentProvider provider, Object data) {
-        this (null, provider, data);
+        this(null, provider, data);
     }
 
     public TreeItemImpl(TreeItem parent, ContentProvider provider, Object data) {
@@ -72,7 +69,7 @@ public class TreeItemImpl implements TreeItem {
     }
 
     public TreeItemImpl(TreeItem parent, Object data) {
-        this (parent, parent.getContentProvider(), data);
+        this(parent, parent.getContentProvider(), data);
     }
 
     public boolean hasChildren() {
@@ -109,9 +106,6 @@ public class TreeItemImpl implements TreeItem {
         return label;
     }
 
-    /**
-     * @return the facets.
-     */
     public String[] getFacets() {
         validateData();
         return facets;
@@ -201,16 +195,14 @@ public class TreeItemImpl implements TreeItem {
         if (!isContainer()) {
             return;
         }
-        Object[] objects = parent == null
-            ? provider.getElements(obj) : provider.getChildren(obj);
+        Object[] objects = parent == null ? provider.getElements(obj)
+                : provider.getChildren(obj);
         if (objects == null) {
             children = null;
         } else {
             children = new TreeItemImpl[objects.length];
-            if (objects != null) {
-                for (int i=0; i<objects.length; i++) {
-                    children[i] = new TreeItemImpl(this, objects[i]);
-                }
+            for (int i = 0; i < objects.length; i++) {
+                children[i] = new TreeItemImpl(this, objects[i]);
             }
         }
     }
@@ -257,7 +249,7 @@ public class TreeItemImpl implements TreeItem {
 
     @Override
     public String toString() {
-        return "TreeItem: "+obj.toString();
+        return "TreeItem: " + obj.toString();
     }
 
     @Override
@@ -266,7 +258,7 @@ public class TreeItemImpl implements TreeItem {
             return true;
         }
         if (obj instanceof TreeItem) {
-            return obj.equals(((TreeItem)obj).getObject());
+            return getObject().equals(((TreeItem) obj).getObject());
         }
         return false;
     }

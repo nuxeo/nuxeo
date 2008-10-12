@@ -30,11 +30,8 @@ import net.sf.json.JSONObject;
  */
 public class JSonTreeSerializer implements TreeItemVisitor {
 
-    public JSonTreeSerializer() {
-    }
-
     /**
-     * Must be overrided to provide real URLs
+     * Must be overridden to provide real URLs
      */
     public String getUrl(TreeItem item) {
         return item.getPath().toString();
@@ -76,7 +73,8 @@ public class JSonTreeSerializer implements TreeItemVisitor {
     }
 
     /**
-     * You may override this method to change the output JSON
+     * You may override this method to change the output JSON.
+     *
      * @param item
      * @param children
      * @return
@@ -97,4 +95,5 @@ public class JSonTreeSerializer implements TreeItemVisitor {
         }
         return json;
     }
+
 }
