@@ -35,8 +35,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -198,12 +196,6 @@ public class BundleAnnotationsLoader implements BundleListener {
             lines.add(line);
         }
         return lines;
-    }
-
-    public static void main(String[] args) {
-        System.out.println("ac|sd|ddd|fg|qw\\|a\\\\sf|d|");
-        String[] ar = parse("ac|sd|ddd|fg|qw\\|a\\\\sf|d|");
-        System.out.println(">> "+Arrays.toString(ar));
     }
 
 }
