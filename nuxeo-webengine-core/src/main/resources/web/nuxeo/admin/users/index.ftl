@@ -1,13 +1,13 @@
 <@extends src="base.ftl">
-<@block name="header"><h1><a href ="${appPath}/users">User Administration</a></h1></@block>
+<@block name="header"><h1><a href ="${This.path}">User Administration</a></h1></@block>
 
 <@block name="toolbox">
   <div class="sideblock contextual">
     <h3>Toolbox</h3>
     <div class="sideblock-content">
       <ul>
-        <li><a href="${appPath}/users/create_user">Create User</a></li>
-        <li><a href="${appPath}/users/create_group">Create Group</a></li>
+        <li><a href="${This.activeService.path}/.views/create_user">Create User</a></li>
+        <li><a href="${This.activeService.path}/.views/create_group">Create Group</a></li>
       </ul>
     </div>
   </div>
@@ -24,7 +24,7 @@
 
 <div class="userSearch">
   <h2>Users</h2>
-  <form method="POST" action="${Context.URL}/search" accept-charset="utf-8">
+  <form method="GET" action="${Context.URL}" accept-charset="utf-8">
     <input type="text" name="query" value=""/>
     <input type="submit" value="Search"/>
   </form>
@@ -32,7 +32,7 @@
 
 <div class="groupSearch">
   <h2>Groups</h2>
-  <form method="POST" action="${Context.URL}/search" accept-charset="utf-8">
+  <form method="GET" action="${Context.URL}" accept-charset="utf-8">
     <input type="text" name="query" value=""/>
     <input type="hidden" name="group" value="true"/>
     <input type="submit" value="Search"/>
@@ -51,7 +51,7 @@
 <tbody>
 <#list users as user>
 	<tr>
-		<td><a href="${appPath}/users/user/${user}">${user}<a/></td>
+		<td><a href="${This.activeService.path}/user/${user}">${user}<a/></td>
 		<td>${user.firstName}</td>
 		<td>${user.lastName}</td>
 	</tr>
@@ -71,7 +71,7 @@
 <tbody>
 <#list groups as user>
   <tr>
-    <td><a href="${appPath}/users/group/${user}">${user}<a/></td>
+    <td><a href="${This.activeService.path}/group/${user}">${user}<a/></td>
   </tr>
 </#list>
 </tbody>

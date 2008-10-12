@@ -9,14 +9,14 @@ import org.nuxeo.ecm.webengine.model.impl.*;
 import org.nuxeo.ecm.webengine.exceptions.*;
 import org.nuxeo.ecm.webengine.*;
 
-@WebModule(name="default")
+@WebModule(name="nuxeo")
 @Path("/")
 @Produces(["text/html", "*/*"])
 public class Main extends DefaultModule {
 
   @Path("admin")
   public Object getAdmin() {
-    return ctx.newObject("Admin");
+    return newObject("Admin");
   }
 
   @Path("repository")
@@ -26,19 +26,19 @@ public class Main extends DefaultModule {
 
   @GET
   public Object getIndex() {
-    return new Template(ctx).fileName("index.ftl")
+    return getTemplate("index.ftl");
   }
 
   @GET
   @Path("help")
   public Object getHelp() {
-    return new Template(ctx).fileName("help/help.ftl")
+    return getTemplate("help/help.ftl");
   }
 
   @GET
   @Path("about")
   public Object getAbout() {
-    return new Template(ctx).fileName("help/about.ftl")
+    return getTemplate("help/about.ftl");
   }
 
   // the login service used to redirect to a wanted page after login / logout
@@ -59,13 +59,13 @@ public class Main extends DefaultModule {
   }
 
   // handle errors
-  public Object getErrorView(WebApplicationException e) {
+  public Object handleError(WebApplicationException e) {
     if (e instanceof WebSecurityException) {
-      return Response.status(401).entity(new Template(ctx, getFile("error/error_401.ftl"))).build();
+      return Response.status(401).entity(getTemplate("error/error_401.ftl")).build();
     } else if (e instanceof WebResourceNotFoundException) {
-      return Response.status(404).entity(new Template(ctx, getFile("error/error_404.ftl"))).build();
+      return Response.status(404).entity(getTemplate("error/error_404.ftl")).build();
     } else {
-      return super.getErrorView(e);
+      return super.handleError(e);
     }
   }
   

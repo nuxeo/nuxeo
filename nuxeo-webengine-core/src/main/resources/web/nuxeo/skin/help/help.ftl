@@ -1,6 +1,6 @@
 <@extends src="base.ftl">
 <@block name="title">Nuxeo WebEngine Documentation</@block>
-<@block name="header"><h1><a href="${Module.path}">Nuxeo WebEngine Documentation</a></@block>
+<@block name="header"><h1><a href="${Context.modulePath}">Nuxeo WebEngine Documentation</a></@block>
 <@block name="content">
 
 <blockquote>

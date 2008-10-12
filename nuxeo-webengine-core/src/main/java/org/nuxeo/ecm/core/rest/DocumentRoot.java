@@ -41,7 +41,7 @@ public class DocumentRoot extends DocumentObject {
     public DocumentRoot(WebContext ctx, DocumentRef root) {
         try {
             DocumentModel doc = ctx.getCoreSession().getDocument(root);
-            initialize(ctx, ctx.getModuleInstance().getType(doc.getType()), doc);
+            initialize(ctx, ctx.getModule().getType(doc.getType()), doc);
             setRoot(true);
             ctx.push(this);
         } catch (Exception e) {
@@ -50,7 +50,7 @@ public class DocumentRoot extends DocumentObject {
     }
 
     public DocumentRoot(WebContext ctx, DocumentModel root) {
-        initialize(ctx, ctx.getModuleInstance().getType(root.getType()), root);
+        initialize(ctx, ctx.getModule().getType(root.getType()), root);
         setRoot(true);
         ctx.push(this);        
     }

@@ -1,6 +1,6 @@
 <@extends src="base.ftl">
 <@block name="title">Nuxeo WebEngine - About</@block>
-<@block name="header"><h1><a href="${appPath}">Nuxeo WebEngine - About</a></@block>
+<@block name="header"><h1><a href="${Context.modulePath}">Nuxeo WebEngine - About</a></@block>
 <@block name="content">
 
 <h1>${env.engine} version ${env.version}</h1>

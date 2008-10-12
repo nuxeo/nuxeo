@@ -40,16 +40,19 @@ public class ResourceTypeImpl extends AbstractResourceType {
     }
      
     protected void loadAnnotations(AnnotationManager annoMgr) {
-        WebObject wo = clazz.get().getAnnotation(WebObject.class);
+        Class<?> c = clazz.get();
+        WebObject wo = c.getAnnotation(WebObject.class);
         if (wo == null) return;
         String g = wo.guard();
         if (g != null && g.length() > 0) {
             try {
                 guard = PermissionService.parse(g);
             } catch (ParseException e) {
-                throw WebException.wrap("Failed to parse guard: "+g+" on WebObject "+clazz.get().getName(), e);
+                throw WebException.wrap("Failed to parse guard: "+g+" on WebObject "+c.getName(), e);
             }
-        }
+        } else {
+            loadGuardFromAnnoation(c);
+        }        
         String[] facets = wo.facets();
         if (facets != null && facets.length > 0) {
             this.facets = new HashSet<String>(Arrays.asList(facets));

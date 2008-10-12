@@ -33,8 +33,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Resource;
-import org.nuxeo.ecm.webengine.model.ResourceType;
-import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
@@ -59,16 +57,14 @@ public class DocumentObject extends DefaultObject {
     }
     
     @Override
-    public Resource initialize(WebContext ctx, ResourceType type,
-            Object... args) throws WebException {
+    public void initialize(Object... args) throws WebException {
         assert args != null && args.length == 1;
         doc = (DocumentModel)args[0];
-        return super.initialize(ctx, type, args);
     }
     
     @GET
     public Object doGet() {
-        return newTemplate("index.ftl");
+        return getView("index.ftl");
     }
     
     @DELETE

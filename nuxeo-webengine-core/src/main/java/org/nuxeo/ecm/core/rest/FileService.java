@@ -51,7 +51,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultService;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebService(name="file", targetTypes={"Document"})
+@WebService(name="file", targetType="Document")
 public class FileService extends DefaultService {
 
     @GET

@@ -47,7 +47,7 @@ public class ResourceWriter implements MessageBodyWriter<Resource> {
             WebApplicationException {
 
         try {
-            t.newTemplate("index.ftl").render(entityStream);
+            t.getTemplate("index.ftl").render(entityStream);
         } catch (Throwable e) {
             throw WebException.wrap("Failed to render resource", e); 
         }

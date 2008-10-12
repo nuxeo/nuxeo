@@ -67,8 +67,15 @@ public interface Resource extends Adaptable {
     
     Resource newObject(String type, Object ... args);
     ServiceResource newService(String type, Object ... args);
-    Template newTemplate(String fileName);
+    Template getView(String fileName);
+    Template getTemplate(String fileName);
 
     Response redirect(String uri);
+
+    /**
+     * Return the active service on this object if any in the current request
+     * @return the service instance or null
+     */
+    ServiceResource getActiveService();
     
 }

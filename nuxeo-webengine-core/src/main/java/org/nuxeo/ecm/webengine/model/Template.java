@@ -104,6 +104,14 @@ public class Template {
         return mediaType;
     }
 
+    public Template arg(String key, Object value) {
+        if (args == null) {
+            args = new HashMap<String, Object>();
+        }
+        args.put(key, value);
+        return this;
+    }
+
     public Template args(Map<String,Object> args) {
         this.args = args;
         return this;

@@ -275,7 +275,7 @@ public interface WebContext extends Adaptable {
      * current executed script then the path will be transformed into an
      * absolute path and next step is entered.
      * <li> the resolving is delegated to the current
-     * {@link DefaultModule#getFile(String)} that will try to resolve the path
+     * {@link Module#getFile(String)} that will try to resolve the path
      * relative to each directory in the directory stack
      * </ol>
      *

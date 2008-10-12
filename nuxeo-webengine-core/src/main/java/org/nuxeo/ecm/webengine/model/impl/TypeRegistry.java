@@ -285,12 +285,8 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
                 }
                 list.addAll(Arrays.asList(sf.facets));
             }
-            if (sf.targetTypes != null && sf.targetTypes.length > 0) {
-                ArrayList<String> list = new ArrayList<String>();
-                if (so.targetTypes != null && so.targetTypes.length > 0) {
-                    list.addAll(Arrays.asList(so.targetTypes));    
-                }
-                list.addAll(Arrays.asList(sf.targetTypes));
+            if (sf.targetType != null && !sf.targetType.equals(ResourceType.ROOT_TYPE_NAME)) {
+                so.targetType = sf.targetType;
             }
         }
     }
@@ -345,23 +341,21 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         }
         services.put(object.name, type);  
         // install bindings
-        if (object.targetTypes != null && object.targetTypes.length > 0) {
-            installServiceBindings(type, object.targetTypes);
+        if (object.targetType != null) {
+            installServiceBindings(type, object.targetType);
         }
     }
     
-    protected void installServiceBindings(ServiceTypeImpl service, String ... targetTypes) {
-        for (String t : targetTypes) {
-            ServiceTypeImpl[] bindings = serviceBindings.get(t);
-            if (bindings == null) {
-                bindings = new ServiceTypeImpl[] {service};
-            } else {
-                ServiceTypeImpl[] ar = new ServiceTypeImpl[bindings.length+1];
-                System.arraycopy(bindings, 0, ar, 0, bindings.length);
-                ar[bindings.length] = service;
-            }
-            serviceBindings.put(t, bindings);
+    protected void installServiceBindings(ServiceTypeImpl service, String targetType) {
+        ServiceTypeImpl[] bindings = serviceBindings.get(targetType);
+        if (bindings == null) {
+            bindings = new ServiceTypeImpl[] {service};
+        } else {
+            ServiceTypeImpl[] ar = new ServiceTypeImpl[bindings.length+1];
+            System.arraycopy(bindings, 0, ar, 0, bindings.length);
+            ar[bindings.length] = service;
         }
+        serviceBindings.put(targetType, bindings);
     }
     
     
@@ -394,21 +388,15 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         AbstractResourceType t = services.get(key);
         if (t instanceof ServiceTypeImpl) { // update the type class
             ServiceTypeImpl service = (ServiceTypeImpl)t;
-            String[] targetTypes = service.targetTypes;
+            String targetType = service.targetType;
             service.clazz = object.clazz;
             service.loadAnnotations(module.getEngine().getAnnotationManager());
             t.flushCache();
             // update bindings
-            if (service.targetTypes != targetTypes) {
-                if (!Arrays.equals(targetTypes, service.targetTypes)) {
-                    if (targetTypes != null && targetTypes.length > 0) {
-                        removeServiceBindings(key, service);
-                    }
-                    if (service.targetTypes != null && service.targetTypes.length > 0) {
-                        installServiceBindings(service, service.targetTypes);
-                    }
-                }
-            }            
+            if (service.targetType != null && !service.targetType.equals(targetType)) {
+                removeServiceBindings(key, service);
+                installServiceBindings(service, service.targetType);
+            }
         } else { // install the type - this should never happen since it is an update!
             throw new IllegalStateException("Updating a service type which is not registered.");
         }        
@@ -417,7 +405,6 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     
     @Override
     protected void uninstallContribution(String key, TypeDescriptor value) {
-        //TODO use "@" prefix for services in fragment registry?
         AbstractResourceType t = types.remove(key);
         if (t == null) {
             ServiceTypeImpl s = services.remove(key);
@@ -428,24 +415,21 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
     
     protected void removeServiceBindings(String key, ServiceTypeImpl service) {
-        key = key.substring(1);
-        if (service.targetTypes != null && service.targetTypes.length > 0) {
-            for (String t : service.targetTypes) {
-                // remove bindings
-                ServiceTypeImpl[] ar = serviceBindings.get(t);
-                if (ar != null) {
-                    ArrayList<ServiceTypeImpl> list = new ArrayList<ServiceTypeImpl>(ar.length);
-                    for (int i=0; i<ar.length; i++) {
-                        if (!key.equals(ar[i].getName())) {
-                            list.add(ar[i]);
-                        }
+        if (service.targetType != null) {
+            // remove bindings
+            ServiceTypeImpl[] ar = serviceBindings.get(service.targetType);
+            if (ar != null) {
+                ArrayList<ServiceTypeImpl> list = new ArrayList<ServiceTypeImpl>(ar.length);
+                for (int i=0; i<ar.length; i++) {
+                    if (!key.equals(ar[i].getName())) {
+                        list.add(ar[i]);
                     }
-                    if (list.isEmpty()) {
-                        serviceBindings.remove(key);
-                    } else if (list.size() < ar.length) {
-                        ar = list.toArray(new ServiceTypeImpl[list.size()]);
-                        serviceBindings.put(key, ar);
-                    }
+                }
+                if (list.isEmpty()) {
+                    serviceBindings.remove(key);
+                } else if (list.size() < ar.length) {
+                    ar = list.toArray(new ServiceTypeImpl[list.size()]);
+                    serviceBindings.put(key, ar);
                 }
             }
         }

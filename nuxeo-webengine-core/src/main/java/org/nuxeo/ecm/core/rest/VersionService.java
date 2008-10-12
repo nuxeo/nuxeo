@@ -39,7 +39,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultService;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebService(name="versions", targetTypes={"Document"}, targetFacets={"Versionable"})
+@WebService(name="versions", targetType="Document", targetFacets={"Versionable"})
 public class VersionService extends DefaultService {
     
     @GET

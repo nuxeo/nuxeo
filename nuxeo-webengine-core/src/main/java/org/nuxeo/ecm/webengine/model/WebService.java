@@ -40,6 +40,6 @@ public @interface WebService {
     String superType() default ResourceTypeImpl.ROOT_TYPE_NAME; // the super type name
     String guard() default ""; // a security guard if any
     String[] facets() default {};
-    String[] targetTypes() default {};
+    String targetType() default ResourceType.ROOT_TYPE_NAME;
     String[] targetFacets() default {};
 }

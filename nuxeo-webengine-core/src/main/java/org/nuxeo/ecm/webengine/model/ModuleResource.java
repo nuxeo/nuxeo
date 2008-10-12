@@ -19,12 +19,7 @@
 
 package org.nuxeo.ecm.webengine.model;
 
-import java.util.List;
-
 import javax.ws.rs.WebApplicationException;
-
-import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -34,26 +29,6 @@ public interface ModuleResource extends Resource{
 
     public String getName();
 
-    public Object getErrorView(WebApplicationException e);
+    public Object handleError(WebApplicationException e);
         
-    public ScriptFile getFile(String path) throws WebException;
-
-    public Class<?> loadClass(String className) throws ClassNotFoundException;
-
-    public ResourceType getType(String typeName) throws TypeNotFoundException;
-        
-    public ResourceType[] getTypes();
-    
-    public ServiceType[] getServices();
-    
-    public ServiceType getService(Resource ctx, String name) throws ServiceNotFoundException;
-    
-    public List<ServiceType> getServices(Resource ctx);
-    
-    public List<String> getServiceNames(Resource ctx);
-
-    public List<ServiceType> getEnabledServices(Resource ctx);
-    
-    public List<String> getEnabledServiceNames(Resource ctx);
-
 }

@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.webengine;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
@@ -112,18 +115,42 @@ public class WebException extends WebApplicationException {
             WebContext ctx = WebEngine.getActiveContext();
             if (ctx != null) {
                 DefaultModule rs = ctx.getModuleInstance();
-                Object result = rs.getErrorView(this);
-                if (result instanceof Response) {
-                    response  = (Response)result;
-                } else if (result != null) {
-                    response = Response.fromResponse(response).entity(result).build();
+                if (rs == null) {
+                    // no context print error on screen
+                    return toResponse(this);
+                } else {
+                    Object result = rs.handleError(this);
+                    if (result instanceof Response) {
+                        response  = (Response)result;
+                    } else if (result != null) {
+                        response = Response.fromResponse(response).entity(result).build();
+                    }
                 }
             }
         }
         return response;
+    }    
+    
+    public String getStackTraceString() {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        printStackTrace(pw);
+        pw.close();
+        return sw.toString();
     }
     
+    public static String toString(Throwable t) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        t.printStackTrace(pw);
+        pw.close();
+        return sw.toString();
+    }
     
+    public static Response toResponse(Throwable t) {
+        return Response.status(500).entity(toString(t)).build();
+    }
+
     public static WebException wrap(Throwable e) {
         return wrap(null, e);
     }

@@ -153,7 +153,7 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public ServiceResource newService(Resource ctx, String serviceName, Object ...  args) throws WebException {
-        ServiceType st = getModuleInstance().getService(ctx, serviceName);
+        ServiceType st = module.getService(ctx, serviceName);
         ServiceResource service = (ServiceResource)st.newInstance();
         service.initialize(this, st, args);
         push(service);

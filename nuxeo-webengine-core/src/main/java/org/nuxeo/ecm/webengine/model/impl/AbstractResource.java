@@ -57,7 +57,12 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         if (!this.type.getGuard().check(this)) {
             throw new WebSecurityException("Failed to initialize object: "+getPath()+". Object is not accessible in the current context", getPath());
         }
+        initialize(args);
         return this;
+    }
+    
+    protected void initialize(Object ...  args) throws WebException {
+        // do nothing
     }
     
     public boolean isService() {
@@ -93,6 +98,10 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
+    }
+    
+    public ServiceResource getActiveService() {
+        return next != null && next.isService() ? (ServiceResource)next : null;
     }
     
     public void dispose() {
@@ -160,8 +169,12 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return ctx.newService(this, type, args);
     }
 
-    public Template newTemplate(String fileName) {
+    public Template getView(String fileName) {
         return new Template(this).fileName(fileName);
+    }
+    
+    public Template getTemplate(String fileName) {
+        return new Template(this, getModule().getFile(fileName));
     }
     
 }

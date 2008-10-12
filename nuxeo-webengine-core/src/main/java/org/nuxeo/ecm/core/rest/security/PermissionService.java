@@ -61,7 +61,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebService(name="permissions", targetTypes={"Document"}, targetFacets={"Folderish"})
+@WebService(name="permissions", targetType="Document", targetFacets={"Folderish"})
 public class PermissionService extends DefaultService {
 
     @GET

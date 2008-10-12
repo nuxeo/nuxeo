@@ -38,4 +38,5 @@ public @interface WebModule {
     String fragment() default "";
     String base() default "";
     String guard() default "";
+    String[] facets() default {};
 }

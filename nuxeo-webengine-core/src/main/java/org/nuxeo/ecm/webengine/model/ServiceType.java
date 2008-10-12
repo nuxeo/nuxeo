@@ -27,7 +27,7 @@ public interface ServiceType extends ResourceType {
 
     String[] getTargetFacets();
     
-    String[] getTargetTypes();
+    String getTargetType();
     
     boolean acceptResource(Resource resource);
 }

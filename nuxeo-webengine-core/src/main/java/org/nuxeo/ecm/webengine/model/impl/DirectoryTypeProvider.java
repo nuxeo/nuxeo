@@ -106,7 +106,7 @@ public class DirectoryTypeProvider extends TypeConfigurationProvider {
                 try {
                     loadClassFileAndRecord(cache, className);
                 } catch (Exception e) {
-                    e.printStackTrace(); //TODO
+                    throw WebException.wrap(e);
                 }
             }
         }

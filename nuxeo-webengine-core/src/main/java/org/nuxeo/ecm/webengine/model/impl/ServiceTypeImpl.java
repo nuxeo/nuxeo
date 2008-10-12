@@ -38,15 +38,15 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
  */
 public class ServiceTypeImpl extends AbstractResourceType implements ServiceType {
     // we are using arrays and not sets since the targetTypes and targetFacets have usually very small sizes  
-    protected String[] targetTypes;
+    protected String targetType;
     protected String[] targetFacets;
     
     public ServiceTypeImpl(ModuleImpl module, ResourceTypeImpl superType, String name, ClassProxy clazz) {
         super (module, superType, name, clazz);
     }
     
-    public String[] getTargetTypes() {
-        return targetTypes;
+    public String getTargetType() {
+        return targetType;
     }
     
     public String[] getTargetFacets() {
@@ -69,38 +69,33 @@ public class ServiceTypeImpl extends AbstractResourceType implements ServiceType
     }
     
     public boolean acceptType(ResourceType type) {
-        if (targetTypes == null || targetTypes.length == 0) {
+        if (targetType == null || targetType == ROOT_TYPE_NAME) {
             return true;
         }
-        for (int i=0; i<targetTypes.length; i++) {
-            if (!type.isDerivedFrom(targetTypes[i])) {
-                return false;
-            }
-        }
-        return true;
+        return type.isDerivedFrom(targetType);
     }
 
         
     @Override
     protected void loadAnnotations(AnnotationManager annoMgr) {
-        WebService ws = clazz.get().getAnnotation(WebService.class);
+        Class<?> c = clazz.get();
+        WebService ws = c.getAnnotation(WebService.class);
         if (ws == null) return;
         String g = ws.guard();
         if (g != null && g.length() > 0) {
             try {
                 this.guard = PermissionService.parse(g);
             } catch (ParseException e) {
-                throw WebException.wrap("Failed to parse guard: "+g+" on WebObject "+clazz.get().getName(), e);
+                throw WebException.wrap("Failed to parse guard: "+g+" on WebObject "+c.getName(), e);
             }
+        } else {
+            loadGuardFromAnnoation(c);
         }
         String[] facets = ws.facets();
         if (facets != null && facets.length > 0) {
             this.facets = new HashSet<String>(Arrays.asList(facets));
         }
-        String[] targetTypes = ws.targetTypes();
-        if (targetTypes != null && targetTypes.length > 0) {
-            this.targetTypes = targetTypes;
-        }
+        this.targetType = ws.targetType();
         String[] targetFacets = ws.targetFacets();
         if (targetFacets != null && targetFacets.length > 0) {
             this.targetFacets = targetFacets;

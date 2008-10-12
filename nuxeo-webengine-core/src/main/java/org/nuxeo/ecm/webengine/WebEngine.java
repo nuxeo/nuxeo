@@ -126,6 +126,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         if (isDebug) { // TODO notifier must be intialized by WebEngine
             this.notifier = new FileChangeNotifier();
             notifier.start();
+            notifier.watch(root);
         }
         this.scripting = new Scripting(isDebug);
         this.annoMgr = new AnnotationManager();
@@ -427,8 +428,8 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
             String moduleName = path; 
             if (p > -1) {
                 moduleName = path.substring(0, p); 
-            }
-            Module module = getModule(moduleName);
+            }  
+            Module module = moduleReg.getModuleByRoot(moduleName);
             if (module != null) {
                 if (path.contains("/skin")) {
                     if (module instanceof ModuleImpl) {

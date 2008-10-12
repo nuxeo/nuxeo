@@ -24,6 +24,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
+import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.Utils;
 import org.nuxeo.ecm.webengine.model.WebService;
 
@@ -46,8 +47,8 @@ public class ServiceDescriptor extends TypeDescriptor {
     @XNode("@superType")
     void setSuperType(String superType) { this.superType = superType; }
     
-    @XNodeList(value="targetType", type=String[].class, componentType=String.class, nullByDefault=true)
-    public String[] targetTypes;
+    @XNode(value="targetType")
+    public String targetType = ResourceType.ROOT_TYPE_NAME;
     
     @XNodeList(value="facet", type=String[].class, componentType=String.class, nullByDefault=true)
     public String[] facets;
@@ -64,14 +65,16 @@ public class ServiceDescriptor extends TypeDescriptor {
         super (clazz, name, superType);
     }
 
-    public ServiceDescriptor(ClassProxy clazz, String name, String superType, String[] types, String[] facets) {
+    public ServiceDescriptor(ClassProxy clazz, String name, String superType, String targetType, String[] facets) {
         super (clazz, name, superType);
         if (facets != null && facets.length > 0) {
             this.facets = facets;
         }
-        if (types != null && types.length > 0) {
-            this.targetTypes = types;
-        }        
+        if (targetType == null || targetType.equals("*")) {
+            this.targetType = ResourceType.ROOT_TYPE_NAME;
+        } else {
+            this.targetType = targetType;
+        }
     }
 
     public boolean isService() {
@@ -103,6 +106,6 @@ public class ServiceDescriptor extends TypeDescriptor {
     
 
     public static ServiceDescriptor fromAnnotation(ClassProxy clazz, WebService type) {
-        return  new ServiceDescriptor(clazz, type.name(), type.superType(), type.targetTypes(), type.facets());
+        return  new ServiceDescriptor(clazz, type.name(), type.superType(), type.targetType(), type.facets());
     }
 }

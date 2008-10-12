@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine.model.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -32,6 +33,7 @@ import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.TemplateNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.security.Guard;
+import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.annotations.AnnotationManager;
 
 /**
@@ -59,7 +61,6 @@ public abstract class AbstractResourceType implements ResourceType {
     }
     
     protected abstract void loadAnnotations(AnnotationManager annoMgr);
-    
     
     public ResourceType getSuperType() {
         return superType;
@@ -182,6 +183,29 @@ public abstract class AbstractResourceType implements ResourceType {
     
     public void flushCache() {
         this.templateCache = new ConcurrentHashMap<String, ScriptFile>();
+    }
+
+    protected void loadGuardFromAnnoation(Class<?> c) throws WebException {
+        org.nuxeo.ecm.webengine.model.Guard ag = (org.nuxeo.ecm.webengine.model.Guard)c.getAnnotation(org.nuxeo.ecm.webengine.model.Guard.class);
+        if (ag != null) {
+            String g = ag.value();
+            if (g != null && g.length() > 0) {
+                try {
+                    guard = PermissionService.parse(g);
+                } catch (ParseException e) {
+                    throw WebException.wrap("Failed to parse guard: "+g+" on WebObject "+c.getName(), e);
+                }                    
+            } else {
+                Class<?> gc = ag.type();
+                if (gc != null) {
+                    try {
+                        guard = (org.nuxeo.ecm.webengine.security.Guard)gc.newInstance();
+                    } catch (Exception e) {
+                        throw WebException.wrap("Failed to instantiate guard handler: "+gc.getName()+" on WebObject "+c.getName(), e);
+                    }
+                }
+            }
+        }        
     }
 
 }

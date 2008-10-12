@@ -41,7 +41,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultService;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebService(name="lock", targetTypes={"Document"})
+@WebService(name="lock", targetType="Document")
 public class LockService extends DefaultService {
 
     @GET

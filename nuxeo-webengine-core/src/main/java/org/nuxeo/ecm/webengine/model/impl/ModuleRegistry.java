@@ -34,7 +34,8 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
 public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleDescriptor> {
 
     protected Map<String, Module> modules = new ConcurrentHashMap<String, Module>();
-
+    protected Map<String, Module> moduleRoots = new ConcurrentHashMap<String, Module>();
+    
     protected WebEngine engine;
 
 
@@ -46,6 +47,10 @@ public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleD
         return engine;
     }
 
+    public Module getModuleByRoot(String rootName) {
+        return moduleRoots.get(rootName);
+    }
+    
     public void putModule(Module app) {
         modules.put(app.getName(), app);
     }
@@ -66,6 +71,7 @@ public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleD
     public synchronized void dispose() {
         super.dispose();
         modules.clear();
+        moduleRoots.clear();
     }
 
     protected ModuleDescriptor clone(ModuleDescriptor descriptor) {
@@ -84,6 +90,9 @@ public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleD
         try {
             Module app = new ModuleImpl(engine, object.directory, object);
             modules.put(key, app);
+            if (object.directory != null) {
+                moduleRoots.put(object.directory.getName(), app);
+            }
         } catch (Exception e) {
             e.printStackTrace(); //TODO
         }

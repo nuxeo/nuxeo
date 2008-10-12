@@ -57,8 +57,8 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     @XNodeList(value="category", type=ArrayList.class, componentType=String.class, nullByDefault=false)
     protected List<String> categories;
 
-    @XNodeList(value="type", type=String[].class, componentType=String.class, nullByDefault=true)
-    protected String[] types;
+    @XNode(value="type")
+    protected String type = ResourceType.ROOT_TYPE_NAME;
 
     @XNodeList(value="facet", type=String[].class, componentType=String.class, nullByDefault=true)
     protected String[] facets;
@@ -163,7 +163,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
 
 
     public boolean acceptResource(Resource context) {
-        if (types == null && facets == null) {
+        if (type == ResourceType.ROOT_TYPE_NAME && facets == null) {
             return true;
         }
         if (facets != null && facets.length > 0) {
@@ -173,12 +173,8 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
                 }
             }
         }
-        if (types != null && types.length > 0) {
-            for (String type : types) {
-                if (!context.isInstanceOf(type)) {
-                    return false;
-                }
-            }
+        if (type != ResourceType.ROOT_TYPE_NAME) {
+            return context.isInstanceOf(type);
         }
         return true;
     }
@@ -207,15 +203,8 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
                 categories.addAll(fragment.categories);
             }            
         }
-        if (fragment.types != null && fragment.types.length > 0) {
-            if (types == null) {
-                types = fragment.types;
-            } else {
-                HashSet<String> set = new HashSet<String>();
-                set.addAll(Arrays.asList(types));
-                set.addAll(Arrays.asList(fragment.types));
-                types = set.toArray(new String[set.size()]);
-            }
+        if (fragment.type != null && !fragment.type.equals(ResourceType.ROOT_TYPE_NAME)) {
+            type = fragment.type;
         }
         if (fragment.facets != null && fragment.facets.length > 0) {
             if (facets == null) {

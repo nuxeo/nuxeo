@@ -1,7 +1,7 @@
 
 <@extends src="base.ftl">
 <@block name="title">Nuxeo WebEngine - Admin board</@block>
-<@block name="header"><h1><a href="${appPath}">Nuxeo WebEngine - Admin board</a></h1></@block>
+<@block name="header"><h1><a href="${Context.modulePath}">Nuxeo WebEngine - Admin board</a></h1></@block>
 <@block name="content">
 
 <div id="mainContentBox">

@@ -21,9 +21,9 @@ package org.nuxeo.ecm.webengine.model.impl;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.List;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
@@ -33,15 +33,11 @@ import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.ModuleResource;
 import org.nuxeo.ecm.webengine.model.ModuleType;
-import org.nuxeo.ecm.webengine.model.NoSuchResourceException;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
-import org.nuxeo.ecm.webengine.model.ServiceNotFoundException;
-import org.nuxeo.ecm.webengine.model.ServiceType;
-import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
+import org.nuxeo.ecm.webengine.model.ServiceResource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebModule;
-import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 
 /**
@@ -63,6 +59,11 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
             throw new WebSecurityException("Failed to initialize object: "+getPath()+". Object is not accessible in the current context", getPath());
         }        
     }
+  
+    @Path(value=".{segment}")
+    public ServiceResource disptachService(@PathParam("segment") String serviceName) throws WebException {
+        return ctx.newService(this, serviceName);
+    }    
     
     @Override
     public Resource initialize(WebContext ctx, ResourceType type,
@@ -83,7 +84,7 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
         return module.getName();
     }
 
-    public Object getErrorView(WebApplicationException e) {
+    public Object handleError(WebApplicationException e) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
@@ -119,50 +120,5 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
     protected String _guessPath() {
         return ctx.getUriInfo().getMatchedURIs().get(0);
     }
-    
-    
-    public ScriptFile getFile(String path) throws WebException {
-        ScriptFile file = module.getFile(path);
-        if (file == null) {
-            throw new NoSuchResourceException("File not found: "+path);
-        }
-        return file;
-    }
-
-    public Class<?> loadClass(String className) throws ClassNotFoundException {
-        return module.loadClass(className);
-    }
-
-    public ResourceType getType(String typeName) throws TypeNotFoundException {
-        return module.getType(typeName);
-    }
-    
-    
-    public ResourceType[] getTypes() {
-        return module.getTypes();
-    }
-    
-    public ServiceType[] getServices() {
-      return module.getServices();  
-    }
-    
-    public ServiceType getService(Resource ctx, String name) throws ServiceNotFoundException {
-        return module.getService(ctx, name);  
-    }
-    
-    public List<ServiceType> getServices(Resource ctx) {
-        return module.getServices(ctx);
-    }
-    
-    public List<String> getServiceNames(Resource ctx) {
-        return module.getServiceNames(ctx);        
-    }
-
-    public List<ServiceType> getEnabledServices(Resource ctx) {
-        return module.getEnabledServices(ctx);
-    }
-    
-    public List<String> getEnabledServiceNames(Resource ctx) {
-        return module.getEnabledServiceNames(ctx);        
-    }
+            
 }
