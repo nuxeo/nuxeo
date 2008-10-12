@@ -47,7 +47,6 @@ import org.nuxeo.runtime.api.Framework;
  * Principal, subject and credentials are immutable per user session
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class UserSession extends HashMap<String, Object> implements Serializable, HttpSessionBindingListener {
 
@@ -116,7 +115,7 @@ public class UserSession extends HashMap<String, Object> implements Serializable
         Set<Object> privateCredentials = new HashSet<Object>();
         principals.add(principal);
         publicCredentials.add(credentials);
-        this.subject = new Subject(true, principals, publicCredentials, privateCredentials);
+        subject = new Subject(true, principals, publicCredentials, privateCredentials);
     }
 
     public void setCoreSession(CoreSession coreSession) {
@@ -124,8 +123,11 @@ public class UserSession extends HashMap<String, Object> implements Serializable
     }
 
     /**
-     * Get a core session. If not already exists it will be oipened against the
-     * given repository
+     * Gets a core session.
+     * <p>
+     * If it does not already exist, it will be opened against the
+     * given repository.
+     *
      * @param repoName
      * @return the core session
      */
@@ -232,10 +234,11 @@ public class UserSession extends HashMap<String, Object> implements Serializable
         }
     }
 
-
     /**
-     * Find an existing component. The component state will not be modified before being returned
-     * as in {@link #getComponent(Class, String)}
+     * Finds an existing component.
+     * <p>
+     * The component state will not be modified before being returned
+     * as in {@link #getComponent(Class, String)}.
      * <p>
      * If the component was not found in that session returns null
      *
@@ -259,9 +262,11 @@ public class UserSession extends HashMap<String, Object> implements Serializable
     }
 
     /**
-     * Get a component given it's class and an optional name.
+     * Gets a component given its class and an optional name.
+     * <p>
      * If the component was not yet created in this session it will
      * be created and registered against the session.
+     *
      * @param <T>
      * @param type
      * @param name
@@ -287,7 +292,7 @@ public class UserSession extends HashMap<String, Object> implements Serializable
         }
         // component not found
         try {
-            comp = (T)type.newInstance();
+            comp = type.newInstance();
         } catch (Exception e) {
             throw new SessionException("Failed to instantiate component: "+type, e);
         }
@@ -315,9 +320,10 @@ public class UserSession extends HashMap<String, Object> implements Serializable
     }
 
     /**
-     * Get component by ID.
-     * The ID is of the form <code>type#name</code> for not null names
-     * and <code>type</code> for null names
+     * Gets component by ID.
+     * <p>
+     * The ID is of the form <code>type#name</code> for non-null names
+     * and <code>type</code> for null names.
      *
      * @param <T>
      * @param id

@@ -27,8 +27,8 @@ import javax.ws.rs.WebApplicationException;
  */
 public interface ModuleResource extends Resource{
 
-    public String getName();
+    String getName();
 
-    public Object handleError(WebApplicationException e);
-        
+    Object handleError(WebApplicationException e);
+
 }
