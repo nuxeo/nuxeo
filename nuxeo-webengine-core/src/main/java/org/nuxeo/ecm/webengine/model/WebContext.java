@@ -51,23 +51,23 @@ public interface WebContext extends Adaptable {
      *
      * @return the web root. Cannot return null.
      */
-    public Module getModule();
+    Module getModule();
 
     /**
      * Get the root resource if any resource was defined as being the root
      * <p>
      * A root resource can be any resource from the resource chain.
-     * 
+     *
      * @return the root resource or null if no root was defined
      */
-    public Resource getRoot();
-    
+    Resource getRoot();
+
     /**
      * Gets the web engine instance.
      *
      * @return the web engine instance. Cannot return null
      */
-    public WebEngine getEngine();
+    WebEngine getEngine();
 
     /**
      * Get the current user session.
@@ -98,26 +98,26 @@ public interface WebContext extends Adaptable {
      * @return the uri info
      */
     UriInfo getUriInfo();
-    
+
     /**
      * Get HTTP Headers as defined by JAX-RS
      * @return HTTP headers object
      */
     HttpHeaders getHttpHeaders();
-    
+
     /**
      * Gets the underlying HTTP servlet request object.
      *
      * @return the HTTP Request object. Cannot return null
      */
     HttpServletRequest getRequest();
-    
+
     /**
      * Get HTTP Method
      * @return the method
      */
     String getMethod();
-    
+
     /**
      * Gets the representation of the data form submitted by the user. This is
      * providing access to both POST and GET parameters, or to multipart form
@@ -126,7 +126,7 @@ public interface WebContext extends Adaptable {
      * @return the request form data. Cannot return null
      */
     FormData getForm();
-        
+
     /**
      * Gets the URL requested by the client. Same as
      * {@link HttpServletRequest#getRequestURL()}
@@ -172,7 +172,7 @@ public interface WebContext extends Adaptable {
      * @return the base URL
      */
     String getBaseURL();
-    
+
     /**
      * TODO: should we remove this method from the context and create a specialized service to resolve document models to paths?
      * Get a suitable URI path for the given Nuxeo document, that can be used to invoke this document.
@@ -182,7 +182,7 @@ public interface WebContext extends Adaptable {
      * XXX can this method return null?
      */
     String getUrlPath(DocumentModel document); // try to resolve a nuxeo doc to a web object path
-    
+
     /**
      * Sets a context variable.
      *
@@ -190,8 +190,8 @@ public interface WebContext extends Adaptable {
      * @param value the variable value
      * @see #getProperty(String)
      */
-    void setProperty(String key, Object value); 
-    
+    void setProperty(String key, Object value);
+
     /**
      * Gets a context variable.
      * <p>
@@ -239,29 +239,29 @@ public interface WebContext extends Adaptable {
      */
     Log getLog();
 
-    public Resource newObject(String typeName, Object ...  args) throws WebException;
+    Resource newObject(String typeName, Object ...  args) throws WebException;
 
-    public Resource newObject(ResourceType type, Object ...  args) throws WebException;
+    Resource newObject(ResourceType type, Object ...  args) throws WebException;
 
-    public ServiceResource newService(Resource ctx, String serviceName, Object ...  args) throws WebException;
-    
+    ServiceResource newService(Resource ctx, String serviceName, Object ...  args) throws WebException;
+
     /** object stack API */
-    
-    public DefaultModule getModuleInstance();
-    
-    public Resource push(Resource obj);
 
-    public Resource pop();
+    DefaultModule getModuleInstance();
 
-    public Resource tail();
+    Resource push(Resource obj);
 
-    public Resource head();
+    Resource pop();
 
-    public Resource getTargetObject();
+    Resource tail();
 
-    public ServiceResource getTargetService();
+    Resource head();
 
-    
+    Resource getTargetObject();
+
+    ServiceResource getTargetService();
+
+
     /** template and script resolver */
 
     /**
@@ -303,7 +303,7 @@ public interface WebContext extends Adaptable {
      *            the writer to use
      * @see #render(String, Map)
      */
-    public void render(String template, Writer writer) throws WebException;
+    void render(String template, Writer writer) throws WebException;
 
     /**
      * Renders the given template using the rendering engine registered in that
@@ -316,10 +316,10 @@ public interface WebContext extends Adaptable {
      *            the arguments to pass
      *  @param writer
      *            the writer to use
-     *            
+     *
      * @throws WebException
      */
-    public void render(String template, Object args, Writer writer) throws WebException;
+    void render(String template, Object args, Writer writer) throws WebException;
 
     /**
      * Renders the given template using the rendering engine registered in that
@@ -332,12 +332,12 @@ public interface WebContext extends Adaptable {
      *            the arguments to pass
      *  @param writer
      *            the writer to use
-     *            
+     *
      * @throws WebException
      */
-    public void render(ScriptFile script, Object args, Writer writer) throws WebException;
+    void render(ScriptFile script, Object args, Writer writer) throws WebException;
 
-    
+
     /**
      * Runs the given script.
      *

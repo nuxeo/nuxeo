@@ -77,7 +77,7 @@ public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleD
     protected ModuleDescriptor clone(ModuleDescriptor descriptor) {
         return descriptor.clone();
     }
-    
+
     @Override
     protected void applyFragment(ModuleDescriptor object, ModuleDescriptor fragment) {
         if (fragment.guardDescriptor != null) {
@@ -107,7 +107,7 @@ public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleD
     protected void uninstallContribution(String key, ModuleDescriptor value) {
         modules.remove(key);
     }
-    
+
     @Override
     protected boolean isMainFragment(ModuleDescriptor object) {
         return object.fragment == null || object.fragment.length() == 0;

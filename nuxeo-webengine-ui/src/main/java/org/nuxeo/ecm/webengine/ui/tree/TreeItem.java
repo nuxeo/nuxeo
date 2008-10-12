@@ -29,10 +29,10 @@ import org.nuxeo.common.utils.Path;
  */
 public interface TreeItem extends Serializable {
 
-    public static final int NONE = 0;
-    public static final int DATA = 1;
-    public static final int CHILDREN = 2;
-    public static final int BOTH = 3;
+    static final int NONE = 0;
+    static final int DATA = 1;
+    static final int CHILDREN = 2;
+    static final int BOTH = 3;
 
     /**
      * Get the item path. The path is uniquely identifying the item in its tree

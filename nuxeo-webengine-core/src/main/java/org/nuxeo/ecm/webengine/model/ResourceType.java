@@ -30,28 +30,28 @@ import org.nuxeo.ecm.webengine.security.Guard;
  *
  */
 public interface ResourceType {
-    
-    public final static String ROOT_TYPE_NAME = "*";
+
+    final static String ROOT_TYPE_NAME = "*";
 
     void flushCache();
-    
+
     Guard getGuard();
-    
+
     String getName();
-    
+
     boolean isDerivedFrom(String type);
-    
+
     Class<? extends Resource> getResourceClass();
-    
+
     <T extends Resource> T newInstance() throws WebException;
 
-    public ResourceType getSuperType();    
-    
+    ResourceType getSuperType();
+
     Set<String> getFacets();
-    
+
     boolean hasFacet(String facet);
-    
-    public ScriptFile getTemplate(String name) throws WebException;
-    
+
+    ScriptFile getTemplate(String name) throws WebException;
+
     boolean isEnabled(Resource ctx);
 }

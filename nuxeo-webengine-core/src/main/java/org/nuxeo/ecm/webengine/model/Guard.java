@@ -34,5 +34,5 @@ public @interface Guard {
 
     String value();
     Class<?> type() default org.nuxeo.ecm.webengine.security.Guard.class;
-    
+
 }

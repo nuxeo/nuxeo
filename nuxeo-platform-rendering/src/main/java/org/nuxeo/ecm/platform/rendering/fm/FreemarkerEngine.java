@@ -43,7 +43,7 @@ import freemarker.template.Template;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class FreemarkerEngine implements RenderingEngine {
 
@@ -141,7 +141,7 @@ public class FreemarkerEngine implements RenderingEngine {
              * with freemarker since freemarker removes the leading / from the
              * absolute path and the file cannot be resolved anymore In the case
              * of URI like path freemarker is not modifying the path <p>
-             * 
+             *
              * @see TemplateCache#normalizeName()
              * @see ResourceTemplateLoader#findTemplateSource()
              */

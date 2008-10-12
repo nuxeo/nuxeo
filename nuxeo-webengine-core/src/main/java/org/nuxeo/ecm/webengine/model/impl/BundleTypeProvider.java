@@ -32,19 +32,19 @@ import org.osgi.framework.Bundle;
  *
  */
 public class BundleTypeProvider extends TypeConfigurationProvider implements AnnotationLoader {
-    
+
 
     public BundleTypeProvider() {
         BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), this);
         BundleAnnotationsLoader.getInstance().addLoader(WebService.class.getName(), this);
     }
-    
-    // support for loading annotations from descriptor files 
+
+    // support for loading annotations from descriptor files
     public void loadAnnotation(Bundle bundle, String annotationType, String className, String[] args) throws Exception {
         // args are ignored for now
         ClassProxy clazz = new StaticClassProxy(bundle.loadClass(className));
         if (annotationType.equals(WebObject.class.getName())) {
-            WebObject type = clazz.get().getAnnotation(WebObject.class);                 
+            WebObject type = clazz.get().getAnnotation(WebObject.class);
             registerType(TypeDescriptor.fromAnnotation(clazz, type));
         } else if (annotationType.equals(WebService.class.getName())) {
             //TODO: avoid loading clazz here - use the data from annotation ?
@@ -54,5 +54,5 @@ public class BundleTypeProvider extends TypeConfigurationProvider implements Ann
             throw new IllegalArgumentException(annotationType);
         }
     }
-    
+
 }

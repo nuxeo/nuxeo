@@ -45,11 +45,11 @@ import org.nuxeo.ecm.webengine.security.PermissionService;
 public class SecurityInterceptor implements ResourceMethodInterceptor {
 
     protected volatile Map<Method, Guard> cache = new ConcurrentHashMap<Method, Guard>();
-    
+
     public void flushCache() {
         cache = new ConcurrentHashMap<Method, Guard>();
     }
-    
+
     public boolean accepted(ResourceMethod method) {
         return null != method.getMethod().getAnnotation(org.nuxeo.ecm.webengine.model.Guard.class);
     }
@@ -76,7 +76,7 @@ public class SecurityInterceptor implements ResourceMethodInterceptor {
                 if (expr.length() > 0) {
                     guard = PermissionService.parse(ganno.value());
                 } else {
-                    guard = (Guard)ganno.type().newInstance(); 
+                    guard = (Guard)ganno.type().newInstance();
                 }
                 cache.put(m , guard);
             }

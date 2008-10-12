@@ -26,8 +26,8 @@ package org.nuxeo.ecm.webengine.model;
 public interface ServiceType extends ResourceType {
 
     String[] getTargetFacets();
-    
+
     String getTargetType();
-    
+
     boolean acceptResource(Resource resource);
 }

@@ -49,23 +49,23 @@ public class ModuleImpl implements Module {
 
     protected WebEngine engine;
     protected ModuleDescriptor descriptor;
-    
+
     protected File root;
-    protected DirectoryStack dirStack; 
+    protected DirectoryStack dirStack;
     // cache used for resolved files
     protected ConcurrentMap<String, ScriptFile> fileCache;
-    
+
     protected final Object typeLock = new Object();
 
     // these two members are lazy initialized when needed
     protected TypeRegistry typeReg;
     protected TypeConfigurationProvider localTypes;
 
-    protected LinkRegistry linkReg; 
-    
+    protected LinkRegistry linkReg;
+
     protected ModuleTypeImpl type;
     protected ModuleImpl superModule;
-    
+
     public ModuleImpl(WebEngine engine, File root, ModuleDescriptor descriptor) throws WebException {
         this.fileCache = new ConcurrentHashMap<String, ScriptFile>();
         this.root = root;
@@ -99,7 +99,7 @@ public class ModuleImpl implements Module {
     public void flushSkinCache() {
         fileCache.clear();
     }
-   
+
     public void flushCache() {
         fileCache.clear();
         synchronized (typeLock) {
@@ -115,15 +115,15 @@ public class ModuleImpl implements Module {
         }
         return type;
     }
-    
+
     public ResourceBinding getModuleBinding() {
         return descriptor.binding;
     }
-    
+
     public static File getSkinDir(File moduleDir) {
         return new File(moduleDir, "skin");
     }
-    
+
     protected void loadDirectoryStack() throws WebException {
         dirStack = new DirectoryStack();
         try {
@@ -140,7 +140,7 @@ public class ModuleImpl implements Module {
     }
 
     public ModuleImpl getSuperModule() {
-        return superModule;               
+        return superModule;
     }
 
     public ScriptFile getFile(String path) throws WebException {
@@ -153,7 +153,7 @@ public class ModuleImpl implements Module {
             path = new org.nuxeo.common.utils.Path(path).makeAbsolute().toString();
         } else if (c != '/') {// avoid doing duplicate entries in document stack cache
             path = new StringBuilder(len+1).append("/").append(path).toString();
-        } 
+        }
         try {
             return findFile(new org.nuxeo.common.utils.Path(path).makeAbsolute().toString());
         } catch (IOException e) {
@@ -176,7 +176,7 @@ public class ModuleImpl implements Module {
         }
         return file;
     }
-    
+
     protected void loadConfiguredTypes() {
         localTypes = new TypeConfigurationProvider();
         // load declared types and actions
@@ -216,7 +216,7 @@ public class ModuleImpl implements Module {
         }
         return typeReg;
     }
-    
+
     public ResourceType getType(String typeName) throws TypeNotFoundException {
         ResourceType type = getTypeRegistry().getType(typeName);
         if (type == null) {
@@ -241,19 +241,19 @@ public class ModuleImpl implements Module {
         }
         return type;
     }
-    
+
     public List<String> getServiceNames(Resource ctx) {
         return getTypeRegistry().getServiceNames(ctx);
     }
-    
+
     public List<ServiceType> getServices(Resource ctx) {
         return getTypeRegistry().getServices(ctx);
     }
-    
+
     public List<String> getEnabledServiceNames(Resource ctx) {
         return getTypeRegistry().getEnabledServiceNames(ctx);
     }
-    
+
     public List<ServiceType> getEnabledServices(Resource ctx) {
         return getTypeRegistry().getEnabledServices(ctx);
     }
@@ -267,15 +267,15 @@ public class ModuleImpl implements Module {
         }
         descriptor.links = null; // avoid storing unused data
     }
-    
+
     public List<LinkDescriptor> getLinks(String category) {
         return linkReg.getLinks(category);
     }
-    
+
     public List<LinkDescriptor> getActiveLinks(Resource context, String category) {
         return linkReg.getActiveLinks(context, category);
     }
-    
+
     public LinkRegistry getLinkRegistry() {
         return linkReg;
     }

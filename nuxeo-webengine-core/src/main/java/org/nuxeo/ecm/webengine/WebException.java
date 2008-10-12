@@ -38,15 +38,15 @@ public class WebException extends WebApplicationException {
     private static final long serialVersionUID = 176876876786L;
     protected String message;
     protected boolean byPassAppResponse = false;
-    
+
     public WebException() {
         super ();
     }
-    
+
     public WebException(Response response) {
         super (response);
     }
-    
+
     public WebException(int status) {
         super (status);
     }
@@ -63,21 +63,21 @@ public class WebException extends WebApplicationException {
     public WebException(Throwable cause, Response.Status status) {
         super (cause, status);
     }
-        
+
     public WebException(Throwable cause, int status) {
         super (cause, status);
     }
-            
+
     public WebException(Throwable cause) {
         super (cause);
     }
 
-    
+
     public WebException(String message) {
-      super ();  
+      super ();
       this.message = message;
     }
-    
+
     public WebException(String message, int code) {
         super (code);
         this.message = message;
@@ -92,7 +92,7 @@ public class WebException extends WebApplicationException {
         super (t, code);
         this.message = message;
     }
-    
+
     @Override
     public String getMessage() {
         return message;
@@ -106,11 +106,11 @@ public class WebException extends WebApplicationException {
     public int getReturnCode() {
         return super.getResponse().getStatus();
     }
-    
-    
+
+
     @Override
     public Response getResponse() {
-        Response response = super.getResponse(); 
+        Response response = super.getResponse();
         if (!byPassAppResponse) {
             WebContext ctx = WebEngine.getActiveContext();
             if (ctx != null) {
@@ -130,7 +130,7 @@ public class WebException extends WebApplicationException {
         }
         return response;
     }    
-    
+
     public String getStackTraceString() {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
@@ -154,7 +154,7 @@ public class WebException extends WebApplicationException {
     public static WebException wrap(Throwable e) {
         return wrap(null, e);
     }
-    
+
     @SuppressWarnings({"ThrowableInstanceNeverThrown"})
     public static WebException wrap(String message, Throwable e) {
         //TODO add EJBAccessException dependency

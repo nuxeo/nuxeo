@@ -30,10 +30,10 @@ public class ModuleTypeDescriptor extends TypeDescriptor {
     public ModuleTypeDescriptor(ClassProxy clazz, String name, String superType) {
         super (clazz, name, superType);
     }
-    
+
     @Override
     public boolean isModule() {
         return true;
     }
-    
+
 }

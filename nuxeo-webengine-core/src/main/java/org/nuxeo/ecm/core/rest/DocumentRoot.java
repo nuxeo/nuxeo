@@ -28,12 +28,12 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *  
+ *
  *  TODO: be able to use other repositories than the default
  */
 public class DocumentRoot extends DocumentObject {
 
-    
+
     public DocumentRoot(WebContext ctx, String uri) {
         this (ctx, new PathRef(uri));
     }
@@ -45,14 +45,14 @@ public class DocumentRoot extends DocumentObject {
             setRoot(true);
             ctx.push(this);
         } catch (Exception e) {
-            throw WebException.wrap(e); 
+            throw WebException.wrap(e);
         }
     }
 
     public DocumentRoot(WebContext ctx, DocumentModel root) {
         initialize(ctx, ctx.getModule().getType(root.getType()), root);
         setRoot(true);
-        ctx.push(this);        
+        ctx.push(this);
     }
-    
+
 }

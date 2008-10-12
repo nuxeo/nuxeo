@@ -30,23 +30,23 @@ public class LazyClassProxy implements ClassProxy {
     protected String className;
     protected ClassLoader loader;
     protected Class<?> clazz;
-    
+
     public LazyClassProxy(ClassLoader loader, String className) {
         this.loader = loader;
         this.className = className;
     }
-    
+
     public String getClassName() {
         return className;
     }
-    
+
     /**
      * @return the loader.
      */
     public ClassLoader getLoader() {
         return loader;
     }
-    
+
     public Class<?> get() {
         if (clazz == null) {
             try {

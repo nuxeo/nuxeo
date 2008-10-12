@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.annotations.test;
+package org.nuxeo.runtime.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
-public @interface Anno1 {
-    
+public @interface Anno2 {
+
     String value() default "N/A";
-    
+
 }

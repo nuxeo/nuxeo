@@ -35,16 +35,16 @@ public class DefaultObject extends AbstractResource<ResourceTypeImpl> {
 
     public DefaultObject() {
     }
-        
+
     public boolean isService() {
         return false;
     }
 
-    
+
     @Path(value=".{segment}")
     public ServiceResource disptachService(@PathParam("segment") String serviceName) throws WebException {
         return ctx.newService(this, serviceName);
-    }    
-    
+    }
+
 
 }

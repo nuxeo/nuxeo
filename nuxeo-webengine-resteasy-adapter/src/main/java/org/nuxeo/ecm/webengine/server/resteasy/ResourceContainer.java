@@ -35,12 +35,11 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class ResourceContainer extends DefaultComponent {
 
-    public final static ComponentName NAME = new ComponentName("org.nuxeo.ecm.webengine.server");
-    
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.webengine.server");
+
     protected Dispatcher dispatcher;
     protected ResourceRegistryImpl registry;
-    
-    
+
     @Override
     public void activate(ComponentContext context) throws Exception {
         RuntimeDelegate.setInstance(new ResteasyProviderFactory());
@@ -48,34 +47,28 @@ public class ResourceContainer extends DefaultComponent {
         dispatcher = new SynchronousDispatcher(providerFactory);
         registry = new ResourceRegistryImpl(dispatcher);
     }
-    
+
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         registry = null;
         dispatcher = null;
     }
-    
-    /**
-     * @return the dispatcher.
-     */
+
     public Dispatcher getDispatcher() {
         return dispatcher;
     }
-    
-    /**
-     * @return the registry.
-     */
+
     public ResourceRegistryImpl getRegistry() {
         return registry;
     }
-    
+
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (ResourceRegistry.class.isAssignableFrom(adapter)) {
-            return adapter.cast(registry); 
+            return adapter.cast(registry);
         }
         // TODO Auto-generated method stub
         return super.getAdapter(adapter);
     }
-    
+
 }

@@ -46,7 +46,7 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
     // the contributions that are waiting for me
     protected Set<Contribution<K,T>> dependents = new HashSet<Contribution<K,T>>();
     // the unresolved dependencies that are blocking my registration
-    //TODO: this member can be removed since we can obtain unresolved deps from dependencies set. 
+    //TODO: this member can be removed since we can obtain unresolved deps from dependencies set.
     //protected Set<Contribution<K,T>> unresolvedDependencies = new HashSet<Contribution<K,T>>();
 
     // last merged fragment
@@ -92,7 +92,7 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
         }
         return set;
     }
-    
+
     protected boolean checkIsResolved() {
         if (mainFragments.isEmpty()) {
             return false;
@@ -102,7 +102,7 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
                 return false;
             }
         }
-        return true;        
+        return true;
     }
 
     public int size() {
@@ -121,7 +121,7 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
         if (mainFragments.remove(fragment)) {
             if (mainFragments.isEmpty()) {
                 if (fragments.isEmpty()) {
-                    unregister();    
+                    unregister();
                 } else {
                     unresolve();
                 }
@@ -130,7 +130,7 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
             }
             return true;
         }
-        if (fragments.remove(fragment)) {            
+        if (fragments.remove(fragment)) {
             if (!mainFragments.isEmpty()) {
                 update();
             }
@@ -138,11 +138,11 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
         }
         return false;
     }
-    
+
     public void addFragment(T fragment, K ... superKeys) {
         // check if it is the main fragment
         if (registry.isMainFragment(fragment)) {
-            mainFragments.add(fragment);   
+            mainFragments.add(fragment);
         } else { // update contribution fragments
             fragments.add(fragment);
         }
@@ -169,7 +169,7 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
             T result = registry.clone(mainFragments.get(mainFragments.size()-1));
             // first apply its super objects if any
             for (Contribution<K,T> key : dependencies) {
-                T superObject = (T)registry.getContribution(key.getId()).getValue();
+                T superObject = registry.getContribution(key.getId()).getValue();
                 registry.applySuperFragment(result, superObject);
             }
             // and now apply fragments
@@ -238,7 +238,8 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
 
     public void resolve() {
         if (isResolved || isPhantom()) {
-            throw new IllegalStateException("Cannot resolve. Invalid state. phantom: "+isPhantom()+"; resolved: "+isResolved);
+            throw new IllegalStateException(
+                    "Cannot resolve. Invalid state. phantom: "+isPhantom()+"; resolved: "+isResolved);
         }
         if (checkIsResolved()) { // resolve dependents
             isResolved = true;
@@ -254,9 +255,11 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
     @Override
     @SuppressWarnings("unchecked")
     public boolean equals(Object obj) {
-        if (obj == this) return true;
+        if (obj == this) {
+            return true;
+        }
         if (obj instanceof Contribution) {
-            return primaryKey.equals(((Contribution)obj).getId());
+            return primaryKey.equals(((Contribution) obj).getId());
         }
         return false;
     }
@@ -265,4 +268,5 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
     public String toString() {
         return primaryKey.toString()+" [ phantom: "+isPhantom()+"; resolved: "+isResolved+"]";
     }
+
 }

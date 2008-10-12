@@ -32,7 +32,7 @@ public class TypeException extends WebException {
     public TypeException(String msg) {
         super (msg);
     }
-    
+
     public TypeException(String msg, Throwable cause) {
         super (msg, cause);
     }

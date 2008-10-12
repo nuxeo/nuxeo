@@ -19,23 +19,12 @@
 
 package org.nuxeo.ecm.webengine.tests.security;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.api.local.LocalSession;
-import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.security.Guard;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class GuardTest extends NXRuntimeTestCase {
+public abstract class GuardTest extends NXRuntimeTestCase {
 
     @Override
     protected void setUp() throws Exception {

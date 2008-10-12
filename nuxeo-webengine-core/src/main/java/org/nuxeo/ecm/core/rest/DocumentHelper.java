@@ -81,7 +81,7 @@ public class DocumentHelper {
         }
     }
 
-    
+
     public static DocumentModel updateDocument(WebContext ctx, DocumentModel doc) throws WebException {
         try {
             FormData form = ctx.getForm();

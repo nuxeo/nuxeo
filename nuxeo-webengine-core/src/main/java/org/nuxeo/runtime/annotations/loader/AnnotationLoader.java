@@ -27,6 +27,6 @@ import org.osgi.framework.Bundle;
  */
 public interface AnnotationLoader {
 
-    public void loadAnnotation(Bundle bundle, String annoType, String className, String[] args) throws Exception;
-    
+    void loadAnnotation(Bundle bundle, String annoType, String className, String[] args) throws Exception;
+
 }

@@ -32,7 +32,7 @@ import org.nuxeo.common.utils.StringUtils;
  */
 public abstract class JQueryTreeBuilder<T> {
 
-    public final static String CHILDREN = "children";
+    public static final String CHILDREN = "children";
 
     public JSONArray buildTree(String rootName, String path) {
         return buildTree(rootName, path);

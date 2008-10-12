@@ -28,11 +28,11 @@ import java.util.Vector;
  *
  */
 public class TypeConfigurationProvider {
-    
+
     protected List<TypeDescriptor> types;
     protected List<ServiceDescriptor> services;
     protected List<TypeRegistry> registries;
-    
+
 
     public TypeConfigurationProvider() {
         types = new ArrayList<TypeDescriptor>();
@@ -43,22 +43,22 @@ public class TypeConfigurationProvider {
     public void flushCache() {
         // do nothing
     }
-    
+
     public synchronized boolean isEmpty() {
         return types.isEmpty() && services.isEmpty();
     }
-    
+
     public synchronized void registerType(TypeDescriptor td) {
         types.add(td);
         fireTypeRegistered(td);
     }
-    
+
     public synchronized void unregisterType(TypeDescriptor td) {
         if (types.remove(td)) {
             fireTypeUnregistered(td);
         }
     }
-    
+
     public synchronized void registerAction(ServiceDescriptor ad) {
         services.add(ad);
         fireServiceRegistered(ad);
@@ -73,11 +73,11 @@ public class TypeConfigurationProvider {
     public void addRegistry(TypeRegistry registry) {
         registries.add(registry);
     }
-    
+
     public void removeRegistry(TypeRegistry listener) {
         registries.remove(listener);
     }
-    
+
     public synchronized void install(TypeRegistry registry) {
         for (TypeDescriptor td : types) {
             registry.registerType(td);
@@ -87,7 +87,7 @@ public class TypeConfigurationProvider {
         }
         addRegistry(registry);
     }
-    
+
 
 
     protected void fireServiceRegistered(ServiceDescriptor ad) {
@@ -107,7 +107,7 @@ public class TypeConfigurationProvider {
            reg.unregisterService(ad);
         }
     }
-    
+
     protected void fireTypeRegistered(TypeDescriptor td) {
         if (registries.isEmpty()) {
             return;
@@ -125,5 +125,5 @@ public class TypeConfigurationProvider {
            listener.unregisterType(td);
         }
     }
-    
+
 }

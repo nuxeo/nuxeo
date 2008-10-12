@@ -54,10 +54,10 @@ import org.nuxeo.runtime.api.Framework;
  * Accepts the following methods:
  * <ul>
  * <li> GET - get the last document version
- * <li> DELETE - delete a version 
+ * <li> DELETE - delete a version
  * <li> POST - create a new version
  * </ul>
- *  
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */

@@ -17,24 +17,21 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.model;
+package org.nuxeo.runtime.annotations;
 
-import org.nuxeo.ecm.webengine.WebException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class NoSuchResourceException extends WebException {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface Anno1 {
 
-    private static final long serialVersionUID = -651531091916992562L;
-
-    public NoSuchResourceException(String msg) {
-        super(msg);
-    }
-
-    public NoSuchResourceException(String msg, Throwable cause) {
-        super(msg, cause);
-    }
+    String value() default "N/A";
 
 }

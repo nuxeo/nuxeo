@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.server.resteasy;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,21 +46,23 @@ public class ResourceRegistryImpl implements ResourceRegistry {
     protected Dispatcher dispatcher;
     protected ResourceMethodRegistry registry;
     protected List<ResourceBinding> bindings;
-    
+
     public ResourceRegistryImpl(Dispatcher dispatcher) {
-        this.registry = (ResourceMethodRegistry)dispatcher.getRegistry();
-        this.bindings = new ArrayList<ResourceBinding>();
+        registry = (ResourceMethodRegistry)dispatcher.getRegistry();
+        bindings = new ArrayList<ResourceBinding>();
         this.dispatcher = dispatcher;
     }
-        
+
     public synchronized void addBinding(ResourceBinding binding) throws WebException {
         registerBinding(binding);
-        this.bindings.add(binding);
+        bindings.add(binding);
     }
-    
+
     public void registerBinding(ResourceBinding binding) throws WebException {
         if (binding.clazz == null || binding.path == null) {
-            throw new WebException("Invalid resource binding: "+binding.path+" -> "+binding.clazz+". No resource path / class specified.");
+            throw new WebException(
+                    "Invalid resource binding: "+binding.path
+                    +" -> "+binding.clazz+". No resource path / class specified.");
         }
 
         if (binding.singleton) {
@@ -70,40 +73,40 @@ public class ResourceRegistryImpl implements ResourceRegistry {
                 throw WebException.wrap(e);
             }
             if (binding.clazz.getAnnotation(Path.class) != null) {
-                registry.addSingletonResource(obj);  
+                registry.addSingletonResource(obj);
             } else {
-                registry.addResourceFactory(new SingletonResource(obj), binding.path, binding.clazz);  
-            }    
+                registry.addResourceFactory(new SingletonResource(obj), binding.path, binding.clazz);
+            }
         } else {
             if (binding.clazz.getAnnotation(Path.class) != null) {
-                registry.addPerRequestResource(binding.clazz);  
+                registry.addPerRequestResource(binding.clazz);
             } else {
-                registry.addResourceFactory(new POJOResourceFactory(binding.clazz), binding.path, binding.clazz);  
-            }      
+                registry.addResourceFactory(new POJOResourceFactory(binding.clazz), binding.path, binding.clazz);
+            }
         }
     }
-    
-    public synchronized void removeBinding(ResourceBinding binding)  throws WebException {
+
+    public synchronized void removeBinding(ResourceBinding binding) throws WebException {
         unregisterBinding(binding);
         bindings.remove(binding);
     }
-    
-    public void unregisterBinding(ResourceBinding binding)  throws WebException {
+
+    public void unregisterBinding(ResourceBinding binding) throws WebException {
         try {
             if (binding.clazz.getAnnotation(Path.class) == null) {
                 removeRegistration(binding.path, binding.clazz);
             } else {
-                registry.removeRegistrations(binding.clazz);  
+                registry.removeRegistrations(binding.clazz);
             }
         } catch (Exception e) {
-            throw WebException.wrap(e); 
+            throw WebException.wrap(e);
         }
     }
 
     public synchronized ResourceBinding[] getBindings() {
         return bindings.toArray(new ResourceBinding[bindings.size()]);
     }
-    
+
     public synchronized void reload() {
         clearRegistrations();
         for (ResourceBinding binding : bindings) {
@@ -119,7 +122,7 @@ public class ResourceRegistryImpl implements ResourceRegistry {
     public void clearRegistrations() {
         Field f;
         try {
-            f = registry.getClass().getDeclaredField("rootSegment");        
+            f = registry.getClass().getDeclaredField("rootSegment");
             if (!f.isAccessible()) {
                 f.setAccessible(true);
             }
@@ -127,22 +130,20 @@ public class ResourceRegistryImpl implements ResourceRegistry {
             f.set(registry, rootSegment);
         } catch (Exception e) {
             throw WebException.wrap("Failed to reload resources", e);
-        }        
+        }
     }
 
     protected void removeRegistration(String base, Class<?> clazz) throws Exception {
-        java.lang.reflect.Method m = registry.getClass().getDeclaredMethod("removeRegistration", String.class, Class.class);
+        Method m = registry.getClass().getDeclaredMethod("removeRegistration", String.class, Class.class);
         m.invoke(registry, base, clazz);
     }
-    
-
 
     public void addMessageBodyReader(MessageBodyReader<?> reader) {
         dispatcher.getProviderFactory().addMessageBodyReader(reader);
     }
-    
+
     public void addMessageBodyWriter(MessageBodyWriter<?> writer) {
         dispatcher.getProviderFactory().addMessageBodyWriter(writer);
     }
-    
+
 }

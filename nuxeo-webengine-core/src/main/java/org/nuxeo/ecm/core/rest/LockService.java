@@ -33,11 +33,11 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultService;
  * <p>
  * Accepts the following methods:
  * <ul>
- * <li> GET - get the Lock Owner if any 
+ * <li> GET - get the Lock Owner if any
  * <li> POST - Lock the document using current login information as the lock owner
  * <li> DELETE - Delete the lock
  * </ul>
- *  
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -53,10 +53,10 @@ public class LockService extends DefaultService {
             throw WebException.wrap("Failed to get lock on document", e);
         }
     }
-    
-    
+
+
     @DELETE
-    public Object removeLock() {        
+    public Object removeLock() {
         try {
             DocumentModel  doc =getTarget().getAdapter(DocumentModel.class);
             ctx.getCoreSession().unlock(doc.getRef());
@@ -66,7 +66,7 @@ public class LockService extends DefaultService {
             throw WebException.wrap("Failed to unlock document", e);
         }
     }
-    
+
     @POST
     public Object doPost() {
         try {
@@ -78,5 +78,5 @@ public class LockService extends DefaultService {
             throw WebException.wrap("Failed to lock document", e);
         }
     }
-    
+
 }

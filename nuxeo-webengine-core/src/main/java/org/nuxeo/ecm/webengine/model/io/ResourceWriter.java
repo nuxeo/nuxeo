@@ -49,7 +49,7 @@ public class ResourceWriter implements MessageBodyWriter<Resource> {
         try {
             t.getTemplate("index.ftl").render(entityStream);
         } catch (Throwable e) {
-            throw WebException.wrap("Failed to render resource", e); 
+            throw WebException.wrap("Failed to render resource", e);
         }
     }
 
@@ -65,4 +65,3 @@ public class ResourceWriter implements MessageBodyWriter<Resource> {
     }
 
 }
-

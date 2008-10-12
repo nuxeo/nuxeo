@@ -53,12 +53,14 @@ public class MyObject {
 
     @Override
     public String toString() {
-        return id+":"+fid+" = str: '"+str+"', list: [ "+list+" ]";
+        return id + ":" + fid + " = str: '" + str + "', list: [ " + list + " ]";
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
+        if (obj == this) {
+            return true;
+        }
         if (obj instanceof MyObject) {
             MyObject myf = (MyObject)obj;
             if (!id.equals(myf.id)) {
@@ -71,4 +73,5 @@ public class MyObject {
         }
         return false;
     }
+
 }

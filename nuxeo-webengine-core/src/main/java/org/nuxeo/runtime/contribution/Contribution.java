@@ -50,16 +50,16 @@ public interface Contribution<K,T> extends Iterable<T> {
 
     T getFragment(int index);
 
-    public boolean isResolved();
+    boolean isResolved();
 
-    public boolean isPhantom();
+    boolean isPhantom();
 
-    public boolean isRegistered();
+    boolean isRegistered();
 
-    public void unregister();
+    void unregister();
 
-    public void resolve();
+    void resolve();
 
-    public void unresolve();
+    void unresolve();
 
 }

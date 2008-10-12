@@ -27,18 +27,18 @@ import org.nuxeo.ecm.webengine.forms.FormInstance;
  */
 public interface Constraint {
 
-    public Constraint newInstance();
+    Constraint newInstance();
 
-    public void init(Field field, String value);
+    void init(Field field, String value);
 
-    public void add(Constraint constraint);
+    void add(Constraint constraint);
 
-    public boolean isContainer();
+    boolean isContainer();
 
-    public Status validate(FormInstance form,  Field field, String rawValue, Object value);
+    Status validate(FormInstance form,  Field field, String rawValue, Object value);
 
-    public String getErrorMessage();
+    String getErrorMessage();
 
-    public void setErrorMessage(String errorMessage);
+    void setErrorMessage(String errorMessage);
 
 }

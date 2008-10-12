@@ -25,8 +25,8 @@ package org.nuxeo.ecm.webengine.loader;
  */
 public interface ClassProxy {
 
-    public Class<?> get();
-    
-    public String getClassName();
-    
+    Class<?> get();
+
+    String getClassName();
+
 }

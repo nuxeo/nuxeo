@@ -166,7 +166,6 @@ public class PathMap<T> {
         return list;
     }
 
-
     protected void collectValues(Entry<T> entry, Collection<T> list) {
         if (entry.value != null) {
             list.add(entry.value);

@@ -33,35 +33,35 @@ public class AnnotationManager {
     protected Map<Class<?>, AnnotatedClass<?>> classCache;
 
     /**
-     * 
+     *
      */
     public AnnotationManager() {
         classCache = createCache();
     }
-    
+
     protected Map<Class<?>, AnnotatedClass<?>> createCache() {
         return new ConcurrentHashMap<Class<?>, AnnotatedClass<?>>();
     }
-    
+
     public void flushCache() {
         classCache = createCache();
     }
-    
+
     public <T> AnnotatedClass<T> getAnnotatedClass(Class<T> clazz) {
         // use a local variable to avoid problem when flushing cache in another thread while this method is executing
-        Map<Class<?>, AnnotatedClass<?>> cache = this.classCache;    
+        Map<Class<?>, AnnotatedClass<?>> cache = this.classCache;
         AnnotatedClass<T> aclass = (AnnotatedClass<T>)cache.get(clazz);
         if (aclass == null) {
             aclass = load(clazz);
             cache.put(clazz, aclass);
         }
-        return aclass; 
+        return aclass;
     }
 
     public <T> AnnotatedClass<T> lookup(Class<T> clazz) {
         return (AnnotatedClass<T>)classCache.get(clazz);
     }
-    
+
     public <T> AnnotatedClass<T> load(Class<T> clazz) {
         AnnotatedClass<T> aclass = new AnnotatedClass<T>(clazz);
         Class<?> zuper = clazz.getSuperclass();
@@ -72,17 +72,17 @@ public class AnnotationManager {
             aclass.annotations.putAll(azuper.annotations);
             for (AnnotatedMethod am : azuper.getAnnotatedMethods()) {
                 mannos.addSuperMethod(am);
-            }          
+            }
         }
-        // collect interface annotations 
+        // collect interface annotations
         for (Class<?> itf : clazz.getInterfaces()) {
             AnnotatedClass<?> aitf = getAnnotatedClass(itf);
             aclass.annotations.putAll(aitf.annotations);
             for (AnnotatedMethod am : aitf.getAnnotatedMethods()) {
                 mannos.addSuperMethod(am);
-            }          
+            }
         }
- 
+
         // finally add class own annotations
         mannos.addMethods(clazz);
         for (Annotation anno : clazz.getAnnotations()) {
@@ -91,9 +91,9 @@ public class AnnotationManager {
         // create annotated methods from collected methods
         for (MethodAnnotations.Entry entry : mannos.entries) {
             AnnotatedMethod am = new AnnotatedMethod(aclass, entry.method, entry.annos);
-            aclass.addMethod(am);            
+            aclass.addMethod(am);
         }
         return aclass;
     }
-        
+
 }

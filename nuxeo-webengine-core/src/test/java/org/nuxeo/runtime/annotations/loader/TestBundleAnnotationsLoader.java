@@ -12,26 +12,24 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     Nuxeo - initial API and implementation
  *
  * $Id$
  */
 
-package org.nuxeo.runtime.annotations.test;
+package org.nuxeo.runtime.annotations.loader;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Arrays;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-public @interface Anno2 {
-    
-    String value() default "N/A";
-    
+import junit.framework.TestCase;
+
+public class TestBundleAnnotationsLoader extends TestCase {
+
+    public void testParse() {
+        String in = "ac|sd|ddd|fg|qw\\|a\\\\sf|d|";
+        String out = "[ac, sd, ddd, fg, qw|a\\sf, d, ]";
+        String[] ar = BundleAnnotationsLoader.parse(in);
+        assertEquals(out, Arrays.toString(ar));
+    }
+
 }

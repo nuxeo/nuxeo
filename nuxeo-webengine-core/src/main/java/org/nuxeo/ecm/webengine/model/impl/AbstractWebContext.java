@@ -61,7 +61,7 @@ public abstract class AbstractWebContext implements WebContext {
 
     protected static final Log log = LogFactory.getLog(WebContext.class);
 
-    protected WebEngine engine;    
+    protected WebEngine engine;
     protected UserSession us;
     protected final LinkedList<File> scriptExecutionStack;
     protected AbstractResource<?> head;
@@ -72,7 +72,7 @@ public abstract class AbstractWebContext implements WebContext {
     protected HashMap<String,Object> vars;
     protected FormData form;
     protected String basePath;
-    
+
     public AbstractWebContext(HttpServletRequest request) {
         this.us = UserSession.getCurrentSession(request.getSession(true));
         this.engine = Framework.getLocalService(WebEngine.class);
@@ -88,7 +88,7 @@ public abstract class AbstractWebContext implements WebContext {
     public Resource getRoot() {
         return root;
     }
-    
+
     public <T> T getAdapter(Class<T> adapter) {
         if (Principal.class == adapter) {
             return adapter.cast(getPrincipal());
@@ -127,16 +127,16 @@ public abstract class AbstractWebContext implements WebContext {
     public HttpServletRequest getRequest() {
         return request;
     }
-    
+
     public String getMethod() {
         return request.getMethod();
     }
-    
+
     public String getModulePath() {
         return head.getPath();
     }
 
-    
+
     public Resource newObject(String typeName, Object ...  args) throws WebException {
         ResourceType type = module.getType(typeName);
         if (type == null) {
@@ -163,8 +163,8 @@ public abstract class AbstractWebContext implements WebContext {
     public void setProperty(String key, Object value) {
         vars.put(key, value);
     }
-    
-    
+
+
     //TODO: use FormData to get query params?
     public Object getProperty(String key) {
         Object value = getUriInfo().getPathParameters().getFirst(key);
@@ -181,7 +181,7 @@ public abstract class AbstractWebContext implements WebContext {
         Object value = getProperty(key);
         return value == null ? defaultValue : value;
     }
-    
+
     public String getCookie(String name) {
         Cookie[] cookies = request.getCookies();
         for (Cookie cooky : cookies) {
@@ -196,14 +196,14 @@ public abstract class AbstractWebContext implements WebContext {
         String value = getCookie(name);
         return value == null ? defaultValue : value;
     }
-    
+
     public FormData getForm() {
         if (form == null) {
             form = new FormData(request);
         }
         return form;
     }
-    
+
     public String getBasePath() {
         if (basePath == null) {
             StringBuilder buf = new StringBuilder(request.getRequestURI().length());
@@ -229,7 +229,7 @@ public abstract class AbstractWebContext implements WebContext {
         }
         return sb.toString();
     }
-    
+
     public String getURI() {
         return request.getRequestURI();
     }
@@ -237,7 +237,7 @@ public abstract class AbstractWebContext implements WebContext {
     public String getURL() {
         return request.getRequestURL().toString();
     }
-    
+
     public String getUrlPath() {
         StringBuilder buf = new StringBuilder(request.getRequestURI().length());
         String path = request.getContextPath();
@@ -257,19 +257,19 @@ public abstract class AbstractWebContext implements WebContext {
         // TODO implement URL PATH FROM DOCUMENT
         return null;
     }
-    
+
     public Log getLog() {
         return log;
     }
-    
+
     /** object stack API */
 
-    
+
     public DefaultModule getModuleInstance() {
         return (DefaultModule)head;
     }
-    
-    
+
+
     public Resource push(Resource obj) {
         AbstractResource<?> rs = (AbstractResource<?>)obj;
         if (tail != null) {
@@ -284,7 +284,7 @@ public abstract class AbstractWebContext implements WebContext {
         return obj;
     }
 
-    public Resource pop() {        
+    public Resource pop() {
         if (tail == null) {
             return null;
         }
@@ -474,9 +474,9 @@ public abstract class AbstractWebContext implements WebContext {
             }
             t = t.getPrevious();
         }
-        return null;        
+        return null;
     }
-    
+
     public ServiceResource getTargetService() {
         Resource t = tail;
         while (t != null) {
@@ -485,10 +485,10 @@ public abstract class AbstractWebContext implements WebContext {
             }
             t = t.getPrevious();
         }
-        return null;        
+        return null;
     }
-    
-    
+
+
     protected void initializeBindings(Bindings bindings) {
         Resource obj = getTargetObject();
         bindings.put("Context", this);

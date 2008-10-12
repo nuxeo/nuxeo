@@ -69,7 +69,7 @@ public class MyRegistry extends AbstractContributionRegistry<String,MyObject> {
     protected void uninstallContribution(String key, MyObject value) {
         map.remove(key);
     }
-    
+
     @Override
     protected boolean isMainFragment(MyObject object) {
         return true;

@@ -28,16 +28,16 @@ import org.nuxeo.runtime.contribution.ContributionRegistry;
 /**
  * The parent provider is read only. It is never modified by the registry.
  * It serves only to resolve dependencies. This allow greater flexibility in managing dependencies.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public abstract class AbstractContributionRegistry<K, T> implements
         ContributionRegistry<K, T> {
 
-    protected Map<Object, Contribution<K, T>> registry; 
-    
+    protected Map<Object, Contribution<K, T>> registry;
+
 
 
     public AbstractContributionRegistry() {
@@ -47,7 +47,7 @@ public abstract class AbstractContributionRegistry<K, T> implements
     public synchronized Contribution<K, T> getContribution(K primaryKey) {
         return registry.get(primaryKey);
     }
-    
+
 
     public T getObject(K key) {
         Contribution<K,T> contrib = getContribution(key);
@@ -58,7 +58,7 @@ public abstract class AbstractContributionRegistry<K, T> implements
         }
         return null;
     };
-    
+
     public synchronized void removeContribution(K key) {
         Contribution<K, T> contrib = registry.get(key);
         if (contrib != null) {
@@ -122,7 +122,7 @@ public abstract class AbstractContributionRegistry<K, T> implements
     }
 
     protected abstract T clone(T object);
-    
+
     /**
      * Apply fragment over the given object
      * @param object
@@ -131,11 +131,11 @@ public abstract class AbstractContributionRegistry<K, T> implements
     protected void applyFragment(T object, T fragment) {
         // do nothing
     }
-    
+
     protected void applySuperFragment(T object, T superFragment) {
         // do nothing
     }
-    
+
     protected abstract void installContribution(K key, T object);
 
     protected abstract void uninstallContribution(K key, T object);
@@ -143,10 +143,10 @@ public abstract class AbstractContributionRegistry<K, T> implements
     protected boolean isMainFragment(T object) {
         return true;
     }
-    
+
     protected void updateContribution(K key, T object, T oldValue) {
         uninstallContribution(key, oldValue);
         installContribution(key, object);
     }
-    
+
 }

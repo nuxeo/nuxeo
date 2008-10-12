@@ -25,23 +25,23 @@ import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
  * To be implemented by backends to allow WebEngine dynamically register/unregister resources
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public interface ResourceRegistry {
 
     void addBinding(ResourceBinding binding) throws WebException;
-        
+
     void removeBinding(ResourceBinding binding) throws WebException;
 
     void clear();
-    
+
     void reload();
-    
+
     ResourceBinding[] getBindings();
-   
+
     void addMessageBodyWriter(MessageBodyWriter<?> writer);
     void addMessageBodyReader(MessageBodyReader<?> reader);
-    
+
 }

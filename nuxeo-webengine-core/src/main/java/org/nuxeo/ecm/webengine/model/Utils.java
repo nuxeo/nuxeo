@@ -26,7 +26,7 @@ package org.nuxeo.ecm.webengine.model;
 public class Utils {
 
     private Utils() {}
-    
+
     public final static boolean streq(String str1, String str2) {
         if (str1 == null) {
             return str2 == null;
@@ -56,5 +56,5 @@ public class Utils {
         }
         return str;
     }
-    
+
 }

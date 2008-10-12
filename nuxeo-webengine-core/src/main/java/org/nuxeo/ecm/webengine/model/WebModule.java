@@ -34,7 +34,7 @@ import org.nuxeo.runtime.annotations.loader.Indexable;
 @Target({ElementType.TYPE})
 @Indexable({"name", "base"})
 public @interface WebModule {
-    String name(); // application name    
+    String name(); // application name
     String fragment() default "";
     String base() default "";
     String guard() default "";

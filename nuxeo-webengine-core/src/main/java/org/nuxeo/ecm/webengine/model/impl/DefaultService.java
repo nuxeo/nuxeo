@@ -36,7 +36,7 @@ public class DefaultService extends AbstractResource<ResourceTypeImpl> implement
 
     public DefaultService() {
     }
-        
+
     public boolean isService() {
         return true;
     }
@@ -44,11 +44,11 @@ public class DefaultService extends AbstractResource<ResourceTypeImpl> implement
     public Resource getTarget() {
         return prev;
     }
-    
+
     @Path(value=".{segment}")
     public ServiceResource disptachService(@PathParam("segment") String serviceName) throws WebException {
         return ctx.newService(this, serviceName);
-    }    
+    }
 
 
 }

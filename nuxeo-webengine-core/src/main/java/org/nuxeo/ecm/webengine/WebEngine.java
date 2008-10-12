@@ -69,10 +69,10 @@ import org.osgi.framework.Bundle;
  */
 public class WebEngine implements FileChangeListener, ResourceLocator, AnnotationLoader {
 
-    private final static ThreadLocal<WebContext> CTX = new ThreadLocal<WebContext>();
-    
+    private static final ThreadLocal<WebContext> CTX = new ThreadLocal<WebContext>();
+
     protected static Map<Object, Object> mimeTypes = loadMimeTypes();
-    
+
     static Map<Object, Object> loadMimeTypes() {
         HashMap<Object,Object> mimeTypes = new HashMap<Object, Object>();
         Properties p = new Properties();
@@ -91,7 +91,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         }
         return mimeTypes;
     }
-    
+
     public final static WebContext getActiveContext() {
         return CTX.get();
     }
@@ -100,7 +100,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         CTX.set(ctx);
     }
 
-    
+
     protected File root;
     protected ModuleRegistry moduleReg;
     protected FileChangeNotifier notifier;
@@ -112,39 +112,39 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     protected boolean isDebug = false;
 
     protected BundleTypeProvider bundleTypeProvider;
-    protected DirectoryTypeProvider directoryTypeProvider;    
+    protected DirectoryTypeProvider directoryTypeProvider;
 
     protected AnnotationManager annoMgr;
 
     protected ResourceRegistry registry;
 
-    
+
     public WebEngine(ResourceRegistry registry, File root) throws IOException {
         this.registry = registry;
         isDebug = Boolean.parseBoolean(Framework.getProperty("debug", "false"));
         this.root = root;
         if (isDebug) { // TODO notifier must be intialized by WebEngine
-            this.notifier = new FileChangeNotifier();
+            notifier = new FileChangeNotifier();
             notifier.start();
             notifier.watch(root);
         }
-        this.scripting = new Scripting(isDebug);
-        this.annoMgr = new AnnotationManager();
+        scripting = new Scripting(isDebug);
+        annoMgr = new AnnotationManager();
         String cp = System.getProperty("groovy.classpath");
         if (cp == null) {
-            cp = new File(root, "classes").getAbsolutePath();        
+            cp = new File(root, "classes").getAbsolutePath();
         }
         scripting.addClassPath(new File(root,".").getAbsolutePath());
         scripting.addClassPath(cp);
-        
-        this.bundleTypeProvider = new BundleTypeProvider();
-        this.directoryTypeProvider = new DirectoryTypeProvider(this);
+
+        bundleTypeProvider = new BundleTypeProvider();
+        directoryTypeProvider = new DirectoryTypeProvider(this);
         BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), bundleTypeProvider);
-        BundleAnnotationsLoader.getInstance().addLoader(WebService.class.getName(), bundleTypeProvider);        
-        
+        BundleAnnotationsLoader.getInstance().addLoader(WebService.class.getName(), bundleTypeProvider);
+
         loadModules();
-        
-        this.env = new HashMap<String, Object>();
+
+        env = new HashMap<String, Object>();
         env.put("installDir", root);
         env.put("engine", "Nuxeo Web Engine");
         env.put("version", "1.0.0.b1"); //TODO this should be put in the MANIFEST
@@ -158,32 +158,32 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         }
         // register annotation loader
         BundleAnnotationsLoader.getInstance().addLoader(Path.class.getName(), this);
-        
+
         // register writers
         registry.addMessageBodyWriter(new ResourceWriter());
         registry.addMessageBodyWriter(new TemplateWriter());
         registry.addMessageBodyWriter(new ScriptFileWriter());
     }
-    
+
     /**
      * @return the registry.
      */
     public ResourceRegistry getRegistry() {
         return registry;
     }
-    
+
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         return scripting.loadClass(className);
     }
-    
+
     public BundleTypeProvider getBundleTypeProvider() {
         return bundleTypeProvider;
     }
-    
+
     public DirectoryTypeProvider getDirectoryTypeProvider() {
         return directoryTypeProvider;
     }
-    
+
     public String getMimeType(String ext) {
         return (String)mimeTypes.get(ext);
     }
@@ -203,7 +203,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
             }
         }
     }
-    
+
     public AnnotationManager getAnnotationManager() {
         return annoMgr;
     }
@@ -230,9 +230,9 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
                 if (file.isDirectory()) {
                     ModuleDescriptor ad = null;
                     File appFile = new File(file, "Main.groovy");
-                    if (appFile.isFile()) {       
+                    if (appFile.isFile()) {
                         ad = loadModuleDescriptor(file.getName()+".Main");
-                        if (notifier != null) { 
+                        if (notifier != null) {
                             notifier.watch(appFile);
                         }
                         appFile = new File(file, "module.xml");
@@ -240,7 +240,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
                             ModuleDescriptor ad2 = loadModuleDescriptor(appFile);
                             ad.links = ad2.links;
                             ad2.links = null;
-                            if (notifier != null) { 
+                            if (notifier != null) {
                                 notifier.watch(appFile);
                             }
                         }
@@ -251,20 +251,20 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
                         }
                     }
                     if (ad != null) {
-                        moduleReg.registerDescriptor(file, ad);                       
+                        moduleReg.registerDescriptor(file, ad);
                         if (notifier != null) {
                             watchModule(file);
                         }
                         notifier.watch(appFile); // always track the file
                     }
                 }
-            } catch (Exception e) {                
+            } catch (Exception e) {
                 e.printStackTrace(); // TODO log
-            }                    
+            }
         }
     }
 
-    
+
 
     protected void watchModule(File root) throws IOException {
         notifier.watch(root);
@@ -274,10 +274,11 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
             }
         }
     }
-    
+
     /**
-     * Load an module given its annotated class 
-     * @param clazz
+     * Loads a module given its annotated class.
+     *
+     * @param className
      */
     protected synchronized ModuleDescriptor loadModuleDescriptor(String className) {
         try {
@@ -288,7 +289,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
                 if (ad.binding != null) {
                     addResourceBinding(ad.binding);
                 }
-            }            
+            }
             return ad;
         } catch (ClassNotFoundException e) {
             e.printStackTrace(); //TODO log
@@ -296,31 +297,28 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         }
         return null;
     }
-    
+
     /**
-     * load an module given its configuration file
-     * @param ctx
+     * Loads an module given its configuration file.
+     *
      * @param cfgFile
      */
     protected synchronized ModuleDescriptor loadModuleDescriptor(File cfgFile) {
         try {
             XMap xmap = new XMap();
             xmap.register(ModuleDescriptor.class);
-            InputStream in = new BufferedInputStream(new FileInputStream(cfgFile));            
+            InputStream in = new BufferedInputStream(new FileInputStream(cfgFile));
             return (ModuleDescriptor)xmap.load(createXMapContext(), in);
         } catch (Exception e) {
             e.printStackTrace(); // TODO log exception
         }
         return null;
     }
-    
+
     public boolean isDebug() {
         return isDebug;
     }
 
-    /**
-     * @param isDebug the isDebug to set.
-     */
     public void setDebug(boolean isDebug) {
         this.isDebug = isDebug;
     }
@@ -341,9 +339,6 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         return messages;
     }
 
-    /**
-     * @return the scripting.
-     */
     public Scripting getScripting() {
         return scripting;
     }
@@ -351,11 +346,11 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     public ModuleRegistry getModuleRegistry() {
         return moduleReg;
     }
-    
+
     public Module getModule(String name) {
-        return moduleReg.getModule(name); 
+        return moduleReg.getModule(name);
     }
-        
+
     public File getRootDirectory() {
         return root;
     }
@@ -382,7 +377,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     }
 
     /**
-     * Reload configuration
+     * Reloads configuration.
      */
     public synchronized void reload() {
         bundleTypeProvider.flushCache();
@@ -425,9 +420,9 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         } else {
             path = path.substring(rootPath.length()+1);
             int p = path.indexOf('/');
-            String moduleName = path; 
+            String moduleName = path;
             if (p > -1) {
-                moduleName = path.substring(0, p); 
+                moduleName = path.substring(0, p);
             }  
             Module module = moduleReg.getModuleByRoot(moduleName);
             if (module != null) {
@@ -435,14 +430,14 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
                     if (module instanceof ModuleImpl) {
                         ((ModuleImpl)module).flushSkinCache();
                     } else {
-                        module.flushCache();    
+                        module.flushCache();
                     }
                 } else {
                     module.flushCache();
                 }
             }
         }
-        lastMessagesUpdate = now;        
+        lastMessagesUpdate = now;
     }
 
     public void loadAnnotation(Bundle bundle, String annoType,
@@ -456,7 +451,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
             addResourceBinding(rb);
         }
     }
-    
+
     /** ResourceLocator API */
 
     public URL getResourceURL(String key) {
@@ -475,6 +470,5 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         }
         return null;
     }
-    
-            
+
 }

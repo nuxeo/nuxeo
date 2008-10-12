@@ -62,6 +62,6 @@ public class ScriptFileWriter implements MessageBodyWriter<ScriptFile> {
             MediaType arg3) {
         return arg0 == ScriptFile.class;
     }
-    
-    
+
+
 }

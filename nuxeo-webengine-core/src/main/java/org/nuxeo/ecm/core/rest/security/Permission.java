@@ -34,21 +34,21 @@ public class Permission {
         this.permission = permission;
         this.granted = granted;
     }
-    
+
     /**
      * @return the name.
      */
     public String getName() {
         return name;
     }
-    
+
     /**
      * @return the permission.
      */
     public String getPermission() {
         return permission;
     }
-    
+
     /**
      * @return the granted.
      */

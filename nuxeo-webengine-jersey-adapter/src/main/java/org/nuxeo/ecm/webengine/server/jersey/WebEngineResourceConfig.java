@@ -41,7 +41,7 @@ public class WebEngineResourceConfig extends DefaultResourceConfig {
     public WebEngineResourceConfig() {
         super ();
     }
-    
+
     @Override
     public Set<Class<?>> getResourceClasses() {
         WebEngine engine = Framework.getLocalService(WebEngine.class);
@@ -55,7 +55,7 @@ public class WebEngineResourceConfig extends DefaultResourceConfig {
         }
         return result;
     }
-    
-    
+
+
 
 }

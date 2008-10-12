@@ -40,7 +40,7 @@ public class TestRendering extends NXRuntimeTestCase {
     }
 
     public void testX() {}
-//TODO migrate tests to JAX-RS    
+//TODO migrate tests to JAX-RS
 //    public void testTemplateContribution() throws Exception {
 //        WebEngine2 web = Framework.getService(WebEngine2.class);
 //        WebApplication app = web.getApplication("test");
