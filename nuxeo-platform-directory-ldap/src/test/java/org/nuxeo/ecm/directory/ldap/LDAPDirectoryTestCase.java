@@ -22,7 +22,6 @@ package org.nuxeo.ecm.directory.ldap;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -77,6 +76,10 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
                 "ldap-test-setup/DirectoryService.xml");
         deployContrib("org.nuxeo.ecm.directory.ldap.tests",
                 "ldap-test-setup/LDAPDirectoryFactory.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql",
+                "OSGI-INF/SQLDirectoryFactory.xml");
+        deployContrib("org.nuxeo.ecm.directory.ldap.tests",
+                "TestSQLDirectories.xml");
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             deployContrib("org.nuxeo.ecm.directory.ldap.tests",
                     EXTERNAL_SERVER_SETUP);
@@ -115,6 +118,28 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
         } finally {
             session.close();
         }
+        undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
+                "ldap-test-setup/CoreService.xml");
+        undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
+                "ldap-test-setup/TypeService.xml");
+
+        undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
+                "ldap-test-setup/DirectoryTypes.xml");
+        undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
+                "ldap-test-setup/DirectoryService.xml");
+        undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
+                "ldap-test-setup/LDAPDirectoryFactory.xml");
+        undeployContrib("org.nuxeo.ecm.directory.sql",
+                "OSGI-INF/SQLDirectoryFactory.xml");
+        undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
+                "TestSQLDirectories.xml");
+        if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
+                    EXTERNAL_SERVER_SETUP);
+        } else {
+            undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
+                    INTERNAL_SERVER_SETUP);
+        }
         super.tearDown();
     }
 
@@ -145,12 +170,6 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
             destroyRecursively(subDn, ctx);
         }
         ctx.destroySubcontext(dn);
-    }
-
-    public static void _setUpContextFactory() {
-        Properties props = System.getProperties();
-        props.put("java.naming.factory.initial",
-                "org.nuxeo.ecm.directory.sql.LocalContextFactory");
     }
 
     public static LDAPDirectory getLDAPDirectory(String name)
