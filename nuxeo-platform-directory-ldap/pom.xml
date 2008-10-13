@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -10,8 +12,10 @@
 
   <artifactId>nuxeo-platform-directory-ldap</artifactId>
   <name>Nuxeo Directory - LDAP Storage</name>
-  <description>Nuxeo Enterprise Platform: LDAP storage implementation for
-    Nuxeo Directory Management Service.</description>
+  <description>
+    Nuxeo Enterprise Platform: LDAP storage implementation for Nuxeo Directory
+    Management Service.
+  </description>
 
   <properties>
     <apacheds.version>1.5.1</apacheds.version>
@@ -112,6 +116,16 @@
       <artifactId>shared-asn1</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -131,7 +145,7 @@
         <configuration>
           <excludes>
             <!--
-            <exclude>**/TestLDAPSession.java</exclude>
+              <exclude>**/TestLDAPSession.java</exclude>
             -->
           </excludes>
         </configuration>
