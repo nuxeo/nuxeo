@@ -721,7 +721,7 @@ public class LDAPSession implements Session, EntrySource {
         String passwordFieldId = getPasswordField();
         Map<String, Object> fieldMap = new HashMap<String, Object>();
 
-        attribute = attributes.get(idAttribute);
+        Attribute attribute = attributes.get(idAttribute);
         // NXP-2461: check that id field is filled + NXP-2730: make sure that
         // entry id is the one returned from LDAP
         if (attribute != null) {
@@ -760,7 +760,7 @@ public class LDAPSession implements Session, EntrySource {
                 // manage directly stored fields
                 String attributeId = directory.getFieldMapper().getBackendField(
                         fieldName);
-                Attribute attribute = attributes.get(attributeId);
+                attribute = attributes.get(attributeId);
                 if (fieldName.equals(passwordFieldId)) {
                     // do not try to fetch the password attribute
                     continue;
