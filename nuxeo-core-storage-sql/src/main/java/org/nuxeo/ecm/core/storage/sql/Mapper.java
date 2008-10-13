@@ -24,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -48,6 +49,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.exception.JDBCExceptionHelper;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.query.QueryResult;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionFragmentIterator;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
@@ -1366,6 +1369,64 @@ public class Mapper {
             Map<String, Serializable> joinMap = new HashMap<String, Serializable>();
             joinMap.put(model.HIER_PARENT_KEY, parentId);
             return getSelectRows(select, criteriaMap, joinMap, context);
+        }
+    }
+
+    /**
+     * Makes a NXQL query to the database.
+     *
+     * @param query the query as a parsed tree
+     * @return the results
+     * @throws StorageException
+     * @throws SQLException
+     */
+    public List<Serializable> query(SQLQuery query) throws StorageException,
+            SQLException {
+        QueryMaker queryMaker = new QueryMaker(sqlInfo, model, query);
+        queryMaker.makeQuery();
+        if (log.isDebugEnabled()) {
+            logSQL(queryMaker.selectInfo.sql, queryMaker.params);
+        }
+        PreparedStatement ps = connection.prepareStatement(queryMaker.selectInfo.sql);
+        try {
+            int i = 1;
+            for (Object object : queryMaker.params) {
+                if (object instanceof Calendar) {
+                    Calendar cal = (Calendar) object;
+                    Timestamp ts = new Timestamp(cal.getTimeInMillis());
+                    ps.setTimestamp(i++, ts, cal); // cal passed for timezone
+                } else {
+                    ps.setObject(i++, object);
+                }
+            }
+            ResultSet rs = ps.executeQuery();
+            Column column = queryMaker.selectInfo.whatColumns.get(0);
+            List<Serializable> ids = new LinkedList<Serializable>();
+            while (rs.next()) {
+                Serializable id = column.getFromResultSet(rs, 1);
+                ids.add(id);
+            }
+            if (log.isDebugEnabled()) {
+                int MAX = 10;
+                List<Serializable> debugIds = ids;
+                String end = "";
+                if (ids.size() > MAX) {
+                    debugIds = new ArrayList<Serializable>(MAX);
+                    i = 0;
+                    for (Serializable id : ids) {
+                        debugIds.add(id);
+                        i++;
+                        if (i == MAX) {
+                            break;
+                        }
+                    }
+                    end = "...";
+                }
+                logDebug("  -> " + debugIds + end);
+            }
+            return ids;
+        } finally {
+            ps.close();
         }
     }
 

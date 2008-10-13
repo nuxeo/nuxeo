@@ -12,13 +12,12 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.query.sql.model;
 
+import java.util.Calendar;
 import java.util.Locale;
 
 import org.joda.time.DateTime;
@@ -26,23 +25,24 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 /**
- * @author  <a href="mailto:fg@nuxeo.com">Florent Guillaume</a>
+ * @author Florent Guillaume
  */
 public class DateLiteral extends Literal {
 
     private static final long serialVersionUID = 279219479611055690L;
 
-    public static final DateTimeFormatter dateParser =
-        ISODateTimeFormat.dateParser().withLocale(Locale.getDefault());
-    public static final DateTimeFormatter dateTimeParser =
-        ISODateTimeFormat.dateOptionalTimeParser().withOffsetParsed();
-    public static final DateTimeFormatter dateFormatter =
-        ISODateTimeFormat.date();
-    public static final DateTimeFormatter dateTimeFormatter =
-        ISODateTimeFormat.dateTime();
+    public static final DateTimeFormatter dateParser = ISODateTimeFormat.dateParser().withLocale(
+            Locale.getDefault());
+
+    public static final DateTimeFormatter dateTimeParser = ISODateTimeFormat.dateOptionalTimeParser().withOffsetParsed();
+
+    public static final DateTimeFormatter dateFormatter = ISODateTimeFormat.date();
+
+    public static final DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime();
 
     // Direct access from org.nuxeo.ecm.core.search.backend.compass.QueryConverter
     public final DateTime value;
+
     public final boolean onlyDate;
 
     public DateLiteral(String value, boolean onlyDate) {
@@ -60,16 +60,20 @@ public class DateLiteral extends Literal {
         }
     }
 
+    public Calendar toCalendar() {
+        return value.toGregorianCalendar();
+    }
+
     @Override
     public String toString() {
         if (onlyDate) {
             String s = dateFormatter.print(value);
-            return new StringBuffer(s.length() + 7)
-                .append("DATE '").append(s).append("'").toString();
+            return new StringBuffer(s.length() + 7).append("DATE '").append(s).append(
+                    "'").toString();
         } else {
             String s = dateTimeFormatter.print(value);
-            return new StringBuffer(s.length() + 12)
-                .append("TIMESTAMP '").append(s).append("'").toString();
+            return new StringBuffer(s.length() + 12).append("TIMESTAMP '").append(
+                    s).append("'").toString();
         }
     }
 

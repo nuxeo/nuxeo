@@ -23,6 +23,8 @@ import java.util.List;
 
 import javax.resource.cci.Connection;
 
+import org.nuxeo.ecm.core.query.QueryResult;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -318,5 +320,14 @@ public interface Session extends Connection {
      * @throws StorageException
      */
     List<Node> getProxies(Node document, Node parent) throws StorageException;
+
+    /**
+     * Makes a NXQL query to the database.
+     *
+     * @param query the query as a parsed tree
+     * @return the resulting ids
+     */
+    // TODO should be an iterator
+    List<Serializable> query(SQLQuery query) throws StorageException;
 
 }

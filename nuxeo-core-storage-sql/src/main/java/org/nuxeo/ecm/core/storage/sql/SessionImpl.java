@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.AccessControlException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,9 +41,12 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.query.QueryResult;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLQueryResult;
 
 /**
  * The session is the main high level access point to data from the underlying
@@ -57,6 +61,8 @@ public class SessionImpl implements Session {
     private final RepositoryImpl repository;
 
     protected final SchemaManager schemaManager;
+
+    private final Mapper mapper;
 
     private final Model model;
 
@@ -73,6 +79,7 @@ public class SessionImpl implements Session {
             Credentials credentials) throws StorageException {
         this.repository = repository;
         this.schemaManager = schemaManager;
+        this.mapper = mapper;
         // this.credentials = credentials;
         model = mapper.getModel();
         context = new PersistenceContext(mapper, invalidators);
@@ -520,6 +527,14 @@ public class SessionImpl implements Session {
             nodes.add(getNodeById(fragment.getId()));
         }
         return nodes;
+    }
+
+    public List<Serializable> query(SQLQuery query) throws StorageException {
+        try {
+            return mapper.query(query);
+        } catch (SQLException e) {
+            throw new StorageException("Invalid query: " + query, e);
+        }
     }
 
     // returns context or null if missing
