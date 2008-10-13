@@ -15,52 +15,56 @@
         </a>
       </h3>
       <div class="boxBody">
-      <h:form>
-        <a4j:region renderRegionOnly="true">
-          <a4j:outputPanel id="dashboardDocumentProcessTable" rendered="#{! empty dashboardActions_documentProcessItems}">
-            
-              <h:outputText value="#{messages['label.user.processes']}"
-                class="infoMessage" />
-              <h:dataTable var="item"
-                value="${dashboardActions_documentProcessItems}"
-                rowClasses="dataRowEven,dataRowOdd"
-                styleClass="dataList">
-                <h:column>
-                  <f:facet name="header">
-                    <h:outputText
-                      value="#{messages['label.workflow.name']}" />
-                  </f:facet>
+      <a4j:region renderRegionOnly="true">
+        <h:form id="dashboardDocumentProcessTable">
+          <a4j:outputPanel rendered="#{! empty dashboardActions_documentProcessItems}">
+            <h:outputText value="#{messages['label.user.processes']}"
+              class="infoMessage" />
+            <h:dataTable var="item"
+              value="${dashboardActions_documentProcessItems}"
+              rowClasses="dataRowEven,dataRowOdd"
+              styleClass="dataList">
+              <h:column>
+                <f:facet name="header">
                   <h:outputText
-                    value="#{messages[item.processInstanceName]}" />
-                </h:column>
-                <h:column>
-                  <f:facet name="header">
-                    <h:outputText
-                      value="#{messages['label.workflow.task.documentLocation']}" />
-                  </f:facet>
-                  <h:commandLink value="#{item.docTitle}"
-                    action="#{dashboardActions.navigateToDocumentTab(item.documentModel)}" />
-                </h:column>
-                <h:column>
-                  <f:facet name="header">
-                    <h:outputText
-                      value="#{messages['label.workflow.task.startdate']}" />
-                  </f:facet>
+                    value="#{messages['label.workflow.name']}" />
+                </f:facet>
+                <h:outputText
+                  value="#{messages[item.processInstanceName]}" />
+              </h:column>
+              <h:column>
+                <f:facet name="header">
                   <h:outputText
-                    value="#{item.processInstanceStartDate}">
-                    <f:convertDateTime
-                      pattern="#{nxu:dateAndTimeFormater('medium')}"
-                      timeZone="#{timeZone}" />
-                  </h:outputText>
-                </h:column>
-              </h:dataTable>
-            <div class="emptyDashboardContent">
-              <h:outputText class="emptyDashBoardLabel"
-                value="#{messages['label.dashboard.user.document.process.empty']}"
-                rendered="#{empty dashboardActions_documentProcessItems}" />
-            </div>
+                    value="#{messages['label.workflow.task.startdate']}" />
+                </f:facet>
+                <h:outputText
+                  value="#{item.processInstanceStartDate}">
+                  <f:convertDateTime
+                    pattern="#{nxu:dateAndTimeFormater('medium')}"
+                    timeZone="#{timeZone}" />
+                </h:outputText>
+              </h:column>
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText
+                    value="#{messages['label.workflow.task.startdate']}" />
+                </f:facet>
+                <h:outputText
+                  value="#{item.processInstanceStartDate}">
+                  <f:convertDateTime
+                    pattern="#{nxu:dateAndTimeFormater('medium')}"
+                    timeZone="#{timeZone}" />
+                </h:outputText>
+              </h:column>
+            </h:dataTable>
           </a4j:outputPanel>
 
+          <div class="emptyDashboardContent">
+            <h:outputText class="emptyDashBoardLabel"
+              value="#{messages['label.dashboard.user.document.process.empty']}"
+              rendered="#{empty dashboardActions_documentProcessItems}" />
+          </div>
+          
           <div class="buttonsGroup">
             <h:commandButton type="submit"
               value="#{messages['label.browse.back']}"
@@ -71,8 +75,8 @@
               reRender="dashboardDocumentProcessTable"
               styleClass="button" />
           </div>
-        </a4j:region>
-      </h:form>
+        </h:form>
+      </a4j:region>
       </div>
     </div>
   </h:panelGroup>

@@ -15,84 +15,83 @@
         </a>
       </h3>
       <div class="boxBody">
-      <h:form>
-        <a4j:region renderRegionOnly="true">
-          <a4j:outputPanel id="dashboardItemTable" rendered="#{! empty dashboardActions_dashboardItems}">
-            
-              <h:outputText value="#{messages['label.workflow.tasks']}"
-                class="infoMessage" />
-              <h:dataTable var="dashboardItem"
-                value="${dashboardActions_dashboardItems}"
-                rowClasses="dataRowEven,dataRowOdd"
-                styleClass="dataList">
-                <h:column>
-                  <f:facet name="header">
-                    <h:outputText
-                      value="#{messages['label.workflow.task.Name']}" />
-                  </f:facet>
-                  <h:outputText value="#{messages[dashboardItem.name]}" />
-                </h:column>
-                <h:column>
-                  <f:facet name="header">
-                    <h:outputText
-                      value="#{messages['label.review.directive']}" />
-                  </f:facet>
+      <a4j:region renderRegionOnly="true" >
+        <h:form id="dashboardItemTable">
+          <a4j:outputPanel rendered="#{! empty dashboardActions_dashboardItems}">
+            <h:outputText value="#{messages['label.workflow.tasks']}"
+              class="infoMessage" />
+            <h:dataTable var="dashboardItem"
+              value="${dashboardActions_dashboardItems}"
+              rowClasses="dataRowEven,dataRowOdd"
+              styleClass="dataList">
+              <h:column>
+                <f:facet name="header">
                   <h:outputText
-                    value="#{messages[dashboardItem.directive]}" />
-                </h:column>
-                <h:column>
-                  <f:facet name="header">
-                    <h:outputText
-                      value="#{messages['label.review.user.comment']}" />
-                  </f:facet>
+                    value="#{messages['label.workflow.task.Name']}" />
+                </f:facet>
+                <h:outputText value="#{messages[dashboardItem.name]}" />
+              </h:column>
+              <h:column>
+                <f:facet name="header">
                   <h:outputText
-                    value="#{messages[dashboardItem.comment]}" />
-                </h:column>
-                <h:column>
-                  <f:facet name="header">
-                    <h:outputText
-                      value="#{messages['label.workflow.task.documentLocation']}" />
-                  </f:facet>
-                  <h:commandLink value="#{dashboardItem.docRefTitle}"
-                    action="#{dashboardActions.navigateToDocumentTab(dashboardItem.document)}" />
-                </h:column>
-                <h:column>
-                  <f:facet name="header">
-                    <h:outputText
-                      value="#{messages['label.workflow.task.duedate']}" />
-                  </f:facet>
-                  <h:outputText value="#{dashboardItem.dueDate}"
-                    rendered="#{dashboardItem.expired}"
-                    styleClass="error">
-                    <f:convertDateTime
-                      pattern="#{nxu:dateAndTimeFormater('medium')}"
-                      timeZone="#{timeZone}" />
-                  </h:outputText>
-                  <h:outputText value="#{dashboardItem.dueDate}"
-                    rendered="#{!dashboardItem.expired}">
-                    <f:convertDateTime
-                      pattern="#{nxu:dateAndTimeFormater('medium')}"
-                      timeZone="#{timeZone}" />
-                  </h:outputText>
-                </h:column>
-                <h:column>
-                  <f:facet name="header">
-                    <h:outputText
-                      value="#{messages['label.workflow.task.startdate']}" />
-                  </f:facet>
-                  <h:outputText value="#{dashboardItem.startDate}">
-                    <f:convertDateTime
-                      pattern="#{nxu:dateAndTimeFormater('medium')}"
-                      timeZone="#{timeZone}" />
-                  </h:outputText>
-                </h:column>
-              </h:dataTable>
-            <div class="emptyDashboardContent">
-              <h:outputText class="emptyDashBoardLabel"
-                value="#{messages['label.dashboard.empty']}"
-                rendered="#{empty dashboardActions_dashboardItems}" />
-            </div>
+                    value="#{messages['label.review.directive']}" />
+                </f:facet>
+                <h:outputText
+                  value="#{messages[dashboardItem.directive]}" />
+              </h:column>
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText
+                    value="#{messages['label.review.user.comment']}" />
+                </f:facet>
+                <h:outputText
+                  value="#{messages[dashboardItem.comment]}" />
+              </h:column>
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText
+                    value="#{messages['label.workflow.task.documentLocation']}" />
+                </f:facet>
+                <h:commandLink value="#{dashboardItem.docRefTitle}"
+                  action="#{dashboardActions.navigateToDocumentTab(dashboardItem.document)}" />
+              </h:column>
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText
+                    value="#{messages['label.workflow.task.duedate']}" />
+                </f:facet>
+                <h:outputText value="#{dashboardItem.dueDate}"
+                  rendered="#{dashboardItem.expired}"
+                  styleClass="error">
+                  <f:convertDateTime
+                    pattern="#{nxu:dateAndTimeFormater('medium')}"
+                    timeZone="#{timeZone}" />
+                </h:outputText>
+                <h:outputText value="#{dashboardItem.dueDate}"
+                  rendered="#{!dashboardItem.expired}">
+                  <f:convertDateTime
+                    pattern="#{nxu:dateAndTimeFormater('medium')}"
+                    timeZone="#{timeZone}" />
+                </h:outputText>
+              </h:column>
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText
+                    value="#{messages['label.workflow.task.startdate']}" />
+                </f:facet>
+                <h:outputText value="#{dashboardItem.startDate}">
+                  <f:convertDateTime
+                    pattern="#{nxu:dateAndTimeFormater('medium')}"
+                    timeZone="#{timeZone}" />
+                </h:outputText>
+              </h:column>
+            </h:dataTable>
           </a4j:outputPanel>
+          <div class="emptyDashboardContent">
+            <h:outputText class="emptyDashBoardLabel"
+              value="#{messages['label.dashboard.empty']}"
+              rendered="#{empty dashboardActions_dashboardItems}" />
+          </div>
 
           <div class="buttonsGroup">
             <h:commandButton type="submit"
@@ -103,9 +102,9 @@
               action="#{dashboardActions.refreshDashboardItems}"
               reRender="dashboardItemTable" styleClass="button" />
           </div>
-          
-        </a4j:region>
-      </h:form>
+        </h:form>   
+      </a4j:region>
+      
       </div>
     </div>
   </h:panelGroup>
