@@ -17,12 +17,10 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.io.Serializable;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,7 +56,7 @@ public class SQLInfo {
 
     private final Model model;
 
-    private final Dialect dialect;
+    protected final Dialect dialect;
 
     private final SQLExceptionConverter sqlExceptionConverter;
 
@@ -607,8 +605,12 @@ public class SQLInfo {
                     // these are columns that need to be searchable, as some
                     // databases (Derby) don't allow matches on CLOB columns
                     sqlType = Types.VARCHAR;
+                } else if (tableName.equals(model.mainTableName) ||
+                        tableName.equals(model.mainTableName)) {
+                    // or VARCHAR for system tables // TODO size?
+                    sqlType = Types.VARCHAR;
                 } else {
-                    sqlType = Types.CLOB; // or VARCHAR for system tables?
+                    sqlType = Types.CLOB;
                 }
                 break;
             case BOOLEAN:

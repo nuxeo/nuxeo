@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -230,6 +229,9 @@ public class Model {
     /** Shared properties. */
     private final Map<String, PropertyInfo> sharedPropertyInfos;
 
+    /** Merged properties (all schemas together + shared). */
+    private final Map<String, PropertyInfo> mergedPropertyInfos;
+
     /** Per-table info about properties. */
     private final Map<String, Map<String, PropertyType>> fragmentsKeys;
 
@@ -257,6 +259,15 @@ public class Model {
     /** Maps schema to simple+collection fragments. */
     protected final Map<String, Set<String>> typeFragments;
 
+    /** Set of doc types, for search. */
+    protected final Set<String> documentTypes;
+
+    /** Map of doc type to its supertype, for search. */
+    protected final Map<String, String> documentSuperTypes;
+
+    /** Map of doc type to its subtypes (including itself), for search. */
+    protected final Map<String, Set<String>> documentSubTypes;
+
     public Model(RepositoryImpl repository, SchemaManager schemaManager) {
         binaryManager = repository.getBinaryManager();
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
@@ -268,6 +279,7 @@ public class Model {
 
         schemaPropertyInfos = new HashMap<String, Map<String, PropertyInfo>>();
         sharedPropertyInfos = new HashMap<String, PropertyInfo>();
+        mergedPropertyInfos = new HashMap<String, PropertyInfo>();
         fragmentsKeys = new HashMap<String, Map<String, PropertyType>>();
 
         collectionTables = new HashMap<String, PropertyType>();
@@ -278,6 +290,10 @@ public class Model {
         typeFragments = new HashMap<String, Set<String>>();
         typeSimpleFragments = new HashMap<String, Set<String>>();
         typeCollectionFragments = new HashMap<String, Set<String>>();
+
+        documentTypes = new HashSet<String>();
+        documentSuperTypes = new HashMap<String, String>();
+        documentSubTypes = new HashMap<String, Set<String>>();
 
         specialPropertyTypes = new HashMap<String, Type>();
 
@@ -367,8 +383,9 @@ public class Model {
                 schemaPropertyInfos.put(schemaName, propertyInfos);
             }
         }
-        propertyInfos.put(propertyName, new PropertyInfo(propertyType,
-                fragmentName, fragmentKey, readonly));
+        PropertyInfo propertyInfo = new PropertyInfo(propertyType,
+                fragmentName, fragmentKey, readonly);
+        propertyInfos.put(propertyName, propertyInfo);
 
         // per-table
         if (fragmentKey != null) {
@@ -385,6 +402,15 @@ public class Model {
             specialPropertyTypes.put(propertyName, type);
         }
 
+        // merged properties
+        PropertyInfo previous = mergedPropertyInfos.get(propertyName);
+        if (previous == null) {
+            mergedPropertyInfos.put(propertyName, propertyInfo);
+        } else {
+            log.warn(String.format(
+                    "Unqualified property %s is ambiguous, schema %s will be used (not %s)",
+                    propertyName, previous.fragmentName, fragmentName));
+        }
     }
 
     /**
@@ -418,6 +444,10 @@ public class Model {
         PropertyInfo propertyInfo = propertyInfos.get(propertyName);
         return propertyInfo != null ? propertyInfo
                 : sharedPropertyInfos.get(propertyName);
+    }
+
+    public PropertyInfo getPropertyInfo(String propertyName) {
+        return mergedPropertyInfos.get(propertyName);
     }
 
     private void addCollectionFragmentInfos(String fragmentName,
@@ -537,6 +567,18 @@ public class Model {
         return typeFragments.containsKey(typeName);
     }
 
+    public boolean isDocumentType(String typeName) {
+        return documentTypes.contains(typeName);
+    }
+
+    public String getDocumentSuperType(String typeName) {
+        return documentSuperTypes.get(typeName);
+    }
+
+    public Set<String> getDocumentSubTypes(String typeName) {
+        return documentSubTypes.get(typeName);
+    }
+
     /**
      * Given a map of id to types, returns a map of fragment names to ids.
      */
@@ -593,6 +635,27 @@ public class Model {
             addTypeCollectionFragment(typeName, MISC_TABLE_NAME);
             log.debug("Fragments for " + typeName + ": " +
                     getTypeFragments(typeName));
+
+            // record doc type, super type, sub types
+            documentTypes.add(typeName);
+            Type superType = documentType.getSuperType();
+            if (superType != null) {
+                String superTypeName = superType.getName();
+                documentSuperTypes.put(typeName, superTypeName);
+            }
+        }
+        // compute subtypes for all types
+        for (String type : documentTypes) {
+            String superType = type;
+            do {
+                Set<String> subTypes = documentSubTypes.get(superType);
+                if (subTypes == null) {
+                    subTypes = new HashSet<String>();
+                    documentSubTypes.put(superType, subTypes);
+                }
+                subTypes.add(type);
+                superType = documentSuperTypes.get(superType);
+            } while (superType != null);
         }
     }
 

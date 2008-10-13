@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -203,11 +202,24 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         dml = session.query("SELECT * FROM File WHERE dc:title = 'testfile1_Title'");
         assertEquals(1, dml.size());
 
+        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile1_Title'");
+        assertEquals(1, dml.size());
+
         dml = session.query("SELECT * FROM File WHERE dc:title = 'testfile1_Title' OR dc:title = 'testfile3_Title'");
         assertEquals(2, dml.size());
 
         dml = session.query("SELECT * FROM File WHERE dc:title = 'testfolder1_Title'");
         assertEquals(0, dml.size());
+
+        dml = session.query("SELECT * FROM File WHERE filename = 'testfile.txt'");
+        assertEquals(1, dml.size());
+
+        dml = session.query("SELECT * FROM File WHERE dc:title = 'testfile3_Title'");
+        assertEquals(1, dml.size());
+
+        // this needs an actual LEFT OUTER JOIN
+        dml = session.query("SELECT * FROM File WHERE filename = 'testfile.txt' OR dc:title = 'testfile3_Title'");
+        assertEquals(2, dml.size());
     }
 
     public void testQueryAfterEdit() throws ClientException, IOException {

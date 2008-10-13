@@ -198,4 +198,20 @@ public class Dialect {
         return true;
     }
 
+    /**
+     * When doing a comparison between a text field and something else, is some
+     * casting required and with what pattern?
+     * <p>
+     * Needed for Derby where CLOB are not comparable by default.
+     *
+     * @return a pattern for String.format with one parameter for the column
+     *         name and one for the width
+     */
+    public String textComparisonCasting() {
+        if (dialect instanceof DerbyDialect) {
+            return "CAST(%1$s AS VARCHAR(%2$d))";
+        }
+        return null;
+    }
+
 }

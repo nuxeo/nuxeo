@@ -40,6 +40,11 @@ import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
+import org.nuxeo.ecm.core.query.QueryParseException;
+import org.nuxeo.ecm.core.query.QueryResult;
+import org.nuxeo.ecm.core.query.UnsupportedQueryTypeException;
+import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -301,8 +306,35 @@ public class SQLSession implements Session {
 
     public Query createQuery(String query, Query.Type qType, String... params)
             throws QueryException {
-        // XXX TODO
-        throw new UnsupportedOperationException();
+        if (qType != Query.Type.NXQL) {
+            throw new UnsupportedQueryTypeException(qType);
+        }
+        if (params != null && params.length != 0) {
+            throw new QueryException("Parameters not supported");
+        }
+        try {
+            return new SQLSessionQuery(SQLQueryParser.parse(query));
+        } catch (QueryParseException e) {
+            throw new QueryException(e.getMessage() + ": " + query, e);
+        }
+    }
+
+    protected class SQLSessionQuery implements Query {
+
+        protected final SQLQuery sqlQuery;
+
+        public SQLSessionQuery(SQLQuery sqlQuery) {
+            this.sqlQuery = sqlQuery;
+        }
+
+        public QueryResult execute() throws QueryException {
+            try {
+                List<Serializable> ids = session.query(sqlQuery);
+                return new SQLQueryResult(SQLSession.this, ids);
+            } catch (StorageException e) {
+                throw new QueryException(e);
+            }
+        }
     }
 
     /*
@@ -342,6 +374,17 @@ public class SQLSession implements Session {
             return new SQLDocumentVersion(node, type, this);
         } else {
             return new SQLDocument(node, type, this, false);
+        }
+    }
+
+    // called by SQLQueryResult iterator
+    protected Document getDocumentById(Serializable id)
+            throws DocumentException {
+        try {
+            Node node = session.getNodeById(id);
+            return node == null ? null : newDocument(node);
+        } catch (StorageException e) {
+            throw new DocumentException("Failed to get document: " + id, e);
         }
     }
 

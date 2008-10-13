@@ -34,6 +34,8 @@ public class Select implements Serializable {
 
     private String from;
 
+    private String join;
+
     private String where;
 
     private String groupBy;
@@ -50,6 +52,10 @@ public class Select implements Serializable {
 
     public void setFrom(String from) {
         this.from = from;
+    }
+
+    public void setJoin(String join) {
+        this.join = join;
     }
 
     public void setWhere(String where) {
@@ -70,6 +76,9 @@ public class Select implements Serializable {
         buf.append(what);
         buf.append(" FROM ");
         buf.append(from);
+        if (join != null && join.length() != 0) {
+            buf.append(join);
+        }
         if (where != null && where.length() != 0) {
             buf.append(" WHERE ");
             buf.append(where);
@@ -86,4 +95,5 @@ public class Select implements Serializable {
         // lock modes
         return buf.toString();
     }
+
 }
