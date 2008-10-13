@@ -2086,7 +2086,9 @@ Element.Methods = {
     if (element.offsetParent) return $(element.offsetParent);
     if (element == document.body) return $(element);
 
-    while ((element = element.parentNode) && element != document.body)
+    // NXP-2586
+    // while ((element = element.parentNode) && element != document.body)
+    while ((element = element.parentNode) && element != document.body && Object.isElement(element)) 
       if (Element.getStyle(element, 'position') != 'static')
         return $(element);
 
