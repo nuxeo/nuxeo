@@ -226,6 +226,8 @@ public class NuxeoAuthenticationFilter implements Filter {
                     cachableUserIdent);
         }
 
+        service.authenticatedSessionCreated(httpRequest, session, cachableUserIdent);
+
         return cachableUserIdent.getPrincipal();
     }
 
@@ -251,7 +253,6 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         HttpSession session = httpRequest.getSession(false);
         session = service.reinitSession(request);
-
         session = httpRequest.getSession(true);
 
         CachableUserIdentificationInfo newCachableUserIdent = new CachableUserIdentificationInfo(

@@ -64,7 +64,6 @@ public class SeamJsfSessionManager extends DefaultSessionManager implements
 
         }
         session = httpRequest.getSession(true);
-
         // reinit Seam so the afterResponseComplete does not crash
         ServletLifecycle.beginRequest(httpRequest);
         return session;

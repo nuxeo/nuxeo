@@ -41,7 +41,63 @@
 
   </extension>
 
+  <extension target="web#STD-AUTH-FILTER">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>*.faces</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>*.seam</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/nxdoc/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/nxfile/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/seam/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/restAPI/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <!-- filter also requests for web services -->
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/ws/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/webservices/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+  </extension>
+
   <extension target="web#FIRST-FILTER">
+
+    <!-- auth filter mapping -->
+
+
 
     <filter>
       <display-name>Nuxeo Fancy URL Filter</display-name>
@@ -79,59 +135,6 @@
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
-
-    <!-- auth filter mapping -->
-    <filter-mapping>
-      <filter-name>NuxeoAuthenticationFilter</filter-name>
-      <url-pattern>*.faces</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
-    <filter-mapping>
-      <filter-name>NuxeoAuthenticationFilter</filter-name>
-      <url-pattern>*.seam</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
-  <filter-mapping>
-      <filter-name>NuxeoAuthenticationFilter</filter-name>
-      <url-pattern>/nxdoc/*</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-  </filter-mapping>
-    <filter-mapping>
-      <filter-name>NuxeoAuthenticationFilter</filter-name>
-      <url-pattern>/nxfile/*</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
-    <filter-mapping>
-      <filter-name>NuxeoAuthenticationFilter</filter-name>
-      <url-pattern>/seam/*</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
-    <filter-mapping>
-      <filter-name>NuxeoAuthenticationFilter</filter-name>
-      <url-pattern>/restAPI/*</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
-    <!-- filter also requests for web services -->
-    <filter-mapping>
-      <filter-name>NuxeoAuthenticationFilter</filter-name>
-      <url-pattern>/ws/*</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
-    <filter-mapping>
-      <filter-name>NuxeoAuthenticationFilter</filter-name>
-      <url-pattern>/webservices/*</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
-
-
 
 
     <!-- filter for web services configuration -->
@@ -276,7 +279,7 @@
 
     <!-- glefter: leave this set to false for now
         if true, chainSelects are not updated properly - issue NXP-589
-      -->
+        -->
     <context-param>
       <param-name>facelets.DEVELOPMENT</param-name>
       <param-value>false</param-value>
@@ -290,7 +293,7 @@
         pages in a running application but slows down page rendering.
 
         Default: 2 seconds.
-      -->
+        -->
     <context-param>
       <param-name>facelets.REFRESH_PERIOD</param-name>
       <param-value>-1</param-value>
@@ -332,7 +335,7 @@
     </el-resolver>
 
     <!-- This line should not strictly speaking be necessary, but it works
-        around a minor bug in the RI.) -->
+      around a minor bug in the RI.) -->
     <el-resolver>org.jboss.seam.el.SeamELResolver</el-resolver>
 
   </extension>
@@ -348,8 +351,8 @@
   <extension target="faces-config#PHASE-LISTENER">
 
     <!-- This is registered after SeamPhaseListener because
-        JSF-RI reads /WEB-INF/faces-config.xml after
-        lib jar's META-INF/faces-config.xml -->
+      JSF-RI reads /WEB-INF/faces-config.xml after
+      lib jar's META-INF/faces-config.xml -->
     <phase-listener>
       org.nuxeo.ecm.platform.ui.web.rest.RestfulPhaseListener
     </phase-listener>

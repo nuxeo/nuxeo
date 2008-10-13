@@ -22,6 +22,8 @@ package org.nuxeo.ecm.platform.ui.web.auth.interfaces;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
+
 /**
  * SessionManager interface for Authentication Filter.
  *
@@ -29,10 +31,16 @@ import javax.servlet.http.HttpSession;
  */
 public interface NuxeoAuthenticationSessionManager {
 
+    /**
+     * returns true if request does not require to be authenticated
+     *
+     * @param request
+     * @return
+     */
     boolean bypassRequest(ServletRequest request);
 
     /**
-     * Used to know if SessionManager is available for a given request.
+     * Used to know if SessionManager is applicable for a given request.
      */
     boolean isAvalaible(ServletRequest request);
 
@@ -46,4 +54,15 @@ public interface NuxeoAuthenticationSessionManager {
      */
     HttpSession reinitSession(ServletRequest request);
 
+
+
+    /**
+     *
+     * CallBack for session creation
+     *
+     * @param request
+     * @param session
+     * @param cachebleUserInfo
+     */
+    void authenticatedSessionCreated(ServletRequest request, HttpSession session, CachableUserIdentificationInfo cachebleUserInfo);
 }

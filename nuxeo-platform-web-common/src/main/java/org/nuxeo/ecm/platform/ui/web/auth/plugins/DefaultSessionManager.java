@@ -23,6 +23,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationSessionManager;
 
 public class DefaultSessionManager implements NuxeoAuthenticationSessionManager {
@@ -59,6 +60,11 @@ public class DefaultSessionManager implements NuxeoAuthenticationSessionManager 
          session = httpRequest.getSession(true);
 
          return session;
+    }
+
+    public void authenticatedSessionCreated(ServletRequest request,
+            HttpSession session, CachableUserIdentificationInfo cachebleUserInfo) {
+        // TODO Auto-generated method stub
     }
 
 
