@@ -337,8 +337,8 @@ public class LDAPSession implements Session, EntrySource {
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
-                            "LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' " +
-                            "mod_op='REMOVE_ATTRIBUTE' attr='%s' [%s]",
+                            "LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' "
+                                    + "mod_op='REMOVE_ATTRIBUTE' attr='%s' [%s]",
                             docModel, dn, attrsToDel, this));
                 }
                 dirContext.modifyAttributes(dn, DirContext.REMOVE_ATTRIBUTE,
@@ -346,8 +346,8 @@ public class LDAPSession implements Session, EntrySource {
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
-                            "LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' " +
-                            "mod_op='REPLACE_ATTRIBUTE' attr='%s' [%s]",
+                            "LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' "
+                                    + "mod_op='REPLACE_ATTRIBUTE' attr='%s' [%s]",
                             docModel, dn, attrs, this));
                 }
                 dirContext.modifyAttributes(dn, DirContext.REPLACE_ATTRIBUTE,
@@ -711,14 +711,13 @@ public class LDAPSession implements Session, EntrySource {
         String passwordFieldId = getPasswordField();
         Map<String, Object> fieldMap = new HashMap<String, Object>();
 
-        if (entryId == null) {
-            // NXP-2461: check that id field is filled
-            attribute = attributes.get(idAttribute);
-            if (attribute != null) {
-                Object entry = attribute.get();
-                if (entry != null) {
-                    entryId = entry.toString();
-                }
+        attribute = attributes.get(idAttribute);
+        // NXP-2461: check that id field is filled + NXP-2730: make sure that
+        // entry id is the one returned from LDAP
+        if (attribute != null) {
+            Object entry = attribute.get();
+            if (entry != null) {
+                entryId = entry.toString();
             }
         }
 

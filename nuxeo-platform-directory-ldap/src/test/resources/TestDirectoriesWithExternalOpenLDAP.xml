@@ -77,6 +77,9 @@
         <inverseReference field="groups" directory="groupDirectory"
           dualReferenceField="members" />
 
+        <inverseReference field="profiles" directory="profileDirectory"
+          dualReferenceField="users" />
+
       </references>
 
     </directory>

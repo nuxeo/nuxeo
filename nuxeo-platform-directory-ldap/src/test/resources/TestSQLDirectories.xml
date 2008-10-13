@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.directory.sql.test">
+
+  <require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+    point="directories">
+
+    <directory name="profileDirectory">
+
+      <schema>user_profile</schema>
+
+      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
+      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
+      <dbUser>sa</dbUser>
+      <dbPassword></dbPassword>
+
+      <table>profiles</table>
+      <idField>id</idField>
+      <passwordField>password</passwordField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>sample-profiles.csv</dataFile>
+      <!-- as it's a memory directory, need to refetch
+        values every time -->
+      <createTablePolicy>always</createTablePolicy>
+      <autoincrementIdField>false</autoincrementIdField>
+
+      <references>
+        <tableReference field="users" directory="userDirectory"
+          table="user2profile" sourceColumn="profileId" targetColumn="userId"
+          dataFile="sample-user-profiles.csv" />
+      </references>
+
+    </directory>
+
+  </extension>
+
+</component>
