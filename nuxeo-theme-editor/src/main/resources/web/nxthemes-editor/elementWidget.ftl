@@ -14,8 +14,12 @@
   <label>View name</label>
   <select name="" id="viewName">
     <#list view_names_for_selected_element as view_name>
-      <option value="${view_name}">${view_name}</option>
-    <#/list>
+      <#if view_name == widget_of_selected_element.name>
+        <option value="${view_name}" selected="selected">${view_name}</option>
+      <#else>
+        <option value="${view_name}">${view_name}</option>
+      </#if>
+    </#list>
   </select>
 </p>
 

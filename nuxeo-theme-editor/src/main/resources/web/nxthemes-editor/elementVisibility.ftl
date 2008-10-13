@@ -1,6 +1,7 @@
 <#assign selected_element_id = script("getSelectedElementId.groovy") />
 <#assign is_selected_element_always_visible = script("isSelectedElementAlwaysVisible.groovy") />
 <#assign perspectives = script("getPerspectives.groovy") />
+<#assign perspectives_of_selected_element = script("getPerspectivesOfSelectedElement.groovy") />
 
 <div>
 
@@ -14,15 +15,23 @@
 
 <p>
   <label>Always visible</label>
-  <input type="checkbox" id="alwaysVisible" value="${is_selected_element_always_visible}" />
+  <#if is_selected_element_always_visible>
+    <input type="checkbox" id="alwaysVisible" name="alwaysVisible" checked="checked" />
+  <#else>
+    <input type="checkbox" id="alwaysVisible" name="alwaysVisible" />
+  </#if>
 </p>
 
-<#if is_selected_element_always_visible>
+<#if !is_selected_element_always_visible>
 <p>
   <label>Visible in perspectives</label>
-  <select id="perspectives" name="">
+  <select id="perspectives" name="perspectives" multiple="multiple">
     <#list perspectives as perspective>
-      <option value="${perspective}">${perspective}</option>
+      <#if perspectives_of_selected_element?seq_contains(perspective.name)>
+        <option value="${perspective.name}" selected="selected">${perspective.title}</option>
+      <#else>
+        <option value="${perspective.name}">${perspective.title}</option>
+      </#if>
     </#list>
   </select>
 </p>

@@ -11,8 +11,8 @@ if (!defaultTheme.contains("/")) {
 
 defaultThemeName = defaultTheme.split("/")[0]
 defaultPageName = defaultTheme.split("/")[1]
-currentPagePath = Context.getCookie("nxthemes.theme", defaultTheme)
-currentThemeName = currentPagePath.split("/")[0]
+
+currentThemeName = Context.runScript("getCurrentThemeName.groovy")
 
 for (themeName in Manager.getThemeManager().getThemeNames()) {
   link = String.format("%s/%s", themeName, defaultPageName)

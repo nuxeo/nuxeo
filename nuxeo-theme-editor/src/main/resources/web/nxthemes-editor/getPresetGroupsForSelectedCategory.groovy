@@ -5,7 +5,7 @@ import org.nuxeo.theme.types.TypeFamily
 import org.nuxeo.theme.types.Type
 
 groups = []
-category = Context.runScript("getCurrentStyleCategory.groovy")
+category = Context.runScript("getSelectedStyleCategory.groovy")
 groups.add("")
 if (category == null) {
     return groups

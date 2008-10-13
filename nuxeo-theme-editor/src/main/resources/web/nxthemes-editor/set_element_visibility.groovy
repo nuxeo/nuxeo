@@ -7,8 +7,15 @@ import org.nuxeo.theme.elements.Element
 import org.nuxeo.theme.perspectives.PerspectiveManager
 
 id = Request.getParameter("id")
-perspectives = Request.getParameter("perspectives")
-alwaysVisible = Request.getParameter("always_visible")
+perspectives = Request.getParameterValues("perspectives")
+alwaysVisible = Request.getParameter("always_visible").equals("true") ? true : false
+
+List<String> perspectivesList = new ArrayList<String>()
+if (perspectives != null) {
+    for (p in perspectives) {
+        perspectivesList.add(p)
+    }
+}
 
 Element element = ThemeManager.getElementById(id)
 PerspectiveManager perspectiveManager = Manager.getPerspectiveManager()
@@ -17,10 +24,10 @@ if (alwaysVisible) {
     perspectiveManager.setAlwaysVisible(element)
 } else {
     // initially make the element visible in all perspectives
-    if (perspectives.isEmpty()) {
+    if (perspectivesList.isEmpty()) {
         perspectiveManager.setVisibleInAllPerspectives(element)
     } else {
-        perspectiveManager.setVisibleInPerspectives(element, perspectives)
+        perspectiveManager.setVisibleInPerspectives(element, perspectivesList)
     }
 }
 

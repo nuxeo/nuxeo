@@ -17,7 +17,7 @@
     <button type="submit">Update</button>
   </div>
 <#else>
-  <p>This element has no configurable properties.</p>
+  <div>This element has no configurable properties.</div>
 </#if>  
 </form>
 

@@ -103,6 +103,9 @@
        <mapping pattern="/set_style_edit_mode">
           <script>/set_style_edit_mode.groovy</script>
        </mapping>
+       <mapping pattern="/set_style_selector">
+          <script>/set_style_selector.groovy</script>
+       </mapping>
        <mapping pattern="/make_element_use_named_style">
           <script>/make_element_use_named_style.groovy</script>
        </mapping>

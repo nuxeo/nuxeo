@@ -18,11 +18,11 @@ window.scrollTo(0,0);
 <#if selected_element_id>
 
 <@nxthemes_tabs identifier="element editor tabs" styleClass="nxthemesEditTabs">
-  <item switchTo="element editor perspectives/edit properties" label="Properties"  />
-  <item switchTo="element editor perspectives/assign widget" label="Widget"  />
-  <item switchTo="element editor perspectives/edit style" label="Style"  />
-  <item switchTo="element editor perspectives/set visibility" label="Visibility"  />
-  <item switchTo="element editor perspectives/set description" label="Description"  />    
+  <tab switchTo="element editor perspectives/edit properties" label="Properties"  />
+  <tab switchTo="element editor perspectives/assign widget" label="Widget"  />
+  <tab switchTo="element editor perspectives/edit style" label="Style"  />
+  <tab switchTo="element editor perspectives/set visibility" label="Visibility"  />
+  <tab switchTo="element editor perspectives/set description" label="Description"  />    
 </@nxthemes_tabs>
 
 <div class="nxthemesEditorFrame">

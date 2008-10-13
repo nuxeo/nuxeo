@@ -1,6 +1,6 @@
 <#assign style_category = script("getStylerCategory.groovy") />
 <#assign preset_groups = script("getPresetGroupsForSelectedCategory.groovy") />
-<#assign presets_for_current_group = script("getPresetsForCurrentGroup.groovy") />
+<#assign presets_for_selected_group = script("getPresetsForSelectedGroup.groovy") />
 
 <div class="nxthemesToolbox" id="nxthemesStylePicker">
 
@@ -20,7 +20,7 @@
   </div>
 
   <div class="frame">
-    <#list presets_for_current_group as preset_info>
+    <#list presets_for_selected_group as preset_info>
         <div class="selection" onclick="NXThemesStyleEditor.updateFormField('&quot;${preset_info.name}&quot;')">
            ${preset_info.preview}
         </div>

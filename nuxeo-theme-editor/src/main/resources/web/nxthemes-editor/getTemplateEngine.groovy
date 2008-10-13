@@ -1,5 +1,5 @@
 
-import org.nuxeo.them.themes.ThemeManager
+import org.nuxeo.theme.themes.ThemeManager
 
 applicationPath = Context.runScript("getApplicationPath.groovy")
-return ThemeManager.getTemplateEngine(applicationPath);
+return ThemeManager.getTemplateEngine(applicationPath)
