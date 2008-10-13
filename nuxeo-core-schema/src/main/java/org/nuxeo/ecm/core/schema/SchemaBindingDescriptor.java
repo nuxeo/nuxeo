@@ -53,4 +53,9 @@ public class SchemaBindingDescriptor {
         this.prefix = prefix;
     }
 
+    @Override
+    public String toString() {
+        return "Schema: "+name;
+    }
+
 }

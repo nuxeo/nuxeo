@@ -41,10 +41,8 @@ public abstract class CompositePropertyFactory {
     static final Map<String, CompositePropertyFactory> FACTORIES
             = new HashMap<String, CompositePropertyFactory>();
 
-    public abstract Property create(
-            JCRNodeProxy parent, Node property, Field field)
+    public abstract Property create(JCRNodeProxy parent, Node property, Field field)
             throws DocumentException;
-
 
     public static Property getProperty(JCRNodeProxy parent, Node property,
             Field field) throws DocumentException {
@@ -79,7 +77,7 @@ public abstract class CompositePropertyFactory {
 
     public static final CompositePropertyFactory CONTENT = new CompositePropertyFactory() {
         @Override
-        public org.nuxeo.ecm.core.model.Property create(JCRNodeProxy parent,
+        public Property create(JCRNodeProxy parent,
                 Node property, Field field) {
             return new BlobProperty(parent, property, field);
         }
