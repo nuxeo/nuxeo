@@ -123,7 +123,8 @@ public class WebEngineServlet extends HttpServlet {
         // UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request,
         // servletMappingPrefix);
         // bs: using real servlet path
-        UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, request.getServletPath());
+        //UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, request.getServletPath());
+        UriInfoImpl uriInfo = UriInfoImpl.create(request);
 
         HttpRequest in;
         try {

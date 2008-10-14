@@ -29,11 +29,15 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
+import org.nuxeo.common.collections.ScopeType;
+import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebService;
@@ -99,6 +103,7 @@ public class FileService extends DefaultService {
     public Response doPost() {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         FormData form = ctx.getForm();
+        form.fillDocument(doc);
         String xpath = ctx.getForm().getString(FormData.PROPERTY);
         if (xpath == null) {
             if (doc.hasSchema("file")) {
@@ -131,6 +136,19 @@ public class FileService extends DefaultService {
                 }
                 p.setValue(blob);
             }
+            // make snapshot
+            VersioningActions va = form.getVersioningOption();
+            if (va != null) {
+                ScopedMap ctxData = doc.getContextData();
+                ctxData.putScopedValue(ScopeType.REQUEST,
+                        VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
+                ctxData.putScopedValue(ScopeType.REQUEST, VersioningActions.KEY_FOR_INC_OPTION, va);
+            } else {
+                ScopedMap ctxData = doc.getContextData();
+                ctxData.putScopedValue(ScopeType.REQUEST,
+                        VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, false);
+            }
+            // ------------------------
             CoreSession session = ctx.getCoreSession();
             session.saveDocument(doc);
             session.save();
