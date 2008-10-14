@@ -151,6 +151,8 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         file2.setPropertyValue("dc:description", "testfile2_DESCRIPTION2");
         Calendar cal2 = getCalendar(2007, 4, 1, 12, 0, 0);
         file2.setPropertyValue("dc:created", cal2);
+        file2.setPropertyValue("dc:contributors",
+                new String[] { "bob", "pete" });
         file2 = session.createDocument(file2);
 
         DocumentModel file3 = new DocumentModelImpl("/testfolder1",
@@ -158,6 +160,8 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         file3.setPropertyValue("dc:title", "testfile3_Title");
         file3.setPropertyValue("dc:description",
                 "testfile3_desc1 testfile3_desc2,  testfile3_desc3");
+        file3.setPropertyValue("dc:contributors",
+                new String[] { "bob", "john" });
         file3 = session.createDocument(file3);
 
         DocumentModel folder2 = new DocumentModelImpl("/", "testfolder2",
@@ -219,6 +223,28 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
 
         // this needs an actual LEFT OUTER JOIN
         dml = session.query("SELECT * FROM File WHERE filename = 'testfile.txt' OR dc:title = 'testfile3_Title'");
+        assertEquals(2, dml.size());
+
+        dml = session.query("SELECT * FROM File WHERE dc:contributors = 'pete'");
+        assertEquals(1, dml.size());
+
+        dml = session.query("SELECT * FROM File WHERE dc:contributors = 'bob'");
+        assertEquals(2, dml.size());
+
+        // the semantics of this is dubious anyway
+        dml = session.query("SELECT * FROM File WHERE dc:contributors <> 'nothere'");
+        assertEquals(2, dml.size());
+
+        dml = session.query("SELECT * FROM File WHERE filename = 'testfile.txt' OR dc:contributors = 'bob'");
+        assertEquals(3, dml.size());
+    }
+
+    // this is disabled for JCR
+    public void testQueryWithIn() throws Exception {
+        DocumentModelList dml;
+        createDocs();
+
+        dml = session.query("SELECT * FROM File WHERE dc:contributors IN ('bob', 'pete')");
         assertEquals(2, dml.size());
     }
 
@@ -306,6 +332,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
 
     // from TestSQLWithPath
 
+    // this is disabled for SQL
     public void testStartsWith() throws Exception {
         String sql;
         DocumentModelList dml;

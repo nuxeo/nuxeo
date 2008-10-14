@@ -44,6 +44,10 @@ public class TestQueryVisitor extends TestCase {
         expected = "SELECT p FROM t WHERE (title = '%test')";
         check(sql, expected);
 
+        sql = "select p from t where foo in (1, 2)";
+        expected = "SELECT p FROM t WHERE (foo IN (1, 2))";
+        check(sql, expected);
+
         sql = "SELECT p, q AS qq, f(x) FROM t, u, v" + //
                 " WHERE title = 'ab' AND des = 'cd'" + //
                 // " GROUP BY x, y" + // unimpl
@@ -69,7 +73,7 @@ public class TestQueryVisitor extends TestCase {
         // hack around timezone variations for this test
         sql = "select * from d where foo = TIMESTAMP '2008-08-08 12:34:56'";
         expected = "SELECT * FROM d WHERE (foo = TIMESTAMP '2008-08-08T12:34:56.000+00:00')";
-        expected = expected.substring(0, expected.length() - 8); // truncate timezone
+        expected = expected.substring(0, expected.length() - 8); // truncate tz
         PrintVisitor v = new PrintVisitor();
         v.visitQuery(SQLQueryParser.parse(sql));
         String got = v.toString();
@@ -228,12 +232,14 @@ class PrintVisitor extends DefaultQueryVisitor {
 
     @Override
     public void visitLiteralList(LiteralList node) {
+        buf.append('(');
         for (Iterator<Literal> it = node.iterator(); it.hasNext();) {
             it.next().accept(this);
             if (it.hasNext()) {
                 buf.append(", ");
             }
         }
+        buf.append(')');
     }
 
     @Override

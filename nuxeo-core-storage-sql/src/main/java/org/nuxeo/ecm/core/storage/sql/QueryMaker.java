@@ -60,20 +60,24 @@ import org.nuxeo.ecm.core.storage.sql.db.Table;
  * This needs to transform statements like:
  *
  * <pre>
- * SELECT * FROM File WHERE dc:title = 'abc' AND uid:uid = '123'
+ * SELECT * FROM File
+ *   WHERE
+ *         dc:title = 'abc' AND uid:uid = '123'
+ *     AND dc:contributors = 'bob' -- multi-valued
  * </pre>
  *
  * into:
  *
  * <pre>
- * SELECT hierarchy.id
+ * SELECT DISTINCT hierarchy.id
  *   FROM hierarchy
  *     LEFT OUTER JOIN dublincore ON dublincore.id = hierarchy.id
  *     LEFT OUTER JOIN uid ON uid.id = hierarchy.id
+ *     LEFT OUTER JOIN dc_contributors ON dc_contributors.id = hierarchy.id
  *   WHERE
  *         hierarchy.primarytype IN ('File', 'SubFile')
  *     -- AND hierarchy.isproperty = FALSE  // redundant with types
- *     AND (dublincore.title = 'abc' AND uid.uid = '123')
+ *     AND (dublincore.title = 'abc' AND uid.uid = '123' AND dc_contributors.item = 'bob')
  * </pre>
  *
  * @author Florent Guillaume
@@ -197,10 +201,22 @@ public class QueryMaker {
         }
 
         /*
+         * Check if we need a DISTINCT.
+         */
+
+        String what;
+        if (whereBuilder.needsDistinct) {
+            // we do LEFT OUTER JOINs, so we could get identical results
+            what = "DISTINCT " + qhierid;
+        } else {
+            // never needed as all impacted tables have unique keys
+            what = qhierid;
+        }
+        /*
          * Create the whole select.
          */
         Select select = new Select(null);
-        select.setWhat(qhierid);
+        select.setWhat(what);
         select.setFrom(qhier);
         select.setJoin(join);
         select.setWhere(whereClause);
@@ -254,6 +270,8 @@ public class QueryMaker {
 
         public final List<Serializable> params;
 
+        public boolean needsDistinct;
+
         public WhereBuilder(Model model, SQLInfo sqlInfo) {
             this.model = model;
             this.sqlInfo = sqlInfo;
@@ -287,7 +305,13 @@ public class QueryMaker {
                         node.name);
             }
             Table table = database.getTable(propertyInfo.fragmentName);
-            Column column = table.getColumn(propertyInfo.fragmentKey);
+            Column column;
+            if (propertyInfo.propertyType.isArray()) {
+                column = table.getColumn(model.COLL_TABLE_VALUE_KEY);
+                needsDistinct = true; // table doesn't have unique keys
+            } else {
+                column = table.getColumn(propertyInfo.fragmentKey);
+            }
             String qname = table.getQuotedName() + '.' + column.getQuotedName();
             // some databases (Derby) can't do comparisons on CLOB
             if (column.getSqlType() == Types.CLOB) {
@@ -301,12 +325,14 @@ public class QueryMaker {
 
         @Override
         public void visitLiteralList(LiteralList node) {
+            buf.append('(');
             for (Iterator<Literal> it = node.iterator(); it.hasNext();) {
                 it.next().accept(this);
                 if (it.hasNext()) {
                     buf.append(", ");
                 }
             }
+            buf.append(')');
         }
 
         @Override

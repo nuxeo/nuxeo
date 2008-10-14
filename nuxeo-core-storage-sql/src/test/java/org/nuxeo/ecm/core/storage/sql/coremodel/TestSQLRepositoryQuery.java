@@ -59,4 +59,9 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
         }
     }
 
+    @Override
+    public void testStartsWith() {
+        // SQL cannot do STARTSWITH queries
+    }
+
 }

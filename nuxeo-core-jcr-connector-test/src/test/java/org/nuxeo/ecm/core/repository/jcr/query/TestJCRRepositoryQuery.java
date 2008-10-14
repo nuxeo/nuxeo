@@ -35,4 +35,9 @@ public class TestJCRRepositoryQuery extends QueryTestCase {
     public void undeployRepository() throws Exception {
     }
 
+    @Override
+    public void testQueryWithIn() {
+        // JCR cannot do IN queries
+    }
+
 }
