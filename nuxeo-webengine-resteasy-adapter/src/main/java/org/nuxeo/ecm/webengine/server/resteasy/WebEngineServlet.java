@@ -134,8 +134,8 @@ public class WebEngineServlet extends HttpServlet {
         }
         HttpResponse theResponse = new HttpServletResponseWrapper(response,
                 dispatcher.getProviderFactory());
-
-        try {
+//        double d = System.currentTimeMillis();
+        try {           
             // bs: initialize webengine context
             WebContext ctx = new WebEngineContext(in, request);
             WebEngine.setActiveContext(ctx);
@@ -149,6 +149,7 @@ public class WebEngineServlet extends HttpServlet {
             ResteasyProviderFactory.clearContextData();
             // bs: cleanup webengine context
             WebEngine.setActiveContext(null);
+//            System.out.println(">>>>>>>>>>>>"+((System.currentTimeMillis()-d)/1000));
         }
     }
 

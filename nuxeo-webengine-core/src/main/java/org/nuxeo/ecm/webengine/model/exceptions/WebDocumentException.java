@@ -17,24 +17,30 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.model;
+package org.nuxeo.ecm.webengine.model.exceptions;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class NoSuchResourceException extends WebException {
+public class WebDocumentException extends WebException {
 
-    private static final long serialVersionUID = -651531091916992562L;
+    private static final long serialVersionUID = 1L;
 
-    public NoSuchResourceException(String msg) {
-        super(msg);
+
+    public WebDocumentException(String message) {
+        super(message);
     }
 
-    public NoSuchResourceException(String msg, Throwable cause) {
-        super(msg, cause);
+    public WebDocumentException(ClientException cause) {
+        super(null, cause);
+    }
+
+    public WebDocumentException(String message, ClientException cause) {
+        super(message, cause);
     }
 
 }

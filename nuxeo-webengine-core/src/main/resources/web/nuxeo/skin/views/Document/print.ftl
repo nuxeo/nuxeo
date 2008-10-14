@@ -24,7 +24,7 @@
 
 <hr/>
 
-<div class="wikiName">URL: <span>${This.getUrlPath()}</span></div>
+<div class="wikiName">URL: <span>${This.path}</span></div>
 
 <hr/>
 
@@ -33,7 +33,7 @@
 <h1>${Document.title}</h1>
 
 <div id="entry-content">
-    <#include "@@print_page"/>
+    <#include "@print_page.ftl"/>
 </div>
 
 </@block>

@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.exceptions;
+package org.nuxeo.ecm.webengine.model.exceptions;
 
 import org.nuxeo.ecm.webengine.WebException;
 
@@ -25,16 +25,16 @@ import org.nuxeo.ecm.webengine.WebException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebDeployException extends WebException {
+public class WebResourceNotFoundException extends WebException {
 
     private static final long serialVersionUID = 1L;
 
 
-    public WebDeployException(String message) {
+    public WebResourceNotFoundException(String message) {
         super (message);
     }
 
-    public WebDeployException(String message, Throwable cause) {
+    public WebResourceNotFoundException(String message, Throwable cause) {
         super (message, cause);
     }
 

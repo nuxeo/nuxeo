@@ -23,8 +23,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -34,8 +36,8 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
-import org.nuxeo.ecm.webengine.model.NoSuchResourceException;
 import org.nuxeo.ecm.webengine.model.WebService;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultService;
 
 /**
@@ -55,7 +57,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultService;
 public class FileService extends DefaultService {
 
     @GET
-    public Object doGet() {
+    public Response doGet() {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         FormData form = ctx.getForm();
         String xpath = form.getString(FormData.PROPERTY);
@@ -71,7 +73,7 @@ public class FileService extends DefaultService {
             Property p = doc.getProperty(xpath);
             Blob blob = (Blob)p.getValue();
             if (blob == null) {
-                throw new NoSuchResourceException("No attached file at "+xpath);
+                throw new WebResourceNotFoundException("No attached file at "+xpath);
             }
             String fileName = blob.getFilename();
             if (fileName == null) {
@@ -84,17 +86,17 @@ public class FileService extends DefaultService {
                     }
                 }
             }
-            return Response.ok()
+            return Response.ok(blob)
                 .header("Content-Disposition","inline; filename="+fileName)
                 .type(blob.getMimeType())
-                .entity(blob).build();
+                .build();
         } catch (Exception e) {
             throw new WebException("Failed to get the attached file", e);
         }
     }
 
     @POST
-    public Object doPost() {
+    public Response doPost() {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         FormData form = ctx.getForm();
         String xpath = ctx.getForm().getString(FormData.PROPERTY);
@@ -132,7 +134,7 @@ public class FileService extends DefaultService {
             CoreSession session = ctx.getCoreSession();
             session.saveDocument(doc);
             session.save();
-            return null; //TODO
+            return redirect(getTarget().getPath());
         } catch (WebException e) {
             throw e;
         } catch (Exception e) {
@@ -140,5 +142,34 @@ public class FileService extends DefaultService {
         }
     }
 
+    @GET
+    @Path("delete")
+    public Response remove() {
+        return doDelete();
+    }
+    
+    @DELETE
+    public Response doDelete() {
+        DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
+        FormData form = ctx.getForm();
+        String xpath = form.getString(FormData.PROPERTY);
+        if (xpath == null) {
+            if (doc.hasSchema("file")) {
+                xpath = "file:content";
+            } else {
+                throw new IllegalArgumentException(
+                "Missing request parameter named 'property' that specify the blob property xpath to fetch");
+            }
+        }
+        try {
+            doc.getProperty(xpath).remove();
+            CoreSession session = ctx.getCoreSession();
+            session.saveDocument(doc);
+            session.save();
+        } catch (Exception e) {
+            throw new WebException("Failed to delete attached file", e);
+        }
+        return redirect(getTarget().getPath());
+    }
 
 }

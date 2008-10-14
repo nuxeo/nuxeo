@@ -25,7 +25,7 @@ import java.util.List;
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
+import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 /**

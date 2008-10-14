@@ -31,7 +31,7 @@ import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
+import org.nuxeo.ecm.webengine.model.exceptions.WebDeployException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.osgi.framework.Bundle;

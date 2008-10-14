@@ -27,7 +27,6 @@ import java.util.Set;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
@@ -35,6 +34,7 @@ import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.ServiceResource;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -58,7 +58,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
             throw new WebSecurityException(
                     "Failed to initialize object: "+getPath()+". Object is not accessible in the current context", getPath());
         }
-        initialize(args);
+        initialize(args);        
         return this;
     }
 

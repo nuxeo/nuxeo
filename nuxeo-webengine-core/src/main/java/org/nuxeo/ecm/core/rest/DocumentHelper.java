@@ -73,6 +73,9 @@ public class DocumentHelper {
             }
             DocumentModel newDoc = session.createDocumentModel(parent.getPathAsString(), name, type);
             form.fillDocument(newDoc);
+            if (newDoc.getTitle().length() == 0) {
+                newDoc.getPart("dublincore").get("title").setValue(newDoc.getName());
+            }
             newDoc = session.createDocument(newDoc);
             session.save();
             return newDoc;

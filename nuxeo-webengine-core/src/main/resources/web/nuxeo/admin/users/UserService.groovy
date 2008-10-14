@@ -5,6 +5,7 @@ import javax.ws.rs.core.*;
 import org.nuxeo.ecm.webengine.model.*;
 import org.nuxeo.ecm.webengine.model.impl.*;
 import org.nuxeo.ecm.webengine.*;
+import org.nuxeo.ecm.webengine.model.exceptions.*;
 import org.nuxeo.runtime.api.*;
 import org.nuxeo.ecm.platform.usermanager.*;
 
@@ -34,7 +35,7 @@ public class UserService extends DefaultService {
     def userManager = Framework.getService(UserManager.class)
     def principal = userManager.getPrincipal(user);
     if (principal == null) {
-      throw new NoSuchResourceException("User not found: "+user);
+      throw new WebResourceNotFoundException("User not found: "+user);
     }
     return newObject("User", principal);
   }
@@ -44,7 +45,7 @@ public class UserService extends DefaultService {
     def userManager = Framework.getService(UserManager.class)
     def principal = userManager.getGroup(group);
     if (principal == null) {
-      throw new NoSuchResourceException("User not found: "+user);
+      throw new WebResourceNotFoundException("User not found: "+user);
     }
     return newObject("Group", principal);
   }

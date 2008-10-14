@@ -67,8 +67,15 @@ public class DocumentObject extends DefaultObject {
         return getView("index.ftl");
     }
 
+    // simulate a DELETE using GET
+    @GET
+    @Path(".delete")
+    public Response getDelete() {
+        return doDelete();
+    }
+    
     @DELETE
-    public Object doDelete() {
+    public Response doDelete() {
         try {
             CoreSession session = ctx.getCoreSession();
             session.removeDocument(doc.getRef());
@@ -95,6 +102,12 @@ public class DocumentObject extends DefaultObject {
         return redirect(getPath());
     }
 
+    @POST
+    @Path(".put")
+    public Response getPut() {
+        return doPut();
+    }
+    
     //TODO implement HEAD
     public Object doHead() {
         return null; //TODO

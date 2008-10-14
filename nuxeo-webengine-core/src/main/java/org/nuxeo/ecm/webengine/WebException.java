@@ -27,10 +27,10 @@ import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
-import org.nuxeo.ecm.webengine.exceptions.WebDocumentException;
-import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
-import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.model.exceptions.WebDocumentException;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
+import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultModule;
 
 public class WebException extends WebApplicationException {

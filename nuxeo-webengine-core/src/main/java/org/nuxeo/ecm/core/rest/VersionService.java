@@ -19,10 +19,18 @@
 
 package org.nuxeo.ecm.core.rest;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebService;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultService;
 
 /**
@@ -42,9 +50,41 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultService;
 @WebService(name="versions", targetType="Document", targetFacets={"Versionable"})
 public class VersionService extends DefaultService {
 
-    @GET
-    public Object getLastVersion() {
-        return "versions"; // handled by interceptor
+    @GET 
+    public Object getVersions() {
+        return getTarget().getView("versions.ftl");
+    }
+    
+    @Path("last")
+    public DocumentObject getLastVersion() {
+        try {
+            DocumentObject dobj = (DocumentObject)getTarget();
+            DocumentModel doc =  dobj.getDocument();            
+            DocumentModel v  = dobj.getCoreSession().getLastDocumentVersion(doc.getRef());
+            if (v != null) {
+                return dobj.newObject(v);
+            }
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+        throw new WebResourceNotFoundException("No version found for "+((DocumentObject)getTarget()).getDocument().getPath());
+    }
+
+    @Path("{label}")
+    public DocumentObject getVersion(@PathParam("label") String label) {
+        try {
+            DocumentObject dobj = (DocumentObject)getTarget();
+            DocumentModel doc =  dobj.getDocument();
+            List<VersionModel> versions = dobj.getCoreSession().getVersionsForDocument(doc.getRef());
+            for (VersionModel v : versions) {
+                if (label.equals(v.getLabel())) {
+                    return dobj.newObject(dobj.getCoreSession().getDocumentWithVersion(doc.getRef(), v));
+                }
+            }
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+        throw new WebResourceNotFoundException("No such version "+label+" for document"+getTarget().getPath());
     }
 
     @POST

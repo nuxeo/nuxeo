@@ -133,7 +133,7 @@ public abstract class AbstractResourceType implements ResourceType {
     }
     
     protected ScriptFile findSkinTemplate(String name) throws IOException {
-        return module.getFile(new StringBuilder().append("templates/")
+        return module.getFile(new StringBuilder().append("views/")
                 .append(this.name).append("/").append(name).toString());
     }
     

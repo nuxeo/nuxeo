@@ -41,6 +41,7 @@ import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.platform.rendering.fm.i18n.ResourceComposite;
 import org.nuxeo.ecm.webengine.loader.WebClassLoader;
 import org.nuxeo.ecm.webengine.model.Module;
+import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.WebService;
@@ -49,6 +50,7 @@ import org.nuxeo.ecm.webengine.model.impl.DirectoryTypeProvider;
 import org.nuxeo.ecm.webengine.model.impl.ModuleDescriptor;
 import org.nuxeo.ecm.webengine.model.impl.ModuleImpl;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRegistry;
+import org.nuxeo.ecm.webengine.model.io.BlobWriter;
 import org.nuxeo.ecm.webengine.model.io.ResourceWriter;
 import org.nuxeo.ecm.webengine.model.io.ScriptFileWriter;
 import org.nuxeo.ecm.webengine.model.io.TemplateWriter;
@@ -163,6 +165,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         registry.addMessageBodyWriter(new ResourceWriter());
         registry.addMessageBodyWriter(new TemplateWriter());
         registry.addMessageBodyWriter(new ScriptFileWriter());
+        registry.addMessageBodyWriter(new BlobWriter());
     }
 
     /**
@@ -255,7 +258,6 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
                         if (notifier != null) {
                             watchModule(file);
                         }
-                        notifier.watch(appFile); // always track the file
                     }
                 }
             } catch (Exception e) {
@@ -405,14 +407,15 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         if (lastMessagesUpdate == now) {
             return;
         }
+        // TODO ignore root since a cache file is generated in root. - may be we should generate the cache elsewhere
+        if (entry.file.equals(root) || entry.file.isFile()) {
+            return;
+        }
         String path = entry.file.getAbsolutePath();
         String rootPath = root.getAbsolutePath();
         if (!path.startsWith(rootPath)) {
             return;
-        }
-        if (entry.file.isFile()) {
-            return;
-        }
+        } 
         if (entry.file.getParentFile().equals(root)) {
             reload();
         } else if (path.endsWith("/i18n")) {
@@ -464,9 +467,16 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
 
     public File getResourceFile(String key) {
         WebContext ctx = WebEngine.getActiveContext();
-        ScriptFile file = ctx.getFile(key);
-        if (file != null) {
-            return file.getFile();
+        if (key.startsWith("@")) {
+            Resource rs = ctx.getTargetObject();
+            if (rs != null) {
+                return rs.getView(key.substring(1)).script().getFile();
+            }
+        } else {
+            ScriptFile file = ctx.getFile(key);
+            if (file != null) {
+                return file.getFile();
+            }
         }
         return null;
     }

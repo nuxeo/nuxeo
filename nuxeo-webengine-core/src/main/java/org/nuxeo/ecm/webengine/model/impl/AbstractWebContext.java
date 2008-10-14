@@ -38,15 +38,14 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.Module;
-import org.nuxeo.ecm.webengine.model.NoSuchResourceException;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.ServiceResource;
 import org.nuxeo.ecm.webengine.model.ServiceType;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.session.UserSession;
@@ -140,7 +139,7 @@ public abstract class AbstractWebContext implements WebContext {
     public Resource newObject(String typeName, Object ...  args) throws WebException {
         ResourceType type = module.getType(typeName);
         if (type == null) {
-            throw new NoSuchResourceException("No Such Object Type: "+typeName);
+            throw new WebResourceNotFoundException("No Such Object Type: "+typeName);
         }
         return newObject(type, args);
     }
@@ -335,14 +334,6 @@ public abstract class AbstractWebContext implements WebContext {
                 log.warn("Relative path used but there is any running script");
                 path = new Path(path).makeAbsolute().toString();
             }
-        }  else if (c == '@' && tail() != null && path.length() > 2 && path.charAt(1) == '@') {
-            // workaround to support action references
-            // an action shortcut
-            //TODO xxxxxx
-//            ScriptFile script = tail().getActionScript(path.substring(2));
-//            if (script != null) {
-//                return script;
-//            }
         }
         return module.getFile(path);
     }
@@ -511,41 +502,4 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
-
-    /** deprecated methods used for compatibility */
-
-//    /**
-//     * @deprecated use {@link WebObject#getActions()}
-//     */
-//    Collection<ActionDescriptor> getActions() throws WebException {
-//        if (!stack.isEmpty()) {
-//            return stack.getLast().getActions();
-//        }
-//        return null;
-//    }
-//
-//    /**
-//     * @deprecated use {@link WebObject#getActions(String)}
-//     * @param category
-//     * @return
-//     * @throws WebException
-//     */
-//    Collection<ActionDescriptor> getActions(String category) throws WebException {
-//        if (!stack.isEmpty()) {
-//            return stack.getLast().getActions(category);
-//        }
-//        return null;
-//    }
-//
-//    /**
-//     * @deprecated use {@link WebObject#getActionsByCategory()}
-//     * @return
-//     * @throws WebException
-//     */
-//    Map<String, Collection<ActionDescriptor>> getActionsByCategory() throws WebException {
-//        if (!stack.isEmpty()) {
-//            return stack.getLast().getActionsByCategory();
-//        }
-//        return null;
-//    }
 }

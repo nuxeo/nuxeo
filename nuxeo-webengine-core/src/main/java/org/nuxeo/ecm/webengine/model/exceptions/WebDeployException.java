@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.exceptions;
+package org.nuxeo.ecm.webengine.model.exceptions;
 
 import org.nuxeo.ecm.webengine.WebException;
 
@@ -25,37 +25,17 @@ import org.nuxeo.ecm.webengine.WebException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebSecurityException extends WebException {
+public class WebDeployException extends WebException {
 
     private static final long serialVersionUID = 1L;
 
-    protected String action;
 
-    public WebSecurityException(String message) {
-        super(message);
+    public WebDeployException(String message) {
+        super (message);
     }
 
-    public WebSecurityException(String message, String action) {
-        super(message);
-        this.action = action;
-    }
-
-    public WebSecurityException(String message, String action, Throwable cause) {
-        super(message, cause);
-        this.action =action;
-    }
-
-    public WebSecurityException(String message, Throwable cause) {
+    public WebDeployException(String message, Throwable cause) {
         super (message, cause);
     }
-
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
 
 }
