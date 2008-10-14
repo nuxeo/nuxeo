@@ -38,19 +38,13 @@ public abstract class JSonTree extends AbstractComponent {
 
     protected TreeViewImpl tree;
 
-
-    public JSonTree() {
-    }
-
     public TreeView getTree() {
         return tree;
     }
 
-
     protected abstract Object getInput(WebContext ctx) throws WebException;
     protected abstract ContentProvider  getProvider(WebContext ctx) throws WebException;
     protected abstract JSonTreeSerializer getSerializer(WebContext ctx) throws WebException;
-
 
     @Override
     public void doInitialize(UserSession session, String name)
@@ -58,7 +52,8 @@ public abstract class JSonTree extends AbstractComponent {
         try {
             tree = new TreeViewImpl();
         } catch (Exception e) {
-            throw new SessionException("Failed to initialize tree component "+getClass()+"#"+name+ ". Cause: "+e.getMessage(), e);
+            throw new SessionException(
+                    "Failed to initialize tree component "+getClass()+"#"+name+ ". Cause: "+e.getMessage(), e);
         }
     }
 
@@ -107,7 +102,7 @@ public abstract class JSonTree extends AbstractComponent {
         if (item != null) {
             item.expand();
             JSONArray result = new JSONArray();
-            if (item != null && item.isContainer()) {
+            if (item.isContainer()) {
                 result = serializer.toJSON((item.getChildren()));
             }
             return result.toString();
