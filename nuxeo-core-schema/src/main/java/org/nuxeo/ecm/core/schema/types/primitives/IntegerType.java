@@ -42,7 +42,6 @@ public final class IntegerType extends PrimitiveType {
         return object instanceof Number;
     }
 
-    @Override
     public Object convert(Object value) {
         if (value instanceof Integer) {
             return value;

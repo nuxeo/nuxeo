@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
  * NuxeoPrincipal stub implementation.
@@ -210,7 +211,7 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
 
     public boolean isAdministrator() {
         try {
-            return isMemberOf("administrators");
+            return isMemberOf(SecurityConstants.ADMINISTRATORS);
         } catch (ClientException e) {
             log.error(e);
             return false;
