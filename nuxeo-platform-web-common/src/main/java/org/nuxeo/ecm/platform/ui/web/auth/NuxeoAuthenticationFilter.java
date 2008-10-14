@@ -366,6 +366,10 @@ public class NuxeoAuthenticationFilter implements Filter {
             } else {
                 log.debug("userIdent found in cache, get the Principal from it without reloggin");
 
+                principal = cachableUserIdent.getPrincipal();
+                log.debug("Principal = " + principal.getName());
+                propagateUserIdentificationInformation(cachableUserIdent);
+
                 String requestedPage = getRequestedPage(httpRequest);
                 if (requestedPage.equals(NXAuthContants.LOGOUT_PAGE)) {
                     boolean redirected = handleLogout(request, response,
@@ -375,9 +379,6 @@ public class NuxeoAuthenticationFilter implements Filter {
                     }
                 }
 
-                principal = cachableUserIdent.getPrincipal();
-                log.debug("Principal = " + principal.getName());
-                propagateUserIdentificationInformation(cachableUserIdent);
             }
         }
 
