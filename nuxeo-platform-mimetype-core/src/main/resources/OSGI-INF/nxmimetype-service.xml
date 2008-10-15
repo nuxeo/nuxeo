@@ -229,6 +229,26 @@
       </extensions>
     </mimetype>
 
+    <mimetype normalized="application/vnd.ms-project" binary="true"
+      iconPath="mpp.png">
+      <mimetypes>
+        <mimetype>application/vnd.ms-project</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>mpp</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/vnd.ms-publisher" binary="true"
+      iconPath="pub.png">
+      <mimetypes>
+        <mimetype>application/vnd.ms-publisher</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>pub</extension>
+      </extensions>
+    </mimetype>
+
     <!--  XML based document types -->
 
     <mimetype normalized="application/docbook+xml" binary="true"
