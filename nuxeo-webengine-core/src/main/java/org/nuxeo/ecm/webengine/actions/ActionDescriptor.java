@@ -179,13 +179,13 @@ public class ActionDescriptor {
                 categories = tmp;
             }
         }
-        if (script == null) {
+        if (ad.script != null) {
             script = ad.script;
         }
-        if (handlerClass == null) {
+        if (ad.handlerClass != null) {
             handlerClass = ad.handlerClass;
         }
-        if (pd == null) {
+        if (ad.getGuard() != null) {
             guard = ad.getGuard();
         } else {
             pd.getGuards().put(".", ad.getGuard());
