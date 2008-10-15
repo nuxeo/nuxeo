@@ -7,10 +7,10 @@
 <div id="mainContentBox">
 
 <div class="adminBoardSettings">
-  <h3> <a href="${basePath}/admin/control"><img src="/nuxeo/site/files/resources/image/admin_board.png" width="98" height="98" alt="Engine Management"><br>Engine Management</a></h3>
+  <h3> <a href="${basePath}/admin/control"><img src="${basePath}/files/resources/image/admin_board.png" width="98" height="98" alt="Engine Management"><br>Engine Management</a></h3>
 </div>
 <div class="adminBoardSettings">
-  <h3><a href="${basePath}/admin/users"><img src="/nuxeo/site/files/resources/image/admin_users.png" width="98" height="98" alt="User management"><br>User Management</a></h3>
+  <h3><a href="${basePath}/admin/users"><img src="${basePath}/files/resources/image/admin_users.png" width="98" height="98" alt="User management"><br>User Management</a></h3>
 </div>
 
 </div>
