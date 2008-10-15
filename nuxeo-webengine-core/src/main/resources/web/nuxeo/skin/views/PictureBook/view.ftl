@@ -24,7 +24,7 @@
 ${Document.description}
 </p>
 <hr/>
-<A href="${This.urlPath}@@edit">Edit</A><BR/>
+<A href="${This.path}/@views/edit">Edit</A><BR/>
 <hr/>
 
 <#if Document.facets?seq_contains("Folderish")>

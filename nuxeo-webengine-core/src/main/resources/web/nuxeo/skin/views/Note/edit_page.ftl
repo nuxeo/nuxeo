@@ -1,4 +1,4 @@
-<form method="POST" action="${This.path}/.put">
+<form method="POST" action="${This.path}/@put">
 <textarea name="note:note" cols="80" rows="20">${This.document.note.note}</textarea>
 <p>
 Title: <input type="text" name="dc:title" value="${This.document.dublincore.title}"/>

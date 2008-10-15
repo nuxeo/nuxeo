@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.model.impl;
 
 import java.net.URI;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.List;
 import java.util.Set;
@@ -95,7 +96,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
 
     public Response redirect(String uri) {
         try {
-            return Response.seeOther(new URI(uri)).build();
+            return Response.seeOther(new URI(URLEncoder.encode(uri, "UTF-8"))).build();
         } catch (Exception e) {
             throw WebException.wrap(e);
         }

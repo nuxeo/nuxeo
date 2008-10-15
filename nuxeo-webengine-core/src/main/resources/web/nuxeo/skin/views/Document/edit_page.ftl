@@ -7,7 +7,7 @@
 
 <div id="mainContentBox">
 
-<form action="${This.path}/.put" method="POST">
+<form action="${This.path}/@put" method="POST">
 <table class="formFill"> 
     <tbody> 
         <!--tr>
@@ -34,6 +34,7 @@
         <tr>
             <td colspan="2"><textarea name="dc:description" cols="54">${Document["dc:description"]}</textarea></td>
         </tr>
+<#if This.hasFacet("Versionable")>
         <tr>
             <td colspan="2">
   <p class="entryEditOptions">
@@ -46,6 +47,7 @@
   </p>
           </td>
         </tr>
+</#if>
         <tr>
           <td colspan="2" align="right"><input type="submit" value="Save" class="buttonsGadget"/></td>
         </tr>

@@ -55,7 +55,8 @@ public class BlobWriter implements MessageBodyWriter<Blob> {
 
     public long getSize(Blob arg0, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4) {
-        return arg0.getLength();
+        long n = arg0.getLength();
+        return n <= 0 ? -1 : n;
     }
 
     public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,

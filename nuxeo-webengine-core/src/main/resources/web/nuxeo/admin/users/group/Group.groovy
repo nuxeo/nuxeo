@@ -8,7 +8,7 @@ import org.nuxeo.ecm.webengine.*;
 import org.nuxeo.runtime.api.*;
 import org.nuxeo.ecm.platform.usermanager.*;
 
-@WebObject(name="Group")
+@WebObject(type="Group")
 @Produces(["text/html", "*/*"])
 public class UserService extends DefaultObject {
 

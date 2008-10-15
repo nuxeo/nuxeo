@@ -40,8 +40,7 @@ public class DefaultObject extends AbstractResource<ResourceTypeImpl> {
         return false;
     }
 
-
-    @Path(value=".{segment}")
+    @Path(value="@{segment}")
     public ServiceResource disptachService(@PathParam("segment") String serviceName) throws WebException {
         return ctx.newService(this, serviceName);
     }

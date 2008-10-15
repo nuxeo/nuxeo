@@ -20,12 +20,12 @@
             <td></td>
             <td>${perm.permission}</td>
         </#if>
-        <td align="right"><a href="${This.path}/.permissions/delete?permission=${perm.permission}&user=${perm.name}">Remove</a></td>
+        <td align="right"><a href="${This.path}/@permissions/delete?permission=${perm.permission}&user=${perm.name}">Remove</a></td>
     </tr>
     </#list>
 </table>
 </#if>
-<form method="POST" action="${This.path}/.permissions/add">
+<form method="POST" action="${This.path}/@permissions/add">
     Add a permission:
     <select name="action" size="1">
         <option value="grant">Grant</option>
