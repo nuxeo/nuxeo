@@ -40,4 +40,8 @@ public class StaticClassProxy implements ClassProxy {
         return clazz;
     };
 
+    @Override
+    public String toString() {
+        return clazz.getName();
+    }
 }

@@ -62,4 +62,8 @@ public class LazyClassProxy implements ClassProxy {
         clazz = null;
     }
 
+    @Override
+    public String toString() {
+        return className;
+    }
 }

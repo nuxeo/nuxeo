@@ -85,6 +85,7 @@ public abstract class AbstractResourceType implements ResourceType {
         return name;
     }
     
+    @SuppressWarnings("unchecked")
     public Class<Resource> getResourceClass() {
         return (Class<Resource>)clazz.get();
     }
@@ -208,4 +209,8 @@ public abstract class AbstractResourceType implements ResourceType {
         }        
     }
 
+    @Override
+    public String toString() {
+        return name+" extends "+superType+" ["+getResourceClass().getName()+"]";
+    }
 }

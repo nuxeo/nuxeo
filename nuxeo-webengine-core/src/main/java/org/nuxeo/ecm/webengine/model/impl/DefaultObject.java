@@ -45,5 +45,4 @@ public class DefaultObject extends AbstractResource<ResourceTypeImpl> {
         return ctx.newAdapter(this, adapterName);
     }
 
-
 }

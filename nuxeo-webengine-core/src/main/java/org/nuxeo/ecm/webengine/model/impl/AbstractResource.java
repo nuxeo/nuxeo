@@ -180,4 +180,9 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return new Template(this, getModule().getFile(fileName));
     }
 
+    @Override
+    public String toString() {
+        return type.getName()+" ["+path+"]";
+    }
+    
 }

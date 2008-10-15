@@ -9,9 +9,9 @@ import org.nuxeo.ecm.webengine.model.exceptions.*;
 import org.nuxeo.runtime.api.*;
 import org.nuxeo.ecm.platform.usermanager.*;
 
-@WebAdapter(name="engine", targetType="Admin")
+@WebObject(type="Engine")
 @Produces(["text/html", "*/*"])
-public class EngineService extends DefaultAdapter {
+public class EngineService extends DefaultObject {
 
   @GET
   public Object getIndex() {

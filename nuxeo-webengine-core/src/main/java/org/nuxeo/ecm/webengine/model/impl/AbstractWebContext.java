@@ -498,11 +498,10 @@ public abstract class AbstractWebContext implements WebContext {
                 bindings.put("Adapter", adapter);
             }
         }
-        //TODO
         try {
             bindings.put("Session", getCoreSession());
         } catch (Exception e) {
-            e.printStackTrace(); // TODO
+            throw WebException.wrap("Failed to get a core session", e); 
         }
     }
 

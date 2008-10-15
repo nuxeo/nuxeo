@@ -105,6 +105,7 @@ public class ModuleDescriptor implements Cloneable {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public ModuleDescriptor clone() {
         try {
             ModuleDescriptor cfg = (ModuleDescriptor) super.clone();

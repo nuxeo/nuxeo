@@ -12,12 +12,12 @@ public class Admin extends DefaultObject {
 
   @Path("users")  
   public Object getUserManagement() {
-    return newAdapter("users");
+    return newObject("UserManager");
   }
 
   @Path("engine")  
   public Object getEngine() {
-    return newAdapter("engine");
+    return newObject("Engine");
   }
 
   @GET

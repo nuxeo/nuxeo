@@ -1,5 +1,5 @@
 <@extends src="base.ftl">
-<@block name="header"><h1><a href ="${This.path}">User Administration</a></h1></@block>
+<@block name="header"><h1><a href ="${This.previous.path}">User Administration</a></h1></@block>
 
 <@block name="content">
 
@@ -37,7 +37,7 @@
 <tbody>
 <#list users as user>
 	<tr>
-		<td><a href="${This.activeAdapter.path}/user/${user}">${user}<a/></td>
+		<td><a href="${This.path}/user/${user}">${user}<a/></td>
 		<td>${user.firstName}</td>
 		<td>${user.lastName}</td>
 	</tr>
@@ -57,7 +57,7 @@
 <tbody>
 <#list groups as user>
   <tr>
-    <td><a href="${This.activeAdapter.path}/group/${user}">${user}<a/></td>
+    <td><a href="${This.path}/group/${user}">${user}<a/></td>
   </tr>
 </#list>
 </tbody>

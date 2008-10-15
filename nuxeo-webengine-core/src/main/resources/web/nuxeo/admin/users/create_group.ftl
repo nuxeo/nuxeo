@@ -1,5 +1,5 @@
 <@extends src="base.ftl">
-<@block name="header"><h1><a href ="${This.activeAdapter.path}"><#if group>Group Details<#else>Group creation</#if></a></h1></@block>
+<@block name="header"><h1><a href ="${This.path}"><#if group>Group Details<#else>Group creation</#if></a></h1></@block>
 
 
 <@block name="content">
@@ -11,11 +11,11 @@
 
 <h2>Members</h2>
 <div>
-<form method="POST" action="${appPath}/users/save_group" accept-charset="utf-8">
+<form method="POST" action="${This.path}/group" accept-charset="utf-8">
         <#if group>
           <input type="hidden" name="groupName" value="${group.name}"/>
           <#list usersGroup as user>
-            <li><a href="${appPath}/users/user/${user}">${user}</a>
+            <li><a href="${This.path}/user/${user}">${user}</a>
           </#list>
         <#else>
 <table>

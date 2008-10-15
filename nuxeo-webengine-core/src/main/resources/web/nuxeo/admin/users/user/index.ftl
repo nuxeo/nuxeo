@@ -1,5 +1,5 @@
 <@extends src="base.ftl">
-<@block name="header"><h1><a href ="${appPath}/users"><#if user>User Details<#else>User creation</#if></a></h1></@block>
+<@block name="header"><h1><a href ="${This.previous.path}"><#if user>User Details<#else>User creation</#if></a></h1></@block>
 
 
 <@block name="content">
@@ -8,7 +8,7 @@
 
 <#if user><h1>${user.name}</h1></#if>
 <div>
-<form method="POST" action="${appPath}/users/save_user" accept-charset="utf-8">
+<form method="POST" action="${This.path}/@put" accept-charset="utf-8">
 <table class="formFill">
     <tbody>
         <#if user><input type="hidden" name="username" value="${user.name}"/><#else>
@@ -33,7 +33,7 @@
             <td class="formLabel">Groups</td>
             <td class="formValue">
                 <select multiple="multiple" name="groups" size="8">
-                <#list allGroups as group>
+                <#list This.previous.groups as group>
                     <#if user>
                     <option value="${group.name}" <#if user.groups?seq_contains(group.name)>selected="selected"</#if>>${group.name}</option>
                     <#else>

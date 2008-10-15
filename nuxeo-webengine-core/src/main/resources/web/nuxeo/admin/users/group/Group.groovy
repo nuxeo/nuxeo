@@ -24,17 +24,35 @@ public class UserService extends DefaultObject {
     return getView("index.ftl").arg("group", principal);
   }
 
+
   @POST
-  public Object doPost() {
-    
+  public Response doPost() {
+    return redirect(getPrevious().getPath());
   }
 
   @PUT
-  public Object doPut() {
-    
+  public Response doPut() {
+    return redirect(getPath());
   }
 
+  @DELETE
+  public Response doDelete() {
+    def userManager = Framework.getService(UserManager.class)
+    userManager.deleteGroup(principal)
+    return redirect(getPrevious().getPath());
+  }
 
-  
+  @POST
+  @Path("@put")
+  public Response simulatePut() {
+    return doPut();
+  }
+
+  @GET
+  @Path("@delete")
+  public Response simulateDelete() {
+    return doDelete();
+  }
+
 }
 

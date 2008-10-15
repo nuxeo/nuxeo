@@ -67,4 +67,8 @@ public class GroovyClassProxy implements ClassProxy {
          }
     }
 
+     @Override
+    public String toString() {
+        return className;
+    }
 }

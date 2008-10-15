@@ -73,7 +73,7 @@ public interface Resource extends Adaptable {
     Response redirect(String uri);
 
     /**
-     * Return the active service on this object if any in the current request
+     * Return the active Adapter on this object if any in the current request
      * @return the service instance or null
      */
     AdapterResource getActiveAdapter();

@@ -25,15 +25,45 @@ public class User extends DefaultObject {
   }
 
   @POST
-  public Object doPost() {
-    
+  public Response doPost() {
+    return redirect(getPrevious().getPath());
   }
 
   @PUT
-  public Object doPut() {
-    
+  public Response doPut() {
+    def userManager = Framework.getService(UserManager.class);
+    def req = ctx.getRequest();
+            // update
+            principal.firstName = req.getParameter("firstName")
+            principal.lastName = req.getParameter("lastName")
+            principal.password = req.getParameter("password")
+            
+            def selectedGroups = req.getParameterValues("groups")
+            def listGroups = Arrays.asList(selectedGroups)
+            principal.setGroups(listGroups)
+            
+            userManager.updatePrincipal(principal)        
+    return redirect(getPath());
   }
 
-  
+  @DELETE
+  public Response doDelete() {
+    def userManager = Framework.getService(UserManager.class)
+    userManager.deletePrincipal(principal)    
+    return redirect(getPrevious().getPath());
+  }
+
+  @POST
+  @Path("@put")
+  public Response simulatePut() {
+    return doPut();
+  }
+
+  @GET
+  @Path("@delete")
+  public Response simulateDelete() {
+    return doDelete();
+  }
+
 }
 
