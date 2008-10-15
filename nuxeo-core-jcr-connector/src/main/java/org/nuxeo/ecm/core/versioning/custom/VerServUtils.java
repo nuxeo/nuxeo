@@ -56,7 +56,6 @@ import org.nuxeo.ecm.core.versioning.DocumentVersion;
  * Rux NXP-2617 made it public and also few methods to be able to use it from extension.
  *
  * @author DM
- *
  */
 final public class VerServUtils {
 
@@ -77,7 +76,6 @@ final public class VerServUtils {
      * The node location is: //versionStorage/
      *
      * @param session
-     * @throws DocumentException
      * @throws RepositoryException
      */
     private static Node getOrCreateVersionHistoryStorage(Session session)
@@ -100,7 +98,6 @@ final public class VerServUtils {
      *
      * @param forNode
      * @throws RepositoryException
-     * @throws DocumentException
      */
     private static Node getOrCreateVersionHistoryNode(Node forNode)
             throws RepositoryException {
@@ -121,13 +118,6 @@ final public class VerServUtils {
                 NodeConstants.ECM_VERSION_HISTORY.rawname);
     }
 
-    /**
-     *
-     * @param storageNode
-     * @param uuid
-     * @return
-     * @throws RepositoryException
-     */
     private static Node getOrCreateVHParent(Node storageNode, String uuid)
             throws RepositoryException {
 
@@ -157,7 +147,6 @@ final public class VerServUtils {
      * @return
      * @throws DocumentException
      * @throws RepositoryException
-     * @throws DocumentException
      */
     public static DocumentVersion createVersion(JCRDocument jdoc, String label, String description)
             throws RepositoryException, DocumentException {
@@ -286,9 +275,6 @@ final public class VerServUtils {
      *
      * @param jdoc
      * @throws RepositoryException
-     * @throws DocumentException
-     * @throws PathNotFoundException
-     * @throws
      */
     static void removeVersionHistory(JCRDocument jdoc) throws RepositoryException {
         final String logPrefix = "<removeVersionHistory> ";
@@ -389,7 +375,6 @@ final public class VerServUtils {
      *
      * @param versionHistoryNode
      * @return
-     * @throws PathNotFoundException
      * @throws RepositoryException
      */
     static Node getLastVersionNode(Node versionHistoryNode)
@@ -448,14 +433,6 @@ final public class VerServUtils {
         return versionNodeName;
     }
 
-    /**
-     *
-     * @param session
-     * @param scrNode
-     * @param dstParent
-     * @return
-     * @throws DocumentException
-     */
     public static Node copyNode(JCRSession session, Node scrNode, Node dstParent)
             throws DocumentException {
         final String logPrefix = "<copyNode> ";
@@ -465,9 +442,7 @@ final public class VerServUtils {
         JCRHelper.saveNode(dstParent);
 
         try {
-
             String srcName = scrNode.getUUID();
-
             String srcPath = scrNode.getPath();
             String dstPath = dstParent.getPath() + "/" + srcName;
 
@@ -482,7 +457,6 @@ final public class VerServUtils {
             final Node copyNode = dstParent.getNode(srcName);
 
             return copyNode;
-
         } catch (RepositoryException e) {
             log.error(logPrefix + "err: " + e.getMessage());
             throw new DocumentException("Could not copy the document", e);
@@ -495,8 +469,6 @@ final public class VerServUtils {
      * @param docNode
      * @return
      * @throws RepositoryException
-     * @throws PathNotFoundException
-     * @throws ValueFormatException
      */
     static boolean isCheckedOut(Node docNode) throws RepositoryException {
         final String propname = NodeConstants.ECM_VER_ISCHECKEDOUT.rawname;

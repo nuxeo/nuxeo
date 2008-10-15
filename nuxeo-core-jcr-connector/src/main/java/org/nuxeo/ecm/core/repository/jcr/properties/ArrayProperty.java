@@ -324,6 +324,7 @@ public class ArrayProperty extends JCRScalarProperty {
     }
 
     // TODO: this method is never user. Remove?
+    @Deprecated
     private static Object valueArrayToList(Value[] values, int type)
             throws DocumentException {
         try {
