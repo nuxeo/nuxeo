@@ -78,6 +78,8 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     public static final String DEFAULT_START_PAGE = "nxstartup.faces";
 
+    protected static final String XMLHTTP_REQUEST_TYPE="XMLHttpRequest";
+
     protected static final String LOGIN_JMS_CATEGORY = "NuxeoAuthentication";
 
     private static final Log log = LogFactory.getLog(NuxeoAuthenticationFilter.class);
@@ -344,7 +346,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                             cachableUserIdent);
                     cachableUserIdent=null;
                     principal=null;
-                    if (redirected) {
+                    if (redirected && httpRequest.getParameter(NXAuthContants.FORM_SUBMITTED_MARKER)==null) {
                         return;
                     }
                 }
@@ -398,8 +400,17 @@ public class NuxeoAuthenticationFilter implements Filter {
                 // httpRequest.getRequestDispatcher(targetPageURL).forward(new
                 // NuxeoSecuredRequestWrapper(httpRequest, principal),
                 // response);
-                httpResponse.sendRedirect(baseURL + targetPageURL);
-                return;
+                if (XMLHTTP_REQUEST_TYPE.equalsIgnoreCase(httpRequest.getHeader("X-Requested-With"))){
+                    //httpResponse.setStatus(200);
+                    return;
+                }
+                else
+                {
+                    httpResponse.sendRedirect(baseURL + targetPageURL);
+                    return;
+                }
+
+
             } else {
                 // simply continue request
                 chain.doFilter(new NuxeoSecuredRequestWrapper(httpRequest,
@@ -508,18 +519,21 @@ public class NuxeoAuthenticationFilter implements Filter {
     }
 
     protected static String getSavedRequestedURL(HttpServletRequest httpRequest) {
-        HttpSession session = httpRequest.getSession(false);
-        if (session == null) {
-            return null;
-        }
-        String requestedPage = (String) session.getAttribute(START_PAGE_SAVE_KEY);
-        if (requestedPage == null) {
-            return null;
-        }
+        String requestedPage = (String) httpRequest.getParameter(START_PAGE_SAVE_KEY);
+        if (requestedPage==null)
+        {
+            HttpSession session = httpRequest.getSession(false);
+            if (session == null) {
+                return null;
+            }
+            requestedPage = (String) session.getAttribute(START_PAGE_SAVE_KEY);
+            if (requestedPage == null) {
+                return null;
+            }
 
-        // clean up session
-        session.removeAttribute(START_PAGE_SAVE_KEY);
-
+            // clean up session
+            session.removeAttribute(START_PAGE_SAVE_KEY);
+        }
         return requestedPage;
     }
 
@@ -555,8 +569,8 @@ public class NuxeoAuthenticationFilter implements Filter {
                     (HttpServletRequest) request,
                     (HttpServletResponse) response);
         }
-
-        if (!redirected) {
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        if (!redirected && ! XMLHTTP_REQUEST_TYPE.equalsIgnoreCase(httpRequest.getHeader("X-Requested-With"))) {
             String baseURL = service.getBaseURL(request);
             try {
                 ((HttpServletResponse) response).sendRedirect(baseURL
