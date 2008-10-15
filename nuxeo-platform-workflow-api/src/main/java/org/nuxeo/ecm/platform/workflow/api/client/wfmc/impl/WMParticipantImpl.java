@@ -33,7 +33,6 @@ public class WMParticipantImpl implements WMParticipant {
     protected String participantId;
 
     public WMParticipantImpl() {
-
     }
 
     public WMParticipantImpl(String participantId) {

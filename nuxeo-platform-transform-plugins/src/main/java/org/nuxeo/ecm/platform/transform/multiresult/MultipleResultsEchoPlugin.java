@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.transform.document.TransformDocumentImpl;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
 import org.nuxeo.ecm.platform.transform.plugin.AbstractPlugin;
@@ -39,8 +37,6 @@ import org.nuxeo.ecm.platform.transform.plugin.AbstractPlugin;
 public class MultipleResultsEchoPlugin extends AbstractPlugin {
 
     private static final long serialVersionUID = -7522610596626881865L;
-
-    private static final Log log = LogFactory.getLog(MultipleResultsEchoPlugin.class);
 
     public MultipleResultsEchoPlugin() {
         // Only takes XML as sources documents.
@@ -57,8 +53,6 @@ public class MultipleResultsEchoPlugin extends AbstractPlugin {
     @Override
     public List<TransformDocument> transform(Map<String, Serializable> options,
             TransformDocument... sources) {
-
-        final String logPrefix = "<transform> ";
 
         List<TransformDocument> results = new ArrayList<TransformDocument>();
         try {

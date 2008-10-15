@@ -19,14 +19,14 @@
 
 package org.nuxeo.ecm.platform.ui.web.component.file;
 
+import java.io.InputStream;
+
 import javax.faces.convert.ConverterException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.myfaces.trinidad.model.UploadedFile;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.platform.ui.web.resolver.TrinidadUploadedFileStreamSource;
+import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 
 /**
  * File information used to manage a file adding/removal.
@@ -44,10 +44,15 @@ public class InputFileInfo {
 
     protected Object filename;
 
-    public InputFileInfo(Object choice, Object blob, Object filename) {
+    protected Object mimeType;
+
+    public InputFileInfo(Object choice, Object blob, Object filename,
+            Object mimeType) {
+        super();
         this.choice = choice;
         this.blob = blob;
         this.filename = filename;
+        this.mimeType = mimeType;
     }
 
     public Object getBlob() {
@@ -58,24 +63,40 @@ public class InputFileInfo {
         this.blob = blob;
     }
 
+    public Object getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(Object mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    public String getConvertedMimeType() throws ConverterException {
+        if (mimeType instanceof String) {
+            return (String) mimeType;
+        } else if (mimeType != null) {
+            log.error("Invalid mimetype detected: " + mimeType);
+        }
+        return null;
+    }
+
     public Blob getConvertedBlob() {
         Blob convertedBlob = null;
-        // XXX AT: later build blob taking care of filename too
         if (blob instanceof Blob) {
             convertedBlob = (Blob) blob;
-        } else if (blob instanceof UploadedFile) {
-            UploadedFile upFile = (UploadedFile) blob;
+        } else if (blob instanceof InputStream) {
+            InputStream upFile = (InputStream) blob;
             try {
-                convertedBlob = createSerializableBlob(upFile, null);
-            } catch (Exception e1) {
-                log.error("Error while accessing mimetype service " + e1.getMessage());
+                convertedBlob = FileUtils.createSerializableBlob(upFile,
+                        getConvertedFilename(), getConvertedMimeType());
+            } catch (Exception e) {
+                log.error(e);
                 throw new ConverterException("error.inputFile.invalidFile");
             }
         } else if (blob != null) {
             throw new ConverterException("error.inputFile.invalidFile");
         }
         return convertedBlob;
-
     }
 
     public Object getChoice() {
@@ -114,31 +135,11 @@ public class InputFileInfo {
     public String getConvertedFilename() throws ConverterException {
         String convertedFilename = null;
         if (filename instanceof String) {
-            convertedFilename = getCleanFilename((String) filename);
+            convertedFilename = FileUtils.getCleanFileName((String) filename);
         } else if (filename != null) {
             throw new ConverterException("error.inputFile.invalidFilename");
-        } else {
-            // try to get it from the uploaded file
-            if (blob instanceof UploadedFile) {
-                String upFilename = ((UploadedFile) blob).getFilename();
-                convertedFilename = getCleanFilename(upFilename);
-            }
         }
         return convertedFilename;
-    }
-
-    protected String getCleanFilename(String filename) {
-        // clean file name, fixes NXP-544
-        String res = null;
-        int lastWinSeparator = filename.lastIndexOf("\\");
-        int lastUnixSeparator = filename.lastIndexOf("/");
-        int lastSeparator = Math.max(lastWinSeparator, lastUnixSeparator);
-        if (lastSeparator != -1) {
-            res = filename.substring(lastSeparator + 1, filename.length());
-        } else {
-            res = filename;
-        }
-        return res;
     }
 
     protected static boolean equalValues(Object first, Object second) {
@@ -167,16 +168,10 @@ public class InputFileInfo {
         if (!equalValues(blob, other.blob)) {
             return false;
         }
-        return true;
-    }
-
-    public static Blob createSerializableBlob(UploadedFile file, String mimeType) {
-        if (mimeType == null || mimeType.equals("application/octet-stream")) {
-            mimeType = file.getContentType();
+        if (!equalValues(mimeType, other.mimeType)) {
+            return false;
         }
-        TrinidadUploadedFileStreamSource src = new TrinidadUploadedFileStreamSource(
-                file);
-        return new StreamingBlob(src, mimeType);
+        return true;
     }
 
 }
