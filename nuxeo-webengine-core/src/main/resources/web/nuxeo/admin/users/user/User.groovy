@@ -8,7 +8,7 @@ import org.nuxeo.ecm.webengine.*;
 import org.nuxeo.runtime.api.*;
 import org.nuxeo.ecm.platform.usermanager.*;
 
-@WebObject(name="User")
+@WebObject(type="User")
 @Produces(["text/html", "*/*"])
 public class User extends DefaultObject {
 

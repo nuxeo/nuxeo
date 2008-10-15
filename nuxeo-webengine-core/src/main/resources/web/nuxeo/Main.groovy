@@ -14,6 +14,7 @@ import org.nuxeo.ecm.webengine.*;
 @Produces(["text/html", "*/*"])
 public class Main extends DefaultModule {
 
+
   @Path("admin")
   public Object getAdmin() {
     return newObject("Admin");

@@ -10,9 +10,9 @@
 <blockquote>${Document.description}</blockquote>
 
 <#assign file = Document["file:content"]/>
-<#if file>
+<#if file.filename>
 <div id="mainContentBox">
-  Attachment: <a href="${This.path}/.file?property=file:content">${file.filename}</a>
+  Attachment: <a href="${This.path}/@file?property=file:content">${file.filename}</a>
 </div>
 </#if>
 

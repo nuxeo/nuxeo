@@ -39,7 +39,7 @@
        <@block name="header">
        <#if Document??>
         <div class="searchBox">
-         <form action="${This.path}@@search" method="get" accept-charset="utf-8">
+         <form action="${This.path}/@search" method="get" accept-charset="utf-8">
            <input type="search" name="q" id="q" results="5" value="Search">
            <input type="hidden" name="p" value="${Root.repositoryPath}">
          </form>
