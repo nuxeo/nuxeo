@@ -42,7 +42,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebObject(name="Document", superType="*")
+@WebObject(type="Document")
 public class DocumentObject extends DefaultObject {
 
     protected DocumentModel doc;
@@ -69,7 +69,7 @@ public class DocumentObject extends DefaultObject {
 
     // simulate a DELETE using GET
     @GET
-    @Path(".delete")
+    @Path("@delete")
     public Response getDelete() {
         return doDelete();
     }
@@ -103,7 +103,7 @@ public class DocumentObject extends DefaultObject {
     }
 
     @POST
-    @Path(".put")
+    @Path("@put")
     public Response getPut() {
         return doPut();
     }

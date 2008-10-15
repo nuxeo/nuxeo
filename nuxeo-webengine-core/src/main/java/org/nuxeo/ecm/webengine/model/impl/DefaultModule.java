@@ -60,11 +60,11 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
         }        
     }
   
-    @Path(value=".{segment}")
+    @Path(value="@{segment}")
     public ServiceResource disptachService(@PathParam("segment") String serviceName) throws WebException {
         return ctx.newService(this, serviceName);
     }    
-    
+   
     @Override
     public Resource initialize(WebContext ctx, ResourceType type,
             Object... args) throws WebException {

@@ -111,6 +111,6 @@ public class TypeDescriptor implements Cloneable {
     }
 
     public static TypeDescriptor fromAnnotation(ClassProxy clazz, WebObject type) {
-        return  new TypeDescriptor(clazz, type.name(), type.superType());
+        return  new TypeDescriptor(clazz, type.type(), type.superType());
     }
 }
