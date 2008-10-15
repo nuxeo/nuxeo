@@ -108,7 +108,7 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
         if (path.indexOf('{') > -1) {
             path = _guessPath();
         } else if (!path.startsWith("/")) {
-            path = new StringBuilder().append('/').append(path).toString();
+            path = new StringBuilder().append(ctx.getBasePath()).append('/').append(path).toString();
         }
         return path;
     }
@@ -118,7 +118,8 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
      * @return
      */
     protected String _guessPath() {
-        return ctx.getUriInfo().getMatchedURIs().get(0);
+        String p = ctx.getUriInfo().getMatchedURIs().get(0);
+        return new StringBuilder().append(ctx.getBasePath()).append(p).toString();
     }
             
 }
