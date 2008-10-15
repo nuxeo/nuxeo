@@ -29,9 +29,9 @@ import javax.ws.rs.PathParam;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.WebService;
+import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
-import org.nuxeo.ecm.webengine.model.impl.DefaultService;
+import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
 /**
  * Version Service - manage document versions
@@ -47,8 +47,8 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultService;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebService(name="versions", targetType="Document", targetFacets={"Versionable"})
-public class VersionService extends DefaultService {
+@WebAdapter(name="versions", targetType="Document", targetFacets={"Versionable"})
+public class VersionService extends DefaultAdapter {
 
     @GET 
     public Object getVersions() {

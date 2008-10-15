@@ -52,7 +52,7 @@ public interface Resource extends Adaptable {
 
     Resource getNext();
 
-    boolean isService();
+    boolean isAdapter();
 
     boolean isModule();
 
@@ -66,7 +66,7 @@ public interface Resource extends Adaptable {
 
 
     Resource newObject(String type, Object ... args);
-    ServiceResource newService(String type, Object ... args);
+    AdapterResource newAdapter(String type, Object ... args);
     Template getView(String fileName);
     Template getTemplate(String fileName);
 
@@ -76,6 +76,6 @@ public interface Resource extends Adaptable {
      * Return the active service on this object if any in the current request
      * @return the service instance or null
      */
-    ServiceResource getActiveService();
+    AdapterResource getActiveAdapter();
 
 }

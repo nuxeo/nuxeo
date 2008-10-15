@@ -44,7 +44,7 @@ import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.WebService;
+import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.BundleTypeProvider;
 import org.nuxeo.ecm.webengine.model.impl.DirectoryTypeProvider;
 import org.nuxeo.ecm.webengine.model.impl.ModuleDescriptor;
@@ -142,7 +142,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         bundleTypeProvider = new BundleTypeProvider();
         directoryTypeProvider = new DirectoryTypeProvider(this);
         BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), bundleTypeProvider);
-        BundleAnnotationsLoader.getInstance().addLoader(WebService.class.getName(), bundleTypeProvider);
+        BundleAnnotationsLoader.getInstance().addLoader(WebAdapter.class.getName(), bundleTypeProvider);
 
         loadModules();
 

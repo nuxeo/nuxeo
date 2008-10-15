@@ -32,7 +32,7 @@ import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
-import org.nuxeo.ecm.webengine.model.ServiceResource;
+import org.nuxeo.ecm.webengine.model.AdapterResource;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
@@ -68,8 +68,8 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         // do nothing
     }
     
-    public boolean isService() {
-        return type.getClass() == ServiceTypeImpl.class;
+    public boolean isAdapter() {
+        return type.getClass() == AdapterTypeImpl.class;
     }
 
     public boolean isModule() {
@@ -103,8 +103,8 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         }
     }
 
-    public ServiceResource getActiveService() {
-        return next != null && next.isService() ? (ServiceResource)next : null;
+    public AdapterResource getActiveAdapter() {
+        return next != null && next.isAdapter() ? (AdapterResource)next : null;
     }
     
     public void dispose() {
@@ -168,8 +168,8 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return ctx.newObject(type, args);
     }
 
-    public ServiceResource newService(String type, Object... args) {
-        return ctx.newService(this, type, args);
+    public AdapterResource newAdapter(String type, Object... args) {
+        return ctx.newAdapter(this, type, args);
     }
 
     public Template getView(String fileName) {

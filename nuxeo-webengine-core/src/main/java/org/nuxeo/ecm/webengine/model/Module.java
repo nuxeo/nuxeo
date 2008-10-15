@@ -102,61 +102,61 @@ public interface Module {
     ResourceType[] getTypes();
 
     /**
-     * Gets the services registered within this module.
+     * Gets the adapters registered within this module.
      *
-     * @return the services. Cannot be null.
+     * @return the adapters. Cannot be null.
      */
-    ServiceType[] getServices();
+    AdapterType[] getAdapters();
 
     /**
-     * Gets the named service definition for the given resource.
+     * Gets the named adapter definition for the given resource.
      *
      * @param ctx the target resource
-     * @param name the service name
-     * @return the service if any service with that name applies for that resource otherwise throws an exception
+     * @param name the adapter name
+     * @return the adapter if any adapter with that name applies for that resource otherwise throws an exception
      *
-     * @throws WebSecurityException if the service exists but cannot be accessed in the context of that resource
-     * @throws ServiceNotFoundException if no such service exists for that resource
+     * @throws WebSecurityException if the adapter exists but cannot be accessed in the context of that resource
+     * @throws AdapterNotFoundException if no such adapter exists for that resource
      */
-    ServiceType getService(Resource ctx, String name) throws ServiceNotFoundException;
+    AdapterType getAdapter(Resource ctx, String name) throws AdapterNotFoundException;
 
     /**
-     * Gets the list of services that applies to the given resource.
-     *
-     * @param ctx the context resource
-     * @return the list of service.s Cannot be null.
-     */
-    List<ServiceType> getServices(Resource ctx);
-
-    /**
-     * Gets the list of service names that applies to the given resource.
+     * Gets the list of adapters that applies to the given resource.
      *
      * @param ctx the context resource
-     * @return the list of service.s Cannot be null.
+     * @return the list of adapters Cannot be null.
      */
-    List<String> getServiceNames(Resource ctx);
+    List<AdapterType> getAdapters(Resource ctx);
 
     /**
-     * Gets the list of services that are enabled for the given context.
+     * Gets the list of adapter names that applies to the given resource.
+     *
+     * @param ctx the context resource
+     * @return the list of adapters Cannot be null.
+     */
+    List<String> getAdapterNames(Resource ctx);
+
+    /**
+     * Gets the list of adapters that are enabled for the given context.
      * <p>
-     * Enabled services are those services which can be accessed in the current
+     * Enabled adapters are those adapters which can be accessed in the current
      * security context
      *
      * @param ctx the context resource
-     * @return the list of service.s Cannot be null.
+     * @return the list of adapter.s Cannot be null.
      */
-    List<ServiceType> getEnabledServices(Resource ctx);
+    List<AdapterType> getEnabledAdapters(Resource ctx);
 
     /**
-     * Gets the list of service names that are enabled for the given context.
+     * Gets the list of adapter names that are enabled for the given context.
      * <p>
-     * Enabled services are those services which can be accessed in the current
+     * Enabled services are those adapters which can be accessed in the current
      * security context.
      *
      * @param ctx the context resource
-     * @return the list of service.s Cannot be null.
+     * @return the list of adapters. Cannot be null.
      */
-    List<String> getEnabledServiceNames(Resource ctx);
+    List<String> getEnabledAdapterNames(Resource ctx);
 
     List<LinkDescriptor> getLinks(String category);
 

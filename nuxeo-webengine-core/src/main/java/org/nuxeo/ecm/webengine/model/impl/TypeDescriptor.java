@@ -90,7 +90,7 @@ public class TypeDescriptor implements Cloneable {
         return fragment;
     }
 
-    public ServiceTypeImpl asActionDescriptor() {
+    public AdapterTypeImpl asActionDescriptor() {
         return null;
     }
 
@@ -102,7 +102,7 @@ public class TypeDescriptor implements Cloneable {
         return fragment == null;
     }
 
-    public boolean isService() {
+    public boolean isAdapter() {
         return false;
     }
 

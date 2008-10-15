@@ -34,7 +34,7 @@ import org.nuxeo.runtime.annotations.loader.Indexable;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @Indexable({"name", "superType"})
-public @interface WebService {
+public @interface WebAdapter {
 
     String name(); // the type name
     String superType() default ResourceTypeImpl.ROOT_TYPE_NAME; // the super type name

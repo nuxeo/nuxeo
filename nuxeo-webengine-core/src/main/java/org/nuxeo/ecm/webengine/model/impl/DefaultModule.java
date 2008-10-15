@@ -34,7 +34,7 @@ import org.nuxeo.ecm.webengine.model.ModuleResource;
 import org.nuxeo.ecm.webengine.model.ModuleType;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
-import org.nuxeo.ecm.webengine.model.ServiceResource;
+import org.nuxeo.ecm.webengine.model.AdapterResource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebModule;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
@@ -61,8 +61,8 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
     }
   
     @Path(value="@{segment}")
-    public ServiceResource disptachService(@PathParam("segment") String serviceName) throws WebException {
-        return ctx.newService(this, serviceName);
+    public AdapterResource disptachAdapter(@PathParam("segment") String adapterName) throws WebException {
+        return ctx.newAdapter(this, adapterName);
     }    
    
     @Override
@@ -76,7 +76,7 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
         return module;
     }
     
-    public boolean isService() {
+    public boolean isAdapter() {
         return false;
     }
     

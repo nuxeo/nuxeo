@@ -34,7 +34,7 @@ import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.loader.GroovyClassProxy;
 import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.WebService;
+import org.nuxeo.ecm.webengine.model.WebAdapter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -133,9 +133,9 @@ public class DirectoryTypeProvider extends TypeConfigurationProvider {
             registerType(TypeDescriptor.fromAnnotation(clazz, type));
             return true;
         } else {
-            WebService ws = clazz.get().getAnnotation(WebService.class);
+            WebAdapter ws = clazz.get().getAnnotation(WebAdapter.class);
             if (ws != null) {
-                registerType(ServiceDescriptor.fromAnnotation(clazz, ws));
+                registerType(AdapterDescriptor.fromAnnotation(clazz, ws));
                 return true;
             }
         }

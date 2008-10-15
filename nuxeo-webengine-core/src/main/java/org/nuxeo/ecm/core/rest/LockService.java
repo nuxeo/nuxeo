@@ -25,8 +25,8 @@ import javax.ws.rs.POST;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.WebService;
-import org.nuxeo.ecm.webengine.model.impl.DefaultService;
+import org.nuxeo.ecm.webengine.model.WebAdapter;
+import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
 /**
  * Lock Service - manage locks on documents
@@ -41,8 +41,8 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultService;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebService(name="lock", targetType="Document")
-public class LockService extends DefaultService {
+@WebAdapter(name="lock", targetType="Document")
+public class LockService extends DefaultAdapter {
 
     @GET
     public Object getView() {

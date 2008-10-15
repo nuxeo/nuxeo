@@ -1,20 +1,5 @@
 <@extends src="base.ftl">
-<@block name="header"><h1><a href ="${This.activeService.path}"><#if user>User Details<#else>User creation</#if></a></h1></@block>
-
-<@block name="toolbox">
-  <div class="sideblock contextual">
-    <h3>Toolbox</h3>
-    <div class="sideblock-content">
-      <ul>
-        <li><a href="${This.activeService.path}/.views/create_user">Create User</a></li>
-        <li><a href="${This.activeService.path}/.views/create_group">Create Group</a></li>
-         <#if user>
-        <li><a href="${appPath}/users/delete_user.groovy?username=${user.name}">Delete User</a></li>
-         </#if>
-      </ul>
-    </div>
-  </div>
-</@block>
+<@block name="header"><h1><a href ="${This.activeAdapter.path}"><#if user>User Details<#else>User creation</#if></a></h1></@block>
 
 <@block name="content">
 
@@ -25,7 +10,7 @@
 </#if>
 
 <div>
-<form method="POST" action="${appPath}/users/save_user" accept-charset="utf-8">
+<form method="POST" action="${This.activeAdapter.appPath}/save_user" accept-charset="utf-8">
 <table class="formFill">
     <tbody>
         <#if user><input type="hidden" name="username" value="${user.name}"/><#else>

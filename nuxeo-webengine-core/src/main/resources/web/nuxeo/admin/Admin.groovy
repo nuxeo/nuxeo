@@ -12,12 +12,17 @@ public class Admin extends DefaultObject {
 
   @Path("users")  
   public Object getUserManagement() {
-    return newService("users");
+    return newAdapter("users");
+  }
+
+  @Path("engine")  
+  public Object getEngine() {
+    return newAdapter("engine");
   }
 
   @GET
   public Object getIndex() {
-    return getTemplate("index.ftl");
+    return getView("index.ftl");
   }
 
 }

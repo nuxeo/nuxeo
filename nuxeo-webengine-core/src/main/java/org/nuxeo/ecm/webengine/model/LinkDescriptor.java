@@ -60,6 +60,12 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     @XNode(value="type")
     protected String type = ResourceType.ROOT_TYPE_NAME;
 
+    /**
+     * The object adapter the link may have as owner
+     */
+    @XNode(value="adapter") 
+    protected String adapter = ResourceType.ROOT_TYPE_NAME;
+    
     @XNodeList(value="facet", type=String[].class, componentType=String.class, nullByDefault=true)
     protected String[] facets;
 
@@ -134,6 +140,27 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     public LinkHandler getHandler() {
         return handler;
     }
+    
+    /**
+     * @return the adapter.
+     */
+    public String getAdapter() {
+        return adapter;
+    }
+    
+    /**
+     * @return the type.
+     */
+    public String getType() {
+        return type;
+    }
+    
+    /**
+     * @return the facets.
+     */
+    public String[] getFacets() {
+        return facets;
+    }
 
     /**
      * @param categories the categories to set.
@@ -162,7 +189,9 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     }
 
     public boolean acceptResource(Resource context) {
-        if (type == ResourceType.ROOT_TYPE_NAME && facets == null) {
+        if (type == ResourceType.ROOT_TYPE_NAME 
+                && adapter == ResourceType.ROOT_TYPE_NAME 
+                && facets == null) {
             return true;
         }
         if (facets != null && facets.length > 0) {
@@ -173,8 +202,21 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
             }
         }
         if (type != ResourceType.ROOT_TYPE_NAME) {
-            return context.isInstanceOf(type);
+            if (adapter != ResourceType.ROOT_TYPE_NAME) {
+                if (!context.isInstanceOf(type)) {
+                    return false;
+                }
+            } else {
+                return context.isInstanceOf(type);    
+            }
         }
+        if (adapter != ResourceType.ROOT_TYPE_NAME) {
+            Resource adapterRs = context.getNext();
+            if (adapterRs != null && adapterRs.isAdapter()) {
+                return adapterRs.isInstanceOf(adapter);
+            }
+            return false;
+        }        
         return true;
     }
 
@@ -186,7 +228,11 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     }
 
     public String getCode(LinkDescriptor link, Resource resource) {
-        return new StringBuilder().append(resource.getPath()).append(path).toString();
+        if (adapter != ResourceType.ROOT_TYPE_NAME) {
+            return new StringBuilder().append(resource.getActiveAdapter().getPath()).append(path).toString();  
+        } else {
+            return new StringBuilder().append(resource.getPath()).append(path).toString();    
+        }        
     }
 
     public boolean isFragment() {
@@ -205,6 +251,9 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
         if (fragment.type != null && !fragment.type.equals(ResourceType.ROOT_TYPE_NAME)) {
             type = fragment.type;
         }
+        if (fragment.adapter != null && !fragment.adapter.equals(ResourceType.ROOT_TYPE_NAME)) {
+            adapter = fragment.adapter;
+        }        
         if (fragment.facets != null && fragment.facets.length > 0) {
             if (facets == null) {
                 facets = fragment.facets;

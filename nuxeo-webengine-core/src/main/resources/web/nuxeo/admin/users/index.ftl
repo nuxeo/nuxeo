@@ -3,8 +3,6 @@
 
 <@block name="content">
 
-
-
 <div id="entry-actions">
 <div class="ui-tabs-panel">
 
@@ -39,7 +37,7 @@
 <tbody>
 <#list users as user>
 	<tr>
-		<td><a href="${This.activeService.path}/user/${user}">${user}<a/></td>
+		<td><a href="${This.activeAdapter.path}/user/${user}">${user}<a/></td>
 		<td>${user.firstName}</td>
 		<td>${user.lastName}</td>
 	</tr>
@@ -59,7 +57,7 @@
 <tbody>
 <#list groups as user>
   <tr>
-    <td><a href="${This.activeService.path}/group/${user}">${user}<a/></td>
+    <td><a href="${This.activeAdapter.path}/group/${user}">${user}<a/></td>
   </tr>
 </#list>
 </tbody>

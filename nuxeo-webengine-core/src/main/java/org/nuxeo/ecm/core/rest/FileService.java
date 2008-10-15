@@ -40,9 +40,9 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
-import org.nuxeo.ecm.webengine.model.WebService;
+import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
-import org.nuxeo.ecm.webengine.model.impl.DefaultService;
+import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
 /**
  * File Service - manage attachments on a document
@@ -57,8 +57,8 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultService;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebService(name="file", targetType="Document")
-public class FileService extends DefaultService {
+@WebAdapter(name="file", targetType="Document")
+public class FileService extends DefaultAdapter {
 
     @GET
     public Response doGet() {

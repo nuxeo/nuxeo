@@ -27,8 +27,8 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
-import org.nuxeo.ecm.webengine.model.ServiceType;
-import org.nuxeo.ecm.webengine.model.WebService;
+import org.nuxeo.ecm.webengine.model.AdapterType;
+import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.annotations.AnnotationManager;
 
@@ -36,12 +36,12 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ServiceTypeImpl extends AbstractResourceType implements ServiceType {
+public class AdapterTypeImpl extends AbstractResourceType implements AdapterType {
     // we are using arrays and not sets since the targetTypes and targetFacets have usually very small sizes
     protected String targetType;
     protected String[] targetFacets;
 
-    public ServiceTypeImpl(ModuleImpl module, ResourceTypeImpl superType, String name, ClassProxy clazz) {
+    public AdapterTypeImpl(ModuleImpl module, ResourceTypeImpl superType, String name, ClassProxy clazz) {
         super (module, superType, name, clazz);
     }
 
@@ -79,7 +79,7 @@ public class ServiceTypeImpl extends AbstractResourceType implements ServiceType
     @Override
     protected void loadAnnotations(AnnotationManager annoMgr) {
         Class<?> c = clazz.get();
-        WebService ws = c.getAnnotation(WebService.class);
+        WebAdapter ws = c.getAnnotation(WebAdapter.class);
         if (ws == null) return;
         String g = ws.guard();
         if (g != null && g.length() > 0) {

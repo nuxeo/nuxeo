@@ -32,7 +32,7 @@ import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
 import org.nuxeo.ecm.webengine.model.ModuleType;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
-import org.nuxeo.ecm.webengine.model.ServiceType;
+import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
 
@@ -43,15 +43,15 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
 public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescriptor>{
     
     protected Map<String, AbstractResourceType> types;
-    protected Map<String, ServiceTypeImpl> services;
-    protected Map<String, ServiceTypeImpl[]> serviceBindings;
+    protected Map<String, AdapterTypeImpl> adapters;
+    protected Map<String, AdapterTypeImpl[]> adapterBindings;
     protected ModuleImpl module;
     protected Class<?> docObjectClass = null;
     
     public TypeRegistry(ModuleImpl module) {
         types = new ConcurrentHashMap<String, AbstractResourceType>();
-        services = new ConcurrentHashMap<String, ServiceTypeImpl>();
-        serviceBindings = new ConcurrentHashMap<String, ServiceTypeImpl[]>();
+        adapters = new ConcurrentHashMap<String, AdapterTypeImpl>();
+        adapterBindings = new ConcurrentHashMap<String, AdapterTypeImpl[]>();
         this.module = module;
         // register root type
         TypeDescriptor root = new TypeDescriptor(new StaticClassProxy(Resource.class), ResourceType.ROOT_TYPE_NAME, null); 
@@ -98,109 +98,109 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         return type;
     }
     
-    public ServiceType getService(String name) {
-        return services.get(name);
+    public AdapterType getAdapter(String name) {
+        return adapters.get(name);
     }    
 
 
-    public ServiceType getService(Resource target, String name) {
-        ServiceTypeImpl service = services.get(name);
-        if (service != null && service.acceptResource(target)) {
-            return service;
+    public AdapterType getAdapter(Resource target, String name) {
+        AdapterTypeImpl adapter = adapters.get(name);
+        if (adapter != null && adapter.acceptResource(target)) {
+            return adapter;
         }
         return null;
     }
     
-    public List<ServiceType> getServices(Resource resource) {
-        ArrayList<ServiceType> result = new ArrayList<ServiceType>();
-        collectServicesFor(resource, resource.getType(), result);
+    public List<AdapterType> getAdapters(Resource resource) {
+        ArrayList<AdapterType> result = new ArrayList<AdapterType>();
+        collectAdaptersFor(resource, resource.getType(), result);
         return result;
     }
 
-    public List<String> getServiceNames(Resource resource) {
+    public List<String> getAdapterNames(Resource resource) {
         ArrayList<String> result = new ArrayList<String>();
-        collectServiceNamesFor(resource, resource.getType(), result);
+        collectAdapterNamesFor(resource, resource.getType(), result);
         return result;
     }
     
-    public List<ServiceType> getEnabledServices(Resource resource) {
-        ArrayList<ServiceType> result = new ArrayList<ServiceType>();
-        collectEnabledServicesFor(resource, resource.getType(), result);
+    public List<AdapterType> getEnabledAdapters(Resource resource) {
+        ArrayList<AdapterType> result = new ArrayList<AdapterType>();
+        collectEnabledAdaptersFor(resource, resource.getType(), result);
         return result;
     }
 
-    public List<String> getEnabledServiceNames(Resource resource) {
+    public List<String> getEnabledAdapterNames(Resource resource) {
         ArrayList<String> result = new ArrayList<String>();
-        collectEnabledServiceNamesFor(resource, resource.getType(), result);
+        collectEnabledAdapterNamesFor(resource, resource.getType(), result);
         return result;
     }
         
     
-    protected void collectServicesFor(Resource ctx, ResourceType type, List<ServiceType> result) {
-        ServiceType[] services = serviceBindings.get(type.getName());
-        if (services != null && services.length > 0) {
-            for (int i=0; i<services.length; i++) {
-                ServiceType service = services[i];
-                if (service.acceptResource(ctx)) {
-                    result.add(service);
+    protected void collectAdaptersFor(Resource ctx, ResourceType type, List<AdapterType> result) {
+        AdapterType[] adapters = adapterBindings.get(type.getName());
+        if (adapters != null && adapters.length > 0) {
+            for (int i=0; i<adapters.length; i++) {
+                AdapterType adapter = adapters[i];
+                if (adapter.acceptResource(ctx)) {
+                    result.add(adapter);
                 }
             }
         }
         ResourceType superType = type.getSuperType();
         if (superType != null) {
-            collectServicesFor(ctx, superType, result);
+            collectAdaptersFor(ctx, superType, result);
         }
     }
 
-    protected void collectServiceNamesFor(Resource ctx, ResourceType type, List<String> result) {
-        ServiceType[] services = serviceBindings.get(type.getName());
-        if (services != null && services.length > 0) {
-            for (int i=0; i<services.length; i++) {
-                ServiceType service = services[i];
-                if (service.acceptResource(ctx)) {
-                    result.add(service.getName());
+    protected void collectAdapterNamesFor(Resource ctx, ResourceType type, List<String> result) {
+        AdapterType[] adapters = adapterBindings.get(type.getName());
+        if (adapters != null && adapters.length > 0) {
+            for (int i=0; i<adapters.length; i++) {
+                AdapterType adapter = adapters[i];
+                if (adapter.acceptResource(ctx)) {
+                    result.add(adapter.getName());
                 }
             }
         }
         ResourceType superType = type.getSuperType();
         if (superType != null) {
-            collectServiceNamesFor(ctx, superType, result);
+            collectAdapterNamesFor(ctx, superType, result);
         }
     }
 
-    protected void collectEnabledServicesFor(Resource ctx, ResourceType type, List<ServiceType> result) {
-        ServiceType[] services = serviceBindings.get(type.getName());
-        if (services != null && services.length > 0) {
-            for (int i=0; i<services.length; i++) {
-                ServiceType service = services[i];
-                if (service.acceptResource(ctx)) {
-                    if (service.isEnabled(ctx)) {
-                        result.add(service);
+    protected void collectEnabledAdaptersFor(Resource ctx, ResourceType type, List<AdapterType> result) {
+        AdapterType[] adapters = adapterBindings.get(type.getName());
+        if (adapters != null && adapters.length > 0) {
+            for (int i=0; i<adapters.length; i++) {
+                AdapterType adapter = adapters[i];
+                if (adapter.acceptResource(ctx)) {
+                    if (adapter.isEnabled(ctx)) {
+                        result.add(adapter);
                     }
                 }
             }
         }
         ResourceType superType = type.getSuperType();
         if (superType != null) {
-            collectEnabledServicesFor(ctx, superType, result);
+            collectEnabledAdaptersFor(ctx, superType, result);
         }
     }
 
-    protected void collectEnabledServiceNamesFor(Resource ctx, ResourceType type, List<String> result) {
-        ServiceType[] services = serviceBindings.get(type.getName());
-        if (services != null && services.length > 0) {
-            for (int i=0; i<services.length; i++) {
-                ServiceType service = services[i];
-                if (service.acceptResource(ctx)) {
-                    if (service.isEnabled(ctx)) {
-                        result.add(service.getName());
+    protected void collectEnabledAdapterNamesFor(Resource ctx, ResourceType type, List<String> result) {
+        AdapterType[] adapters = adapterBindings.get(type.getName());
+        if (adapters != null && adapters.length > 0) {
+            for (int i=0; i<adapters.length; i++) {
+                AdapterType adapter = adapters[i];
+                if (adapter.acceptResource(ctx)) {
+                    if (adapter.isEnabled(ctx)) {
+                        result.add(adapter.getName());
                     }
                 }
             }
         }
         ResourceType superType = type.getSuperType();
         if (superType != null) {
-            collectEnabledServiceNamesFor(ctx, superType, result);
+            collectEnabledAdapterNamesFor(ctx, superType, result);
         }
     }
 
@@ -209,8 +209,8 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         return types.values().toArray(new ResourceTypeImpl[types.size()]);
     }
     
-    public ServiceType[] getServices() {
-        return services.values().toArray(new ServiceTypeImpl[services.size()]);
+    public AdapterType[] getAdapters() {
+        return adapters.values().toArray(new AdapterTypeImpl[adapters.size()]);
     }
     
     
@@ -221,7 +221,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         addFragment(td.name, td, td.superType);
     }
     
-    public synchronized void registerService(ServiceDescriptor td) {
+    public synchronized void registerAdapter(AdapterDescriptor td) {
         addFragment(td.name, td, td.superType);
     }
     
@@ -229,7 +229,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         removeFragment(td.name, td);
     }
 
-    public void unregisterService(TypeDescriptor td) {
+    public void unregisterAdapter(TypeDescriptor td) {
         removeFragment(td.name, td);
     }
         
@@ -275,9 +275,9 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         if (fragment.clazz != null) {
             object.clazz = fragment.clazz;
         }
-        if (object.isService()) {
-            ServiceDescriptor so = (ServiceDescriptor)object;
-            ServiceDescriptor sf = (ServiceDescriptor)fragment;
+        if (object.isAdapter()) {
+            AdapterDescriptor so = (AdapterDescriptor)object;
+            AdapterDescriptor sf = (AdapterDescriptor)fragment;
             if (sf.facets != null && sf.facets.length > 0) {
                 ArrayList<String> list = new ArrayList<String>();
                 if (so.facets != null && so.facets.length > 0) {
@@ -300,8 +300,8 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     
     @Override
     protected void installContribution(String key, TypeDescriptor object) {
-        if (object.isService()) {
-            installServiceContribution(key, (ServiceDescriptor)object);
+        if (object.isAdapter()) {
+            installAdapterContribution(key, (AdapterDescriptor)object);
         } else {
             installTypeContribution(key, object);
         }
@@ -333,36 +333,36 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         types.put(object.name, type);  
     }
 
-    protected void installServiceContribution(String key, ServiceDescriptor object) {
-        ServiceTypeImpl type = new ServiceTypeImpl(module, null, object.name, object.clazz);
+    protected void installAdapterContribution(String key, AdapterDescriptor object) {
+        AdapterTypeImpl type = new AdapterTypeImpl(module, null, object.name, object.clazz);
         if (object.superType != null) {
             type.superType = types.get(object.superType);
             assert type.superType != null; // must never be null since the object is resolved 
         }
-        services.put(object.name, type);  
+        adapters.put(object.name, type);  
         // install bindings
         if (object.targetType != null) {
-            installServiceBindings(type, object.targetType);
+            installAdapterBindings(type, object.targetType);
         }
     }
     
-    protected void installServiceBindings(ServiceTypeImpl service, String targetType) {
-        ServiceTypeImpl[] bindings = serviceBindings.get(targetType);
+    protected void installAdapterBindings(AdapterTypeImpl adapter, String targetType) {
+        AdapterTypeImpl[] bindings = adapterBindings.get(targetType);
         if (bindings == null) {
-            bindings = new ServiceTypeImpl[] {service};
+            bindings = new AdapterTypeImpl[] {adapter};
         } else {
-            ServiceTypeImpl[] ar = new ServiceTypeImpl[bindings.length+1];
+            AdapterTypeImpl[] ar = new AdapterTypeImpl[bindings.length+1];
             System.arraycopy(bindings, 0, ar, 0, bindings.length);
-            ar[bindings.length] = service;
+            ar[bindings.length] = adapter;
         }
-        serviceBindings.put(targetType, bindings);
+        adapterBindings.put(targetType, bindings);
     }
     
     
     @Override
     protected void updateContribution(String key, TypeDescriptor object, TypeDescriptor oldValue) {
-          if (object.isService()) {
-              updateServiceContribution(key, (ServiceDescriptor)object);
+          if (object.isAdapter()) {
+              updateAdapterContribution(key, (AdapterDescriptor)object);
           } else {
               updateTypeContribution(key, object);
           }
@@ -384,21 +384,21 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         }
     }
 
-    protected void updateServiceContribution(String key, ServiceDescriptor object) {
-        AbstractResourceType t = services.get(key);
-        if (t instanceof ServiceTypeImpl) { // update the type class
-            ServiceTypeImpl service = (ServiceTypeImpl)t;
-            String targetType = service.targetType;
-            service.clazz = object.clazz;
-            service.loadAnnotations(module.getEngine().getAnnotationManager());
+    protected void updateAdapterContribution(String key, AdapterDescriptor object) {
+        AbstractResourceType t = adapters.get(key);
+        if (t instanceof AdapterTypeImpl) { // update the type class
+            AdapterTypeImpl adapter = (AdapterTypeImpl)t;
+            String targetType = adapter.targetType;
+            adapter.clazz = object.clazz;
+            adapter.loadAnnotations(module.getEngine().getAnnotationManager());
             t.flushCache();
             // update bindings
-            if (service.targetType != null && !service.targetType.equals(targetType)) {
-                removeServiceBindings(key, service);
-                installServiceBindings(service, service.targetType);
+            if (adapter.targetType != null && !adapter.targetType.equals(targetType)) {
+                removeAdapterBindings(key, adapter);
+                installAdapterBindings(adapter, adapter.targetType);
             }
         } else { // install the type - this should never happen since it is an update!
-            throw new IllegalStateException("Updating a service type which is not registered.");
+            throw new IllegalStateException("Updating an adapter type which is not registered.");
         }        
     }
 
@@ -407,29 +407,29 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     protected void uninstallContribution(String key, TypeDescriptor value) {
         AbstractResourceType t = types.remove(key);
         if (t == null) {
-            ServiceTypeImpl s = services.remove(key);
+            AdapterTypeImpl s = adapters.remove(key);
             if (s != null) {
-                removeServiceBindings(key, (ServiceTypeImpl)t);    
+                removeAdapterBindings(key, (AdapterTypeImpl)t);    
             }
         }
     }
     
-    protected void removeServiceBindings(String key, ServiceTypeImpl service) {
-        if (service.targetType != null) {
+    protected void removeAdapterBindings(String key, AdapterTypeImpl adapter) {
+        if (adapter.targetType != null) {
             // remove bindings
-            ServiceTypeImpl[] ar = serviceBindings.get(service.targetType);
+            AdapterTypeImpl[] ar = adapterBindings.get(adapter.targetType);
             if (ar != null) {
-                ArrayList<ServiceTypeImpl> list = new ArrayList<ServiceTypeImpl>(ar.length);
+                ArrayList<AdapterTypeImpl> list = new ArrayList<AdapterTypeImpl>(ar.length);
                 for (int i=0; i<ar.length; i++) {
                     if (!key.equals(ar[i].getName())) {
                         list.add(ar[i]);
                     }
                 }
                 if (list.isEmpty()) {
-                    serviceBindings.remove(key);
+                    adapterBindings.remove(key);
                 } else if (list.size() < ar.length) {
-                    ar = list.toArray(new ServiceTypeImpl[list.size()]);
-                    serviceBindings.put(key, ar);
+                    ar = list.toArray(new AdapterTypeImpl[list.size()]);
+                    adapterBindings.put(key, ar);
                 }
             }
         }

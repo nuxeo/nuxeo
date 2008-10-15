@@ -30,13 +30,13 @@ import java.util.Vector;
 public class TypeConfigurationProvider {
 
     protected List<TypeDescriptor> types;
-    protected List<ServiceDescriptor> services;
+    protected List<AdapterDescriptor> services;
     protected List<TypeRegistry> registries;
 
 
     public TypeConfigurationProvider() {
         types = new ArrayList<TypeDescriptor>();
-        services = new ArrayList<ServiceDescriptor>();
+        services = new ArrayList<AdapterDescriptor>();
         registries = new Vector<TypeRegistry>();
     }
 
@@ -59,12 +59,12 @@ public class TypeConfigurationProvider {
         }
     }
 
-    public synchronized void registerAction(ServiceDescriptor ad) {
+    public synchronized void registerAction(AdapterDescriptor ad) {
         services.add(ad);
         fireServiceRegistered(ad);
     }
 
-    public synchronized void unregisterAction(ServiceDescriptor ad) {
+    public synchronized void unregisterAction(AdapterDescriptor ad) {
         if (services.remove(ad)) {
             fireServiceUnregistered(ad);
         }
@@ -82,29 +82,29 @@ public class TypeConfigurationProvider {
         for (TypeDescriptor td : types) {
             registry.registerType(td);
         }
-        for (ServiceDescriptor ad : services) {
-            registry.registerService(ad);
+        for (AdapterDescriptor ad : services) {
+            registry.registerAdapter(ad);
         }
         addRegistry(registry);
     }
 
 
 
-    protected void fireServiceRegistered(ServiceDescriptor ad) {
+    protected void fireServiceRegistered(AdapterDescriptor ad) {
         if (registries.isEmpty()) {
             return;
         }
         for (TypeRegistry reg : registries.toArray(new TypeRegistry[registries.size()])) {
-           reg.registerService(ad);
+           reg.registerAdapter(ad);
         }
     }
 
-    protected void fireServiceUnregistered(ServiceDescriptor ad) {
+    protected void fireServiceUnregistered(AdapterDescriptor ad) {
         if (registries.isEmpty()) {
             return;
         }
         for (TypeRegistry reg : registries.toArray(new TypeRegistry[registries.size()])) {
-           reg.unregisterService(ad);
+           reg.unregisterAdapter(ad);
         }
     }
 

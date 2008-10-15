@@ -25,14 +25,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.nuxeo.ecm.webengine.model.Template;
-import org.nuxeo.ecm.webengine.model.WebService;
+import org.nuxeo.ecm.webengine.model.WebAdapter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebService(name="views")
-public class ViewService extends DefaultService {
+@WebAdapter(name="views")
+public class ViewService extends DefaultAdapter {
 
     @GET
     public Object disptachViews() {

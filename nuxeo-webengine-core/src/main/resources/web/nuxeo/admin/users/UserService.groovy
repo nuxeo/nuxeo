@@ -9,9 +9,9 @@ import org.nuxeo.ecm.webengine.model.exceptions.*;
 import org.nuxeo.runtime.api.*;
 import org.nuxeo.ecm.platform.usermanager.*;
 
-@WebService(name="users", targetType="Admin")
+@WebAdapter(name="users", targetType="Admin")
 @Produces(["text/html", "*/*"])
-public class UserService extends DefaultService {
+public class UserService extends DefaultAdapter {
 
   @GET @POST
   public Object getIndex(@QueryParam("query") String query, @QueryParam("group") String group) {

@@ -42,8 +42,8 @@ import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
-import org.nuxeo.ecm.webengine.model.ServiceResource;
-import org.nuxeo.ecm.webengine.model.ServiceType;
+import org.nuxeo.ecm.webengine.model.AdapterResource;
+import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
@@ -151,9 +151,9 @@ public abstract class AbstractWebContext implements WebContext {
         return obj;
     }
 
-    public ServiceResource newService(Resource ctx, String serviceName, Object ...  args) throws WebException {
-        ServiceType st = module.getService(ctx, serviceName);
-        ServiceResource service = (ServiceResource)st.newInstance();
+    public AdapterResource newAdapter(Resource ctx, String serviceName, Object ...  args) throws WebException {
+        AdapterType st = module.getAdapter(ctx, serviceName);
+        AdapterResource service = (AdapterResource)st.newInstance();
         service.initialize(this, st, args);
         push(service);
         return service;
@@ -460,7 +460,7 @@ public abstract class AbstractWebContext implements WebContext {
     public Resource getTargetObject() {
         Resource t = tail;
         while (t != null) {
-            if (!t.isService()) {
+            if (!t.isAdapter()) {
                 return t;
             }
             t = t.getPrevious();
@@ -468,11 +468,11 @@ public abstract class AbstractWebContext implements WebContext {
         return null;
     }
 
-    public ServiceResource getTargetService() {
+    public AdapterResource getTargetAdapter() {
         Resource t = tail;
         while (t != null) {
-            if (t.isService()) {
-                return (ServiceResource)t;
+            if (t.isAdapter()) {
+                return (AdapterResource)t;
             }
             t = t.getPrevious();
         }
@@ -492,6 +492,10 @@ public abstract class AbstractWebContext implements WebContext {
             DocumentModel doc = obj.getAdapter(DocumentModel.class);
             if (doc != null) {
                 bindings.put("Document", doc);
+            }
+            Resource adapter = getTargetAdapter();
+            if (adapter != null) {
+                bindings.put("Adapter", adapter);
             }
         }
         //TODO

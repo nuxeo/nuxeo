@@ -26,14 +26,14 @@ import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.Utils;
-import org.nuxeo.ecm.webengine.model.WebService;
+import org.nuxeo.ecm.webengine.model.WebAdapter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@XObject("web-service")
-public class ServiceDescriptor extends TypeDescriptor {
+@XObject("web-adapter")
+public class AdapterDescriptor extends TypeDescriptor {
 
     @XNode("@class")
     void setClass(Class<?> clazz) { this.clazz = new StaticClassProxy(clazz); }
@@ -57,15 +57,15 @@ public class ServiceDescriptor extends TypeDescriptor {
     /**
      *
      */
-    public ServiceDescriptor() {
+    public AdapterDescriptor() {
         super ();
     }
 
-    public ServiceDescriptor(ClassProxy clazz, String name, String superType) {
+    public AdapterDescriptor(ClassProxy clazz, String name, String superType) {
         super (clazz, name, superType);
     }
 
-    public ServiceDescriptor(ClassProxy clazz, String name, String superType, String targetType, String[] facets) {
+    public AdapterDescriptor(ClassProxy clazz, String name, String superType, String targetType, String[] facets) {
         super (clazz, name, superType);
         if (facets != null && facets.length > 0) {
             this.facets = facets;
@@ -77,7 +77,7 @@ public class ServiceDescriptor extends TypeDescriptor {
         }
     }
 
-    public boolean isService() {
+    public boolean isAdapter() {
         return true;
     }
 
@@ -85,8 +85,8 @@ public class ServiceDescriptor extends TypeDescriptor {
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null) return false;
-        if (obj instanceof ServiceDescriptor) {
-            ServiceDescriptor td = (ServiceDescriptor)obj;
+        if (obj instanceof AdapterDescriptor) {
+            AdapterDescriptor td = (AdapterDescriptor)obj;
             return name.equals(td.name) && Utils.streq(fragment, td.fragment);
         }
         return false;
@@ -105,7 +105,7 @@ public class ServiceDescriptor extends TypeDescriptor {
     }
 
 
-    public static ServiceDescriptor fromAnnotation(ClassProxy clazz, WebService type) {
-        return  new ServiceDescriptor(clazz, type.name(), type.superType(), type.targetType(), type.facets());
+    public static AdapterDescriptor fromAnnotation(ClassProxy clazz, WebAdapter type) {
+        return  new AdapterDescriptor(clazz, type.name(), type.superType(), type.targetType(), type.facets());
     }
 }

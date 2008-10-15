@@ -23,6 +23,7 @@
       <category>TOOLBOX</category>
     </link>
     <link id="link_delete_doc" path="/@delete">
+      <type>Document</type>
       <category>TOOLBOX</category>
     </link>
     <link id="link_create_doc" path="/@views/create">
@@ -33,18 +34,18 @@
     <!-- user management -->
     <link id="link_delete_user" path="/@delete">
       <type>User</type>
-      <category>TOOLBOX</category>      
+      <category>TOOLBOX</category>
     </link>
-    <link id="link_create_user" path="/@views/create">
-      <type>users</type>
+    <link id="link_create_user" path="/@views/create_user">
+      <adapter>users</adapter>
       <category>TOOLBOX</category>
     </link>
     <link id="link_delete_group" path="/@delete">
       <type>Group</type>
       <category>TOOLBOX</category>      
     </link>
-    <link id="link_create_group" path="/@views/create">
-      <type>users</type>
+    <link id="link_create_group" path="/@views/create_group">
+      <adapter>users</adapter>
       <category>TOOLBOX</category>
     </link> 
     

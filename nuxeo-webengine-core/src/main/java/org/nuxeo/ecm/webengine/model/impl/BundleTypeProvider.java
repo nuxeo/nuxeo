@@ -22,7 +22,7 @@ package org.nuxeo.ecm.webengine.model.impl;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.WebService;
+import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.runtime.annotations.loader.AnnotationLoader;
 import org.nuxeo.runtime.annotations.loader.BundleAnnotationsLoader;
 import org.osgi.framework.Bundle;
@@ -36,7 +36,7 @@ public class BundleTypeProvider extends TypeConfigurationProvider implements Ann
 
     public BundleTypeProvider() {
         BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), this);
-        BundleAnnotationsLoader.getInstance().addLoader(WebService.class.getName(), this);
+        BundleAnnotationsLoader.getInstance().addLoader(WebAdapter.class.getName(), this);
     }
 
     // support for loading annotations from descriptor files
@@ -46,10 +46,10 @@ public class BundleTypeProvider extends TypeConfigurationProvider implements Ann
         if (annotationType.equals(WebObject.class.getName())) {
             WebObject type = clazz.get().getAnnotation(WebObject.class);
             registerType(TypeDescriptor.fromAnnotation(clazz, type));
-        } else if (annotationType.equals(WebService.class.getName())) {
+        } else if (annotationType.equals(WebAdapter.class.getName())) {
             //TODO: avoid loading clazz here - use the data from annotation ?
-            WebService service = clazz.get().getAnnotation(WebService.class);
-            registerType(ServiceDescriptor.fromAnnotation(clazz, service));
+            WebAdapter service = clazz.get().getAnnotation(WebAdapter.class);
+            registerType(AdapterDescriptor.fromAnnotation(clazz, service));
         } else {
             throw new IllegalArgumentException(annotationType);
         }

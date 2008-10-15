@@ -1,22 +1,6 @@
 <@extends src="base.ftl">
 <@block name="header"><h1><a href ="${appPath}/users"><#if group>Group Details<#else>Group creation</#if></a></h1></@block>
 
-<@block name="toolbox">
-  <div class="sideblock contextual">
-    <h3>Toolbox</h3>
-    <div class="sideblock-content">
-      <ul>
-        <li><a href="${appPath}/users/create_user">Create User</a></li>
-        <li><a href="${appPath}/users/create_group">Create Group</a></li>
-         <#if group>        
-        <li><a href="${appPath}/users/delete_group.groovy?username=${group.name}">Delete Group</a></li>
-         </#if>
-      </ul>
-    </div>
-  </div>
-</@block>
-
-
 <@block name="content">
 
 <#if group>

@@ -34,8 +34,8 @@ import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.ModuleType;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
-import org.nuxeo.ecm.webengine.model.ServiceNotFoundException;
-import org.nuxeo.ecm.webengine.model.ServiceType;
+import org.nuxeo.ecm.webengine.model.AdapterNotFoundException;
+import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
@@ -184,7 +184,7 @@ public class ModuleImpl implements Module {
         if (descriptor.types != null) {
             localTypes.types.addAll(descriptor.types);
         }
-        localTypes.services = new ArrayList<ServiceDescriptor>();
+        localTypes.services = new ArrayList<AdapterDescriptor>();
         if (descriptor.actions != null) {
             descriptor.actions.addAll(descriptor.actions);
         }
@@ -229,33 +229,33 @@ public class ModuleImpl implements Module {
         return getTypeRegistry().getTypes();
     }
 
-    public ServiceType[] getServices() {
-        return getTypeRegistry().getServices();
+    public AdapterType[] getAdapters() {
+        return getTypeRegistry().getAdapters();
     }
 
-    public ServiceType getService(Resource ctx, String name)
-            throws ServiceNotFoundException {
-        ServiceType type = getTypeRegistry().getService(ctx, name);
+    public AdapterType getAdapter(Resource ctx, String name)
+            throws AdapterNotFoundException {
+        AdapterType type = getTypeRegistry().getAdapter(ctx, name);
         if (type == null) {
-            throw new ServiceNotFoundException(ctx, name);
+            throw new AdapterNotFoundException(ctx, name);
         }
         return type;
     }
 
-    public List<String> getServiceNames(Resource ctx) {
-        return getTypeRegistry().getServiceNames(ctx);
+    public List<String> getAdapterNames(Resource ctx) {
+        return getTypeRegistry().getAdapterNames(ctx);
     }
 
-    public List<ServiceType> getServices(Resource ctx) {
-        return getTypeRegistry().getServices(ctx);
+    public List<AdapterType> getAdapters(Resource ctx) {
+        return getTypeRegistry().getAdapters(ctx);
     }
 
-    public List<String> getEnabledServiceNames(Resource ctx) {
-        return getTypeRegistry().getEnabledServiceNames(ctx);
+    public List<String> getEnabledAdapterNames(Resource ctx) {
+        return getTypeRegistry().getEnabledAdapterNames(ctx);
     }
 
-    public List<ServiceType> getEnabledServices(Resource ctx) {
-        return getTypeRegistry().getEnabledServices(ctx);
+    public List<AdapterType> getEnabledAdapters(Resource ctx) {
+        return getTypeRegistry().getEnabledAdapters(ctx);
     }
 
     protected void loadLinks() {

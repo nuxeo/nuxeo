@@ -243,7 +243,7 @@ public interface WebContext extends Adaptable {
 
     Resource newObject(ResourceType type, Object ...  args) throws WebException;
 
-    ServiceResource newService(Resource ctx, String serviceName, Object ...  args) throws WebException;
+    AdapterResource newAdapter(Resource ctx, String adapterName, Object ...  args) throws WebException;
 
     /** object stack API */
 
@@ -259,7 +259,7 @@ public interface WebContext extends Adaptable {
 
     Resource getTargetObject();
 
-    ServiceResource getTargetService();
+    AdapterResource getTargetAdapter();
 
 
     /** template and script resolver */

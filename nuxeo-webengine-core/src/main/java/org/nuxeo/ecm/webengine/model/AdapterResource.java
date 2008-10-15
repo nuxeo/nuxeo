@@ -20,16 +20,14 @@
 package org.nuxeo.ecm.webengine.model;
 
 
+
 /**
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ServiceNotFoundException extends TypeException {
+public interface AdapterResource extends Resource {
 
-    private static final long serialVersionUID = 1L;
-
-    public ServiceNotFoundException(Resource ctx, String service) {
-        super ("Service "+service+" not found for object: "+ctx.getPath()+" of type "+ctx.getType().getName());
-    }
+    Resource getTarget();
 
 }
