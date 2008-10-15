@@ -4,7 +4,8 @@
   xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:s="http://jboss.com/products/seam/taglib">
+  xmlns:s="http://jboss.com/products/seam/taglib"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 
 <div class="userServices">
 <ui:insert name="user">
@@ -36,9 +37,15 @@
                     rowIndexVar="row"
                     rowCountVar="rowCount">
         <h:outputText value=" | " rendered="#{row!=(rowCount-1)}"/>
-        <h:outputLink value="#{baseURL}#{action.getLink()}">
+
+        <nxh:commandLink action="#{action.getLink()}" rendered="#{fn:startsWith(action.link,'#')}">
+          <h:outputText value="#{messages[action.label]}" />
+        </nxh:commandLink>
+
+        <h:outputLink value="#{baseURL}#{action.link}" rendered="#{!(fn:startsWith(action.link,'#'))}">
           <h:outputText value="#{messages[action.label]}" />
         </h:outputLink>
+
       </nxu:dataList>
     </nxu:methodResult>
     <br />
