@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.ui.web.auth.plugins;
 
 import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
@@ -29,43 +28,28 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationSessionM
 public class DefaultSessionManager implements NuxeoAuthenticationSessionManager {
 
 
-    public boolean bypassRequest(ServletRequest request)
+    public boolean canBypassRequest(ServletRequest request)
     {
         return false;
     }
 
-    public void invalidateSession(ServletRequest request) {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpSession session = httpRequest.getSession(false);
-
-        if (session != null) {
-            session.invalidate();
-        }
+    public void onBeforeSessionInvalidate(ServletRequest request) {
+        // NOP
     }
 
-    public boolean isAvalaible(ServletRequest request) {
-        return true;
+    public void onAfterSessionReinit(ServletRequest request) {
+        // NOP
     }
 
-    public HttpSession reinitSession(ServletRequest request) {
-
-         HttpServletRequest httpRequest = (HttpServletRequest) request;
-         HttpSession session = httpRequest.getSession(false);
-
-         if (session != null) {
-             session.invalidate();
-         }
-
-         // create new one
-         session = httpRequest.getSession(true);
-
-         return session;
-    }
-
-    public void authenticatedSessionCreated(ServletRequest request,
+    public void onAuthenticatedSessionCreated(ServletRequest request,
             HttpSession session, CachableUserIdentificationInfo cachebleUserInfo) {
-        // TODO Auto-generated method stub
+        // NOP
     }
+
+    public void onBeforeSessionReinit(ServletRequest request) {
+        // NOP
+    }
+
 
 
 }

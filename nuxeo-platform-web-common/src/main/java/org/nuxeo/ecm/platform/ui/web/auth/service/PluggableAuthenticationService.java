@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
@@ -263,19 +264,6 @@ public class PluggableAuthenticationService extends DefaultComponent {
         }
     }
 
-    protected NuxeoAuthenticationSessionManager getSM(ServletRequest request)
-    {
-        if (sessionManagers.size()>0)
-        {
-            for (String smName : sessionManagers.keySet())
-            {
-                NuxeoAuthenticationSessionManager sm  = sessionManagers.get(smName);
-                if (sm.isAvalaible(request))
-                    return sm;
-                }
-            }
-        return defaultSessionManager;
-    }
 
     public void invalidateSession(ServletRequest request)
     {
@@ -284,58 +272,67 @@ public class PluggableAuthenticationService extends DefaultComponent {
             for (String smName : sessionManagers.keySet())
             {
                 NuxeoAuthenticationSessionManager sm  = sessionManagers.get(smName);
-                sm.invalidateSession(request);
-
+                sm.onBeforeSessionInvalidate(request);
             }
         }
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpSession session = httpRequest.getSession(false);
+        if (session!=null)
+            session.invalidate();
     }
 
-    public  HttpSession reinitSession(ServletRequest request)
+    public  HttpSession reinitSession(HttpServletRequest httpRequest)
     {
-        //return getSM(request).reinitSession(request);
 
-        HttpSession session = null;
-        // XXX need to change the impl !!
         if (sessionManagers.size()>0)
         {
             for (String smName : sessionManagers.keySet())
             {
                 NuxeoAuthenticationSessionManager sm  = sessionManagers.get(smName);
-                session = sm.reinitSession(request);
+                sm.onBeforeSessionReinit(httpRequest);
+            }
+        }
+
+        HttpSession session = httpRequest.getSession(true);
+
+        if (sessionManagers.size()>0)
+        {
+            for (String smName : sessionManagers.keySet())
+            {
+                NuxeoAuthenticationSessionManager sm  = sessionManagers.get(smName);
+                sm.onAfterSessionReinit(httpRequest);
             }
         }
         return session;
-
     }
 
-    public boolean bypassRequest(ServletRequest request)
+    public boolean canBypassRequest(ServletRequest request)
     {
         if (sessionManagers.size()>0)
         {
             for (String smName : sessionManagers.keySet())
             {
                 NuxeoAuthenticationSessionManager sm  = sessionManagers.get(smName);
-                if (sm.bypassRequest(request))
+                if (sm.canBypassRequest(request))
                     return true;
             }
         }
         return false;
     }
 
-
     public String getBaseURL(ServletRequest request)
     {
         return VirtualHostHelper.getBaseURL(request);
     }
 
-    public void authenticatedSessionCreated(ServletRequest request, HttpSession session, CachableUserIdentificationInfo cachebleUserInfo)
+    public void onAuthenticatedSessionCreated(ServletRequest request, HttpSession session, CachableUserIdentificationInfo cachebleUserInfo)
     {
          if (sessionManagers.size()>0)
          {
              for (String smName : sessionManagers.keySet())
              {
                  NuxeoAuthenticationSessionManager sm  = sessionManagers.get(smName);
-                 sm.authenticatedSessionCreated(request, session, cachebleUserInfo);
+                 sm.onAuthenticatedSessionCreated(request, session, cachebleUserInfo);
              }
          }
     }

@@ -61,7 +61,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Servlet filter handling Nuxeo authentication (JAAS + EJB).
  * <p>
- * Also handles logout.
+ * Also handles logout and identity switch
  *
  * @author Thierry Delprat
  * @author Bogdan Stefanescu
@@ -226,7 +226,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                     cachableUserIdent);
         }
 
-        service.authenticatedSessionCreated(httpRequest, session, cachableUserIdent);
+        service.onAuthenticatedSessionCreated(httpRequest, session, cachableUserIdent);
 
         return cachableUserIdent.getPrincipal();
     }
@@ -252,8 +252,8 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
 
         HttpSession session = httpRequest.getSession(false);
-        session = service.reinitSession(request);
-        session = httpRequest.getSession(true);
+        session = service.reinitSession(httpRequest);
+
 
         CachableUserIdentificationInfo newCachableUserIdent = new CachableUserIdentificationInfo(
                 deputyLogin, deputyLogin);
@@ -293,11 +293,12 @@ public class NuxeoAuthenticationFilter implements Filter {
                 return;
             }
         }
+
         if (request instanceof NuxeoSecuredRequestWrapper) {
             log.debug("ReEntering Nuxeo Authentication Filter ... exiting directly");
             chain.doFilter(request, response);
             return;
-        } else if (service.bypassRequest(request)) {
+        } else if (service.canBypassRequest(request)) {
             log.debug("ReEntering Nuxeo Authentication Filter after URL rewrite ... exiting directly");
             chain.doFilter(request, response);
             return;
@@ -327,6 +328,29 @@ public class NuxeoAuthenticationFilter implements Filter {
                 cachableUserIdent = retrieveIdentityFromCache(httpRequest);
             }
 
+            // identity found in cache
+            if (cachableUserIdent != null
+                    && cachableUserIdent.getUserInfo() != null)
+            {
+                log.debug("userIdent found in cache, get the Principal from it without reloggin");
+
+                principal = cachableUserIdent.getPrincipal();
+                log.debug("Principal = " + principal.getName());
+                propagateUserIdentificationInformation(cachableUserIdent);
+
+                String requestedPage = getRequestedPage(httpRequest);
+                if (requestedPage.equals(NXAuthContants.LOGOUT_PAGE)) {
+                    boolean redirected = handleLogout(request, response,
+                            cachableUserIdent);
+                    cachableUserIdent=null;
+                    principal=null;
+                    if (redirected) {
+                        return;
+                    }
+                }
+            }
+
+            // identity not found in cache or reseted by logout
             if (cachableUserIdent == null
                     || cachableUserIdent.getUserInfo() == null) {
                 UserIdentificationInfo userIdent = handleRetrieveIdentity(
@@ -363,22 +387,6 @@ public class NuxeoAuthenticationFilter implements Filter {
                     }
 
                 }
-            } else {
-                log.debug("userIdent found in cache, get the Principal from it without reloggin");
-
-                principal = cachableUserIdent.getPrincipal();
-                log.debug("Principal = " + principal.getName());
-                propagateUserIdentificationInformation(cachableUserIdent);
-
-                String requestedPage = getRequestedPage(httpRequest);
-                if (requestedPage.equals(NXAuthContants.LOGOUT_PAGE)) {
-                    boolean redirected = handleLogout(request, response,
-                            cachableUserIdent);
-                    if (redirected) {
-                        return;
-                    }
-                }
-
             }
         }
 

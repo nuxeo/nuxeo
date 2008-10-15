@@ -37,24 +37,23 @@ public interface NuxeoAuthenticationSessionManager {
      * @param request
      * @return
      */
-    boolean bypassRequest(ServletRequest request);
+    boolean canBypassRequest(ServletRequest request);
 
     /**
-     * Used to know if SessionManager is applicable for a given request.
+     * CallBack to clean up web session associated resources.
      */
-    boolean isAvalaible(ServletRequest request);
+    void onBeforeSessionInvalidate(ServletRequest request);
 
     /**
-     * Destroys web session and associated resources.
+     * CallBack before SessionReinit
      */
-    void invalidateSession(ServletRequest request);
+    void onBeforeSessionReinit(ServletRequest request);
+
 
     /**
-     * Reinitializes a Session.
+     * CallBack after SessionReinit
      */
-    HttpSession reinitSession(ServletRequest request);
-
-
+    void onAfterSessionReinit(ServletRequest request);
 
     /**
      *
@@ -64,5 +63,5 @@ public interface NuxeoAuthenticationSessionManager {
      * @param session
      * @param cachebleUserInfo
      */
-    void authenticatedSessionCreated(ServletRequest request, HttpSession session, CachableUserIdentificationInfo cachebleUserInfo);
+    void onAuthenticatedSessionCreated(ServletRequest request, HttpSession session, CachableUserIdentificationInfo cachebleUserInfo);
 }

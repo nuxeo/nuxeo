@@ -39,9 +39,9 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
 
     protected String loginPage = "login.jsp";
 
-    protected String usernameKey = "user_name";
+    protected String usernameKey = NXAuthContants.USERNAME_KEY;
 
-    protected String passwordKey = "user_password";
+    protected String passwordKey = NXAuthContants.PASSORD_KEY;
 
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse, String baseURL) {
