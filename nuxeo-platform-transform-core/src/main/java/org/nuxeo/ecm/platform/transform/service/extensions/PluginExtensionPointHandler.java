@@ -74,6 +74,7 @@ public class PluginExtensionPointHandler extends
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static void registerOne(PluginExtension pluginExtension,
             Extension extension) throws Exception {
 
@@ -117,7 +118,7 @@ public class PluginExtensionPointHandler extends
     }
 
     private static void unregisterOne(PluginExtension pluginExtension,
-            Extension extension) throws Exception {
+            Extension extension) {
         String name = pluginExtension.getName();
         getNXTransform().unregisterPlugin(name);
     }

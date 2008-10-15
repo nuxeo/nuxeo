@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.content.template.listener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -29,8 +27,6 @@ import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
 import org.nuxeo.runtime.api.Framework;
 
 public class RepositoryInitializationListener  extends RepositoryInitializationHandler{
-
-    private static final Log log = LogFactory.getLog(RepositoryInitializationListener.class);
 
     private ContentTemplateService service;
 

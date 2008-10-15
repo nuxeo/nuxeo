@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.usermanager;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +66,14 @@ public class FakeUserManagerImpl implements UserManager {
 
     String groupParentGroupsField;
 
-    Map<String, String> anonymousUser;
+    VirtualUser anonymousUser;
+
+    Map<String, VirtualUserDescriptor> virtualUsers;
+
+    public FakeUserManagerImpl() {
+        super();
+        virtualUsers = new HashMap<String, VirtualUserDescriptor>();
+    }
 
     public String getUserListingMode() {
         return userListingMode;
@@ -77,7 +85,7 @@ public class FakeUserManagerImpl implements UserManager {
 
     public String getGroupListingMode() {
         return groupListingMode;
-   }
+    }
 
     public void setGroupListingMode(String groupListingMode) {
         this.groupListingMode = groupListingMode;
@@ -280,12 +288,41 @@ public class FakeUserManagerImpl implements UserManager {
         this.userPasswordPattern = userPasswordPattern;
     }
 
-    public void setAnonymousUser(Map<String, String> anonymousUser) {
+    public void setAnonymousUser(VirtualUser anonymousUser) {
         this.anonymousUser = anonymousUser;
     }
 
+    public void setVirtualUsers(Map<String, VirtualUserDescriptor> virtualUsers) {
+        this.virtualUsers.clear();
+        if (virtualUsers != null) {
+            this.virtualUsers.putAll(virtualUsers);
+        }
+    }
+
     public String getAnonymousUserId() {
-        return anonymousUser.get(ANONYMOUS_USER_ID_KEY);
+        if (anonymousUser == null) {
+            return null;
+        }
+        return anonymousUser.getId();
+    }
+
+    public void setConfiguration(UserManagerDescriptor descriptor) {
+        setDefaultGroup(descriptor.defaultGroup);
+        setRootLogin(descriptor.rootLogin);
+        setUserSortField(descriptor.userSortField);
+        setGroupSortField(descriptor.groupSortField);
+        setUserListingMode(descriptor.userListingMode);
+        setGroupListingMode(descriptor.groupListingMode);
+        setUserDirectoryName(descriptor.userDirectoryName);
+        setUserEmailField(descriptor.userEmailField);
+        setUserSearchFields(descriptor.userSearchFields);
+        setUserPasswordPattern(descriptor.userPasswordPattern);
+        setGroupDirectoryName(descriptor.groupDirectoryName);
+        setGroupMembersField(descriptor.groupMembersField);
+        setGroupSubGroupsField(descriptor.groupSubGroupsField);
+        setGroupParentGroupsField(descriptor.groupParentGroupsField);
+        setAnonymousUser(descriptor.anonymousUser);
+        setVirtualUsers(descriptor.virtualUsers);
     }
 
 }

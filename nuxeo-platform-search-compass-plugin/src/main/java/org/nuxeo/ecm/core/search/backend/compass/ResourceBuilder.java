@@ -23,9 +23,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,13 +57,13 @@ import org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory.BuiltinD
 import org.nuxeo.ecm.core.search.api.backend.security.SecurityFiltering;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.FieldConstants;
+import sun.misc.BASE64Encoder;
 
 /**
  * Takes care of building one Compass Resource. DO NOT reuse in another session
  * or for another resource.
  *
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
- *
  */
 public class ResourceBuilder {
 
@@ -108,7 +108,7 @@ public class ResourceBuilder {
      */
     // TODO apply converter TODO integrate or drop
     @SuppressWarnings("unused")
-    private Property buildDynamicalProperty(String name, Object value,
+    private static Property buildDynamicalProperty(String name, Object value,
             String analyzer, Store store, Index index) {
 
         Field f = new Field(name, (String) value,
@@ -144,7 +144,6 @@ public class ResourceBuilder {
      * @param stored
      * @param multiple
      * @param sortable
-     * @param properties TODO
      * @param properties optional map of properties. Musn't be null
      * @param sortOption TODO
      * @throws IndexingException
@@ -218,8 +217,8 @@ public class ResourceBuilder {
         if (value instanceof String) {
             value = Util.escapeSpecialMarkers((String) value);
             sValue = (String) value;
-        } else if (value instanceof GregorianCalendar) {
-            sValue = String.valueOf(((GregorianCalendar) value).getTimeInMillis());
+        } else if (value instanceof Calendar) {
+            sValue = String.valueOf(((Calendar) value).getTimeInMillis());
         } else if (value instanceof Date) {
             sValue = String.valueOf(((Date) value).getTime());
         } else if (value instanceof Integer || value instanceof Long
@@ -300,7 +299,7 @@ public class ResourceBuilder {
                 } catch (IOException e) {
                     throw new IndexingException(e.getMessage(), e);
                 }
-                sValue = new sun.misc.BASE64Encoder().encode(b.toByteArray());
+                sValue = new BASE64Encoder().encode(b.toByteArray());
             }
 
             // Note the existence of other Property.Store.* Use Compress on
