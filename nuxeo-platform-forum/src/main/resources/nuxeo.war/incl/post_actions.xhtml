@@ -19,34 +19,34 @@
       </h:commandLink>
     </nxu:methodResult>
 
-  </nxu:methodResult>
+    <nxu:methodResult name="isPrincipalModerator"
+      value="#{threadAction.isPrincipalModerator()}">
 
-  <nxu:methodResult name="isPrincipalModerator"
-    value="#{threadAction.isPrincipalModerator()}">
+      <h:outputText value=" | "
+        rendered="#{isPostPublished}"/>
+      <h:commandLink action="#{postAction.deletePost}"
+        value="#{messages['command.delete']}"
+        rendered="#{isPrincipalModerator or threadEntry.comment.post.author == commentManagerActions.principalName or commentManagerActions.principalIsAdmin}">
+        <f:param name="deletePostId" value="#{threadEntry.comment.id}"/>
+      </h:commandLink>
 
-    <h:outputText value=" | "
-      rendered="#{isPostPublished}"/>
-    <h:commandLink action="#{postAction.deletePost}"
-      value="#{messages['command.delete']}"
-      rendered="#{isPrincipalModerator or threadEntry.comment.post.author == commentManagerActions.principalName or commentManagerActions.principalIsAdmin}">
-      <f:param name="deletePostId" value="#{threadEntry.comment.id}"/>
-    </h:commandLink>
+      <h:outputText value=" | "
+        rendered="#{isPrincipalModerator and threadEntry.comment.currentLifeCycleState == 'moderation_pending'}"/>
 
-    <h:outputText value=" | "
-      rendered="#{isPrincipalModerator and threadEntry.comment.currentLifeCycleState == 'moderation_pending'}"/>
-  
-    <h:commandLink action="#{postAction.approvePost(threadEntry.comment)}"
-      value="#{messages['command.validate']}"
-      rendered="#{isPrincipalModerator and threadEntry.comment.currentLifeCycleState == 'moderation_pending'}">
-    </h:commandLink>
-  
-    <h:outputText value=" | "
-      rendered="#{isPrincipalModerator and threadEntry.comment.currentLifeCycleState == 'moderation_pending'}"/>
-  
-    <h:commandLink action="#{postAction.rejectPost(threadEntry.comment)}"
-      value="#{messages['command.reject']}"
-      rendered="#{isPrincipalModerator and threadEntry.comment.currentLifeCycleState == 'moderation_pending'}">
-    </h:commandLink>
+      <h:commandLink action="#{postAction.approvePost(threadEntry.comment)}"
+        value="#{messages['command.validate']}"
+        rendered="#{isPrincipalModerator and threadEntry.comment.currentLifeCycleState == 'moderation_pending'}">
+      </h:commandLink>
+
+      <h:outputText value=" | "
+        rendered="#{isPrincipalModerator and threadEntry.comment.currentLifeCycleState == 'moderation_pending'}"/>
+
+      <h:commandLink action="#{postAction.rejectPost(threadEntry.comment)}"
+        value="#{messages['command.reject']}"
+        rendered="#{isPrincipalModerator and threadEntry.comment.currentLifeCycleState == 'moderation_pending'}">
+      </h:commandLink>
+
+    </nxu:methodResult>
 
   </nxu:methodResult>
 
