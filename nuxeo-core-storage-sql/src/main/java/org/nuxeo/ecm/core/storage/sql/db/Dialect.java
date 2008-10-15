@@ -38,11 +38,15 @@ import org.nuxeo.ecm.core.storage.StorageException;
  */
 public class Dialect {
 
-    protected final boolean storesUpperCaseIdentifiers;
+    public final String databaseName;
+
+    public final int databaseMajor;
 
     protected final org.hibernate.dialect.Dialect dialect;
 
-    protected final String name;
+    public final String dialectName;
+
+    protected final boolean storesUpperCaseIdentifiers;
 
     /**
      * Creates a {@code Dialect} by connecting to the datasource to check what
@@ -51,28 +55,27 @@ public class Dialect {
      * @throws StorageException if a SQL connection problem occurs
      */
     public Dialect(Connection connection) throws StorageException {
-        String dbname;
-        int dbmajor;
         try {
             DatabaseMetaData metadata = connection.getMetaData();
-            dbname = metadata.getDatabaseProductName();
-            dbmajor = metadata.getDatabaseMajorVersion();
+            databaseName = metadata.getDatabaseProductName();
+            databaseMajor = metadata.getDatabaseMajorVersion();
             storesUpperCaseIdentifiers = metadata.storesUpperCaseIdentifiers();
         } catch (SQLException e) {
             throw new StorageException(e);
         }
         try {
-            dialect = DialectFactory.determineDialect(dbname, dbmajor);
+            dialect = DialectFactory.determineDialect(databaseName,
+                    databaseMajor);
         } catch (HibernateException e) {
             throw new StorageException("Cannot determine dialect for: " +
                     connection, e);
         }
-        name = dialect.getClass().getSimpleName();
+        dialectName = dialect.getClass().getSimpleName();
     }
 
     @Override
     public String toString() {
-        return name;
+        return dialectName;
     }
 
     /*

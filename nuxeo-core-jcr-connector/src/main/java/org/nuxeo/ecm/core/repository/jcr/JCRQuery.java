@@ -158,6 +158,9 @@ public class JCRQuery implements Query {
         buffer.append(" '/");
         buffer.append(NodeConstants.ECM_ROOT.rawname).append('/');
         buffer.append(ModelAdapter.path2Jcr(new Path(s.replaceAll("\\.", "/"))));
+        if (!"/".equals(s)) {
+            buffer.append('/');
+        }
         buffer.append("%' ");
         return buffer.toString();
     }

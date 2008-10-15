@@ -23,7 +23,6 @@ import java.util.List;
 
 import javax.resource.cci.Connection;
 
-import org.nuxeo.ecm.core.query.QueryResult;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.StorageException;
 

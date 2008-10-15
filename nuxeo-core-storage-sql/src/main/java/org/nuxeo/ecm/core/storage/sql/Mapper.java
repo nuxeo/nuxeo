@@ -55,6 +55,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionFragmentIterator;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.SQLInfo.SQLInfoSelect;
+import org.nuxeo.ecm.core.storage.sql.SQLInfo.StoredProcedureInfo;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
@@ -271,27 +272,57 @@ public class Mapper {
                 // normalize to uppercase too
                 tableNames.add(tableName.toUpperCase());
             }
-            /*
-             * Create missing tables.
-             */
-            Database database = sqlInfo.getDatabase();
-            for (Table table : database.getTables()) {
-                String physicalName = table.getPhysicalName();
-                if (tableNames.contains(physicalName) ||
-                        tableNames.contains(physicalName.toUpperCase())) {
-                    // table already present
-                    continue;
-                }
-                for (String sql : sqlInfo.getTableCreateSqls(table)) {
+
+            Statement st = connection.createStatement();
+            try {
+                /*
+                 * Create missing tables.
+                 */
+                for (Table table : sqlInfo.getDatabase().getTables()) {
+                    String physicalName = table.getPhysicalName();
+                    if (tableNames.contains(physicalName) ||
+                            tableNames.contains(physicalName.toUpperCase())) {
+                        // table already present
+                        continue;
+                    }
+                    String sql = table.getCreateSql();
                     logDebug(sql);
-                    Statement s = connection.createStatement();
-                    try {
-                        s.execute(sql);
-                    } finally {
-                        s.close();
+                    st.execute(sql);
+                    for (String s : table.getPostCreateSqls()) {
+                        logDebug(s);
+                        st.execute(s);
                     }
                 }
+
+                /*
+                 * Create stored procedures.
+                 */
+                for (StoredProcedureInfo spi : sqlInfo.getStoredProceduresSqls()) {
+                    boolean drop;
+                    if (spi.dropFlag != null) {
+                        drop = spi.dropFlag.booleanValue();
+                    } else {
+                        logDebug(spi.checkDropStatement);
+                        rs = st.executeQuery(spi.checkDropStatement);
+                        if (rs.next()) {
+                            // already present
+                            logDebug("  -> (present)");
+                            drop = true;
+                        } else {
+                            drop = false;
+                        }
+                    }
+                    if (drop) {
+                        logDebug(spi.dropStatement);
+                        st.execute(spi.dropStatement);
+                    }
+                    logDebug(spi.createStatement);
+                    st.execute(spi.createStatement);
+                }
+            } finally {
+                st.close();
             }
+
         } catch (SQLException e) {
             throw new StorageException(e);
         }
@@ -1376,21 +1407,22 @@ public class Mapper {
      * Makes a NXQL query to the database.
      *
      * @param query the query as a parsed tree
+     * @param session the current session (to resolve paths)
      * @return the results
      * @throws StorageException
      * @throws SQLException
      */
-    public List<Serializable> query(SQLQuery query) throws StorageException,
-            SQLException {
-        QueryMaker queryMaker = new QueryMaker(sqlInfo, model, query);
+    public List<Serializable> query(SQLQuery query, Session session)
+            throws StorageException, SQLException {
+        QueryMaker queryMaker = new QueryMaker(sqlInfo, model, session, query);
         queryMaker.makeQuery();
         if (log.isDebugEnabled()) {
-            logSQL(queryMaker.selectInfo.sql, queryMaker.params);
+            logSQL(queryMaker.selectInfo.sql, queryMaker.selectParams);
         }
         PreparedStatement ps = connection.prepareStatement(queryMaker.selectInfo.sql);
         try {
             int i = 1;
-            for (Object object : queryMaker.params) {
+            for (Object object : queryMaker.selectParams) {
                 if (object instanceof Calendar) {
                     Calendar cal = (Calendar) object;
                     Timestamp ts = new Timestamp(cal.getTimeInMillis());

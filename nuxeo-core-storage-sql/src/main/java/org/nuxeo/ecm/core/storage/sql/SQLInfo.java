@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Delete;
+import org.nuxeo.ecm.core.storage.sql.db.DerbyFunctions;
 import org.nuxeo.ecm.core.storage.sql.db.Dialect;
 import org.nuxeo.ecm.core.storage.sql.db.Insert;
 import org.nuxeo.ecm.core.storage.sql.db.Select;
@@ -211,23 +212,12 @@ public class SQLInfo {
         initSQL();
     }
 
-    // ----- exceptions -----
-
     public SQLExceptionConverter getSqlExceptionConverter() {
         return sqlExceptionConverter;
     }
 
-    // ----- create whole database -----
-
     public Database getDatabase() {
         return database;
-    }
-
-    public List<String> getTableCreateSqls(Table table) {
-        List<String> sqls = new LinkedList<String>();
-        sqls.add(table.getCreateSql());
-        sqls.addAll(table.getPostCreateSqls());
-        return sqls;
     }
 
     // ----- select -----
@@ -1094,4 +1084,88 @@ public class SQLInfo {
                 whereColumns);
     }
 
+    /**
+     * Class to hold info about a stored procedure and how to create it.
+     */
+    public static class StoredProcedureInfo {
+
+        /**
+         * If {@code null}, use {@link #checkDropStatement} to check if drop or
+         * not.
+         */
+        public final Boolean dropFlag;
+
+        /** If this statement's execution returns something, then do the drop. */
+        public final String checkDropStatement;
+
+        public final String dropStatement;
+
+        public final String createStatement;
+
+        public StoredProcedureInfo(Boolean dropFlag, String checkDropStatement,
+                String dropStatement, String createStatement) {
+            this.dropFlag = dropFlag;
+            this.checkDropStatement = checkDropStatement;
+            this.dropStatement = dropStatement;
+            this.createStatement = createStatement;
+        }
+    }
+
+    public class DerbyStoredProcedureInfoMaker {
+
+        public final String idType;
+
+        public final String methodSuffix;
+
+        public final String className;
+
+        public DerbyStoredProcedureInfoMaker() {
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                idType = "VARCHAR(36)";
+                methodSuffix = "String";
+                break;
+            case DB_IDENTITY:
+                idType = "INTEGER";
+                methodSuffix = "Long";
+                break;
+            default:
+                throw new AssertionError(model.idGenPolicy);
+            }
+            className = DerbyFunctions.class.getName();
+        }
+
+        public StoredProcedureInfo make(String functionName, String proto,
+                String methodName) {
+            proto = String.format(proto, idType);
+            return new StoredProcedureInfo(
+                    null,
+                    String.format(
+                            "SELECT ALIAS FROM SYS.SYSALIASES WHERE ALIAS = '%s' AND ALIASTYPE = 'F'",
+                            functionName), //
+                    String.format("DROP FUNCTION %s", functionName), //
+                    String.format("CREATE FUNCTION %s%s " //
+                            + "LANGUAGE JAVA " //
+                            + "PARAMETER STYLE JAVA " //
+                            + "EXTERNAL NAME '%s.%s%s' " //
+                            + "READS SQL DATA", //
+                            functionName, proto, //
+                            className, methodName, methodSuffix));
+        }
+    }
+
+    /**
+     * Gets the statements creating the appropriate stored procedures.
+     */
+    public Collection<StoredProcedureInfo> getStoredProceduresSqls() {
+        List<StoredProcedureInfo> spis = new LinkedList<StoredProcedureInfo>();
+        if ("Apache Derby".equals(dialect.databaseName)) {
+            DerbyStoredProcedureInfoMaker maker = new DerbyStoredProcedureInfoMaker();
+            spis.add(maker.make("NX_IN_TREE",
+                    "(BASEID %s, ID %<s) RETURNS SMALLINT", "isInTree"));
+            spis.add(maker.make("NX_CAN_BROWSE", "(ID %s) RETURNS SMALLINT",
+                    "canBrowse"));
+        }
+        return spis;
+    }
 }

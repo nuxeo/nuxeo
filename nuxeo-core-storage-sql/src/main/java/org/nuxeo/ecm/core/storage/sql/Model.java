@@ -408,8 +408,8 @@ public class Model {
             mergedPropertyInfos.put(propertyName, propertyInfo);
         } else {
             log.warn(String.format(
-                    "Unqualified property %s is ambiguous, schema %s will be used (not %s)",
-                    propertyName, previous.fragmentName, fragmentName));
+                    "Schemas '%s' and '%s' both have a property '%s', unqualified reference will use schema '%1$s'",
+                    previous.fragmentName, fragmentName, propertyName));
         }
     }
 

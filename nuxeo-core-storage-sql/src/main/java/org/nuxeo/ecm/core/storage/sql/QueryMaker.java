@@ -84,19 +84,23 @@ import org.nuxeo.ecm.core.storage.sql.db.Table;
  */
 public class QueryMaker {
 
-    private final SQLInfo sqlInfo;
+    protected final SQLInfo sqlInfo;
 
-    private final Model model;
+    protected final Model model;
 
-    private final SQLQuery query;
+    protected final Session session;
+
+    protected final SQLQuery query;
 
     public SQLInfoSelect selectInfo;
 
-    public List<Serializable> params;
+    public List<Serializable> selectParams;
 
-    public QueryMaker(SQLInfo sqlInfo, Model model, SQLQuery query) {
+    public QueryMaker(SQLInfo sqlInfo, Model model, Session session,
+            SQLQuery query) {
         this.sqlInfo = sqlInfo;
         this.model = model;
+        this.session = session;
         this.query = query;
     }
 
@@ -162,7 +166,7 @@ public class QueryMaker {
         /*
          * Create the structural WHERE clauses for the type.
          */
-        params = new LinkedList<Serializable>();
+        selectParams = new LinkedList<Serializable>();
         String qprimary = hierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY).getQuotedName();
         // String qisprop =
         // hierTable.getColumn(model.HIER_CHILD_ISPROPERTY_KEY).getQuotedName();
@@ -173,7 +177,7 @@ public class QueryMaker {
                 continue;
             }
             typeStrings.add("?");
-            params.add(type);
+            selectParams.add(type);
         }
         // String whereClause = String.format("%s.%s IN (%s) AND %s.%s = %s",
         // qhier, qprimary, StringUtils.join(typeStrings, ", "), qhier,
@@ -185,15 +189,23 @@ public class QueryMaker {
          * Create the part of the WHERE clause that comes from the original
          * query.
          */
-        WhereBuilder whereBuilder = new WhereBuilder(model, sqlInfo);
+        WhereBuilder whereBuilder = new WhereBuilder();
         if (query.where != null) {
             query.where.accept(whereBuilder);
             String w = whereBuilder.buf.toString();
             if (w.length() != 0) {
                 whereClause = whereClause + " AND (" + w + ')';
-                params.addAll(whereBuilder.params);
+                selectParams.addAll(whereBuilder.params);
             }
         }
+
+        // XXX security check
+        if (false) {
+            whereClause = whereClause +
+                    String.format(" AND NX_CAN_BROWSE(%s) = %s", qhierid,
+                            sqlInfo.dialect.toBooleanValueString(true));
+        }
+
         if (query.orderBy != null) {
             whereBuilder.buf.setLength(0);
             query.orderBy.accept(whereBuilder);
@@ -256,42 +268,72 @@ public class QueryMaker {
 
     }
 
-    public static class WhereBuilder extends DefaultQueryVisitor {
+    public class WhereBuilder extends DefaultQueryVisitor {
 
         private static final long serialVersionUID = 1L;
-
-        public final Model model;
-
-        public final SQLInfo sqlInfo;
-
-        public final Database database;
 
         public final StringBuilder buf;
 
         public final List<Serializable> params;
 
+        public final String idColumnName;
+
         public boolean needsDistinct;
 
-        public WhereBuilder(Model model, SQLInfo sqlInfo) {
-            this.model = model;
-            this.sqlInfo = sqlInfo;
-            this.database = sqlInfo.database;
+        public WhereBuilder() {
             buf = new StringBuilder();
             params = new LinkedList<Serializable>();
+
+            Table hierTable = sqlInfo.database.getTable(model.hierTableName);
+            Column hierIdColumn = hierTable.getColumn(model.MAIN_KEY);
+            idColumnName = hierTable.getQuotedName() + "." +
+                    hierIdColumn.getQuotedName();
         }
 
         @Override
         public void visitExpression(Expression node) {
             buf.append('(');
-            super.visitExpression(node);
+            if (node.operator == Operator.STARTSWITH) {
+                // left must be ecm:path
+                // TODO change nxql.cup to use Reference, not StringLiteral
+                if (!(node.lvalue instanceof StringLiteral) ||
+                        !((StringLiteral) node.lvalue).value.equals("ecm:path")) {
+                    throw new IllegalArgumentException(
+                            "STARTSWITH requires ecm:path as left argument");
+                }
+                if (!(node.rvalue instanceof StringLiteral)) {
+                    throw new IllegalArgumentException(
+                            "STARTSWITH requires literal path as right argument");
+                }
+                String path = ((StringLiteral) node.rvalue).value;
+                if (path.length() > 1 && path.endsWith("/")) {
+                    path = path.substring(0, path.length() - 1);
+                }
+                // find the id from the path
+                Serializable id;
+                try {
+                    Node n = session.getNodeByPath(path, null);
+                    id = n == null ? null : n.getId();
+                } catch (StorageException e) {
+                    throw new RuntimeException(e);
+                }
+                if (id == null) {
+                    // no such path, always return a false
+                    buf.append("0 = 1");
+                } else {
+                    buf.append("NX_IN_TREE(").append(idColumnName).append(
+                            ", ?) = ");
+                    params.add(id);
+                    buf.append(sqlInfo.dialect.toBooleanValueString(true));
+                }
+            } else {
+                super.visitExpression(node);
+            }
             buf.append(')');
         }
 
         @Override
         public void visitOperator(Operator node) {
-            if (node == Operator.STARTSWITH) {
-                throw new IllegalArgumentException("STARTSWITH not supported");
-            }
             buf.append(' ');
             buf.append(node.toString());
             buf.append(' ');
@@ -304,7 +346,7 @@ public class QueryMaker {
                 throw new IllegalArgumentException("Unknown field: " +
                         node.name);
             }
-            Table table = database.getTable(propertyInfo.fragmentName);
+            Table table = sqlInfo.database.getTable(propertyInfo.fragmentName);
             Column column;
             if (propertyInfo.propertyType.isArray()) {
                 column = table.getColumn(model.COLL_TABLE_VALUE_KEY);

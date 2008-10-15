@@ -531,7 +531,7 @@ public class SessionImpl implements Session {
 
     public List<Serializable> query(SQLQuery query) throws StorageException {
         try {
-            return mapper.query(query);
+            return mapper.query(query, this);
         } catch (SQLException e) {
             throw new StorageException("Invalid query: " + query, e);
         }
