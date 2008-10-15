@@ -124,6 +124,9 @@ public class UriInfoImpl implements UriInfo
        }
        int e = str.indexOf(delimiter, s);
        if (e == -1) {
+           if (s > 0) {
+               str = str.substring(s);
+           }
            ar.add(new PathSegmentImpl(str));
            return ar;
        }

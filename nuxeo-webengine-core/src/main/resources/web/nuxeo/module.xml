@@ -22,13 +22,31 @@
     <link id="link_print" path="/@views/print">
       <category>TOOLBOX</category>
     </link>
-    <link id="link_delete" path="/@delete">
+    <link id="link_delete_doc" path="/@delete">
       <category>TOOLBOX</category>
     </link>
-    <link id="link_create" path="/@views/create">
+    <link id="link_create_doc" path="/@views/create">
       <facet>Folderish</facet>
       <category>TOOLBOX</category>
     </link> 
 
+    <!-- user management -->
+    <link id="link_delete_user" path="/@delete">
+      <type>User</type>
+      <category>TOOLBOX</category>      
+    </link>
+    <link id="link_create_user" path="/@views/create">
+      <type>users</type>
+      <category>TOOLBOX</category>
+    </link>
+    <link id="link_delete_group" path="/@delete">
+      <type>Group</type>
+      <category>TOOLBOX</category>      
+    </link>
+    <link id="link_create_group" path="/@views/create">
+      <type>users</type>
+      <category>TOOLBOX</category>
+    </link> 
+    
   </links>
 </module>

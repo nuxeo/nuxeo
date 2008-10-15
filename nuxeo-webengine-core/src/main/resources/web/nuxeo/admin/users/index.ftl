@@ -1,18 +1,6 @@
 <@extends src="base.ftl">
 <@block name="header"><h1><a href ="${This.path}">User Administration</a></h1></@block>
 
-<@block name="toolbox">
-  <div class="sideblock contextual">
-    <h3>Toolbox</h3>
-    <div class="sideblock-content">
-      <ul>
-        <li><a href="${This.activeService.path}/.views/create_user">Create User</a></li>
-        <li><a href="${This.activeService.path}/.views/create_group">Create Group</a></li>
-      </ul>
-    </div>
-  </div>
-</@block>
-
 <@block name="content">
 
 
