@@ -32,10 +32,7 @@ import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.annotations.loader.BundleAnnotationsLoader;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.deploy.ConfigurationChangedListener;
 import org.nuxeo.runtime.deploy.ConfigurationDeployer;
-import org.nuxeo.runtime.deploy.FileChangeNotifier;
-import org.nuxeo.runtime.deploy.ConfigurationDeployer.Entry;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -48,7 +45,7 @@ import org.osgi.framework.Bundle;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebEngineComponent extends DefaultComponent implements ConfigurationChangedListener {
+public class WebEngineComponent extends DefaultComponent { //implements ConfigurationChangedListener {
 
     public static final ComponentName NAME = new ComponentName(WebEngineComponent.class.getName());
 
@@ -67,7 +64,7 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
     private WebEngine engine;
-    private FileChangeNotifier notifier;
+//    private FileChangeNotifier notifier;
 
     private ConfigurationDeployer deployer;
 
@@ -100,16 +97,16 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
 
         // load message bundle
         //TODO: remove notifier
-        notifier = new FileChangeNotifier();
-        notifier.start();
+//        notifier = new FileChangeNotifier();
+//        notifier.start();
 
         ResourceRegistry registry = Framework.getLocalService(ResourceRegistry.class);
         if (registry == null) {
             throw new Error("Could not find a server implementation");
         }
         engine = new WebEngine(registry, root);
-        deployer = new ConfigurationDeployer(notifier);
-        deployer.addConfigurationChangedListener(this);
+//        deployer = new ConfigurationDeployer(notifier);
+//        deployer.addConfigurationChangedListener(this);
 
     }
 
@@ -119,10 +116,10 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
         //TODO: move this in runtime
         context.getRuntimeContext().getBundle().getBundleContext().removeBundleListener(BundleAnnotationsLoader.getInstance());
 
-        notifier.stop();
-        deployer.removeConfigurationChangedListener(this);
+//        notifier.stop();
+//        deployer.removeConfigurationChangedListener(this);
         deployer = null;
-        notifier = null;
+//        notifier = null;
         super.deactivate(context);
     }
 
@@ -228,18 +225,18 @@ public class WebEngineComponent extends DefaultComponent implements Configuratio
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter == WebEngine.class) {
             return adapter.cast(engine);
-        } else if (adapter == FileChangeNotifier.class) {
-            return adapter.cast(notifier);
+//        } else if (adapter == FileChangeNotifier.class) {
+//            return adapter.cast(notifier);
         }
         return null;
     }
 
 
-    public void configurationChanged(Entry entry) throws Exception {
-        if (engine != null) {
-            engine.reload();
-            //engine.fireConfigurationChanged(); ?
-        }
-    }
+//    public void configurationChanged(Entry entry) throws Exception {
+//        if (engine != null) {
+//            engine.reload();
+//            //engine.fireConfigurationChanged(); ?
+//        }
+//    }
 
 }

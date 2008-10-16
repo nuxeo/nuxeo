@@ -26,16 +26,18 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.AdapterNotFoundException;
+import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.ModuleType;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
-import org.nuxeo.ecm.webengine.model.AdapterNotFoundException;
-import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
@@ -47,6 +49,8 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
  */
 public class ModuleImpl implements Module {
 
+    public final static Log log = LogFactory.getLog(ModuleImpl.class);
+    
     protected WebEngine engine;
     protected ModuleDescriptor descriptor;
 
@@ -97,15 +101,21 @@ public class ModuleImpl implements Module {
     }
 
     public void flushSkinCache() {
-        fileCache.clear();
+        log.info("Flushing skin cache for module: "+getName());
+        fileCache = new ConcurrentHashMap<String, ScriptFile>();
     }
 
-    public void flushCache() {
-        fileCache.clear();
+    public void flushTypeCache() {
+        log.info("Flushing type cache for module: "+getName());
         synchronized (typeLock) {
             typeReg = null; // type registry will be recreated on first access
             localTypes = null;
         }
+    }
+
+    public void flushCache() {
+        flushSkinCache();
+        flushTypeCache();
         engine.getScripting().flushCache();
     }
 

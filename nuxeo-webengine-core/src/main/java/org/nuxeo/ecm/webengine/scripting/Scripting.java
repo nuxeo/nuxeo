@@ -96,6 +96,7 @@ public class Scripting {
     }
 
     public void flushCache() {
+        log.info("Flushing Groovy class cache");
         groovy.clearCache();
     }
 

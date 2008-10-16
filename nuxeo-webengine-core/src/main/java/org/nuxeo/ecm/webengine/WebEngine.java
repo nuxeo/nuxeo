@@ -32,6 +32,8 @@ import java.util.ResourceBundle;
 
 import javax.ws.rs.Path;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.url.URLFactory;
@@ -42,9 +44,9 @@ import org.nuxeo.ecm.platform.rendering.fm.i18n.ResourceComposite;
 import org.nuxeo.ecm.webengine.loader.WebClassLoader;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
+import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.BundleTypeProvider;
 import org.nuxeo.ecm.webengine.model.impl.DirectoryTypeProvider;
 import org.nuxeo.ecm.webengine.model.impl.ModuleDescriptor;
@@ -54,15 +56,15 @@ import org.nuxeo.ecm.webengine.model.io.BlobWriter;
 import org.nuxeo.ecm.webengine.model.io.ResourceWriter;
 import org.nuxeo.ecm.webengine.model.io.ScriptFileWriter;
 import org.nuxeo.ecm.webengine.model.io.TemplateWriter;
+import org.nuxeo.ecm.webengine.notifier.FileChangeListener;
+import org.nuxeo.ecm.webengine.notifier.FileChangeNotifier;
+import org.nuxeo.ecm.webengine.notifier.FileChangeNotifier.FileEntry;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.runtime.annotations.AnnotationManager;
 import org.nuxeo.runtime.annotations.loader.AnnotationLoader;
 import org.nuxeo.runtime.annotations.loader.BundleAnnotationsLoader;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.deploy.FileChangeListener;
-import org.nuxeo.runtime.deploy.FileChangeNotifier;
-import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
 import org.osgi.framework.Bundle;
 
 /**
@@ -70,6 +72,8 @@ import org.osgi.framework.Bundle;
  *
  */
 public class WebEngine implements FileChangeListener, ResourceLocator, AnnotationLoader {
+
+    private static final Log log = LogFactory.getLog(WebEngine.class);
 
     private static final ThreadLocal<WebContext> CTX = new ThreadLocal<WebContext>();
 
@@ -128,7 +132,8 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         if (isDebug) { // TODO notifier must be intialized by WebEngine
             notifier = new FileChangeNotifier();
             notifier.start();
-            notifier.watch(root);
+            notifier.watch(new File(root, "i18n")); // watch i18n files
+            notifier.addListener(this);
         }
         scripting = new Scripting(isDebug);
         annoMgr = new AnnotationManager();
@@ -154,10 +159,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         rendering = new FreemarkerEngine();
         rendering.setResourceLocator(this);
         rendering.setSharedVariable("env", getEnvironment());
-        loadMessageBundle(true);
-        if (notifier != null) {
-            notifier.addListener(this);
-        }
+        loadMessageBundle();
         // register annotation loader
         BundleAnnotationsLoader.getInstance().addLoader(Path.class.getName(), this);
 
@@ -191,20 +193,14 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         return (String)mimeTypes.get(ext);
     }
 
-    private void loadMessageBundle(boolean watch) throws IOException {
+    private void loadMessageBundle() throws IOException {
+        log.info("Loading i18n files");
         File file = new File(root, "i18n");
         WebClassLoader cl = new WebClassLoader();
         cl.addFile(file);
         //messages = ResourceBundle.getBundle("messages", Locale.getDefault(), cl);
         messages = new ResourceComposite(cl);
         rendering.setMessageBundle(messages);
-        // make a copy to avoid concurrent modifs
-        if (watch && notifier != null) {
-            notifier.watch(file);
-            for (File f : file.listFiles()) {
-                notifier.watch(f);
-            }
-        }
     }
 
     public AnnotationManager getAnnotationManager() {
@@ -235,17 +231,11 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
                     File appFile = new File(file, "Main.groovy");
                     if (appFile.isFile()) {
                         ad = loadModuleDescriptor(file.getName()+".Main");
-                        if (notifier != null) {
-                            notifier.watch(appFile);
-                        }
                         appFile = new File(file, "module.xml");
                         if (appFile.isFile()) {
                             ModuleDescriptor ad2 = loadModuleDescriptor(appFile);
                             ad.links = ad2.links;
                             ad2.links = null;
-                            if (notifier != null) {
-                                notifier.watch(appFile);
-                            }
                         }
                     } else {
                         appFile = new File(file, "module.xml");
@@ -256,7 +246,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
                     if (ad != null) {
                         moduleReg.registerDescriptor(file, ad);
                         if (notifier != null) {
-                            watchModule(file);
+                            notifier.watch(file);
                         }
                     }
                 }
@@ -266,16 +256,6 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         }
     }
 
-
-
-    protected void watchModule(File root) throws IOException {
-        notifier.watch(root);
-        for (File f : root.listFiles()) {
-            if (f.isDirectory()) {
-                watchModule(f);
-            }
-        }
-    }
 
     /**
      * Loads a module given its annotated class.
@@ -382,6 +362,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
      * Reloads configuration.
      */
     public synchronized void reload() {
+        log.info("Reloading WebEngine");
         bundleTypeProvider.flushCache();
         directoryTypeProvider.flushCache();
         reloadModules();
@@ -403,42 +384,55 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         registry.clear();
     }
 
-    public void fileChanged(FileEntry entry, long now) throws Exception {
+    protected Module getModuleFromPath(String rootPath, String path) {
+        path = path.substring(rootPath.length()+1);
+        int p = path.indexOf('/');
+        String moduleName = path;
+        if (p > -1) {
+            moduleName = path.substring(0, p);
+        }
+        return moduleReg.getModuleByRoot(moduleName);
+    }
+
+    public void fileChanged(FileEntry entry, int type, long now) throws Exception {
         if (lastMessagesUpdate == now) {
             return;
         }
         // TODO ignore root since a cache file is generated in root. - may be we should generate the cache elsewhere
-        if (entry.file.equals(root) || entry.file.isFile()) {
+        if (entry.file.equals(root)) {
             return;
         }
         String path = entry.file.getAbsolutePath();
         String rootPath = root.getAbsolutePath();
         if (!path.startsWith(rootPath)) {
             return;
-        } 
-        if (entry.file.getParentFile().equals(root)) {
-            reload();
-        } else if (path.endsWith("/i18n")) {
-            loadMessageBundle(false);
-        } else {
-            path = path.substring(rootPath.length()+1);
-            int p = path.indexOf('/');
-            String moduleName = path;
-            if (p > -1) {
-                moduleName = path.substring(0, p);
-            }  
-            Module module = moduleReg.getModuleByRoot(moduleName);
-            if (module != null) {
-                if (path.contains("/skin")) {
-                    if (module instanceof ModuleImpl) {
+        }
+        String name = entry.file.getName();
+        if (name.endsWith("~") || entry.file.getParent().equals("i18n")) {
+            return;
+        } else if (name.equals("i18n")) {
+            log.info("File changed: "+entry.file);
+            loadMessageBundle();
+        } else if (type == FileChangeListener.DELETED || type ==FileChangeListener.CREATED) {
+            if (entry.file.getParent().equals(root)) {
+                log.info("File changed: "+entry.file);
+                reload();
+            } else {
+                Module module = getModuleFromPath(rootPath, path);
+                if (module != null) {
+                    log.info("File changed: "+entry.file);
+                    if (path.indexOf("/skin/", 0) > 0) {
                         ((ModuleImpl)module).flushSkinCache();
-                    } else {
-                        module.flushCache();
+                    } else { // not a skin may be a type
+                        //module.flushCache();
+                        ((ModuleImpl)module).flushTypeCache();
+                        directoryTypeProvider.flushCache();
                     }
-                } else {
-                    module.flushCache();
                 }
             }
+        } else if (name.equals("module.xml") || name.equals("Main.groovy")) {
+            log.info("File changed: "+entry.file);
+            reload();
         }
         lastMessagesUpdate = now;
     }

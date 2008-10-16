@@ -27,14 +27,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.loader.GroovyClassProxy;
 import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
-import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
+import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -42,6 +44,8 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
  */
 public class DirectoryTypeProvider extends TypeConfigurationProvider {
 
+    public final static Log log = LogFactory.getLog(DirectoryTypeProvider.class);
+    
     public static final String CRLF = System.getProperty("line.separator");
 
     protected GroovyClassLoader loader;
@@ -57,6 +61,7 @@ public class DirectoryTypeProvider extends TypeConfigurationProvider {
 
     @Override
     public synchronized void flushCache() {
+        log.info("Flush directory type provider cache");
         File cache = new File(root, "resources.cache");
         cache.delete();
         isLoaded = false;
