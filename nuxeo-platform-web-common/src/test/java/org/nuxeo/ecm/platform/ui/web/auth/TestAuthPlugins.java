@@ -50,7 +50,7 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
         getAuthService();
         assertNotNull(authService);
         //Rux NXP-1972: webservices plugin also
-        assertEquals(3, authService.getAuthChain().size());
+        assertEquals(4, authService.getAuthChain().size());
         assertEquals("BASIC_AUTH", authService.getAuthChain().get(0));
     }
 
