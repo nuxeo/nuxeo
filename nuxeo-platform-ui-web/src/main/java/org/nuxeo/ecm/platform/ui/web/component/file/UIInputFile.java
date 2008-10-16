@@ -40,7 +40,8 @@ import javax.faces.validator.ValidatorException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.myfaces.trinidad.component.core.input.CoreInputFile;
+import org.jboss.seam.ui.component.UIFileUpload;
+import org.jboss.seam.ui.component.html.HtmlFileUpload;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
@@ -61,6 +62,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
 
     public static final String COMPONENT_FAMILY = "javax.faces.Input";
 
+    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(UIInputFile.class);
 
     private static final String CHOICE_FACET_NAME = "choice";
@@ -87,7 +89,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
         ComponentUtils.initiateSubComponent(this, EDIT_FILENAME_FACET_NAME,
                 new HtmlInputText());
         ComponentUtils.initiateSubComponent(this, UPLOAD_FACET_NAME,
-                new CoreInputFile());
+                new HtmlFileUpload());
     }
 
     // component will render itself
@@ -110,12 +112,14 @@ public class UIInputFile extends UIInput implements NamingContainer {
         } else {
             Blob blob = null;
             Object originalValue = super.getValue();
+            String mimeType = null;
             if (originalValue instanceof Blob) {
                 blob = (Blob) originalValue;
+                mimeType = blob.getMimeType();
             }
             List<InputFileChoice> choices = getAvailableChoices(blob, false);
             InputFileChoice choice = choices.get(0);
-            return new InputFileInfo(choice, blob, getFilename());
+            return new InputFileInfo(choice, blob, getFilename(), mimeType);
         }
     }
 
@@ -190,7 +194,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 + NamingContainer.SEPARATOR_CHAR + CHOICE_FACET_NAME;
         String choice = requestMap.get(radioClientId);
         // other submitted values will be handled at validation time
-        InputFileInfo submitted = new InputFileInfo(choice, null, null);
+        InputFileInfo submitted = new InputFileInfo(choice, null, null, null);
         setSubmittedValue(submitted);
     }
 
@@ -295,7 +299,6 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 queueEvent(new ValueChangeEvent(this, previous, submitted));
             }
         }
-
     }
 
     public void validateFilename(FacesContext context, InputFileInfo submitted) {
@@ -328,9 +331,11 @@ public class UIInputFile extends UIInput implements NamingContainer {
             throws ValidatorException {
         // validate blob
         UIComponent uploadFacet = getFacet(UPLOAD_FACET_NAME);
-        if (uploadFacet instanceof EditableValueHolder) {
-            EditableValueHolder uploadComp = (EditableValueHolder) uploadFacet;
-            submitted.setBlob(uploadComp.getLocalValue());
+        if (uploadFacet instanceof UIFileUpload) {
+            UIFileUpload uploadComp = (UIFileUpload) uploadFacet;
+            submitted.setBlob(uploadComp.getLocalInputStream());
+            submitted.setFilename(uploadComp.getLocalFileName());
+            submitted.setMimeType(uploadComp.getLocalContentType());
             Blob blob = null;
             try {
                 blob = submitted.getConvertedBlob();
@@ -575,8 +580,10 @@ public class UIInputFile extends UIInput implements NamingContainer {
                         ComponentUtils.hookSubComponent(context, this,
                                 downloadComp);
                         downloadComp.setQueryParent(true);
-                        ComponentUtils.copyValues(this, downloadComp,
-                                new String[]{ "downloadLabel", "iconRendered" });
+                        ComponentUtils.copyValues(
+                                this,
+                                downloadComp,
+                                new String[] { "downloadLabel", "iconRendered" });
                         ComponentUtils.copyLinkValues(this, downloadComp);
                         ComponentUtils.encodeComponent(context, downloadComp);
                     }
@@ -655,8 +662,8 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 }
                 // encode upload component
                 UIComponent uploadFacet = getFacet(UPLOAD_FACET_NAME);
-                if (uploadFacet instanceof CoreInputFile) {
-                    CoreInputFile uploadComp = (CoreInputFile) uploadFacet;
+                if (uploadFacet instanceof HtmlFileUpload) {
+                    HtmlFileUpload uploadComp = (HtmlFileUpload) uploadFacet;
                     ComponentUtils.hookSubComponent(context, this, uploadComp);
                     String onClick = "document.getElementById('%s').checked='checked'";
                     uploadComp.setOnclick(String.format(onClick, id));

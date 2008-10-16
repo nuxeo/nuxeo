@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.uidgen;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -31,9 +33,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractUIDGenerator implements UIDGenerator {
 
+    private static final Log log = LogFactory.getLog(AbstractUIDGenerator.class);
+
     private UIDSequencer sequencer;
 
-    private String propertyName;
+    private String[] propertyNames;
 
     public final void setSequencer(UIDSequencer sequencer) {
         if (null == sequencer) {
@@ -53,11 +57,23 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
     }
 
     public String getPropertyName() {
-        return propertyName;
+        if (propertyNames.length == 0) {
+            log.warn("No propertyName specified");
+            return null;
+        }
+        return propertyNames[0];
     }
 
     public void setPropertyName(String propertyName) {
-        this.propertyName = propertyName;
+        propertyNames = new String[] { propertyName };
+    }
+
+    public void setPropertyNames(String[] propertyNames) {
+        this.propertyNames = propertyNames;
+    }
+
+    public String[] getPropertyNames() {
+        return propertyNames;
     }
 
     /**
@@ -99,13 +115,15 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
 
     public void setUID(DocumentModel document) throws DocumentException {
         String uid = createUID(document);
-        try {
-            document.setProperty(getSchemaName(propertyName),
-                    getFieldName(propertyName), uid);
-        } catch (Exception e) {
-            throw new DocumentException(String.format(
-                    "Cannot set uid %s on property %s for doc %s", uid,
-                    propertyName, document));
+        for (String propertyName : propertyNames) {
+            try {
+                document.setProperty(getSchemaName(propertyName),
+                        getFieldName(propertyName), uid);
+            } catch (Exception e) {
+                throw new DocumentException(String.format(
+                        "Cannot set uid %s on property %s for doc %s", uid,
+                        propertyName, document));
+            }
         }
     }
 

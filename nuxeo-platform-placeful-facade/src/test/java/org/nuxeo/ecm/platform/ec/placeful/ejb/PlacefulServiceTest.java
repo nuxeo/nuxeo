@@ -116,4 +116,5 @@ public class PlacefulServiceTest extends TestCase {
         assertEquals(ID_1, annotation.getId());
         assertEquals(EVENT_1, annotation.getEvent());
     }
+
 }

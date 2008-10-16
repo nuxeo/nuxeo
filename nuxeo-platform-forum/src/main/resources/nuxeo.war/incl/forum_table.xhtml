@@ -3,7 +3,6 @@
   xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:s="http://jboss.com/products/seam/taglib">
@@ -80,7 +79,8 @@
           <h:outputText value="#{messages['label.forum.content.header.last_added']}" />
         </f:facet>
         <h:outputText value="#{lastPost.post.creationDate}" rendered="#{lastPost != null}">
-          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}" />
+          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+            timeZone="#{timeZone}" />
         </h:outputText>
         <h:outputText value=" #{messages['label.forum.post.by']} " rendered="#{lastPost != null}"/>
         <h:outputText value="#{lastPost.post.author}" rendered="#{lastPost != null}"/>
