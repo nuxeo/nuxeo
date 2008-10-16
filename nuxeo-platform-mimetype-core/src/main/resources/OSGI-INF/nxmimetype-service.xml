@@ -272,6 +272,15 @@
       </extensions>
     </mimetype>
 
+    <mimetype normalized="text/xml" binary="true" iconPath="graffle.png">
+      <mimetypes>
+        <mimetype>text/xml</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>graffle</extension>
+      </extensions>
+    </mimetype>
+
     <!-- OpenOffice.org 1.x document types -->
 
     <mimetype normalized="application/vnd.sun.xml.writer" binary="true"
