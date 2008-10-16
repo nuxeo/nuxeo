@@ -17,6 +17,7 @@
   <description>Nuxeo WebEngine is the lightweight content-centric web framework.</description>
 
   <modules>
+    <module>nuxeo-webengine-apt</module>    
     <module>nuxeo-platform-rendering</module>
     <module>nuxeo-webengine-resteasy-adapter</module>    
     <module>nuxeo-webengine-core</module>
