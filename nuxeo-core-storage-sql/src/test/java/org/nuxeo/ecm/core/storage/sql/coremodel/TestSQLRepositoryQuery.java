@@ -28,21 +28,20 @@ import org.nuxeo.ecm.core.query.test.QueryTestCase;
  */
 public class TestSQLRepositoryQuery extends QueryTestCase {
 
-    private static String DATABASE = "derby";
-
     @Override
     public void deployRepository() throws Exception {
-        if (DATABASE.equals("postgresql")) {
-        } else {
-            File testdir = new File("target/test");
-            testdir.mkdirs();
-            File dbdir = new File(testdir, "repository");
-            deleteRecursive(dbdir);
-            System.setProperty("derby.stream.error.file", new File(testdir,
-                    "derby.log").getAbsolutePath());
-            deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
-                    "OSGI-INF/test-repo-repository-contrib.xml");
-        }
+        File testdir = new File("target/test");
+        testdir.mkdirs();
+        File dbdir = new File(testdir, "repository");
+        deleteRecursive(dbdir);
+        System.setProperty("derby.stream.error.file", new File(testdir,
+                "derby.log").getAbsolutePath());
+        deployRepositoryContribs();
+    }
+
+    protected void deployRepositoryContribs() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
+                "OSGI-INF/test-repo-repository-contrib.xml");
     }
 
     protected static void deleteRecursive(File file) {
@@ -56,14 +55,11 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
 
     @Override
     public void undeployRepository() throws Exception {
-        if (DATABASE.equals("postgresql")) {
-        } else {
-            try {
-                DriverManager.getConnection("jdbc:derby:;shutdown=true");
-                fail("Expected Derby shutdown exception");
-            } catch (SQLException e) {
-                assertEquals("Derby system shutdown.", e.getMessage());
-            }
+        try {
+            DriverManager.getConnection("jdbc:derby:;shutdown=true");
+            fail("Expected Derby shutdown exception");
+        } catch (SQLException e) {
+            assertEquals("Derby system shutdown.", e.getMessage());
         }
     }
 

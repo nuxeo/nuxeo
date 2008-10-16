@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
  */
 public class Dialect {
 
-    public final String databaseName;
+    private final String databaseName;
 
     public final int databaseMajor;
 
@@ -64,13 +64,17 @@ public class Dialect {
             throw new StorageException(e);
         }
         try {
-            dialect = DialectFactory.determineDialect(databaseName,
+            dialect = DialectFactory.determineDialect(getDatabaseName(),
                     databaseMajor);
         } catch (HibernateException e) {
             throw new StorageException("Cannot determine dialect for: " +
                     connection, e);
         }
         dialectName = dialect.getClass().getSimpleName();
+    }
+
+    public String getDatabaseName() {
+        return databaseName;
     }
 
     @Override

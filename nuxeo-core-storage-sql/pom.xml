@@ -72,6 +72,11 @@
       <version>10.4.1.3</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -85,6 +90,8 @@
             <exclude>**/TestSQLRepositoryAPI.java</exclude>
             <!-- Search implementation not yet done: -->
             <exclude>**/TestSQLRepositoryQuery.java</exclude>
+            <!-- PostgreSQL-specific test, launch manually: -->
+            <exclude>**/TestSQLRepositoryQueryPG.java</exclude>
           </excludes>
         </configuration>
       </plugin>

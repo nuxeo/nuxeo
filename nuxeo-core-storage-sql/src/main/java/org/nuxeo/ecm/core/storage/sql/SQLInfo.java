@@ -1139,7 +1139,7 @@ public class SQLInfo {
                 String methodName) {
             proto = String.format(proto, idType);
             return new StoredProcedureInfo(
-                    null,
+                    null, // do a drop check
                     String.format(
                             "SELECT ALIAS FROM SYS.SYSALIASES WHERE ALIAS = '%s' AND ALIASTYPE = 'F'",
                             functionName), //
@@ -1154,17 +1154,70 @@ public class SQLInfo {
         }
     }
 
+    public class PostgreSQLstoredProcedureInfoMaker {
+
+        public final String idType;
+
+        public PostgreSQLstoredProcedureInfoMaker() {
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                idType = "varchar(36)";
+                break;
+            case DB_IDENTITY:
+                idType = "integer";
+                break;
+            default:
+                throw new AssertionError(model.idGenPolicy);
+            }
+        }
+
+        public StoredProcedureInfo makeInTree() {
+            return new StoredProcedureInfo(
+                    //
+                    Boolean.FALSE, // no drop needed
+                    null,
+                    null, //
+                    String.format(
+                            "CREATE OR REPLACE FUNCTION NX_IN_TREE(id %s, baseid %<s) " //
+                                    + "RETURNS boolean " //
+                                    + "AS $$ " //
+                                    + "DECLARE" //
+                                    + "  cur %<s := id; " //
+                                    + "BEGIN" //
+                                    + "  IF baseid IS NULL OR id IS NULL OR baseid = id THEN" //
+                                    + "    RETURN false;" //
+                                    + "  END IF;" //
+                                    + "  LOOP" //
+                                    + "    SELECT parentid INTO cur FROM hierarchy WHERE hierarchy.id = cur;" //
+                                    + "    IF cur IS NULL THEN" //
+                                    + "      RETURN false; " //
+                                    + "    ELSIF cur = baseid THEN" //
+                                    + "      RETURN true;" //
+                                    + "    END IF;" //
+                                    + "  END LOOP;" //
+                                    + "END " //
+                                    + "$$ " //
+                                    + "LANGUAGE plpgsql " //
+                                    + "STABLE " //
+                            , idType));
+        }
+    }
+
     /**
      * Gets the statements creating the appropriate stored procedures.
      */
     public Collection<StoredProcedureInfo> getStoredProceduresSqls() {
         List<StoredProcedureInfo> spis = new LinkedList<StoredProcedureInfo>();
-        if ("Apache Derby".equals(dialect.databaseName)) {
+        String databaseName = dialect.getDatabaseName();
+        if ("Apache Derby".equals(databaseName)) {
             DerbyStoredProcedureInfoMaker maker = new DerbyStoredProcedureInfoMaker();
             spis.add(maker.make("NX_IN_TREE",
                     "(BASEID %s, ID %<s) RETURNS SMALLINT", "isInTree"));
             spis.add(maker.make("NX_CAN_BROWSE", "(ID %s) RETURNS SMALLINT",
                     "canBrowse"));
+        } else if ("PostgreSQL".equals(databaseName)) {
+            PostgreSQLstoredProcedureInfoMaker maker = new PostgreSQLstoredProcedureInfoMaker();
+            spis.add(maker.makeInTree());
         }
         return spis;
     }
