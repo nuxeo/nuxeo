@@ -176,8 +176,6 @@ public class AnnotationsIndexBuilder implements AnnotationProcessorFactory {
                 if (buf.length() > 0) {
                     writer = env.getFiler().createTextFile(Filer.Location.CLASS_TREE, "",
                             new File("OSGI-INF/annotations"), "UTF-8");
-                    writer.println("# This is a generated file and contains core annotations indexes in the form: ");
-                    writer.println("# class@annotation?key=val&..");
                     writer.print(buf.toString());
                     writer.close();
                 }

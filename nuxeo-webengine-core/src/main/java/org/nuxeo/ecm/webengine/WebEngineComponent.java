@@ -174,14 +174,15 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
             Installer installer = (Installer)contribution;
             installer.install(contributor.getContext(), engine.getRootDirectory());
         } else if (extensionPoint.equals(CONFIG_XP)) {
-            ConfigurationFileDescriptor cfg = (ConfigurationFileDescriptor)contribution;
-            if (cfg.path != null) {
-                loadConfiguration(contributor.getContext(), new File(engine.getRootDirectory(), cfg.path), cfg.trackChanges);
-            } else if (cfg.entry != null) {
-                throw new UnsupportedOperationException("Entry is not supported for now");
-            } else {
-                log.error("Neither path neither entry attribute was defined in the configuration extension. Ignoring");
-            }
+            System.out.println("Extensions point "+CONFIG_XP+" is no more supported");
+//            ConfigurationFileDescriptor cfg = (ConfigurationFileDescriptor)contribution;
+//            if (cfg.path != null) {
+//                loadConfiguration(contributor.getContext(), new File(engine.getRootDirectory(), cfg.path), cfg.trackChanges);
+//            } else if (cfg.entry != null) {
+//                throw new UnsupportedOperationException("Entry is not supported for now");
+//            } else {
+//                log.error("Neither path neither entry attribute was defined in the configuration extension. Ignoring");
+//            }
 //TODO
 //        } else if (extensionPoint.endsWith(FORM_XP)) {
 //            Form form = (Form)contribution;
@@ -206,14 +207,14 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
             Installer installer = (Installer)contribution;
             installer.uninstall(contributor.getContext(), engine.getRootDirectory());
         } else if (extensionPoint.equals(CONFIG_XP)) {
-            ConfigurationFileDescriptor cfg = (ConfigurationFileDescriptor)contribution;
-            if (cfg.path != null) {
-                unloadConfiguration(new File(engine.getRootDirectory(), cfg.path));
-            } else if (cfg.entry != null) {
-                throw new UnsupportedOperationException("Entry is not supported for now");
-            } else {
-                log.error("Neither path neither entry attribute was defined in the configuration extension. Ignoring");
-            }
+//            ConfigurationFileDescriptor cfg = (ConfigurationFileDescriptor)contribution;
+//            if (cfg.path != null) {
+//                unloadConfiguration(new File(engine.getRootDirectory(), cfg.path));
+//            } else if (cfg.entry != null) {
+//                throw new UnsupportedOperationException("Entry is not supported for now");
+//            } else {
+//                log.error("Neither path neither entry attribute was defined in the configuration extension. Ignoring");
+//            }
 //TODO
 //        } else if (extensionPoint.endsWith(FORM_XP)) {
 //            Form form = (Form)contribution;
