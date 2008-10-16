@@ -33,9 +33,9 @@
     <dependencies>
         <!--this is required to index annotations at build time -->
     <dependency>
-      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <groupId>org.nuxeo.build</groupId>
       <artifactId>nuxeo-webengine-apt</artifactId>
-      <version>5.2-SNAPSHOT</version>
+      <version>1.0-SNAPSHOT</version>
       <scope>compile</scope>
       <!-- workaround for Mac OS X -->
       <exclusions>
