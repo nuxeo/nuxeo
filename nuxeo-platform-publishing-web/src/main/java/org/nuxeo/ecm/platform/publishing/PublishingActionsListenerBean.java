@@ -251,14 +251,9 @@ public class PublishingActionsListenerBean extends InputController implements
         // Of course it remains a temporary solution.
         if (rejectPublishingComment == null
                 || rejectPublishingComment.trim().length() <= 0) {
-            // :XXX: Should be error but the error severity is not yet well
-            // integrated Nuxeo5 side.
-            FacesMessage message = FacesMessages.createFacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
+            facesMessages.add(FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.publishing.reject.user.comment.mandatory"));
-
-            FacesMessages.instance().add("rejectPublishingComment", message);
             return null;
         }
 
