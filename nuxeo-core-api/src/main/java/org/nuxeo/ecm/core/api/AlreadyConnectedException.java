@@ -19,18 +19,12 @@
 
 package org.nuxeo.ecm.core.api;
 
-
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class AlreadyConnectedException extends ConnectionException {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 62727379399331378L;
-
-
 
 }

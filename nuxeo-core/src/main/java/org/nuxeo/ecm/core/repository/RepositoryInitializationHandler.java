@@ -75,12 +75,7 @@ public abstract class RepositoryInitializationHandler {
         instance = handler;
     }
 
-    /**
-     * Must be implemented by custom initializers.
-     *
-     * @param session the current session
-     * @throws ClientException
-     */
-    public abstract void initializeRepository(CoreSession session) throws ClientException;
+    public abstract void initializeRepository(CoreSession session)
+            throws ClientException;
 
 }
