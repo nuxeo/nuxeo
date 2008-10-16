@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webengine.model.impl;
 
 import java.net.URI;
-import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.List;
 import java.util.Set;
@@ -28,11 +27,11 @@ import java.util.Set;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.AdapterResource;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
-import org.nuxeo.ecm.webengine.model.AdapterResource;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
@@ -97,7 +96,15 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
 
     public Response redirect(String uri) {
         try {
-            return Response.seeOther(new URI(URLEncoder.encode(uri, "UTF-8"))).build();
+            //return Response.seeOther(new URI(URLEncoder.encode(uri, "UTF-8"))).build();            
+            if (uri.indexOf("://") == -1) { // not an absolute URI
+                if (!uri.startsWith("/")) {
+                    uri = ctx.getServerURL().append('/').append(uri).toString();                        
+                } else {
+                    uri = ctx.getServerURL().append(uri).toString();    
+                }                
+            }
+            return Response.seeOther(new URI(uri)).build();
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
@@ -144,6 +151,10 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
 
     public String getPath() {
         return path;
+    }
+    
+    public String getURL() {
+        return ctx.getServerURL().append(path).toString();
     }
 
     public List<LinkDescriptor> getLinks(String category) {

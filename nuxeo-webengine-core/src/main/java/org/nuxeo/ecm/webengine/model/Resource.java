@@ -47,6 +47,8 @@ public interface Resource extends Adaptable {
     boolean isInstanceOf(String type);
 
     String getPath();
+    
+    String getURL();
 
     Resource getPrevious();
 

@@ -108,12 +108,16 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
         if (path.indexOf('{') > -1) {
             path = _guessPath();
         } 
+        StringBuilder buf = new StringBuilder();
         if (!path.startsWith("/")) {
-            path = new StringBuilder().append(ctx.getBasePath()).append('/').append(path).toString();
+            buf.append(ctx.getBasePath()).append('/').append(path);
         } else {
-            path = new StringBuilder().append(ctx.getBasePath()).append(path).toString();
+            buf.append(ctx.getBasePath()).append(path);
         }
-        return path;
+        if (path.endsWith("/")) {
+            buf.setLength(buf.length()-1);
+        }
+        return buf.toString();
     }
     
     /**

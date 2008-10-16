@@ -1,6 +1,6 @@
 
 <!-- Login Form -->
-<form action="${basePath}/login${Context.urlPath}" method="POST">
+<form action="${This.path}/login${Context.urlPath}" method="POST">
 <table cellpadding="4" cellspacing="1">
   <tr>
     <td>Username:</td>

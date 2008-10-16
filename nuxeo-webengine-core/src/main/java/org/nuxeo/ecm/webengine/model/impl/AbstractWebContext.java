@@ -229,6 +229,23 @@ public abstract class AbstractWebContext implements WebContext {
         return sb.toString();
     }
 
+    public StringBuilder getServerURL() {
+        StringBuilder buf = new StringBuilder();
+        String scheme = request.getScheme ();
+        int port = request.getServerPort ();
+        String urlPath = request.getRequestURI();
+        if (urlPath.length() == 0) {
+            urlPath = "/";
+        }
+        buf.append(scheme).append("://").append(request.getServerName());
+        if ((scheme.equals ("http") && port != 80)
+                || (scheme.equals ("https") && port != 443)) {
+            buf.append (':');
+            buf.append (request.getServerPort ());
+        }
+        return buf;
+    }
+    
     public String getURI() {
         return request.getRequestURI();
     }

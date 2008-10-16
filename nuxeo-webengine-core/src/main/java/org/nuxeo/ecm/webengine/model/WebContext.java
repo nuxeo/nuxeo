@@ -174,6 +174,13 @@ public interface WebContext extends Adaptable {
     String getBaseURL();
 
     /**
+     * Gets the server URL without any path.
+     * The return string builder can be used to build the wanted URL  
+     * @return a string builder  
+     */
+    StringBuilder getServerURL();
+    
+    /**
      * TODO: should we remove this method from the context and create a specialized service to resolve document models to paths?
      * Get a suitable URI path for the given Nuxeo document, that can be used to invoke this document.
      *

@@ -12,7 +12,7 @@ function doLogin(username, password) {
   var req = jQuery.ajax({
     type: "POST",
     async: false,
-    url: "/login",
+    url: "${basePath}/login/${basePath}",
     data: {caller: "login", nuxeo_login : "true", userid : username, password : password},
     success: function(html, status) {
       document.location.reload();
