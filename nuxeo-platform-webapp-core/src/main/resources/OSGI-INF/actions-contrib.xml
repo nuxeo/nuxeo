@@ -15,9 +15,25 @@
       </filter>
     </action>
 
-    <action id="logout" link="#{loginLogoutAction.logout}" enabled="true"
+
+
+  <!--
+    <action id="logout" link="logout" enabled="true"
       label="command.logout" order="200">
-      <category>USER_SERVICES</category>
+      <category>USER_SERVICES_BOTTOM</category>
+    </action>
+    -->
+
+    <action id="non_anonymous_logout" link="#{loginLogoutAction.logout}"
+      enabled="true" label="command.logout">
+      <category>USER_SERVICES_BOTTOM</category>
+      <filter-id>not_anonymous</filter-id>
+    </action>
+
+    <action id="login" link="#{anonymousLoginManager.login}"
+      enabled="true" label="command.login">
+      <category>USER_SERVICES_BOTTOM</category>
+      <filter-id>anonymous</filter-id>
     </action>
 
     <action id="user_manager" link="#{userManagerActions.viewUsers}"

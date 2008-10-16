@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.listener.DocumentModelEventListener;
 public class ContextDataCleanerListener extends AbstractEventListener implements
         AsynchronousEventListener, DocumentModelEventListener {
 
+    @Override
     public void notifyEvent(CoreEvent coreEvent) {
         Object source = coreEvent.getSource();
         if (source instanceof DocumentModel) {

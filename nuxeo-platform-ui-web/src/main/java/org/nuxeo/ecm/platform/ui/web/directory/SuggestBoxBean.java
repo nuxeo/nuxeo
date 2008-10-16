@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.directory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,7 +34,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -43,24 +44,29 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 @Name("suggestBox")
 @Scope(ScopeType.EVENT)
 @Transactional
-public class SuggestBoxBean {
+/**
+ * @deprecated: use rich:suggestionbox instead
+ */
+@Deprecated
+public class SuggestBoxBean implements Serializable {
 
     private static final Log log = LogFactory.getLog(SuggestBoxBean.class);
 
     private static transient DirectoryService dirService;
 
-    private static List<Map<String, String>> tempLabel;
+    private static final List<Map<String, String>> tempLabel = new ArrayList<Map<String, String>>();
+
+    private static final long serialVersionUID = 9206507449990045737L;
 
     public static DirectoryService getService() {
         if (dirService == null) {
-            dirService= DirectoryHelper.getDirectoryService();
+            dirService = DirectoryHelper.getDirectoryService();
         }
         return dirService;
     }
 
     private static boolean queryVoc(String directoryName, String input)
             throws Exception {
-        tempLabel = new ArrayList<Map<String, String>>();
         Session directory = null;
         try {
             Map<String, Object> filter = new LinkedHashMap<String, Object>();
@@ -83,13 +89,13 @@ public class SuggestBoxBean {
             if (directory != null) {
                 directory.close();
             }
-            return false;
         }
+        return false;
     }
 
     // ToDo, remove this function and use filters in the directory service
     // instead.
-    public static void substractTab(String input) throws Exception {
+    public static void substractTab(String input) {
         List<Map<String, String>> tmp = new ArrayList<Map<String, String>>();
         for (Map<String, String> map : tempLabel) {
             String label = map.get("label");

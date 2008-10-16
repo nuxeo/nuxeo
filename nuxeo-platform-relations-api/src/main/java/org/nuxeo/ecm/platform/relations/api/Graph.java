@@ -47,7 +47,7 @@ public interface Graph extends Serializable {
     /**
      * Sets options for the graph.
      * <p>
-     * Options arte typically backend to use, additional parameters for backend
+     * Options are typically: which backend to use, additional parameters for backend
      * (e.g. for instance SQL backend, host, port, user/password...).
      *
      * @param options map of options for the graph
@@ -215,7 +215,7 @@ public interface Graph extends Serializable {
     /**
      * Serializes graph.
      *
-     * @param out path on file system where to put the serialization file
+     * @param path path on file system where to put the serialization file
      * @param lang format for the input serialization, may be "RDF/XML",
      *            "RDF/XML-ABBREV", "N-TRIPLE" and "N3". The default value,
      *            represented by null, is "RDF/XML".
