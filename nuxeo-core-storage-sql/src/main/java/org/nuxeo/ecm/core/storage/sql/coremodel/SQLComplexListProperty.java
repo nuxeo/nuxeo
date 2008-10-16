@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -63,8 +64,13 @@ public class SQLComplexListProperty extends SQLBaseProperty {
         return name;
     }
 
-    public List<Property> getValue() throws DocumentException {
-        return session.makeProperties(node, name, type, readonly, -1);
+    public List<Object> getValue() throws DocumentException {
+        List<Property> properties = session.makeProperties(node, name, type, readonly, -1);
+        List<Object> list = new ArrayList<Object>(properties.size());
+        for (Property property : properties) {
+            list.add(property.getValue());
+        }
+        return list;
     }
 
     public void setValue(Object value) throws DocumentException {

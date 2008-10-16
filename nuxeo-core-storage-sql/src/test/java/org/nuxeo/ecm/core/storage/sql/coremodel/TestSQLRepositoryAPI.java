@@ -197,13 +197,13 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc = session.createDocument(doc);
         DocumentRef docRef = doc.getRef();
         session.save();
-        closeSession();
 
         // test setting and reading a map with an empty list
+        closeSession();
         openSession();
         doc = session.getDocument(docRef);
         Map<String, Object> attachedFile = new HashMap<String, Object>();
-        List<Map<String, Object>> vignettes = new ArrayList<Map<String,Object>>();
+        List<Map<String, Object>> vignettes = new ArrayList<Map<String, Object>>();
         attachedFile.put("name", "some name");
         attachedFile.put("vignettes", vignettes);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
@@ -212,13 +212,16 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         closeSession();
         openSession();
         doc = session.getDocument(docRef);
-        assertEquals(attachedFile, doc.getProperty("cmpf:attachedFile").getValue());
-        assertEquals(attachedFile.get("vignettes"), doc.getProperty("cmpf:attachedFile/vignettes").getValue());
+        assertEquals(attachedFile,
+                doc.getProperty("cmpf:attachedFile").getValue());
+        assertEquals(attachedFile.get("vignettes"), doc.getProperty(
+                "cmpf:attachedFile/vignettes").getValue());
 
-        // test setting and reading a list of maps without a complex type in the maps
+        // test setting and reading a list of maps without a complex type in the
+        // maps
         Map<String, Object> vignette = new HashMap<String, Object>();
-        vignette.put("width", 0);
-        vignette.put("height", 0);
+        vignette.put("width", Long.valueOf(0));
+        vignette.put("height", Long.valueOf(0));
         vignette.put("content", null);
         vignettes.add(vignette);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
@@ -232,14 +235,14 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(attachedFile.get("vignettes"), doc.getProperty(
                 "cmpf:attachedFile/vignettes").getValue());
         assertEquals(vignette, doc.getProperty(
-                "cmpf:attachedFile/vignettes/vignette[1]").getValue());
-        assertEquals(0, doc.getProperty(
-                "cmpf:attachedFile/vignettes/vignette[1]/height").getValue());
-        assertEquals(attachedFile, doc.getProperty("cmpf:attachedFile").getValue());
+                "cmpf:attachedFile/vignettes/vignette[0]").getValue());
+        assertEquals(Long.valueOf(0), doc.getProperty(
+                "cmpf:attachedFile/vignettes/vignette[0]/height").getValue());
+        assertEquals(attachedFile,
+                doc.getProperty("cmpf:attachedFile").getValue());
 
         // test setting and reading a list of maps with a blob inside the map
-
-        byte[] binaryContent = new byte[] {'0', '1', 'A', 'B'};
+        byte[] binaryContent = "01AB".getBytes();
         Blob blob = StreamingBlob.createFromByteArray(binaryContent,
                 "application/octet-stream");
         blob.setFilename("file.bin");
@@ -247,6 +250,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
         session.saveDocument(doc);
         session.save();
+
         closeSession();
         openSession();
         assertEquals(attachedFile,
@@ -254,14 +258,16 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(attachedFile.get("vignettes"), doc.getProperty(
                 "cmpf:attachedFile/vignettes").getValue());
         assertEquals(vignette, doc.getProperty(
-                "cmpf:attachedFile/vignettes/vignette[1]").getValue());
-        assertEquals(0, doc.getProperty(
-                "cmpf:attachedFile/vignettes/vignette[1]/height").getValue());
-        assertEquals(
-                blob.getFilename(),
-                doc.getProperty(
-                        "cmpf:attachedFile/vignettes/vignette[1]/content/filename").getValue());
-        closeSession();
+                "cmpf:attachedFile/vignettes/vignette[0]").getValue());
+        assertEquals(Long.valueOf(0), doc.getProperty(
+                "cmpf:attachedFile/vignettes/vignette[0]/height").getValue());
+        // this doesn't work due to core restrictions (BlobProperty):
+        // assertEquals(blob.getFilename(), doc.getProperty(
+        // "cmpf:attachedFile/vignettes/vignette[0]/content/name").getValue());
+        Blob b = (Blob) doc.getProperty(
+                "cmpf:attachedFile/vignettes/vignette[0]/content").getValue();
+        assertEquals("file.bin", b.getFilename());
+
     }
 
     //
