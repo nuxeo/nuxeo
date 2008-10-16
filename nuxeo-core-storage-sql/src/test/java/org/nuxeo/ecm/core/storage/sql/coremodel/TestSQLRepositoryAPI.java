@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -53,6 +54,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelTreeNodeComparator;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -193,7 +195,73 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     public void testComplexType() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
         doc = session.createDocument(doc);
+        DocumentRef docRef = doc.getRef();
         session.save();
+        closeSession();
+
+        // test setting and reading a map with an empty list
+        openSession();
+        doc = session.getDocument(docRef);
+        Map<String, Object> attachedFile = new HashMap<String, Object>();
+        List<Map<String, Object>> vignettes = new ArrayList<Map<String,Object>>();
+        attachedFile.put("name", "some name");
+        attachedFile.put("vignettes", vignettes);
+        doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
+        session.saveDocument(doc);
+        session.save();
+        closeSession();
+        openSession();
+        doc = session.getDocument(docRef);
+        assertEquals(attachedFile, doc.getProperty("cmpf:attachedFile").getValue());
+        assertEquals(attachedFile.get("vignettes"), doc.getProperty("cmpf:attachedFile/vignettes").getValue());
+
+        // test setting and reading a list of maps without a complex type in the maps
+        Map<String, Object> vignette = new HashMap<String, Object>();
+        vignette.put("width", 0);
+        vignette.put("height", 0);
+        vignette.put("content", null);
+        vignettes.add(vignette);
+        doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
+        session.saveDocument(doc);
+        session.save();
+        closeSession();
+        openSession();
+        doc = session.getDocument(docRef);
+        assertEquals(attachedFile,
+                doc.getProperty("cmpf:attachedFile").getValue());
+        assertEquals(attachedFile.get("vignettes"), doc.getProperty(
+                "cmpf:attachedFile/vignettes").getValue());
+        assertEquals(vignette, doc.getProperty(
+                "cmpf:attachedFile/vignettes/vignette[1]").getValue());
+        assertEquals(0, doc.getProperty(
+                "cmpf:attachedFile/vignettes/vignette[1]/height").getValue());
+        assertEquals(attachedFile, doc.getProperty("cmpf:attachedFile").getValue());
+
+        // test setting and reading a list of maps with a blob inside the map
+
+        byte[] binaryContent = new byte[] {'0', '1', 'A', 'B'};
+        Blob blob = StreamingBlob.createFromByteArray(binaryContent,
+                "application/octet-stream");
+        blob.setFilename("file.bin");
+        vignette.put("content", blob);
+        doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
+        session.saveDocument(doc);
+        session.save();
+        closeSession();
+        openSession();
+        assertEquals(attachedFile,
+                doc.getProperty("cmpf:attachedFile").getValue());
+        assertEquals(attachedFile.get("vignettes"), doc.getProperty(
+                "cmpf:attachedFile/vignettes").getValue());
+        assertEquals(vignette, doc.getProperty(
+                "cmpf:attachedFile/vignettes/vignette[1]").getValue());
+        assertEquals(0, doc.getProperty(
+                "cmpf:attachedFile/vignettes/vignette[1]/height").getValue());
+        assertEquals(
+                blob.getFilename(),
+                doc.getProperty(
+                        "cmpf:attachedFile/vignettes/vignette[1]/content/filename").getValue());
+        closeSession();
     }
 
     //
