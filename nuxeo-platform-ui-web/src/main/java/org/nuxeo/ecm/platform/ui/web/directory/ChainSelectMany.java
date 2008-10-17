@@ -223,7 +223,6 @@ public class ChainSelectMany extends ChainSelectBase {
 
     @Override
     public void encodeChildren(FacesContext context) throws IOException {
-
     }
 
     private void encodeValue(FacesContext context) throws IOException {
@@ -302,7 +301,6 @@ public class ChainSelectMany extends ChainSelectBase {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void restoreState(FacesContext context, Object state) {
         Object[] values = (Object[]) state;
         super.restoreState(context, values[0]);

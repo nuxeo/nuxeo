@@ -160,9 +160,7 @@ public final class EmailHelper {
      */
     private static Session getSession() {
         Session session = null;
-        /*
-         * First, try to get the session from JNDI, as would be done under J2EE.
-         */
+        // First, try to get the session from JNDI, as would be done under J2EE.
         try {
             NotificationService service = (NotificationService) Framework.getRuntime().getComponent(
                     NotificationService.NAME);
