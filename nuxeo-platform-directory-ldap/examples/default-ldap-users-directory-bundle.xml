@@ -15,7 +15,7 @@
 
       A single server declaration can point to a cluster of replicated
       servers (using OpenLDAP's slapd + sluprd for instance). To leverage
-      such a cluster and improve availibility, please provide one
+      such a cluster and improve availability, please provide one
       <ldapUrl/> tag for each replica of the cluster.
     -->
     <server name="default">
@@ -84,10 +84,10 @@
            anything else will not change the case.
       -->
       <missingIdFieldCase>lower</missingIdFieldCase>
-      
+
       <!-- Maximum number of entries returned by the search -->
       <querySizeLimit>200</querySizeLimit>
-      
+
       <!-- Time to wait for a search to finish. 0 to wait indefinitely -->
       <queryTimeLimit>0</queryTimeLimit>
 

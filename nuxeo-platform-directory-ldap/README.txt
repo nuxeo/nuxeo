@@ -77,6 +77,7 @@ TODO:
 
 - Talk about the concept of references.
 
+- Talk about configuration on multi-server installation
 
 Tools to setup a sample LDAP server
 ===================================
@@ -85,7 +86,7 @@ The ``ldaptools/`` folder provides sample ldiff files and OpenLDAP configuration
 file to help you setup a sample OpenLDAP server you can use as a base config to
 build your corporate directory.
 
-Please refere to the included ``README.txt`` file for sample usage and basic
+Please refer to the included ``README.txt`` file for sample usage and basic
 instructions.
 
 
