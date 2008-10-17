@@ -118,8 +118,9 @@ public class CommentEventListenerBean implements MessageListener {
     public void onMessage(Message message) {
         try {
             Object obj = ((ObjectMessage) message).getObject();
-            if (!(obj instanceof DocumentMessage))
+            if (!(obj instanceof DocumentMessage)) {
                 return;
+            }
             DocumentMessage doc = (DocumentMessage) obj;
             onDocumentRemoved(doc);
             onCommentRemoved(doc);

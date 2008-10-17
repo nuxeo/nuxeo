@@ -28,19 +28,15 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * immutable?
+ * UID generator configuration holder.
  *
- * @author dragos
- *
- */
-/**
- * @author dragos
- *
+ * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
 @XObject("generator")
 public class UIDGeneratorDescriptor {
 
-    private static final Log log = LogFactory.getLog(UIDGeneratorDescriptor.class);
+    private static final Log log = LogFactory
+            .getLog(UIDGeneratorDescriptor.class);
 
     private static final int DEFAULT_COUNTER_START = 1;
 
@@ -59,8 +55,10 @@ public class UIDGeneratorDescriptor {
     @XNode("@class")
     private String className;
 
-    @XNode("propertyName")
-    private String propertyName;
+    // @XNode("propertyName")
+    // private String propertyName;
+    @XNodeList(value = "propertyName", type = String[].class, componentType = String.class)
+    private String[] propertyNames;
 
     @XNodeList(value = "docType", type = String[].class, componentType = String.class)
     private String[] docTypes;
@@ -91,8 +89,8 @@ public class UIDGeneratorDescriptor {
      */
     public UIDGeneratorDescriptor(String generationExp, Set generationCrit,
             int counterStart) {
-        this.generationExpression = generationExp;
-        this.generationCriteria = generationCrit;
+        generationExpression = generationExp;
+        generationCriteria = generationCrit;
         this.counterStart = counterStart;
     }
 
@@ -132,12 +130,37 @@ public class UIDGeneratorDescriptor {
         return generationExpression;
     }
 
+    /**
+     * Kept for convenience. If there is only one property to be set with
+     * generated UID.
+     *
+     * @return first propertyName
+     */
     public String getPropertyName() {
-        return propertyName;
+        if (propertyNames.length == 0) {
+            log.warn("No propertyName specified");
+            return null;
+        }
+        return propertyNames[0];
     }
 
+    /**
+     * Set the value as first property name.
+     * Kept for convenience. If there is only one property to be set with
+     * generated UID.
+     */
     public void setPropertyName(String propertyName) {
-        this.propertyName = propertyName;
+        if (propertyNames.length == 0) {
+            log.warn("Cannot set propertyName.");
+        }
+        this.propertyNames[0] = propertyName;
     }
 
+    public String[] getPropertyNames() {
+        return propertyNames;
+    }
+
+    public void setPropertyNames(String[] propNames) {
+        this.propertyNames = propNames;
+    }
 }

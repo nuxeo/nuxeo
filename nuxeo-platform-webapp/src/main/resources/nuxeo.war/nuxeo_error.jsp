@@ -1,6 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page language="java" %>
+<%@ page import="org.nuxeo.ecm.platform.ui.web.auth.plugins.AnonymousAuthenticator"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <html>
@@ -104,9 +105,12 @@ a:hover {
   Boolean securityError = (Boolean) request.getAttribute("securityError");
 
   String pageTitle="An error occured";
-  if ((securityError!=null) && (securityError.booleanValue()==true)) {
-	  pageTitle = "You don't have the necessary permission to perform the requested action";
+  if ((securityError!=null) && (securityError.booleanValue()==true))
+  {
+    pageTitle = "You don't have the neccessary permission to do the requested action";
   }
+  boolean isAnonymous = AnonymousAuthenticator.isAnonymousRequest(request);
+
 %>
 
 <table border="0" width="75%" cellpadding="0" cellspacing="0" align="center">
@@ -120,9 +124,11 @@ a:hover {
 
       <h1><%=pageTitle%></h1>
 
+  <% if (!isAnonymous) { %>
       <h2>
       <fmt:message bundle="${messages}" key="${user_message}" />
       </h2>
+
 
       <div class="links">
         <div class="back"><a href="javascript:history.back();">back</a>
@@ -142,6 +148,12 @@ a:hover {
           </inputTextarea>
         </div>
       </div>
+      <%} else { %>
+      <h2> You must be authenticated to perform this operation </h2>
+      <div class="change"><a href="<%=context%>/logout">Login</a>
+
+      <%} %>
+
     </td>
   </tr>
 </table>
