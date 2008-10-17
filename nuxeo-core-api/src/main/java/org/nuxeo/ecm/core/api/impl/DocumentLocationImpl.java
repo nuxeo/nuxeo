@@ -20,7 +20,10 @@
 package org.nuxeo.ecm.core.api.impl;
 
 import org.nuxeo.ecm.core.api.DocumentLocation;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
 
 public class DocumentLocationImpl implements DocumentLocation {
 
@@ -30,10 +33,31 @@ public class DocumentLocationImpl implements DocumentLocation {
 
     private final DocumentRef docRef;
 
+    private final IdRef docIdRef;
+
+    private final PathRef docPathRef;
+
+    public DocumentLocationImpl(DocumentModel doc) {
+        serverName = doc.getRepositoryName();
+        docRef = doc.getRef();
+        docIdRef = new IdRef(doc.getId());
+        docPathRef = new PathRef(doc.getPathAsString());
+    }
+
     public DocumentLocationImpl(final String serverName,
             final DocumentRef docRef) {
         this.serverName = serverName;
         this.docRef = docRef;
+        if (docRef instanceof IdRef) {
+            docIdRef = (IdRef) docRef;
+            docPathRef = null;
+        } else if (docRef instanceof PathRef) {
+            docIdRef = null;
+            docPathRef = (PathRef) docRef;
+        } else {
+            docIdRef = null;
+            docPathRef = null;
+        }
     }
 
     public DocumentRef getDocRef() {
@@ -42,6 +66,14 @@ public class DocumentLocationImpl implements DocumentLocation {
 
     public String getServerName() {
         return serverName;
+    }
+
+    public IdRef getIdRef() {
+        return docIdRef;
+    }
+
+    public PathRef getPathRef() {
+        return docPathRef;
     }
 
 }
