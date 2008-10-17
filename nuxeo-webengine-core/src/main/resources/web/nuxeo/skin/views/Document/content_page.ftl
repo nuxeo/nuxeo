@@ -13,7 +13,7 @@
   <div id="tree">
   <ul class="treeview">
   <#list Document.children as child>
-    <li><a href="$(basePath}${This.path}/${child.name}">${child.name}</a> - ${child.title}</li>
+    <li><a href="${This.path}/${child.name}">${child.name}</a> - ${child.title}</li>
   </#list>
   </ul>
   </div>
