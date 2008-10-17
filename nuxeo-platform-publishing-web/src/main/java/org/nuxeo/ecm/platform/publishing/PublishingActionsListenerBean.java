@@ -24,7 +24,6 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.ejb.PostActivate;
@@ -47,7 +46,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.publishing.api.PublishActions;
@@ -60,9 +58,7 @@ import org.nuxeo.ecm.platform.workflow.api.client.delegate.WAPIBusinessDelegate;
 import org.nuxeo.ecm.platform.workflow.api.client.events.EventNames;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WAPI;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMParticipant;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMProcessInstance;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemState;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkflowException;
 import org.nuxeo.ecm.platform.workflow.api.common.WorkflowConstants;
 import org.nuxeo.ecm.platform.workflow.document.api.ejb.delegate.WorkflowDocumentRelationBusinessDelegate;
@@ -71,8 +67,7 @@ import org.nuxeo.ecm.webapp.dashboard.DashboardActions;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Publishing actions listener. Listens to publish/reject
- * document actions.
+ * Publishing actions listener. Listens to publish/reject document actions.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
@@ -167,7 +162,8 @@ public class PublishingActionsListenerBean extends InputController implements
     public String publishDocument() throws PublishingException {
         WMParticipant creator;
         try {
-            PublishingTasks tasks = new PublishingTasks(navigationContext.getCurrentDocument(), currentUser);
+            PublishingTasks tasks = new PublishingTasks(
+                    navigationContext.getCurrentDocument(), currentUser);
             WMWorkItemInstance wi = tasks.getPublishingWorkItem();
             if (wi == null) {
                 throw new PublishingException(
@@ -200,8 +196,7 @@ public class PublishingActionsListenerBean extends InputController implements
 
             String proxySourceId = session.getDocument(
                     new IdRef(currentDocument.getSourceId())).getSourceId();
-            sourceDocument = session.getDocument(new IdRef(
-                    proxySourceId));
+            sourceDocument = session.getDocument(new IdRef(proxySourceId));
             try {
                 if (repository != null && session != null) {
                     repository.close(session);
@@ -251,7 +246,8 @@ public class PublishingActionsListenerBean extends InputController implements
         // Of course it remains a temporary solution.
         if (rejectPublishingComment == null
                 || rejectPublishingComment.trim().length() <= 0) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+            facesMessages.add("rejectPublishingComment",
+                    FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.publishing.reject.user.comment.mandatory"));
             return null;
@@ -268,7 +264,8 @@ public class PublishingActionsListenerBean extends InputController implements
         }
 
         try {
-            PublishingTasks tasks = new PublishingTasks(navigationContext.getCurrentDocument(), currentUser);
+            PublishingTasks tasks = new PublishingTasks(
+                    navigationContext.getCurrentDocument(), currentUser);
             WMWorkItemInstance wi = tasks.getPublishingWorkItem();
             if (wi == null) {
                 throw new PublishingException(
@@ -286,7 +283,6 @@ public class PublishingActionsListenerBean extends InputController implements
         DocumentModel sourceDocument;
         try {
 
-
             CoreSession session = null;
             LoginContext context = null;
             Repository repository = null;
@@ -301,8 +297,7 @@ public class PublishingActionsListenerBean extends InputController implements
 
             String proxySourceId = session.getDocument(
                     new IdRef(currentDocument.getSourceId())).getSourceId();
-            sourceDocument = session.getDocument(new IdRef(
-                    proxySourceId));
+            sourceDocument = session.getDocument(new IdRef(proxySourceId));
             try {
                 if (repository != null && session != null) {
                     repository.close(session);
@@ -355,8 +350,6 @@ public class PublishingActionsListenerBean extends InputController implements
         return view;
     }
 
-
-
     protected DocumentModel getCurrentDocument() {
         return navigationContext.getCurrentDocument();
     }
@@ -368,11 +361,14 @@ public class PublishingActionsListenerBean extends InputController implements
         if (document != null) {
             String parentDocumentType = document.getType();
             // FIXME AT: types shouldn't be harcoded here
-            /* Rux NXP-1879: Multiple types can be suitable for publishing. Is the FIXME
-             * fixed now?
+            /*
+             * Rux NXP-1879: Multiple types can be suitable for publishing. Is
+             * the FIXME fixed now?
              */
-            result = publishActions.getSectionRootTypes().contains(parentDocumentType) ||
-                    publishActions.getSectionTypes().contains(parentDocumentType);
+            result = publishActions.getSectionRootTypes().contains(
+                    parentDocumentType)
+                    || publishActions.getSectionTypes().contains(
+                            parentDocumentType);
         }
         return result;
     }
@@ -380,7 +376,8 @@ public class PublishingActionsListenerBean extends InputController implements
     public boolean canManagePublishing() throws PublishingException {
         // Current document is a proxy and the current user has a publishing
         // task.
-        PublishingTasks tasks = new PublishingTasks(navigationContext.getCurrentDocument(), currentUser);
+        PublishingTasks tasks = new PublishingTasks(
+                navigationContext.getCurrentDocument(), currentUser);
         return isProxy() && tasks.getPublishingWorkItem() != null;
     }
 
