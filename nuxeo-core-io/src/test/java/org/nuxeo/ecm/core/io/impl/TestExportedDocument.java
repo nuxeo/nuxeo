@@ -51,6 +51,8 @@ public class TestExportedDocument extends NXRuntimeTestCase {
                 .will(returnValue(new Path("my-path")));
         documentModelMock.expects(atLeastOnce()).method("getRef")
                 .will(returnValue(new IdRef("My id")));
+        documentModelMock.expects(atLeastOnce()).method("getPathAsString")
+                .will(returnValue("/my/path/"));
         documentModelMock.expects(atLeastOnce()).method("getName")
                 .will(returnValue(null));
         documentModelMock.expects(atLeastOnce()).method("getCurrentLifeCycleState")
