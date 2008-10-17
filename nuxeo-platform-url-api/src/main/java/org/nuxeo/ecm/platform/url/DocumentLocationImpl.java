@@ -19,27 +19,36 @@
 
 package org.nuxeo.ecm.platform.url;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.url.api.DocumentLocation;
 
-public class DocumentLocationImpl implements DocumentLocation {
+/**
+ * @deprecated use {@link org.nuxeo.ecm.core.api.impl.DocumentLocationImpl}
+ *             instead
+ */
+@Deprecated
+public class DocumentLocationImpl extends
+        org.nuxeo.ecm.core.api.impl.DocumentLocationImpl implements
+        DocumentLocation {
 
-    private final String serverLocationName;
+    private static final long serialVersionUID = 1L;
 
-    private final DocumentRef docRef;
+    public DocumentLocationImpl(DocumentModel doc) {
+        super(doc);
+    }
 
     public DocumentLocationImpl(final String serverLocationName,
             final DocumentRef docRef) {
-        this.serverLocationName = serverLocationName;
-        this.docRef = docRef;
+        super(serverLocationName, docRef);
     }
 
     public DocumentRef getDocRef() {
-        return docRef;
+        return super.getDocRef();
     }
 
     public String getServerLocationName() {
-        return serverLocationName;
+        return super.getServerName();
     }
 
 }

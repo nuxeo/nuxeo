@@ -327,8 +327,7 @@ public class NotificationMessageListener implements MessageListener {
         eventInfo.put("author", message.getPrincipalName());
 
         if (!documentHasBeenDeleted(message)) {
-            DocumentLocation docLoc = new DocumentLocationImpl(
-                    message.getRepositoryName(), message.getRef());
+            DocumentLocation docLoc = new DocumentLocationImpl(message);
             TypeInfo typeInfo = message.getAdapter(TypeInfo.class);
             DocumentView docView = new DocumentViewImpl(docLoc, typeInfo.getDefaultView());
             eventInfo.put(

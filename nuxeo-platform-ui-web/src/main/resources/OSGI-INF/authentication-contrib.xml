@@ -61,6 +61,7 @@
     <startURLPattern>
       <patterns>
         <pattern>nxdoc/</pattern>
+        <pattern>nxpath/</pattern>
         <pattern>getDocument.faces</pattern>
         <pattern>nxstartup.faces</pattern>
         <pattern>getSyndicationDocument.faces</pattern>

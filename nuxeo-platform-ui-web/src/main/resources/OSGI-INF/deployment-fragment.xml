@@ -90,6 +90,13 @@
 
     <filter-mapping>
       <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/nxpath/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
       <url-pattern>/nxfile/*</url-pattern>
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
@@ -884,6 +891,7 @@
     <web-resource-name>Secure area nxdoc</web-resource-name>
     <description>Security for Protected Pages</description>
     <url-pattern>/nxdoc/*</url-pattern>
+    <url-pattern>/nxpath/*</url-pattern>
     <http-method>HEAD</http-method>
     <http-method>GET</http-method>
     <http-method>POST</http-method>

@@ -108,9 +108,7 @@ public class RestHelper {
         if (currentDocument != null) {
             // XXX AT: i dont get why currentServerLocation is null while
             // currentDocument is not..
-            DocumentLocation docLoc = new DocumentLocationImpl(
-                    currentDocument.getRepositoryName(),
-                    currentDocument.getRef());
+            DocumentLocation docLoc = new DocumentLocationImpl(currentDocument);
             TypeInfo typeInfo = currentDocument.getAdapter(TypeInfo.class);
             Map<String, String> params = new HashMap<String, String>();
             params.put("tabId", webActions.getCurrentTabId());

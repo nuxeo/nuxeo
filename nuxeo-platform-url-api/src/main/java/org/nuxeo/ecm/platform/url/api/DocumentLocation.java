@@ -19,11 +19,13 @@
 
 package org.nuxeo.ecm.platform.url.api;
 
-import org.nuxeo.ecm.core.api.DocumentRef;
 
-public interface DocumentLocation {
-
-    DocumentRef getDocRef();
+/**
+ * @deprecated use {@link org.nuxeo.ecm.core.api.DocumentLocation} instead
+ */
+@Deprecated
+public interface DocumentLocation extends
+        org.nuxeo.ecm.core.api.DocumentLocation {
 
     String getServerLocationName();
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.url.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentLocation;
@@ -37,23 +37,23 @@ import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
 import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
 
 /**
- * Codec handling a document repository, id, view and additional request
+ * Codec handling a document repository, path, view and additional request
  * parameters.
  *
  * @author Anahide Tchertchian
  */
-public class DocumentIdCodec extends AbstractDocumentViewCodec implements
+public class DocumentPathCodec extends AbstractDocumentViewCodec implements
         DocumentViewCodec {
 
-    public static final String PREFIX = "nxdoc";
+    public static final String PREFIX = "nxpath";
 
-    // nxdoc/server/docId/view_id/?requestParams
-    public static final String URLPattern = "/(\\w+)/([a-zA-Z_0-9\\-]+)(/([a-zA-Z_0-9\\-\\.]*))?(/)?(\\?(.*)?)?";
+    // nxpath/server/path/to/doc/view_id/?requestParams
+    public static final String URLPattern = "/(\\w+)(/([a-zA-Z_0-9/\\-]*))?(@([a-zA-Z_0-9\\-\\.]+))(/)?(\\?(.*)?)?";
 
-    public DocumentIdCodec() {
+    public DocumentPathCodec() {
     }
 
-    public DocumentIdCodec(String prefix) {
+    public DocumentPathCodec(String prefix) {
     }
 
     @Override
@@ -70,16 +70,23 @@ public class DocumentIdCodec extends AbstractDocumentViewCodec implements
             List<String> items = new ArrayList<String>();
             items.add(getPrefix());
             items.add(docLoc.getServerName());
-            IdRef docRef = docLoc.getIdRef();
+            PathRef docRef = docLoc.getPathRef();
             if (docRef == null) {
                 return null;
             }
-            items.add(docRef.toString());
-            String viewId = docView.getViewId();
-            if (viewId != null) {
-                items.add(viewId);
+            // this is a path, get rid of leading slash
+            String path = docRef.toString();
+            if (path.startsWith("/")) {
+                path = path.substring(1);
+            }
+            if (path.length() > 0) {
+                items.add(path);
             }
             String uri = StringUtils.join(items, "/");
+            String viewId = docView.getViewId();
+            if (viewId != null) {
+                uri += "@" + viewId;
+            }
             return URIUtils.addParametersToURIQuery(uri,
                     docView.getParameters());
         }
@@ -94,31 +101,30 @@ public class DocumentIdCodec extends AbstractDocumentViewCodec implements
         final Pattern pattern = Pattern.compile(getPrefix() + URLPattern);
         Matcher m = pattern.matcher(url);
         if (m.matches()) {
-            if (m.groupCount() >= 4) {
 
-                // for debug
-                // for (int i = 1; i < m.groupCount() + 1; i++) {
-                // System.err.println(i + ": " + m.group(i));
-                // }
-
-                final String server = m.group(1);
-                String uuid = m.group(2);
-                final DocumentRef docRef = new IdRef(uuid);
-                final String viewId = m.group(4);
-
-                // get other parameters
-
-                Map<String, String> params = null;
-                if (m.groupCount() > 6) {
-                    String query = m.group(7);
-                    params = URIUtils.getRequestParameters(query);
-                }
-
-                final DocumentLocation docLoc = new DocumentLocationImpl(
-                        server, docRef);
-
-                return new DocumentViewImpl(docLoc, viewId, params);
+            final String server = m.group(1);
+            String path = m.group(3);
+            if (path != null) {
+                // add leading slash to make it absolute if it's not the root
+                path = "/" + path;
+            } else {
+                path = "/";
             }
+            final DocumentRef docRef = new PathRef(path);
+            final String viewId = m.group(5);
+
+            // get other parameters
+
+            Map<String, String> params = null;
+            if (m.groupCount() > 7) {
+                String query = m.group(8);
+                params = URIUtils.getRequestParameters(query);
+            }
+
+            final DocumentLocation docLoc = new DocumentLocationImpl(server,
+                    docRef);
+
+            return new DocumentViewImpl(docLoc, viewId, params);
         }
 
         return null;

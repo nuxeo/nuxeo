@@ -448,8 +448,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
         infoMap.put("comment", comment);
         infoMap.put("sender", sender);
 
-        DocumentLocation docLoc = new DocumentLocationImpl(
-                doc.getRepositoryName(), doc.getRef());
+        DocumentLocation docLoc = new DocumentLocationImpl(doc);
         DocumentView docView = new DocumentViewImpl(docLoc);
         docView.setViewId("view_documents");
         infoMap.put(

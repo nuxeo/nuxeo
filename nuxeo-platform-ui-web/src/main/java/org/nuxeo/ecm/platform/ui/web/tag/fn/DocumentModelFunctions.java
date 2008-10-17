@@ -347,8 +347,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String fileUrl(String patternName, DocumentModel doc,
             String blobPropertyName, String filename) {
         try {
-            DocumentLocation docLoc = new DocumentLocationImpl(
-                    doc.getRepositoryName(), doc.getRef());
+            DocumentLocation docLoc = new DocumentLocationImpl(doc);
             Map<String, String> params = new HashMap<String, String>();
             params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY,
                     blobPropertyName);
@@ -408,11 +407,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             String listElement, int index, String blobPropertyName,
             String filename) {
         try {
-            DocumentLocation docLoc = new DocumentLocationImpl(
-                    doc.getRepositoryName(), doc.getRef());
+            DocumentLocation docLoc = new DocumentLocationImpl(doc);
             Map<String, String> params = new HashMap<String, String>();
 
-            String fileProperty = getPropertyPath(listElement, index, blobPropertyName);
+            String fileProperty = getPropertyPath(listElement, index,
+                    blobPropertyName);
 
             params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, fileProperty);
             params.put(DocumentFileCodec.FILENAME_KEY, filename);
@@ -443,8 +442,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             String viewId, Map<String, String> parameters,
             boolean newConversation) {
         try {
-            DocumentLocation docLoc = new DocumentLocationImpl(
-                    doc.getRepositoryName(), doc.getRef());
+            DocumentLocation docLoc = new DocumentLocationImpl(doc);
             if (viewId == null) {
                 viewId = getDefaultView(doc);
             }
@@ -697,7 +695,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @param id the label id
      * @return the label.
      * @throws DirectoryException
-     * @deprecated use {@link DirectoryFunctions#getDirectoryEntry(String, String)}
+     * @deprecated use
+     *             {@link DirectoryFunctions#getDirectoryEntry(String, String)}
      */
     @Deprecated
     public static String getLabelFromId(String directoryName, String id)

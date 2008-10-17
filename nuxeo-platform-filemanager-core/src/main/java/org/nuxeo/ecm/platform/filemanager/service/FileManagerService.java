@@ -624,8 +624,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         List<DocumentLocation> docLocationList = new ArrayList<DocumentLocation>();
         DocumentLocation docLocation;
         for (DocumentModel documentModel : documentModelList) {
-            docLocation = new DocumentLocationImpl(
-                    documentModel.getRepositoryName(), documentModel.getRef());
+            docLocation = new DocumentLocationImpl(documentModel);
             docLocationList.add(docLocation);
         }
         return docLocationList;

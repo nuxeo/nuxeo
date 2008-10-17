@@ -13,6 +13,8 @@
     <documentation>
       Basic url pattern using the doc id codec: it places the application in the
       document context described by the url and sets a current tab.
+      
+      Additional url pattern using the doc path codec.
     </documentation>
 
     <urlPattern name="default" enabled="true">
@@ -21,6 +23,21 @@
       <needRedirectFilter>true</needRedirectFilter>
       <needFilterPreprocessing>true</needFilterPreprocessing>
       <codecName>docid</codecName>
+      <actionBinding>#{restHelper.initContextFromRestRequest}</actionBinding>
+      <documentViewBinding>#{restHelper.documentView}</documentViewBinding>
+      <newDocumentViewBinding>#{restHelper.newDocumentView}</newDocumentViewBinding>
+      <bindings>
+        <binding name="tabId">#{webActions.currentTabId}</binding>
+        <binding name="subTabId">#{webActions.currentSubTabId}</binding>
+      </bindings>
+    </urlPattern>
+
+    <urlPattern name="path" enabled="true">
+      <defaultURLPolicy>false</defaultURLPolicy>
+      <needBaseURL>true</needBaseURL>
+      <needRedirectFilter>true</needRedirectFilter>
+      <needFilterPreprocessing>true</needFilterPreprocessing>
+      <codecName>docpath</codecName>
       <actionBinding>#{restHelper.initContextFromRestRequest}</actionBinding>
       <documentViewBinding>#{restHelper.documentView}</documentViewBinding>
       <newDocumentViewBinding>#{restHelper.newDocumentView}</newDocumentViewBinding>
