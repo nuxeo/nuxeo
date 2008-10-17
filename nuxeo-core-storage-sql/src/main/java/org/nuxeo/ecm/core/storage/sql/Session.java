@@ -39,7 +39,7 @@ public interface Session extends Connection {
      *
      * @return {@code true} if the session is live
      */
-    public boolean isLive();
+    boolean isLive();
 
     /**
      * Gets the {@link Model} associated to this session.

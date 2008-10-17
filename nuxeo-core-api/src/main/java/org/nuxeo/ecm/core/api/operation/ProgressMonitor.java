@@ -27,10 +27,10 @@ package org.nuxeo.ecm.core.api.operation;
  */
 public interface ProgressMonitor {
 
-    public void started(Operation<?> cmd);
+    void started(Operation<?> cmd);
 
-    public void done(Operation<?> cmd, int percent);
+    void done(Operation<?> cmd, int percent);
 
-    public void terminated(Operation<?> cmd);
+    void terminated(Operation<?> cmd);
 
 }
