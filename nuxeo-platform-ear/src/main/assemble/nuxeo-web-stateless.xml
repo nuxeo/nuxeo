@@ -34,6 +34,7 @@
       <artifact group="org.nuxeo.*" category="runtime,jboss4"
         includeDependsOnCategory="false" />
       <artifact group="org.nuxeo.*" category="stateless" />
+      <!-- add here web and stateless nuxeo-addons -->
     </includes>
     <excludes>
       <artifact group="!org.nuxeo*" />
@@ -42,6 +43,8 @@
 
       <artifact name="nuxeo-platform-webapp" />
       <artifact name="nuxeo-platform-webapp-core" />
+      <artifact name="nuxeo-platform-ear" />
+      <artifact name="nuxeo-apt-extensions" />
     </excludes>
   </artifactSet>
 
@@ -52,6 +55,7 @@
   </assemble>
   <artifactSet id="nuxeo-fixed-libs">
     <artifacts>
+      <artifact group="org.freemarker" name="freemarker" version="2.3.11" />
       <artifact group="org.osgi" name="osgi-core" version="4.1" />
       <artifact group="commons-collections" name="commons-collections"
         version="3.1" />
@@ -108,6 +112,30 @@
     <excludes>
     <artifact group="org.nuxeo.*" />
     </excludes>
+    </artifactSet>
+  -->
+
+  <!-- CUSTOM RESOURCES
+    <assemble>
+    <outputFile>/</outputFile>
+    <set>custom-resources-stateless</set>
+    </assemble>
+    <fileSet id="custom-resources-stateless">
+    <directory>src/main/resources_custom_stateless</directory>
+    </fileSet>
+  -->
+
+  <!-- CUSTOM ARTIFACTS
+    <assemble>
+    <outputFile>plugins</outputFile>
+    <set>custom-plugins-stateless</set>
+    </assemble>
+    <artifactSet id="custom-plugins-stateless">
+    <import>**</import>
+    <includeDependencies>false</includeDependencies>
+    <includes>
+    <artifact group="com.custom.sample" category="stateless" />
+    </includes>
     </artifactSet>
   -->
 </assembly>

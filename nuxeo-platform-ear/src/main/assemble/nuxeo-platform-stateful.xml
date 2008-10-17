@@ -21,6 +21,7 @@
       <artifact group="org.nuxeo.*" category="runtime,jboss4"
         includeDependsOnCategory="false" />
       <artifact group="org.nuxeo.*" category="core,stateful" />
+      <!-- add here core and stateful nuxeo-addons -->
     </includes>
     <excludes>
       <artifact group="!org.nuxeo*" />
@@ -33,6 +34,7 @@
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
       <artifact name="nuxeo-platform-search-compass-plugin" />
+      <artifact name="nuxeo-platform-ear" />
     </excludes>
   </artifactSet>
 
@@ -58,6 +60,7 @@
   </assemble>
   <artifactSet id="nuxeo-fixed-libs">
     <artifacts>
+      <artifact group="org.freemarker" name="freemarker" version="2.3.11" />
       <artifact group="org.osgi" name="osgi-core" version="4.1" />
       <artifact group="commons-collections" name="commons-collections"
         version="3.1" />
@@ -114,6 +117,30 @@
     <excludes>
     <artifact group="org.nuxeo.*" />
     </excludes>
+    </artifactSet>
+  -->
+
+  <!-- CUSTOM RESOURCES
+    <assemble>
+    <outputFile>/</outputFile>
+    <set>custom-resources-stateful</set>
+    </assemble>
+    <fileSet id="custom-resources-stateful">
+    <directory>src/main/resources_custom_stateful</directory>
+    </fileSet>
+  -->
+
+  <!-- CUSTOM ARTIFACTS
+    <assemble>
+    <outputFile>plugins</outputFile>
+    <set>custom-plugins-stateful</set>
+    </assemble>
+    <artifactSet id="custom-plugins-stateful">
+    <import>**</import>
+    <includeDependencies>false</includeDependencies>
+    <includes>
+    <artifact group="com.custom.sample" category="core,stateful" />
+    </includes>
     </artifactSet>
   -->
 </assembly>

@@ -16,6 +16,7 @@
   </assemble>
   <artifactSet id="root-artifacts">
     <import>**</import>
+    <includeDependencies>false</includeDependencies>
     <includes>
       <artifact name="nuxeo-platform-webapp" />
       <artifact name="nuxeo-platform-webapp-core" />
@@ -37,7 +38,7 @@
     </includes>
     <excludes>
       <artifact group="!org.nuxeo*" />
-      <artifact name="nuxeo-common" />
+      <artifact group="org.nuxeo.common" />
       <artifact name="nuxeo-runtime-jboss-extensions" />
 
       <artifact name="nuxeo-platform-webapp" />
@@ -47,6 +48,7 @@
       <artifact name="nuxeo-platform-placeful-facade" />
       <artifact name="nuxeo-platform-search-compass-plugin" />
       <artifact name="nuxeo-platform-ear" />
+      <artifact name="nuxeo-apt-extensions" />
     </excludes>
   </artifactSet>
 
