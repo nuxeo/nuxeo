@@ -99,8 +99,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
         this.path = path.makeRelative();
         readDocument(doc, inlineBlobs);
 
-        srcLocation = new DocumentLocationImpl(doc.getRepositoryName(),
-                doc.getRef());
+        srcLocation = new DocumentLocationImpl(doc);
     }
 
     public ExportedDocumentImpl(DocumentModel doc) throws IOException {

@@ -36,4 +36,14 @@ public interface DocumentLocation extends Serializable {
      */
     DocumentRef getDocRef();
 
+    /**
+     * Returns the document path reference
+     */
+    PathRef getPathRef();
+
+    /**
+     * Returns the document id reference
+     */
+    IdRef getIdRef();
+
 }
