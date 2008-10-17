@@ -7,16 +7,16 @@
        </@block>
     </title>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <link rel="stylesheet" href="/nuxeo/site/files/resources/css/webengine.css" type="text/css" media="screen" charset="utf-8">
-    <script src="/nuxeo/site/files/resources/script/jquery/jquery.js"></script>
-    <link rel="stylesheet" href="/nuxeo/site/files/resources/script/jquery/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
-    <link rel="shortcut icon" href="/nuxeo/site/files/resources/image/favicon.gif" />
+    <link rel="stylesheet" href="${basePath}/files/resources/css/webengine.css" type="text/css" media="screen" charset="utf-8">
+    <script src="${basePath}/files/resources/script/jquery/jquery.js"></script>
+    <link rel="stylesheet" href="${basePath}/files/resources/script/jquery/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
+    <link rel="shortcut icon" href="${basePath}/files/resources/image/favicon.gif" />
     <@block name="stylesheets" />
-    <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.base.js"></script>
-    <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.tabs.js"></script>
-    <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/cookie.js"></script>
-    <script type="text/javascript" src="/nuxeo/site/files/resources/script/json.js"></script>
-    <script type="text/javascript" src="/nuxeo/site/files/resources/script/webengine.js"></script>
+    <script type="text/javascript" src="${basePath}/files/resources/script/jquery/ui/ui.base.js"></script>
+    <script type="text/javascript" src="${basePath}/files/resources/script/jquery/ui/ui.tabs.js"></script>
+    <script type="text/javascript" src="${basePath}/files/resources/script/jquery/cookie.js"></script>
+    <script type="text/javascript" src="${basePath}/files/resources/script/json.js"></script>
+    <script type="text/javascript" src="${basePath}/files/resources/script/webengine.js"></script>
     <#if Document??> <#-- we are in a document context: search is enabled -->
           <script>
            $(document).ready(function(){
@@ -35,7 +35,7 @@
 
 <div id="wrap">
     <div id="header">
-      <div class="webEngineRoot"><a href="${appPath}"><img src="/nuxeo/site/files/resources/image/dots.png" width="16" height="16" alt=""/></a></div>
+      <div class="webEngineRoot"><a href="${appPath}"><img src="${basePath}/files/resources/image/dots.png" width="16" height="16" alt=""/></a></div>
        <@block name="header">
        <#if Document??>
         <div class="searchBox">
@@ -91,7 +91,7 @@
     <#if Context.principal.isAdministrator()>
     <h3>Administration</h3>
     <ul>
-      <li><a href="${basePath}/admin">Admin board</a></li>    
+      <li><a href="${basePath}/admin">Admin board</a></li>
       <li><a href="${basePath}/admin/users">User Management</a></li>
     </ul>
     </#if>
