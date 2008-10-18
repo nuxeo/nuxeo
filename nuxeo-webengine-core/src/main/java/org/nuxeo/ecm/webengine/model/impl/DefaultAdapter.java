@@ -23,9 +23,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.AdapterResource;
-
+import org.nuxeo.ecm.webengine.model.Resource;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -33,10 +32,10 @@ import org.nuxeo.ecm.webengine.model.AdapterResource;
  */
 public class DefaultAdapter extends AbstractResource<ResourceTypeImpl> implements AdapterResource {
 
-
     public DefaultAdapter() {
     }
 
+    @Override
     public boolean isAdapter() {
         return true;
     }
@@ -52,9 +51,8 @@ public class DefaultAdapter extends AbstractResource<ResourceTypeImpl> implement
      * @throws WebException
      */
     @Path(value="@{segment}")
-    public AdapterResource disptachAdapter(@PathParam("segment") String adapterName) throws WebException {
+    public AdapterResource disptachAdapter(@PathParam("segment") String adapterName) {
         return ctx.newAdapter(this, adapterName);
     }
-
 
 }

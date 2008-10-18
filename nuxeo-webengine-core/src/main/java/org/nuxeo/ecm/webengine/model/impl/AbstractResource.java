@@ -50,23 +50,23 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     protected String path;
     protected T type;
 
-    public Resource initialize(WebContext ctx, ResourceType type, Object ...  args) throws WebException {
+    public Resource initialize(WebContext ctx, ResourceType type, Object ...  args) {
         this.ctx = ctx;
-        this.type = (T)type;        
+        this.type = (T)type;
         this.path = ctx.getUriInfo().getMatchedURIs().get(0);
         this.path = new StringBuilder().append(ctx.getBasePath()).append(this.path).toString();
         if (!this.type.getGuard().check(this)) {
             throw new WebSecurityException(
                     "Failed to initialize object: "+getPath()+". Object is not accessible in the current context", getPath());
         }
-        initialize(args);        
+        initialize(args);
         return this;
     }
 
-    protected void initialize(Object ...  args) throws WebException {
+    protected void initialize(Object ...  args) {
         // do nothing
     }
-    
+
     public boolean isAdapter() {
         return type.getClass() == AdapterTypeImpl.class;
     }
@@ -96,13 +96,13 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
 
     public Response redirect(String uri) {
         try {
-            //return Response.seeOther(new URI(URLEncoder.encode(uri, "UTF-8"))).build();            
+            //return Response.seeOther(new URI(URLEncoder.encode(uri, "UTF-8"))).build();
             if (uri.indexOf("://") == -1) { // not an absolute URI
                 if (!uri.startsWith("/")) {
-                    uri = ctx.getServerURL().append('/').append(uri).toString();                        
+                    uri = ctx.getServerURL().append('/').append(uri).toString();
                 } else {
-                    uri = ctx.getServerURL().append(uri).toString();    
-                }                
+                    uri = ctx.getServerURL().append(uri).toString();
+                }
             }
             return Response.seeOther(new URI(uri)).build();
         } catch (Exception e) {
@@ -113,7 +113,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public AdapterResource getActiveAdapter() {
         return next != null && next.isAdapter() ? (AdapterResource)next : null;
     }
-    
+
     public void dispose() {
         this.ctx = null;
         this.type = null;
@@ -152,7 +152,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public String getPath() {
         return path;
     }
-    
+
     public String getURL() {
         return ctx.getServerURL().append(path).toString();
     }
@@ -186,7 +186,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public Template getView(String fileName) {
         return new Template(this).fileName(fileName);
     }
-    
+
     public Template getTemplate(String fileName) {
         return new Template(this, getModule().getFile(fileName));
     }
@@ -195,5 +195,5 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public String toString() {
         return type.getName()+" ["+path+"]";
     }
-    
+
 }

@@ -38,10 +38,11 @@ public class StaticClassProxy implements ClassProxy {
 
     public Class<?> get() {
         return clazz;
-    };
+    }
 
     @Override
     public String toString() {
         return clazz.getName();
     }
+
 }

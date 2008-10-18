@@ -41,18 +41,17 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * TODO: should be synchronized? concurrent access may happen for the same session
- *
  * Used to store user session. This object is cached in a the HTTP session
  * Principal, subject and credentials are immutable per user session
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+// TODO: should be synchronized? concurrent access may happen for the same session
 public class UserSession extends HashMap<String, Object> implements Serializable, HttpSessionBindingListener {
 
     private static final long serialVersionUID = 260562970988817064L;
 
-    private static Log log = LogFactory.getLog(UserSession.class);
+    private static final Log log = LogFactory.getLog(UserSession.class);
 
     protected static UserSession anonymous;
 
@@ -60,7 +59,7 @@ public class UserSession extends HashMap<String, Object> implements Serializable
 
 
     public static UserSession getCurrentSession(HttpSession session) {
-        return (UserSession)session.getAttribute("nuxeo.webengine.user_session");
+        return (UserSession) session.getAttribute("nuxeo.webengine.user_session");
     }
 
     public static void setCurrentSession(HttpSession session, UserSession us) {
@@ -147,8 +146,11 @@ public class UserSession extends HashMap<String, Object> implements Serializable
     }
 
     /**
-     * Get a core session. I not already opened open a
-     * new core session against the default repository
+     * Gets a core session.
+     * <p>
+     * If not already opened, opens a new core session against the default
+     * repository.
+     *
      * @return
      */
     public CoreSession getCoreSession() {
@@ -240,16 +242,15 @@ public class UserSession extends HashMap<String, Object> implements Serializable
      * The component state will not be modified before being returned
      * as in {@link #getComponent(Class, String)}.
      * <p>
-     * If the component was not found in that session returns null
+     * If the component was not found in that session, returns null.
      *
      * @param <T>
      * @param type
      * @param name
      * @return
-     * @throws SessionException
      */
     @SuppressWarnings("unchecked")
-    public synchronized <T extends Component> T findComponent(Class<T> type, String name) throws SessionException {
+    public synchronized <T extends Component> T findComponent(Class<T> type, String name) {
         ComponentMap<T> map = (ComponentMap<T>)comps.get(type);
         if (map == null) {
             return null;
@@ -264,7 +265,7 @@ public class UserSession extends HashMap<String, Object> implements Serializable
     /**
      * Gets a component given its class and an optional name.
      * <p>
-     * If the component was not yet created in this session it will
+     * If the component was not yet created in this session, it will
      * be created and registered against the session.
      *
      * @param <T>
@@ -275,7 +276,7 @@ public class UserSession extends HashMap<String, Object> implements Serializable
      */
     @SuppressWarnings("unchecked")
     public synchronized <T extends Component> T getComponent(Class<T> type, String name) throws SessionException {
-        ComponentMap<T> map = (ComponentMap<T>)comps.get(type);
+        ComponentMap<T> map = (ComponentMap<T>) comps.get(type);
         T comp = null;
         if (map == null) {
             map = new ComponentMap<T>();
@@ -312,10 +313,11 @@ public class UserSession extends HashMap<String, Object> implements Serializable
     @SuppressWarnings("unchecked")
     public <T extends Component> T getComponent(String  typeName, String name) throws SessionException {
         try {
-            Class<T> type = (Class<T>)Class.forName(typeName);
+            Class<T> type = (Class<T>) Class.forName(typeName);
             return getComponent(type, name);
         } catch (ClassNotFoundException e) {
-            throw new SessionException("Could not find component class: "+typeName, e);
+            throw new SessionException("Could not find component class: "
+                    + typeName, e);
         }
     }
 
@@ -330,12 +332,12 @@ public class UserSession extends HashMap<String, Object> implements Serializable
      * @return
      */
     @SuppressWarnings("unchecked")
-    public <T extends Component> T getComponent(String  id) throws SessionException {
+    public <T extends Component> T getComponent(String id) throws SessionException {
         int p = id.lastIndexOf('#');
         if (p > -1) {
-            return (T)getComponent(id.substring(0, p), id.substring(p+1));
+            return (T) getComponent(id.substring(0, p), id.substring(p + 1));
         } else {
-            return (T)getComponent(id, null);
+            return (T) getComponent(id, null);
         }
     }
 

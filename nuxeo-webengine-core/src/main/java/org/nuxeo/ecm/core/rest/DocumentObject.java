@@ -57,7 +57,7 @@ public class DocumentObject extends DefaultObject {
     }
 
     @Override
-    public void initialize(Object... args) throws WebException {
+    public void initialize(Object... args) {
         assert args != null && args.length == 1;
         doc = (DocumentModel)args[0];
     }
@@ -73,7 +73,7 @@ public class DocumentObject extends DefaultObject {
     public Response getDelete() {
         return doDelete();
     }
-    
+
     @DELETE
     public Response doDelete() {
         try {
@@ -107,14 +107,14 @@ public class DocumentObject extends DefaultObject {
     public Response getPut() {
         return doPut();
     }
-    
+
     //TODO implement HEAD
     public Object doHead() {
         return null; //TODO
     }
 
     @Path(value="{path}")
-    public Resource traverse(@PathParam("path") String path) throws WebException {
+    public Resource traverse(@PathParam("path") String path) {
         return newObject(path);
     }
 

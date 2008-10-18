@@ -36,8 +36,7 @@ import org.nuxeo.runtime.contribution.ContributionRegistry;
 public abstract class AbstractContributionRegistry<K, T> implements
         ContributionRegistry<K, T> {
 
-    protected Map<Object, Contribution<K, T>> registry;
-
+    protected final Map<Object, Contribution<K, T>> registry;
 
 
     public AbstractContributionRegistry() {
@@ -57,7 +56,7 @@ public abstract class AbstractContributionRegistry<K, T> implements
             }
         }
         return null;
-    };
+    }
 
     public synchronized void removeContribution(K key) {
         Contribution<K, T> contrib = registry.get(key);
@@ -124,7 +123,8 @@ public abstract class AbstractContributionRegistry<K, T> implements
     protected abstract T clone(T object);
 
     /**
-     * Apply fragment over the given object
+     * Applies fragment over the given object.
+     *
      * @param object
      * @param fragment
      */

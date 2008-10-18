@@ -103,16 +103,15 @@ public class FormData implements FormInstance {
 
 
     @SuppressWarnings("unchecked")
-    public Map<String, String[]> getFormFields() throws WebException {
+    public Map<String, String[]> getFormFields() {
         if (isMultipart) {
             return getMultiPartFormFields();
         } else {
-            return ((Map<String, String[]>) request.getParameterMap());
+            return request.getParameterMap();
         }
     }
 
-
-    public Map<String, String[]> getMultiPartFormFields() throws WebException {
+    public Map<String, String[]> getMultiPartFormFields() {
         Map<String, List<FileItem>> items = getMultiPartItems();
         Map<String, String[]> result = new HashMap<String, String[]>();
         for (Map.Entry<String,List<FileItem>> entry : items.entrySet()) {
@@ -127,7 +126,7 @@ public class FormData implements FormInstance {
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String, List<FileItem>> getMultiPartItems() throws WebException {
+    public Map<String, List<FileItem>> getMultiPartItems() {
         if (items == null) {
             if (!isMultipart) {
                 throw new IllegalStateException("Not in a multi part form request");
@@ -153,7 +152,7 @@ public class FormData implements FormInstance {
     }
 
     @SuppressWarnings("unchecked")
-    public Collection<String> getKeys() throws WebException {
+    public Collection<String> getKeys() {
         if (isMultipart) {
             return getMultiPartItems().keySet();
         } else {
@@ -161,12 +160,12 @@ public class FormData implements FormInstance {
         }
     }
 
-    public Blob getBlob(String key) throws WebException {
+    public Blob getBlob(String key) {
         FileItem item = getFileItem(key);
         return item == null ? null : getBlob(item);
     }
 
-    public Blob[] getBlobs(String key) throws WebException {
+    public Blob[] getBlobs(String key) {
         List<FileItem> list = getFileItems(key);
         Blob[] ar = null;
         if (list != null) {
@@ -181,11 +180,11 @@ public class FormData implements FormInstance {
     /**
      * XXX TODO implement it
      */
-    public Map<String, Blob[]> getBlobFields() throws WebException {
+    public Map<String, Blob[]> getBlobFields() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public Blob getFirstBlob() throws WebException {
+    public Blob getFirstBlob() {
         Map<String, List<FileItem>> items = getMultiPartItems();
         for (List<FileItem> list : items.values()) {
             for (FileItem item : list) {
@@ -197,7 +196,7 @@ public class FormData implements FormInstance {
         return null;
     }
 
-    protected Blob getBlob(FileItem item) throws WebException {
+    protected Blob getBlob(FileItem item) {
         StreamSource src;
         if (item.isInMemory()) {
             src = new ByteArraySource(item.get());
@@ -214,7 +213,7 @@ public class FormData implements FormInstance {
         return blob;
     }
 
-    public final FileItem getFileItem(String key) throws WebException {
+    public final FileItem getFileItem(String key) {
         Map<String, List<FileItem>> items = getMultiPartItems();
         List<FileItem> list = items.get(key);
         if (list != null && !list.isEmpty()) {
@@ -223,16 +222,16 @@ public class FormData implements FormInstance {
         return null;
     }
 
-    public final List<FileItem> getFileItems(String key) throws WebException {
+    public final List<FileItem> getFileItems(String key) {
         return getMultiPartItems().get(key);
     }
 
-    public String getMultiPartFormProperty(String key) throws WebException {
+    public String getMultiPartFormProperty(String key) {
         FileItem item = getFileItem(key);
         return item == null ? null : item.getString();
     }
 
-    public String[] getMultiPartFormListProperty(String key) throws WebException {
+    public String[] getMultiPartFormListProperty(String key) {
         List<FileItem> list = getFileItems(key);
         String[] ar = null;
         if (list != null) {
@@ -249,11 +248,11 @@ public class FormData implements FormInstance {
      * @param key
      * @return an array of strings or an array of blobs
      */
-    public Object[] getMultiPartFormItems(String key) throws WebException {
+    public Object[] getMultiPartFormItems(String key) {
         return getMultiPartFormItems(getFileItems(key));
     }
 
-    public Object[] getMultiPartFormItems(List<FileItem> list) throws WebException {
+    public Object[] getMultiPartFormItems(List<FileItem> list) {
         Object[] ar = null;
         if (list != null) {
             if (list.isEmpty()) {
@@ -277,7 +276,7 @@ public class FormData implements FormInstance {
         return ar;
     }
 
-    public final Object getFileItemValue(FileItem item) throws WebException {
+    public final Object getFileItemValue(FileItem item) {
         if (item.isFormField()) {
             return item.getString();
         } else {
@@ -297,7 +296,7 @@ public class FormData implements FormInstance {
         return request.getParameterValues(key);
     }
 
-    public String getString(String key) throws WebException {
+    public String getString(String key) {
         if (isMultipart) {
             return getMultiPartFormProperty(key);
         } else {
@@ -305,7 +304,7 @@ public class FormData implements FormInstance {
         }
     }
 
-    public String[] getList(String key) throws WebException {
+    public String[] getList(String key) {
         if (isMultipart) {
             return getMultiPartFormListProperty(key);
         } else {
@@ -313,7 +312,7 @@ public class FormData implements FormInstance {
         }
     }
 
-    public Object[] get(String key) throws WebException {
+    public Object[] get(String key) {
         if (isMultipart) {
             return getMultiPartFormItems(key);
         } else {
@@ -321,7 +320,7 @@ public class FormData implements FormInstance {
         }
     }
 
-    public void fillDocument(DocumentModel doc) throws WebException {
+    public void fillDocument(DocumentModel doc) {
         try {
             if (isMultipart) {
                 fillDocumentFromMultiPartForm(doc);
@@ -334,7 +333,7 @@ public class FormData implements FormInstance {
     }
 
     @SuppressWarnings("unchecked")
-    public void fillDocumentFromForm(DocumentModel doc) throws PropertyException, WebException {
+    public void fillDocumentFromForm(DocumentModel doc) throws PropertyException {
         Map<String, String[]> map = request.getParameterMap();
         for (Map.Entry<String,String[]> entry : map.entrySet()) {
             String key = entry.getKey();
@@ -351,7 +350,7 @@ public class FormData implements FormInstance {
         }
     }
 
-    public void fillDocumentFromMultiPartForm(DocumentModel doc) throws PropertyException, WebException {
+    public void fillDocumentFromMultiPartForm(DocumentModel doc) throws PropertyException {
         Map<String,List<FileItem>> map = getMultiPartItems();
         for (Map.Entry<String,List<FileItem>> entry : map.entrySet()) {
             String key = entry.getKey();
@@ -373,7 +372,7 @@ public class FormData implements FormInstance {
         }
     }
 
-    void fillDocumentProperty(Property p, String key, Object[] ar) throws PropertyException, WebException {
+    void fillDocumentProperty(Property p, String key, Object[] ar) throws PropertyException {
         if (ar == null || ar.length == 0) {
             p.remove();
         } else if (p.isScalar()) {
@@ -414,12 +413,12 @@ public class FormData implements FormInstance {
                 p.setValue(blob);
             } else {
                 throw new WebException(
-                        "Cannot set complext properties from HTML forms. You need to set each sub-scalar property explicitely");
+                        "Cannot set complex properties from HTML forms. You need to set each sub-scalar property explicitely");
             }
         }
     }
 
-    public VersioningActions getVersioningOption() throws WebException {
+    public VersioningActions getVersioningOption() {
         String val = getString(VERSIONING);
         if (val != null) {
             return val.equals(MAJOR) ? VersioningActions.ACTION_INCREMENT_MAJOR
@@ -428,11 +427,11 @@ public class FormData implements FormInstance {
         return null;
     }
 
-    public String getDocumentType() throws WebException {
+    public String getDocumentType() {
         return getString(DOCTYPE);
     }
 
-    public String getDocumentTitle() throws WebException {
+    public String getDocumentTitle() {
         return getString(TITLE);
     }
 

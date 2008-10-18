@@ -37,8 +37,7 @@ public class TestContributions extends TestCase {
         reg = new MyRegistry();
     }
 
-    public void test1() throws Exception {
-
+    public void test1() {
         MyObject mf = new MyObject("key1", "#1");
         mf.str = "a";
         reg.addFragment(mf.id, mf);
@@ -52,8 +51,7 @@ public class TestContributions extends TestCase {
         System.out.println(reg);
     }
 
-    public void test2() throws Exception {
-
+    public void test2() {
         MyObject mf = new MyObject("key1", "#1");
         mf.str = "a";
         reg.addFragment(mf.id, mf, "base");
@@ -73,8 +71,7 @@ public class TestContributions extends TestCase {
         System.out.println(reg);
     }
 
-    public void test3() throws Exception {
-
+    public void test3() {
         MyObject mf = new MyObject("key1", "#1");
         mf.str = "a";
         reg.addFragment(mf.id, mf, "base");
@@ -96,6 +93,6 @@ public class TestContributions extends TestCase {
 
         reg.removeFragment("key1", mf2);
         System.out.println(reg);
-
     }
+
 }

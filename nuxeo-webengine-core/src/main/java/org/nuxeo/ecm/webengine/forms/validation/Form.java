@@ -28,7 +28,6 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormInstance;
 
 /**
@@ -80,11 +79,11 @@ public class Form {
         return id;
     }
 
-    public Status validate(FormInstance data) throws WebException, ValidationException {
+    public Status validate(FormInstance data) {
         return validate(data, true);
     }
 
-    public Status validate(FormInstance data, boolean collectAll) throws WebException, ValidationException {
+    public Status validate(FormInstance data, boolean collectAll) {
         MultiStatus multiStatus = new MultiStatus();
         Collection<String>keys = data.getKeys();
         for (String key : keys) {

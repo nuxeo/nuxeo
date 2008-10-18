@@ -52,7 +52,7 @@ public class AbstractConstraint implements Constraint {
 
     public Constraint newInstance() {
         try {
-            return (Constraint)getClass().newInstance();
+            return getClass().newInstance();
         } catch (Exception e) {
             return null;
         }

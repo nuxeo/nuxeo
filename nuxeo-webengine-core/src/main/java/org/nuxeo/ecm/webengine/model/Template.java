@@ -36,8 +36,6 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
  */
 public class Template {
 
-    private static final long serialVersionUID = 1L;
-
     protected static final Map<String,String> mediaTypeNames = new HashMap<String, String>();
     static {
         mediaTypeNames.put(MediaType.APPLICATION_ATOM_XML, "atom");
@@ -53,35 +51,35 @@ public class Template {
     protected WebContext ctx;
 
     public Template(WebContext ctx) {
-        this (ctx, null, null, null);
+        this(ctx, null, null, null);
     }
 
-    public Template(WebContext ctx, Map<String,Object> args) {
-        this (ctx, null, null, args);
+    public Template(WebContext ctx, Map<String, Object> args) {
+        this(ctx, null, null, args);
     }
 
     public Template(WebContext ctx, ScriptFile script) {
-        this (ctx, null, script, null);
+        this(ctx, null, script, null);
     }
 
-    public Template(WebContext ctx, ScriptFile script, Map<String,Object> args) {
-        this (ctx, null, script, args);
+    public Template(WebContext ctx, ScriptFile script, Map<String, Object> args) {
+        this(ctx, null, script, args);
     }
 
     public Template(Resource resource) {
-        this (resource.getContext(), resource, null, null);
+        this(resource.getContext(), resource, null, null);
     }
 
-    public Template(Resource resource, Map<String,Object> args) {
-        this (resource.getContext(), resource, null, null);
+    public Template(Resource resource, Map<String, Object> args) {
+        this(resource.getContext(), resource, null, null);
     }
 
     public Template(Resource resource, ScriptFile script, Map<String,Object> args) {
-        this (resource.getContext(), resource, script, args);
+        this(resource.getContext(), resource, script, args);
     }
 
     public Template(Resource resource, ScriptFile script) {
-        this (resource.getContext(), resource, script, null);
+        this(resource.getContext(), resource, script, null);
     }
 
     public Template(WebContext ctx, Resource resource, ScriptFile script, Map<String,Object> args) {
@@ -92,7 +90,7 @@ public class Template {
         if (this.ctx == null && this.resource != null) {
             this.ctx = this.resource.getContext();
         }
-        this.mediaType = ctx.getHttpHeaders().getMediaType();
+        mediaType = ctx.getHttpHeaders().getMediaType();
     }
 
     public Template mediaType(MediaType mediaType) {

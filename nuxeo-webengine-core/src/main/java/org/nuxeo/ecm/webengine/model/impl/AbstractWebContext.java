@@ -68,16 +68,16 @@ public abstract class AbstractWebContext implements WebContext {
     protected AbstractResource<?> root;
     protected Module module;
     protected HttpServletRequest request;
-    protected HashMap<String,Object> vars;
+    protected HashMap<String, Object> vars;
     protected FormData form;
     protected String basePath;
 
     public AbstractWebContext(HttpServletRequest request) {
-        this.us = UserSession.getCurrentSession(request.getSession(true));
-        this.engine = Framework.getLocalService(WebEngine.class);
-        this.scriptExecutionStack = new LinkedList<File>();
+        us = UserSession.getCurrentSession(request.getSession(true));
+        engine = Framework.getLocalService(WebEngine.class);
+        scriptExecutionStack = new LinkedList<File>();
         this.request = request;
-        this.vars = new HashMap<String, Object>();
+        vars = new HashMap<String, Object>();
     }
 
 //    public abstract HttpServletRequest getHttpServletRequest();
@@ -245,7 +245,7 @@ public abstract class AbstractWebContext implements WebContext {
         }
         return buf;
     }
-    
+
     public String getURI() {
         return request.getRequestURI();
     }
@@ -304,7 +304,7 @@ public abstract class AbstractWebContext implements WebContext {
         if (tail == null) {
             return null;
         }
-        AbstractResource<?> rs = (AbstractResource<?>)tail;
+        AbstractResource<?> rs = tail;
         if (tail == head) {
             head = tail = null;
         } else {
@@ -389,15 +389,13 @@ public abstract class AbstractWebContext implements WebContext {
         return scriptExecutionStack.get(size-1).getParentFile();
     }
 
-
-
     /** running scripts and rendering templates */
 
-    public void render(String template, Writer writer) throws WebException {
+    public void render(String template, Writer writer) {
         render(template, null, writer);
     }
 
-    public void render(String template, Object ctx, Writer writer) throws WebException {
+    public void render(String template, Object ctx, Writer writer) {
         ScriptFile script = getFile(template);
         if (script != null) {
             render(script, ctx, writer);
@@ -407,7 +405,7 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     @SuppressWarnings("unchecked")
-    public void render(ScriptFile script, Object ctx, Writer writer) throws WebException {
+    public void render(ScriptFile script, Object ctx, Writer writer) {
         Map map = null;
         if (ctx != null) {
             if (ctx instanceof Map) {
@@ -434,11 +432,11 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
-    public Object runScript(String script) throws WebException {
+    public Object runScript(String script) {
         return runScript(script, null);
     }
 
-    public Object runScript(String script, Map<String, Object> args) throws WebException {
+    public Object runScript(String script, Map<String, Object> args) {
         ScriptFile sf = getFile(script);
         if (sf != null) {
             return runScript(sf, args);
@@ -447,7 +445,7 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
-    public Object runScript(ScriptFile script, Map<String, Object> args) throws WebException {
+    public Object runScript(ScriptFile script, Map<String, Object> args) {
         try {
             pushScriptFile(script.getFile());
             return engine.getScripting().runScript(script, createBindings(args));
@@ -462,8 +460,6 @@ public abstract class AbstractWebContext implements WebContext {
             }
         }
     }
-
-
 
     public Bindings createBindings(Map<String, Object> vars) {
         Bindings bindings = new SimpleBindings();
@@ -496,7 +492,6 @@ public abstract class AbstractWebContext implements WebContext {
         return null;
     }
 
-
     protected void initializeBindings(Bindings bindings) {
         Resource obj = getTargetObject();
         bindings.put("Context", this);
@@ -518,7 +513,7 @@ public abstract class AbstractWebContext implements WebContext {
         try {
             bindings.put("Session", getCoreSession());
         } catch (Exception e) {
-            throw WebException.wrap("Failed to get a core session", e); 
+            throw WebException.wrap("Failed to get a core session", e);
         }
     }
 

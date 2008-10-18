@@ -40,56 +40,55 @@ public class WebException extends WebApplicationException {
     protected boolean byPassAppResponse = false;
 
     public WebException() {
-        super ();
+        super();
     }
 
     public WebException(Response response) {
-        super (response);
+        super(response);
     }
 
     public WebException(int status) {
-        super (status);
+        super(status);
     }
 
     public WebException(Response.Status status) {
-        super (status);
+        super(status);
     }
 
     public WebException(Throwable cause, Response response) {
-        super (cause, response);
+        super(cause, response);
         byPassAppResponse = true;
     }
 
     public WebException(Throwable cause, Response.Status status) {
-        super (cause, status);
+        super(cause, status);
     }
 
     public WebException(Throwable cause, int status) {
-        super (cause, status);
+        super(cause, status);
     }
 
     public WebException(Throwable cause) {
-        super (cause);
+        super(cause);
     }
 
-
     public WebException(String message) {
-      super ();
-      this.message = message;
+        super();
+        this.message = message;
     }
 
     public WebException(String message, int code) {
-        super (code);
+        super(code);
         this.message = message;
     }
 
     public WebException(String message, Throwable t) {
-        super (t);
+        super(t);
         this.message = message;
     }
 
     public WebException(String message, Throwable t, int code) {
-        super (t, code);
+        super(t, code);
         this.message = message;
     }
 
@@ -106,7 +105,6 @@ public class WebException extends WebApplicationException {
     public int getReturnCode() {
         return super.getResponse().getStatus();
     }
-
 
     @Override
     public Response getResponse() {
@@ -129,7 +127,7 @@ public class WebException extends WebApplicationException {
             }
         }
         return response;
-    }    
+    }
 
     public String getStackTraceString() {
         StringWriter sw = new StringWriter();
@@ -138,7 +136,7 @@ public class WebException extends WebApplicationException {
         pw.close();
         return sw.toString();
     }
-    
+
     public static String toString(Throwable t) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
@@ -146,7 +144,7 @@ public class WebException extends WebApplicationException {
         pw.close();
         return sw.toString();
     }
-    
+
     public static Response toResponse(Throwable t) {
         return Response.status(500).entity(toString(t)).build();
     }
@@ -158,7 +156,8 @@ public class WebException extends WebApplicationException {
     @SuppressWarnings({"ThrowableInstanceNeverThrown"})
     public static WebException wrap(String message, Throwable e) {
         //TODO add EJBAccessException dependency
-        if (e instanceof DocumentSecurityException || "javax.ejb.EJBAccessException".equals(e.getClass().getName())) {
+        if (e instanceof DocumentSecurityException
+                || "javax.ejb.EJBAccessException".equals(e.getClass().getName())) {
             return new WebSecurityException(message, e);
         } else if (e instanceof WebException) {
             return (WebException)e;

@@ -41,9 +41,6 @@ public abstract class TypeHandler {
         return handlers.get(type);
     }
 
-    /**
-     * @return the type.
-     */
     public String getType() {
         return type;
     }

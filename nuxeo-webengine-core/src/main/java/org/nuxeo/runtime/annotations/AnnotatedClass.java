@@ -32,9 +32,9 @@ import java.util.Map;
 public class AnnotatedClass<T> {
 
     protected AnnotatedClass<?> superClass;
-    protected Class<T> clazz;
-    protected Map<Class<? extends Annotation>, Annotation> annotations;
-    protected Map<Method, AnnotatedMethod> methods;
+    protected final Class<T> clazz;
+    protected final Map<Class<? extends Annotation>, Annotation> annotations;
+    protected final Map<Method, AnnotatedMethod> methods;
 
     public AnnotatedClass(Class<T> clazz) {
         this.clazz = clazz;

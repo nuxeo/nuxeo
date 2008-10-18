@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -32,21 +31,22 @@ import org.nuxeo.ecm.webengine.WebException;
  */
 public interface FormInstance {
 
-    Collection<String> getKeys() throws WebException;
+    Collection<String> getKeys();
 
-    Object[] get(String key) throws WebException;
+    Object[] get(String key);
 
-    String getString(String key) throws WebException;
+    String getString(String key);
 
-    String[] getList(String key) throws WebException;
+    String[] getList(String key);
 
-    Blob getBlob(String key) throws WebException;
+    Blob getBlob(String key);
 
-    Blob[] getBlobs(String key) throws WebException;
+    Blob[] getBlobs(String key);
 
-    Map<String, String[]> getFormFields() throws WebException;
+    Map<String, String[]> getFormFields();
 
-    Map<String, Blob[]> getBlobFields() throws WebException;
+    Map<String, Blob[]> getBlobFields();
 
-    void fillDocument(DocumentModel doc) throws WebException;
+    void fillDocument(DocumentModel doc);
+
 }

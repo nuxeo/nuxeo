@@ -34,9 +34,6 @@ import org.nuxeo.runtime.contribution.ContributionRegistry;
  */
 public class ContributionImpl<K,T> implements Contribution<K,T> {
 
-    private static final long serialVersionUID = 1L;
-
-
     protected AbstractContributionRegistry<K,T> registry;
     protected K primaryKey;
     protected List<T> mainFragments = new ArrayList<T>();
@@ -52,8 +49,6 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
     // last merged fragment
     protected T value = null;
     protected boolean isResolved = false;
-
-
 
     public ContributionImpl(AbstractContributionRegistry<K,T> reg,  K primaryKey) {
         this.primaryKey = primaryKey;

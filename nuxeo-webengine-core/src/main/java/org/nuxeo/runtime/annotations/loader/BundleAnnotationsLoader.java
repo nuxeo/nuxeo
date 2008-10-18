@@ -43,14 +43,14 @@ public class BundleAnnotationsLoader implements BundleListener {
 
     private static final Log log = LogFactory.getLog(BundleAnnotationsLoader.class);
 
-    protected static BundleAnnotationsLoader instance = new BundleAnnotationsLoader();
+    protected static final BundleAnnotationsLoader instance = new BundleAnnotationsLoader();
 
     public static BundleAnnotationsLoader getInstance() {
         return instance;
     }
 
-    protected Map<String, AnnotationLoader> loaders;
-    protected Map<String, List<Entry>> pendings;
+    protected final Map<String, AnnotationLoader> loaders;
+    protected final Map<String, List<Entry>> pendings;
 
 
     public BundleAnnotationsLoader() {
@@ -161,9 +161,10 @@ public class BundleAnnotationsLoader implements BundleListener {
 
 
     static class Entry {
-        Bundle bundle;
-        String className;
-        String[] args;
+        final Bundle bundle;
+        final String className;
+        final String[] args;
+
         Entry(Bundle bundle, String className, String[] args) {
             this.bundle = bundle;
             this.className = className;

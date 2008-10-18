@@ -41,71 +41,71 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
  *
  */
 public abstract class AbstractResourceType implements ResourceType {
-    
+
     protected ModuleImpl module;
     protected String name;
     protected AbstractResourceType superType;
     protected volatile ClassProxy clazz;
     protected volatile Guard guard = Guard.DEFAULT;
-    protected volatile Set<String> facets;    
+    protected volatile Set<String> facets;
     protected volatile ConcurrentMap<String, ScriptFile> templateCache;
-    
+
     public AbstractResourceType(ModuleImpl module, AbstractResourceType superType, String name, ClassProxy clazz) {
-        this.templateCache = new ConcurrentHashMap<String, ScriptFile>();        
+        templateCache = new ConcurrentHashMap<String, ScriptFile>();
         this.module = module;
         this.superType = superType;
         this.name = name;
-        this.clazz = clazz;        
-        AnnotationManager mgr = module.engine.getAnnotationManager();        
-        loadAnnotations(mgr);        
+        this.clazz = clazz;
+        AnnotationManager mgr = module.engine.getAnnotationManager();
+        loadAnnotations(mgr);
     }
-    
+
     protected abstract void loadAnnotations(AnnotationManager annoMgr);
-    
+
     public ResourceType getSuperType() {
         return superType;
     }
-    
+
     public Guard getGuard() {
         return guard;
     }
-    
+
     public Set<String> getFacets() {
         return facets;
     }
-    
+
     public boolean hasFacet(String facet) {
         return facets != null && facets.contains(facet);
     }
-    
+
     /**
      * @return the name.
      */
     public String getName() {
         return name;
     }
-    
+
     @SuppressWarnings("unchecked")
     public Class<Resource> getResourceClass() {
         return (Class<Resource>)clazz.get();
     }
-    
+
     @SuppressWarnings("unchecked")
     public <T extends Resource> T newInstance() throws WebException {
-        try {           
+        try {
             return (T)clazz.get().newInstance();
         } catch (Exception e) {
             throw WebException.wrap("Failed to instantiate web object: "+clazz, e);
         }
-    }    
+    }
 
     public boolean isEnabled(Resource ctx) {
         return guard.check(ctx);
     }
-    
+
     public ScriptFile getTemplate(String name) throws WebException {
         if (name == null) {
-            name = "view.ftl"; 
+            name = "view.ftl";
         }
         ScriptFile file = findTemplate(name);
         if (file == null) {
@@ -113,8 +113,8 @@ public abstract class AbstractResourceType implements ResourceType {
         }
         return file;
     }
-    
-    public ScriptFile findTemplate(String name) throws WebException {
+
+    public ScriptFile findTemplate(String name) {
         ScriptFile file = templateCache.get(name);
         if (file != null) {
             return file;
@@ -132,12 +132,12 @@ public abstract class AbstractResourceType implements ResourceType {
         }
         return file;
     }
-    
-    protected ScriptFile findSkinTemplate(String name) throws IOException {
+
+    protected ScriptFile findSkinTemplate(String name) {
         return module.getFile(new StringBuilder().append("views/")
                 .append(this.name).append("/").append(name).toString());
     }
-    
+
     protected ScriptFile findTypeTemplate(String name) throws IOException {
         String path = resolveResourcePath(clazz.getClassName(), name);
         File f = new File(module.getEngine().getRootDirectory(), path);
@@ -152,7 +152,7 @@ public abstract class AbstractResourceType implements ResourceType {
                 break;
             }
             t = (AbstractResourceType)t.getSuperType();
-        }     
+        }
         return file;
     }
 
@@ -169,25 +169,25 @@ public abstract class AbstractResourceType implements ResourceType {
         .append(path)
         .append('/')
         .append(fileName)
-        .toString();        
+        .toString();
     }
 
     public boolean isDerivedFrom(String type) {
         if (type.equals(name)) {
-            return true; 
+            return true;
         }
         if (superType != null) {
             return superType.isDerivedFrom(type);
         }
         return false;
     }
-    
+
     public void flushCache() {
-        this.templateCache = new ConcurrentHashMap<String, ScriptFile>();
+        templateCache = new ConcurrentHashMap<String, ScriptFile>();
     }
 
-    protected void loadGuardFromAnnoation(Class<?> c) throws WebException {
-        org.nuxeo.ecm.webengine.model.Guard ag = (org.nuxeo.ecm.webengine.model.Guard)c.getAnnotation(org.nuxeo.ecm.webengine.model.Guard.class);
+    protected void loadGuardFromAnnoation(Class<?> c) {
+        org.nuxeo.ecm.webengine.model.Guard ag = c.getAnnotation(org.nuxeo.ecm.webengine.model.Guard.class);
         if (ag != null) {
             String g = ag.value();
             if (g != null && g.length() > 0) {
@@ -195,22 +195,24 @@ public abstract class AbstractResourceType implements ResourceType {
                     guard = PermissionService.parse(g);
                 } catch (ParseException e) {
                     throw WebException.wrap("Failed to parse guard: "+g+" on WebObject "+c.getName(), e);
-                }                    
+                }
             } else {
                 Class<?> gc = ag.type();
                 if (gc != null) {
                     try {
                         guard = (org.nuxeo.ecm.webengine.security.Guard)gc.newInstance();
                     } catch (Exception e) {
-                        throw WebException.wrap("Failed to instantiate guard handler: "+gc.getName()+" on WebObject "+c.getName(), e);
+                        throw WebException.wrap(
+                                "Failed to instantiate guard handler: "+gc.getName()+" on WebObject "+c.getName(), e);
                     }
                 }
             }
-        }        
+        }
     }
 
     @Override
     public String toString() {
-        return name+" extends "+superType+" ["+getResourceClass().getName()+"]";
+        return name + " extends " + superType + " [" + getResourceClass().getName() + "]";
     }
+
 }

@@ -77,35 +77,43 @@ public class AdapterDescriptor extends TypeDescriptor {
         }
     }
 
+    @Override
     public boolean isAdapter() {
         return true;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
         if (obj instanceof AdapterDescriptor) {
-            AdapterDescriptor td = (AdapterDescriptor)obj;
+            AdapterDescriptor td = (AdapterDescriptor) obj;
             return name.equals(td.name) && Utils.streq(fragment, td.fragment);
         }
         return false;
     }
 
+    @Override
     public String getId() {
         return name;
     }
 
+    @Override
     public String getFragment() {
         return fragment;
     }
 
+    @Override
     public boolean isMainFragment() {
         return fragment == null;
     }
 
-
     public static AdapterDescriptor fromAnnotation(ClassProxy clazz, WebAdapter type) {
         return  new AdapterDescriptor(clazz, type.name(), type.superType(), type.targetType(), type.facets());
     }
+
 }

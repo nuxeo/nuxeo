@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * Form instanceto be used in test units
@@ -81,7 +80,7 @@ public class TestFormInstance implements FormInstance {
     }
 
     public void addField(String key, Blob ... values) {
-        Blob[] ar = this.blobs.get(key);
+        Blob[] ar = blobs.get(key);
         if (blobs == null) {
             blobs.put(key, values);
         } else {
@@ -92,7 +91,7 @@ public class TestFormInstance implements FormInstance {
         }
     }
 
-    public Collection<String> getKeys() throws WebException {
+    public Collection<String> getKeys() {
         ArrayList<String> result = new ArrayList<String>();
         result.addAll(params.keySet());
         result.addAll(blobs.keySet());
@@ -102,11 +101,11 @@ public class TestFormInstance implements FormInstance {
     /**
      * TODO XXX implement it
      */
-    public void fillDocument(DocumentModel doc) throws WebException {
+    public void fillDocument(DocumentModel doc) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public Object[] get(String key) throws WebException {
+    public Object[] get(String key) {
         Object[] val =  params.get(key);
         if (val == null) {
             val = blobs.get(key);
@@ -114,28 +113,28 @@ public class TestFormInstance implements FormInstance {
         return val;
     }
 
-    public Blob getBlob(String key) throws WebException {
+    public Blob getBlob(String key) {
         Blob[] blobs = this.blobs.get(key);
         return blobs == null ? null : blobs[0];
     }
 
-    public Blob[] getBlobs(String key) throws WebException {
+    public Blob[] getBlobs(String key) {
         return blobs.get(key);
     }
 
-    public Map<String, Blob[]> getBlobFields() throws WebException {
+    public Map<String, Blob[]> getBlobFields() {
         return blobs;
     }
 
-    public Map<String, String[]> getFormFields() throws WebException {
+    public Map<String, String[]> getFormFields() {
         return params;
     }
 
-    public String[] getList(String key) throws WebException {
+    public String[] getList(String key) {
         return params.get(key);
     }
 
-    public String getString(String key) throws WebException {
+    public String getString(String key) {
         String[] values = params.get(key);
         return values == null ? null : values[0];
     }

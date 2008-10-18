@@ -98,7 +98,7 @@ public class ResourceComposite extends ResourceBundle {
             }
             map.put(locale, bundle);
         }
-        return (String) bundle.getString(key);
+        return bundle.getString(key);
     }
 
 }

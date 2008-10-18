@@ -30,12 +30,12 @@ import java.util.Map;
  */
 public class AnnotatedMethod {
 
-    protected AnnotatedClass<?> aclass;
-    protected Method method;
-    protected Map<Class<? extends Annotation>, Annotation> annotations;
+    protected final AnnotatedClass<?> aclass;
+    protected final Method method;
+    protected final Map<Class<? extends Annotation>, Annotation> annotations;
 
     AnnotatedMethod(AnnotatedClass<?> aclass, Method method) {
-        this (aclass, method, new HashMap<Class<? extends Annotation>, Annotation>());
+        this(aclass, method, new HashMap<Class<? extends Annotation>, Annotation>());
     }
 
     AnnotatedMethod(AnnotatedClass<?> aclass, Method method, Map<Class<? extends Annotation>, Annotation> annos) {
@@ -48,16 +48,10 @@ public class AnnotatedMethod {
         return aclass;
     }
 
-    /**
-     * @return the method.
-     */
     public Method getMethod() {
         return method;
     }
 
-    /**
-     * @return the annotations.
-     */
     public Annotation[] getAnnotations() {
         return annotations.values().toArray(new Annotation[annotations.size()]);
     }
@@ -82,7 +76,5 @@ public class AnnotatedMethod {
     public boolean isDeclaringAnnotation(Class<? extends  Annotation> annotationClass) {
         return method.isAnnotationPresent(annotationClass);
     }
-
-
 
 }

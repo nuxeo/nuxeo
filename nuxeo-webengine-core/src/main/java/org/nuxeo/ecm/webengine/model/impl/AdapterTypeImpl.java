@@ -53,11 +53,10 @@ public class AdapterTypeImpl extends AbstractResourceType implements AdapterType
         return targetFacets;
     }
 
-
     public boolean acceptResource(Resource resource) {
         if (acceptType(resource.getType())) {
             if (targetFacets != null && targetFacets.length > 0) {
-                String[] facets = this.targetFacets; // make a local copy to avoid parallel type definition updates
+                String[] facets = targetFacets; // make a local copy to avoid parallel type definition updates
                 for (String f : facets) {
                     if (!resource.hasFacet(f)) {
                         return false;
@@ -75,16 +74,17 @@ public class AdapterTypeImpl extends AbstractResourceType implements AdapterType
         return type.isDerivedFrom(targetType);
     }
 
-
     @Override
     protected void loadAnnotations(AnnotationManager annoMgr) {
         Class<?> c = clazz.get();
         WebAdapter ws = c.getAnnotation(WebAdapter.class);
-        if (ws == null) return;
+        if (ws == null) {
+            return;
+        }
         String g = ws.guard();
         if (g != null && g.length() > 0) {
             try {
-                this.guard = PermissionService.parse(g);
+                guard = PermissionService.parse(g);
             } catch (ParseException e) {
                 throw WebException.wrap("Failed to parse guard: "+g+" on WebObject "+c.getName(), e);
             }
@@ -95,12 +95,11 @@ public class AdapterTypeImpl extends AbstractResourceType implements AdapterType
         if (facets != null && facets.length > 0) {
             this.facets = new HashSet<String>(Arrays.asList(facets));
         }
-        this.targetType = ws.targetType();
+        targetType = ws.targetType();
         String[] targetFacets = ws.targetFacets();
         if (targetFacets != null && targetFacets.length > 0) {
             this.targetFacets = targetFacets;
         }
     }
-
 
 }

@@ -38,7 +38,7 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 public class DocumentHelper {
 
 
-    public static DocumentModel createDocument(WebContext context, DocumentModel parent, String name) throws WebException {
+    public static DocumentModel createDocument(WebContext context, DocumentModel parent, String name) {
         try {
             CoreSession session = context.getCoreSession();
             FormData form = context.getForm();
@@ -85,7 +85,7 @@ public class DocumentHelper {
     }
 
 
-    public static DocumentModel updateDocument(WebContext ctx, DocumentModel doc) throws WebException {
+    public static DocumentModel updateDocument(WebContext ctx, DocumentModel doc) {
         try {
             FormData form = ctx.getForm();
             form.fillDocument(doc);
