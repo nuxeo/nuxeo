@@ -17,7 +17,7 @@ if (style != null) {
         viewName = "*"
     }
     Set<String> paths = style.getPathsForView(viewName)
-    current = Context.runScript("getCurrentStyleSelector.groovy")
+    current = Context.runScript("getSelectedStyleSelector.groovy")
     if (current != null && !paths.contains(current)) {
         selectors.add(current)
     }

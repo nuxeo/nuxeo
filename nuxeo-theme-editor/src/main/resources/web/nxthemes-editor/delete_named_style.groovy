@@ -3,6 +3,7 @@ import org.nuxeo.theme.editor.Events
 import org.nuxeo.theme.elements.Element
 import org.nuxeo.theme.elements.ElementFormatter
 import org.nuxeo.theme.events.EventContext
+import org.nuxeo.theme.events.EventManager
 import org.nuxeo.theme.formats.styles.Style
 import org.nuxeo.theme.themes.ThemeManager
 import org.nuxeo.theme.formats.styles.Style

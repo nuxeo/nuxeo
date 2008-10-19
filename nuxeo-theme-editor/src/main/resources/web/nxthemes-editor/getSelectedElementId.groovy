@@ -1,1 +1,1 @@
-return Request.getSession(true).getAttribute("nxthemes.editor.selected_element")
+return Request.getSession(true).getAttribute("nxthemes.editor.element")

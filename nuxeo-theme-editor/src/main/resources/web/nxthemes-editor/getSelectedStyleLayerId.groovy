@@ -1,1 +1,1 @@
-return Request.getSession(true).getAttribute("nxthemes.editor.selected_style_layer")
+return Request.getSession(true).getAttribute("nxthemes.editor.style_layer")

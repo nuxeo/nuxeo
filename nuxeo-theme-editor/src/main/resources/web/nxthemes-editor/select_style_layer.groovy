@@ -4,5 +4,5 @@ import org.nuxeo.theme.formats.styles.Style
 uid = Request.getParameter("uid")
 Style layer = (Style) ThemeManager.getFormatById(uid);
 if (layer != null) {
-    Request.getSession(true).setAttribute("nxthemes.editor.current_style_layer", uid);
+    Request.getSession(true).setAttribute("nxthemes.editor.style_layer", uid);
 }
