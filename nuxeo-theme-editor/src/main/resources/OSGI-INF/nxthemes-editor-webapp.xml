@@ -118,6 +118,9 @@
        <mapping pattern="/insert_fragment">
           <script>/insert_fragment.groovy</script>
        </mapping>
+       <mapping pattern="/update_element_style">
+          <script>/update_element_style.groovy</script>
+       </mapping>
       </mappings>
     </webapp>
 

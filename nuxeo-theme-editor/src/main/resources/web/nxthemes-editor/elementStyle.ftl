@@ -8,6 +8,7 @@
 <div>
 
   <#if !style_of_element_element>
+
       <form action="" class="nxthemesForm" onsubmit="NXThemesStyleEditor.createStyle(); return false;">
         <div>
           The element has no style.

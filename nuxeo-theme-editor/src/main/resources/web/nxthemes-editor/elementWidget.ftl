@@ -1,5 +1,5 @@
 <#assign selected_element_id = script("getSelectedElementId.groovy") />
-<#assign widget_of_selected_element = script("getWidgetOfSelectedElement.groovy") />
+<#assign selected_view_name = script("getSelectedViewName.groovy") />
 <#assign view_names_for_selected_element = script("getViewNamesForSelectedElement.groovy") />
 
 <div>
@@ -14,7 +14,7 @@
   <label>View name</label>
   <select name="" id="viewName">
     <#list view_names_for_selected_element as view_name>
-      <#if view_name == widget_of_selected_element.name>
+      <#if view_name == selected_view_name>
         <option value="${view_name}" selected="selected">${view_name}</option>
       <#else>
         <option value="${view_name}">${view_name}</option>

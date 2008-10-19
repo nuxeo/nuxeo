@@ -1,58 +1,67 @@
 
+import org.nuxeo.theme.Manager
+import org.nuxeo.theme.formats.FormatType
+import org.nuxeo.theme.elements.Element
+import org.nuxeo.theme.elements.ElementFormatter
+import org.nuxeo.theme.themes.ThemeManager
+import org.nuxeo.theme.formats.Format
+import org.nuxeo.theme.types.TypeFamily
+import org.nuxeo.theme.formats.styles.Style
+import org.nuxeo.theme.html.Utils
+import org.nuxeo.theme.presets.PresetType
+
 selectedElementId = Context.runScript("getSelectedElementId.groovy")
 selectedLayerId = Context.runScript("getSelectedStyleLayerId.groovy")
+selectedStyleLayer = Context.runScript("getSelectedStyleLayer.groovy")
+selectedViewName = Context.runScript("getSelectedViewName.groovy")
+selectedElement = Context.runScript("getSelectedElement.groovy")
 
-Element selectedElement = Manager.getElementById(selectedElementId);
-FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "style");
-Style style = (Style) ElementFormatter.getFormatByType(selectedElement, styleType);
+FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "style")
+Style style = (Style) ElementFormatter.getFormatByType(selectedElement, styleType)
 
-Style currentStyleLayer = Manager.get ...
-
-if (currentStyleLayer != null) {
-    style = currentStyleLayer;
+if (selectedStyleLayer != null) {
+    style = selectedStyleLayer
 }
 if (style == null) {
-    return "";
+    return ""
 }
 
-StringBuilder css = new StringBuilder();
-// TODO use Utils.styleToCss()
+StringBuilder css = new StringBuilder()
 
-List<Style> styles = new ArrayList<Style>();
+List<Style> styles = new ArrayList<Style>()
 for (Format ancestor : ThemeManager.listAncestorFormatsOf(style)) {
-    styles.add(0, (Style) ancestor);
+    styles.add(0, (Style) ancestor)
 }
-styles.add(style);
+styles.add(style)
 
-currentViewName = uiManager.getCurrentViewName();
 for (Style s : styles) {
-    viewName = currentViewName;
+    viewName = selectedViewName
     if (s.getName() != null) {
-viewName = "*";
+        viewName = "*"
     }
-    for (path : s.getPathsForView(viewName)) {
-css.append('#').append(cssPreviewId);
-css.append(' ').append(path).append(" {");
+    for (path in s.getPathsForView(viewName)) {
+        css.append("#stylePreviewArea")
+        css.append(' ').append(path).append(" {")
 
-Properties styleProperties = s.getPropertiesFor(viewName,
-path);
-Enumeration<?> propertyNames = Utils.getCssProperties().propertyNames();
-while (propertyNames.hasMoreElements()) {
-    propertyName = (String) propertyNames.nextElement();
-    value = styleProperties.getProperty(propertyName);
-    if (value == null) {
-continue;
+        Properties styleProperties = s.getPropertiesFor(viewName, path)
+        Enumeration<?> propertyNames = Utils.getCssProperties().propertyNames()
+        while (propertyNames.hasMoreElements()) {
+            propertyName = (String) propertyNames.nextElement()
+            value = styleProperties.getProperty(propertyName)
+            if (value == null) {
+                continue
+            }
+            css.append(propertyName)
+            css.append(':')
+            PresetType preset = ThemeManager.resolvePreset(value)
+            if (preset != null) {
+                value = preset.getValue()
+            }
+            css.append(value)
+            css.append('')
+       }
+       css.append('}')
     }
-    css.append(propertyName);
-    css.append(':');
-    PresetType preset = ThemeManager.resolvePreset(value);
-    if (preset != null) {
-value = preset.getValue();
-    }
-    css.append(value);
-    css.append(';');
 }
-css.append('}');
-    }
-}
-return css.toString();
+
+Response.writer.write(css.toString())
