@@ -129,7 +129,7 @@ public class VocabularyActionsBean implements VocabularyActions {
 
     private void initDirService() {
         if (dirService == null) {
-            dirService= DirectoryHelper.getDirectoryService();
+            dirService = DirectoryHelper.getDirectoryService();
             if (dirService == null) { // can't throw
                 log.error("Failed to lookup directory service");
             }
@@ -201,12 +201,11 @@ public class VocabularyActionsBean implements VocabularyActions {
                             selectedVocabularyEntry.getParent());
                 }
                 if (!vocabulary.query(filter).isEmpty()) {
-                    facesMessages.add(
+                    facesMessages.addToControl(
                             "id",
-                            FacesMessages.createFacesMessage(
-                                    FacesMessage.SEVERITY_INFO,
-                                    resourcesAccessor.getMessages().get(
-                                            "vocabulary.entry.identifier.already.exists")));
+                            FacesMessage.SEVERITY_INFO,
+                            resourcesAccessor.getMessages().get(
+                                    "vocabulary.entry.identifier.already.exists"));
                     return "view_vocabulary";
                 }
 
@@ -317,7 +316,8 @@ public class VocabularyActionsBean implements VocabularyActions {
         return "view_vocabularies";
     }
 
-    private static class VocabularyComparator implements Comparator<String>, Serializable {
+    private static class VocabularyComparator implements Comparator<String>,
+            Serializable {
 
         private static final long serialVersionUID = -3178630590907764894L;
 
@@ -595,8 +595,7 @@ public class VocabularyActionsBean implements VocabularyActions {
     }
 
     public boolean isHierarchical() throws DirectoryException {
-        return VocabularyConstants.VOCABULARY_TYPE_HIER.equals(
-                dirService.getDirectorySchema(selectedVocabularyName));
+        return VocabularyConstants.VOCABULARY_TYPE_HIER.equals(dirService.getDirectorySchema(selectedVocabularyName));
     }
 
     public boolean isNullParentAllowed() throws DirectoryException {
@@ -605,8 +604,7 @@ public class VocabularyActionsBean implements VocabularyActions {
         if (selectedVocabularyName == null) {
             return false;
         }
-        return selectedVocabularyName.equals(
-                dirService.getParentDirectoryName(selectedVocabularyName));
+        return selectedVocabularyName.equals(dirService.getParentDirectoryName(selectedVocabularyName));
     }
 
     private VocabularyEntry getEmptyVocabularyEntry() throws ClientException {

@@ -121,7 +121,6 @@ public class GroupManagerActionsBean extends InputController implements
         groupListingMode = userManager.getGroupListingMode();
     }
 
-
     public void destroy() {
         log.debug("destroy");
     }
@@ -232,16 +231,15 @@ public class GroupManagerActionsBean extends InputController implements
             if (StringUtils.isEmpty(newGroup.getName())) {
                 String message = resourcesAccessor.getMessages().get(
                         "label.groupManager.emptyGroupName");
-                facesMessages.add("groupName", message);
-                facesMessages.add(FacesMessage.SEVERITY_INFO, message);
+                facesMessages.addToControl("groupName",
+                        FacesMessage.SEVERITY_INFO, message);
                 return null;
             }
             if (!StringUtils.containsOnly(newGroup.getName(), VALID_CHARS)) {
                 String message = resourcesAccessor.getMessages().get(
                         "label.groupManager.wrongGroupName");
-
-                FacesMessages.instance().add("groupName",
-                        FacesMessage.SEVERITY_ERROR, message, (Object[]) null);
+                facesMessages.addToControl("groupName",
+                        FacesMessage.SEVERITY_ERROR, message);
                 return null;
             }
 
@@ -259,8 +257,8 @@ public class GroupManagerActionsBean extends InputController implements
         } catch (GroupAlreadyExistsException e) {
             String message = resourcesAccessor.getMessages().get(
                     "error.groupManager.groupAlreadyExists");
-            facesMessages.add("groupName", message);
-            facesMessages.add(FacesMessage.SEVERITY_INFO, message);
+            facesMessages.addToControl("groupName", FacesMessage.SEVERITY_INFO,
+                    message);
             return null;
         } catch (Throwable t) {
             throw ClientException.wrap(t);

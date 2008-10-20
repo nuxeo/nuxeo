@@ -246,7 +246,7 @@ public class PublishingActionsListenerBean extends InputController implements
         // Of course it remains a temporary solution.
         if (rejectPublishingComment == null
                 || rejectPublishingComment.trim().length() <= 0) {
-            facesMessages.add("rejectPublishingComment",
+            facesMessages.addToControl("rejectPublishingComment",
                     FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.publishing.reject.user.comment.mandatory"));
