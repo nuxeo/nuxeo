@@ -47,6 +47,10 @@
       from="nxforum.tmp/OSGI-INF/l10n/messages_de.properties"
       to="nuxeo.war/WEB-INF/classes/messages_de.properties"
       addNewLine="true" />
+    <append
+      from="nxforum.tmp/OSGI-INF/l10n/messages_cn.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_cn.properties"
+      addNewLine="true" />
 
     <!-- Other languages, if available, should appened here -->
 

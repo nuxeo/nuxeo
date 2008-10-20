@@ -40,6 +40,10 @@
       from="nxcomment.tmp/OSGI-INF/l10n/messages_de.properties"
       to="nuxeo.war/WEB-INF/classes/messages_de.properties"
       addNewLine="true" />
+    <append
+      from="nxcomment.tmp/OSGI-INF/l10n/messages_cn.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_cn.properties"
+      addNewLine="true" />
 
     <delete path="nxcomment.tmp" />
   </install>
