@@ -130,7 +130,7 @@ public class DocumentModelResolver extends BeanELResolver {
         }
 
         if (!context.isPropertyResolved() && avoidErrors) {
-            log.error(errorMessage);
+            log.warn(errorMessage);
             context.setPropertyResolved(true);
         }
 
@@ -212,7 +212,7 @@ public class DocumentModelResolver extends BeanELResolver {
                 context.setPropertyResolved(true);
             } catch (PropertyException pe) {
                 // XXX avoid errors here too?
-                log.error(pe.getMessage());
+                log.warn(pe.getMessage());
                 context.setPropertyResolved(true);
             }
         }
