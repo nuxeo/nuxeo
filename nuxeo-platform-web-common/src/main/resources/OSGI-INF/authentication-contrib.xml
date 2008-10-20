@@ -52,8 +52,8 @@
     <authenticationChain>
       <plugins>
         <plugin>BASIC_AUTH</plugin>
-        <plugin>ANONYMOUS_AUTH</plugin>
         <plugin>FORM_AUTH</plugin>
+        <plugin>ANONYMOUS_AUTH</plugin>
         <plugin>WEBSERVICES_AUTH</plugin>
       </plugins>
     </authenticationChain>

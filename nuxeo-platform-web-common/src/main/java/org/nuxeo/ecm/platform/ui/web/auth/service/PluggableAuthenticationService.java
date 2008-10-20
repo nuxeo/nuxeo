@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -320,6 +321,18 @@ public class PluggableAuthenticationService extends DefaultComponent {
         return false;
     }
 
+    public boolean needResetLogin(ServletRequest request) {
+        if (sessionManagers.size()>0) {            
+            for (NuxeoAuthenticationSessionManager sm : sessionManagers.values()) {
+                if (sm.needResetLogin(request)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    
     public String getBaseURL(ServletRequest request)
     {
         return VirtualHostHelper.getBaseURL(request);
