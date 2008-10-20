@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.core.repository;
 
+import java.util.LinkedList;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
@@ -71,11 +73,69 @@ public abstract class RepositoryInitializationHandler {
         return instance;
     }
 
-    public static void setInstance(RepositoryInitializationHandler handler) {
-        instance = handler;
+    /**
+     * The parent handler if any otherwise null
+     */
+    protected RepositoryInitializationHandler previous;
+    /**
+     * The next handler in the chain if any or null otherwise
+     */
+    protected RepositoryInitializationHandler next;
+
+    public abstract void doInitializeRepository(CoreSession session) throws ClientException;
+
+    /**
+     * Must be implemented by custom initializers.
+     *
+     * @param session the current session
+     * @throws ClientException
+     */
+    public void initializeRepository(CoreSession session) throws ClientException {
+        synchronized (RepositoryInitializationHandler.class) {
+            if (previous != null) {
+                previous.initializeRepository(session);
+            }
+            doInitializeRepository(session);
+        }
     }
 
-    public abstract void initializeRepository(CoreSession session)
-            throws ClientException;
+
+    /**
+     * @param parent the parent to set.
+     */
+    public void install() {
+        synchronized (RepositoryInitializationHandler.class) {
+            this.previous = RepositoryInitializationHandler.instance;
+            if (this.previous != null) {
+                this.previous.next = this;
+            }
+            RepositoryInitializationHandler.instance = this;
+        }
+    }
+
+    public void uninstall() {
+        synchronized (RepositoryInitializationHandler.class) {
+            if (previous != null) {
+                this.previous.next = next;
+                if (next != null) {
+                    next.previous = this.previous;
+                }
+            }
+            if (RepositoryInitializationHandler.instance == this) {
+                RepositoryInitializationHandler.instance = previous;
+            }
+        }
+    }
+
+    /**
+     * @return the parent.
+     */
+    public RepositoryInitializationHandler getPrevious() {
+        return previous;
+    }
+
+    public RepositoryInitializationHandler getNext() {
+        return next;
+    }
 
 }
