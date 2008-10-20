@@ -50,6 +50,9 @@ public class DefaultSessionManager implements NuxeoAuthenticationSessionManager 
         // NOP
     }
 
+    public boolean needResetLogin(ServletRequest req) {
+        return false;
+    }
 
 
 }
