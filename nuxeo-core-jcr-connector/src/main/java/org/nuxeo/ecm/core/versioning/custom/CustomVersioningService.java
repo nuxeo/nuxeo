@@ -437,11 +437,13 @@ public class CustomVersioningService implements VersioningService {
 
     protected void clearHistoryReference(Node parent) throws RepositoryException {
         removeHistoryReference(parent);
-        if ( ModelAdapter.isContainerNode(parent)) {
+        try {
             Node container = ModelAdapter.getContainerNode(parent);
             for ( NodeIterator it = container.getNodes() ; it.hasNext(); ) {
                 clearHistoryReference(it.nextNode());
             }
+        } catch (PathNotFoundException e) {
+            // ignore - not a folderish node
         }
     }
 
