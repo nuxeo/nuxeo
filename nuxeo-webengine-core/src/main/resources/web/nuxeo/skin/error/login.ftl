@@ -4,11 +4,11 @@
 <table cellpadding="4" cellspacing="1">
   <tr>
     <td>Username:</td>
-    <td><input name="userid" type="text"></td>
+    <td><input name="user_name" type="text"></td>
   </tr>
   <tr>
     <td>Password:</td>
-    <td><input name="password" type="password"></td>
+    <td><input name="user_password" type="password"></td>
   </tr>
   <tr align="right">
     <td colspan="2">

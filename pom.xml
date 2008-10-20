@@ -112,6 +112,24 @@
         <artifactId>nuxeo-platform-versioning-core</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-web-common</artifactId>
+	<version>${nuxeo.platform.version}</version>
+      </dependency>
+      <!-- needed by web-common -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-api</artifactId>
+	<version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-login</artifactId>
+	<version>${nuxeo.platform.version}</version>
+      </dependency>
+      <!-- END needed by web-common -->
+      
 
       <!-- nuxeo-addons -->
       <dependency>

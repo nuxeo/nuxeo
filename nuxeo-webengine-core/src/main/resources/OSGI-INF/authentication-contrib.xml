@@ -12,6 +12,14 @@
 
   <extension
     target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="propagator">
+
+    <propagationHandler name="WebEngine"
+      class="org.nuxeo.ecm.webengine.login.WebEngineLocalPropagator"/>
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
     point="startURL">
 
     <startURLPattern>

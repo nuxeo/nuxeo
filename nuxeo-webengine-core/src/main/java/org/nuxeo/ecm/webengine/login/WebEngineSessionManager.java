@@ -17,17 +17,17 @@ import org.nuxeo.runtime.api.Framework;
 public class WebEngineSessionManager extends DefaultSessionManager implements
         NuxeoAuthenticationSessionManager {
 
-    private static final String RESOURCES_PATH="/site/files";
+    //TODO work on skin request to avoid hardcoding paths
+    private static final String RESOURCES_PATH="/nuxeo/site/files/";
     private static Log log = LogFactory.getLog(WebEngineSessionManager.class);
     private static boolean useSharedAnonymousSession=false;
 
+    
     @Override
-    public boolean canBypassRequest(ServletRequest request) {
-        // resources do not require Authentication
-        HttpServletRequest req = (HttpServletRequest)request;
-        if (req.getServletPath().startsWith(RESOURCES_PATH))
-            return true;
-        return false;
+    public boolean canBypassRequest(ServletRequest request) {        
+        // static resources don't require Authentication
+        return ((HttpServletRequest)request).getRequestURI()
+            .startsWith(RESOURCES_PATH);
     }
 
     @Override
@@ -55,4 +55,12 @@ public class WebEngineSessionManager extends DefaultSessionManager implements
         UserSession.setCurrentSession(httpSession, userSession);
     }
 
+    public boolean needResetLogin(ServletRequest req) {
+        String p = ((HttpServletRequest)req).getPathInfo();
+        if (p != null && p.startsWith("/login")) {
+            return true;
+        }
+        return false;
+    }
+    
 }

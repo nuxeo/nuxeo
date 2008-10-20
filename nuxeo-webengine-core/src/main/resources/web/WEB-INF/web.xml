@@ -6,17 +6,21 @@
 
   <filter>
     <display-name>WebEngine Authentication Filter</display-name>
-    <filter-name>WebEngineAuthenticationFilter</filter-name>
+    <filter-name>NuxeoAuthenticationFilter</filter-name>
     <filter-class>
-      org.nuxeo.ecm.webengine.login.WebEngineAuthenticationFilter
+      org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter
     </filter-class>
     <init-param>
-      <param-name>exclude</param-name>
-      <param-value>/nuxeo/site/files</param-value>
+      <param-name>byPassAuthenticationLog</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>securityDomain</param-name>
+      <param-value>nuxeo-webengine</param-value>
     </init-param>
   </filter>
   <filter-mapping>
-    <filter-name>WebEngineAuthenticationFilter</filter-name>
+    <filter-name>NuxeoAuthenticationFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
