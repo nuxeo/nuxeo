@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig">
 
+  <!-- replace auth chain -->
+  <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+
   <extension
     target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
     point="sessionManager">
@@ -9,15 +12,6 @@
       class="org.nuxeo.ecm.webengine.login.WebEngineSessionManager">
     </sessionManager>
   </extension>
-
-  <extension
-    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-    point="propagator">
-
-    <propagationHandler name="WebEngine"
-      class="org.nuxeo.ecm.webengine.login.WebEngineLocalPropagator"/>
-  </extension>
-
 
   <extension
     target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
@@ -44,8 +38,6 @@
     </authenticationPlugin>
   </extension>
   
-  <!-- replace current chain -->
-  <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
   <extension
     target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
     point="chain">
@@ -61,5 +53,18 @@
     </authenticationChain>
 
   </extension>
-  
+
+
+  <!-- The propagator must be deployed only on webengine standalone 
+  so the definition was moved to config directory in webengine -->
+  <!-- 
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="propagator">
+
+    <propagationHandler name="WebEngine"
+      class="org.nuxeo.ecm.webengine.login.WebEngineLocalPropagator"/>
+  </extension>
+  -->
+    
 </component>
