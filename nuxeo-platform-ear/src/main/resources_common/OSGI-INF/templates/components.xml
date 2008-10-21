@@ -22,9 +22,9 @@
   <!-- Mail configuration -->
   <mail:mailSession sessionJndiName="java:/Mail" />
 
-  <!-- Multipart configuration sample showing seam default values
-    maxRequestSize set to 0 means no limit, it should be set in
-    bytes: set it to 1000000 for 1Mo limite -->
+  <!-- Multipart configuration sample showing seam default values.
+    maxRequestSize set to 0 means no limit and it should be set in
+    bytes: set it to 1000000 for 1Mb -->
   <!-- 
     <component class="org.jboss.seam.web.MultipartFilter">
     <property name="createTempFiles">false</property>
