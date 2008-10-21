@@ -1457,7 +1457,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             throw new PropertyNotFoundException(
                     xpath,
                     String.format(
-                            "Document '%s' with title '%s' and type '%s' don't implement schema with prefix '%s'",
+                            "Document '%s' with title '%s' and type '%s' does not have any schema with prefix '%s'",
                             getRef(), getTitle(), getType(), prefix));
         }
         return part.resolvePath(path.toString());
