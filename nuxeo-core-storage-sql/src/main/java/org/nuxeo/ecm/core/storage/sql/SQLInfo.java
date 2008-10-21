@@ -1212,7 +1212,7 @@ public class SQLInfo {
         if ("Apache Derby".equals(databaseName)) {
             DerbyStoredProcedureInfoMaker maker = new DerbyStoredProcedureInfoMaker();
             spis.add(maker.make("NX_IN_TREE",
-                    "(BASEID %s, ID %<s) RETURNS SMALLINT", "isInTree"));
+                    "(ID %s, BASEID %<s) RETURNS SMALLINT", "isInTree"));
             spis.add(maker.make("NX_CAN_BROWSE", "(ID %s) RETURNS SMALLINT",
                     "canBrowse"));
         } else if ("PostgreSQL".equals(databaseName)) {
