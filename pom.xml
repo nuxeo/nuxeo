@@ -20,7 +20,7 @@
   <properties>
     <nuxeo.runtime.version>1.5.0.m1</nuxeo.runtime.version>
     <nuxeo.common.version>1.5.0.m1</nuxeo.common.version>
-    <nuxeo.core.version>1.5.0.m1-PATXT-SNAPSHOT</nuxeo.core.version>
+    <nuxeo.core.version>1.5.0.m1-PATXT-20081020</nuxeo.core.version>
   </properties>
 
   <modules>
