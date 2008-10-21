@@ -22,12 +22,19 @@
   <!-- Mail configuration -->
   <mail:mailSession sessionJndiName="java:/Mail" />
 
-  <!-- Multipart configuration sample -->
+  <!-- Multipart configuration sample showing seam default values
+    maxRequestSize set to 0 means no limit, it should be set in
+    bytes: set it to 1000000 for 1Mo limite -->
   <!-- 
     <component class="org.jboss.seam.web.MultipartFilter">
-    <property name="createTempFiles">true</property>
-    <property name="maxRequestSize">1000000</property>
+    <property name="createTempFiles">false</property>
+    <property name="maxRequestSize">0</property>
     </component>
   -->
+  <!-- create temp files by default otherwise server could have
+    a hard time with big files -->
+  <component class="org.jboss.seam.web.MultipartFilter">
+    <property name="createTempFiles">true</property>
+  </component>
 
 </components>

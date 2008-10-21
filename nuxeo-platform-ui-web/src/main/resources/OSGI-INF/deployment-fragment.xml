@@ -201,17 +201,6 @@
       <url-pattern>/a4j.res/*</url-pattern>
     </filter-mapping>
 
-    <!-- multipart filter -->
-    <filter>
-      <filter-name>Seam Multipart Filter</filter-name>
-      <filter-class>org.jboss.seam.web.MultipartFilter</filter-class>
-    </filter>
-
-    <filter-mapping>
-      <filter-name>Seam Multipart Filter</filter-name>
-      <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
   </extension>
 
   <!-- AT: mixing servlets and mappings for clarity, does not change
