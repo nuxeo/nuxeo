@@ -18,6 +18,7 @@
       class="org.nuxeo.ecm.webengine.login.WebEngineLocalPropagator"/>
   </extension>
 
+
   <extension
     target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
     point="startURL">
@@ -30,4 +31,35 @@
 
   </extension>
 
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+    <authenticationPlugin name="WEBENGINE_FORM_AUTH" enabled="true"
+      class="org.nuxeo.ecm.webengine.login.WebEngineFormAuthenticator">
+      <needStartingURLSaving>true</needStartingURLSaving>
+      <parameters>
+        <parameter name="UsernameKey">username</parameter>
+        <parameter name="PasswordKey">password</parameter>
+      </parameters>
+    </authenticationPlugin>
+  </extension>
+  
+  <!-- replace current chain -->
+  <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="chain">
+
+    <authenticationChain>
+      <plugins>
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>FORM_AUTH</plugin>
+        <plugin>WEBENGINE_FORM_AUTH</plugin>        
+        <plugin>ANONYMOUS_AUTH</plugin>
+        <plugin>WEBSERVICES_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+
+  </extension>
+  
 </component>

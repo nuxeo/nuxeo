@@ -1,18 +1,18 @@
 
 <!-- Login Form -->
-<form action="${This.path}/login${Context.urlPath}" method="POST">
+<form action="${basePath}/login${Context.urlPath}" method="POST">
 <table cellpadding="4" cellspacing="1">
   <tr>
     <td>Username:</td>
-    <td><input name="user_name" type="text"></td>
+    <td><input name="username" type="text"></td>
   </tr>
   <tr>
     <td>Password:</td>
-    <td><input name="user_password" type="password"></td>
+    <td><input name="password" type="password"></td>
   </tr>
   <tr align="right">
     <td colspan="2">
-      <input name="nuxeo_login" type="submit" value="Sign In"/>
+      <input type="submit" value="Sign In"/>
     </td>
   </tr>
   <#if Context.getProperty("failed") == "true">

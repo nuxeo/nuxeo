@@ -13,7 +13,7 @@ function doLogin(username, password) {
     type: "POST",
     async: false,
     url: "${basePath}/login/${basePath}",
-    data: {caller: "login", nuxeo_login : "true", user_name : username, user_password : password},
+    data: {caller: "login", nuxeo_login : "true", username : username, password : password},
     success: function(html, status) {
       document.location.reload();
       result = true;
