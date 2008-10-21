@@ -1420,7 +1420,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (path.segmentCount() == 0) {
             throw new PropertyNotFoundException(xpath, "Schema not specified");
         }
-        String segment =path.segment(0);
+        String segment = path.segment(0);
         int p = segment.indexOf(':');
         if (p == -1) { // support also other schema paths? like schema.property
             // allow also unprefixed schemas -> make a search for the first matching schema having a property with same name as path segment 0
@@ -1439,7 +1439,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (schema == null) {
             schema = mgr.getSchema(prefix);
             if (schema == null) {
-                throw new PropertyNotFoundException(xpath, "No such schema: " + prefix);
+                throw new PropertyNotFoundException(xpath,
+                        "Could not find registered schema with prefix: "
+                                + prefix);
             }
             // workaround for a schema prefix bug -> XPATH lookups in DocumentPart must use prefixed
             // names for schema with prefixes and non prefixed names for the rest o schemas.
@@ -1452,8 +1454,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
         DocumentPart part = getPart(schema.getName());
         if (part == null) {
-            throw new PropertyNotFoundException(xpath,
-                    "Document dont' implement schema: " + prefix);
+            throw new PropertyNotFoundException(
+                    xpath,
+                    String.format(
+                            "Document '%s' with title '%s' and type '%s' don't implement schema with prefix '%s'",
+                            getRef(), getTitle(), getType(), prefix));
         }
         return part.resolvePath(path.toString());
     }
