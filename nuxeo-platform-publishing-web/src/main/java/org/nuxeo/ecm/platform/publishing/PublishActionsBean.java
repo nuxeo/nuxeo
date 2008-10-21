@@ -820,7 +820,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
         }
 
         // remove from the current selection list
-        documentsListsManager.resetWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        documentsListsManager.resetWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
 
         documentManager.removeDocuments(documentsRef.toArray(new DocumentRef[0]));
         documentManager.save();
