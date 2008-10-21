@@ -5,7 +5,7 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core">
 
   <ui:define name="page title">Nuxeo 5 EP</ui:define>
@@ -45,7 +45,7 @@
         <tr>
           <td class="labelColumn"><h:outputText value="#{messages['label.groupManager.userMembers']}"/></td>
           <td class="fieldColumn">
-            <t:dataList
+            <nxu:dataList
                 var="user"
                 value="#{selectedGroup.memberUsers}"
                 layout="simple"
@@ -53,14 +53,14 @@
                 rowIndexVar="rowIndex">
                 <h:outputText value="#{user}" />
                 <h:outputText value=", " rendered="#{rowIndex + 1 &lt; rowCount}" />
-            </t:dataList>
+            </nxu:dataList>
           </td>
         </tr>
 
         <tr>
           <td class="labelColumn"><h:outputText value="#{messages['label.groupManager.groupMembers']}"/></td>
           <td class="fieldColumn">
-            <t:dataList
+            <nxu:dataList
                 var="group"
                 value="#{selectedGroup.memberGroups}"
                 layout="simple"
@@ -68,7 +68,7 @@
                 rowIndexVar="rowIndex">
                 <h:outputText value="#{group}" />
                 <h:outputText value=", " rendered="#{rowIndex + 1 &lt; rowCount}" />
-            </t:dataList>
+            </nxu:dataList>
           </td>
         </tr>
         <tr>

@@ -24,6 +24,7 @@ import static org.jboss.seam.ScopeType.STATELESS;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.Map;
 
 import org.jboss.seam.annotations.In;
@@ -54,7 +55,9 @@ import com.noelios.restlet.http.HttpConstants;
 
 @Name("exportRestlet")
 @Scope(STATELESS)
-public class ExportRestlet extends BaseNuxeoRestlet {
+public class ExportRestlet extends BaseNuxeoRestlet implements Serializable {
+
+    private static final long serialVersionUID = 7831287875548588711L;
 
     @In(create = true)
     protected NavigationContext navigationContext;
