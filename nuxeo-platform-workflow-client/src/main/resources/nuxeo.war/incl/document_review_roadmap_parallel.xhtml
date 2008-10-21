@@ -3,7 +3,6 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
@@ -70,7 +69,8 @@
             </f:facet>
             <h:outputText value="#{workflowTaskInstance.startDate}">
               <f:convertDateTime
-                pattern="#{nxu:dateAndTimeFormater('medium')}" />
+                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                timeZone="#{timeZone}" />
             </h:outputText>
           </h:column>
 
@@ -81,7 +81,8 @@
             </f:facet>
             <h:outputText value="#{workflowTaskInstance.dueDate}">
               <f:convertDateTime
-                pattern="#{nxu:dateAndTimeFormater('medium')}" />
+                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                timeZone="#{timeZone}" />
             </h:outputText>
           </h:column>
 

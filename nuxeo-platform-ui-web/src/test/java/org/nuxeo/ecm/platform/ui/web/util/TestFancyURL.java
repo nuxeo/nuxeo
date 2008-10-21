@@ -21,15 +21,11 @@ package org.nuxeo.ecm.platform.ui.web.util;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.rest.FancyURLConfig;
 import org.nuxeo.ecm.platform.ui.web.rest.FancyURLMapper;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 
 public class TestFancyURL extends TestCase {
-
-    private static final Log log = LogFactory.getLog(TestFancyURL.class);
 
     public void testExtractParametersFromTraversal() {
         String url1 = FancyURLConfig.FANCY_URL_PREFIX

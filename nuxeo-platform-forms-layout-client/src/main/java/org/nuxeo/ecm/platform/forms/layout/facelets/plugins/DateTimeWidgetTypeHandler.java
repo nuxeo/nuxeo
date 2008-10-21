@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import java.io.Serializable;
+import java.util.Map;
+import java.util.TimeZone;
+
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.convert.DateTimeConverter;
 
@@ -33,6 +37,7 @@ import org.nuxeo.ecm.platform.ui.web.component.date.UIInputDateTime;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.tag.CompositeFaceletHandler;
+import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributes;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.jsf.ComponentHandler;
@@ -66,16 +71,25 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
             String msgId = helper.generateMessageId(widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(msgId,
                     widgetId, null);
-            FaceletHandler[] handlers = new FaceletHandler[]{ input, message };
+            FaceletHandler[] handlers = new FaceletHandler[] { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
             // default on text for other modes
+            // set time zone by default
+            TagAttributes convertAttributes = attributes;
+            Map<String, Serializable> properties = widget.getProperties();
+            if (properties == null || !properties.containsKey("timeZone")) {
+                TagAttribute timeZone = helper.createAttribute("timeZone",
+                        TimeZone.getDefault().getID());
+                convertAttributes = FaceletHandlerHelper.addTagAttribute(
+                        attributes, timeZone);
+            }
             ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(
-                    tagConfig, attributes, leaf, DateTimeConverter.CONVERTER_ID);
+                    tagConfig, convertAttributes, leaf,
+                    DateTimeConverter.CONVERTER_ID);
             ConvertHandler convert = new ConvertDateTimeHandler(convertConfig);
-            return helper.getHtmlComponentHandler(
-                    attributes, convert, HtmlOutputText.COMPONENT_TYPE, null);
+            return helper.getHtmlComponentHandler(attributes, convert,
+                    HtmlOutputText.COMPONENT_TYPE, null);
         }
     }
-
 }
