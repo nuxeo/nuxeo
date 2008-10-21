@@ -104,8 +104,8 @@ public final class JCAConnectionFactory
     /**
      * Creates a new session.
      */
+    // TODO: Never used. Remove?
     private Session getSession(JCAConnectionRequestInfo cri) throws DocumentException {
-        //System.out.println("JCA >>>>>>>>>>>>>>>>>>>>>> calling allocateConnection");
         try {
             return (Session) cm.allocateConnection(mcf, cri);
         } catch (ResourceException e) {
@@ -127,16 +127,10 @@ public final class JCAConnectionFactory
         mcf.getRepository().initialize();
     }
 
-    /**
-     * Returns the reference.
-     */
     public Reference getReference() {
         return reference;
     }
 
-    /**
-     * Sets the reference.
-     */
     public void setReference(Reference reference) {
         this.reference = reference;
     }

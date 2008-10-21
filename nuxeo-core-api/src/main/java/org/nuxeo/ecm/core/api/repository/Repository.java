@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.api.repository;
 
 import java.io.Serializable;
-import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,30 +71,18 @@ public class Repository implements Serializable {
         this(name, name);
     }
 
-    /**
-     * @return the name.
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * @return the label.
-     */
     public String getLabel() {
         return label;
     }
 
-    /**
-     * @param label the label to set.
-     */
     public void setLabel(String label) {
         this.label = label;
     }
 
-    /**
-     * @return the properties.
-     */
     public Map<String, String> getProperties() {
         return properties;
     }
@@ -126,7 +113,7 @@ public class Repository implements Serializable {
     }
 
     public CoreSession open(Map<String, Serializable> context) throws Exception {
-        CoreSession session = null;
+        CoreSession session;
         if (group != null) {
             ServiceManager mgr = Framework.getLocalService(ServiceManager.class);
             ServiceGroup sg = mgr.getGroup(group);
@@ -147,18 +134,12 @@ public class Repository implements Serializable {
         return session;
     }
 
-    public void close(CoreSession session) throws Exception {
+    public static void close(CoreSession session) {
         CoreInstance.getInstance().close(session);
     }
 
     public static RepositoryInstance newRepositoryInstance(Repository repository) {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        if (cl == null) {
-            cl = Repository.class.getClassLoader();
-        }
-        return (RepositoryInstance)Proxy.newProxyInstance(cl,
-                new Class[] { RepositoryInstance.class },
-                new RepositoryInstanceHandler(repository));
+        return new RepositoryInstanceHandler(repository).getProxy();
     }
 
     public RepositoryInstance newInstance() {
@@ -181,4 +162,5 @@ public class Repository implements Serializable {
     public String getRepositoryUri() {
         return repositoryUri;
     }
+
 }

@@ -50,13 +50,14 @@ terminal           	SELECT, FROM, WHERE, AS, IN, LIKE, BETWEEN, NOTBETWEEN, NOTI
 					COMMA, LPARA, RPARA, LOCATION, STARTSWITH, TYPE,
 					DATE, TIMESTAMP, OFFSET;
 
-terminal String		IDENTIFIER, FROM_IDENTIFIER, STRING, INTEGER, DOUBLE;
+terminal String		IDENTIFIER, FROM_IDENTIFIER, PATH_IDENTIFIER, STRING, INTEGER, DOUBLE;
 
 
 non terminal SQLQuery     	query;
 non terminal Operand		operand;
 non terminal Operand		predicate_operand;
 non terminal Literal		literal;
+non terminal Reference    reference;
 non terminal Expression		expression;
 non terminal Predicate		predicate;
 non terminal Function		function;
@@ -251,14 +252,14 @@ non terminal String			from_key;
 				{: RESULT = new Predicate(new Reference(name), Operator.LIKE, new StringLiteral(s)); :}
 				| IDENTIFIER:name NOT LIKE STRING:s
 				{: RESULT = new Predicate(new Reference(name), Operator.NOTLIKE, new StringLiteral(s)); :}
-				
+
 				/* -- removed as it is replaced by ecm:path
 				| LOCATION STARTSWITH STRING:s
 				{: RESULT = new Predicate(new StringLiteral(s), Operator.STARTSWITH, null); :}
 				*/
-				
+
 				| IDENTIFIER:name STARTSWITH STRING:s
-				{: RESULT = new Predicate(new StringLiteral(name), Operator.STARTSWITH, new StringLiteral(s)); :}
+				{: RESULT = new Predicate(new Reference(name), Operator.STARTSWITH, new StringLiteral(s)); :}
 				;
 
 	predicate_operand ::= operand:o
@@ -291,11 +292,16 @@ non terminal String			from_key;
 					;
 
 
+  reference ::= IDENTIFIER:v
+        {: RESULT = new Reference(v); :}
+        | PATH_IDENTIFIER:v
+        {: RESULT = new PathReference(v); :}
+        ;
 
-	operand ::= IDENTIFIER:v
-				{: RESULT = new Reference(v); :}
-				| literal:v
+	operand ::= literal:v
 				{: RESULT = v; :}
+				| reference:r
+				{: RESULT = r; :}
 				| function:f
 				{: RESULT = f; :}
 				;
