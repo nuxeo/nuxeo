@@ -151,7 +151,9 @@ public class DocumentModelResolver extends BeanELResolver {
             subProperty = docProperty.get((String) propertyValue);
         }
         if (subProperty == null) {
-            throw new PropertyException("Property not found");
+            throw new PropertyException(String.format(
+                    "Could not resolve subproperty '%s' under '%s'",
+                    propertyValue, docProperty.getPath()));
         }
         return subProperty;
     }
