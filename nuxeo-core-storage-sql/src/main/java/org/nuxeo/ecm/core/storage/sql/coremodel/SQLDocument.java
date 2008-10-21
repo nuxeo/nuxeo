@@ -151,7 +151,16 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         for (Property property : dp) {
             setPropertyValue(property.getName(), property.getValue());
         }
-        dp.clearDirtyFlags();
+        clearDirtyFlags(dp);
+    }
+
+    protected static void clearDirtyFlags(Property property) {
+        if (property.isContainer()) {
+            for (Property p : property) {
+                clearDirtyFlags(p);
+            }
+        }
+        property.clearDirtyFlags();
     }
 
     protected static Map<String, String> systemPropNameMap;
