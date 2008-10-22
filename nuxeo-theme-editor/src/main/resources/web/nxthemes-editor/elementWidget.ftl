@@ -12,7 +12,7 @@
 </div>
 <p>
   <label>View name</label>
-  <select name="" id="viewName">
+  <select name="viewName" id="viewName">
     <#list view_names_for_selected_element as view_name>
       <#if view_name == selected_view_name>
         <option value="${view_name}" selected="selected">${view_name}</option>

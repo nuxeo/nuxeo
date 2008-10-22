@@ -14,6 +14,8 @@ Style selectedStyleLayer = Context.runScript("getSelectedStyleLayer.groovy")
 
 id = Request.getParameter("id")
 Element element = ThemeManager.getElementById(id)
+viewName = Request.getParameter("view_name")
+cssSource = Request.getParameter("css_source")
 
 FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "style")
 Style style = (Style) ElementFormatter.getFormatByType(element, styleType)

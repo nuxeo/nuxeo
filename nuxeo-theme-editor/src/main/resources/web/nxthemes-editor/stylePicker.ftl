@@ -1,4 +1,4 @@
-<#assign style_category = script("getStylerCategory.groovy") />
+<#assign style_category = script("getSelectedStyleCategory.groovy") />
 <#assign preset_groups = script("getPresetGroupsForSelectedCategory.groovy") />
 <#assign presets_for_selected_group = script("getPresetsForSelectedGroup.groovy") />
 

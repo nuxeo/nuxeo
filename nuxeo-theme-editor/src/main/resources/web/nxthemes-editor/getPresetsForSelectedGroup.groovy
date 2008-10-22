@@ -7,8 +7,8 @@ import org.nuxeo.theme.types.Type
 import org.nuxeo.theme.editor.StyleCategory
 import org.nuxeo.theme.editor.PresetInfo
 
-category = Context.runScript("getCurrentStyleCategory.groovy")
-group = Context.runScript("getCurrentPresetGroup.groovy")
+category = Context.runScript("getSelectedStyleCategory.groovy")
+group = Context.runScript("getSelectedPresetGroup.groovy")
 
 presets = []
 

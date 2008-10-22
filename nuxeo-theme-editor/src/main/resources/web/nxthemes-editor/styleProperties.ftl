@@ -6,6 +6,8 @@
 <#assign selected_style_selector = script("getSelectedStyleSelector.groovy") />
 <#assign style_properties = script("getStylePropertiesForSelectedElement.groovy") />
 <#assign style_categories = script("getStyleCategories.groovy") />
+<#assign element_style_properties = script("getElementStyleProperties.groovy") />
+
 
 <div>
 
