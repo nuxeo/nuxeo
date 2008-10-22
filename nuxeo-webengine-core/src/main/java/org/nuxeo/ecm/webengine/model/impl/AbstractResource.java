@@ -57,7 +57,8 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         this.path = new StringBuilder().append(ctx.getBasePath()).append(this.path).toString();
         if (!this.type.getGuard().check(this)) {
             throw new WebSecurityException(
-                    "Failed to initialize object: "+getPath()+". Object is not accessible in the current context", getPath());
+                    "Failed to initialize object: " + path + ". Object is not accessible in the current context",
+                    getPath());
         }
         initialize(args);
         return this;
@@ -97,7 +98,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public Response redirect(String uri) {
         try {
             //return Response.seeOther(new URI(URLEncoder.encode(uri, "UTF-8"))).build();
-            if (uri.indexOf("://") == -1) { // not an absolute URI
+            if (!uri.contains("://")) { // not an absolute URI
                 if (!uri.startsWith("/")) {
                     uri = ctx.getServerURL().append('/').append(uri).toString();
                 } else {

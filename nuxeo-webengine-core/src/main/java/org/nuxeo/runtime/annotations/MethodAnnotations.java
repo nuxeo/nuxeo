@@ -55,15 +55,15 @@ class MethodAnnotations {
         for (int i=0, len=entries.size();i<len; i++) {
             Entry entry = entries.get(i);
             if (entry.isSameAs(m)) {
-                for (int k=0;k<annos.length;k++) {
-                    Class<?> annoType = annos[k].annotationType();
+                for (Annotation anno : annos) {
+                    Class<?> annoType = anno.annotationType();
                     Annotation a = entry.annos.get(annoType);
                     if (a == null) {
                         //TODO support merging annotations?
-                        entry.annos.put(annos[k].annotationType(), annos[k]);
+                        entry.annos.put(anno.annotationType(), anno);
                         entry.method = m;
                     } else {
-                        entry.annos.put(annos[k].annotationType(), annos[k]);
+                        entry.annos.put(anno.annotationType(), anno);
                         entry.method = m;
                     }
                 }
@@ -71,7 +71,6 @@ class MethodAnnotations {
             }
         }
         entries.add(new Entry(m, annos));
-        return;
     }
 
     public void addSuperMethod(AnnotatedMethod am) {

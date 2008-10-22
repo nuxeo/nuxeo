@@ -79,7 +79,7 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
     }
 
     public Set<Contribution<K,T>> getUnresolvedDependencies() {
-        HashSet<Contribution<K,T>> set = new HashSet<Contribution<K,T>>();
+        Set<Contribution<K,T>> set = new HashSet<Contribution<K,T>>();
         for (Contribution<K,T> dep : dependencies) {
             if (dep.isResolved()) {
                 set.add(dep);
@@ -142,8 +142,8 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
             fragments.add(fragment);
         }
         if (superKeys != null && superKeys.length > 0 && superKeys[0] != null) { // when passing a null value as the superKey you get an arrray with a null element
-            for (int i=0; i<superKeys.length; i++) {
-                Contribution<K,T> c = registry.getOrCreateDependency(superKeys[i]);
+            for (K superKey : superKeys) {
+                Contribution<K, T> c = registry.getOrCreateDependency(superKey);
                 dependencies.add(c);
                 c.getDependents().add(this);
             }

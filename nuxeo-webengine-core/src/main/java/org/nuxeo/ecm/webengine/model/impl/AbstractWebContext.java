@@ -68,7 +68,7 @@ public abstract class AbstractWebContext implements WebContext {
     protected AbstractResource<?> root;
     protected Module module;
     protected HttpServletRequest request;
-    protected HashMap<String, Object> vars;
+    protected Map<String, Object> vars;
     protected FormData form;
     protected String basePath;
 

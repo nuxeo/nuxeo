@@ -98,12 +98,12 @@ public class FakeResponse implements HttpServletResponse {
     }
 
     public void sendError(int sc) throws IOException {
-        setStatus(sc);
+        status = sc;
         fout.print("ERROR: "+sc);
     }
 
     public void sendError(int sc, String msg) throws IOException {
-        setStatus(sc);
+        status = sc;
         fout.print("ERROR: "+sc+" - "+msg);
     }
 

@@ -87,7 +87,7 @@ public class BundleAnnotationsLoader implements BundleListener {
     }
 
     protected void loadAnnotation(Bundle bundle, String line) {
-        String ar[] = parse(line);
+        String[] ar = parse(line);
         if (ar.length < 2) {
             log.error("Invalid annotation entry key '"+line+"' in bundle '"+bundle.getLocation()+"'.");
             return;

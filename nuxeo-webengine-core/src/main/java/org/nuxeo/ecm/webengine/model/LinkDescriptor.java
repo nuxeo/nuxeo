@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -63,9 +64,9 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     /**
      * The object adapter the link may have as owner
      */
-    @XNode(value="adapter") 
+    @XNode(value="adapter")
     protected String adapter = ResourceType.ROOT_TYPE_NAME;
-    
+
     @XNodeList(value="facet", type=String[].class, componentType=String.class, nullByDefault=true)
     protected String[] facets;
 
@@ -140,21 +141,21 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     public LinkHandler getHandler() {
         return handler;
     }
-    
+
     /**
      * @return the adapter.
      */
     public String getAdapter() {
         return adapter;
     }
-    
+
     /**
      * @return the type.
      */
     public String getType() {
         return type;
     }
-    
+
     /**
      * @return the facets.
      */
@@ -189,8 +190,8 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     }
 
     public boolean acceptResource(Resource context) {
-        if (type == ResourceType.ROOT_TYPE_NAME 
-                && adapter == ResourceType.ROOT_TYPE_NAME 
+        if (type == ResourceType.ROOT_TYPE_NAME
+                && adapter == ResourceType.ROOT_TYPE_NAME
                 && facets == null) {
             return true;
         }
@@ -207,7 +208,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
                     return false;
                 }
             } else {
-                return context.isInstanceOf(type);    
+                return context.isInstanceOf(type);
             }
         }
         if (adapter != ResourceType.ROOT_TYPE_NAME) {
@@ -216,7 +217,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
                 return adapterRs.isInstanceOf(adapter);
             }
             return false;
-        }        
+        }
         return true;
     }
 
@@ -229,10 +230,10 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
 
     public String getCode(LinkDescriptor link, Resource resource) {
         if (adapter != ResourceType.ROOT_TYPE_NAME) {
-            return new StringBuilder().append(resource.getActiveAdapter().getPath()).append(path).toString();  
+            return new StringBuilder().append(resource.getActiveAdapter().getPath()).append(path).toString();
         } else {
-            return new StringBuilder().append(resource.getPath()).append(path).toString();    
-        }        
+            return new StringBuilder().append(resource.getPath()).append(path).toString();
+        }
     }
 
     public boolean isFragment() {
@@ -253,12 +254,12 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
         }
         if (fragment.adapter != null && !fragment.adapter.equals(ResourceType.ROOT_TYPE_NAME)) {
             adapter = fragment.adapter;
-        }        
+        }
         if (fragment.facets != null && fragment.facets.length > 0) {
             if (facets == null) {
                 facets = fragment.facets;
             } else {
-                HashSet<String> set = new HashSet<String>();
+                Set<String> set = new HashSet<String>();
                 set.addAll(Arrays.asList(facets));
                 set.addAll(Arrays.asList(fragment.facets));
                 facets = set.toArray(new String[set.size()]);

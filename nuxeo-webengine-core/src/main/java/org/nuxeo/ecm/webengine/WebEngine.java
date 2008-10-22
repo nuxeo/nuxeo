@@ -80,7 +80,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     protected static Map<Object, Object> mimeTypes = loadMimeTypes();
 
     static Map<Object, Object> loadMimeTypes() {
-        HashMap<Object,Object> mimeTypes = new HashMap<Object, Object>();
+        Map<Object,Object> mimeTypes = new HashMap<Object, Object>();
         Properties p = new Properties();
         URL url = WebEngine.class.getClassLoader().getResource("OSGI-INF/mime.properties");
         InputStream in = null;
@@ -98,11 +98,11 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         return mimeTypes;
     }
 
-    public final static WebContext getActiveContext() {
+    public static final WebContext getActiveContext() {
         return CTX.get();
     }
 
-    public final static void setActiveContext(WebContext ctx) {
+    public static final void setActiveContext(WebContext ctx) {
         CTX.set(ctx);
     }
 

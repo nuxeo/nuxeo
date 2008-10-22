@@ -52,12 +52,12 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
     }
 
     public List<LinkDescriptor> getActiveLinks(Resource context, String category) {
-        ArrayList<LinkDescriptor> result = new ArrayList<LinkDescriptor>();
+        List<LinkDescriptor> result = new ArrayList<LinkDescriptor>();
         LinkDescriptor[] descriptors = links.get(category);
         if (descriptors != null && descriptors.length > 0) {
-            for (int i=0; i<descriptors.length; i++) {
-                if (descriptors[i].isEnabled(context)) {
-                    result.add(descriptors[i]);
+            for (LinkDescriptor descriptor : descriptors) {
+                if (descriptor.isEnabled(context)) {
+                    result.add(descriptor);
                 }
             }
         }
@@ -88,7 +88,6 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
         object.applyFragment(fragment);
     }
 
-
     @Override
     protected void applySuperFragment(LinkDescriptor object,
             LinkDescriptor superFragment) {
@@ -102,7 +101,6 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
             installLink(cat, object);
         }
     }
-
 
     @Override
     protected void updateContribution(String key, LinkDescriptor object, LinkDescriptor oldValue) {
@@ -164,6 +162,5 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
             }
         }
     }
-
 
 }

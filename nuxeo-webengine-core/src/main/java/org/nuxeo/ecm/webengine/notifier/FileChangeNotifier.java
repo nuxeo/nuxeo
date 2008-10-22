@@ -48,7 +48,7 @@ public class FileChangeNotifier implements FileChangeListener {
     private final Hashtable<String, FileEntry> roots = new Hashtable<String, FileEntry>();
 
     public void start() {
-        String interval = Framework.getProperty("org.nuxeo.ecm.webengine.fileChangeNotifierInterval", "2000");        
+        String interval = Framework.getProperty("org.nuxeo.ecm.webengine.fileChangeNotifierInterval", "2000");
         start(2000, Integer.parseInt(interval));
     }
 
@@ -106,8 +106,8 @@ public class FileChangeNotifier implements FileChangeListener {
         public File file;
         public boolean isDirectory;
         public long lastModified;
-        public HashMap<File, FileEntry> children;        
-        
+        public HashMap<File, FileEntry> children;
+
         public FileEntry(File file) throws IOException {
             this.file = file.getCanonicalFile();
             lastModified = file.lastModified();
@@ -116,10 +116,9 @@ public class FileChangeNotifier implements FileChangeListener {
                 File[] files = file.listFiles();
                 if (files != null) {
                     this.children = new HashMap<File, FileEntry>();
-                    for (int i=0; i<files.length; i++) {
-                        File f = files[i];
+                    for (File f : files) {
                         children.put(f, new FileEntry(f));
-                    }                    
+                    }
                 }
             }
         }
@@ -127,7 +126,7 @@ public class FileChangeNotifier implements FileChangeListener {
         public int compareTo(FileEntry o) {
             return file.compareTo(o.file);
         }
-        
+
         @Override
         public boolean equals(Object obj) {
             if (obj == null) {
@@ -138,7 +137,7 @@ public class FileChangeNotifier implements FileChangeListener {
             }
             return false;
         }
-        
+
         @Override
         public int hashCode() {
             return file.hashCode();
@@ -148,23 +147,22 @@ public class FileChangeNotifier implements FileChangeListener {
         public String toString() {
             return file.toString();
         }
-        
+
         public void scanForChanges(FileChangeListener listener) throws IOException {
             long tm = file.lastModified();
-            if (tm > lastModified) { // handle REMOVE and CREATE                
+            if (tm > lastModified) { // handle REMOVE and CREATE
                 // this file changed
                 if (isDirectory != file.isDirectory()) {
                     if (isDirectory) {
-                        //TODO this directory was removed and recreated as a file  
+                        //TODO this directory was removed and recreated as a file
                     } else {
                         //TODO this file was removed and recreated as a directory
-                    } 
+                    }
                 } else if (isDirectory) {
                     // find out which files changed in that directory
-                    HashSet<File> checkedFiles = new HashSet<File>(); 
+                    Set<File> checkedFiles = new HashSet<File>();
                     File[] files = file.listFiles();
-                    for (int i=0; i<files.length; i++) {
-                        File f = files[i];
+                    for (File f : files) {
                         checkedFiles.add(f);
                         FileEntry entry = children.get(f);
                         if (entry == null) { // a new file
@@ -176,31 +174,28 @@ public class FileChangeNotifier implements FileChangeListener {
                         }
                     }
                     // look for deleted files
-                    Set<File> clone = (Set<File>)((HashMap<File,FileEntry>)children.clone()).keySet();
+                    Set<File> clone = ((Map<File, FileEntry>) children.clone()).keySet();
                     clone.removeAll(checkedFiles);
                     for (File f : clone) {
                         FileEntry entry = children.remove(f);
                         fileChanged(entry, FileChangeListener.DELETED, tm);
                     }
                 } else {
-                    fileChanged(this, FileChangeListener.MODIFIED, tm); 
+                    fileChanged(this, FileChangeListener.MODIFIED, tm);
                 }
                 lastModified = tm;
             }
-            if (isDirectory) { // descend into 
-                HashMap<File,FileEntry> clone = (HashMap<File,FileEntry>)children.clone();
+            if (isDirectory) { // descend into
+                Map<File,FileEntry> clone = (Map<File,FileEntry>) children.clone();
                 for (FileEntry entry : clone.values()) {
                     if (entry.isDirectory) {
                         entry.scanForChanges(listener);
                     }
                 }
             }
-                
         }
-
     }
 
-    
     public static void main(String[] args) throws Exception {
         FileChangeNotifier fcn = new FileChangeNotifier();
         fcn.watch(new File("/home/bstefanescu/tmp/test"));
@@ -215,5 +210,5 @@ public class FileChangeNotifier implements FileChangeListener {
         Thread.sleep(1000*60*10);
         System.out.println("Done.");
     }
-    
+
 }

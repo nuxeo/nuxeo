@@ -26,6 +26,8 @@ package org.nuxeo.ecm.webengine.session;
  */
 public abstract class AbstractComponent implements Component {
 
+    private static final long serialVersionUID = 3472450841328363350L;
+
     protected String name;
     private boolean isLive;
 

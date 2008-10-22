@@ -65,7 +65,7 @@ public class DirectoryContentProvider implements ContentProvider {
         try {
             if (obj == null || (obj instanceof DocumentModel)) {
                 DocumentModel parent = (DocumentModel)obj;
-                HashMap<String, Object> args = new HashMap<String, Object>();
+                Map<String, Object> args = new HashMap<String, Object>();
                 createQuery(parent, args);
                 DocumentModelList list = session.query(args);
                 return list.toArray(new DocumentModel[list.size()]);
