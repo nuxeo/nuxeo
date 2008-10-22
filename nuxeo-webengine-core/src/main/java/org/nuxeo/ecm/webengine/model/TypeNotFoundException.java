@@ -29,7 +29,7 @@ public class TypeNotFoundException extends TypeException {
     private static final long serialVersionUID = 1L;
 
     public TypeNotFoundException(String type) {
-        super ("Type not found: "+type);
+        super("Type not found: "+type);
     }
 
 }

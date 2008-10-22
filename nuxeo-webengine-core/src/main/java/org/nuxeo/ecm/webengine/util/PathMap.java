@@ -161,7 +161,7 @@ public class PathMap<T> {
     }
 
     public Collection<T> getValues() {
-        ArrayList<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<T>();
         collectValues(root, list);
         return list;
     }

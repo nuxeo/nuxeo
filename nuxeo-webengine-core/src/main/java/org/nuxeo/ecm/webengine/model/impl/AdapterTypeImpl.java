@@ -42,7 +42,7 @@ public class AdapterTypeImpl extends AbstractResourceType implements AdapterType
     protected String[] targetFacets;
 
     public AdapterTypeImpl(ModuleImpl module, ResourceTypeImpl superType, String name, ClassProxy clazz) {
-        super (module, superType, name, clazz);
+        super(module, superType, name, clazz);
     }
 
     public String getTargetType() {

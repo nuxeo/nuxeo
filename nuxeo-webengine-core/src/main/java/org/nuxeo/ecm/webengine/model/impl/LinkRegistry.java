@@ -42,7 +42,6 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
         links = new ConcurrentHashMap<String, LinkDescriptor[]>();
     }
 
-
     public List<LinkDescriptor> getLinks(String category) {
         LinkDescriptor[] descriptors = links.get(category);
         if (descriptors != null && descriptors.length > 0) {
@@ -144,6 +143,7 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
             return;
         }
         for (int i=0; i<descriptors.length; i++) {
+            // FIXME: this can't work, comparison between a String and a LinkDescriptor
             if (link.getId().equals(descriptors[i])) {
                 if (descriptors.length == 1 && i == 0) {
                     links.remove(category);

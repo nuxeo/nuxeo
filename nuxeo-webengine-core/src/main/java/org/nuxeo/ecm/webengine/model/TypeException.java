@@ -30,11 +30,11 @@ public class TypeException extends WebException {
     private static final long serialVersionUID = 1L;
 
     public TypeException(String msg) {
-        super (msg);
+        super(msg);
     }
 
     public TypeException(String msg, Throwable cause) {
-        super (msg, cause);
+        super(msg, cause);
     }
 
 }

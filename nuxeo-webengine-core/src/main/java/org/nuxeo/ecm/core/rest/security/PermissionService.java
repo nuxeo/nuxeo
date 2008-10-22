@@ -111,7 +111,8 @@ public class PermissionService extends DefaultAdapter {
             String username = req.getParameter("user");
             CoreSession session = ctx.getCoreSession();
             Resource target = getTarget();
-            ACLUtils.removePermission(session, target.getAdapter(DocumentModel.class).getRef(), username, permission);
+            ACLUtils.removePermission(session, target.getAdapter(DocumentModel.class).getRef(),
+                    username, permission);
             session.save();
             return Response.seeOther(new URI(target.getPath())).build();
         } catch (Exception e) {
@@ -122,7 +123,7 @@ public class PermissionService extends DefaultAdapter {
     public List<Permission> getPermissions() {
         try {
             ACP acp = ctx.getCoreSession().getACP(getTarget().getAdapter(DocumentModel.class).getRef());
-            ArrayList<Permission> permissions = new ArrayList<Permission>();
+            List<Permission> permissions = new ArrayList<Permission>();
             for (ACL acl : acp.getACLs()) {
                 for (ACE ace : acl.getACEs()) {
                     permissions.add(new Permission(ace.getUsername(), ace.getPermission(), ace.isGranted()));

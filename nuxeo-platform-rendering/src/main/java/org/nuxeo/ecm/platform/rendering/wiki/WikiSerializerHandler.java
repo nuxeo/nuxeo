@@ -47,7 +47,7 @@ public class WikiSerializerHandler extends PrintListener {
     protected Toc toc;
 
     public WikiSerializerHandler(WikiSerializer engine) {
-        super (null); // cannot base on the wikiprinter - so we don't use it
+        super(null); // cannot base on the wikiprinter - so we don't use it
         this.engine = engine;
         writer = new WikiWriter();
         if (engine.macros.containsKey("toc")) {

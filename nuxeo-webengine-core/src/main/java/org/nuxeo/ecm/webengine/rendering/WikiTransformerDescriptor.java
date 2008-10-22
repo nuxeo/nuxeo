@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.rendering;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -49,12 +50,12 @@ public class WikiTransformerDescriptor extends RenderingExtensionDescriptor {
     protected Class<?> serializerClass;
 
     @XNodeList(value="filter", type=ArrayList.class, componentType=WikiFilterDescriptor.class)
-    protected ArrayList<WikiFilterDescriptor> filters;
+    protected List<WikiFilterDescriptor> filters;
 
 
     @Override
     public WikiTransformer newInstance() throws Exception {
-        WikiTransformer tr = null;
+        WikiTransformer tr;
         if (serializerClass == null) {
             tr = new WikiTransformer();
         } else {

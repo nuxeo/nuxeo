@@ -98,11 +98,11 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         return mimeTypes;
     }
 
-    public static final WebContext getActiveContext() {
+    public static WebContext getActiveContext() {
         return CTX.get();
     }
 
-    public static final void setActiveContext(WebContext ctx) {
+    public static void setActiveContext(WebContext ctx) {
         CTX.set(ctx);
     }
 
@@ -170,9 +170,6 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         registry.addMessageBodyWriter(new BlobWriter());
     }
 
-    /**
-     * @return the registry.
-     */
     public ResourceRegistry getRegistry() {
         return registry;
     }
@@ -193,7 +190,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         return (String)mimeTypes.get(ext);
     }
 
-    private void loadMessageBundle() throws IOException {
+    private void loadMessageBundle() {
         log.info("Loading i18n files");
         File file = new File(root, "i18n");
         WebClassLoader cl = new WebClassLoader();
@@ -414,6 +411,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
             log.info("File changed: "+entry.file);
             loadMessageBundle();
         } else if (type == FileChangeListener.DELETED || type ==FileChangeListener.CREATED) {
+            // FIXME: this can't work, comparison between a String and a File
             if (entry.file.getParent().equals(root)) {
                 log.info("File changed: "+entry.file);
                 reload();

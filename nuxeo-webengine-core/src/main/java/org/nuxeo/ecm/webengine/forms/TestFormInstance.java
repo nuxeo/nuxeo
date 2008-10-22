@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -92,7 +93,7 @@ public class TestFormInstance implements FormInstance {
     }
 
     public Collection<String> getKeys() {
-        ArrayList<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<String>();
         result.addAll(params.keySet());
         result.addAll(blobs.keySet());
         return result;

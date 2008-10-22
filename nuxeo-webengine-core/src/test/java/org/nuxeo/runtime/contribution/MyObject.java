@@ -20,6 +20,7 @@
 package org.nuxeo.runtime.contribution;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -30,14 +31,10 @@ public class MyObject {
     public String id;
     public String fid;
     public String str;
-    public ArrayList<String> list;
+    public List<String> list;
     public String[] parents;
 
-    /**
-     *
-     */
     public MyObject() {
-
     }
 
     public MyObject(String id, String fid) {
@@ -45,11 +42,9 @@ public class MyObject {
         this.fid = fid;
     }
 
-
     public Object[] getExtends() {
         return parents;
     }
-
 
     @Override
     public String toString() {

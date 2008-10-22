@@ -27,32 +27,34 @@ public class Utils {
 
     private Utils() {}
 
-    public final static boolean streq(String str1, String str2) {
+    public static boolean streq(String str1, String str2) {
         if (str1 == null) {
             return str2 == null;
         } else if (str2 == null) {
-            return str1 == null;
+            return false;
         } else {
             return str1.equals(str2);
         }
     }
 
-    public static final String nullIfEmpty(String str) {
+    public static String nullIfEmpty(String str) {
         return str != null && str.length() == 0 ? null : str;
     }
 
-    public static final String fcToUpperCase(String str) {
+    public static String fcToUpperCase(String str) {
         char c = str.charAt(0);
         if (Character.isLowerCase(c)) {
-            str = new StringBuilder().append(Character.toUpperCase(c)).append(str.substring(1)).toString();
+            str = new StringBuilder().append(Character.toUpperCase(c))
+                    .append(str.substring(1)).toString();
         }
         return str;
     }
 
-    public static final String fcToLowerCase(String str) {
+    public static String fcToLowerCase(String str) {
         char c = str.charAt(0);
         if (Character.isUpperCase(c)) {
-            str = new StringBuilder().append(Character.toLowerCase(c)).append(str.substring(1)).toString();
+            str = new StringBuilder().append(Character.toLowerCase(c))
+                    .append(str.substring(1)).toString();
         }
         return str;
     }

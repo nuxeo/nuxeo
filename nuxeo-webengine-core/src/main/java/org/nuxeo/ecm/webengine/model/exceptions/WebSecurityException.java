@@ -46,7 +46,7 @@ public class WebSecurityException extends WebException {
     }
 
     public WebSecurityException(String message, Throwable cause) {
-        super (message, cause);
+        super(message, cause);
     }
 
     public void setAction(String action) {
@@ -56,6 +56,5 @@ public class WebSecurityException extends WebException {
     public String getAction() {
         return action;
     }
-
 
 }

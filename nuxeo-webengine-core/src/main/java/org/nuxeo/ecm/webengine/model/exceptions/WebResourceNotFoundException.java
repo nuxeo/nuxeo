@@ -29,13 +29,12 @@ public class WebResourceNotFoundException extends WebException {
 
     private static final long serialVersionUID = 1L;
 
-
     public WebResourceNotFoundException(String message) {
-        super (message);
+        super(message);
     }
 
     public WebResourceNotFoundException(String message, Throwable cause) {
-        super (message, cause);
+        super(message, cause);
     }
 
 }

@@ -31,11 +31,11 @@ public class WebDeployException extends WebException {
 
 
     public WebDeployException(String message) {
-        super (message);
+        super(message);
     }
 
     public WebDeployException(String message, Throwable cause) {
-        super (message, cause);
+        super(message, cause);
     }
 
 }

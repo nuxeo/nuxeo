@@ -91,10 +91,7 @@ public class FormData implements FormInstance {
         if (contentType == null) {
             return false;
         }
-        if (contentType.toLowerCase().startsWith(WebConst.MULTIPART)) {
-            return true;
-        }
-        return false;
+        return contentType.toLowerCase().startsWith(WebConst.MULTIPART);
     }
 
     public boolean isMultipartContent() {

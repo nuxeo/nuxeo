@@ -34,11 +34,11 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
  *
  */
 public class ResourceTypeImpl extends AbstractResourceType {
-    
+
     public ResourceTypeImpl(ModuleImpl module, ResourceTypeImpl superType, String name, ClassProxy clazz) {
-        super (module, superType, name, clazz);
+        super(module, superType, name, clazz);
     }
-     
+
     protected void loadAnnotations(AnnotationManager annoMgr) {
         Class<?> c = clazz.get();
         WebObject wo = c.getAnnotation(WebObject.class);
@@ -52,7 +52,7 @@ public class ResourceTypeImpl extends AbstractResourceType {
             }
         } else {
             loadGuardFromAnnoation(c);
-        }        
+        }
         String[] facets = wo.facets();
         if (facets != null && facets.length > 0) {
             this.facets = new HashSet<String>(Arrays.asList(facets));

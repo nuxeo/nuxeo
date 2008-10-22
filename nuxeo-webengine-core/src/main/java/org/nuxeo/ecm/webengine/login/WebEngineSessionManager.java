@@ -14,53 +14,47 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 
-public class WebEngineSessionManager extends DefaultSessionManager implements
-        NuxeoAuthenticationSessionManager {
+public class WebEngineSessionManager extends DefaultSessionManager
+        implements NuxeoAuthenticationSessionManager {
 
     //TODO work on skin request to avoid hardcoding paths
-    private static final String RESOURCES_PATH="/nuxeo/site/files/";
+    private static final String RESOURCES_PATH = "/nuxeo/site/files/";
     private static Log log = LogFactory.getLog(WebEngineSessionManager.class);
-    private static boolean useSharedAnonymousSession=false;
+    private static boolean useSharedAnonymousSession = false;
 
-    
+
     @Override
-    public boolean canBypassRequest(ServletRequest request) {        
+    public boolean canBypassRequest(ServletRequest request) {
         // static resources don't require Authentication
-        return ((HttpServletRequest)request).getRequestURI()
-            .startsWith(RESOURCES_PATH);
+        return ((HttpServletRequest) request).getRequestURI().startsWith(RESOURCES_PATH);
     }
 
     @Override
-    public void onAuthenticatedSessionCreated(ServletRequest request,
-            HttpSession httpSession, CachableUserIdentificationInfo cachebleUserInfo) {
+    public void onAuthenticatedSessionCreated(ServletRequest request, HttpSession httpSession,
+            CachableUserIdentificationInfo cachebleUserInfo) {
 
         UserSession userSession = null;
-        if (useSharedAnonymousSession && ((NuxeoPrincipal) cachebleUserInfo.getPrincipal()).isAnonymous())
-        {
+        if (useSharedAnonymousSession && ((NuxeoPrincipal) cachebleUserInfo.getPrincipal()).isAnonymous()) {
             try {
                 UserManager um = Framework.getService(UserManager.class);
                 userSession = UserSession.getAnonymousSession(um);
-            }catch(Exception e)
-            {
+            } catch (Exception e) {
                 log.error("Error during Anonymous session creation", e);
                 log.warn("Std UserSession will be used instead");
                 // fall back to default session
             }
         }
-        if (userSession==null)
-        {
+        if (userSession == null) {
             // create WE custom UserSession
-            userSession = new UserSession(cachebleUserInfo.getPrincipal(), cachebleUserInfo.getUserInfo().getPassword());
+            userSession = new UserSession(cachebleUserInfo.getPrincipal(),
+                    cachebleUserInfo.getUserInfo().getPassword());
         }
         UserSession.setCurrentSession(httpSession, userSession);
     }
 
     public boolean needResetLogin(ServletRequest req) {
-        String p = ((HttpServletRequest)req).getPathInfo();
-        if (p != null && p.startsWith("/login")) {
-            return true;
-        }
-        return false;
+        String p = ((HttpServletRequest) req).getPathInfo();
+        return p != null && p.startsWith("/login");
     }
-    
+
 }

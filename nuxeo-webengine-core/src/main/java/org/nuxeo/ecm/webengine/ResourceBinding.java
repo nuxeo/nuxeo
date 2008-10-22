@@ -69,7 +69,7 @@ public class ResourceBinding {
         return false;
     }
 
-    public static final ResourceBinding fromAnnotation(Class<?> clazz) {
+    public static ResourceBinding fromAnnotation(Class<?> clazz) {
         Path path = clazz.getAnnotation(Path.class);
         ResourceBinding binding = null;
         if (path != null) {

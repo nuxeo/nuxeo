@@ -112,19 +112,19 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     public List<AdapterType> getAdapters(Resource resource) {
-        ArrayList<AdapterType> result = new ArrayList<AdapterType>();
+        List<AdapterType> result = new ArrayList<AdapterType>();
         collectAdaptersFor(resource, resource.getType(), result);
         return result;
     }
 
     public List<String> getAdapterNames(Resource resource) {
-        ArrayList<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<String>();
         collectAdapterNamesFor(resource, resource.getType(), result);
         return result;
     }
 
     public List<AdapterType> getEnabledAdapters(Resource resource) {
-        ArrayList<AdapterType> result = new ArrayList<AdapterType>();
+        List<AdapterType> result = new ArrayList<AdapterType>();
         collectEnabledAdaptersFor(resource, resource.getType(), result);
         return result;
     }
@@ -134,7 +134,6 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         collectEnabledAdapterNamesFor(resource, resource.getType(), result);
         return result;
     }
-
 
     protected void collectAdaptersFor(Resource ctx, ResourceType type, List<AdapterType> result) {
         AdapterType[] adapters = adapterBindings.get(type.getName());
@@ -202,7 +201,6 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             collectEnabledAdapterNamesFor(ctx, superType, result);
         }
     }
-
 
     public ResourceType[] getTypes() {
         return types.values().toArray(new ResourceTypeImpl[types.size()]);
@@ -355,14 +353,13 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         adapterBindings.put(targetType, bindings);
     }
 
-
     @Override
     protected void updateContribution(String key, TypeDescriptor object, TypeDescriptor oldValue) {
-          if (object.isAdapter()) {
-              updateAdapterContribution(key, (AdapterDescriptor)object);
-          } else {
-              updateTypeContribution(key, object);
-          }
+        if (object.isAdapter()) {
+            updateAdapterContribution(key, (AdapterDescriptor) object);
+        } else {
+            updateTypeContribution(key, object);
+        }
     }
 
     protected void updateTypeContribution(String key, TypeDescriptor object) {

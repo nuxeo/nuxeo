@@ -28,9 +28,8 @@ public class TemplateNotFoundException extends TypeException {
 
     private static final long serialVersionUID = 1L;
 
-
     public TemplateNotFoundException(ResourceType type, String fileName) {
-        super ("Template "+fileName+" not found for object of type "+type.getName());
+        super("Template "+fileName+" not found for object of type "+type.getName());
     }
 
 }

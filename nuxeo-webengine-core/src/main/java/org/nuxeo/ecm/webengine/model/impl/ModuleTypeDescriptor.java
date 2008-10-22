@@ -28,7 +28,7 @@ import org.nuxeo.ecm.webengine.loader.ClassProxy;
 public class ModuleTypeDescriptor extends TypeDescriptor {
 
     public ModuleTypeDescriptor(ClassProxy clazz, String name, String superType) {
-        super (clazz, name, superType);
+        super(clazz, name, superType);
     }
 
     @Override

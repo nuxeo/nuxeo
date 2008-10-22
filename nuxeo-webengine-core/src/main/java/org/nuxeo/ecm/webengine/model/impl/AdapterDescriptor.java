@@ -54,19 +54,16 @@ public class AdapterDescriptor extends TypeDescriptor {
     public String[] facets;
 
 
-    /**
-     *
-     */
     public AdapterDescriptor() {
-        super ();
+        super();
     }
 
     public AdapterDescriptor(ClassProxy clazz, String name, String superType) {
-        super (clazz, name, superType);
+        super(clazz, name, superType);
     }
 
     public AdapterDescriptor(ClassProxy clazz, String name, String superType, String targetType, String[] facets) {
-        super (clazz, name, superType);
+        super(clazz, name, superType);
         if (facets != null && facets.length > 0) {
             this.facets = facets;
         }
