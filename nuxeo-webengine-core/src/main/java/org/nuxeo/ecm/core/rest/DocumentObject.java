@@ -25,6 +25,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -43,6 +44,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
  *
  */
 @WebObject(type="Document")
+@Produces({"text/html", "*/*"})
 public class DocumentObject extends DefaultObject {
 
     protected DocumentModel doc;
