@@ -23,6 +23,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.Map;
 
 /**
  * A resource bundle for Nuxeo Rendering that holds a map of locals, allows
@@ -33,14 +34,15 @@ import java.util.ResourceBundle;
  *
  */
 public class ResourceComposite extends ResourceBundle {
-    HashMap<Locale, ResourceBundle> map = new HashMap<Locale, ResourceBundle>();
 
-    ResourceBundle current = null;
+    final Map<Locale, ResourceBundle> map = new HashMap<Locale, ResourceBundle>();
 
-    ClassLoader cl;
+    final ClassLoader cl;
+
+    ResourceBundle current;
 
     public ResourceComposite() {
-        this.cl = null;
+        cl = null;
     }
 
     public ResourceComposite(ClassLoader cl) {
@@ -81,7 +83,7 @@ public class ResourceComposite extends ResourceBundle {
     }
 
     /**
-     * Delegate getString using the resource bundle corresponding to the local
+     * Delegates getString using the resource bundle corresponding to the local
      * (create one if it doesn't exist).
      *
      * @param key

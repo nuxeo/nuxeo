@@ -27,8 +27,8 @@ import org.nuxeo.ecm.webengine.WebException;
  */
 public class LazyClassProxy implements ClassProxy {
 
-    protected String className;
-    protected ClassLoader loader;
+    protected final String className;
+    protected final ClassLoader loader;
     protected Class<?> clazz;
 
     public LazyClassProxy(ClassLoader loader, String className) {
@@ -40,9 +40,6 @@ public class LazyClassProxy implements ClassProxy {
         return className;
     }
 
-    /**
-     * @return the loader.
-     */
     public ClassLoader getLoader() {
         return loader;
     }
@@ -66,4 +63,5 @@ public class LazyClassProxy implements ClassProxy {
     public String toString() {
         return className;
     }
+
 }

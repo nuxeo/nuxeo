@@ -48,7 +48,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     protected String path;
 
     @XNode("@fragment")
-    protected String fragment = null;
+    protected String fragment;
 
     protected volatile LinkHandler handler;
 

@@ -60,15 +60,15 @@ public abstract class AbstractWebContext implements WebContext {
 
     protected static final Log log = LogFactory.getLog(WebContext.class);
 
-    protected WebEngine engine;
-    protected UserSession us;
+    protected final WebEngine engine;
+    protected final UserSession us;
     protected final LinkedList<File> scriptExecutionStack;
+    protected final HttpServletRequest request;
+    protected final Map<String, Object> vars;
     protected AbstractResource<?> head;
     protected AbstractResource<?> tail;
     protected AbstractResource<?> root;
     protected Module module;
-    protected HttpServletRequest request;
-    protected Map<String, Object> vars;
     protected FormData form;
     protected String basePath;
 
@@ -134,7 +134,6 @@ public abstract class AbstractWebContext implements WebContext {
     public String getModulePath() {
         return head.getPath();
     }
-
 
     public Resource newObject(String typeName, Object ...  args) throws WebException {
         ResourceType type = module.getType(typeName);
@@ -238,10 +237,9 @@ public abstract class AbstractWebContext implements WebContext {
             urlPath = "/";
         }
         buf.append(scheme).append("://").append(request.getServerName());
-        if ((scheme.equals ("http") && port != 80)
-                || (scheme.equals ("https") && port != 443)) {
-            buf.append (':');
-            buf.append (request.getServerPort ());
+        if ("http".equals(scheme) && port != 80 || "https".equals(scheme) && port != 443) {
+            buf.append(':');
+            buf.append(request.getServerPort());
         }
         return buf;
     }
@@ -279,7 +277,6 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     /** object stack API */
-
 
     public DefaultModule getModuleInstance() {
         return (DefaultModule)head;

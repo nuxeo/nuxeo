@@ -77,7 +77,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
 
     private static final ThreadLocal<WebContext> CTX = new ThreadLocal<WebContext>();
 
-    protected static Map<Object, Object> mimeTypes = loadMimeTypes();
+    protected static final Map<Object, Object> mimeTypes = loadMimeTypes();
 
     static Map<Object, Object> loadMimeTypes() {
         Map<Object,Object> mimeTypes = new HashMap<Object, Object>();
@@ -287,7 +287,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
             XMap xmap = new XMap();
             xmap.register(ModuleDescriptor.class);
             InputStream in = new BufferedInputStream(new FileInputStream(cfgFile));
-            return (ModuleDescriptor)xmap.load(createXMapContext(), in);
+            return (ModuleDescriptor) xmap.load(createXMapContext(), in);
         } catch (Exception e) {
             e.printStackTrace(); // TODO log exception
         }

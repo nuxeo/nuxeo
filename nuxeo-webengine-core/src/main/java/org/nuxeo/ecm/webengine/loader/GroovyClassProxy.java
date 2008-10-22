@@ -34,8 +34,8 @@ public class GroovyClassProxy implements ClassProxy {
 
     private static final Log log = LogFactory.getLog(GroovyClassLoader.class);
 
-    protected GroovyClassLoader loader;
-    protected String className;
+    protected final GroovyClassLoader loader;
+    protected final String className;
     protected long timestamp = 0;
 
 
@@ -44,9 +44,6 @@ public class GroovyClassProxy implements ClassProxy {
         this.className = className;
     }
 
-    /**
-     * @return the className.
-     */
     public String getClassName() {
         return className;
     }
@@ -67,8 +64,9 @@ public class GroovyClassProxy implements ClassProxy {
          }
     }
 
-     @Override
+    @Override
     public String toString() {
         return className;
     }
+
 }

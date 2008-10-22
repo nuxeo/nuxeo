@@ -103,7 +103,7 @@ public abstract class JSonTree extends AbstractComponent {
             item.expand();
             JSONArray result = new JSONArray();
             if (item.isContainer()) {
-                result = serializer.toJSON((item.getChildren()));
+                result = serializer.toJSON(item.getChildren());
             }
             return result.toString();
         } else {

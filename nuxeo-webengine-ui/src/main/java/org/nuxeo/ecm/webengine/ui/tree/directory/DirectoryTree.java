@@ -53,7 +53,7 @@ public abstract class DirectoryTree extends JSonTree {
 
     @Override
     protected Object getInput(WebContext ctx) throws WebException {
-        return this.dir;
+        return dir;
     }
 
     @Override

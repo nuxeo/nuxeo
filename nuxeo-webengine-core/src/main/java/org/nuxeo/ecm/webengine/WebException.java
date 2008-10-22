@@ -40,7 +40,6 @@ public class WebException extends WebApplicationException {
     protected boolean byPassAppResponse = false;
 
     public WebException() {
-        super();
     }
 
     public WebException(Response response) {
@@ -73,7 +72,6 @@ public class WebException extends WebApplicationException {
     }
 
     public WebException(String message) {
-        super();
         this.message = message;
     }
 

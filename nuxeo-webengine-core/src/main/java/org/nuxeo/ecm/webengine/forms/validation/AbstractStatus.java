@@ -86,7 +86,7 @@ public abstract class AbstractStatus implements Status {
             .element("field", field)
             .element("message", message);
         if (isMultiStatus()) {
-            obj.element("children", this.getChildren());
+            obj.element("children", getChildren());
         }
         return obj;
     }

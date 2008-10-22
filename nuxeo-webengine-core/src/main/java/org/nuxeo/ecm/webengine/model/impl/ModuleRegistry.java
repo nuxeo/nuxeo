@@ -33,10 +33,9 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
  */
 public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleDescriptor> {
 
-    protected Map<String, Module> modules = new ConcurrentHashMap<String, Module>();
-    protected Map<String, Module> moduleRoots = new ConcurrentHashMap<String, Module>();
-    
-    protected WebEngine engine;
+    protected final Map<String, Module> modules = new ConcurrentHashMap<String, Module>();
+    protected final Map<String, Module> moduleRoots = new ConcurrentHashMap<String, Module>();
+    protected final WebEngine engine;
 
 
     public ModuleRegistry(WebEngine engine) {
@@ -50,7 +49,7 @@ public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleD
     public Module getModuleByRoot(String rootName) {
         return moduleRoots.get(rootName);
     }
-    
+
     public void putModule(Module app) {
         modules.put(app.getName(), app);
     }

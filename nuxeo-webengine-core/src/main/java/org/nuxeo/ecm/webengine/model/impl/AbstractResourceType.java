@@ -42,8 +42,8 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
  */
 public abstract class AbstractResourceType implements ResourceType {
 
-    protected ModuleImpl module;
-    protected String name;
+    protected final ModuleImpl module;
+    protected final String name;
     protected AbstractResourceType superType;
     protected volatile ClassProxy clazz;
     protected volatile Guard guard = Guard.DEFAULT;
@@ -78,9 +78,6 @@ public abstract class AbstractResourceType implements ResourceType {
         return facets != null && facets.contains(facet);
     }
 
-    /**
-     * @return the name.
-     */
     public String getName() {
         return name;
     }
@@ -164,12 +161,8 @@ public abstract class AbstractResourceType implements ResourceType {
             path = path.substring(0, p);
         }
         path = path.replace('.', '/');
-        return new StringBuilder()
-        .append("/")
-        .append(path)
-        .append('/')
-        .append(fileName)
-        .toString();
+        return new StringBuilder().append("/").append(path).append('/')
+                .append(fileName).toString();
     }
 
     public boolean isDerivedFrom(String type) {
@@ -194,13 +187,14 @@ public abstract class AbstractResourceType implements ResourceType {
                 try {
                     guard = PermissionService.parse(g);
                 } catch (ParseException e) {
-                    throw WebException.wrap("Failed to parse guard: "+g+" on WebObject "+c.getName(), e);
+                    throw WebException.wrap(
+                            "Failed to parse guard: "+g+" on WebObject "+c.getName(), e);
                 }
             } else {
                 Class<?> gc = ag.type();
                 if (gc != null) {
                     try {
-                        guard = (org.nuxeo.ecm.webengine.security.Guard)gc.newInstance();
+                        guard = (Guard) gc.newInstance();
                     } catch (Exception e) {
                         throw WebException.wrap(
                                 "Failed to instantiate guard handler: "+gc.getName()+" on WebObject "+c.getName(), e);

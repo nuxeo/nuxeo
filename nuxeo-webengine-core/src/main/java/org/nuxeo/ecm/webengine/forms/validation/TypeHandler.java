@@ -28,9 +28,9 @@ import java.util.Map;
  */
 public abstract class TypeHandler {
 
-    protected static Map<String, TypeHandler> handlers = new HashMap<String, TypeHandler>();
+    protected static final Map<String, TypeHandler> handlers = new HashMap<String, TypeHandler>();
 
-    protected String type;
+    protected final String type;
 
     public TypeHandler(String type) {
         this.type = type;

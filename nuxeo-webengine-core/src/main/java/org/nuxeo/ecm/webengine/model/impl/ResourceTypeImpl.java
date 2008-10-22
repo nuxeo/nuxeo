@@ -42,7 +42,9 @@ public class ResourceTypeImpl extends AbstractResourceType {
     protected void loadAnnotations(AnnotationManager annoMgr) {
         Class<?> c = clazz.get();
         WebObject wo = c.getAnnotation(WebObject.class);
-        if (wo == null) return;
+        if (wo == null) {
+            return;
+        }
         String g = wo.guard();
         if (g != null && g.length() > 0) {
             try {

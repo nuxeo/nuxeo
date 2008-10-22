@@ -36,7 +36,7 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
 public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescriptor>{
 
     // type to view bindings
-    protected Map<String, LinkDescriptor[]> links; // category to links mapping
+    protected final Map<String, LinkDescriptor[]> links; // category to links mapping
 
     public LinkRegistry() {
         links = new ConcurrentHashMap<String, LinkDescriptor[]>();

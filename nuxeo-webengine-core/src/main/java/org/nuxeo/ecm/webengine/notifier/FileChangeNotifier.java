@@ -115,7 +115,7 @@ public class FileChangeNotifier implements FileChangeListener {
             if (isDirectory) {
                 File[] files = file.listFiles();
                 if (files != null) {
-                    this.children = new HashMap<File, FileEntry>();
+                    children = new HashMap<File, FileEntry>();
                     for (File f : files) {
                         children.put(f, new FileEntry(f));
                     }

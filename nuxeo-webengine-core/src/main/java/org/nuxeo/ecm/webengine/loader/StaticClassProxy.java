@@ -26,7 +26,7 @@ package org.nuxeo.ecm.webengine.loader;
  */
 public class StaticClassProxy implements ClassProxy {
 
-    protected Class<?> clazz;
+    protected final Class<?> clazz;
 
     public StaticClassProxy(Class<?>clazz) {
         this.clazz = clazz;

@@ -46,40 +46,40 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
  */
 public class DefaultModule extends AbstractResource<ModuleType> implements ModuleResource {
 
-    protected Module module;
-  
-    public DefaultModule() {        
+    protected final Module module;
+
+    public DefaultModule() {
         ctx = WebEngine.getActiveContext();
         module = ctx.getEngine().getModule(getClass().getAnnotation(WebModule.class).name());
         type = module.getModuleType();
         path = guessPath();
         setRoot(true);
         ctx.push(this);
-        if (!this.type.getGuard().check(this)) {
+        if (!type.getGuard().check(this)) {
             throw new WebSecurityException("Failed to initialize object: "+getPath()+". Object is not accessible in the current context", getPath());
-        }        
+        }
     }
-  
+
     @Path(value="@{segment}")
     public AdapterResource disptachAdapter(@PathParam("segment") String adapterName) throws WebException {
         return ctx.newAdapter(this, adapterName);
-    }    
-   
+    }
+
     @Override
     public Resource initialize(WebContext ctx, ResourceType type,
             Object... args) throws WebException {
         return this; // initialization is done in constructor
     }
-    
+
     @Override
     public Module getModule() {
         return module;
     }
-    
+
     public boolean isAdapter() {
         return false;
     }
-    
+
     public String getName() {
         return module.getName();
     }
@@ -91,7 +91,7 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
         pw.close();
         return Response.status(500).entity(sw.toString()).build();
     }
-        
+
 
     /**
      * This method try to guess the actual path under this resource was called.
@@ -107,7 +107,7 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
         String path = p.value();
         if (path.indexOf('{') > -1) {
             path = _guessPath();
-        } 
+        }
         StringBuilder buf = new StringBuilder();
         if (!path.startsWith("/")) {
             buf.append(ctx.getBasePath()).append('/').append(path);
@@ -119,13 +119,13 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
         }
         return buf.toString();
     }
-    
+
     /**
      * The correct method to guess the path that is not working for now because of a bug in RestEasy
      * @return
      */
     protected String _guessPath() {
-        return ctx.getUriInfo().getMatchedURIs().get(0);        
+        return ctx.getUriInfo().getMatchedURIs().get(0);
     }
-            
+
 }

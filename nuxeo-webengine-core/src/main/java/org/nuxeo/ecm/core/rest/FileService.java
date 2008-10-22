@@ -122,7 +122,7 @@ public class FileService extends DefaultAdapter {
         try {
             Property p = doc.getProperty(xpath);
             if (p.isList()) { // add the file to the list
-                if (p.getSchema().getName().equals("files")) { // treat the files schema separately
+                if ("files".equals(p.getSchema().getName())) { // treat the files schema separately
                     Map<String, Serializable> map = new HashMap<String, Serializable>();
                     map.put("filename", blob.getFilename());
                     map.put("file", (Serializable)blob);
@@ -131,7 +131,7 @@ public class FileService extends DefaultAdapter {
                     p.add(blob);
                 }
             } else {
-                if (p.getSchema().getName().equals("file")) { // for compatibility with deprecated filename
+                if ("file".equals(p.getSchema().getName())) { // for compatibility with deprecated filename
                     p.getParent().get("filename").setValue(blob.getFilename());
                 }
                 p.setValue(blob);
@@ -165,7 +165,7 @@ public class FileService extends DefaultAdapter {
     public Response remove() {
         return doDelete();
     }
-    
+
     @DELETE
     public Response doDelete() {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);

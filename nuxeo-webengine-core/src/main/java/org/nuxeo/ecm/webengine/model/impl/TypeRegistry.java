@@ -42,11 +42,11 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
  */
 public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescriptor>{
 
-    protected Map<String, AbstractResourceType> types;
-    protected Map<String, AdapterTypeImpl> adapters;
-    protected Map<String, AdapterTypeImpl[]> adapterBindings;
-    protected ModuleImpl module;
-    protected Class<?> docObjectClass = null;
+    protected final Map<String, AbstractResourceType> types;
+    protected final Map<String, AdapterTypeImpl> adapters;
+    protected final Map<String, AdapterTypeImpl[]> adapterBindings;
+    protected final ModuleImpl module;
+    protected Class<?> docObjectClass;
 
     public TypeRegistry(ModuleImpl module) {
         types = new ConcurrentHashMap<String, AbstractResourceType>();
@@ -130,7 +130,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     public List<String> getEnabledAdapterNames(Resource resource) {
-        ArrayList<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<String>();
         collectEnabledAdapterNamesFor(resource, resource.getType(), result);
         return result;
     }
@@ -153,8 +153,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     protected void collectAdapterNamesFor(Resource ctx, ResourceType type, List<String> result) {
         AdapterType[] adapters = adapterBindings.get(type.getName());
         if (adapters != null && adapters.length > 0) {
-            for (int i=0; i<adapters.length; i++) {
-                AdapterType adapter = adapters[i];
+            for (AdapterType adapter : adapters) {
                 if (adapter.acceptResource(ctx)) {
                     result.add(adapter.getName());
                 }
@@ -169,8 +168,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     protected void collectEnabledAdaptersFor(Resource ctx, ResourceType type, List<AdapterType> result) {
         AdapterType[] adapters = adapterBindings.get(type.getName());
         if (adapters != null && adapters.length > 0) {
-            for (int i=0; i<adapters.length; i++) {
-                AdapterType adapter = adapters[i];
+            for (AdapterType adapter : adapters) {
                 if (adapter.acceptResource(ctx)) {
                     if (adapter.isEnabled(ctx)) {
                         result.add(adapter);
@@ -187,8 +185,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     protected void collectEnabledAdapterNamesFor(Resource ctx, ResourceType type, List<String> result) {
         AdapterType[] adapters = adapterBindings.get(type.getName());
         if (adapters != null && adapters.length > 0) {
-            for (int i=0; i<adapters.length; i++) {
-                AdapterType adapter = adapters[i];
+            for (AdapterType adapter : adapters) {
                 if (adapter.acceptResource(ctx)) {
                     if (adapter.isEnabled(ctx)) {
                         result.add(adapter.getName());

@@ -31,7 +31,7 @@ import org.nuxeo.ecm.webengine.security.Guard;
  */
 public interface ResourceType {
 
-    final static String ROOT_TYPE_NAME = "*";
+    String ROOT_TYPE_NAME = "*";
 
     void flushCache();
 
@@ -54,4 +54,5 @@ public interface ResourceType {
     ScriptFile getTemplate(String name) throws WebException;
 
     boolean isEnabled(Resource ctx);
+
 }

@@ -51,9 +51,9 @@ public class TreeViewImpl implements TreeView {
 
     public void setInput(Object input) {
         if (input == null) {
-            this.root = null;
+            root = null;
         } else {
-            this.root = new TreeItemImpl(provider, input);
+            root = new TreeItemImpl(provider, input);
         }
     }
 

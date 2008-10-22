@@ -14,12 +14,11 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 
-public class WebEngineSessionManager extends DefaultSessionManager
-        implements NuxeoAuthenticationSessionManager {
+public class WebEngineSessionManager extends DefaultSessionManager {
 
     //TODO work on skin request to avoid hardcoding paths
     private static final String RESOURCES_PATH = "/nuxeo/site/files/";
-    private static Log log = LogFactory.getLog(WebEngineSessionManager.class);
+    private static final Log log = LogFactory.getLog(WebEngineSessionManager.class);
     private static boolean useSharedAnonymousSession = false;
 
 
@@ -34,7 +33,8 @@ public class WebEngineSessionManager extends DefaultSessionManager
             CachableUserIdentificationInfo cachebleUserInfo) {
 
         UserSession userSession = null;
-        if (useSharedAnonymousSession && ((NuxeoPrincipal) cachebleUserInfo.getPrincipal()).isAnonymous()) {
+        if (useSharedAnonymousSession
+                && ((NuxeoPrincipal) cachebleUserInfo.getPrincipal()).isAnonymous()) {
             try {
                 UserManager um = Framework.getService(UserManager.class);
                 userSession = UserSession.getAnonymousSession(um);

@@ -68,7 +68,7 @@ public class FreemarkerEngine implements RenderingEngine {
     }
 
     public FreemarkerEngine(Configuration cfg, ResourceLocator locator) {
-        this.wrapper = new DocumentObjectWrapper(this);
+        wrapper = new DocumentObjectWrapper(this);
         this.cfg = cfg == null ? new Configuration() : cfg;
         this.cfg.setWhitespaceStripping(true);
         this.cfg.setLocalizedLookup(false);
@@ -96,7 +96,7 @@ public class FreemarkerEngine implements RenderingEngine {
     public void setMessageBundle(ResourceBundle messages) {
         this.messages.setBundle(messages);
         if (messages instanceof ResourceComposite) {
-            this.localeMessages.setBundle((ResourceComposite) messages);
+            localeMessages.setBundle((ResourceComposite) messages);
         }
     }
 
@@ -105,12 +105,12 @@ public class FreemarkerEngine implements RenderingEngine {
     }
 
     public void setResourceLocator(ResourceLocator locator) {
-        this.loader = new ResourceTemplateLoader(locator);
-        this.cfg.setTemplateLoader(loader);
+        loader = new ResourceTemplateLoader(locator);
+        cfg.setTemplateLoader(loader);
     }
 
     public ResourceLocator getResourceLocator() {
-        return this.loader.getLocator();
+        return loader.getLocator();
     }
 
     public ResourceTemplateLoader getLoader() {

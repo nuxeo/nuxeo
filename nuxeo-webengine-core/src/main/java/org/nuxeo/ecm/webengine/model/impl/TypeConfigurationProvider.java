@@ -31,8 +31,7 @@ public class TypeConfigurationProvider {
 
     protected List<TypeDescriptor> types;
     protected List<AdapterDescriptor> services;
-    protected List<TypeRegistry> registries;
-
+    protected final List<TypeRegistry> registries;
 
     public TypeConfigurationProvider() {
         types = new ArrayList<TypeDescriptor>();

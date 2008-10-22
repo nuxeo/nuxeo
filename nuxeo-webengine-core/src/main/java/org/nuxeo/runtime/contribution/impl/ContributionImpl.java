@@ -32,27 +32,30 @@ import org.nuxeo.runtime.contribution.ContributionRegistry;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ContributionImpl<K,T> implements Contribution<K,T> {
+public class ContributionImpl<K, T> implements Contribution<K, T> {
 
-    protected AbstractContributionRegistry<K,T> registry;
-    protected K primaryKey;
-    protected List<T> mainFragments = new ArrayList<T>();
-    protected List<T> fragments = new ArrayList<T>();
+    protected final AbstractContributionRegistry<K, T> registry;
+    protected final K primaryKey;
+    protected final List<T> mainFragments = new ArrayList<T>();
+    protected final List<T> fragments = new ArrayList<T>();
+
     // the contributions I depend on
-    protected Set<Contribution<K,T>> dependencies = new HashSet<Contribution<K,T>>();
+    protected final Set<Contribution<K, T>> dependencies = new HashSet<Contribution<K, T>>();
+
     // the contributions that are waiting for me
-    protected Set<Contribution<K,T>> dependents = new HashSet<Contribution<K,T>>();
+    protected final Set<Contribution<K, T>> dependents = new HashSet<Contribution<K, T>>();
+
     // the unresolved dependencies that are blocking my registration
     //TODO: this member can be removed since we can obtain unresolved deps from dependencies set.
     //protected Set<Contribution<K,T>> unresolvedDependencies = new HashSet<Contribution<K,T>>();
 
     // last merged fragment
-    protected T value = null;
+    protected T value;
     protected boolean isResolved = false;
 
     public ContributionImpl(AbstractContributionRegistry<K,T> reg,  K primaryKey) {
         this.primaryKey = primaryKey;
-        this.registry = reg;
+        registry = reg;
     }
 
     public ContributionRegistry<K,T> getRegistry() {

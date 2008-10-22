@@ -45,7 +45,9 @@ public class ModuleTypeImpl extends AbstractResourceType implements ModuleType {
     protected void loadAnnotations(AnnotationManager annoMgr) {
         Class<?> c = clazz.get();
         WebModule wm = c.getAnnotation(WebModule.class);
-        if (wm == null) return;
+        if (wm == null) {
+            return;
+        }
         String g = wm.guard();
         if (g != null && g.length() > 0) {
             try {
@@ -71,7 +73,7 @@ public class ModuleTypeImpl extends AbstractResourceType implements ModuleType {
                     guard = PermissionService.parse(g);
                 } catch (ParseException e) {
                     throw WebException.wrap("Failed to parse guard: "+g+" on WebObject "+c.getName(), e);
-                }                    
+                }
             } else {
                 Class<?> gc = ag.type();
                 if (gc != null) {
@@ -82,7 +84,7 @@ public class ModuleTypeImpl extends AbstractResourceType implements ModuleType {
                     }
                 }
             }
-        }        
+        }
     }
-    
+
 }

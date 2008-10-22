@@ -35,7 +35,7 @@ import java.util.Map;
  */
 class MethodAnnotations {
 
-    protected List<Entry> entries = new ArrayList<Entry>();
+    protected final List<Entry> entries = new ArrayList<Entry>();
 
     public void addMethods(Class<?> clazz) {
         for (Method m : clazz.getDeclaredMethods()) {
@@ -78,14 +78,14 @@ class MethodAnnotations {
             Entry entry = entries.get(i);
             if (entry.isSameAs(am.method)) {
                 Annotation[] annos = am.getAnnotations();
-                for (int k=0;k<annos.length;k++) {
-                    Class<?> annoType = annos[k].annotationType();
+                for (Annotation anno : annos) {
+                    Class<?> annoType = anno.annotationType();
                     Annotation a = entry.annos.get(annoType);
                     if (a == null) {
                         //TODO support merging annotations?
-                        entry.annos.put(annos[k].annotationType(), annos[k]);
+                        entry.annos.put(anno.annotationType(), anno);
                     } else {
-                        entry.annos.put(annos[k].annotationType(), annos[k]);
+                        entry.annos.put(anno.annotationType(), anno);
                     }
                 }
                 return;
@@ -94,19 +94,20 @@ class MethodAnnotations {
         entries.add(new Entry(am.method, am.getAnnotations()));
     }
 
-
     static class Entry {
-        Class<?>[] parameterTypes; // store as member to avoid cloning when calling getParameterTypes()
+        final Class<?>[] parameterTypes; // store as member to avoid cloning when calling getParameterTypes()
         Method method;
-        Map<Class<? extends Annotation>, Annotation> annos;
+        final Map<Class<? extends Annotation>, Annotation> annos;
+
         Entry(Method method, Annotation[] annos) {
             this.method = method;
-            this.parameterTypes = method.getParameterTypes();
+            parameterTypes = method.getParameterTypes();
             this.annos = new HashMap<Class<? extends Annotation>, Annotation>();
-            for (int i=0; i<annos.length; i++) {
-                this.annos.put(annos[i].annotationType(), annos[i]) ;
+            for (Annotation anno : annos) {
+                this.annos.put(anno.annotationType(), anno);
             }
         }
+
         public boolean isSameAs(Method m) {
             if (method.getName().equals(m.getName())) {
                 if (method.getReturnType() == m.getReturnType()) {
@@ -124,4 +125,5 @@ class MethodAnnotations {
             return false;
         }
     }
+
 }

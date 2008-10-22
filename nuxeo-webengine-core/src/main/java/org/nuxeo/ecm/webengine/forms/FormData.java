@@ -419,7 +419,7 @@ public class FormData implements FormInstance {
         String val = getString(VERSIONING);
         if (val != null) {
             return val.equals(MAJOR) ? VersioningActions.ACTION_INCREMENT_MAJOR
-                    : (val.equals(MINOR) ? VersioningActions.ACTION_INCREMENT_MINOR : null);
+                    : val.equals(MINOR) ? VersioningActions.ACTION_INCREMENT_MINOR : null;
         }
         return null;
     }

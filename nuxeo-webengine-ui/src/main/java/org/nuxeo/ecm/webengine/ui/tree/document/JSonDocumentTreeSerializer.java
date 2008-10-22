@@ -30,7 +30,7 @@ import org.nuxeo.ecm.webengine.ui.tree.TreeItem;
  */
 public class JSonDocumentTreeSerializer extends JSonTreeSerializer {
 
-    protected WebContext ctx;
+    protected final WebContext ctx;
 
     public JSonDocumentTreeSerializer(WebContext ctx) {
         this.ctx = ctx;

@@ -124,7 +124,7 @@ public class DocumentObject extends DefaultObject {
         try {
             PathRef pathRef = new PathRef(doc.getPath().append(path).toString());
             DocumentModel doc = ctx.getCoreSession().getDocument(pathRef);
-            return (DocumentObject)(ctx.newObject(doc.getType(), doc));
+            return (DocumentObject) ctx.newObject(doc.getType(), doc);
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
@@ -133,7 +133,7 @@ public class DocumentObject extends DefaultObject {
     public DocumentObject newObject(DocumentRef ref) {
         try {
             DocumentModel doc = ctx.getCoreSession().getDocument(ref);
-            return (DocumentObject)(ctx.newObject(doc.getType(), doc));
+            return (DocumentObject) ctx.newObject(doc.getType(), doc);
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
@@ -141,7 +141,7 @@ public class DocumentObject extends DefaultObject {
 
     public DocumentObject newObject(DocumentModel doc) {
         try {
-            return (DocumentObject)(ctx.newObject(doc.getType(), doc));
+            return (DocumentObject) ctx.newObject(doc.getType(), doc);
         } catch (Exception e) {
             throw WebException.wrap(e);
         }

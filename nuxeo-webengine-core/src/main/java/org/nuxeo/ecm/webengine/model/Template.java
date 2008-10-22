@@ -45,10 +45,21 @@ public class Template {
     protected String name = "view";
     protected String ext = "ftl";
     protected MediaType mediaType;
-    protected Resource resource;
-    protected Map<String,Object> args;
+    protected final Resource resource;
+    protected Map<String, Object> args;
     protected ScriptFile script;
     protected WebContext ctx;
+
+    public Template(WebContext ctx, Resource resource, ScriptFile script, Map<String, Object> args) {
+        this.ctx = ctx;
+        this.resource = resource;
+        this.script = script;
+        this.args = args;
+        if (this.ctx == null && this.resource != null) {
+            this.ctx = this.resource.getContext();
+        }
+        mediaType = ctx.getHttpHeaders().getMediaType();
+    }
 
     public Template(WebContext ctx) {
         this(ctx, null, null, null);
@@ -80,17 +91,6 @@ public class Template {
 
     public Template(Resource resource, ScriptFile script) {
         this(resource.getContext(), resource, script, null);
-    }
-
-    public Template(WebContext ctx, Resource resource, ScriptFile script, Map<String,Object> args) {
-        this.ctx = ctx;
-        this.resource = resource;
-        this.script = script;
-        this.args = args;
-        if (this.ctx == null && this.resource != null) {
-            this.ctx = this.resource.getContext();
-        }
-        mediaType = ctx.getHttpHeaders().getMediaType();
     }
 
     public Template mediaType(MediaType mediaType) {
@@ -178,8 +178,6 @@ public class Template {
         }
         return this;
     }
-
-
 
     public void render(OutputStream out) throws WebException {
         Writer w = new OutputStreamWriter(out);

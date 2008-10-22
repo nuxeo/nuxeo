@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class DocumentTreeBuilder extends JQueryTreeBuilder<DocumentModel> {
 
-    protected CoreSession session;
+    protected final CoreSession session;
 
     public DocumentTreeBuilder(CoreSession session) {
         this.session = session;

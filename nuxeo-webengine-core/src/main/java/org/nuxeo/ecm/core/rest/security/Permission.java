@@ -25,9 +25,9 @@ package org.nuxeo.ecm.core.rest.security;
  */
 public class Permission {
 
-    public String name;
-    public boolean granted;
-    public String permission;
+    public final String name;
+    public final boolean granted;
+    public final String permission;
 
     public Permission(String name, String permission, boolean granted) {
         this.name = name;
@@ -35,24 +35,16 @@ public class Permission {
         this.granted = granted;
     }
 
-    /**
-     * @return the name.
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * @return the permission.
-     */
     public String getPermission() {
         return permission;
     }
 
-    /**
-     * @return the granted.
-     */
     public boolean isGranted() {
         return granted;
     }
+
 }

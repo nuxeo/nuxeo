@@ -59,7 +59,7 @@ public class FakeResponse implements HttpServletResponse {
     public String getOutput() throws UnsupportedEncodingException {
         if (output == null) {
             printer.flush();
-            output = (out).toString("UTF-8");
+            output = out.toString("UTF-8");
         }
         return output;
     }

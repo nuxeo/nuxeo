@@ -53,8 +53,8 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public Resource initialize(WebContext ctx, ResourceType type, Object ...  args) {
         this.ctx = ctx;
         this.type = (T)type;
-        this.path = ctx.getUriInfo().getMatchedURIs().get(0);
-        this.path = new StringBuilder().append(ctx.getBasePath()).append(this.path).toString();
+        path = ctx.getUriInfo().getMatchedURIs().get(0);
+        path = new StringBuilder().append(ctx.getBasePath()).append(path).toString();
         if (!this.type.getGuard().check(this)) {
             throw new WebSecurityException(
                     "Failed to initialize object: " + path + ". Object is not accessible in the current context",
@@ -116,9 +116,9 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     }
 
     public void dispose() {
-        this.ctx = null;
-        this.type = null;
-        this.path = null;
+        ctx = null;
+        type = null;
+        path = null;
     }
 
     public Set<String> getFacets() {
@@ -141,7 +141,6 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return ctx.getModule();
     }
 
-
     public Resource getNext() {
         return next;
     }
@@ -161,7 +160,6 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public List<LinkDescriptor> getLinks(String category) {
         return ctx.getModule().getActiveLinks(this, category);
     }
-
 
     public <A> A getAdapter(Class<A> adapter) {
         if (adapter == Principal.class) {

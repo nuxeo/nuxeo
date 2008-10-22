@@ -40,6 +40,7 @@ import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
+import org.nuxeo.common.utils.Path;
 
 /**
  * The default implementation for a web configuration
@@ -49,13 +50,14 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
  */
 public class ModuleImpl implements Module {
 
-    public final static Log log = LogFactory.getLog(ModuleImpl.class);
-    
-    protected WebEngine engine;
-    protected ModuleDescriptor descriptor;
+    public static final Log log = LogFactory.getLog(ModuleImpl.class);
 
-    protected File root;
+    protected final WebEngine engine;
+    protected final ModuleDescriptor descriptor;
+    protected final File root;
+
     protected DirectoryStack dirStack;
+
     // cache used for resolved files
     protected ConcurrentMap<String, ScriptFile> fileCache;
 
@@ -71,7 +73,7 @@ public class ModuleImpl implements Module {
     protected ModuleImpl superModule;
 
     public ModuleImpl(WebEngine engine, File root, ModuleDescriptor descriptor) throws WebException {
-        this.fileCache = new ConcurrentHashMap<String, ScriptFile>();
+        fileCache = new ConcurrentHashMap<String, ScriptFile>();
         this.root = root;
         this.descriptor = descriptor;
         this.engine = engine;
@@ -82,11 +84,9 @@ public class ModuleImpl implements Module {
         loadLinks();
     }
 
-
     public boolean isFragment() {
         return descriptor.fragment != null;
     }
-
 
     public ModuleDescriptor getDescriptor() {
         return descriptor;
@@ -160,12 +160,12 @@ public class ModuleImpl implements Module {
         }
         char c = path.charAt(0);
         if (c == '.') { // avoid getting files outside the web root
-            path = new org.nuxeo.common.utils.Path(path).makeAbsolute().toString();
+            path = new Path(path).makeAbsolute().toString();
         } else if (c != '/') {// avoid doing duplicate entries in document stack cache
             path = new StringBuilder(len+1).append("/").append(path).toString();
         }
         try {
-            return findFile(new org.nuxeo.common.utils.Path(path).makeAbsolute().toString());
+            return findFile(new Path(path).makeAbsolute().toString());
         } catch (IOException e) {
             throw WebException.wrap(e);
         }

@@ -39,10 +39,10 @@ package org.nuxeo.ecm.webengine.notifier;
  */
 public interface FileChangeListener {
 
-    public final static int MODIFIED = 1;
-    public final static int CREATED = 2;
-    public final static int DELETED = 3;
-    
+    int MODIFIED = 1;
+    int CREATED = 2;
+    int DELETED = 3;
+
     /**
      * Notify that the given file changed.
      *

@@ -47,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 // TODO: should be synchronized? concurrent access may happen for the same session
-public class UserSession extends HashMap<String, Object> implements Serializable, HttpSessionBindingListener {
+public class UserSession extends HashMap<String, Object> implements HttpSessionBindingListener {
 
     private static final long serialVersionUID = 260562970988817064L;
 

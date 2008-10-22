@@ -177,7 +177,7 @@ public class Path implements Serializable {
     }
 
     protected final void updateHashCode() {
-        flags = (flags & ALL_SEPARATORS) | (computeHashCode() << USED_BITS);
+        flags = flags & ALL_SEPARATORS | (computeHashCode() << USED_BITS);
     }
 
     protected int computeHashCode() {
@@ -199,11 +199,11 @@ public class Path implements Serializable {
     }
 
     public boolean isRoot() {
-        return (segments.length == 0) && ((flags & HAS_LEADING) != 0);
+        return segments.length == 0 && (flags & HAS_LEADING) != 0;
     }
 
     public boolean isEmpty() {
-        return (segments.length == 0) && ((flags & HAS_LEADING) == 0);
+        return segments.length == 0 && (flags & HAS_LEADING) == 0;
     }
 
     public boolean hasTrailingSeparator() {

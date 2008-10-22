@@ -38,8 +38,8 @@ public class AnnotatedClass<T> {
 
     public AnnotatedClass(Class<T> clazz) {
         this.clazz = clazz;
-        this.methods = new HashMap<Method, AnnotatedMethod>();
-        this.annotations = new HashMap<Class<? extends Annotation>, Annotation>();
+        methods = new HashMap<Method, AnnotatedMethod>();
+        annotations = new HashMap<Class<? extends Annotation>, Annotation>();
     }
 
     public Class<?> getAnnotatedClass() {

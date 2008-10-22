@@ -29,19 +29,18 @@ public class ClassMap<T> extends HashMap<Class<?>, T>{
 
     private static final long serialVersionUID = 1L;
 
-
     public T find(Class<?> key) {
-        T v = super.get(key);
+        T v = get(key);
         if (v == null) {
             Class<?>[] itfs = null;
             Class<?> sk = key.getSuperclass();
             if (sk != null) {
-                v = super.get(sk);
+                v = get(sk);
             }
             if (v == null) { // try interfaces
                 itfs = key.getInterfaces();
                 for (Class<?> itf : itfs) {
-                    v = super.get(itf);
+                    v = get(itf);
                     if (v != null) {
                         break;
                     }

@@ -43,7 +43,8 @@ import org.codehaus.groovy.runtime.InvokerHelper;
  */
 public class GroovyScripting {
 
-    protected GroovyClassLoader loader;
+    protected final GroovyClassLoader loader;
+
     // compiled script class cache
     protected Map<File, Entry> cache;
 
@@ -127,8 +128,9 @@ public class GroovyScripting {
     }
 
     static class Entry {
-        long lastModified;
-        Class<?> klass;
+        final long lastModified;
+        final Class<?> klass;
+
         Entry(Class<?> klass, long lastModified) {
             this.klass = klass;
             this.lastModified = lastModified;

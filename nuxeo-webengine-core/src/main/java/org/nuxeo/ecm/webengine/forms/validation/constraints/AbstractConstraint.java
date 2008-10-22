@@ -59,7 +59,7 @@ public class AbstractConstraint implements Constraint {
     }
 
     public String getErrorMessage() {
-        return this.errorMessage;
+        return errorMessage;
     }
 
     public void setErrorMessage(String errorMessage) {

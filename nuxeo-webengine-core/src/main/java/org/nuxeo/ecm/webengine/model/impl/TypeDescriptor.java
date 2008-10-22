@@ -64,10 +64,14 @@ public class TypeDescriptor implements Cloneable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
         if (obj instanceof TypeDescriptor) {
-            TypeDescriptor td = (TypeDescriptor)obj;
+            TypeDescriptor td = (TypeDescriptor) obj;
             return name.equals(td.name) && Utils.streq(fragment, td.fragment);
         }
         return false;

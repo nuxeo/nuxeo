@@ -44,14 +44,14 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  */
 public class DirectoryTypeProvider extends TypeConfigurationProvider {
 
-    public final static Log log = LogFactory.getLog(DirectoryTypeProvider.class);
-    
+    public static final Log log = LogFactory.getLog(DirectoryTypeProvider.class);
+
     public static final String CRLF = System.getProperty("line.separator");
 
-    protected GroovyClassLoader loader;
-    protected File root;
+    protected final GroovyClassLoader loader;
+    protected final File root;
+    protected final WebEngine engine;
     protected boolean isLoaded = false;
-    protected WebEngine engine;
 
     public DirectoryTypeProvider(WebEngine engine) {
         this.engine = engine;
@@ -93,11 +93,11 @@ public class DirectoryTypeProvider extends TypeConfigurationProvider {
         }
     }
 
-
     protected void scan(File root, String path, Writer cache) {
         for (File file : root.listFiles()) {
             String name = file.getName();
-            if (file.isDirectory() && !name.equals("skin") && !name.equals("WEB-INF") && !name.equals("resources")) {
+            if (file.isDirectory() && !"skin".equals(name)
+                    && !"WEB-INF".equals(name) && !"resources".equals(name)) {
                 scan(file, path == null ? name :
                     new StringBuilder().append(path).append('.').append(name).toString(),
                     cache);

@@ -55,7 +55,6 @@ public class AdapterDescriptor extends TypeDescriptor {
 
 
     public AdapterDescriptor() {
-        super();
     }
 
     public AdapterDescriptor(ClassProxy clazz, String name, String superType) {
@@ -67,7 +66,7 @@ public class AdapterDescriptor extends TypeDescriptor {
         if (facets != null && facets.length > 0) {
             this.facets = facets;
         }
-        if (targetType == null || targetType.equals("*")) {
+        if (targetType == null || "*".equals(targetType)) {
             this.targetType = ResourceType.ROOT_TYPE_NAME;
         } else {
             this.targetType = targetType;

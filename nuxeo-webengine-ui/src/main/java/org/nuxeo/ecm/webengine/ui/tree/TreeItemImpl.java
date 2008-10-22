@@ -35,23 +35,19 @@ public class TreeItemImpl implements TreeItem {
     public static final TreeItem[] EMPTY_CHILDREN = new TreeItem[0];
     public static final TreeItem[] HAS_CHILDREN = new TreeItem[0];
 
-    protected ContentProvider provider;
-    protected TreeItem parent;
-    protected Path path;
+    protected final ContentProvider provider;
+    protected final TreeItem parent;
+    protected final Path path;
     protected String label;
     protected String[] facets;
     protected TreeItem[] children = EMPTY_CHILDREN;
 
-    protected Object obj;
+    protected final Object obj;
 
     protected volatile int state = BOTH;
 
     // TODO: use a map?
     //protected Map<String, TreeItem> childrenMap;
-
-    public TreeItemImpl(ContentProvider provider, Object data) {
-        this(null, provider, data);
-    }
 
     public TreeItemImpl(TreeItem parent, ContentProvider provider, Object data) {
         this.parent = parent;
@@ -68,9 +64,14 @@ public class TreeItemImpl implements TreeItem {
         }
     }
 
+    public TreeItemImpl(ContentProvider provider, Object data) {
+        this(null, provider, data);
+    }
+
     public TreeItemImpl(TreeItem parent, Object data) {
         this(parent, parent.getContentProvider(), data);
     }
+
 
     public boolean hasChildren() {
         return children.length > 0;

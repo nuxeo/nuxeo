@@ -46,7 +46,8 @@ public class Form {
             addField(field);
         }
     }
-    protected Map<String, Field> fields = new HashMap<String, Field>();
+
+    protected final Map<String, Field> fields = new HashMap<String, Field>();
 
 
     public Form() {
@@ -61,9 +62,6 @@ public class Form {
         fields.put(field.getId(), field);
     }
 
-    /**
-     * @return the fields.
-     */
     public Map<String, Field> getFields() {
         return fields;
     }
@@ -72,9 +70,6 @@ public class Form {
         return fields.get(id);
     }
 
-    /**
-     * @return the id.
-     */
     public String getId() {
         return id;
     }

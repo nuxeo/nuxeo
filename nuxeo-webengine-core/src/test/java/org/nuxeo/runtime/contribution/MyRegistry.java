@@ -31,8 +31,7 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
  */
 public class MyRegistry extends AbstractContributionRegistry<String,MyObject> {
 
-    protected Map<String,MyObject> map = new HashMap<String, MyObject>();
-
+    protected final Map<String, MyObject> map = new HashMap<String, MyObject>();
 
     @Override
     protected MyObject clone(MyObject object) {
@@ -75,9 +74,9 @@ public class MyRegistry extends AbstractContributionRegistry<String,MyObject> {
         return true;
     }
 
-
     @Override
     public String toString() {
         return map.toString();
     }
+
 }

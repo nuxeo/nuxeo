@@ -41,7 +41,7 @@ public class AnnotatedMethod {
     AnnotatedMethod(AnnotatedClass<?> aclass, Method method, Map<Class<? extends Annotation>, Annotation> annos) {
         this.aclass = aclass;
         this.method = method;
-        this.annotations = annos;
+        annotations = annos;
     }
 
     public AnnotatedClass<?> getAnnotatedClass() {

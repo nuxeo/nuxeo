@@ -49,7 +49,7 @@ public class AnnotationManager {
 
     public <T> AnnotatedClass<T> getAnnotatedClass(Class<T> clazz) {
         // use a local variable to avoid problem when flushing cache in another thread while this method is executing
-        Map<Class<?>, AnnotatedClass<?>> cache = this.classCache;
+        Map<Class<?>, AnnotatedClass<?>> cache = classCache;
         AnnotatedClass<T> aclass = (AnnotatedClass<T>)cache.get(clazz);
         if (aclass == null) {
             aclass = load(clazz);

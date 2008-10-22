@@ -38,7 +38,7 @@ public class WebEngineContext extends AbstractWebContext {// extends HttpRequest
     private static final Log log = LogFactory.getLog(WebContext.class);
 
     protected UriInfo uri;
-    protected HttpRequest jaxReq;
+    protected final HttpRequest jaxReq;
 
     public WebEngineContext(HttpRequest jaxReq, HttpServletRequest request) {
         super(request);

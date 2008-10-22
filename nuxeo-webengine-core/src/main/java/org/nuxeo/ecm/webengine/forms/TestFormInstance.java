@@ -35,17 +35,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class TestFormInstance implements FormInstance {
 
-    protected Map<String, String[]> params;
-    protected Map<String, Blob[]> blobs;
-
-
-    public TestFormInstance() {
-        this (null, null);
-    }
-
-    public TestFormInstance(Map<String, String[]> params) {
-        this (params, null);
-    }
+    protected final Map<String, String[]> params;
+    protected final Map<String, Blob[]> blobs;
 
     public TestFormInstance(Map<String, String[]> params, Map<String, Blob[]> blobs) {
         if (params == null) {
@@ -58,6 +49,14 @@ public class TestFormInstance implements FormInstance {
         } else {
             this.blobs = blobs;
         }
+    }
+
+    public TestFormInstance() {
+        this(null, null);
+    }
+
+    public TestFormInstance(Map<String, String[]> params) {
+        this(params, null);
     }
 
     public void setField(String key, String ... values) {

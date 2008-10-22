@@ -43,8 +43,8 @@ import org.nuxeo.ecm.webengine.WebException;
  */
 public class ResourceRegistryImpl implements ResourceRegistry {
 
-    protected Dispatcher dispatcher;
-    protected ResourceMethodRegistry registry;
+    protected final Dispatcher dispatcher;
+    protected final ResourceMethodRegistry registry;
     protected List<ResourceBinding> bindings;
 
     public ResourceRegistryImpl(Dispatcher dispatcher) {

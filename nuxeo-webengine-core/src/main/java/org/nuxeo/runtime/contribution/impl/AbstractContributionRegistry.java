@@ -40,7 +40,7 @@ public abstract class AbstractContributionRegistry<K, T> implements
 
 
     public AbstractContributionRegistry() {
-        this.registry = new HashMap<Object, Contribution<K, T>>();
+        registry = new HashMap<Object, Contribution<K, T>>();
     }
 
     public synchronized Contribution<K, T> getContribution(K primaryKey) {
