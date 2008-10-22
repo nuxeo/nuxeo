@@ -1,4 +1,4 @@
-package nuxeo.admin.engine;
+package admin.engine;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
