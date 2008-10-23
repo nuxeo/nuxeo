@@ -55,7 +55,7 @@ public class ECDomainBean implements ECDomain, ECDomainLocal {
 
             return handle.getChildren(rootRef);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
