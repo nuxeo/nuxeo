@@ -25,7 +25,7 @@
   <div class="addComment">
     <ul>
       <li>
-        <form id="comment" action="${This.urlPath}@@add_comment" method="post" accept-charset="utf-8">
+        <form id="comment" action="${This.path}/@comments" method="post" accept-charset="utf-8">
           <input type="text" name="author" value="Your name" id="author" class="commentAuthor">
           <br/>
           <textarea name="text" rows="4" cols="40" class="commentText">Your comment</textarea>
