@@ -23,6 +23,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
@@ -32,6 +33,7 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
  *
  */
 @WebAdapter(name="views")
+@Produces({"text/html", "*/*"})
 public class ViewService extends DefaultAdapter {
 
     @GET
