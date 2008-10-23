@@ -27,7 +27,7 @@ public class WikiObject extends DocumentObject {
   } 
 
   @GET
-  @Path("@create/{segment}")
+  @Path("create/{segment}")
   public Response createPage(@PathParam("segment") String segment) {
     def session = ctx.getCoreSession();
     def newDoc = session.createDocumentModel(doc.getPathAsString(), segment, "WikiPage");
