@@ -8,6 +8,7 @@ import org.nuxeo.ecm.webengine.model.*;
 import org.nuxeo.ecm.webengine.model.impl.*;
 import org.nuxeo.ecm.webengine.model.exceptions.*;
 import org.nuxeo.ecm.webengine.*;
+import org.nuxeo.ecm.core.api.*;
 
 @WebModule(name="wiki")
 @Path("/")
@@ -15,9 +16,26 @@ import org.nuxeo.ecm.webengine.*;
 
 public class Main extends DefaultModule {
 
+    public DocumentObject newDocumentObject(String path) {
+        try {
+            PathRef pathRef = new PathRef(doc.getPath().append(path).toString());
+            DocumentModel doc = ctx.getCoreSession().getDocument(pathRef);
+            return (DocumentObject)(ctx.newObject(doc.getType(), doc));
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+    }
+    
+    @Path("{segment}")
+    public DocumentObject getWiki(@PathParam("segment") String segment) {
+      return new DocumentRoot(ctx, "/default-domain/workspaces/wikis/"+segment);
+    }
+    
   @GET
   public Object getIndex() {
-    return getTemplate("index.ftl");
+    return getView("index.ftl");
   }  
+  
+  
 }
 
