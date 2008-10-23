@@ -48,23 +48,6 @@ public class Main extends DefaultModule {
     return getTemplate("help/about.ftl");
   }
 
-  // the login service used to redirect to a wanted page after login / logout
-  // which is done in the authentication filter
-  @GET @POST
-  @Path("login")
-  public Response login() {
-    return login("/");
-  }
-  @GET @POST
-  @Path("login/{target:.*}")
-  public Response login(@PathParam("target") String target) {
-    if (target != null) {
-      return redirect(target);
-    } else {
-      return Response.ok().noContent().build();
-    }
-  }
-
   // handle errors
   public Object handleError(WebApplicationException e) {
     if (e instanceof WebSecurityException) {
