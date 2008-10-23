@@ -152,6 +152,26 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public String getPath() {
         return path;
     }
+    
+    public String getTrailingPath() {
+        int len = path.length();
+        String urlPath = ctx.getUrlPath();
+        return len < urlPath.length() ? urlPath.substring(len): null;
+    }
+    
+    public String getNextSegment() {
+        String p = getTrailingPath();
+        if (p != null) {
+            int s = p.startsWith("/") ? 1 : 0; 
+            int k = p.indexOf('/', s);
+            if (k == -1) {
+                return s > 0 ? p.substring(s) : p;
+            } else {
+                return p.substring(s, k); 
+            }
+        }
+        return null;
+    }
 
     public String getURL() {
         return ctx.getServerURL().append(path).toString();

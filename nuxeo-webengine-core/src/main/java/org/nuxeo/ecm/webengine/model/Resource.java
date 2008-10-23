@@ -48,6 +48,10 @@ public interface Resource extends Adaptable {
 
     String getPath();
     
+    String getTrailingPath();
+    
+    String getNextSegment();
+    
     String getURL();
 
     Resource getPrevious();

@@ -14,14 +14,30 @@ import org.nuxeo.ecm.core.rest.*;
 
 @WebObject(type="Wiki")
 @Produces(["text/html", "*/*"])
-public class WikiObject extends DocumentRoot {
+public class WikiObject extends DocumentObject {
 
-  @GET @POST
-  public Response getIndex(@QueryParam("query") String query, @QueryParam("group") String group) {
-    System.out.println("aaaaaaaaaaaaaaaaaaa");  
-    return redirect(path+"/FrontPage");
+  public void initialize(Object... args) {
+    super.initialize(args);
+    setRoot(true);
   }
 
+  @GET
+  public Response doGet() {
+    return redirect(path+"/FrontPage");
+  } 
+
+  @GET
+  @Path("create/{segment}")
+  public Response createPage(@PathParam("segment") String segment) {
+    def session = ctx.getCoreSession();
+    def newDoc = session.createDocumentModel(doc.getPathAsString(), segment, "WikiPage");
+    if (newDoc.getTitle().length() == 0) {
+      newDoc.getPart("dublincore").get("title").setValue(newDoc.getName());
+    }
+    newDoc = session.createDocument(newDoc);
+    session.save();
+    return redirect(path+"/"+segment);
+  }
 
 }
 

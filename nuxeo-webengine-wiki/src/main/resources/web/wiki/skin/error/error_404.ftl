@@ -4,7 +4,7 @@
 
 <h1>404 - Resource Not Found</h1>
 
-The page you requested doesn't exists
+The page you requested doesn't exists. Click <a href="${This.path}/create/${This.nextSegment}">here</a> to create a new Wiki Page named <i>${This.nextSegment}</i>.
 
 </@block>
 </@extends>

@@ -290,4 +290,8 @@ public class ModuleImpl implements Module {
         return linkReg;
     }
 
+    @Override
+    public String toString() {
+        return getName();
+    }
 }
