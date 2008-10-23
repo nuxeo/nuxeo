@@ -59,7 +59,8 @@
           value="#{messages['label.content.header.created']}" />
       </f:facet>
       <h:outputText value="#{statement.creationDate}">
-        <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}" />
+        <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+          timeZone="#{timeZone}" />
       </h:outputText>
     </h:column>
     <h:column>
@@ -130,7 +131,8 @@
           value="#{messages['label.content.header.created']}" />
       </f:facet>
       <h:outputText value="#{statement.creationDate}">
-        <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}" />
+        <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+          timeZone="#{timeZone}" />
       </h:outputText>
     </h:column>
     <h:column>

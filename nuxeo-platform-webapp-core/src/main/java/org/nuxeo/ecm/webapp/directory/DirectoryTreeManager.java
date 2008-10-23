@@ -18,21 +18,24 @@
  */
 package org.nuxeo.ecm.webapp.directory;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.Remove;
 
-import org.apache.myfaces.custom.tree2.TreeModel;
 import org.jboss.seam.annotations.Destroy;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.richfaces.component.UITree;
+import org.richfaces.event.NodeExpandedEvent;
 
-public interface DirectoryTreeManager {
+public interface DirectoryTreeManager extends Serializable {
 
-    TreeModel get(String treeName);
+    DirectoryTreeNode get(String treeName);
 
-    TreeModel getSelectedTree();
+    DirectoryTreeNode getSelectedTree();
 
-    List<TreeModel> getDirectoryTrees();
+    List<DirectoryTreeNode> getDirectoryTrees();
 
     List<String> getDirectoryTreeNames();
 
@@ -41,6 +44,19 @@ public interface DirectoryTreeManager {
     void setSelectedTreeName(String treeName);
 
     boolean isInitialized();
+
+    /**
+     * Listener for node opening/closing events.
+     * <p>
+     * Used to not interfere with node state when manually changing open nodes.
+     * </p>
+     */
+    void changeExpandListener(NodeExpandedEvent event) throws ClientException;
+
+    /**
+     * Returns true if node should be opened according to last selection.
+     */
+    Boolean adviseNodeOpened(UITree tree) throws ClientException;
 
     @Remove
     @Destroy

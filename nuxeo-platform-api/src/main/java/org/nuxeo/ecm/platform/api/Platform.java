@@ -29,7 +29,6 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.runtime.NXRuntime;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -88,7 +87,7 @@ public final class Platform implements Serializable {
             // this is the server definition
             server = new Server(this, sd);
             servers.put(sd.name, server);
-            // register any bin dingis that are waiting for this server
+            // register any bindings that are waiting for this server
             registerPendingBindings(server);
         } else {
             // this is a server bindings contribution - but the server is not yet registered.
@@ -130,7 +129,7 @@ public final class Platform implements Serializable {
             return (T) sd.server.getService(sd);
         }
         // try to find a local service through NXRuntime
-        return NXRuntime.getRuntime().getService(remoteItf);
+        return Framework.getRuntime().getService(remoteItf);
     }
 
     public CoreSession openRepository(String repositoryName) throws Exception {

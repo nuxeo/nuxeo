@@ -77,7 +77,6 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
             return new FieldImpl(qname, StringType.INSTANCE,
                     StringType.INSTANCE);
         }
-
     }
 
     private ResultItem resultItem;
@@ -115,16 +114,15 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testGetNumberOfPages() throws Exception {
+    public void testGetNumberOfPages() {
         ResultSet set = new ResultSetImpl(null, null, null, 0, 10,
                 Collections.EMPTY_LIST, 17, 10);
         SearchPageProvider provider = new SearchPageProvider(set);
         assertEquals(2, provider.getNumberOfPages());
-
     }
 
     @SuppressWarnings("unchecked")
-    public void testGetCurerntPageSize() throws Exception {
+    public void testGetCurerntPageSize() {
         ResultSet set = new ResultSetImpl(null, null, null, 10, 10,
                 Collections.EMPTY_LIST, 17, 7);
         SearchPageProvider provider = new SearchPageProvider(set);
@@ -142,7 +140,6 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
      * Checks that a DocumentModel constructed from member field resultItem is
      * correct.
      */
-    @SuppressWarnings("unchecked")
     public static void checkSetUpDocumentModel(DocumentModel docModel)
             throws Exception {
         assertEquals(new PathRef("doc/path"), docModel.getRef());
@@ -176,10 +173,9 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
      * See NXP-1696
      */
     @SuppressWarnings("unchecked")
-    public void testEmptyResults() throws Exception {
+    public void testEmptyResults() {
         SearchPageProvider provider =
             new SearchPageProvider(new ResultSetImpl(null, null, null, 0, 10, Collections.EMPTY_LIST, 0, 0));
-        assertTrue(provider.getCurrentPage() instanceof DocumentModelList);
         assertFalse(provider.isNextPageAvailable());
         assertFalse(provider.isPreviousPageAvailable());
         assertEquals(0, provider.getCurrentPageIndex());
