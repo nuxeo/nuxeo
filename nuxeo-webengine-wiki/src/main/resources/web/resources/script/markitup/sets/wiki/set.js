@@ -3,7 +3,7 @@
 myWikiSettings = {
     nameSpace:          "wiki", // Useful to prevent multi-instances CSS conflict
     previewParserPath:  document.location.pathname+"@@preview",
-    previewParserVar: 'content',
+    previewParserVar: 'wiki_editor',
     previewAutorefresh: true,
     previewInWindow: 'width=500, height=700, resizable=yes, scrollbars=yes',
     onShiftEnter:       {keepDefault:false, replaceWith:'\n\n'},
