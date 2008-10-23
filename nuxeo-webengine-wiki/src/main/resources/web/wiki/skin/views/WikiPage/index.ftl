@@ -22,10 +22,6 @@ div id="message">$ { Request.getParameter('msg')}</div-->
   </#list>
 </ul>
 
-<div id="content_page">
-  <#include "@content_page.ftl" />
-</div>
-
 </div>
 
 </@block>
