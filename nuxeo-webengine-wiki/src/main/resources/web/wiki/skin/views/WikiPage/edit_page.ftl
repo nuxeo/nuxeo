@@ -6,7 +6,7 @@
 
 
 
-<form method="POST" action="${This.urlPath}@@update" accept-charset="utf-8">
+<form method="POST" action="${This.path}/@put" accept-charset="utf-8">
   <h1><input type="text" name="dc:title" value="${Document.dublincore.title}"/></h1>
   <textarea name="wp:content" cols="75" rows="40" id="wiki_editor" class="entryEdit">${Document.wikiPage.content}</textarea>
   <p class="entryEditOptions">
