@@ -1,4 +1,4 @@
-<@extends src="Wiki/base.ftl">
+<@extends src="base.ftl">
 <@block name="content">
 
 <html>

@@ -16,26 +16,41 @@ import org.nuxeo.ecm.core.api.*;
 
 public class Main extends DefaultModule {
 
-    public DocumentObject newDocumentObject(String path) {
+    public DocumentModel getDocument(String path) {
         try {
-            PathRef pathRef = new PathRef(doc.getPath().append(path).toString());
-            DocumentModel doc = ctx.getCoreSession().getDocument(pathRef);
-            return (DocumentObject)(ctx.newObject(doc.getType(), doc));
+            PathRef pathRef = new PathRef(path);
+	    return ctx.getCoreSession().getDocument(pathRef);
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
     }
     
+    
     @Path("{segment}")
     public DocumentObject getWiki(@PathParam("segment") String segment) {
-      return new DocumentRoot(ctx, "/default-domain/workspaces/wikis/"+segment);
+    System.out.println("qqqqqqqqqqqqqqqq")
+      return newObject("Wiki", getDocument("/default-domain/workspaces/wikis/"+segment));
+//      return new DocumentRoot(ctx, "/default-domain/workspaces/wikis/"+segment);
     }
     
   @GET
   public Object getIndex() {
-    return getView("index.ftl");
+  System.out.println("qqqqqqqqqqqqqqq222222222222q")
+//    return getView("index.ftl");
+return "zzzz";
   }  
   
+  // handle errors
+  public Object handleError(WebApplicationException e) {
+    if (e instanceof WebSecurityException) {
+      return Response.status(401).entity(getTemplate("error/error_401.ftl")).build();
+    } else if (e instanceof WebResourceNotFoundException) {
+      return Response.status(404).entity(getTemplate("error/error_404.ftl")).build();
+    } else {
+      return super.handleError(e);
+    }
+  }
+
   
 }
 
