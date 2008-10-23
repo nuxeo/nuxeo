@@ -1,13 +1,13 @@
 <#import "common/util.ftl" as base/>
 
-<#assign r1 = Request.getParameter('r1') />
-<#assign r2 = Request.getParameter('r2') />
+<#assign r1 = Context.request.getParameter('r1') />
+<#assign r2 = Context.request.getParameter('r2') />
 <#assign l1 = Session.getDocument(docRef(r1)).versionLabel />
 <#assign l2 = Session.getDocument(docRef(r2)).versionLabel />
 <#assign c1 = Session.getDocument(docRef(r1)).wikiPage.content />
 <#assign c2 = Session.getDocument(docRef(r2)).wikiPage.content />
 
-<@extends src="WikiPage/view.ftl">
+<@extends src="base.ftl">
 <@block name="content">
 
 <script language="JavaScript" src="/nuxeo/site/files/resources/script/diff_match_patch.js"></script>
