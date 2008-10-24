@@ -26,7 +26,7 @@ public class Main extends DefaultModule {
     }
     
     
-    @Path("{segment}")
+    @Path("/wikis/{segment}")
     public DocumentObject getWiki(@PathParam("segment") String segment) {
       return newObject("Wiki", getDocument("/default-domain/workspaces/wikis/"+segment));
     }
@@ -34,14 +34,20 @@ public class Main extends DefaultModule {
   @GET
   public Object doGet() {
     // get the list of Wikis.
-    try{
-        def list = ctx.getCoreSession().getChildren(new PathRef("/default-domain/workspaces/wikis"), null, new WikiFilter() , null);
-        return getView("index.ftl").arg("wikis", list);
-    }
-    catch(Exception e){
-        throw WebException.wrap(e);
-    }
-  }  
+        return getView("index.ftl");
+  } 
+  
+  @GET
+  @Path("/wikis")
+  public Object wikis(){
+       try{
+          def list = ctx.getCoreSession().getChildren(new PathRef("/default-domain/workspaces/wikis"), null, new WikiFilter() , null);
+          return getView("list_wikis.ftl").arg("wikis", list);
+        }
+        catch(Exception e){
+            throw WebException.wrap(e);
+        }
+  }
   
   // handle errors
   public Object handleError(WebApplicationException e) {
@@ -55,6 +61,9 @@ public class Main extends DefaultModule {
   }
 }
 
+/**
+ * Get only the wikis object from the list
+ */
 class WikiFilter implements Filter{
   public boolean accept(DocumentModel doc) {
     return "Wiki".equals(doc.getType());
