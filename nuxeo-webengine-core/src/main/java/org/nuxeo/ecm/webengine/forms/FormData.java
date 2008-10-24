@@ -395,7 +395,8 @@ public class FormData implements FormInstance {
                     }
                     p.setValue(blobs);
                 } else {
-                    throw new WebException("Cannot create complex lists properties from HTML forms");
+                    // complex properties will be ignored
+                    //throw new WebException("Cannot create complex lists properties from HTML forms");
                 }
             }
         } else if (p.isComplex()) {
@@ -409,8 +410,9 @@ public class FormData implements FormInstance {
                 }
                 p.setValue(blob);
             } else {
-                throw new WebException(
-                        "Cannot set complex properties from HTML forms. You need to set each sub-scalar property explicitely");
+                // complex properties will be ignored
+//                throw new WebException(
+//                        "Cannot set complex properties from HTML forms. You need to set each sub-scalar property explicitely");
             }
         }
     }

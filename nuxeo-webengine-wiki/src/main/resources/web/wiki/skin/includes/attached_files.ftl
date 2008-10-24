@@ -8,9 +8,9 @@
     <#list files as file>
       <#if (file_index == 0)><ul></#if>
       <@compress single_line=true>
-      <li><a href="${This.urlPath}@@getfile?property=files:files/item[${file_index}]/file">${file.filename}</a>
+      <li><a href="${This.path}/@file?property=files:files/item[${file_index}]/file">${file.filename}</a>
         <#if (base.canWrite)>
-        - <a href="${This.urlPath}@@deletefile?property=files:files/item[${file_index}]">Remove</a>
+        - <a href="${This.path}/@file/delete?property=files:files/item[${file_index}]">Remove</a>
         </#if>
       </li>
       </@compress>
@@ -19,7 +19,7 @@
 </#if>
 
 <#if base.canWrite>
-    <form id="add_file" action="${This.urlPath}@@addfile" accept-charset="utf-8" method="POST" enctype="multipart/form-data">
+    <form id="add_file" action="${This.path}/@file" accept-charset="utf-8" method="POST" enctype="multipart/form-data">
         <ul><li>
         <input type="file" name="files:files" value="" id="file_to_add">
         <input type="submit" name="attach_file" value="Attach" id="attach_file">

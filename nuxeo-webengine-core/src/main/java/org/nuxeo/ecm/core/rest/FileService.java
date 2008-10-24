@@ -41,6 +41,7 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
+import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
@@ -69,7 +70,7 @@ public class FileService extends DefaultAdapter {
             if (doc.hasSchema("file")) {
                 xpath = "file:content";
             } else {
-                throw new IllegalArgumentException(
+                throw new IllegalParameterException(
                 "Missing request parameter named 'property' that specify the blob property xpath to fetch");
             }
         }
