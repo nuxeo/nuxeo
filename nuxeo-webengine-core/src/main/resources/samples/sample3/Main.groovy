@@ -8,7 +8,7 @@ import org.nuxeo.ecm.webengine.model.*;
 /**
  * Templates sample.
  *
- * This demonstrates how to use template files to output responses to the client.
+ * This demonstrates how to use template files to build client responses.
  * JAX-RS provides a flexible mechanism to send responses based on the mime type that the client expects.
  * To send a response to the client you simply return the Object you want as the response.
  * JAX-RS engines will usually known how to render common Java objects like String, InputStream, File etc.
