@@ -9,12 +9,12 @@ srcId = Request.getParameter("src_id")
 destId = Request.getParameter("dest_id")
 order = new Integer(Request.getParameter("order"))
 
-Element srcElement = ThemeManager.getElementById(src_I);
-Element destElement = ThemeManager.getElementById(destId);
+Element srcElement = ThemeManager.getElementById(srcId)
+Element destElement = ThemeManager.getElementById(destId)
 
 // move the element
-srcElement.moveTo(destElement, order);
+srcElement.moveTo(destElement, order)
 
-EventManager eventManager = Manager.getEventManager();
-eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(srcElement, destElement));
+EventManager eventManager = Manager.getEventManager()
+eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(srcElement, destElement))
 
