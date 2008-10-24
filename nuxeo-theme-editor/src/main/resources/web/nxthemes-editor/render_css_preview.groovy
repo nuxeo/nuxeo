@@ -58,7 +58,7 @@ for (Style s : styles) {
                 value = preset.getValue()
             }
             css.append(value)
-            css.append('')
+            css.append(';')
        }
        css.append('}')
     }
