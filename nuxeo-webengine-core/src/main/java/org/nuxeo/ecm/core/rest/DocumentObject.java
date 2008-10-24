@@ -28,13 +28,16 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
 
@@ -74,6 +77,36 @@ public class DocumentObject extends DefaultObject {
     @Path("@delete")
     public Response getDelete() {
         return doDelete();
+    }
+
+    @GET
+    @Path("@search")
+    public Object search() {
+        String query = ctx.getRequest().getParameter("query");
+        if (query == null) {
+            String fullText = ctx.getRequest().getParameter("fullText");
+            if (fullText == null) {
+                throw new IllegalParameterException("Expecting a query or a fullText parameter");    
+            }
+            String orderBy = ctx.getRequest().getParameter("orderBy");
+            String orderClause = "";
+            if (orderBy != null) {
+                orderClause =   " ORDER BY "+orderBy;
+            }
+            String path = null; 
+            if (doc.isFolder()) {
+                path = doc.getPathAsString();
+            } else {
+                path = doc.getPath().removeLastSegments(1).toString();
+            }
+            query = "SELECT * FROM Document WHERE (ecm:fulltext = \""+fullText+"\") AND (ecm:isCheckedInVersion = 0) AND (ecm:path STARTSWITH \""+path+"\")"+orderClause;
+        }
+        try {
+            DocumentModelList docs = ctx.getCoreSession().query(query);
+            return getView("search.ftl").arg("query", query).arg("result", docs);
+        } catch (ClientException e) {
+            throw WebException.wrap(e);
+        }
     }
 
     @DELETE

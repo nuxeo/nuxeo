@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Preview of ${This.title}</title>
+    <title>Preview of ${Document.title}</title>
     <link rel="stylesheet" href="/nuxeo/site/files/resources/css/webengine.css" type="text/css" media="screen" charset="utf-8">
     <link rel="stylesheet" href="/nuxeo/site/files/resources/css/preview.css" type="text/css" media="screen" charset="utf-8">
     <#assign type = This.document.type/>

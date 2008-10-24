@@ -24,7 +24,7 @@
     <#if Document??> <#-- we are in a document context: search is enabled -->
           <script>
            $(document).ready(function(){
-             $('#q').focus(function() {
+             $('#query').focus(function() {
                if (this.value == "Search") {
                  this.value = ""
                }
@@ -44,8 +44,8 @@
        <#if Document??>
         <div class="searchBox">
          <form action="${This.path}/@search" method="get" accept-charset="utf-8">
-           <input type="search" name="q" id="q" results="5" value="Search">
-           <input type="hidden" name="p" value="${Root.repositoryPath}">
+           <input type="search" name="fullText" id="query" results="5" value="Search">
+           <input type="hidden" name="orderBy" value="dc:modified">
          </form>
         </div>
         <h1><a href="${Context.modulePath}">${Root.document.title}</a></h1>

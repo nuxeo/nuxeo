@@ -1,5 +1,5 @@
-<#import "common/util.ftl" as base/>
-<h2>Versions</h2>
+<!--#import "common/util.ftl" as base/-->
+<h1>${Document.title}</h1>
 
 <form id="version_list" action="${This.path}/@views/compare_versions" method="get" accept-charset="utf-8">
 <table class="itemListing history">

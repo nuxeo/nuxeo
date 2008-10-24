@@ -1,5 +1,5 @@
 <#import "common/util.ftl" as base/>
-<h1>${Document.dublincore.title}</h1>
+<h1>${Document.title}</h1>
 
 <div id="entry-content">
   <@wiki>${Document.wikiPage.content}</@wiki>
