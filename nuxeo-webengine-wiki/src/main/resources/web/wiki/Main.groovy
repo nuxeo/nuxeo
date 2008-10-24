@@ -33,8 +33,14 @@ public class Main extends DefaultModule {
     
   @GET
   public Object doGet() {
-    return getView("index.ftl");
-    //return "Wiki Index";
+    // get the list of Wikis.
+    try{
+        def list = ctx.getCoreSession().getChildren(new PathRef("/default-domain/workspaces/wikis"), null, new WikiFilter() , null);
+        return getView("index.ftl").arg("wikis", list);
+    }
+    catch(Exception e){
+        throw WebException.wrap(e);
+    }
   }  
   
   // handle errors
@@ -47,7 +53,14 @@ public class Main extends DefaultModule {
       return super.handleError(e);
     } 
   }
-
-  
 }
+
+class WikiFilter implements Filter{
+  public boolean accept(DocumentModel doc) {
+    return "Wiki".equals(doc.getType());
+  }
+}
+    
+
+
 
