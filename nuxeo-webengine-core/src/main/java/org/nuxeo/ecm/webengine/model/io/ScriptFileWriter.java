@@ -25,7 +25,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -45,8 +44,7 @@ public class ScriptFileWriter implements MessageBodyWriter<ScriptFile> {
     public void writeTo(ScriptFile t, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException,
-            WebApplicationException {
+            OutputStream entityStream) throws IOException {
 
         new Template(WebEngine.getActiveContext(), t).render(entityStream);
         entityStream.flush();

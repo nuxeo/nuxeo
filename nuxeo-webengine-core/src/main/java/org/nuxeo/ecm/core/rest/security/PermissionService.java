@@ -89,7 +89,7 @@ public class PermissionService extends DefaultAdapter {
             ACPImpl acp = new ACPImpl();
             ACLImpl acl = new ACLImpl(ACL.LOCAL_ACL);
             acp.addACL(acl);
-            boolean granted = action.equals("grant");
+            boolean granted = "grant".equals(action);
             ACE ace = new ACE(username, permission, granted);
             acl.add(ace);
             CoreSession session = ctx.getCoreSession();

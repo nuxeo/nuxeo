@@ -329,7 +329,7 @@ public class Path implements Serializable {
 
     public Path removeFileExtension() {
         String extension = getFileExtension();
-        if (extension == null || extension.equals("")) { //$NON-NLS-1$
+        if (extension == null || "".equals(extension)) { //$NON-NLS-1$
             return this;
         }
         String lastSegment = lastSegment();

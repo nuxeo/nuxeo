@@ -133,7 +133,7 @@ public class Template {
         return this;
     }
 
-    public Template fileName(String fileName) throws WebException {
+    public Template fileName(String fileName) {
         if (resource != null) {
             script = resource.getType().getTemplate(fileName);
         } else {
@@ -179,7 +179,7 @@ public class Template {
         return this;
     }
 
-    public void render(OutputStream out) throws WebException {
+    public void render(OutputStream out) {
         Writer w = new OutputStreamWriter(out);
         try {
             ctx.render(resolve().script(), args, w);

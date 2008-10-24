@@ -29,15 +29,12 @@ import org.nuxeo.runtime.contribution.ContributionRegistry;
  * The parent provider is read only. It is never modified by the registry.
  * It serves only to resolve dependencies. This allow greater flexibility in managing dependencies.
  *
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class AbstractContributionRegistry<K, T> implements
         ContributionRegistry<K, T> {
 
     protected final Map<Object, Contribution<K, T>> registry;
-
 
     public AbstractContributionRegistry() {
         registry = new HashMap<Object, Contribution<K, T>>();
@@ -46,7 +43,6 @@ public abstract class AbstractContributionRegistry<K, T> implements
     public synchronized Contribution<K, T> getContribution(K primaryKey) {
         return registry.get(primaryKey);
     }
-
 
     public T getObject(K key) {
         Contribution<K,T> contrib = getContribution(key);

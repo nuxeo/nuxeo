@@ -29,9 +29,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Form instanceto be used in test units
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Form instance to be used in unit tests.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TestFormInstance implements FormInstance {
 

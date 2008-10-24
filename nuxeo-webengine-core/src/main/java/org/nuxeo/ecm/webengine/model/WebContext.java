@@ -84,7 +84,7 @@ public interface WebContext extends Adaptable {
      *
      * @return the core session. Cannot return null
      */
-    CoreSession getCoreSession() throws WebException;
+    CoreSession getCoreSession();
 
     /**
      * Gets the principal identifying the user that originated the request.
@@ -175,11 +175,11 @@ public interface WebContext extends Adaptable {
 
     /**
      * Gets the server URL without any path.
-     * The return string builder can be used to build the wanted URL  
-     * @return a string builder  
+     * The return string builder can be used to build the wanted URL
+     * @return a string builder
      */
     StringBuilder getServerURL();
-    
+
     /**
      * TODO: should we remove this method from the context and create a specialized service to resolve document models to paths?
      * Get a suitable URI path for the given Nuxeo document, that can be used to invoke this document.
@@ -246,11 +246,11 @@ public interface WebContext extends Adaptable {
      */
     Log getLog();
 
-    Resource newObject(String typeName, Object ...  args) throws WebException;
+    Resource newObject(String typeName, Object ...  args);
 
-    Resource newObject(ResourceType type, Object ...  args) throws WebException;
+    Resource newObject(ResourceType type, Object ...  args);
 
-    AdapterResource newAdapter(Resource ctx, String adapterName, Object ...  args) throws WebException;
+    AdapterResource newAdapter(Resource ctx, String adapterName, Object ...  args);
 
     /** object stack API */
 
@@ -291,7 +291,7 @@ public interface WebContext extends Adaptable {
      * @return the file or null if the path couldn't be resolved
      * @throws IOException
      */
-    ScriptFile getFile(String path) throws WebException;
+    ScriptFile getFile(String path);
 
 
     /** running scripts and rendering templates */
@@ -310,7 +310,7 @@ public interface WebContext extends Adaptable {
      *            the writer to use
      * @see #render(String, Map)
      */
-    void render(String template, Writer writer) throws WebException;
+    void render(String template, Writer writer);
 
     /**
      * Renders the given template using the rendering engine registered in that
@@ -326,7 +326,7 @@ public interface WebContext extends Adaptable {
      *
      * @throws WebException
      */
-    void render(String template, Object args, Writer writer) throws WebException;
+    void render(String template, Object args, Writer writer);
 
     /**
      * Renders the given template using the rendering engine registered in that
@@ -342,7 +342,7 @@ public interface WebContext extends Adaptable {
      *
      * @throws WebException
      */
-    void render(ScriptFile script, Object args, Writer writer) throws WebException;
+    void render(ScriptFile script, Object args, Writer writer);
 
 
     /**
@@ -354,7 +354,7 @@ public interface WebContext extends Adaptable {
      * @param args
      *            the arguments to pass
      */
-    Object runScript(String script, Map<String, Object> args) throws WebException;
+    Object runScript(String script, Map<String, Object> args);
 
     /**
      * Runs the given script.
@@ -367,7 +367,7 @@ public interface WebContext extends Adaptable {
      *            or relative to the caller script if any.
      * @see #runScript(String, Map)
      */
-    Object runScript(String script) throws WebException;
+    Object runScript(String script);
 
     /**
      * Runs the script using given arguments
@@ -382,5 +382,5 @@ public interface WebContext extends Adaptable {
      *            a map of arguments
      * @see #runScript(String, Map)
      */
-    Object runScript(ScriptFile script, Map<String, Object> args) throws WebException;
+    Object runScript(ScriptFile script, Map<String, Object> args);
 }

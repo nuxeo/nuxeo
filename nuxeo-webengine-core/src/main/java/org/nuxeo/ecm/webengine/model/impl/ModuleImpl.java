@@ -72,7 +72,7 @@ public class ModuleImpl implements Module {
     protected ModuleTypeImpl type;
     protected ModuleImpl superModule;
 
-    public ModuleImpl(WebEngine engine, File root, ModuleDescriptor descriptor) throws WebException {
+    public ModuleImpl(WebEngine engine, File root, ModuleDescriptor descriptor) {
         fileCache = new ConcurrentHashMap<String, ScriptFile>();
         this.root = root;
         this.descriptor = descriptor;
@@ -134,7 +134,7 @@ public class ModuleImpl implements Module {
         return new File(moduleDir, "skin");
     }
 
-    protected void loadDirectoryStack() throws WebException {
+    protected void loadDirectoryStack() {
         dirStack = new DirectoryStack();
         try {
             File skin = getSkinDir(root);
@@ -153,7 +153,7 @@ public class ModuleImpl implements Module {
         return superModule;
     }
 
-    public ScriptFile getFile(String path) throws WebException {
+    public ScriptFile getFile(String path) {
         int len = path.length();
         if (len == 0) {
             return null;
@@ -227,7 +227,7 @@ public class ModuleImpl implements Module {
         return typeReg;
     }
 
-    public ResourceType getType(String typeName) throws TypeNotFoundException {
+    public ResourceType getType(String typeName) {
         ResourceType type = getTypeRegistry().getType(typeName);
         if (type == null) {
             throw new TypeNotFoundException(typeName);
@@ -243,8 +243,7 @@ public class ModuleImpl implements Module {
         return getTypeRegistry().getAdapters();
     }
 
-    public AdapterType getAdapter(Resource ctx, String name)
-            throws AdapterNotFoundException {
+    public AdapterType getAdapter(Resource ctx, String name) {
         AdapterType type = getTypeRegistry().getAdapter(ctx, name);
         if (type == null) {
             throw new AdapterNotFoundException(ctx, name);

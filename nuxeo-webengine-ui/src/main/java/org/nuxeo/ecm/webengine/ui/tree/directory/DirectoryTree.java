@@ -52,12 +52,12 @@ public abstract class DirectoryTree extends JSonTree {
     }
 
     @Override
-    protected Object getInput(WebContext ctx) throws WebException {
+    protected Object getInput(WebContext ctx) {
         return dir;
     }
 
     @Override
-    protected ContentProvider getProvider(WebContext ctx) throws WebException {
+    protected ContentProvider getProvider(WebContext ctx) {
         try {
             return new DirectoryContentProvider(dir.getSession());
         } catch (DirectoryException e) {
@@ -66,8 +66,7 @@ public abstract class DirectoryTree extends JSonTree {
     }
 
     @Override
-    protected JSonTreeSerializer getSerializer(WebContext ctx)
-            throws WebException {
+    protected JSonTreeSerializer getSerializer(WebContext ctx) {
         return new JSonTreeSerializer();
     }
 
