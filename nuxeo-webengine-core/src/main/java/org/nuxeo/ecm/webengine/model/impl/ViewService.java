@@ -37,7 +37,7 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 public class ViewService extends DefaultAdapter {
 
     @GET
-    public Object disptachViews() {
+    public Object doGet() {
         //TODO: display a list of templates
         //ctx.getModule().getFiles();
         return "View Service: TODO - display the list of existing views";

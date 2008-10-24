@@ -14,7 +14,7 @@ import org.nuxeo.ecm.platform.usermanager.*;
 public class EngineService extends DefaultObject {
 
   @GET
-  public Object getIndex() {
+  public Object doGet() {
     return getView("index.ftl");
   }
 

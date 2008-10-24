@@ -32,7 +32,7 @@ public class Main extends DefaultModule {
   }
 
   @GET
-  public Object getIndex() {
+  public Object doGet() {
     return getView("index.ftl");
   }
 

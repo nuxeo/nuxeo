@@ -65,7 +65,7 @@ import org.nuxeo.runtime.api.Framework;
 public class PermissionService extends DefaultAdapter {
 
     @GET
-    public Object getPermissionsView() {
+    public Object doGet() {
         return new Template(getTarget()).name("permissions").resolve();
     }
 

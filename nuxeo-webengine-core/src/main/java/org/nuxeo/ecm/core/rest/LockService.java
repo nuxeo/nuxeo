@@ -45,7 +45,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 public class LockService extends DefaultAdapter {
 
     @GET
-    public Object getView() {
+    public Object doGet() {
         try {
             DocumentModel  doc =getTarget().getAdapter(DocumentModel.class);
             return ctx.getCoreSession().getLock(doc.getRef());

@@ -32,9 +32,9 @@ public class Main extends DefaultModule {
     }
     
   @GET
-  public Object getIndex() {
-    //return getView("index.ftl");
-    return "Wiki Index";
+  public Object doGet() {
+    return getView("index.ftl");
+    //return "Wiki Index";
   }  
   
   // handle errors

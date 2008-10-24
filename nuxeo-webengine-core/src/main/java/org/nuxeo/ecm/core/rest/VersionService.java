@@ -51,7 +51,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 public class VersionService extends DefaultAdapter {
 
     @GET 
-    public Object getVersions() {
+    public Object doGet() {
         return getTarget().getView("versions.ftl");
     }
     
