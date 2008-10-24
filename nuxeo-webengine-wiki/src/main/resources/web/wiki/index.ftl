@@ -10,7 +10,7 @@ Hi There, here is the wikis currently available :
 <ul>
       <#list wikis as wiki>
         <li id="${wiki.ref}">
-          <a href="${wiki.name}">${wiki.title}</div>
+          <a href="${wiki.name}">${wiki.title}</a>
         </li>
       </#list>
 </ul>
