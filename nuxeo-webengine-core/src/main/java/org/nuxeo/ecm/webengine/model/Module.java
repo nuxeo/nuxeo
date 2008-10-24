@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
@@ -67,7 +66,7 @@ public interface Module {
      * @return null if no file found otherwise the file
      * @throws IOException if any error occurs
      */
-    ScriptFile getFile(String path) throws WebException;
+    ScriptFile getFile(String path);
 
     /**
      * Loads a class given its name.
@@ -92,7 +91,7 @@ public interface Module {
      * @return the web type instance
      * @throws TypeNotFoundException if no such web type was defined
      */
-    ResourceType getType(String typeName) throws TypeNotFoundException;
+    ResourceType getType(String typeName);
 
     /**
      * Gets the types registered within this module.
@@ -118,7 +117,7 @@ public interface Module {
      * @throws WebSecurityException if the adapter exists but cannot be accessed in the context of that resource
      * @throws AdapterNotFoundException if no such adapter exists for that resource
      */
-    AdapterType getAdapter(Resource ctx, String name) throws AdapterNotFoundException;
+    AdapterType getAdapter(Resource ctx, String name);
 
     /**
      * Gets the list of adapters that applies to the given resource.

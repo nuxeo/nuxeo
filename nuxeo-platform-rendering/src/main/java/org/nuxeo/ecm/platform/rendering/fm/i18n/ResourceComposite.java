@@ -22,13 +22,13 @@ package org.nuxeo.ecm.platform.rendering.fm.i18n;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * A resource bundle for Nuxeo Rendering that holds a map of locals, allows
  * developers to change it from its api (setLocale) and that will delegate its
- * method to the correct resourcebundle according to the local chosen.
+ * method to the correct resource bundle according to the local chosen.
  *
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
  *
@@ -50,7 +50,7 @@ public class ResourceComposite extends ResourceBundle {
     }
 
     /**
-     * Set the local to be used.
+     * Set the locale to be used.
      *
      * @param locale
      */

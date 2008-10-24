@@ -135,7 +135,7 @@ public abstract class AbstractWebContext implements WebContext {
         return head.getPath();
     }
 
-    public Resource newObject(String typeName, Object ...  args) throws WebException {
+    public Resource newObject(String typeName, Object ...  args) {
         ResourceType type = module.getType(typeName);
         if (type == null) {
             throw new WebResourceNotFoundException("No Such Object Type: "+typeName);
@@ -143,14 +143,14 @@ public abstract class AbstractWebContext implements WebContext {
         return newObject(type, args);
     }
 
-    public Resource newObject(ResourceType type, Object ...  args) throws WebException {
+    public Resource newObject(ResourceType type, Object ...  args) {
         Resource obj = type.newInstance();
         obj.initialize(this, type, args);
         push(obj);
         return obj;
     }
 
-    public AdapterResource newAdapter(Resource ctx, String serviceName, Object ...  args) throws WebException {
+    public AdapterResource newAdapter(Resource ctx, String serviceName, Object ...  args) {
         AdapterType st = module.getAdapter(ctx, serviceName);
         AdapterResource service = (AdapterResource)st.newInstance();
         service.initialize(this, st, args);
@@ -320,10 +320,9 @@ public abstract class AbstractWebContext implements WebContext {
         return head;
     }
 
-
     /** template and script resolver */
 
-    public ScriptFile getFile(String path) throws WebException {
+    public ScriptFile getFile(String path) {
         if (path == null || path.length() == 0) {
             return null;
         }

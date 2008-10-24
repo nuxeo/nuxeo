@@ -24,7 +24,6 @@ import java.util.Set;
 
 import javax.ws.rs.core.Response;
 
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.runtime.model.Adaptable;
 
 
@@ -34,7 +33,7 @@ import org.nuxeo.runtime.model.Adaptable;
  */
 public interface Resource extends Adaptable {
 
-    Resource initialize(WebContext ctx, ResourceType type, Object ...  args) throws WebException;
+    Resource initialize(WebContext ctx, ResourceType type, Object ...  args);
 
     void dispose();
 
@@ -47,11 +46,11 @@ public interface Resource extends Adaptable {
     boolean isInstanceOf(String type);
 
     String getPath();
-    
+
     String getTrailingPath();
-    
+
     String getNextSegment();
-    
+
     String getURL();
 
     Resource getPrevious();

@@ -381,7 +381,7 @@ public class FormData implements FormInstance {
                 Type elType = ((ListType)p.getType()).getFieldType();
                 if (elType.isSimpleType()) {
                     p.setValue(ar);
-                } else if (elType.getName().equals("content")) {
+                } else if ("content".equals(elType.getName())) {
                     // list of blobs
                     List<Blob> blobs = new ArrayList<Blob>();
                     if (ar.getClass().getComponentType() == String.class) { // transform strings to blobs

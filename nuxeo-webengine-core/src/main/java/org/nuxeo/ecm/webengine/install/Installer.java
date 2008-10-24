@@ -84,7 +84,7 @@ public class Installer {
         log.error(message);
     }
 
-    public void install(RuntimeContext ctx, File installDir) throws WebDeployException {
+    public void install(RuntimeContext ctx, File installDir) {
         this.ctx = ctx;
         if (guard != null) {
             if (new File(installDir, guard).exists()) {
@@ -125,7 +125,7 @@ public class Installer {
         }
     }
 
-    public void uninstall(RuntimeContext ctx, File installDir) throws WebDeployException {
+    public void uninstall(RuntimeContext ctx, File installDir) {
         //TODO
     }
 

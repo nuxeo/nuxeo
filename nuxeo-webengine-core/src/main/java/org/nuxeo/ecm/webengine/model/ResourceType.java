@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webengine.model;
 
 import java.util.Set;
 
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.security.Guard;
 
@@ -43,7 +42,7 @@ public interface ResourceType {
 
     Class<? extends Resource> getResourceClass();
 
-    <T extends Resource> T newInstance() throws WebException;
+    <T extends Resource> T newInstance();
 
     ResourceType getSuperType();
 
@@ -51,7 +50,7 @@ public interface ResourceType {
 
     boolean hasFacet(String facet);
 
-    ScriptFile getTemplate(String name) throws WebException;
+    ScriptFile getTemplate(String name);
 
     boolean isEnabled(Resource ctx);
 

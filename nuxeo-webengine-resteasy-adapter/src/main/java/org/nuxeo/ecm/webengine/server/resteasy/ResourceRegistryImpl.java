@@ -53,12 +53,12 @@ public class ResourceRegistryImpl implements ResourceRegistry {
         this.dispatcher = dispatcher;
     }
 
-    public synchronized void addBinding(ResourceBinding binding) throws WebException {
+    public synchronized void addBinding(ResourceBinding binding) {
         registerBinding(binding);
         bindings.add(binding);
     }
 
-    public void registerBinding(ResourceBinding binding) throws WebException {
+    public void registerBinding(ResourceBinding binding) {
         if (binding.clazz == null || binding.path == null) {
             throw new WebException(
                     "Invalid resource binding: "+binding.path
@@ -86,12 +86,12 @@ public class ResourceRegistryImpl implements ResourceRegistry {
         }
     }
 
-    public synchronized void removeBinding(ResourceBinding binding) throws WebException {
+    public synchronized void removeBinding(ResourceBinding binding) {
         unregisterBinding(binding);
         bindings.remove(binding);
     }
 
-    public void unregisterBinding(ResourceBinding binding) throws WebException {
+    public void unregisterBinding(ResourceBinding binding) {
         try {
             if (binding.clazz.getAnnotation(Path.class) == null) {
                 removeRegistration(binding.path, binding.clazz);

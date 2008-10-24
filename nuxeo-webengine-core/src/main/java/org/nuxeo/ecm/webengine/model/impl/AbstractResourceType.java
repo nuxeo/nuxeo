@@ -88,7 +88,7 @@ public abstract class AbstractResourceType implements ResourceType {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Resource> T newInstance() throws WebException {
+    public <T extends Resource> T newInstance() {
         try {
             return (T)clazz.get().newInstance();
         } catch (Exception e) {
@@ -100,7 +100,7 @@ public abstract class AbstractResourceType implements ResourceType {
         return guard.check(ctx);
     }
 
-    public ScriptFile getTemplate(String name) throws WebException {
+    public ScriptFile getTemplate(String name) {
         if (name == null) {
             name = "view.ftl";
         }

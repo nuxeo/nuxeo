@@ -20,7 +20,6 @@ public class WebEngineSessionManager extends DefaultSessionManager {
     private static final Log log = LogFactory.getLog(WebEngineSessionManager.class);
     private static boolean useSharedAnonymousSession = false;
 
-
     @Override
     public boolean canBypassRequest(ServletRequest request) {
         // static resources don't require Authentication
@@ -51,6 +50,7 @@ public class WebEngineSessionManager extends DefaultSessionManager {
         UserSession.setCurrentSession(httpSession, userSession);
     }
 
+    @Override
     public boolean needResetLogin(ServletRequest req) {
         String p = ((HttpServletRequest) req).getPathInfo();
         return p != null && p.startsWith("/login");

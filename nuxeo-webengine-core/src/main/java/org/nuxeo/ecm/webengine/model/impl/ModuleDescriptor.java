@@ -77,7 +77,7 @@ public class ModuleDescriptor implements Cloneable {
 
     private Guard guard;
 
-    public void checkPermission(Adaptable adaptable) throws WebSecurityException {
+    public void checkPermission(Adaptable adaptable) {
         if (!getGuard().check(adaptable)) {
             throw new WebSecurityException("Access Restricted");
         }
