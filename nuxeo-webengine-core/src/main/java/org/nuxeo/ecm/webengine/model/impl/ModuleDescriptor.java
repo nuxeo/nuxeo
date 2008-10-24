@@ -70,6 +70,9 @@ public class ModuleDescriptor implements Cloneable {
     @XNodeList(value="links/link", type=ArrayList.class, componentType=LinkDescriptor.class, nullByDefault=true)
     public List<LinkDescriptor> links;
 
+    @XNodeList(value="resources/resource", type=ArrayList.class, componentType=ResourceBinding.class, nullByDefault=true)
+    public List<ResourceBinding> resources;
+
     @XNode("permission")
     public  GuardDescriptor guardDescriptor;
 
