@@ -6,10 +6,13 @@ Hello <strong>${Context.principal.name}</strong>! This is the root of your web s
 </p>
 
 <div id="mainContentBox">
-Welcome to Nuxeo Webengine. Here are the available applications :
+Hi There, here is the wikis currently available :
 <ul>
-  <li><a href="admin">Admin board</a></li>
-  <li><a href="wikis">Wikis</a></li>
+      <#list wikis as wiki>
+        <li id="${wiki.ref}">
+          <a href="wikis/${wiki.name}">${wiki.title}</a>
+        </li>
+      </#list>
 </ul>
 
 </div>
