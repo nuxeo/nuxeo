@@ -23,9 +23,6 @@ import javax.ws.rs.Path;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.api.Framework;
-
-import EDU.oswego.cs.dl.util.concurrent.misc.Fraction;
 
 /**
  *
