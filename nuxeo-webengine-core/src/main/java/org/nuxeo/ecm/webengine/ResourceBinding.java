@@ -36,7 +36,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @see Path
  *
  */
-@XObject("resource")
+@XObject(value="resource", order={"@path", "@class"})
 public class ResourceBinding {
 
     @XNode("@path")
@@ -48,7 +48,17 @@ public class ResourceBinding {
     /**
      * Use this to specify the resource class.
      */
-    @XNode("@class") 
+    @XNode("@class")
+    void setClazz(Class<?> clazz) {
+        this.clazz = clazz;
+        if (path == null) {
+            Path p = clazz.getAnnotation(Path.class);
+            if (p == null) {
+                throw new WebException("Invalid resource binding. Path not defined");
+            }
+            path = p.value();
+        }
+    }
     public Class<?> clazz;
 
 
