@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,26 +12,25 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.query;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author Bogdan Stefanescu
+ * @author Florent Guillaume
  */
 public interface Query {
 
     /**
      * Defines general query types.
      * <p>
-     * There could be Query implementations for one or another Query Type.
-     * If the query factory instantiating a specific implementation of
-     * this class does not support a given Query Type than a
-     * <code>UnsupportedQueryTypeException</code> should be thrown.
+     * There could be Query implementations for one or another Query Type. If
+     * the query factory instantiating a specific implementation of this class
+     * does not support a given Query Type than a {@code
+     * UnsupportedQueryTypeException} should be thrown.
      */
     enum Type {
         NXQL("NXQL"), XPATH("XPATH");
@@ -48,6 +47,14 @@ public interface Query {
         }
     }
 
+    /**
+     * Makes a query to the backend. No fiter, permission or policy filterings
+     * are done.
+     *
+     * @return a query result object describing the resulting documents
+     * @throws QueryException
+     * @see {@link FilterableQuery#execute(QueryFilter)}
+     */
     QueryResult execute() throws QueryException;
 
 }

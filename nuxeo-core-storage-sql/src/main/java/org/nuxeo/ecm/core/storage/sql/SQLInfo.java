@@ -1135,7 +1135,19 @@ public class SQLInfo {
             className = DerbyFunctions.class.getName();
         }
 
-        public StoredProcedureInfo make(String functionName, String proto,
+        public StoredProcedureInfo makeInTree() {
+            return make("NX_IN_TREE", "(ID %s, BASEID %<s) RETURNS SMALLINT",
+                    "isInTree");
+        }
+
+        public StoredProcedureInfo makeAccessAllowed() {
+            return make(
+                    "NX_ACCESS_ALLOWED",
+                    "(ID %s, PRINCIPALS VARCHAR(10000), PERMISSIONS VARCHAR(10000)) RETURNS SMALLINT",
+                    "isAccessAllowed");
+        }
+
+        protected StoredProcedureInfo make(String functionName, String proto,
                 String methodName) {
             proto = String.format(proto, idType);
             return new StoredProcedureInfo(
@@ -1182,19 +1194,50 @@ public class SQLInfo {
                                     + "RETURNS boolean " //
                                     + "AS $$ " //
                                     + "DECLARE" //
-                                    + "  cur %<s := id; " //
+                                    + "  curid %<s := id; " //
                                     + "BEGIN" //
                                     + "  IF baseid IS NULL OR id IS NULL OR baseid = id THEN" //
                                     + "    RETURN false;" //
                                     + "  END IF;" //
                                     + "  LOOP" //
-                                    + "    SELECT parentid INTO cur FROM hierarchy WHERE hierarchy.id = cur;" //
-                                    + "    IF cur IS NULL THEN" //
+                                    + "    SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;" //
+                                    + "    IF curid IS NULL THEN" //
                                     + "      RETURN false; " //
-                                    + "    ELSIF cur = baseid THEN" //
+                                    + "    ELSIF curid = baseid THEN" //
                                     + "      RETURN true;" //
                                     + "    END IF;" //
                                     + "  END LOOP;" //
+                                    + "END " //
+                                    + "$$ " //
+                                    + "LANGUAGE plpgsql " //
+                                    + "STABLE " //
+                            , idType));
+        }
+
+        public StoredProcedureInfo makeAccessAllowed() {
+            return new StoredProcedureInfo(
+                    //
+                    Boolean.FALSE, // no drop needed
+                    null,
+                    null, //
+                    String.format(
+                            "CREATE OR REPLACE FUNCTION NX_ACCESS_ALLOWED" //
+                                    + "(id %s, users varchar[], permissions varchar[]) " //
+                                    + "RETURNS boolean " //
+                                    + "AS $$ " //
+                                    + "DECLARE" //
+                                    + "  curid %<s := id; " //
+                                    + "  r record; " //
+                                    + "BEGIN" //
+                                    + "  WHILE curid IS NOT NULL LOOP" //
+                                    + "    FOR r in SELECT acls.grant, acls.permission, acls.user FROM acls WHERE acls.id = curid ORDER BY acls.pos LOOP"
+                                    + "      IF r.permission = ANY(permissions) AND r.user = ANY(users) THEN" //
+                                    + "        RETURN r.grant;" //
+                                    + "      END IF;" //
+                                    + "    END LOOP;" //
+                                    + "    SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;" //
+                                    + "  END LOOP;" //
+                                    + "  RETURN false; " //
                                     + "END " //
                                     + "$$ " //
                                     + "LANGUAGE plpgsql " //
@@ -1211,13 +1254,12 @@ public class SQLInfo {
         String databaseName = dialect.getDatabaseName();
         if ("Apache Derby".equals(databaseName)) {
             DerbyStoredProcedureInfoMaker maker = new DerbyStoredProcedureInfoMaker();
-            spis.add(maker.make("NX_IN_TREE",
-                    "(ID %s, BASEID %<s) RETURNS SMALLINT", "isInTree"));
-            spis.add(maker.make("NX_CAN_BROWSE", "(ID %s) RETURNS SMALLINT",
-                    "canBrowse"));
+            spis.add(maker.makeInTree());
+            spis.add(maker.makeAccessAllowed());
         } else if ("PostgreSQL".equals(databaseName)) {
             PostgreSQLstoredProcedureInfoMaker maker = new PostgreSQLstoredProcedureInfoMaker();
             spis.add(maker.makeInTree());
+            spis.add(maker.makeAccessAllowed());
         }
         return spis;
     }

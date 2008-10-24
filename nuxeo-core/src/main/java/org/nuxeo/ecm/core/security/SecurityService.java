@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.security;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,6 +41,7 @@ import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
 import org.nuxeo.ecm.core.api.security.impl.SecuritySummaryEntryImpl;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -129,6 +131,18 @@ public class SecurityService extends DefaultComponent {
         session.getRepository().getSecurityManager().invalidateCache(session);
     }
 
+    public boolean arePoliciesRestrictingPermission(String permission) {
+        return securityPolicyService.arePoliciesRestrictingPermission(permission);
+    }
+
+    public boolean arePoliciesExpressibleInQuery() {
+        return securityPolicyService.arePoliciesExpressibleInQuery();
+    }
+
+    public Collection<SQLQuery.Transformer> getPoliciesQueryTransformers() {
+        return securityPolicyService.getPoliciesQueryTransformers();
+    }
+
     public boolean checkPermission(Document doc, Principal principal,
             String permission) throws SecurityException {
         String username = principal.getName();
@@ -198,7 +212,7 @@ public class SecurityService extends DefaultComponent {
         }
     }
 
-    protected static String[] getPrincipalsToCheck(Principal principal) {
+    public static String[] getPrincipalsToCheck(Principal principal) {
         List<String> userGroups = null;
         if (principal instanceof NuxeoPrincipal) {
             userGroups = ((NuxeoPrincipal) principal).getAllGroups();

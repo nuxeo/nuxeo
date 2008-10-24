@@ -1000,18 +1000,19 @@ public interface CoreSession {
      * @param max number of document to retrieve
      * @return the query result
      * @throws ClientException
-     *
-     * @deprecated use search service
      */
-    @Deprecated
     DocumentModelList query(String query, Filter filter, int max)
             throws ClientException;
 
     /**
-     * @deprecated use SearchService instead. See
-     *             {@url http://doc.nuxeo.org/reference/html/search-service.html}
+     * Executes the given NXQL query and returns an iterators of results.
+     *
+     * @param query the query to execute
+     * @param filter the filter to apply to result
+     * @param max number of document to retrieve
+     * @return the query result iterator
+     * @throws ClientException
      */
-    @Deprecated
     DocumentModelIterator queryIt(String query, Filter filter, int max)
             throws ClientException;
 

@@ -26,6 +26,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-query</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core</artifactId>
     </dependency>
     <dependency>
@@ -88,8 +92,6 @@
             <exclude>**/Test*MemoryLeak.java</exclude>
             <!-- Derby leaks memory in this one: -->
             <exclude>**/TestSQLRepositoryAPI.java</exclude>
-            <!-- Search implementation not yet done: -->
-            <exclude>**/TestSQLRepositoryQuery.java</exclude>
             <!-- PostgreSQL-specific test, launch manually: -->
             <exclude>**/TestSQLRepositoryQueryPG.java</exclude>
           </excludes>
