@@ -48,7 +48,7 @@ public class CommentService extends DefaultAdapter {
 
     @POST
     public Response doPost(@FormParam("text")  String cText) {
-        if (cText != null) {
+        if (cText == null) {
             throw new IllegalParameterException("Expecting a 'text' parameter");
         }
 
@@ -58,7 +58,7 @@ public class CommentService extends DefaultAdapter {
 
         try {
             cDoc.addComment(cText);
-            return redirect(path);
+            return redirect(getTarget().getPath());
         } catch (ClientException e) {
             throw WebException.wrap(e);
         }
