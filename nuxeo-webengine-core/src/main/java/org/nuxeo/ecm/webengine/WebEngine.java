@@ -287,7 +287,13 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
             XMap xmap = new XMap();
             xmap.register(ModuleDescriptor.class);
             InputStream in = new BufferedInputStream(new FileInputStream(cfgFile));
-            return (ModuleDescriptor) xmap.load(createXMapContext(), in);
+            ModuleDescriptor md = (ModuleDescriptor) xmap.load(createXMapContext(), in);
+            if (md.resources != null) {
+                for (ResourceBinding rb : md.resources) {
+                    addResourceBinding(rb);
+                }
+            }
+            return md;
         } catch (Exception e) {
             e.printStackTrace(); // TODO log exception
         }

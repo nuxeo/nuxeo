@@ -59,10 +59,10 @@ public class ResourceRegistryImpl implements ResourceRegistry {
     }
 
     public void registerBinding(ResourceBinding binding) {
-        if (binding.clazz == null || binding.path == null) {
+        if (binding.clazz == null) {
             throw new WebException(
                     "Invalid resource binding: "+binding.path
-                    +" -> "+binding.clazz+". No resource path / class specified.");
+                    +" -> "+binding.clazz+". No resource class specified.");
         }
 
         if (binding.singleton) {
