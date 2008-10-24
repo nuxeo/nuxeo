@@ -30,24 +30,6 @@
       <facet>Folderish</facet>
       <category>TOOLBOX</category>
     </link> 
-
-    <!-- user management -->
-    <link id="link_delete_user" path="/@delete">
-      <type>User</type>
-      <category>TOOLBOX</category>
-    </link>
-    <link id="link_create_user" path="/@views/create_user">
-      <type>UserManager</type>
-      <category>TOOLBOX</category>
-    </link>
-    <link id="link_delete_group" path="/@delete">
-      <type>Group</type>
-      <category>TOOLBOX</category>      
-    </link>
-    <link id="link_create_group" path="/@views/create_group">
-      <type>UserManager</type>
-      <category>TOOLBOX</category>
-    </link> 
     
   </links>
 </module>
