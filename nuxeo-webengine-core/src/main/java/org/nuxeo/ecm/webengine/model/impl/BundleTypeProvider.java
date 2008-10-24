@@ -21,8 +21,8 @@ package org.nuxeo.ecm.webengine.model.impl;
 
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
-import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
+import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.annotations.loader.AnnotationLoader;
 import org.nuxeo.runtime.annotations.loader.BundleAnnotationsLoader;
 import org.osgi.framework.Bundle;

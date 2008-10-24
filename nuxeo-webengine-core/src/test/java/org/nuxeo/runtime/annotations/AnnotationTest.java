@@ -22,6 +22,7 @@ package org.nuxeo.runtime.annotations;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
+
 import junit.framework.TestCase;
 
 /**

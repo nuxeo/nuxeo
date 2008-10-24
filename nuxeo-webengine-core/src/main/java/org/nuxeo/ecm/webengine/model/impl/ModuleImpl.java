@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
@@ -40,7 +41,6 @@ import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
-import org.nuxeo.common.utils.Path;
 
 /**
  * The default implementation for a web configuration

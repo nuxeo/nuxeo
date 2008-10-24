@@ -22,10 +22,13 @@ package org.nuxeo.ecm.core.rest;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
+import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
 /**
@@ -44,20 +47,22 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 public class CommentService extends DefaultAdapter {
 
     @POST
-    public void doPost(@FormParam("text")
-    String cText) {
+    public Response doPost(@FormParam("text")  String cText) {
+        if (cText != null) {
+            throw new IllegalParameterException("Expecting a 'text' parameter");
+        }
+
         DocumentObject dobj = (DocumentObject) getTarget();
         CommentableDocument cDoc = dobj.getDocument().getAdapter(
                 CommentableDocument.class, true);
 
         try {
-            if (cText != null) {
-                cDoc.addComment(cText);
-                redirect(path);
-            }
+            cDoc.addComment(cText);
+            return redirect(path);
         } catch (ClientException e) {
-            e.printStackTrace();
+            throw WebException.wrap(e);
         }
-
+        
     }
+    
 }

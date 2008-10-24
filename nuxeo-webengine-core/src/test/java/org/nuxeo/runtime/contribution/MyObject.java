@@ -19,7 +19,6 @@
 
 package org.nuxeo.runtime.contribution;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

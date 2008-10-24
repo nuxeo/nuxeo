@@ -25,9 +25,9 @@ import java.util.HashSet;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
+import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
-import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.annotations.AnnotationManager;

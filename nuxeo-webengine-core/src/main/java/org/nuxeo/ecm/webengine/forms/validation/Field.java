@@ -26,7 +26,6 @@ import org.nuxeo.ecm.webengine.forms.FormInstance;
 import org.nuxeo.ecm.webengine.forms.validation.constraints.And;
 import org.nuxeo.ecm.webengine.forms.validation.constraints.SimpleConstraint;
 import org.w3c.dom.DocumentFragment;
-import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

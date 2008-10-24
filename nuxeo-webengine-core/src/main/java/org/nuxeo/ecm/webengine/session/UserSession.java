@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine.session;
 
-import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.HashSet;

@@ -29,10 +29,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
+import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.ecm.webengine.model.ModuleType;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
-import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
 
