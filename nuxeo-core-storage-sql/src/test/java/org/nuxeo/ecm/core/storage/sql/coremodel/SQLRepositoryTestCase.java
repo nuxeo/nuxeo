@@ -35,7 +35,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
 
-    protected String REPOSITORY_NAME = "test";
+    protected final String REPOSITORY_NAME = "test";
 
     protected CoreSession session;
 

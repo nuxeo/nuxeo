@@ -48,7 +48,7 @@ public class Table implements Serializable {
     private final LinkedHashMap<String, Column> columns;
 
     /** Logical names of indexed columns. */
-    private List<String[]> indexedColumns;
+    private final List<String[]> indexedColumns;
 
     /**
      * Creates a new empty table.
@@ -57,7 +57,7 @@ public class Table implements Serializable {
      */
     public Table(Database database, String physicalName) {
         this.database = database;
-        this.dialect = database.dialect;
+        dialect = database.dialect;
         this.physicalName = physicalName;
         // we use a LinkedHashMap to have deterministic ordering
         columns = new LinkedHashMap<String, Column>();
@@ -87,8 +87,6 @@ public class Table implements Serializable {
 
     /**
      * Adds a {@link Column} to the table.
-     *
-     * @param column the column
      */
     public Column addColumn(String name, PropertyType type, int sqlType,
             String key, Model model) throws IllegalArgumentException {

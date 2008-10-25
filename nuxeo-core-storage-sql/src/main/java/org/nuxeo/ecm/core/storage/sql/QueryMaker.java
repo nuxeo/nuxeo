@@ -238,9 +238,8 @@ public class QueryMaker {
          * Security check.
          */
         if (queryFilter.getPrincipals() != null) {
-            whereClause = whereClause +
-                    String.format(" AND NX_ACCESS_ALLOWED(%s, ?, ?) = %s",
-                            qhierid, sqlInfo.dialect.toBooleanValueString(true));
+            whereClause += String.format(" AND NX_ACCESS_ALLOWED(%s, ?, ?) = %s", qhierid,
+                    sqlInfo.dialect.toBooleanValueString(true));
             Serializable principals;
             Serializable permissions;
             if (sqlInfo.dialect.supportsArrays()) {
@@ -258,13 +257,12 @@ public class QueryMaker {
         if (query.orderBy != null) {
             whereBuilder.buf.setLength(0);
             query.orderBy.accept(whereBuilder);
-            whereClause = whereClause + whereBuilder.buf.toString();
+            whereClause += whereBuilder.buf.toString();
         }
 
         /*
          * Check if we need a DISTINCT.
          */
-
         String what;
         if (whereBuilder.needsDistinct) {
             // we do LEFT OUTER JOINs, so we could get identical results
@@ -273,6 +271,7 @@ public class QueryMaker {
             // never needed as all impacted tables have unique keys
             what = qhierid;
         }
+
         /*
          * Create the whole select.
          */
@@ -337,9 +336,9 @@ public class QueryMaker {
 
         private static final long serialVersionUID = 1L;
 
-        public Set<String> types = new HashSet<String>();
+        public final Set<String> types = new HashSet<String>();
 
-        public Set<String> keys = new HashSet<String>();
+        public final Set<String> keys = new HashSet<String>();
 
         @Override
         public void visitFromClause(FromClause node) {

@@ -59,7 +59,7 @@ public class RepositoryDescriptor {
          */
         DB_IDENTITY("database-identity");
 
-        private String value;
+        private final String value;
 
         private IdGenPolicy(String value) {
             this.value = value;
@@ -77,7 +77,7 @@ public class RepositoryDescriptor {
             }
             throw new IllegalArgumentException(value);
         }
-    };
+    }
 
     /**
      * Which id generation policy to use.

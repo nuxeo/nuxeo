@@ -235,7 +235,7 @@ public class SQLSession implements Session {
         }
     }
 
-    private static Pattern dotDigitsPattern = Pattern.compile("(.*)\\.[0-9]+$");
+    private static final Pattern dotDigitsPattern = Pattern.compile("(.*)\\.[0-9]+$");
 
     protected String findFreeName(Node parentNode, String name)
             throws StorageException {

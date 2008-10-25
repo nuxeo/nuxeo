@@ -191,7 +191,7 @@ public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
         return null;
     }
 
-    protected static DocumentVersionIterator EMPTY_VERSION_ITERATOR = new DocumentVersionIterator() {
+    protected static final DocumentVersionIterator EMPTY_VERSION_ITERATOR = new DocumentVersionIterator() {
         public boolean hasNext() {
             return false;
         }
