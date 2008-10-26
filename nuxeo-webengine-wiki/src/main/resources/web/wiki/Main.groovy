@@ -16,38 +16,48 @@ import org.nuxeo.ecm.core.api.*;
 
 public class Main extends DefaultModule {
 
-    public DocumentModel getDocument(String path) {
-        try {
-            PathRef pathRef = new PathRef(path);
-	    return ctx.getCoreSession().getDocument(pathRef);
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
+  public DocumentModel getDocument(String path) {
+    try {
+        PathRef pathRef = new PathRef(path);
+	return ctx.getCoreSession().getDocument(pathRef);
+    } catch (Exception e) {
+        throw WebException.wrap(e);
     }
-    
-    
-    @Path("/wikis/{segment}")
-    public DocumentObject getWiki(@PathParam("segment") String segment) {
-      return newObject("Wiki", getDocument("/default-domain/workspaces/wikis/"+segment));
-    }
+  }
     
   @GET
   public Object doGet() {
-    // get the list of Wikis.
-        return getView("index.ftl");
+    return getView("index.ftl");
   } 
   
-  @GET
-  @Path("/wikis")
-  public Object wikis(){
-       try{
-          def list = ctx.getCoreSession().getChildren(new PathRef("/default-domain/workspaces/wikis"), null, new WikiFilter() , null);
-          return getView("list_wikis.ftl").arg("wikis", list);
-        }
-        catch(Exception e){
-            throw WebException.wrap(e);
-        }
+  @Path("wikis")
+  public DocumentObject wikis(){
+    try{
+      return new DocumentRoot(ctx, "/default-domain/workspaces/wikis/");
+    }
+    catch(Exception e){
+      throw WebException.wrap(e);
+    }
   }
+  
+  @GET
+  @Path("create/{segment}")
+  public Response createPage(@PathParam("segment") String segment) {
+    try{
+    def session = ctx.getCoreSession();
+    def newDoc = session.createDocumentModel("/default-domain/workspaces/", segment, "Workspace");
+    if (newDoc.getTitle().length() == 0) {
+      newDoc.getPart("dublincore").get("title").setValue(newDoc.getName());
+    }
+    newDoc = session.createDocument(newDoc);
+    session.save();
+    return redirect(path+"/"+segment);
+    }
+    catch(Exception e){
+        throw WebException.wrap(e);
+    }
+  }
+  
   
   // handle errors
   public Object handleError(WebApplicationException e) {
