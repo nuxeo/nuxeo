@@ -61,7 +61,6 @@ public class UISelectItem extends javax.faces.component.UISelectItem {
         return createSelectItem(value);
     }
 
-    @SuppressWarnings("unchecked")
     protected SelectItem createSelectItem(Object value) {
         SelectItem item = null;
 
