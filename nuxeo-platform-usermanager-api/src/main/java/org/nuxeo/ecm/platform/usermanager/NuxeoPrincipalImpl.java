@@ -29,7 +29,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jetbrains.annotations.NotNull;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -131,16 +130,16 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     // impossible to modify the name - it is PK
-    public void setName(@NotNull String name) {
+    public void setName(String name) {
         dataModel.setData(USERNAME_COLUMN, name);
     }
 
-    public void setRoles(@NotNull List<String> roles) {
+    public void setRoles(List<String> roles) {
         this.roles.clear();
         this.roles.addAll(roles);
     }
 
-    public void setGroups(@NotNull List<String> groups) {
+    public void setGroups(List<String> groups) {
         if (virtualGroups != null && !virtualGroups.isEmpty()) {
             List<String> groupsToWrite = new ArrayList<String>();
             for (String group : groups) {

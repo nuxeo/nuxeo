@@ -25,7 +25,6 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 
-import org.jetbrains.annotations.NotNull;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.interfaces.ejb.ECServer;
@@ -84,7 +83,7 @@ public class ECServerBean implements ECServer, ECServerLocal {
         return repositoryLocation;
     }
 
-    public RepositoryLocation getRepositoryLocationForName(@NotNull String repName) {
+    public RepositoryLocation getRepositoryLocationForName(String repName) {
         final List<RepositoryLocation> repLocations = getAvailableRepositoryLocations();
         for (RepositoryLocation location : repLocations) {
             if (repName.equals(location.getName())) {
