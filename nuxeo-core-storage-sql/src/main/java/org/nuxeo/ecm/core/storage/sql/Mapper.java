@@ -809,9 +809,9 @@ public class Mapper {
                         map.put(key, value);
                     }
                 }
-                map.put(Model.HIER_PARENT_KEY, parentId);
-                map.put(Model.HIER_CHILD_NAME_KEY, childName);
-                map.put(Model.HIER_CHILD_ISPROPERTY_KEY,
+                map.put(model.HIER_PARENT_KEY, parentId);
+                map.put(model.HIER_CHILD_NAME_KEY, childName);
+                map.put(model.HIER_CHILD_ISPROPERTY_KEY,
                         Boolean.valueOf(complexProp));
                 SimpleFragment row = new SimpleFragment(id, State.PRISTINE,
                         context, map);

@@ -220,7 +220,7 @@ final public class VerServUtils {
         // is restored.
         copyNode.setProperty(NodeConstants.ECM_VERSION_HISTORY.rawname,
                 versionHistoryNode);
-
+        
         // NXP-754
         copyNode.save();
         // ----------------------------------------

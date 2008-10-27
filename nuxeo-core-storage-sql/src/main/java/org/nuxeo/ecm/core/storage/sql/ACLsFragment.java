@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionMaker;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 
 /**
@@ -39,11 +40,12 @@ public class ACLsFragment extends ArrayFragment {
      * Constructs an empty {@link ACLsFragment} of the given table with the
      * given id (which may be a temporary one).
      *
+     * @param tableName the table name
      * @param id the id
      * @param state the initial state for the fragment
      * @param context the persistence context to which the row is tied, or
      *            {@code null}
-     * @param acls the initial acls to use
+     * @param array the initial acls to use
      */
     public ACLsFragment(Serializable id, State state, Context context,
             Serializable[] acls) {
@@ -70,18 +72,18 @@ public class ACLsFragment extends ArrayFragment {
                     i++;
                     String key = column.getKey();
                     Serializable v = column.getFromResultSet(rs, i);
-                    if (key.equals(Model.ACL_POS_KEY)) {
+                    if (key.equals(model.ACL_POS_KEY)) {
                         pos = v == null ? 0 : ((Long) v).intValue();
-                    } else if (key.equals(Model.ACL_NAME_KEY)) {
+                    } else if (key.equals(model.ACL_NAME_KEY)) {
                         name = (String) v;
-                    } else if (key.equals(Model.ACL_GRANT_KEY)) {
+                    } else if (key.equals(model.ACL_GRANT_KEY)) {
                         grant = v == null ? false
                                 : ((Boolean) v).booleanValue();
-                    } else if (key.equals(Model.ACL_PERMISSION_KEY)) {
+                    } else if (key.equals(model.ACL_PERMISSION_KEY)) {
                         permission = (String) v;
-                    } else if (key.equals(Model.ACL_USER_KEY)) {
+                    } else if (key.equals(model.ACL_USER_KEY)) {
                         user = (String) v;
-                    } else if (key.equals(Model.ACL_GROUP_KEY)) {
+                    } else if (key.equals(model.ACL_GROUP_KEY)) {
                         group = (String) v;
                     } else if (key.equals(model.MAIN_KEY)) {
                         // skip
@@ -129,17 +131,17 @@ public class ACLsFragment extends ArrayFragment {
                 Serializable v;
                 if (key.equals(model.MAIN_KEY)) {
                     v = getId();
-                } else if (key.equals(Model.ACL_POS_KEY)) {
+                } else if (key.equals(model.ACL_POS_KEY)) {
                     v = Long.valueOf(acl.pos);
-                } else if (key.equals(Model.ACL_NAME_KEY)) {
+                } else if (key.equals(model.ACL_NAME_KEY)) {
                     v = acl.name;
-                } else if (key.equals(Model.ACL_GRANT_KEY)) {
+                } else if (key.equals(model.ACL_GRANT_KEY)) {
                     v = Boolean.valueOf(acl.grant);
-                } else if (key.equals(Model.ACL_PERMISSION_KEY)) {
+                } else if (key.equals(model.ACL_PERMISSION_KEY)) {
                     v = acl.permission;
-                } else if (key.equals(Model.ACL_USER_KEY)) {
+                } else if (key.equals(model.ACL_USER_KEY)) {
                     v = acl.user;
-                } else if (key.equals(Model.ACL_GROUP_KEY)) {
+                } else if (key.equals(model.ACL_GROUP_KEY)) {
                     v = acl.group;
                 } else {
                     throw new AssertionError(key);
