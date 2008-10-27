@@ -40,6 +40,7 @@ import org.compass.core.CompassQueryBuilder.CompassQueryStringBuilder;
 import org.compass.core.lucene.util.LuceneHelper;
 import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
+import org.nuxeo.ecm.core.query.sql.model.DoubleLiteral;
 import org.nuxeo.ecm.core.query.sql.model.FromClause;
 import org.nuxeo.ecm.core.query.sql.model.IntegerLiteral;
 import org.nuxeo.ecm.core.query.sql.model.Literal;
@@ -394,6 +395,12 @@ public class QueryConverter {
                 rightOb = (long) ((IntegerLiteral) right).value;
             } else {
                 rightOb = ((IntegerLiteral) right).value;
+            }
+        } else if (right instanceof DoubleLiteral) {
+            if ("float".equals(type) || "double".equals(type)) {
+                rightOb = ((DoubleLiteral) right).value;
+            } else {
+                rightOb = ((DoubleLiteral) right).value;
             }
         }
 
