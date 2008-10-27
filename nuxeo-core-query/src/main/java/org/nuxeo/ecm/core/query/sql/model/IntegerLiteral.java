@@ -28,8 +28,7 @@ public class IntegerLiteral extends Literal {
 
     private static final long serialVersionUID = 4769705314623462546L;
 
-    // XXX: Should be final but it can't with the current parser impl.
-    public long value;
+    public final long value;
 
     public IntegerLiteral(long value) {
         this.value = value;

@@ -100,10 +100,9 @@ public class TestQueryParser extends TestCase {
         dl = (DoubleLiteral) query.getWhereClause().predicate.rvalue;
         assertEquals(0.2, dl.value);
 
-        // TODO NXP-2775 Test fail because of Query Parser (see nxql.cup)
-        // query = SQLQueryParser.parse("SELECT p FROM t WHERE title=-1.2");
-        // dl = (DoubleLiteral) query.getWhereClause().predicate.rvalue;
-        // assertEquals(-1.2, dl.value);
+        query = SQLQueryParser.parse("SELECT p FROM t WHERE title=-1.2");
+        dl = (DoubleLiteral) query.getWhereClause().predicate.rvalue;
+        assertEquals(-1.2, dl.value);
 
         // dates
         DateLiteral datel;
