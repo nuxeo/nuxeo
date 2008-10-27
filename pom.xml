@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
-  <version>5.2-SNAPSHOT</version>
+  <version>5.2-20081027</version>
   <!-- IMPORTANT: change this file version when it's modified -->
 
   <packaging>pom</packaging>
