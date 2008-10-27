@@ -270,7 +270,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
     /**
      * Called by {@link ConnectionImpl#close} when the connection is closed.
      */
-    protected void close(ConnectionImpl connection) {
+    protected void close(ConnectionImpl connection) throws ResourceException {
         log.debug("close: " + this);
         removeConnection(connection);
         sendClosedEvent(connection);

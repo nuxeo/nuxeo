@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.storage.Credentials;
  */
 public class ConnectionSpecImpl implements ConnectionSpec {
 
-    private final Credentials credentials;
+    private Credentials credentials;
 
     public ConnectionSpecImpl(Credentials credentials) {
         this.credentials = credentials;

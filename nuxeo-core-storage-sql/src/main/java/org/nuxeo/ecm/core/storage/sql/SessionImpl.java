@@ -333,12 +333,14 @@ public class SessionImpl implements Session {
         hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY,
                 Boolean.valueOf(complexProp));
 
-        SimpleFragment mainRow = context.createSimpleFragment(model.mainTableName, id, mainMap);
+        SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
+                model.mainTableName, id, mainMap);
 
         SimpleFragment hierRow;
         if (model.separateMainTable) {
             // TODO put it in a collection context instead
-            hierRow = context.createSimpleFragment(model.hierTableName, id, hierMap);
+            hierRow = (SimpleFragment) context.createSimpleFragment(
+                    model.hierTableName, id, hierMap);
         } else {
             hierRow = null;
         }
@@ -581,11 +583,13 @@ public class SessionImpl implements Session {
         hierMap.put(model.HIER_CHILD_NAME_KEY, "");
         hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.FALSE);
 
-        SimpleFragment mainRow = context.createSimpleFragment(model.mainTableName, id, mainMap);
+        SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
+                model.mainTableName, id, mainMap);
 
         SimpleFragment hierRow;
         if (model.separateMainTable) {
-            hierRow = context.createSimpleFragment(model.hierTableName, id, hierMap);
+            hierRow = (SimpleFragment) context.createSimpleFragment(
+                    model.hierTableName, id, hierMap);
         } else {
             hierRow = null;
         }

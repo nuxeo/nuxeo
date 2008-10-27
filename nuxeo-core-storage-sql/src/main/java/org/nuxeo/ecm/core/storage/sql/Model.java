@@ -221,7 +221,7 @@ public class Model {
     private final AtomicLong temporaryIdCounter;
 
     /** Shared high-level properties that don't come from the schema manager. */
-    private final Map<String, Type> specialPropertyTypes;
+    private Map<String, Type> specialPropertyTypes;
 
     /** Per-schema/type info about properties. */
     private final HashMap<String, Map<String, PropertyInfo>> schemaPropertyInfos;
@@ -429,7 +429,7 @@ public class Model {
                 // schema with no properties (complex list)
                 continue;
             }
-            for (Entry<String, PropertyInfo> info : infos.entrySet()) {
+            for (Map.Entry<String, PropertyInfo> info : infos.entrySet()) {
                 propertyInfos.put(info.getKey(), info.getValue());
             }
         }

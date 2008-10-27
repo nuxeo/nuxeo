@@ -175,9 +175,9 @@ public class BinaryManager {
         return new File(dir, digest);
     }
 
-    public static final int MIN_BUF_SIZE = 8 * 1024; // 8 kB
+    public final static int MIN_BUF_SIZE = 8 * 1024; // 8 kB
 
-    public static final int MAX_BUF_SIZE = 64 * 1024; // 64 kB
+    public final static int MAX_BUF_SIZE = 64 * 1024; // 64 kB
 
     protected String storeAndDigest(InputStream in, OutputStream out)
             throws IOException {
@@ -215,7 +215,8 @@ public class BinaryManager {
 
     public static String toHexString(byte[] data) {
         StringBuilder buf = new StringBuilder(2 * data.length);
-        for (byte b : data) {
+        for (int i = 0; i < data.length; i++) {
+            byte b = data[i];
             buf.append(HEX_DIGITS[(0xF0 & b) >> 4]);
             buf.append(HEX_DIGITS[0x0F & b]);
         }

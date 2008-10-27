@@ -231,17 +231,17 @@ public class SQLInfo {
     }
 
     public String getInsertRootIdSql() {
-        return insertSqlMap.get(Model.REPOINFO_TABLE_NAME);
+        return insertSqlMap.get(model.REPOINFO_TABLE_NAME);
     }
 
     public List<Column> getInsertRootIdColumns() {
-        return insertColumnsMap.get(Model.REPOINFO_TABLE_NAME);
+        return insertColumnsMap.get(model.REPOINFO_TABLE_NAME);
     }
 
     public String getSelectByChildNameSql(Boolean complexProp) {
         if (complexProp == null) {
             return selectByChildNameAllSql;
-        } else if (complexProp) {
+        } else if (complexProp.booleanValue()) {
             return selectByChildNamePropertiesSql;
         } else {
             return selectByChildNameRegularSql;
@@ -251,7 +251,7 @@ public class SQLInfo {
     public List<Column> getSelectByChildNameWhatColumns(Boolean complexProp) {
         if (complexProp == null) {
             return selectByChildNameAllWhatColumns;
-        } else if (complexProp) {
+        } else if (complexProp.booleanValue()) {
             return selectByChildNamePropertiesWhatColumns;
         } else {
             return selectByChildNameRegularWhatColumns;
@@ -261,7 +261,7 @@ public class SQLInfo {
     public List<Column> getSelectByChildNameWhereColumns(Boolean complexProp) {
         if (complexProp == null) {
             return selectByChildNameAllWhereColumns;
-        } else if (complexProp) {
+        } else if (complexProp.booleanValue()) {
             return selectByChildNamePropertiesWhereColumns;
         } else {
             return selectByChildNameRegularWhereColumns;
@@ -388,7 +388,7 @@ public class SQLInfo {
         initRepositorySQL();
 
         for (String tableName : model.getFragmentNames()) {
-            if (tableName.equals(Model.HIER_TABLE_NAME)) {
+            if (tableName.equals(model.HIER_TABLE_NAME)) {
                 continue;
             }
             if (tableName.equals(model.MAIN_TABLE_NAME) &&
@@ -402,34 +402,34 @@ public class SQLInfo {
         /*
          * versions
          */
-        Table table = database.getTable(Model.VERSION_TABLE_NAME);
+        Table table = database.getTable(model.VERSION_TABLE_NAME);
         selectVersionsByVersionable = makeSelect(table,
-                Model.VERSION_VERSIONABLE_KEY);
+                model.VERSION_VERSIONABLE_KEY);
         table.addIndex(model.VERSION_VERSIONABLE_KEY);
         selectVersionsByLabel = makeSelect(table,
-                Model.VERSION_VERSIONABLE_KEY, Model.VERSION_LABEL_KEY);
+                model.VERSION_VERSIONABLE_KEY, model.VERSION_LABEL_KEY);
         // don't index versionable+label, a simple label scan will suffice
         selectVersionsByVersionableLastFirst = makeSelect(table, new String[] {
-                Model.VERSION_CREATED_KEY, ORDER_DESC },
-                Model.VERSION_VERSIONABLE_KEY);
+                model.VERSION_CREATED_KEY, ORDER_DESC },
+                model.VERSION_VERSIONABLE_KEY);
 
         /*
          * proxies
          */
-        table = database.getTable(Model.PROXY_TABLE_NAME);
+        table = database.getTable(model.PROXY_TABLE_NAME);
         Table hierTable = database.getTable(model.hierTableName);
         selectProxiesByVersionable = makeSelect(table,
-                Model.PROXY_VERSIONABLE_KEY);
-        table.addIndex(Model.PROXY_VERSIONABLE_KEY);
-        selectProxiesByTarget = makeSelect(table, Model.PROXY_TARGET_KEY);
-        table.addIndex(Model.PROXY_TARGET_KEY);
+                model.PROXY_VERSIONABLE_KEY);
+        table.addIndex(model.PROXY_VERSIONABLE_KEY);
+        selectProxiesByTarget = makeSelect(table, model.PROXY_TARGET_KEY);
+        table.addIndex(model.PROXY_TARGET_KEY);
         selectProxiesByVersionableAndParent = makeSelect(table,
-                new String[] { Model.PROXY_VERSIONABLE_KEY }, hierTable,
-                new String[] { Model.HIER_PARENT_KEY });
+                new String[] { model.PROXY_VERSIONABLE_KEY }, hierTable,
+                new String[] { model.HIER_PARENT_KEY });
 
         selectProxiesByTargetAndParent = makeSelect(table,
-                new String[] { Model.PROXY_TARGET_KEY }, hierTable,
-                new String[] { Model.HIER_PARENT_KEY });
+                new String[] { model.PROXY_TARGET_KEY }, hierTable,
+                new String[] { model.HIER_PARENT_KEY });
     }
 
     /**
@@ -437,9 +437,9 @@ public class SQLInfo {
      * includes the id of the hierarchy root node.
      */
     protected void initRepositorySQL() {
-        TableMaker maker = new TableMaker(Model.REPOINFO_TABLE_NAME);
+        TableMaker maker = new TableMaker(model.REPOINFO_TABLE_NAME);
         maker.newPrimaryKey(); // foreign key to main id
-        maker.newColumn(Model.REPOINFO_REPONAME_KEY, PropertyType.STRING,
+        maker.newColumn(model.REPOINFO_REPONAME_KEY, PropertyType.STRING,
                 Types.VARCHAR);
         maker.postProcessRepository();
     }
@@ -454,12 +454,12 @@ public class SQLInfo {
         } else {
             maker.newId(); // global primary key / generation
         }
-        maker.newMainKeyReference(Model.HIER_PARENT_KEY, true);
-        maker.newColumn(Model.HIER_CHILD_POS_KEY, PropertyType.LONG,
+        maker.newMainKeyReference(model.HIER_PARENT_KEY, true);
+        maker.newColumn(model.HIER_CHILD_POS_KEY, PropertyType.LONG,
                 Types.INTEGER);
-        maker.newColumn(Model.HIER_CHILD_NAME_KEY, PropertyType.STRING,
+        maker.newColumn(model.HIER_CHILD_NAME_KEY, PropertyType.STRING,
                 Types.VARCHAR); // text?
-        maker.newColumn(Model.HIER_CHILD_ISPROPERTY_KEY, PropertyType.BOOLEAN,
+        maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, PropertyType.BOOLEAN,
                 Types.BIT); // not null
         if (!model.separateMainTable) {
             maker.newFragmentFields();
@@ -470,8 +470,8 @@ public class SQLInfo {
             maker.postProcessIdGeneration();
         }
 
-        maker.table.addIndex(Model.HIER_PARENT_KEY);
-        maker.table.addIndex(Model.HIER_PARENT_KEY, Model.HIER_CHILD_NAME_KEY);
+        maker.table.addIndex(model.HIER_PARENT_KEY);
+        maker.table.addIndex(model.HIER_PARENT_KEY, model.HIER_CHILD_NAME_KEY);
         // don't index parent+name+isprop, a simple isprop scan will suffice
     }
 
@@ -486,8 +486,8 @@ public class SQLInfo {
             maker.newId(); // global primary key / generation
         } else {
             if (model.isCollectionFragment(tableName)) {
-                maker.newMainKeyReference(Model.MAIN_KEY, false);
-                maker.table.addIndex(Model.MAIN_KEY);
+                maker.newMainKeyReference(model.MAIN_KEY, false);
+                maker.table.addIndex(model.MAIN_KEY);
             } else {
                 maker.newPrimaryKey();
             }
@@ -536,18 +536,18 @@ public class SQLInfo {
         protected Column newMainKeyReference(String name, boolean nullable) {
             Column column = newMainKey(name);
             column.setReferences(database.getTable(model.mainTableName),
-                    Model.MAIN_KEY);
+                    model.MAIN_KEY);
             column.setNullable(nullable);
             return column;
         }
 
         protected void newPrimaryKey() {
-            Column column = newMainKeyReference(Model.MAIN_KEY, false);
+            Column column = newMainKeyReference(model.MAIN_KEY, false);
             column.setPrimary(true);
         }
 
         protected void newId() {
-            Column column = newMainKey(Model.MAIN_KEY);
+            Column column = newMainKey(model.MAIN_KEY);
             switch (model.idGenPolicy) {
             case APP_UUID:
                 break;
@@ -570,18 +570,18 @@ public class SQLInfo {
 
         protected void newPrimitiveField(String key, PropertyType type) {
             // TODO find a way to put these exceptions in model
-            if (tableName.equals(Model.VERSION_TABLE_NAME) &&
-                    key.equals(Model.VERSION_VERSIONABLE_KEY)) {
+            if (tableName.equals(model.VERSION_TABLE_NAME) &&
+                    key.equals(model.VERSION_VERSIONABLE_KEY)) {
                 newMainKeyReference(key, true);
                 return;
             }
             // TODO XXX also MAIN_BASE_VERSION_KEY is main key
-            if (tableName.equals(Model.PROXY_TABLE_NAME)) {
-                if (key.equals(Model.PROXY_TARGET_KEY)) {
+            if (tableName.equals(model.PROXY_TABLE_NAME)) {
+                if (key.equals(model.PROXY_TARGET_KEY)) {
                     newMainKeyReference(key, true);
                     return;
                 }
-                if (key.equals(Model.PROXY_VERSIONABLE_KEY)) {
+                if (key.equals(model.PROXY_VERSIONABLE_KEY)) {
                     newMainKey(key); // not a foreign key
                     return;
                 }
@@ -590,8 +590,8 @@ public class SQLInfo {
             switch (type) {
             case STRING:
                 // hack, make this more configurable
-                if (tableName.equals(Model.VERSION_TABLE_NAME) &&
-                        key.equals(Model.VERSION_LABEL_KEY)) {
+                if (tableName.equals(model.VERSION_TABLE_NAME) &&
+                        key.equals(model.VERSION_LABEL_KEY)) {
                     // these are columns that need to be searchable, as some
                     // databases (Derby) don't allow matches on CLOB columns
                     sqlType = Types.VARCHAR;
@@ -651,10 +651,10 @@ public class SQLInfo {
             for (Column column : table.getColumns()) {
                 String key = column.getKey();
                 String qname = column.getQuotedName();
-                if (key.equals(Model.MAIN_KEY)) {
+                if (key.equals(model.MAIN_KEY)) {
                     what = qname;
                     selectRootIdWhatColumn = column;
-                } else if (key.equals(Model.REPOINFO_REPONAME_KEY)) {
+                } else if (key.equals(model.REPOINFO_REPONAME_KEY)) {
                     where = qname + " = ?";
                 } else {
                     throw new AssertionError(column);
@@ -704,13 +704,13 @@ public class SQLInfo {
             postProcessCopyHier();
 
             selectChildrenByIsProperty = makeSelect(table,
-                    Model.HIER_PARENT_KEY, Model.HIER_CHILD_ISPROPERTY_KEY);
+                    model.HIER_PARENT_KEY, model.HIER_CHILD_ISPROPERTY_KEY);
         }
 
         protected void postProcessSelectById() {
             String[] orderBys = orderBy == null ? new String[0] : new String[] {
                     orderBy, ORDER_ASC };
-            SQLInfoSelect select = makeSelect(table, orderBys, Model.MAIN_KEY);
+            SQLInfoSelect select = makeSelect(table, orderBys, model.MAIN_KEY);
             selectFragmentById.put(tableName, select);
         }
 
@@ -722,8 +722,8 @@ public class SQLInfo {
             for (Column column : table.getColumns()) {
                 String key = column.getKey();
                 String qname = column.getQuotedName();
-                if (key.equals(Model.HIER_PARENT_KEY) ||
-                        key.equals(Model.HIER_CHILD_NAME_KEY)) {
+                if (key.equals(model.HIER_PARENT_KEY) ||
+                        key.equals(model.HIER_CHILD_NAME_KEY)) {
                     wheres.add(qname + " = ?");
                     whereColumns.add(column);
                 } else {
@@ -749,12 +749,12 @@ public class SQLInfo {
             for (Column column : table.getColumns()) {
                 String key = column.getKey();
                 String qname = column.getQuotedName();
-                if (key.equals(Model.HIER_PARENT_KEY) ||
-                        key.equals(Model.HIER_CHILD_NAME_KEY)) {
+                if (key.equals(model.HIER_PARENT_KEY) ||
+                        key.equals(model.HIER_CHILD_NAME_KEY)) {
                     wheresRegular.add(qname + " = ?");
                     wheresProperties.add(qname + " = ?");
                     whereColumns.add(column);
-                } else if (key.equals(Model.HIER_CHILD_ISPROPERTY_KEY)) {
+                } else if (key.equals(model.HIER_CHILD_ISPROPERTY_KEY)) {
                     wheresRegular.add(qname + " = " +
                             dialect.toBooleanValueString(false));
                     wheresProperties.add(qname + " = " +
@@ -784,23 +784,23 @@ public class SQLInfo {
             assert !model.separateMainTable; // otherwise join needed
             ArrayList<Column> whatColumns = new ArrayList<Column>(2);
             ArrayList<String> whats = new ArrayList<String>(2);
-            Column column = table.getColumn(Model.MAIN_KEY);
+            Column column = table.getColumn(model.MAIN_KEY);
             whatColumns.add(column);
             whats.add(column.getQuotedName());
-            column = table.getColumn(Model.MAIN_PRIMARY_TYPE_KEY);
+            column = table.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
             whatColumns.add(column);
             whats.add(column.getQuotedName());
             Select select = new Select(table);
             select.setWhat(StringUtils.join(whats, ", "));
             select.setFrom(table.getQuotedName());
-            String where = table.getColumn(Model.HIER_PARENT_KEY).getQuotedName() +
+            String where = table.getColumn(model.HIER_PARENT_KEY).getQuotedName() +
                     " = ?";
             select.setWhere(where);
             selectChildrenIdsAndTypesSql = select.getStatement();
             selectChildrenIdsAndTypesWhatColumns = whatColumns;
             // now only complex properties
             where += " AND " +
-                    table.getColumn(Model.HIER_CHILD_ISPROPERTY_KEY).getQuotedName() +
+                    table.getColumn(model.HIER_CHILD_ISPROPERTY_KEY).getQuotedName() +
                     " = " + dialect.toBooleanValueString(true);
             select.setWhere(where);
             selectComplexChildrenIdsAndTypesSql = select.getStatement();
@@ -846,7 +846,7 @@ public class SQLInfo {
             List<String> wheres = new LinkedList<String>();
             List<Column> whereColumns = new LinkedList<Column>();
             for (Column column : table.getColumns()) {
-                if (column.getKey().equals(Model.MAIN_KEY)) {
+                if (column.getKey().equals(model.MAIN_KEY)) {
                     wheres.add(column.getQuotedName() + " = ?");
                     whereColumns.add(column);
                 } else {
@@ -866,7 +866,7 @@ public class SQLInfo {
             Delete delete = new Delete(table);
             List<String> wheres = new LinkedList<String>();
             for (Column column : table.getColumns()) {
-                if (column.getKey().equals(Model.MAIN_KEY)) {
+                if (column.getKey().equals(model.MAIN_KEY)) {
                     wheres.add(column.getQuotedName() + " = ?");
                 }
             }
@@ -894,8 +894,8 @@ public class SQLInfo {
                 insert.addColumn(column);
                 String quotedName = column.getQuotedName();
                 String key = column.getKey();
-                if (key.equals(Model.MAIN_KEY) ||
-                        key.equals(Model.HIER_PARENT_KEY)) {
+                if (key.equals(model.MAIN_KEY) ||
+                        key.equals(model.HIER_PARENT_KEY)) {
                     // explicit id/parent value (id if not identity column)
                     selectWhats.add("?");
                     copyHierColumns.add(column);
@@ -903,15 +903,15 @@ public class SQLInfo {
                     copyHierColumnsExplicitName.add(column);
                     selectWhatsCreateVersion.add("?");
                     copyHierColumnsCreateVersion.add(column);
-                } else if (key.equals(Model.HIER_CHILD_NAME_KEY)) {
+                } else if (key.equals(model.HIER_CHILD_NAME_KEY)) {
                     selectWhats.add(quotedName);
                     // exlicit name value if requested
                     selectWhatsExplicitName.add("?");
                     copyHierColumnsExplicitName.add(column);
                     // version creation copies name
                     selectWhatsCreateVersion.add(quotedName);
-                } else if (key.equals(Model.MAIN_BASE_VERSION_KEY) ||
-                        key.equals(Model.MAIN_CHECKED_IN_KEY)) {
+                } else if (key.equals(model.MAIN_BASE_VERSION_KEY) ||
+                        key.equals(model.MAIN_CHECKED_IN_KEY)) {
                     selectWhats.add(quotedName);
                     selectWhatsExplicitName.add(quotedName);
                     // version creation sets those null
@@ -924,7 +924,7 @@ public class SQLInfo {
                     selectWhatsCreateVersion.add(quotedName);
                 }
             }
-            copyHierWhereColumn = table.getColumn(Model.MAIN_KEY);
+            copyHierWhereColumn = table.getColumn(model.MAIN_KEY);
             Select select = new Select(table);
             select.setFrom(table.getQuotedName());
             select.setWhere(copyHierWhereColumn.getQuotedName() + " = ?");
@@ -947,7 +947,7 @@ public class SQLInfo {
         protected void postProcessCopy() {
             Collection<Column> columns = table.getColumns();
             List<String> selectWhats = new ArrayList<String>(columns.size());
-            Column copyIdColumn = table.getColumn(Model.MAIN_KEY);
+            Column copyIdColumn = table.getColumn(model.MAIN_KEY);
             Insert insert = new Insert(table);
             for (Column column : columns) {
                 if (column.isIdentity()) {
@@ -982,7 +982,7 @@ public class SQLInfo {
         }
         Update update = new Update(table);
         update.setNewValues(StringUtils.join(values, ", "));
-        update.setWhere(table.getColumn(Model.MAIN_KEY).getQuotedName() +
+        update.setWhere(table.getColumn(model.MAIN_KEY).getQuotedName() +
                 " = ?");
         return update;
     }
@@ -1058,8 +1058,8 @@ public class SQLInfo {
         List<Column> whereColumns = new LinkedList<Column>();
         List<String> whats = new LinkedList<String>();
         List<String> wheres = new LinkedList<String>();
-        String join = table.getColumn(Model.MAIN_KEY).getFullQuotedName() +
-                " = " + joinTable.getColumn(Model.MAIN_KEY).getFullQuotedName();
+        String join = table.getColumn(model.MAIN_KEY).getFullQuotedName() +
+                " = " + joinTable.getColumn(model.MAIN_KEY).getFullQuotedName();
         wheres.add(join);
         for (Column column : table.getColumns()) {
             String qname = column.getFullQuotedName();
@@ -1263,5 +1263,4 @@ public class SQLInfo {
         }
         return spis;
     }
-
 }

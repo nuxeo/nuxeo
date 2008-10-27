@@ -163,7 +163,7 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         property.clearDirtyFlags();
     }
 
-    protected static final Map<String, String> systemPropNameMap;
+    protected static Map<String, String> systemPropNameMap;
 
     static {
         systemPropNameMap = new HashMap<String, String>();

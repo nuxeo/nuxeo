@@ -340,12 +340,13 @@ public class PersistenceContext {
         /*
          * Create a "version" row for our new version.
          */
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> map = new HashMap<String, Serializable>();
         map.put(model.VERSION_VERSIONABLE_KEY, id);
         map.put(model.VERSION_CREATED_KEY, new GregorianCalendar()); // now
         map.put(model.VERSION_LABEL_KEY, label);
         map.put(model.VERSION_DESCRIPTION_KEY, description);
-        SimpleFragment versionRow = createSimpleFragment(model.VERSION_TABLE_NAME, newId, map);
+        SimpleFragment versionRow = (SimpleFragment) createSimpleFragment(
+                model.VERSION_TABLE_NAME, newId, map);
         /*
          * Update the original node to reflect that it's checked in.
          */

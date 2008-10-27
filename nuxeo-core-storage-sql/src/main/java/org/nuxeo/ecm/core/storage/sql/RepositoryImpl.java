@@ -267,13 +267,14 @@ public class RepositoryImpl implements Repository {
                 // convert the String value to this type by calling valueOf
                 Method m;
                 try {
-                    m = sig[0].getMethod("valueOf", String.class);
+                    m = sig[0].getMethod("valueOf",
+                            new Class[] { String.class });
                 } catch (Exception e) {
                     log.error("Cannot get valueOf", e);
                     continue;
                 }
                 try {
-                    value = m.invoke(null, value);
+                    value = m.invoke(null, new Object[] { value });
                 } catch (Exception e) {
                     log.error("Cannot call " + typeName + ".valueOf(" + value +
                             ")", e);
@@ -314,7 +315,7 @@ public class RepositoryImpl implements Repository {
                 continue;
             }
             try {
-                method.invoke(xadatasource, value);
+                method.invoke(xadatasource, new Object[] { value });
             } catch (Exception e) {
                 log.error("Cannot call JavaBean method " + className + "." +
                         methodName + "(" + value + ")", e);

@@ -245,13 +245,13 @@ public class Node {
 
     public void setSingleProperty(String name, Serializable value)
             throws StorageException {
-        SimpleProperty property = getSimpleProperty(name);
+        SimpleProperty property = (SimpleProperty) getSimpleProperty(name);
         property.setValue(value);
     }
 
     public void setCollectionProperty(String name, Serializable[] value)
             throws StorageException {
-        CollectionProperty property = getCollectionProperty(name);
+        CollectionProperty property = (CollectionProperty) getCollectionProperty(name);
         property.setValue(value);
     }
 

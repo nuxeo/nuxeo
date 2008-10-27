@@ -194,7 +194,8 @@ class FileManager {
 
     protected static String toHexString(byte[] data) {
         StringBuilder buf = new StringBuilder(2 * data.length);
-        for (byte b : data) {
+        for (int i = 0; i < data.length; i++) {
+            byte b = data[i];
             buf.append(HEX_DIGITS[(0xF0 & b) >> 4]);
             buf.append(HEX_DIGITS[0x0F & b]);
         }
