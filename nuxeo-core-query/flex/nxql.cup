@@ -310,9 +310,11 @@ non terminal String			from_key;
 	 			| INTEGER:v
 	 			{: RESULT = new IntegerLiteral(v); :}
 	 			| SUB INTEGER:v
-	 			{: IntegerLiteral n = new IntegerLiteral(v); n.value = - n.value; RESULT = n; :}
+	 			{: RESULT = new IntegerLiteral('-'+v); :}
 	 			| DOUBLE:v
 	 			{: RESULT = new DoubleLiteral(v); :}
+                                | SUB DOUBLE:v
+                                {: RESULT = new DoubleLiteral('-'+v); :}
 	 			| DATE STRING:v
 	 			{: RESULT = new DateLiteral(v, true); :}
 	 			| TIMESTAMP STRING:v
