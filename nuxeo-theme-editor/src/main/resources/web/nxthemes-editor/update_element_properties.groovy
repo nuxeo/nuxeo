@@ -6,7 +6,7 @@ import org.nuxeo.theme.events.EventManager
 import org.nuxeo.theme.themes.ThemeManager
 
 id = Request.getParameter("id")
-propertyMap = Request.getParameterValues("property_map")
+propertyMap = Request.getParameter("property_map")
 
 Element element = ThemeManager.getElementById(id)
 Properties properties = new Properties()

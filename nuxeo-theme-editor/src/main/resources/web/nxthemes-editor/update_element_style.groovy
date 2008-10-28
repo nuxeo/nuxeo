@@ -1,3 +1,14 @@
+import org.nuxeo.theme.Manager
+import org.nuxeo.theme.themes.ThemeManager
+import org.nuxeo.theme.elements.Element
+import org.nuxeo.theme.editor.Events
+import org.nuxeo.theme.events.EventContext
+import org.nuxeo.theme.events.EventManager
+import org.nuxeo.theme.formats.FormatType
+import org.nuxeo.theme.formats.styles.Style
+
+id = Request.getParameter("id")
+propertyMap = Request.getParameter("property_map")
 
 Element element = ThemeManager.getElementById(id)
 Properties properties = new Properties()
@@ -17,4 +28,6 @@ if (style.getName() != null || "".equals(viewName)) {
 }
 
 style.setPropertiesFor(viewName, path, properties)
+
+EventManager eventManager = Manager.getEventManager()
 eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(element, null))

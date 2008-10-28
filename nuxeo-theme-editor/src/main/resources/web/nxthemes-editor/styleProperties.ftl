@@ -19,14 +19,12 @@
     <div class="nxthemesButtonSelector"
       style="float: right; margin-top: -40px">
       <span>Edit mode:</span>
-      <#if styleEditMode == 'css'>
-          <a href="javascript:void(0)"
-            onclick="NXThemesStyleEditor.setStyleEditMode('form', 'css')">form</a>
+      <#if style_edit_mode == 'css'>
+          <a href="javascript:void(0)" onclick="NXThemesStyleEditor.setStyleEditMode('form', 'css')">form</a>
           <a href="javascript:void(0)" class="selected">CSS</a>
       <#else>
           <a href="javascript:void(0)" class="selected">form</a>
-          <a href="javascript:void(0)"
-            onclick="NXThemesStyleEditor.setStyleEditMode('css', 'form')">CSS</a>
+          <a href="javascript:void(0)" onclick="NXThemesStyleEditor.setStyleEditMode('css', 'form')">CSS</a>
       </#if>
     </div>
 
@@ -36,7 +34,7 @@
           onsubmit="return false">
           <div>
             <textarea name="cssSource" rows="15" cols="72"
-              style="width: 100%; height: 250px; font-size: 11px;">${rendered_element_style_properties}</textarea>
+              style="width: 100%; height: 250px; font-size: 11px;">${rendered_style_properties}</textarea>
             <input type="hidden" name="id" value="${selected_element_uid}" />
             <input type="hidden" name="viewName" value="${selected_view_name}" />
           </div>
@@ -52,15 +50,15 @@
             <label>
               Selector
             </label>
-	    <select id="viewName" onchange="NXThemesStyleEditor.chooseStyleSelector(this)">
-	      <#list style_selectors as selector>
-	        <#if selector == selected_style_selector>
-	          <option value="${selector}" selected="selected" />${selector}
-	        <#else>
-	          <option value="${selector}" />${selector}
-		    </#if>
-          </#list>
-	    </select>
+	        <select id="viewName" onchange="NXThemesStyleEditor.chooseStyleSelector(this)">
+	          <#list style_selectors as selector>
+	            <#if selector == selected_style_selector>
+	              <option value="${selector}" selected="selected" />${selector}
+	            <#else>
+	              <option value="${selector}" />${selector}
+		        </#if>
+              </#list>
+	        </select>
             <input type="hidden" name="id" value="${selected_element_uid}" />
             <input type="hidden" name="path" value="${selected_style_selector}" />
             <input type="hidden" name="viewName" value="${selected_view_name}" />
