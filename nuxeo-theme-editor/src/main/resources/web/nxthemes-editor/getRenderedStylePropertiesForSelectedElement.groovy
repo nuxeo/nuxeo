@@ -2,6 +2,7 @@
 import org.nuxeo.theme.html.Utils
 import org.nuxeo.theme.formats.styles.Style
 
+
 Style style = Context.runScript("getStyleOfSelectedElement.groovy")
 Style currentStyleLayer = Context.runScript("getSelectedStyleLayer.groovy")
 
