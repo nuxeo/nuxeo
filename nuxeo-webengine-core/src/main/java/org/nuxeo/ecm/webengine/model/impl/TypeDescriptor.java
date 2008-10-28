@@ -42,7 +42,7 @@ public class TypeDescriptor implements Cloneable {
     public ClassProxy clazz;
 
     @XNode("@name")
-    public String name;
+    public String type;
 
     @XNode("@fragment")
     public String fragment;
@@ -56,9 +56,9 @@ public class TypeDescriptor implements Cloneable {
     public TypeDescriptor() {
     }
 
-    public TypeDescriptor(ClassProxy clazz, String name, String superType) {
+    public TypeDescriptor(ClassProxy clazz, String type, String superType) {
         this.clazz = clazz;
-        this.name = name;
+        this.type = type;
         this.superType = superType;
     }
 
@@ -72,7 +72,7 @@ public class TypeDescriptor implements Cloneable {
         }
         if (obj instanceof TypeDescriptor) {
             TypeDescriptor td = (TypeDescriptor) obj;
-            return name.equals(td.name) && Utils.streq(fragment, td.fragment);
+            return type.equals(td.type) && Utils.streq(fragment, td.fragment);
         }
         return false;
     }
@@ -87,7 +87,7 @@ public class TypeDescriptor implements Cloneable {
     }
 
     public String getId() {
-        return name;
+        return type;
     }
 
     public String getFragment() {
@@ -120,6 +120,6 @@ public class TypeDescriptor implements Cloneable {
 
     @Override
     public String toString() {
-        return name+ "extends "+superType+" ["+clazz.getClassName()+"]";
+        return type+ "extends "+superType+" ["+clazz.getClassName()+"]";
     }
 }

@@ -33,6 +33,7 @@ import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.Template;
+import org.nuxeo.ecm.webengine.model.View;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 
@@ -202,8 +203,8 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return ctx.newAdapter(this, type, args);
     }
 
-    public Template getView(String fileName) {
-        return new Template(this).fileName(fileName);
+    public Template getView(String viewId) {
+        return new View(this, viewId);
     }
 
     public Template getTemplate(String fileName) {

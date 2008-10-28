@@ -41,7 +41,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebAdapter(name="lock", targetType="Document")
+@WebAdapter(name="lock", type="LockService", targetType="Document")
 public class LockService extends DefaultAdapter {
 
     @GET

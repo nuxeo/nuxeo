@@ -33,7 +33,7 @@ public class Main extends DefaultModule {
 
   @GET
   public Object getIndex() {
-    return getView("index.ftl");
+    return getView("index");
   }
 
   @GET

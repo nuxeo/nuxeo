@@ -58,7 +58,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebAdapter(name="file", targetType="Document")
+@WebAdapter(name="file", type="FileService", targetType="Document")
 public class FileService extends DefaultAdapter {
 
     @GET

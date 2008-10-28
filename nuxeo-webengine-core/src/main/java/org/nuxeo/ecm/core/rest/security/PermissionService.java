@@ -41,7 +41,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Resource;
-import org.nuxeo.ecm.webengine.model.Template;
+import org.nuxeo.ecm.webengine.model.View;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.ecm.webengine.util.ACLUtils;
@@ -61,12 +61,12 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebAdapter(name="permissions", targetType="Document", targetFacets={"Folderish"})
+@WebAdapter(name="permissions", type="PermissionService", targetType="Document", targetFacets={"Folderish"})
 public class PermissionService extends DefaultAdapter {
 
     @GET
     public Object doGet() {
-        return new Template(getTarget()).name("permissions").resolve();
+        return new View(getTarget(), "permissions").resolve();
     }
 
     @POST

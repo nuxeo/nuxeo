@@ -127,7 +127,9 @@ public class Main extends DefaultModule {
   }
 
   /**
-   * Get the WebObject (i.e. a JAX-RS sub-resource) bound to "users"
+   * Get the WebObject (i.e. a JAX-RS sub-resource) bound to "users".
+   * Look into "users" directory for the UserManager WebObject. The location of WebObjects is not explictely specified by the programmer.
+   * The module directory will be automatically scanned for WebObject and WebAdapters.
    */
   @Path("users")
   public Object getUserManager() {

@@ -47,7 +47,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebAdapter(name="versions", targetType="Document", targetFacets={"Versionable"})
+@WebAdapter(name="versions", type="VersionService", targetType="Document", targetFacets={"Versionable"})
 public class VersionService extends DefaultAdapter {
 
     @GET 

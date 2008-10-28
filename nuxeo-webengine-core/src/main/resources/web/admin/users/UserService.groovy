@@ -22,13 +22,13 @@ public class UserService extends DefaultObject {
       def results = null;
       if (group != null) {
         results = userManager.searchGroups(query)
-        return getView("index.ftl").arg("groups", results);
+        return getView("index").arg("groups", results);
       } else {
         results = userManager.searchPrincipals(query)
-        return getView("index.ftl").arg("users", results);
+        return getView("index").arg("users", results);
       }
     }
-    return getView("index.ftl");
+    return getView("index");
   }
 
 

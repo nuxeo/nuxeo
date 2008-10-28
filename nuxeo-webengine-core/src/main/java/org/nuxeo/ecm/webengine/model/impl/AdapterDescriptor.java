@@ -38,8 +38,11 @@ public class AdapterDescriptor extends TypeDescriptor {
     @XNode("@class")
     void setClass(Class<?> clazz) { this.clazz = new StaticClassProxy(clazz); }
 
+    @XNode("@type")
+    void setType(String type) { this.type = type; }
+
     @XNode("@name")
-    void setName(String name) { this.name = name; }
+    public String name;
 
     @XNode("@fragment")
     void setFragment(String fragment) { this.fragment = fragment; }
@@ -57,12 +60,14 @@ public class AdapterDescriptor extends TypeDescriptor {
     public AdapterDescriptor() {
     }
 
-    public AdapterDescriptor(ClassProxy clazz, String name, String superType) {
-        super(clazz, name, superType);
+    public AdapterDescriptor(ClassProxy clazz, String name, String type, String superType) {
+        super(clazz, type, superType);
+        this.name = name;
     }
 
-    public AdapterDescriptor(ClassProxy clazz, String name, String superType, String targetType, String[] facets) {
-        super(clazz, name, superType);
+    public AdapterDescriptor(ClassProxy clazz, String name, String type, String superType, String targetType, String[] facets) {
+        super(clazz, type, superType);
+        this.name = name;
         if (facets != null && facets.length > 0) {
             this.facets = facets;
         }
@@ -88,14 +93,14 @@ public class AdapterDescriptor extends TypeDescriptor {
         }
         if (obj instanceof AdapterDescriptor) {
             AdapterDescriptor td = (AdapterDescriptor) obj;
-            return name.equals(td.name) && Utils.streq(fragment, td.fragment);
+            return type.equals(td.type) && Utils.streq(fragment, td.fragment);
         }
         return false;
     }
 
     @Override
     public String getId() {
-        return name;
+        return type;
     }
 
     @Override
@@ -109,7 +114,7 @@ public class AdapterDescriptor extends TypeDescriptor {
     }
 
     public static AdapterDescriptor fromAnnotation(ClassProxy clazz, WebAdapter type) {
-        return  new AdapterDescriptor(clazz, type.name(), type.superType(), type.targetType(), type.facets());
+        return  new AdapterDescriptor(clazz, type.name(), type.type(), type.superType(), type.targetType(), type.facets());
     }
 
 }

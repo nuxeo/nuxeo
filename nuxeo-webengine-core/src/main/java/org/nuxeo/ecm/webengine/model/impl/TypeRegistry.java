@@ -63,7 +63,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     protected void registerModuleType(ModuleImpl m) {
         TypeDescriptor td = new ModuleTypeDescriptor(
                 new StaticClassProxy(m.descriptor.binding.clazz),
-                m.descriptor.name,
+                ResourceType.MODULE_TYPE_NAME,
                 ResourceType.ROOT_TYPE_NAME);
         ModuleImpl sm = m.getSuperModule();
         if (sm != null) {
@@ -74,7 +74,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     public ModuleType getModuleType() {
-        return (ModuleType)types.get(module.descriptor.name);
+        return (ModuleType)types.get(ResourceType.MODULE_TYPE_NAME);
     }
 
     public ResourceType getRootType() {
@@ -211,19 +211,19 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         if (td.superType != null && !types.containsKey(td.superType)) {
             registerDocumentTypeIfNeeded(td.superType);
         }
-        addFragment(td.name, td, td.superType);
+        addFragment(td.type, td, td.superType);
     }
 
     public synchronized void registerAdapter(AdapterDescriptor td) {
-        addFragment(td.name, td, td.superType);
+        addFragment(td.type, td, td.superType);
     }
 
     public void unregisterType(TypeDescriptor td) {
-        removeFragment(td.name, td);
+        removeFragment(td.type, td);
     }
 
     public void unregisterAdapter(TypeDescriptor td) {
-        removeFragment(td.name, td);
+        removeFragment(td.type, td);
     }
 
     protected boolean registerDocumentTypeIfNeeded(String typeName) {
@@ -300,11 +300,11 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void installTypeContribution(String key, TypeDescriptor object) {
-        AbstractResourceType type = new ResourceTypeImpl(module, null, object.name, object.clazz);
+        AbstractResourceType type = new ResourceTypeImpl(module, null, object.type, object.clazz);
         if (object.isModule()) {
-            type = new ModuleTypeImpl(module, null, object.name, object.clazz);
+            type = new ModuleTypeImpl(module, null, object.type, object.clazz);
         } else {
-            type = new ResourceTypeImpl(module, null, object.name, object.clazz);
+            type = new ResourceTypeImpl(module, null, object.type, object.clazz);
         }
         if (object.superType != null) {
             type.superType = types.get(object.superType);
@@ -322,15 +322,16 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             }
         }
         // register the type
-        types.put(object.name, type);
+        types.put(object.type, type);
     }
 
     protected void installAdapterContribution(String key, AdapterDescriptor object) {
-        AdapterTypeImpl type = new AdapterTypeImpl(module, null, object.name, object.clazz);
+        AdapterTypeImpl type = new AdapterTypeImpl(module, null, object.type, object.name, object.clazz);
         if (object.superType != null) {
             type.superType = types.get(object.superType);
             assert type.superType != null; // must never be null since the object is resolved
         }
+        types.put(object.type, type);
         adapters.put(object.name, type);
         // install bindings
         if (object.targetType != null) {
@@ -396,8 +397,8 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     @Override
     protected void uninstallContribution(String key, TypeDescriptor value) {
         AbstractResourceType t = types.remove(key);
-        if (t == null) {
-            AdapterTypeImpl s = adapters.remove(key);
+        if (t instanceof AdapterTypeImpl) {
+            AdapterTypeImpl s = adapters.remove(((AdapterTypeImpl)t).name);
             if (s != null) {
                 removeAdapterBindings(key, (AdapterTypeImpl)t);
             }

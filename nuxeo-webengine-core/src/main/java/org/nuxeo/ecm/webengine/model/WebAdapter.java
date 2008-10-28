@@ -36,7 +36,8 @@ import org.nuxeo.runtime.annotations.loader.Indexable;
 @Indexable({"name", "superType"})
 public @interface WebAdapter {
 
-    String name(); // the type name
+    String name(); // the adapter name
+    String type(); // the type name
     String superType() default ResourceTypeImpl.ROOT_TYPE_NAME; // the super type name
     String guard() default ""; // a security guard if any
     String[] facets() default {};

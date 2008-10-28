@@ -21,7 +21,7 @@ public class User extends DefaultObject {
 
   @GET  
   public Object doGet() {
-    return getView("index.ftl").arg("user", principal);
+    return getView("index").arg("user", principal);
   }
 
   @POST

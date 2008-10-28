@@ -15,7 +15,7 @@ public class EngineService extends DefaultObject {
 
   @GET
   public Object getIndex() {
-    return getView("index.ftl");
+    return getView("index");
   }
 
   @GET

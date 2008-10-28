@@ -27,7 +27,7 @@ public class Main extends DefaultModule {
     
   @GET
   public Object doGet() {
-    return getView("index.ftl");
+    return getView("index");
   } 
   
   @Path("wikis")

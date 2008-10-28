@@ -22,6 +22,8 @@ package org.nuxeo.ecm.webengine.model;
 import java.io.IOException;
 import java.util.List;
 
+import javax.ws.rs.core.MediaType;
+
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
@@ -43,6 +45,10 @@ public interface Module {
 
     Module getSuperModule();
 
+    String getTemplateFileExt();
+    
+    String getMediaTypeId(MediaType mt);
+    
     /**
      * The root resource  type
      * @return

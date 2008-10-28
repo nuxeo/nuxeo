@@ -6,7 +6,7 @@ Hello <strong>${Context.principal.name}</strong>! This is the root of your web s
 </p>
 
 <div id="mainContentBox">
-Welcome to Nuxeo Webengine. Here are the available applications :
+Welcome to Nuxeo WebEngine. Here are the available applications :
 <ul>
   <li><a href="admin">Admin board</a></li>
   <li><a href="wikis">Wikis</a></li>

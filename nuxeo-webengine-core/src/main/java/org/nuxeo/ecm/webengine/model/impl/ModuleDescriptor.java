@@ -76,6 +76,12 @@ public class ModuleDescriptor implements Cloneable {
     @XNode("permission")
     public  GuardDescriptor guardDescriptor;
 
+    @XNode("templateFileExt")
+    public String templateFileExt = "ftl";
+
+    @XNodeList(value="media-types/media-type", type=MediaTypeRef[].class, componentType=MediaTypeRef.class, nullByDefault=true)
+    public MediaTypeRef[] mediatTypeRefs;
+    
     public ResourceBinding binding;
 
     private Guard guard;

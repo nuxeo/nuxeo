@@ -124,7 +124,7 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
     }
 
     private static void deployWebDir(Bundle bundle, File root) throws IOException {
-        if (!new File(root, "nuxeo").exists()) {
+        if (!new File(root, "admin").exists()) {
             root.mkdirs();
             Installer.copyResources(bundle, "web", root);
         }

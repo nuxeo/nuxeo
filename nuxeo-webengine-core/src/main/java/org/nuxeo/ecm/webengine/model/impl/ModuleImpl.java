@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.ws.rs.core.MediaType;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
@@ -151,6 +153,24 @@ public class ModuleImpl implements Module {
 
     public ModuleImpl getSuperModule() {
         return superModule;
+    }
+    
+    public String getTemplateFileExt() {
+        return descriptor.templateFileExt;    
+    }
+    
+    public String getMediaTypeId(MediaType mt) {
+        if (descriptor.mediatTypeRefs == null) {
+            return null;
+        }
+        MediaTypeRef[] refs = descriptor.mediatTypeRefs;
+        for (int i=0; i<refs.length; i++) {
+            String id = refs[i].match(mt);
+            if (id != null) {
+                return id;
+            }
+        }
+        return null;
     }
 
     public ScriptFile getFile(String path) {

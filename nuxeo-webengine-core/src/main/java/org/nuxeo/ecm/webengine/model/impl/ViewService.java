@@ -25,14 +25,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
-import org.nuxeo.ecm.webengine.model.Template;
+import org.nuxeo.ecm.webengine.model.View;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@WebAdapter(name="views")
+@WebAdapter(name="views", type="ViewService")
 @Produces({"text/html", "*/*"})
 public class ViewService extends DefaultAdapter {
 
@@ -46,7 +46,7 @@ public class ViewService extends DefaultAdapter {
     @GET @POST
     @Path("{view}")
     public Object dispatchView(@PathParam("view") String name) {
-        return new Template(prev).name(name).resolve();
+        return new View(prev, name).resolve();
     }
 
 }

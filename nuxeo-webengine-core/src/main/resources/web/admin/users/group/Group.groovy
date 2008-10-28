@@ -21,7 +21,7 @@ public class UserService extends DefaultObject {
 
   @GET  
   public Object doGet() {
-    return getView("index.ftl").arg("group", principal);
+    return getView("index").arg("group", principal);
   }
 
 
