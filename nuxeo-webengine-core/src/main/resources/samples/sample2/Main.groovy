@@ -31,13 +31,13 @@ public class Main extends DefaultModule {
 
   @GET
   public String doGet() {
-    return "Hello World!";
+    return "Sample2: Hello World!";
   }
 
   @GET
   @Path("{name}")
   public String doGet(@PathParam("name") String name) {
-    return "Hello "+name+"!";
+    return "Sample2: Hello "+name+"!";
   }
   
 }

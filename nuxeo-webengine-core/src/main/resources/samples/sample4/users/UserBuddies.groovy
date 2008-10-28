@@ -1,4 +1,4 @@
-package sample4;
+package sample4.users;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -10,9 +10,9 @@ import org.nuxeo.ecm.webengine.model.*;
  * You can see the @WebObject annotation that is defining a an WebObject of type "UserManager"
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@WebAdapter(name="buddies", targetType="User")
+@WebAdapter(name="buddies", type="UserBuddies", targetType="User")
 @Produces(["text/html", "*/*"])
-public class Main extends DefaultModule {
+public class UserBuddies extends DefaultAdapter {
 
   /**
    * Get the index view. The view file name is computed as follows: index[-media_type_id].ftl

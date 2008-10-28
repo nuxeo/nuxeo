@@ -21,7 +21,20 @@ public class UserManager extends DefaultObject {
    */
   @GET
   public Object doGet() {
-    return "This is the UserManager index"
+    return getView("index");
+  }
+
+  /**
+   * A hack to accept users as user?name=xxx query parameters
+   */
+  @GET
+  @Path("user")
+  public Response getUserByQueryString(@QueryParam("name") String name) {
+    if (name == null) {
+      return Response.status(404).build();
+    } else {
+      return redirect(getPath()+"/user/"+name);
+    }
   }
 
   /**

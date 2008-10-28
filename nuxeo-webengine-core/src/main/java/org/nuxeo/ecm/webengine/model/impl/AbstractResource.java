@@ -150,6 +150,12 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return prev;
     }
 
+    public String getName() {
+        int e = path.endsWith("/") ? path.length() - 1 : path.length();
+        int p = path.lastIndexOf('/', e-1);
+        return p > -1 ? path.substring(p+1) : path;
+    }
+    
     public String getPath() {
         return path;
     }
