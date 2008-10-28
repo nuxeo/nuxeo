@@ -38,6 +38,7 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -167,6 +168,7 @@ public class TreeActionsBean implements TreeActions {
     }
 
     @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED }, create = false)
+    @BypassInterceptors
     public void resetCurrentDocumentData() {
         currentDocumentPath = null;
     }
@@ -175,6 +177,7 @@ public class TreeActionsBean implements TreeActions {
             EventNames.DOMAIN_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED,
             EventNames.DOCUMENT_SECURITY_CHANGED,
             EventNames.DOCUMENT_CHILDREN_CHANGED }, create = false)
+    @BypassInterceptors
     public void reset() {
         tree = null;
         resetCurrentDocumentData();

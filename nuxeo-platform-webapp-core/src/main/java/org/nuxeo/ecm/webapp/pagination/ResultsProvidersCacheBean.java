@@ -38,6 +38,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.contexts.FacesLifecycle;
 import org.jboss.seam.faces.FacesMessages;
@@ -223,6 +224,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache, Seriali
     }
 
     @Observer(value={ EventNames.DOCUMENT_CHILDREN_CHANGED, EventNames.LOCATION_SELECTION_CHANGED }, create=false,inject=false)
+    @BypassInterceptors
     public void invalidateChildrenProvider()
     {
         invalidate(DocumentChildrenStdFarm.CHILDREN_BY_COREAPI);

@@ -41,6 +41,7 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
@@ -193,6 +194,7 @@ public class SearchResultsBean extends InputController implements SearchResults,
 
     // GR TODO use a provider invalidation event
     @Observer(value = { org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHILDREN_CHANGED }, create = false)
+    @BypassInterceptors
     public void refreshSelectModels() {
         Context context = Contexts.getEventContext();
         context.remove("searchSelectModel_simple");

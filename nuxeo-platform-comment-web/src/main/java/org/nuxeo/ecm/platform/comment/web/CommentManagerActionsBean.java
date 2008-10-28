@@ -41,6 +41,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -191,14 +192,10 @@ public class CommentManagerActionsBean extends InputController implements
         return null;
     }
 
-    /*
-     * @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
-     * EventNames.DOCUMENT_CHANGED, CommentEvents.COMMENT_ADDED,
-     * CommentEvents.COMMENT_REMOVED }, create = false, inject=false)
-     */
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
             EventNames.CONTENT_ROOT_SELECTION_CHANGED,
             EventNames.DOCUMENT_CHANGED }, create = false, inject = false)
+    @BypassInterceptors
     public void documentChanged() {
         cleanContextVariable();
     }

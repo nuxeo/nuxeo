@@ -44,6 +44,7 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -222,6 +223,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     }
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)
+    @BypassInterceptors
     public void resetVersioningOption() {
         availableVersioningOptionsMap = null;
         selectedOption = null;
@@ -252,6 +254,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
      * For documents about to be created there should be no versioning options.
      */
     @Observer(value = { EventNames.NEW_DOCUMENT_CREATED }, create = false, inject = false)
+    @BypassInterceptors
     public void resetRenderingStatus() {
         rendered = false;
     }

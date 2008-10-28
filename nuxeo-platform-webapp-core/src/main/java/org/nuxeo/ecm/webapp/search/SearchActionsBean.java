@@ -39,6 +39,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Context;
@@ -232,6 +233,7 @@ public class SearchActionsBean extends InputController implements
     }
 
     @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false)
+    @BypassInterceptors
     public void resetSearchField() {
         simpleSearchKeywords = "";
         searchTypeId = SearchType.KEYWORDS;
@@ -322,9 +324,9 @@ public class SearchActionsBean extends InputController implements
                                 resourcesAccessor.getMessages().get(
                                         "feedback.search.star"));
                         return ACTION_PAGE_SEARCH_NO_KEYWORDS;
-                        
+
                     }
-                }   
+                }
                 resultsProvidersCache.invalidate(QM_SIMPLE);
                 resultsProvider = resultsProvidersCache.get(QM_SIMPLE);
                 page = ACTION_PAGE_SEARCH_SIMPLE;
@@ -525,6 +527,7 @@ public class SearchActionsBean extends InputController implements
     }
 
     @Observer(value = { org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHILDREN_CHANGED }, create = false)
+
     public void refreshCache() {
         // XXX invalidate both because no way to know in which list it appended
         resultsProvidersCache.invalidate(QM_SIMPLE);

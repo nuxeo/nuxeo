@@ -40,6 +40,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
@@ -172,6 +173,7 @@ public class DashBoardActionsBean extends InputController implements
             EventNames.WORK_ITEMS_LIST_LOADED,
             EventNames.WORKFLOW_TASKS_COMPUTED,
             org.nuxeo.ecm.webapp.helpers.EventNames.DOMAIN_SELECTION_CHANGED }, create=false, inject=false)
+    @BypassInterceptors
     public void invalidateDocumentProcessItems() throws ClientException {
         documentProcessItems = null;
     }
@@ -185,6 +187,7 @@ public class DashBoardActionsBean extends InputController implements
             EventNames.WORK_ITEMS_LIST_LOADED,
             EventNames.WORKFLOW_TASKS_COMPUTED,
             org.nuxeo.ecm.webapp.helpers.EventNames.DOMAIN_SELECTION_CHANGED }, create=false, inject=false)
+    @BypassInterceptors
     public void invalidateDashboardItems() throws ClientException {
         dashboardItems = null;
     }

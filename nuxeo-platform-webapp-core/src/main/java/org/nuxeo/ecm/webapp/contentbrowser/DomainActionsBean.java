@@ -36,6 +36,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -108,6 +109,7 @@ public class DomainActionsBean extends InputController implements DomainActions,
 
     @Observer( value= { EventNames.LOCATION_SELECTION_CHANGED,
             EventNames.NEW_DOCUMENT_CREATED, EventNames.DOCUMENT_CHANGED }, create=false, inject=false)
+    @BypassInterceptors
     public void invalidateDomainList() {
         domains = null;
     }

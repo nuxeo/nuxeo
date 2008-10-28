@@ -29,6 +29,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
@@ -70,6 +71,7 @@ public class UserServicesContext implements Serializable {
     }
 
     @Observer(value={EventNames.LOCATION_SELECTION_CHANGED}, create=false, inject=false)
+    @BypassInterceptors
     public void invalidate() {
         repoLocation = null;
         serverLocationRetrieved = false;

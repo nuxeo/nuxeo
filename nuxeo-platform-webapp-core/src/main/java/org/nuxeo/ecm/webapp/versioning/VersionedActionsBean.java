@@ -38,6 +38,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -103,6 +104,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
             EventNames.DOCUMENT_CHANGED }, create = false, inject = false)
+    @BypassInterceptors
     public void resetVersions() {
         versionModelList = null;
     }

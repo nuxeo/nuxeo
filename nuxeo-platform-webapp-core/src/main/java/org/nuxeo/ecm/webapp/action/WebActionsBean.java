@@ -47,6 +47,7 @@ import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 
 /**
  * Web actions bean that manages actions.
@@ -156,6 +157,7 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
 
     @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED,
             EventNames.LOCATION_SELECTION_CHANGED }, create = false, inject = false)
+    @BypassInterceptors
     public void resetTabList() {
         currentActionContext = null;
         tabsActionsList = null;

@@ -44,6 +44,7 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Out;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
@@ -163,6 +164,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         parents = null;
     }
 
+    @BypassInterceptors
     public DocumentModel getCurrentDocument() {
         return currentDocument;
     }
@@ -245,6 +247,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         EventManager.raiseEventsOnDocumentSelected(currentDocument);
     }
 
+    @BypassInterceptors
     public DocumentModel getChangeableDocument() {
         return changeableDocument;
     }
@@ -277,6 +280,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
     }
 
     @Observer( value={ EventNames.DOCUMENT_CHILDREN_CHANGED }, create=false, inject=false)
+    @BypassInterceptors
     public void resetCurrentDocumentChildrenCache(DocumentModel targetDoc) {
         if (targetDoc != null && currentDocument != null
                 && !currentDocument.getRef().equals(targetDoc.getRef())) {
@@ -373,6 +377,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         return currentDocumentChildren;
     }
 
+    @BypassInterceptors
     public DocumentModel getCurrentDomain() {
         return currentDomain;
     }
@@ -534,6 +539,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         return documentManager;
     }
 
+    @BypassInterceptors
     public DocumentModel getCurrentWorkspace() {
         return currentWorkspace;
     }
