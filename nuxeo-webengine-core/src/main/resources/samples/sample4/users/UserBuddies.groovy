@@ -6,8 +6,10 @@ import org.nuxeo.ecm.webengine.model.impl.*;
 import org.nuxeo.ecm.webengine.model.*;
 
 /**
- * UserManager object.
- * You can see the @WebObject annotation that is defining a an WebObject of type "UserManager"
+ * UserBuddies object.
+ * You can see the @WebAdapter annotation that is defining a an WebAdapter of type "UserBuddies" that apply to any User WebObject.
+ * The name used to access this adapter is the adapter name prefixed with a '@' character: <code>@buddies</code>
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @WebAdapter(name="buddies", type="UserBuddies", targetType="User")
@@ -16,7 +18,7 @@ public class UserBuddies extends DefaultAdapter {
 
   /**
    * Get the index view. The view file name is computed as follows: index[-media_type_id].ftl
-   * First the skin/views/UserManager is searched for that file then the current directory.
+   * First the skin/views/UserBuddies is searched for that file then the current directory.
    * (The type of a module is the same as its name)
    */
   @GET
@@ -24,15 +26,6 @@ public class UserBuddies extends DefaultAdapter {
     return getView("index");
   }
 
-  /**
-   * 
-   */
-  @Path("user/{name}")
-  public Object getUser(@PathParam("name") String name) {
-    // TODO
-    return newObject("User", name);
-  }
-  
 
 }
 
