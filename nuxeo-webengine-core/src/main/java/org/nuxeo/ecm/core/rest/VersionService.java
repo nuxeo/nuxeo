@@ -52,7 +52,7 @@ public class VersionService extends DefaultAdapter {
 
     @GET 
     public Object doGet() {
-        return getTarget().getView("versions.ftl");
+        return getTarget().getView("versions");
     }
     
     @Path("last")

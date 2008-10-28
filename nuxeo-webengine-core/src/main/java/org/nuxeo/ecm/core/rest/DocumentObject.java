@@ -69,7 +69,7 @@ public class DocumentObject extends DefaultObject {
 
     @GET
     public Object doGet() {
-        return getView("index.ftl");
+        return getView("index");
     }
 
     // simulate a DELETE using GET
@@ -103,7 +103,7 @@ public class DocumentObject extends DefaultObject {
         }
         try {
             DocumentModelList docs = ctx.getCoreSession().query(query);
-            return getView("search.ftl").arg("query", query).arg("result", docs);
+            return getView("search").arg("query", query).arg("result", docs);
         } catch (ClientException e) {
             throw WebException.wrap(e);
         }

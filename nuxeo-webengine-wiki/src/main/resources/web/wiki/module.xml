@@ -9,6 +9,10 @@
     <link id="tab_edit" path="/@views/edit_page">
       <category>TABVIEW</category>
     </link>
+    <link id="tab_versions" path="/@views/versions_page">
+      <category>TABVIEW</category>
+      <facet>Versionable</facet>
+    </link>
     
     <link id="link_print" path="/@views/print">
       <category>TOOLBOX</category>
