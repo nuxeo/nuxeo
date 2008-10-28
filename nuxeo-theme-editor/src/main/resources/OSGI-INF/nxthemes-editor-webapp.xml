@@ -121,6 +121,12 @@
        <mapping pattern="/insert_fragment">
           <script>/insert_fragment.groovy</script>
        </mapping>
+       <mapping pattern="/copy_element">
+          <script>/copy_element.groovy</script>
+       </mapping>
+       <mapping pattern="/paste_element">
+          <script>/paste_element.groovy</script>
+       </mapping>
       </mappings>
     </webapp>
 
