@@ -46,7 +46,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.*;
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@WebModule(name="sample6", base="sample5")
+@WebModule( name="sample6", base="sample5")
 @Path("/sample6")
 @Produces(["text/html", "*/*"])
 public class Main extends sample5.Main {

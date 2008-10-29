@@ -8,11 +8,13 @@
     <div>Document name: ${Document.name}
     <div>Document type: ${Document.type}
 
+    <p>
     <#-- we redefine the nested block info by adding a link to another view named 'info' on the document -->
     <@block name="info">
     <#-- look how the builtin view service adapter is used to locate the 'info' view -->
-    <a href="${This}/@views/info">More Info</a>
+    <a href="${This.path}/@views/info">More Info</a>
     </@block>
+    </p>
 
   <#if Document.isFolder>
     <hr>

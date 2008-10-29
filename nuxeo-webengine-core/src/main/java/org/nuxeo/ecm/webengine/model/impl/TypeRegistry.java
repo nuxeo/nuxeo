@@ -63,7 +63,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     protected void registerModuleType(ModuleImpl m) {
         TypeDescriptor td = new ModuleTypeDescriptor(
                 new StaticClassProxy(m.descriptor.binding.clazz),
-                ResourceType.MODULE_TYPE_NAME,
+                m.descriptor.name,
                 ResourceType.ROOT_TYPE_NAME);
         ModuleImpl sm = m.getSuperModule();
         if (sm != null) {
@@ -74,7 +74,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     public ModuleType getModuleType() {
-        return (ModuleType)types.get(ResourceType.MODULE_TYPE_NAME);
+        return (ModuleType)types.get(module.descriptor.name);
     }
 
     public ResourceType getRootType() {

@@ -30,7 +30,6 @@ import org.nuxeo.ecm.webengine.security.Guard;
  */
 public interface ResourceType {
 
-    public static final String MODULE_TYPE_NAME = "ModuleRoot";
     public static final String ROOT_TYPE_NAME = "*";
 
     void flushCache();
