@@ -24,7 +24,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.*;
  * <i></i>
  * <br>
  * <b>Note</b> that only the <i>skin</i> directory is stacked over the one in the base module.
- * The others directories in the module are not inheritable.
+ * The other directories in the module are not inheritable.
  * <p>
  * Also, resource types defined by the base module will become visible in the derived one.
  * <p>
@@ -35,15 +35,15 @@ import org.nuxeo.ecm.webengine.model.exceptions.*;
  * Then to display the <i>info</i> view we can use the builtin views adapter this way:
  * <code>/my/doc/@views/info</code>.
  * <p>
- * Obviusly, you can redefine the WebObject corresponding to your document type and add a new method that will dispatch
- * the view <info>info</info> using a pretty path like <code>/my/doc/info</code>. But this involve changing code.
+ * Obviously, you can redefine the WebObject corresponding to your document type and add a new method that will dispatch
+ * the view <info>info</info> using a pretty path like <code>/my/doc/info</code>. But this involves changing code.
  * If you don't want this then the views adapter will be your friend.
  *
  * <p>
  * <p>
  * This example will extend the module defined in sample5 and will reuse and add more templates.
  * Look into template files to see how base module templates are reused.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @WebModule( name="sample6", base="sample5")

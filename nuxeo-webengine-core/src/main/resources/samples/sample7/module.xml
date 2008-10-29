@@ -3,8 +3,8 @@
 <module>
 
 <links>
-  <!-- link IDs are normally used as the keys of i18n messages - but in this example we are displaying them directly witput using i18n mechanism-->
-  <!-- link to a info view available for all Documents (i.e. WebObjects that are derived from Docuemnt type) -->
+  <!-- link IDs are normally used as the keys of i18n messages - but in this example we are displaying them directly without using i18n mechanism-->
+  <!-- link to a info view available for all Documents (i.e. WebObjects that are derived from Document type) -->
   <link id="Info" path="/@views/info">
     <category>TOOLS</category>
     <category>INFO</category>
@@ -25,6 +25,6 @@
     <category>TOOLS</category>
   </link>
 </links>
-  
+
 </module>
 

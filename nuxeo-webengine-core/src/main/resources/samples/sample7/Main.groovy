@@ -12,7 +12,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.*;
  *
  * Almost any template page will contain links to other pages in your application.
  * These links are usually absolute paths to other WebObjects or WebAdapters (including parameters if any).
- * Maintaining these links when application object changes is painfull when you are using modular applications
+ * Maintaining these links when application object changes is painful when you are using modular applications
  * (that may contribute new views or templates).
  * <p>
  * WebEngine is providing a flexible way to ease link management.
@@ -29,7 +29,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.*;
  * <p>
  * Apart conditions you can <i>group</i> links in categories.
  * Using categories and conditions you can quickly find in a template which are all enabled links that are part of a category.
- * This way, you can control which links are written in the template without neededing to do conditional code to check the context if links are enabled.
+ * This way, you can control which links are written in the template without needing to do conditional code to check the context if links are enabled.
  * <p>
  * Conditions and categories manage thus where and when your links are displayed in a page. Apart this you also want to have a target URL for each link.
  * <ul>
@@ -38,11 +38,11 @@ import org.nuxeo.ecm.webengine.model.exceptions.*;
  * The handler will be invoked each time the link code need to be written in the output stream so that it can programatically generate the link code.
  * <li> use the builtin link handler. The builtin link handler will append the <code>path</code> attribute you specified in link definition
  * to the current WebObject path on the request. This behavior is good enough for most of the use cases.
- * <li> 
+ * <li>
  * </ul>
  * <p>
  * <p>
- * This example will demonstrates how links works. Look into <code>module.xml</code> for link definitions
+ * This example will demonstrate how links work. Look into <code>module.xml</code> for link definitions
  * and then in <code>skin/views/Document/index.ftl</code> on how they are used in the template.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -64,7 +64,7 @@ public class Main extends DefaultModule {
   public Object getRepositoryView() {
     return DocumentFactory.newDocumentRoot(ctx, "/default-domain");
   }
-  
+
 
   /**
    * Example on how to handle errors

@@ -10,16 +10,16 @@ import org.nuxeo.ecm.webengine.model.exceptions.*;
 /**
  * Working with Nuxeo Documents.
  *
- * Nuxeo Documents are transaprently mapped to WebObjects so that you can easily access your documents
+ * Nuxeo Documents are transparently mapped to WebObjects so that you can easily access your documents
  * through WebEngine.
  * Nuxeo Documents are defined by a document type and can be structured in a hierarchy based on their type.
  * The ancestor of all document types is the "Document" type.
- * Document types are transaprently mapped to WebObject types, so that you don;t need to explicitely declare
- * WebObjects that expose documents. By default all docuemnts are exposed as DocumentObject instances (which is an WebObject).
+ * Document types are transparently mapped to WebObject types, so that you don't need to explicitely declare
+ * WebObjects that expose documents. By default all documents are exposed as DocumentObject instances (which is an WebObject).
  * If you need specific control over your document type you need then to explicitely declare a new WebObject using the same
  * type name as your document type. This way, the default binding to DocumentObject will be replaced with your own WebObject.
  * <p>
- * <b>Note</b> that is recommended to subclass the DocumentObject when redefining document WebObjects.
+ * <b>Note</b> that it is recommended to subclass the DocumentObject when redefining document WebObjects.
  * <p>
  * Also, Documents as WebObjects may have a set of facets. Documents facets are transparently exposed as WebObject facets.
  * When redefining the WebObject used to expose a Document you can add new facets using @WebObject annotation
@@ -34,7 +34,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.*;
  * The document WebObject created using the DocumentFactory helper class will represent the root of your repository view.
  * To go deeper in the repository tree you can use the <code>newDocument</code> methods on the DocumentObject instance.
  * <p>
- * <b>Remember</b> that When working with documents you may need to signup to be able to access the repository.
+ * <b>Remember</b> that when working with documents you may need to log in to be able to access the repository.
  * (it depends on whether or not the repository root is accessible to Anonymous user)
  * For this reason we provide in this example a way to login into the repository.
  * This also demonstrates <b>how to handle errors</b> in WebEngine. The mechanism is simple:
@@ -66,7 +66,7 @@ public class Main extends DefaultModule {
   public Object getRepositoryView() {
     return DocumentFactory.newDocumentRoot(ctx, "/default-domain");
   }
-  
+
 
   /**
    * Example on how to handle errors
