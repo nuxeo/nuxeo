@@ -36,8 +36,8 @@ public class DocumentFactory {
         return new DocumentRoot(ctx, path);
     }
 
-    public static DocumentObject newDocumentRoot(WebContext ctx, PathRef path) {
-        return new DocumentRoot(ctx, path);
+    public static DocumentObject newDocumentRoot(WebContext ctx, DocumentRef ref) {
+        return new DocumentRoot(ctx, ref);
     }
 
     public static DocumentObject newDocumentRoot(WebContext ctx, DocumentModel doc) {

@@ -1,21 +1,17 @@
-<#-- we reuse base.ftl from base module -->
 <@extends src="base.ftl">
 
 <@block name="content">
     <h2>${Document.title}</h2>
+
+<table width="100%" border="1">
+  <tr>
+    <td>
     <div>Document ID: ${Document.id}
     <div>Document path: ${Document.path}
     <div>Document name: ${Document.name}
     <div>Document type: ${Document.type}
-
-    <#-- we redefine the nested block info by adding a link to another view named 'info' on the document -->
-    <@block name="info">
-    <#-- look how the builtin view service adapter is used to locate the 'info' view -->
-    <a href="${This}/@views/info">More Info</a>
-    </@block>
-
-  <#if Document.isFolder>
     <hr>
+    <#if Document.isFolder>
     <div>
     Document children:
     <ul>
@@ -24,7 +20,26 @@
     </#list>
     </ul>
     </div>
-  </#if>
+    </#if>
+    </td>
+    <td>
+      <#-- display here the links available in the current context in category INFO -->
+      <ul>
+      <b>Tools</b>
+      <#list This.getLinks("INFO") as link>
+        <li> <a href="${link.getCode(This)}">${link.id}</a>
+      </#list>
+      </ul>
+      <#-- display here the links available in the current context in category TOOLS -->
+      <ul>
+      <b>Adminitsration</b>
+      <#list This.getLinks("TOOLS") as link>
+        <li> <a href="${link.getCode(This)}">${link.id}</a>
+      </#list>
+      </ul>
+    </td>
+  </tr>
+</table>
 
 </@block>
 </@extends>
