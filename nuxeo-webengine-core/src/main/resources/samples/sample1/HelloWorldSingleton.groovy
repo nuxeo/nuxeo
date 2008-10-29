@@ -4,19 +4,21 @@ import javax.ws.rs.*;
 
 /**
  * Singleton Hello World example.
+ * <p>
  * This demonstrates how to declare JAX-RS resources without using explicit @Path annotations.
- * The resource, and the path it is bound to is declared in module.xml file as following:
+ * The resource, and the path it is bound to, is declared in module.xml file as following:
  * <pre>
  *   <resources>
  *     <resource class="sample1.HelloWorldSingleton" path="/sample1/singleton" singleton="true"/>
  *   </resources>
  * </pre>
- * This is an Nuxeo extension on JAX-RS. The resource class is like a regular JAX-RS resource but without the @Path annotation.
+ * This is an Nuxeo extension to JAX-RS.
+ * The resource class is like a regular JAX-RS resource, but without the @Path annotation.
  * Note that this resource is a singleton - it will be instantiated only once at registration!
  * This means the resource instance may be concurrently accessed
  * within different threads.
  * <p>
- * You can also use per request instances by removing the signleton="true" attribute.
+ * You can also use per request instances by removing the singleton="true" attribute.
  * <p>
  * This class provides two examples on how to use @GET annotation method to handle GET requests.
  *

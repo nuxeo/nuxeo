@@ -37,6 +37,8 @@ import org.nuxeo.ecm.webengine.model.WebContext;
  */
 public class DocumentHelper {
 
+    private DocumentHelper() {
+    }
 
     public static DocumentModel createDocument(WebContext context, DocumentModel parent, String name) {
         try {
@@ -83,7 +85,6 @@ public class DocumentHelper {
             throw new WebException("Failed to create document: "+name, e);
         }
     }
-
 
     public static DocumentModel updateDocument(WebContext ctx, DocumentModel doc) {
         try {

@@ -244,7 +244,8 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
                     if (docObjectClass == null) {
                         docObjectClass = Class.forName("org.nuxeo.ecm.core.rest.DocumentObject");
                     }
-                    TypeDescriptor superWebType = new TypeDescriptor(new StaticClassProxy(docObjectClass), typeName, superSuperTypeName);
+                    TypeDescriptor superWebType = new TypeDescriptor(
+                            new StaticClassProxy(docObjectClass), typeName, superSuperTypeName);
                     registerType(superWebType);
                     return true;
                 } catch (ClassNotFoundException e) {
