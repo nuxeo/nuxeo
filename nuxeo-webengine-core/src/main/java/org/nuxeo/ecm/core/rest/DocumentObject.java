@@ -40,8 +40,6 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -51,7 +49,6 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 public class DocumentObject extends DefaultObject {
 
     protected DocumentModel doc;
-
 
     @Override
     public <A> A getAdapter(Class<A> adapter) {
@@ -64,7 +61,7 @@ public class DocumentObject extends DefaultObject {
     @Override
     public void initialize(Object... args) {
         assert args != null && args.length == 1;
-        doc = (DocumentModel)args[0];
+        doc = (DocumentModel) args[0];
     }
 
     @GET
@@ -86,14 +83,14 @@ public class DocumentObject extends DefaultObject {
         if (query == null) {
             String fullText = ctx.getRequest().getParameter("fullText");
             if (fullText == null) {
-                throw new IllegalParameterException("Expecting a query or a fullText parameter");    
+                throw new IllegalParameterException("Expecting a query or a fullText parameter");
             }
             String orderBy = ctx.getRequest().getParameter("orderBy");
             String orderClause = "";
             if (orderBy != null) {
                 orderClause =   " ORDER BY "+orderBy;
             }
-            String path = null; 
+            String path = null;
             if (doc.isFolder()) {
                 path = doc.getPathAsString();
             } else {

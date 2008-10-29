@@ -48,21 +48,21 @@ public class APIHelper implements RenderingExtensionFactory {
         return this;
     }
 
-    public final DocumentType[] getSortedDocumentTypes() {
+    public static final DocumentType[] getSortedDocumentTypes() {
         DocumentType[] doctypes = Framework.getLocalService(SchemaManager.class).getDocumentTypes();
         Arrays.sort(doctypes, DOCTYPE_COMPARATOR);
         return doctypes;
     }
 
-    public final Bundle[] getBundles() {
+    public static final Bundle[] getBundles() {
         return Framework.getRuntime().getContext().getBundle().getBundleContext().getBundles();
     }
 
-    public final Collection<RegistrationInfo> getComponents() {
+    public static final Collection<RegistrationInfo> getComponents() {
         return Framework.getRuntime().getComponentManager().getRegistrations();
     }
 
-    public final Collection<ComponentName> getPendingComponents() {
+    public static final Collection<ComponentName> getPendingComponents() {
         return Framework.getRuntime().getComponentManager().getPendingRegistrations().keySet();
     }
 

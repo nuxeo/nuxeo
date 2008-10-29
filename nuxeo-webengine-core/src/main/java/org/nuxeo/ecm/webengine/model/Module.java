@@ -46,30 +46,32 @@ public interface Module {
     Module getSuperModule();
 
     String getTemplateFileExt();
-    
+
     String getMediaTypeId(MediaType mt);
-    
+
     /**
-     * The root resource  type
+     * The root resource type.
+     *
      * @return
      */
     ModuleType getModuleType();
 
     /**
-     * Get the root binding of this module
+     * Gets the root binding of this module.
+     *
      * @return
      */
     ResourceBinding getModuleBinding();
 
-    public List<ResourceBinding> getResourceBindings();
-        
-    
+    List<ResourceBinding> getResourceBindings();
+
     /**
-     * Get a file using the configured directory stack. Each directory in the stack is asked for the file
-     * until a file is found. If no file is found return null.
+     * Gets a file using the configured directory stack. Each directory in the
+     * stack is asked for the file until a file is found. If no file is found,
+     * returns null.
      * <p>
-     * Note that the implementation may cache the results.
-     * To clear any cached data you may call the {@link #flushCache()} method
+     * Note that the implementation may cache the results. To clear any cached
+     * data, you should call the {@link #flushCache()} method.
      *
      * @param path the file path
      * @return null if no file found otherwise the file
@@ -148,7 +150,7 @@ public interface Module {
      * Gets the list of adapters that are enabled for the given context.
      * <p>
      * Enabled adapters are those adapters which can be accessed in the current
-     * security context
+     * security context.
      *
      * @param ctx the context resource
      * @return the list of adapter.s Cannot be null.

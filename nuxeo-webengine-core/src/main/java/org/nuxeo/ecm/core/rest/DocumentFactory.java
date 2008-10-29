@@ -31,7 +31,10 @@ import org.nuxeo.ecm.webengine.model.WebContext;
  */
 public class DocumentFactory {
 
-    
+    // Utility class.
+    private DocumentFactory() {
+    }
+
     public static DocumentObject newDocumentRoot(WebContext ctx, String path) {
         return new DocumentRoot(ctx, path);
     }
@@ -71,5 +74,4 @@ public class DocumentFactory {
         }
     }
 
-    
 }

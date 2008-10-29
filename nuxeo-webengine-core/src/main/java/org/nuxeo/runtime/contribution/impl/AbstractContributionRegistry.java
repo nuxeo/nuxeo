@@ -36,7 +36,7 @@ public abstract class AbstractContributionRegistry<K, T> implements
 
     protected final Map<Object, Contribution<K, T>> registry;
 
-    public AbstractContributionRegistry() {
+    protected AbstractContributionRegistry() {
         registry = new HashMap<Object, Contribution<K, T>>();
     }
 

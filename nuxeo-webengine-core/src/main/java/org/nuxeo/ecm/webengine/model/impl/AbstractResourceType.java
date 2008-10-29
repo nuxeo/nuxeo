@@ -50,7 +50,7 @@ public abstract class AbstractResourceType implements ResourceType {
     protected volatile Set<String> facets;
     protected volatile ConcurrentMap<String, ScriptFile> templateCache;
 
-    public AbstractResourceType(ModuleImpl module, AbstractResourceType superType, String name, ClassProxy clazz) {
+    protected AbstractResourceType(ModuleImpl module, AbstractResourceType superType, String name, ClassProxy clazz) {
         templateCache = new ConcurrentHashMap<String, ScriptFile>();
         this.module = module;
         this.superType = superType;

@@ -46,7 +46,7 @@ public interface Resource extends Adaptable {
     boolean isInstanceOf(String type);
 
     String getName();
-    
+
     String getPath();
 
     String getTrailingPath();
@@ -64,23 +64,28 @@ public interface Resource extends Adaptable {
     boolean isModule();
 
     boolean isRoot();
+
     void setRoot(boolean isRoot);
 
     Set<String> getFacets();
+
     boolean hasFacet(String facet);
 
     List<LinkDescriptor> getLinks(String category);
 
-
     Resource newObject(String type, Object ... args);
+
     AdapterResource newAdapter(String type, Object ... args);
+
     Template getView(String fileName);
+
     Template getTemplate(String fileName);
 
     Response redirect(String uri);
 
     /**
-     * Return the active Adapter on this object if any in the current request
+     * Returns the active Adapter on this object if any in the current request.
+     *
      * @return the service instance or null
      */
     AdapterResource getActiveAdapter();

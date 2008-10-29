@@ -72,7 +72,7 @@ public abstract class AbstractWebContext implements WebContext {
     protected FormData form;
     protected String basePath;
 
-    public AbstractWebContext(HttpServletRequest request) {
+    protected AbstractWebContext(HttpServletRequest request) {
         us = UserSession.getCurrentSession(request.getSession(true));
         engine = Framework.getLocalService(WebEngine.class);
         scriptExecutionStack = new LinkedList<File>();

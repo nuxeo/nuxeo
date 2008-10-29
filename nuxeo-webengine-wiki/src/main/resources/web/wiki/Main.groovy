@@ -31,7 +31,7 @@ public class Main extends DefaultModule {
   } 
   
   @Path("wikis")
-  public DocumentObject wikis(){
+  public DocumentObject wikis() {
     try{
       return new DocumentRoot(ctx, "/default-domain/workspaces/wikis/");
     }
@@ -44,21 +44,19 @@ public class Main extends DefaultModule {
   @Path("create/{segment}")
   public Response createPage(@PathParam("segment") String segment) {
     try{
-    def session = ctx.getCoreSession();
-    def newDoc = session.createDocumentModel("/default-domain/workspaces/", segment, "Workspace");
-    if (newDoc.getTitle().length() == 0) {
-      newDoc.getPart("dublincore").get("title").setValue(newDoc.getName());
-    }
-    newDoc = session.createDocument(newDoc);
-    session.save();
-    return redirect(path+"/"+segment);
-    }
-    catch(Exception e){
-        throw WebException.wrap(e);
+      def session = ctx.getCoreSession();
+      def newDoc = session.createDocumentModel("/default-domain/workspaces/", segment, "Workspace");
+      if (newDoc.getTitle().length() == 0) {
+        newDoc.getPart("dublincore").get("title").setValue(newDoc.getName());
+      }
+      newDoc = session.createDocument(newDoc);
+      session.save();
+      return redirect(path + "/" + segment);
+    } catch(Exception e) {
+      throw WebException.wrap(e);
     }
   }
-  
-  
+
   // handle errors
   public Object handleError(WebApplicationException e) {
     if (e instanceof WebSecurityException) {

@@ -28,7 +28,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.AdapterResource;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.ModuleResource;
@@ -56,18 +55,18 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
         setRoot(true);
         ctx.push(this);
         if (!type.getGuard().check(this)) {
-            throw new WebSecurityException("Failed to initialize object: "+getPath()+". Object is not accessible in the current context", getPath());
+            throw new WebSecurityException(
+                    "Failed to initialize object: "+getPath()+". Object is not accessible in the current context", getPath());
         }
     }
 
     @Path(value="@{segment}")
-    public AdapterResource disptachAdapter(@PathParam("segment") String adapterName) throws WebException {
+    public AdapterResource disptachAdapter(@PathParam("segment") String adapterName) {
         return ctx.newAdapter(this, adapterName);
     }
 
     @Override
-    public Resource initialize(WebContext ctx, ResourceType type,
-            Object... args) throws WebException {
+    public Resource initialize(WebContext ctx, ResourceType type, Object... args) {
         return this; // initialization is done in constructor
     }
 
@@ -76,10 +75,12 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
         return module;
     }
 
+    @Override
     public boolean isAdapter() {
         return false;
     }
 
+    @Override
     public String getName() {
         return module.getName();
     }

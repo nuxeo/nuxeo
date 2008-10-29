@@ -8,11 +8,11 @@ Hello <strong>${Context.principal.name}</strong>! This is the root of your web s
 <div id="mainContentBox">
 Hi There, here is the wikis currently available :
 <ul>
-      <#list wikis as wiki>
-        <li id="${wiki.ref}">
-          <a href="wikis/${wiki.name}">${wiki.title}</a>
-        </li>
-      </#list>
+  <#list wikis as wiki>
+    <li id="${wiki.ref}">
+      <a href="wikis/${wiki.name}">${wiki.title}</a>
+    </li>
+  </#list>
 </ul>
 
 </div>
