@@ -1,3 +1,4 @@
+<#-- we reuse base.ftl from base module -->
 <@extends src="base.ftl">
 
 <@block name="content">
@@ -7,26 +8,11 @@
     <div>Document name: ${Document.name}
     <div>Document type: ${Document.type}
 
-    <#-- Here we declare a nested block. Look in sample6 how nested block can be redeclared -->
+    <#-- we redefine the nested block info by adding a link to another view named 'info' on the document -->
     <@block name="info">
-
-    <div>
-    Document schemas:
-    <ul>
-    <#list Document.schemas as schema>
-      <li> ${schema}
-    </#list>
-    </ul>
-    </div>
-    <div>
-    Document facets:
-    <ul>
-    <#list Document.facets as facet>
-      <li> ${facet}
-    </#list>
-    </ul>
-    </div>
-  </@block>
+    <#-- look how the builtin view service adapter is used to locate the 'info' view -->
+    <a href="${This}/@views/info">More Info</a>
+    </@block>
 
   <#if Document.isFolder>
     <hr>

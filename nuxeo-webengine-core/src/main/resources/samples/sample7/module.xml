@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<module name="sample1">
+  <link id="tab_versions" path="/@views/versions_page">
+    <category>TABVIEW</category>
+    <facet>Versionable</facet>
+  </link>
+  <link id="tab_permissions" path="/@permissions">
+    <facet>Folderish</facet>
+    <guard>user=Administrator</guard>
+    <category>TABVIEW</category>
+  </link>
+</module>
+
