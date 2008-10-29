@@ -1,13 +1,14 @@
 import org.nuxeo.theme.Manager
 import org.nuxeo.theme.editor.Events
 import org.nuxeo.theme.events.EventContext
+import org.nuxeo.theme.events.EventManager
 
 themeName = Request.getParameter("theme_name")
 theme = Manager.getThemeManager().getThemeByName(themeName)
 
-res = true
+res = 1
 if (theme == null) {
-    res = false
+    res = 0
 }
 
 if (res) {

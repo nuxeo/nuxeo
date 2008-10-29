@@ -1,13 +1,14 @@
 import org.nuxeo.theme.themes.ThemeManager
+import org.nuxeo.theme.themes.ThemeIOException
 
 src = Request.getParameter("src")
 indent = Request.getParameter("indent")
 
-res = true
+res = 1
 try {
-    ThemeManager.saveTheme(src, indent)
+    ThemeManager.saveTheme(src, new Integer(indent))
 } catch (ThemeIOException e) {
-    res = false
+    res = 0
 }
 
 Response.writer.write(res)

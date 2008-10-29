@@ -1,3 +1,5 @@
+import net.sf.json.JSONObject
+
 import org.nuxeo.theme.Manager
 import org.nuxeo.theme.themes.ThemeManager
 import org.nuxeo.theme.elements.Element
@@ -6,9 +8,13 @@ import org.nuxeo.theme.events.EventContext
 import org.nuxeo.theme.events.EventManager
 import org.nuxeo.theme.formats.FormatType
 import org.nuxeo.theme.formats.styles.Style
+import org.nuxeo.theme.types.TypeFamily
+import org.nuxeo.theme.elements.ElementFormatter
 
 id = Request.getParameter("id")
-propertyMap = Request.getParameter("property_map")
+viewName = Request.getParameter("view_name")
+path = Request.getParameter("path")
+propertyMap = JSONObject.fromObject(Request.getParameter("property_map"))
 
 Element element = ThemeManager.getElementById(id)
 Properties properties = new Properties()
@@ -17,8 +23,8 @@ for (Object key : propertyMap.keySet()) {
 }
 
 FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "style")
-Style style = (Style) ElementFormatter.getFormatByType(element,styleType)
-Style currentStyleLayer = uiStates.getCurrentStyleLayer()
+Style style = (Style) ElementFormatter.getFormatByType(element, styleType)
+Style currentStyleLayer = Context.runScript("getSelectedStyleLayer.groovy")
 if (currentStyleLayer != null) {
     style = currentStyleLayer
 }

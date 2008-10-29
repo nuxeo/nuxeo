@@ -1,15 +1,16 @@
 import org.nuxeo.theme.Manager
 import org.nuxeo.theme.editor.Events
 import org.nuxeo.theme.events.EventContext
+import org.nuxeo.theme.events.EventManager
 import org.nuxeo.theme.themes.ThemeIOException
 
 src = Request.getParameter("src")
 
-res = true
+res = 1
 try {
     Manager.getThemeManager().loadTheme(src)
 } catch (ThemeIOException e) {
-    res = false
+    res = 0
 }
 
 if (res) {
