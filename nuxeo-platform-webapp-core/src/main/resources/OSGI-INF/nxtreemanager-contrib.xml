@@ -11,6 +11,7 @@
     <treeManagerPlugin>
       <showFiles>false</showFiles>
       <showSection>true</showSection>
+      <!-- <leafFilterClass>org.nuxeo.ecm.webapp.navigation.FolderLeafFilter</leafFilterClass> -->
     </treeManagerPlugin>
   </extension>
 </component>
