@@ -311,7 +311,7 @@
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-remoting</artifactId>
-        <version>${jboss.version}</version>
+        <version>2.2.2.SP1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -344,7 +344,7 @@
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-serialization</artifactId>
-        <version>1.0.0-RC1</version>
+        <version>1.0.3.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
