@@ -47,7 +47,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
  *
  */
 @WebObject(type="Document")
-@Produces({"text/html", "*/*"})
+@Produces({"text/html; charset=UTF-8", "*/*; charset=UTF-8"})
 public class DocumentObject extends DefaultObject {
 
     protected DocumentModel doc;
