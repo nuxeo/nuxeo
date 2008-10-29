@@ -150,10 +150,10 @@ public class DocumentObject extends DefaultObject {
 
     @Path(value="{path}")
     public Resource traverse(@PathParam("path") String path) {
-        return newObject(path);
+        return newDocument(path);
     }
 
-    public DocumentObject newObject(String path) {
+    public DocumentObject newDocument(String path) {
         try {
             PathRef pathRef = new PathRef(doc.getPath().append(path).toString());
             DocumentModel doc = ctx.getCoreSession().getDocument(pathRef);
@@ -163,7 +163,7 @@ public class DocumentObject extends DefaultObject {
         }
     }
 
-    public DocumentObject newObject(DocumentRef ref) {
+    public DocumentObject newDocument(DocumentRef ref) {
         try {
             DocumentModel doc = ctx.getCoreSession().getDocument(ref);
             return (DocumentObject) ctx.newObject(doc.getType(), doc);
@@ -172,7 +172,7 @@ public class DocumentObject extends DefaultObject {
         }
     }
 
-    public DocumentObject newObject(DocumentModel doc) {
+    public DocumentObject newDocument(DocumentModel doc) {
         try {
             return (DocumentObject) ctx.newObject(doc.getType(), doc);
         } catch (Exception e) {

@@ -61,6 +61,9 @@ public interface Module {
      */
     ResourceBinding getModuleBinding();
 
+    public List<ResourceBinding> getResourceBindings();
+        
+    
     /**
      * Get a file using the configured directory stack. Each directory in the stack is asked for the file
      * until a file is found. If no file is found return null.

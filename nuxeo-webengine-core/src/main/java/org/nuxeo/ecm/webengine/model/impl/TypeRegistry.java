@@ -377,7 +377,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void updateAdapterContribution(String key, AdapterDescriptor object) {
-        AbstractResourceType t = adapters.get(key);
+        AbstractResourceType t = types.get(key);
         if (t instanceof AdapterTypeImpl) { // update the type class
             AdapterTypeImpl adapter = (AdapterTypeImpl)t;
             String targetType = adapter.targetType;
@@ -390,7 +390,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
                 installAdapterBindings(adapter, adapter.targetType);
             }
         } else { // install the type - this should never happen since it is an update!
-            throw new IllegalStateException("Updating an adapter type which is not registered.");
+            throw new IllegalStateException("Updating an adapter type which is not registered: "+key);
         }
     }
 

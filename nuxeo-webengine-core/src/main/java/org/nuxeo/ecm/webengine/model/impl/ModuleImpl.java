@@ -131,6 +131,10 @@ public class ModuleImpl implements Module {
     public ResourceBinding getModuleBinding() {
         return descriptor.binding;
     }
+    
+    public List<ResourceBinding> getResourceBindings() {
+        return descriptor.resources;
+    }
 
     public static File getSkinDir(File moduleDir) {
         return new File(moduleDir, "skin");

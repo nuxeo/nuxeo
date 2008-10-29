@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -374,7 +375,15 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     public synchronized void reloadModules() {
         for (Module module : moduleReg.getModules()) {
             ResourceBinding binding = module.getModuleBinding();
-            registry.removeBinding(binding);
+            if (binding != null) { // a module may not have a resource binding ..
+                registry.removeBinding(binding);
+            }
+            List<ResourceBinding> bindings = module.getResourceBindings();
+            if (bindings != null) {
+                for (ResourceBinding b : bindings) {
+                    registry.removeBinding(b);    
+                }
+            }
         }
         loadModules();
     }

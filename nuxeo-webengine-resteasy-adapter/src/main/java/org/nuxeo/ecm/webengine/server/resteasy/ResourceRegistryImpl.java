@@ -135,6 +135,7 @@ public class ResourceRegistryImpl implements ResourceRegistry {
 
     protected void removeRegistration(String base, Class<?> clazz) throws Exception {
         Method m = registry.getClass().getDeclaredMethod("removeRegistration", String.class, Class.class);
+        m.setAccessible(true);
         m.invoke(registry, base, clazz);
     }
 

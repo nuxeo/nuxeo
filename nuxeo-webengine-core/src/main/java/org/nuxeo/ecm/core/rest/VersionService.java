@@ -62,7 +62,7 @@ public class VersionService extends DefaultAdapter {
             DocumentModel doc =  dobj.getDocument();            
             DocumentModel v  = dobj.getCoreSession().getLastDocumentVersion(doc.getRef());
             if (v != null) {
-                return dobj.newObject(v);
+                return dobj.newDocument(v);
             }
         } catch (Exception e) {
             throw WebException.wrap(e);
@@ -78,7 +78,7 @@ public class VersionService extends DefaultAdapter {
             List<VersionModel> versions = dobj.getCoreSession().getVersionsForDocument(doc.getRef());
             for (VersionModel v : versions) {
                 if (label.equals(v.getLabel())) {
-                    return dobj.newObject(dobj.getCoreSession().getDocumentWithVersion(doc.getRef(), v));
+                    return dobj.newDocument(dobj.getCoreSession().getDocumentWithVersion(doc.getRef(), v));
                 }
             }
         } catch (Exception e) {
