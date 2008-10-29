@@ -6,9 +6,9 @@ import org.nuxeo.theme.events.EventManager
 import org.nuxeo.theme.elements.Element
 
 destId = Request.getParameter("dest_id")
-ids = Request.getSession(true).getAttribute("nxthemes.editor.clipboard")
+id = Request.getSession(true).getAttribute("nxthemes.editor.clipboard")
 
-if (ids == null) {
+if (id == null) {
     return
 }
 
@@ -17,11 +17,9 @@ if (destElement.isLeaf()) {
     destElement = (Element) destElement.getParent()
 }
 
-for (String id : ids) {
-    Element element = ThemeManager.getElementById(id)
-    if (element != null) {
-        destElement.addChild(themeManager.duplicateElement(element, true))
-    }
+Element element = ThemeManager.getElementById(id)
+if (element != null) {
+    destElement.addChild(Manager.getThemeManager().duplicateElement(element, true))
 }
 
 EventManager eventManager = Manager.getEventManager()

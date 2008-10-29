@@ -1,3 +1,3 @@
 
-ids = Request.getParameter("ids")
-Request.getSession(true).setAttribute("nxthemes.editor.clipboard", ids)
+id = Request.getParameter("id")
+Request.getSession(true).setAttribute("nxthemes.editor.clipboard", id)
