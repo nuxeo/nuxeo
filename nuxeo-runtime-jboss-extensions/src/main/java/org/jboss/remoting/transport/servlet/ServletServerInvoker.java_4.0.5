@@ -22,49 +22,43 @@
 
 package org.jboss.remoting.transport.servlet;
 
-import org.jboss.remoting.InvocationResponse;
-import org.jboss.remoting.InvocationRequest;
-import org.jboss.remoting.InvokerLocator;
-import org.jboss.remoting.Version;
-import org.jboss.remoting.marshal.MarshalFactory;
-import org.jboss.remoting.marshal.Marshaller;
-import org.jboss.remoting.marshal.UnMarshaller;
-import org.jboss.remoting.marshal.VersionedMarshaller;
-import org.jboss.remoting.marshal.VersionedUnMarshaller;
-import org.jboss.remoting.marshal.http.HTTPMarshaller;
-import org.jboss.remoting.marshal.http.HTTPUnMarshaller;
-import org.jboss.remoting.transport.http.HTTPMetadataConstants;
-import org.jboss.remoting.transport.web.WebServerInvoker;
-import org.jboss.remoting.transport.web.WebUtil;
-import org.jboss.logging.Logger;
-
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.Iterator;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.jboss.remoting.InvocationRequest;
+import org.jboss.remoting.InvocationResponse;
+import org.jboss.remoting.InvokerLocator;
+import org.jboss.remoting.marshal.MarshalFactory;
+import org.jboss.remoting.marshal.Marshaller;
+import org.jboss.remoting.marshal.UnMarshaller;
+import org.jboss.remoting.marshal.http.HTTPMarshaller;
+import org.jboss.remoting.marshal.http.HTTPUnMarshaller;
+import org.jboss.remoting.transport.http.HTTPMetadataConstants;
+import org.jboss.remoting.transport.servlet.ServletServerInvokerMBean;
+import org.jboss.remoting.transport.web.WebServerInvoker;
+import org.jboss.remoting.transport.web.WebUtil;
 
 /**
  * The servlet based server invoker that receives the original http request
  * from the ServerInvokerServlet.
  *
- * PATCHED to send exceptions back to the client instead of sending an error message which is breaking EJB calls - see line 145
+ * PATCHED to send exceptions back to the client instead of sending an error message which is breaking EJB calls - see line 135
  * To apply that patch you should copy this class over the original one in jboss remoting 1.4.3-GA
  *
  * @author <a href="mailto:tom.elrod@jboss.com">Tom Elrod</a>
  */
 public class ServletServerInvoker extends WebServerInvoker implements ServletServerInvokerMBean
 {
-   private static final Logger log = Logger.getLogger(ServletServerInvoker.class);
-
    public ServletServerInvoker(InvokerLocator locator)
    {
       super(locator);
@@ -110,11 +104,7 @@ public class ServletServerInvoker extends WebServerInvoker implements ServletSer
 
          ServletInputStream inputStream = request.getInputStream();
          UnMarshaller unmarshaller = MarshalFactory.getUnMarshaller(HTTPUnMarshaller.DATATYPE, getSerializationType());
-         Object obj = null;
-         if (unmarshaller instanceof VersionedUnMarshaller)
-            obj = ((VersionedUnMarshaller)unmarshaller).read(inputStream, metadata, Version.getDefaultVersion());
-         else
-            obj = unmarshaller.read(inputStream, metadata);
+         Object obj = unmarshaller.read(inputStream, metadata);
          inputStream.close();
 
          InvocationRequest invocationRequest = null;
@@ -142,8 +132,8 @@ public class ServletServerInvoker extends WebServerInvoker implements ServletSer
          }
          catch(Throwable ex)
          {
-             log.debug("Error thrown calling invoke on server invoker.", ex);
-             invocationResponse = new InvocationResponse(invocationRequest.getSessionId(), ex, true, invocationRequest.getReturnPayload());
+            log.debug("Error thrown calling invoke on server invoker.", ex);
+            invocationResponse = new InvocationResponse(invocationRequest.getSessionId(), ex, true, invocationRequest.getReturnPayload());
          }
 
          if(invocationResponse != null)
@@ -153,10 +143,7 @@ public class ServletServerInvoker extends WebServerInvoker implements ServletSer
             response.setContentLength(iContentLength);
             ServletOutputStream outputStream = response.getOutputStream();
             Marshaller marshaller = MarshalFactory.getMarshaller(HTTPMarshaller.DATATYPE, getSerializationType());
-            if (marshaller instanceof VersionedMarshaller)
-               ((VersionedMarshaller) marshaller).write(invocationResponse, outputStream, Version.getDefaultVersion());
-            else
-               marshaller.write(invocationResponse, outputStream);
+            marshaller.write(invocationResponse, outputStream);
             outputStream.close();
          }
 
@@ -174,7 +161,7 @@ public class ServletServerInvoker extends WebServerInvoker implements ServletSer
                                 HttpServletResponse response)
          throws ServletException, IOException
    {
-      byte[] retval = new byte[0];
+      byte[] retval = null;
 
       Map metadata = new HashMap();
 
@@ -202,11 +189,7 @@ public class ServletServerInvoker extends WebServerInvoker implements ServletSer
 
          ServletInputStream inputStream = request.getInputStream();
          UnMarshaller unmarshaller = getUnMarshaller();
-         Object obj = null;
-         if (unmarshaller instanceof VersionedUnMarshaller)
-            obj = ((VersionedUnMarshaller)unmarshaller).read(new ByteArrayInputStream(requestByte), metadata, Version.getDefaultVersion());
-         else
-            obj = unmarshaller.read(new ByteArrayInputStream(requestByte), metadata);
+         Object obj = unmarshaller.read(new ByteArrayInputStream(requestByte), metadata);
          inputStream.close();
 
          boolean isError = false;
@@ -236,7 +219,7 @@ public class ServletServerInvoker extends WebServerInvoker implements ServletSer
          catch(Throwable ex)
          {
             log.debug("Error thrown calling invoke on server invoker.", ex);
-            invocationResponse = ex;
+            invocationResponse = new InvocationResponse(invocationRequest.getSessionId(), ex, true, invocationRequest.getReturnPayload());
             isError = true;
          }
 
@@ -246,7 +229,8 @@ public class ServletServerInvoker extends WebServerInvoker implements ServletSer
          {
             if(isError)
             {
-               response.sendError(500, "Error occurred processing invocation request. ");
+                status = 200;
+               //response.sendError(500, "Error occurred processing invocation request. ");
             }
             else
             {
@@ -258,23 +242,12 @@ public class ServletServerInvoker extends WebServerInvoker implements ServletSer
          Map responseMap = invocationRequest.getReturnPayload();
          if(responseMap != null)
          {
-            Integer handlerStatus = (Integer) responseMap.remove(HTTPMetadataConstants.RESPONSE_CODE);
+            Integer handlerStatus = (Integer) responseMap.get(HTTPMetadataConstants.RESPONSE_CODE);
             if(handlerStatus != null)
             {
                status = handlerStatus.intValue();
             }
-
-            // add any response map headers
-            Set entries = responseMap.entrySet();
-            Iterator itr = entries.iterator();
-            while(itr.hasNext())
-            {
-               Map.Entry entry = (Map.Entry)itr.next();
-               response.addHeader(entry.getKey().toString(), entry.getValue().toString());
-            }
          }
-
-
 
          // can't set message anymore as is depricated
          response.setStatus(status);
@@ -287,10 +260,7 @@ public class ServletServerInvoker extends WebServerInvoker implements ServletSer
             //response.setContentLength(iContentLength);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             Marshaller marshaller = getMarshaller();
-            if (marshaller instanceof VersionedMarshaller)
-               ((VersionedMarshaller) marshaller).write(invocationResponse, outputStream, Version.getDefaultVersion());
-            else
-               marshaller.write(invocationResponse, outputStream);
+            marshaller.write(invocationResponse, outputStream);
             retval = outputStream.toByteArray();
             response.setContentLength(retval.length);
          }
