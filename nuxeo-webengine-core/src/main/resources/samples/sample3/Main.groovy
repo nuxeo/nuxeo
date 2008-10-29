@@ -11,18 +11,18 @@ import org.nuxeo.ecm.webengine.model.*;
  * This demonstrates how to use template files to build client responses.
  * JAX-RS provides a flexible mechanism to send responses based on the mime type that the client expects.
  * To send a response to the client you simply return the Object you want as the response.
- * JAX-RS engines will usually known how to render common Java objects like String, InputStream, File etc.
+ * JAX-RS engines will usually know how to render common Java objects like String, InputStream, File etc.
  * If you need to output specific objects you need to register a custom MessageBodyWriter class.
  * In JAX-RS you are not able to modify the HttpServletResponse object directly from a resource method. (add headers, cookies etc)
  * Anything you may want to output must be returned from the resource method back to JAX-RS engine, and the engine will output it for you.
- * This is a very good thing, even if for some peoples this approach may seems strange.
+ * This is a very good thing, even if for some people this approach may seem strange.
  * You may ask yourself, ok cool, The response rendering is pretty well separated from the resource logic.
  * But how can I modify response headers?
- * In that case you must return a javax.ws.rs.Response that may be used to customize uyour reponse headers.
+ * In that case you must return a javax.ws.rs.Response that may be used to customize your response headers.
  * <p>
  * WebEngine is adding a new type of response objects: templates.
  * Templates are freemarker based templates that can be used to render your objects depending on the request context.
- * WebEngine is adding some cool extensions to freemarker templates that lets you build your web site in a modular fashion.
+ * WebEngine is adding some cool extensions to freemarker templates that let you build your web site in a modular fashion.
  * These extensions are called blocks. Blocks are dynamic template parts that can be extended or replaced using derived blocks.
  * Using blocks, you can write a base template that may define the site layout (using blocks containing empty or generic content) and then
  * write final <i>skins</i> for your layout by extending the base template and redefining blocks you are interested in.
@@ -30,7 +30,7 @@ import org.nuxeo.ecm.webengine.model.*;
  * <p>
  * Templates are stored in files under the <i>skin</i> directory. Templates are always resolved relative to the <i>skin</i> directory,
  * even if you are using absolute paths.
- * The following variables are accessible from a template when renderedat rendering time:
+ * The following variables are accessible from a template when rendered at rendering time:
  * <ul>
  * <li> <code>Context</code>  - the WebContext instance
  * <li> <code>Engine</code>   - the WebEngine instance
@@ -56,7 +56,7 @@ public class Main extends DefaultModule {
   }
 
   /**
-   * Return the template index.ftl from 'skins' directory
+   * Return the template index.ftl from 'skin' directory
    */
   @GET
   @Path("index1")

@@ -7,7 +7,7 @@ import org.nuxeo.ecm.webengine.model.*;
 
 /**
  * UserManager object.
- * You can see the @WebObject annotation that is defining a an WebObject of type "UserManager"
+ * You can see the @WebObject annotation that is defining a WebObject of type "UserManager"
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @WebObject(type="UserManager")
@@ -38,11 +38,11 @@ public class UserManager extends DefaultObject {
   }
 
   /**
-   * 
+   *
    */
   @Path("user/{name}")
   public Object getUser(@PathParam("name") String name) {
-    // create a new instance of an WebObject which type is "User" and push this object on the request chain
+    // create a new instance of a WebObject which type is "User" and push this object on the request chain
     // the User object is intialized with the user name
     return newObject("User", name);
   }

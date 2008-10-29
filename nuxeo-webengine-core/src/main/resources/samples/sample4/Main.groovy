@@ -8,9 +8,9 @@ import org.nuxeo.ecm.webengine.model.*;
 /**
  * WebEngine Object Model.
  *
- * This sample is explaining the basics of  Nuxeo WebEngine Object Model.
+ * This sample is explaining the basics of Nuxeo WebEngine Object Model.
  * <p>
- * 
+ *
  * <h3>Resource Model</h3>
  * Resources are objects used to serve the request. WebEngine Resources are always stateless (a new instance is created on each request).
  * There are three type of resources defined by WebEngine:
@@ -22,11 +22,11 @@ import org.nuxeo.ecm.webengine.model.*;
  *  This resource is usually wrapping some internal object to expose it as a JAX-RS resource.
  * <li> Web Adapter - this is a special kind of resource that can be used to adapt Web Objects
  * to application specific needs.
- * These adapters are usefull to add new functionalities on Web Objects without breaking application modularity
+ * These adapters are useful to add new functionalities on Web Objects without breaking application modularity
  * or adding new methods on resources.
- * This is helping in creating extensible applications, in keeping the code cleaner and in focusing better on the REST aproach
+ * This is helping in creating extensible applications, in keeping the code cleaner and in focusing better on the REST approach
  * of the application.
- * For example let say you defined a DocumentObject which will expose docuemnts as JAX-RS resources.
+ * For example let say you defined a DocumentObject which will expose documents as JAX-RS resources.
  * A JAX-RS resources will be able to respond to any HTTP method like GET, POST, PUT, DELETE.
  * So let say we use:
  * <ul>
@@ -55,7 +55,7 @@ import org.nuxeo.ecm.webengine.model.*;
  * By using types and super types you can create hierarchies or resources, so that derived resource types will inherit attributes of the super types.
  * <p>
  *
- * There is a builtin adapter that is managing Web Objects views. The adapter name is <code>@views</code>. 
+ * There is a builtin adapter that is managing Web Objects views. The adapter name is <code>@views</code>.
  * You will see in the view model an example on how to use it.
  * <p>
  *
@@ -63,16 +63,16 @@ import org.nuxeo.ecm.webengine.model.*;
  * <br>
  * Each of these resource objects will be <i>served</i> using the <i>sub-resource</i> mechanism of JAX-RS until the last resource is reached.
  * The last resource will usually return a view to be rendered or a redirection response.
- * The request resource chain is exposed by the WebContext object, so that one can programatically retrieve any resource fom the chain.
+ * The request resource chain is exposed by the WebContext object, so that one can programatically retrieve any resource from the chain.
  * In a given resource chain there will be always 2 special resources: a <b>root</b> and a <b>target</b> resource
  * The root resource is exposed in templates as the <code>Root</code> object and the target one as the contextual object: <code>This</code>.
  * <br>
- * <b>Note</b> that the root resource is not necesarly the first one, and the target resource is not necesarly the last one!
+ * <b>Note</b> that the root resource is not necessarily the first one, and the target resource is not necessarily the last one!
  * More, the root and the target resources are never WebAdapters. They can be only WebObjects or WebModule entry points
  * (that are aspecial kind of WebObjects).
  * <p>
  * The root resource is by default the module entry point (i.e. the first resource in the chain) but can be programatically set to point to any other
- * WebObject from the chain. 
+ * WebObject from the chain.
  * <p>
  * The target resource will be always the last WebObject resource from the chain.(so any trailing WebAdapters are excluded).
  * This means in the chain: <code>/my/space/doc/@lock</code>, the root will be by default <code>my</code> which is the module entry point,
@@ -80,12 +80,12 @@ import org.nuxeo.ecm.webengine.model.*;
  * never points to the adapter <code>@lock</code> - but to the last WebObject in the chain.
  * So when an adapter view is rendered the <code>$This</code> variable will point to the adapted WebObject and not to the adapter itself.
  * In that case you can retrieve the adapter using <code>${This.activeAdapter}</code>.
- * This is an important aspect in order to correctly understand the behavior of the <code>$This</code> object exposed in templates. 
+ * This is an important aspect in order to correctly understand the behavior of the <code>$This</code> object exposed in templates.
  * <p>
- * <p> 
+ * <p>
  * <h3>View Model</h3>
  * The view model is an extension of the template model we discussed in the previous sample.
- * The difference between views and templates is that views are allways attached to an Web Object. Also, the view file resolution is
+ * The difference between views and templates is that views are always attached to an Web Object. Also, the view file resolution is
  * a bit different from template files. Templates are all living in <code>skin</skin> directory. Views may live in two places:
  * <ul>
  * <li> in the skin/views/${type-name} folders where type-name is the resource type name the view is applying on.
@@ -93,17 +93,17 @@ import org.nuxeo.ecm.webengine.model.*;
  * <li> in the same folder (e.g. java package) as the resource class.
  * This location is useful to defining views inside JARs along with resource classes.
  * </ul>
- * Another specific property of views is that their are inherited from resource super types.
+ * Another specific property of views is that they are inherited from resource super types.
  * For example if you have a resource of type <code>Base</code> and a resource of type <code>Derived</code> then all views
- * defined on type <code>Base</code> applies on type <code>Dervied</code> too.
+ * defined on type <code>Base</code> apply on type <code>Dervied</code> too.
  * You may override these views by redefining them on type <code>Derived</code>
  * <br>
- * Another difference between templates and views is that views may varies depending on the response media-type.
+ * Another difference between templates and views is that views may vary depending on the response media-type.
  * A view is identified by an ID. The view file name is computed as follow:
  * <pre>
  * view_id + [-media_type_id] + ".ftl"
  * </pre>
- * The <code>media_type_id</code> is optional and will be empty for media-types not explicitelly bound to an ID in modules.xml configuration file.
+ * The <code>media_type_id</code> is optional and will be empty for media-types not explicitely bound to an ID in modules.xml configuration file.
  * For example, to dynamically change the view file corresponding to a view
  * having the ID <code>index</code> when the response media-type is <code>application/atom+xml</code>
  * you can define a mapping of this media type to the media_type_id <code>atom</code> and then you can use the file name
@@ -136,7 +136,7 @@ public class Main extends DefaultModule {
     // create a new instance of an WebObject which type is "UserManager" and push this object on the request chain
     return newObject("UserManager");
   }
-  
+
 
 }
 

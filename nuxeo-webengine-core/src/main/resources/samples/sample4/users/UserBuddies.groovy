@@ -7,7 +7,7 @@ import org.nuxeo.ecm.webengine.model.*;
 
 /**
  * UserBuddies object.
- * You can see the @WebAdapter annotation that is defining a an WebAdapter of type "UserBuddies" that apply to any User WebObject.
+ * You can see the @WebAdapter annotation that is defining a WebAdapter of type "UserBuddies" that applies to any User WebObject.
  * The name used to access this adapter is the adapter name prefixed with a '@' character: <code>@buddies</code>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

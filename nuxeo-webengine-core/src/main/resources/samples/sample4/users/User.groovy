@@ -7,7 +7,7 @@ import org.nuxeo.ecm.webengine.model.*;
 
 /**
  * User object.
- * You can see the @WebObject annotation that is defining a an WebObject of type "User"
+ * You can see the @WebObject annotation that is defining a WebObject of type "User"
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @WebObject(type="User")
@@ -31,7 +31,7 @@ public class User extends DefaultObject {
   public Object doRemove(@PathParam("name") String name) {
     //TODO ... remove user here ...
     // redirect to the UserManager (the previous object in the request chain)
-    return redirect(getPrevious().getPath()); 
+    return redirect(getPrevious().getPath());
   }
 
   /**
@@ -41,7 +41,7 @@ public class User extends DefaultObject {
   public Object doPut(@PathParam("name") String name) {
     //TODO ... update user here ...
     // redirect to myself
-    return redirect(getPath()); 
+    return redirect(getPath());
   }
 
 }
