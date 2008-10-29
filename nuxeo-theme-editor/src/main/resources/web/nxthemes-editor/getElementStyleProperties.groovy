@@ -38,7 +38,7 @@ while (propertyNames.hasMoreElements()) {
     value = properties == null ? "" : properties.getProperty(name, "")
     type = cssProperties.getProperty(name)
 
-    if (!selectedCategory.equals("")) {
+    if (!selectedCategory.equals("*")) {
         Matcher categoryMatcher = cssCategoryPattern.matcher(type)
         if (!categoryMatcher.find()) {
             continue

@@ -10,7 +10,7 @@ Pattern cssCategoryPattern = Pattern.compile("<(.*?)>")
 Map<String, StyleCategory> categories = new LinkedHashMap<String, StyleCategory>()
 Enumeration<?> elements = Utils.getCssProperties().elements()
 
-categories.put("", new StyleCategory("", "all", selectedStyleCategory.equals("")))
+categories.put("", new StyleCategory("*", "all", selectedStyleCategory.equals("*")))
         
 while (elements.hasMoreElements()) {
     element = (String) elements.nextElement()

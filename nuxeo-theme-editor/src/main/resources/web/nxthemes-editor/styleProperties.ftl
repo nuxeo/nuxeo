@@ -8,7 +8,6 @@
 <#assign style_categories = script("getStyleCategories.groovy") />
 <#assign element_style_properties = script("getElementStyleProperties.groovy") />
 
-
 <div>
 
   <fieldset class="nxthemesEditor">
