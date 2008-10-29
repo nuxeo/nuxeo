@@ -102,7 +102,7 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
     }
 
     public boolean arePoliciesRestrictingPermission(String permission) {
-        for (SecurityPolicy policy : policies) {
+        for (SecurityPolicy policy : getPolicies()) {
             if (policy.isRestrictingPermission(permission)) {
                 return true;
             }
@@ -111,7 +111,7 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
     }
 
     public boolean arePoliciesExpressibleInQuery() {
-        for (SecurityPolicy policy : policies) {
+        for (SecurityPolicy policy : getPolicies()) {
             if (!policy.isExpressibleInQuery()) {
                 return false;
             }
@@ -121,7 +121,7 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
 
     public Collection<SQLQuery.Transformer> getPoliciesQueryTransformers() {
         List<SQLQuery.Transformer> transformers = new LinkedList<SQLQuery.Transformer>();
-        for (SecurityPolicy policy : policies) {
+        for (SecurityPolicy policy : getPolicies()) {
             if (policy.isExpressibleInQuery()) {
                 transformers.add(policy.getQueryTransformer());
             }
