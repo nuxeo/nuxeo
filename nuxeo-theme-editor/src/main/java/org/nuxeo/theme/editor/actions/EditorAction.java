@@ -32,6 +32,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.editor.Events;
 import org.nuxeo.theme.editor.managers.UiManagerLocal;
 import org.nuxeo.theme.editor.states.UiStatesLocal;
 import org.nuxeo.theme.elements.CellElement;
@@ -73,10 +74,6 @@ public class EditorAction implements EditorActionLocal {
     private static final EventManager eventManager = Manager.getEventManager();
 
     private static final ThemeManager themeManager = Manager.getThemeManager();
-
-    private static final String THEME_MODIFIED_EVENT = "theme modified";
-
-    private static final String STYLES_MODIFIED_EVENT = "styles modified";
 
     @In(value = "nxthemesUiStates", create = true)
     public UiStatesLocal uiStates;
@@ -155,18 +152,18 @@ public class EditorAction implements EditorActionLocal {
 
     public String moveElement(final String srcId, final String destId,
             final Integer order) {
-        final Element srcElement = getElementById(srcId);
-        final Element destElement = getElementById(destId);
+        final Element srcElement = ThemeManager.getElementById(srcId);
+        final Element destElement = ThemeManager.getElementById(destId);
         // move the element
         srcElement.moveTo(destElement, order);
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(srcElement,
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(srcElement,
                 destElement));
         log.debug("Moved element: " + srcId + " to: " + destId);
         return "";
     }
 
     public String selectElement(final String id) {
-        final Element element = getElementById(id);
+        final Element element = ThemeManager.getElementById(id);
         if (element != null) {
             uiStates.setSelectedElement(element);
             uiStates.setCurrentStyleSelector(null);
@@ -191,34 +188,34 @@ public class EditorAction implements EditorActionLocal {
         for (String id : ids) {
             addElementToClipboard(id);
         }
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(null, null));
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null, null));
         log.debug("Copied the elements: " + ids + " to the clipboard.");
         return null;
     }
 
     public String duplicateElement(final String id) {
-        final Element element = getElementById(id);
+        final Element element = ThemeManager.getElementById(id);
         final Element duplicate = themeManager.duplicateElement(element, true);
 
         // insert the duplicated element
         element.getParent().addChild(duplicate);
         duplicate.moveTo(element.getParent(), element.getOrder() + 1);
-        eventManager.notify(STYLES_MODIFIED_EVENT, new EventContext(null, null));
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(null,
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(null, null));
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null,
                 element));
         log.debug("Duplicated the element: " + element);
         return duplicate.getUid().toString();
     }
 
     public List<String> pasteElements(final String destId) {
-        Element destElement = getElementById(destId);
+        Element destElement = ThemeManager.getElementById(destId);
         if (destElement.isLeaf()) {
             destElement = (Element) destElement.getParent();
         }
         // Paste elements
         final List<String> ids = uiStates.getClipboardElements();
         for (String id : ids) {
-            final Element element = getElementById(id);
+            final Element element = ThemeManager.getElementById(id);
             if (element == null) {
                 log.debug("Element to paste not found: " + id);
             } else {
@@ -226,15 +223,15 @@ public class EditorAction implements EditorActionLocal {
                         true));
             }
         }
-        eventManager.notify(STYLES_MODIFIED_EVENT, new EventContext(null, null));
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(null,
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(null, null));
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null,
                 destElement));
         log.debug("Pasted the elements: " + ids + " from the clipboard.");
         return null;
     }
 
     public String deleteElement(final String id) {
-        final Element element = getElementById(id);
+        final Element element = ThemeManager.getElementById(id);
         final Element parent = (Element) element.getParent();
 
         if (element instanceof ThemeElement || element instanceof PageElement) {
@@ -276,7 +273,7 @@ public class EditorAction implements EditorActionLocal {
             themeManager.destroyElement(element);
         }
 
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(null, null));
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null, null));
         log.debug("Deleted element: " + id);
         return id;
     }
@@ -286,7 +283,7 @@ public class EditorAction implements EditorActionLocal {
         if (destId == null) {
             return "";
         }
-        final Element destElement = getElementById(destId);
+        final Element destElement = ThemeManager.getElementById(destId);
 
         // create the new fragment
         final String fragmentTypeName = typeName.split("/")[0];
@@ -302,13 +299,13 @@ public class EditorAction implements EditorActionLocal {
         // insert the fragment
         destElement.addChild(fragment);
 
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(fragment,
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(fragment,
                 destElement));
         return "";
     }
 
     public String expireThemes() {
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(null, null));
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null, null));
         return "";
     }
 
@@ -322,7 +319,7 @@ public class EditorAction implements EditorActionLocal {
     }
 
     public void updateElementWidget(final String id, final String viewName) {
-        final Element element = getElementById(id);
+        final Element element = ThemeManager.getElementById(id);
         final FormatType widgetType = (FormatType) Manager.getTypeRegistry().lookup(
                 TypeFamily.FORMAT, "widget");
         Format widget = ElementFormatter.getFormatByType(element, widgetType);
@@ -332,21 +329,21 @@ public class EditorAction implements EditorActionLocal {
         }
         widget.setName(viewName);
         ElementFormatter.setFormat(element, widget);
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(element,
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element,
                 null));
     }
 
     public void updateElementDescription(final String id,
             final String description) {
-        final Element element = getElementById(id);
+        final Element element = ThemeManager.getElementById(id);
         element.setDescription(description);
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(element,
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element,
                 null));
     }
 
     public void updateElementStyle(final String id, String viewName,
             final String path, final Map<Object, Object> propertyMap) {
-        final Element element = getElementById(id);
+        final Element element = ThemeManager.getElementById(id);
         final Properties properties = new Properties();
         for (Object key : propertyMap.keySet()) {
             properties.put(key, propertyMap.get(key));
@@ -365,13 +362,13 @@ public class EditorAction implements EditorActionLocal {
             viewName = "*";
         }
         style.setPropertiesFor(viewName, path, properties);
-        eventManager.notify(STYLES_MODIFIED_EVENT, new EventContext(element,
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(element,
                 null));
     }
 
     public void makeElementUseNamedStyle(final String id,
             final String inheritedName, final String currentThemeName) {
-        final Element element = getElementById(id);
+        final Element element = ThemeManager.getElementById(id);
         final FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(
                 TypeFamily.FORMAT, "style");
         Style style = (Style) ElementFormatter.getFormatByType(element,
@@ -390,9 +387,9 @@ public class EditorAction implements EditorActionLocal {
                 themeManager.makeFormatInherit(style, inheritedStyle);
             }
         }
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(element,
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element,
                 null));
-        eventManager.notify(STYLES_MODIFIED_EVENT, new EventContext(element,
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(element,
                 null));
     }
 
@@ -418,7 +415,7 @@ public class EditorAction implements EditorActionLocal {
 
     public void updateElementStyleCss(final String id, String viewName,
             String cssSource) {
-        final Element element = getElementById(id);
+        final Element element = ThemeManager.getElementById(id);
 
         final FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(
                 TypeFamily.FORMAT, "style");
@@ -434,13 +431,13 @@ public class EditorAction implements EditorActionLocal {
         }
 
         Utils.loadCss(style, cssSource, viewName);
-        eventManager.notify(STYLES_MODIFIED_EVENT, new EventContext(element,
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(element,
                 null));
     }
 
     public void setElementVisibility(final String id,
             final List<String> perspectives, final boolean alwaysVisible) {
-        final Element element = getElementById(id);
+        final Element element = ThemeManager.getElementById(id);
         final PerspectiveManager perspectiveManager = Manager.getPerspectiveManager();
 
         if (alwaysVisible) {
@@ -454,13 +451,13 @@ public class EditorAction implements EditorActionLocal {
                         perspectives);
             }
         }
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(element,
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element,
                 null));
     }
 
     public void updateElementProperties(final String id,
             final Map<Object, Object> propertyMap) {
-        final Element element = getElementById(id);
+        final Element element = ThemeManager.getElementById(id);
         final Properties properties = new Properties();
         for (Object key : propertyMap.keySet()) {
             properties.put(key, propertyMap.get(key));
@@ -471,7 +468,7 @@ public class EditorAction implements EditorActionLocal {
             log.warn("Could not update properties of element: " + id);
             return;
         }
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(element,
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element,
                 null));
     }
 
@@ -488,20 +485,20 @@ public class EditorAction implements EditorActionLocal {
             for (Object key : propertyMap.keySet()) {
                 layout.setProperty((String) key, (String) propertyMap.get(key));
             }
-            eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(element,
+            eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element,
                     null));
         }
     }
 
     public void setSize(final String id, final String width) {
-        final Format layout = getFormatById(id);
+        final Format layout = ThemeManager.getFormatById(id);
         layout.setProperty("width", width);
-        eventManager.notify(THEME_MODIFIED_EVENT,
+        eventManager.notify(Events.THEME_MODIFIED_EVENT,
                 new EventContext(layout, null));
     }
 
     public void splitElement(final String id) {
-        final Element element = getElementById(id);
+        final Element element = ThemeManager.getElementById(id);
         if (!element.getElementType().getTypeName().equals("cell")) {
             return;
         }
@@ -532,12 +529,12 @@ public class EditorAction implements EditorActionLocal {
         ElementFormatter.setFormat(newCell, cellLayout);
         ElementFormatter.setFormat(newCell, cellStyle);
         newCell.insertAfter(element);
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(element,
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element,
                 null));
     }
 
     public void insertSectionAfter(final String id) {
-        final Element element = getElementById(id);
+        final Element element = ThemeManager.getElementById(id);
 
         final Element newSection = ElementFactory.create("section");
         final Element newCell = ElementFactory.create("cell");
@@ -579,12 +576,12 @@ public class EditorAction implements EditorActionLocal {
             element.addChild(newSection);
         }
 
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(newSection,
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(newSection,
                 null));
     }
 
     public void alignElement(final String id, final String position) {
-        final Element element = getElementById(id);
+        final Element element = ThemeManager.getElementById(id);
         Layout layout = (Layout) ElementFormatter.getFormatFor(element,
                 "layout");
         if (layout == null) {
@@ -614,7 +611,7 @@ public class EditorAction implements EditorActionLocal {
             }
         }
 
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(element,
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element,
                 null));
     }
 
@@ -641,7 +638,7 @@ public class EditorAction implements EditorActionLocal {
 
     public void assignStyleProperty(final String id, final String property,
             final String value) {
-        final Element element = getElementById(id);
+        final Element element = ThemeManager.getElementById(id);
         if (element == null) {
             return;
         }
@@ -671,9 +668,9 @@ public class EditorAction implements EditorActionLocal {
         }
         style.setPropertiesFor(viewName, "", properties);
 
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(element,
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element,
                 null));
-        eventManager.notify(STYLES_MODIFIED_EVENT,
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT,
                 new EventContext(style, null));
     }
 
@@ -685,7 +682,7 @@ public class EditorAction implements EditorActionLocal {
         final Format style = FormatFactory.create("style");
         themeManager.registerFormat(style);
         ElementFormatter.setFormat(element, style);
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(element,
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element,
                 null));
     }
 
@@ -704,8 +701,8 @@ public class EditorAction implements EditorActionLocal {
             return false;
         }
         ThemeManager.repairTheme(theme);
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(theme, null));
-        eventManager.notify(STYLES_MODIFIED_EVENT,
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(theme, null));
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT,
                 new EventContext(theme, null));
         log.debug("Theme repaired: " + themeName);
         return true;
@@ -718,8 +715,8 @@ public class EditorAction implements EditorActionLocal {
             log.error(e);
             return false;
         }
-        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(null, null));
-        eventManager.notify(STYLES_MODIFIED_EVENT, new EventContext(null, null));
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null, null));
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(null, null));
         log.debug("Theme loaded: " + src);
         return true;
     }
@@ -785,16 +782,6 @@ public class EditorAction implements EditorActionLocal {
             }
         }
         return css.toString();
-    }
-
-    /* Private API */
-
-    private static Element getElementById(final String id) {
-        return (Element) uidManager.getObjectByUid(Integer.valueOf(id));
-    }
-
-    private static Format getFormatById(final String id) {
-        return (Format) uidManager.getObjectByUid(Integer.valueOf(id));
     }
 
     @Remove

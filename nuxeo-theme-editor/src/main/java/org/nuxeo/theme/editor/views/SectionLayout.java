@@ -57,20 +57,20 @@ public class SectionLayout extends DefaultLayoutView {
 
         html.append("<div style=\"text-align: center\">");
         html.append(
-                "<img class=\"nxthemesAlignSection\" position=\"left\" src=\"/nuxeo/nxthemes/editor/img/align-left-24.png\" title=\"Left\" sectionid=\"").append(
+                "<img class=\"nxthemesAlignSection\" position=\"left\" src=\"/nuxeo/site/files/nxthemes-editor/img/align-left-24.png\" title=\"Left\" sectionid=\"").append(
                 sectionId).append("\" />");
         html.append(
-                "<img class=\"nxthemesAlignSection\" position=\"center\" src=\"/nuxeo/nxthemes/editor/img/align-center-24.png\" title=\"Center\" sectionid=\"").append(
+                "<img class=\"nxthemesAlignSection\" position=\"center\" src=\"/nuxeo/site/files/nxthemes-editor/img/align-center-24.png\" title=\"Center\" sectionid=\"").append(
                 sectionId).append("\" />");
         html.append(
-                "<img class=\"nxthemesAlignSection\" position=\"right\" src=\"/nuxeo/nxthemes/editor/img/align-right-24.png\" title=\"Right\" sectionid=\"").append(
+                "<img class=\"nxthemesAlignSection\" position=\"right\" src=\"/nuxeo/site/files/nxthemes-editor/img/align-right-24.png\" title=\"Right\" sectionid=\"").append(
                 sectionId).append("\" />");
         html.append("</div>");
 
         html.append(
-                "<img class=\"nxthemesAddSection\" src=\"/nuxeo/nxthemes/editor/img/add.png\" ").append(
-                "onmouseover=\"this.src='/nuxeo/nxthemes/editor/img/add-hover.png'\" ").append(
-                "onmouseout=\"this.src='/nuxeo/nxthemes/editor/img/add.png'\" ").append(
+                "<img class=\"nxthemesAddSection\" src=\"/nuxeo/site/files/nxthemes-editor/img/add.png\" ").append(
+                "onmouseover=\"this.src='/nuxeo/site/files/nxthemes-editor/img/add-hover.png'\" ").append(
+                "onmouseout=\"this.src='/nuxeo/site/files/nxthemes-editor/img/add.png'\" ").append(
                 "sectionid=\"").append(sectionId).append(
                 "\" title=\"Add a section\" />");
         html.append("</div>");

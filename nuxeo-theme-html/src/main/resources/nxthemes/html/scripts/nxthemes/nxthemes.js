@@ -81,14 +81,8 @@ var NXThemes = {
 
   /* Session management */
 
-  contextPath: '/',
-
-  setContextPath: function(path) {
-      this.contextPath = path;
-  },
-
   setCookie: function(id, value) {
-    document.cookie = id + '=' + escape(value) + '; path=' + this.contextPath;
+    document.cookie = id + '=' + escape(value) + '; path=/';
   },
 
   getCookie: function(id) {
@@ -110,7 +104,7 @@ var NXThemes = {
   expireCookie: function(id) {
     var now = new Date();
     now.setTime(now.getTime() -1);
-    document.cookie = id += "=; expires=" + now.toGMTString() + '; path=' + this.contextPath;
+    document.cookie = id += "=; expires=" + now.toGMTString() + '; path=/';
   },
 
   getSessionData: function(id) {

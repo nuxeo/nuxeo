@@ -39,9 +39,7 @@ public final class CookieManager {
             return;
         }
         HttpServletResponse response = (HttpServletResponse) context.getResponse();
-        final String path = context.getRequestContextPath();
         final Cookie cookie = new Cookie(name, value);
-        cookie.setPath(path);
         response.addCookie(cookie);
     }
 
@@ -50,9 +48,7 @@ public final class CookieManager {
             return;
         }
         HttpServletResponse response = (HttpServletResponse) context.getResponse();
-        final String path = context.getRequestContextPath();
         final Cookie cookie = new Cookie(name, "");
-        cookie.setPath(path);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
     }

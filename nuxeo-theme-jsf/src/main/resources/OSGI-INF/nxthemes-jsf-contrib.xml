@@ -155,21 +155,21 @@
     <view name="plain text" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <model-type>text</model-type>
-      <icon>/nuxeo/nxthemes/icons/plain-text.png</icon>
+      <icon>/nuxeo/site/files/nxthemes/icons/plain-text.png</icon>
       <template>nxthemes/jsf/widgets/plain-text.xml</template>
     </view>
 
     <view name="plain html" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <model-type>html</model-type>
-      <icon>/nuxeo/nxthemes/icons/plain-html.png</icon>
+      <icon>/nuxeo/site/files/nxthemes/icons/plain-html.png</icon>
       <template>nxthemes/jsf/widgets/plain-html.xml</template>
     </view>
 
     <view name="facelet region" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <model-type>region</model-type>
-      <icon>/nuxeo/nxthemes/icons/facelet-region.png</icon>
+      <icon>/nuxeo/site/files/nxthemes/icons/facelet-region.png</icon>
       <class>
         org.nuxeo.theme.jsf.filters.widgets.FaceletRegionView
       </class>

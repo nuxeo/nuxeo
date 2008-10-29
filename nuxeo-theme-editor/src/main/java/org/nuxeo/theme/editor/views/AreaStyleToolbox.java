@@ -53,7 +53,7 @@ public class AreaStyleToolbox {
             className = "picker selected";
         }
         return String.format(
-                "<img class=\"%s\" name=\"%s\" width=\"16\" height=\"16\" title=\"%s\" src=\"/nuxeo/nxthemes/editor/img/%s\" />",
+                "<img class=\"%s\" name=\"%s\" width=\"16\" height=\"16\" title=\"%s\" src=\"/nuxeo/site/files/nxthemes-editor/img/%s\" />",
                 className, name, title, image);
     }
 }

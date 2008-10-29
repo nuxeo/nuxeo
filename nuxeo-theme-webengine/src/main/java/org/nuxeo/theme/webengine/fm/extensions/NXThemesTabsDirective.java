@@ -79,7 +79,7 @@ public class NXThemesTabsDirective implements TemplateDirectiveModel {
 
         StringWriter sw = new StringWriter();
         body.render(sw);
-        String content = String.format("<items>%s</items>",
+        String content = String.format("<tabs>%s</tabs>",
                 sw.getBuffer().toString());
 
         final List<Map<String, String>> items = new ArrayList<Map<String, String>>();
@@ -89,7 +89,7 @@ public class NXThemesTabsDirective implements TemplateDirectiveModel {
         try {
             Document doc = dbf.newDocumentBuilder().parse(
                     new ByteArrayInputStream(content.getBytes()));
-            NodeList itemList = doc.getElementsByTagName("item");
+            NodeList itemList = doc.getElementsByTagName("tab");
             for (int i = 0; i < itemList.getLength(); i++) {
                 Node itemNode = itemList.item(i);
                 NamedNodeMap attrs = itemNode.getAttributes();

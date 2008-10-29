@@ -8,6 +8,7 @@
   </documentation>
 
   <require>org.nuxeo.theme.core</require>
+  <require>org.nuxeo.theme.webengine</require>
   
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="shortcuts">

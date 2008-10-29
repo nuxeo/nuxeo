@@ -15,6 +15,7 @@
 package org.nuxeo.theme.html;
 
 import org.apache.commons.logging.Log;
+import net.sf.json.JSONObject;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextAction;

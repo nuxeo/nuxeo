@@ -20,7 +20,6 @@ if (typeof NXThemesEditor == "undefined") {
 
 }
 
-
 NXThemesEditor.setCanvasMode =  function(info) {
     var target = Event.element(info);
     var mode = target.getAttribute("name");
@@ -35,62 +34,78 @@ NXThemesEditor.deleteThemeOrPage = function(info) {
       return;
     }
     var element_id = id.substr(4);
-    Seam.Component.getInstance("nxthemesEditorAction").deleteElement(
-       element_id,
-      function(r) {
-        if (r === "") {
-          window.alert("Could not delete the element.");
-        } else {
-          NXThemes.getViewById("theme selector").refresh();
-          NXThemesEditor.refreshCanvas();
-        }
-      });
+    var url = "/nxthemes/editor/delete_element?id=" + encodeURIComponent(element_id);
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             var text = r.responseText;
+             if (text === "") {
+                 window.alert("Could not delete the element.");
+             } else {
+                 NXThemes.getViewById("theme selector").refresh();
+                 NXThemesEditor.refreshCanvas();
+             }
+         }
+    });
 };
 
 NXThemesEditor.moveElement = function(info) {
     var src_id = info.source.getAttribute('id');
     var dest_id = info.target.getAttribute('id');
     var order = info.order;
-    Seam.Component.getInstance("nxthemesEditorAction").moveElement(
-        src_id, dest_id, order, NXThemesEditor.refreshCanvas);
+    var url = "/nxthemes/editor/move_element?src_id=" + encodeURIComponent(src_id) + "&dest_id=" + encodeURIComponent(dest_id) + "&order=" + encodeURIComponent(order);
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemesEditor.refreshCanvas();
+         }
+    });
 };
 
 NXThemesEditor.insertFragment = function(info) {
     var dest_id = info.target.getAttribute('id');
     var order = info.order;
     var type_name = info.source.getAttribute('typename');
-    Seam.Component.getInstance("nxthemesEditorAction").insertFragment(
-        type_name, dest_id, order,
-        function(r) {
-          NXThemesEditor.refreshCanvas();
-          NXThemesEditor.switchToEditCanvas()
-        });
+    var url = "/nxthemes/editor/insert_fragment?type_name=" + encodeURIComponent(type_name) + "&dest_id=" + encodeURIComponent(dest_id) + "&order=" + encodeURIComponent(order);
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemesEditor.refreshCanvas();
+             NXThemesEditor.switchToEditCanvas()
+         }
+    });
 };
 
 NXThemesEditor.editElement = function(info) {
     var id = info.target.getAttribute('id');
-    Seam.Component.getInstance("nxthemesEditorAction").selectElement(id,
-       function(r) {
-         NXThemes.getControllerById("editor perspectives").switchTo("edit element");
-         NXThemes.getViewById("element editor").refresh();
-         var v = NXThemes.getViewById("element editor tabs");
-         if (typeof v !== 'undefined') {
-             v.switchTo("element editor perspectives/edit properties");
+    var url = "/nxthemes/editor/select_element?id=" + encodeURIComponent(id); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemes.getControllerById("editor perspectives").switchTo("edit element");
+             NXThemes.getViewById("element editor").refresh();
+             var v = NXThemes.getViewById("element editor tabs");
+             if (typeof v !== 'undefined') {
+                 v.switchTo("element editor perspectives/edit properties");
+             }
          }
-       });
+    });
 };
 
 NXThemesEditor.changeElementStyle = function(info) {
     var id = info.target.getAttribute('id');
-    Seam.Component.getInstance("nxthemesEditorAction").selectElement(id,
-       function(r) {
-         NXThemes.getControllerById("editor perspectives").switchTo("edit element");
-         NXThemes.getViewById("element editor").refresh();
-         var v = NXThemes.getViewById("element editor tabs");
-         if (typeof v !== 'undefined') {
-             v.switchTo("element editor perspectives/edit style");
+    var url = "/nxthemes/editor/select_element?id=" + encodeURIComponent(id); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemes.getControllerById("editor perspectives").switchTo("edit element");
+             NXThemes.getViewById("element editor").refresh();
+             var v = NXThemes.getViewById("element editor tabs");
+             if (typeof v !== 'undefined') {
+                 v.switchTo("element editor perspectives/edit style");
+             }
          }
-       });
+    });
 };
 
 NXThemesEditor.setSize = function(info) {
@@ -106,29 +121,40 @@ NXThemesEditor.setSize = function(info) {
           width = value;
         }
       });
-    Seam.Component.getInstance("nxthemesEditorAction").setSize(
-       id, width, NXThemesEditor.refreshCanvas);
+    var url = "/nxthemes/editor/update_element_size?id=" + encodeURIComponent(id) + "&width=" + encodeURIComponent(width); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemesEditor.refreshCanvas();
+         }
+    });       
 };
 
 NXThemesEditor.updateElementProperties = function(info) {
     var form = Event.findElement(info, "form");
     var id = null;
-    var propertyMap = new Seam.Remoting.Map();
+    var propertyMap = $H();
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
         var value = Form.Element.getValue(i);
         if (name == "id") {
           id = value;
         } else {
-          propertyMap.put(i.name, value);
+          propertyMap.set(i.name, value);
         }
-      });
-    Seam.Component.getInstance("nxthemesEditorAction").updateElementProperties(
-       id, propertyMap,
-       function(r) {
-         NXThemes.getViewById("element properties").refresh();
-         NXThemesEditor.writeMessage("Properties updated.");
-       });
+    });
+    var url = "/nxthemes/editor/update_element_properties"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             id: id,
+             property_map: propertyMap.toJSON()
+         },
+         onComplete: function(r) {
+             NXThemes.getViewById("element properties").refresh();
+             NXThemesEditor.writeMessage("Properties updated.");
+         }
+    });
 };
 
 NXThemesEditor.updateElementWidget = function(info) {
@@ -144,12 +170,16 @@ NXThemesEditor.updateElementWidget = function(info) {
           viewName = value;
         }
     });
-
-    Seam.Component.getInstance("nxthemesEditorAction").updateElementWidget(
-       id, viewName,
-       function(r) {
-         NXThemesEditor.writeMessage("Widget changed.");
-       });
+    if (!viewName) {
+        return;
+    }
+    var url = "/nxthemes/editor/update_element_widget?id=" + encodeURIComponent(id) + "&view_name=" + encodeURIComponent(viewName); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemesEditor.writeMessage("Widget changed.");
+         }
+    });
 };
 
 
@@ -170,19 +200,20 @@ NXThemesEditor.updateElementDescription = function(info) {
     if (!description) {
       return;
     }
-    
-    Seam.Component.getInstance("nxthemesEditorAction").updateElementDescription(
-       id, description,
-       function(r) {
-         NXThemesEditor.writeMessage("Description changed.");
-       });
+    var url = "/nxthemes/editor/update_element_description?id=" + encodeURIComponent(id) + "&description=" + encodeURIComponent(description); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemesEditor.writeMessage("Description changed.");
+         }
+    });         
 };
 
 
 NXThemesEditor.updateElementStyle = function() {
     var form = $('nxthemesElementStyle');
     var id, path, viewName;
-    var propertyMap = new Seam.Remoting.Map();
+    var propertyMap = $H();
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
         var value = Form.Element.getValue(i);
@@ -193,15 +224,24 @@ NXThemesEditor.updateElementStyle = function() {
         } else if (name == "viewName") {
           viewName = value;
         } else if (name.indexOf('property:') === 0) {
-          propertyMap.put(name.substr(9), value);
+          propertyMap.set(name.substr(9), value);
         }
-      });
-    Seam.Component.getInstance("nxthemesEditorAction").updateElementStyle(
-       id, viewName, path, propertyMap,
-       function(r) {
-         NXThemesStyleEditor.refreshCssPreview();
-         NXThemesEditor.writeMessage("Style updated.");
-       });
+    });
+    
+    var url = "/nxthemes/editor/update_element_style"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             id: id,
+             view_name: viewName,
+             path: path,
+             property_map: propertyMap.toJSON()
+         },
+         onComplete: function(r) {
+             NXThemesStyleEditor.refreshCssPreview();
+             NXThemesEditor.writeMessage("Style updated.");
+         }
+    });
 };
 
 NXThemesEditor.updateElementStyleCss = function() {
@@ -218,12 +258,19 @@ NXThemesEditor.updateElementStyleCss = function() {
           viewName = value;
         }
     });
-    Seam.Component.getInstance("nxthemesEditorAction").updateElementStyleCss(
-       id, viewName, cssSource,
-      function(r) {
-        NXThemesStyleEditor.refreshCssPreview();
-        NXThemesEditor.writeMessage("Style updated.");
-      });
+    var url = "/nxthemes/editor/update_element_style_css"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             id: id,
+             view_name: viewName,
+             css_source: cssSource
+         },
+         onComplete: function(r) {
+             NXThemesStyleEditor.refreshCssPreview();
+             NXThemesEditor.writeMessage("Style updated.");
+         }
+    });
 };
 
 NXThemesEditor.setElementVisibility = function(info) {
@@ -242,12 +289,18 @@ NXThemesEditor.setElementVisibility = function(info) {
           perspectives = $F("perspectives");
         }
     });
-    Seam.Component.getInstance("nxthemesEditorAction").setElementVisibility(
-       id, perspectives, alwaysVisible,
-       function(r) {
-         NXThemes.getViewById("element visibility").refresh();
-         NXThemesEditor.writeMessage("Visibility changed.");
-       });
+    var url = "/nxthemes/editor/update_element_visibility?id=" + encodeURIComponent(id); 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             'always_visible': alwaysVisible,
+             'perspectives': perspectives
+         },
+         onComplete: function(r) {
+             NXThemes.getViewById("element visibility").refresh();
+             NXThemesEditor.writeMessage("Visibility changed.");
+         }
+    });
 };
 
 NXThemesEditor.setElementWidget = function(info) {
@@ -256,41 +309,73 @@ NXThemesEditor.setElementWidget = function(info) {
       return;
     }
     var viewName = info.options.choice;
-    Seam.Component.getInstance("nxthemesEditorAction").updateElementWidget(
-       id, viewName, NXThemesEditor.refreshCanvas);
+    if (!viewName) {
+        return;
+    }
+    var url = "/nxthemes/editor/update_element_widget?id=" + encodeURIComponent(id) + "&view_name=" + encodeURIComponent(viewName); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemesEditor.refreshCanvas();
+         }
+    });
 };
 
 NXThemesEditor.copyElement = function(info) {
     var id =  info.target.getAttribute('id');
-    Seam.Component.getInstance("nxthemesEditorAction").copyElements(
-       [id], function(r) {});
+    var url = "/nxthemes/editor/copy_element"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             id: id
+         },
+         onComplete: function(r) {
+             NXThemesEditor.writeMessage("Element copied.");
+         }
+    });
 };
 
 NXThemesEditor.splitElement = function(info) {
     var id =  info.target.getAttribute('id');
-    Seam.Component.getInstance("nxthemesEditorAction").splitElement(
-       id, NXThemesEditor.refreshCanvas);
+    var url = "/nxthemes/editor/split_element?id=" + encodeURIComponent(id); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemesEditor.refreshCanvas();
+         }
+    });       
 };
 
 NXThemesEditor.setElementPadding = function(info) {
     var id = info.target.getAttribute('id');
-    Seam.Component.getInstance("nxthemesEditorAction").selectElement(id,
-      function(r) {
-        NXThemes.getControllerById("editor perspectives").switchTo("edit padding");
-      });
+    var url = "/nxthemes/editor/select_element?id=" + encodeURIComponent(id); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemes.getControllerById("editor perspectives").switchTo("edit padding");
+         }
+    });
 };
 
 NXThemesEditor.updateElementPadding = function(info) {
     var form = Event.findElement(info, "form");
     var id = null;
-    var propertyMap = new Seam.Remoting.Map();
+    var propertyMap = $H();
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
         var value = Form.Element.getValue(i);
-        propertyMap.put(i.name, value);
-      });
-    Seam.Component.getInstance("nxthemesEditorAction").updateElementLayout(
-       propertyMap, NXThemesEditor.refreshCanvas);
+        propertyMap[i.name] = value;
+    });
+    var url = "/nxthemes/editor/update_element_layout"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             property_map: propertyMap
+         },
+         onComplete: function(r) {
+             NXThemesEditor.refreshCanvas();
+         }
+    });
 };
 
 NXThemesEditor.alignElement = function(info) {
@@ -300,33 +385,51 @@ NXThemesEditor.alignElement = function(info) {
       return;
     }
     var position = info.options.choice;
-    Seam.Component.getInstance("nxthemesEditorAction").alignElement(
-       id, position, NXThemesEditor.refreshCanvas);
+    var url = "/nxthemes/editor/align_element?id=" + encodeURIComponent(id) + "&position=" + encodeURIComponent(position); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+           NXThemesEditor.refreshCanvas();
+         }
+    });     
 };
 
 NXThemesEditor.duplicateElement = function(info) {
     var id =  info.target.getAttribute('id');
-    Seam.Component.getInstance("nxthemesEditorAction").duplicateElement(id, 
-      function(r) {
-        NXThemes.getViewById("style css").hide();
-        NXThemes.getViewById("style css").show();
-        NXThemesEditor.refreshCanvas();
-      });
+    var url = "/nxthemes/editor/duplicate_element?id=" + encodeURIComponent(id); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemes.getViewById("style css").hide();
+             NXThemes.getViewById("style css").show();
+             NXThemesEditor.refreshCanvas();
+         }
+    });       
 };
 
 NXThemesEditor.pasteElement = function(info) {
     var dest_id =  info.target.getAttribute('id');
-    Seam.Component.getInstance("nxthemesEditorAction").pasteElements(dest_id, function(r) {
-        NXThemes.getViewById("style css").hide();
-        NXThemes.getViewById("style css").show();
-        NXThemesEditor.refreshCanvas();
-      });
+    var url = "/nxthemes/editor/paste_element?dest_id=" + encodeURIComponent(dest_id); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemes.getViewById("style css").hide();
+             NXThemes.getViewById("style css").show();
+             NXThemesEditor.refreshCanvas();
+             NXThemesEditor.writeMessage("Element pasted.");
+         }
+    });
 };
 
 NXThemesEditor.deleteElement = function(info) {
     var id =  info.target.getAttribute('id');
-    Seam.Component.getInstance("nxthemesEditorAction").deleteElement(
-       id, NXThemesEditor.refreshCanvas);
+    var url = "/nxthemes/editor/delete_element?id=" + encodeURIComponent(id);
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemesEditor.refreshCanvas();
+         }
+    });
 };
 
 NXThemesEditor.selectPerspective = function(info) {
@@ -356,16 +459,20 @@ NXThemesEditor.addTheme = function() {
         window.alert("Theme names must only contain alphabetic characters.");
         return "";
     }
-    Seam.Component.getInstance("nxthemesEditorAction").addTheme(name,
-      function(r) {
-        if (r === "") {
-          window.alert("The theme name is already taken.");
-        } else {
-          NXThemes.setCookie("nxthemes.theme", r);
-          NXThemes.getViewById("theme selector").refresh();
-          NXThemesEditor.refreshCanvas();
-        }
-      });
+    var url = "/nxthemes/editor/add_theme?name=" + encodeURIComponent(name);
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             var text = r.responseText;
+             if (text === "") {
+                 window.alert("The theme name is already taken.");
+             } else {
+                 NXThemes.setCookie("nxthemes.theme", text);
+                 NXThemes.getViewById("theme selector").refresh();
+                 NXThemesEditor.refreshCanvas();
+             }
+         }
+    });
 };
 
 NXThemesEditor.addPage = function(themeName) {
@@ -378,16 +485,20 @@ NXThemesEditor.addPage = function(themeName) {
         window.alert("Page names must only contain alphabetic characters.");
         return "";
     }
-    Seam.Component.getInstance("nxthemesEditorAction").addPage(themeName + '/' + name,
-      function(r) {
-        if (r === "") {
-          window.alert("The page name is already taken.");
-        } else {
-          NXThemes.setCookie("nxthemes.theme", r);
-          NXThemes.getViewById("theme selector").refresh();
-          NXThemesEditor.refreshCanvas();
-        }
-      });
+    var url = "/nxthemes/editor/add_page?path=" + encodeURIComponent(themeName + '/' + name);
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             var text = r.responseText;
+             if (text === "") {
+                 window.alert("The page name is already taken.");
+             } else {
+                 NXThemes.setCookie("nxthemes.theme", text);
+                 NXThemes.getViewById("theme selector").refresh();
+                 NXThemesEditor.refreshCanvas();
+             }
+         }
+    });    
 };
 
 NXThemesEditor.switchToEditCanvas = function() {
@@ -402,16 +513,26 @@ NXThemesEditor.backToCanvas = function() {
 NXThemesEditor.addSection = function(info) {
     var target = Event.element(info);
     var id = target.getAttribute('sectionid') || target.getAttribute('pageid');
-    Seam.Component.getInstance("nxthemesEditorAction").insertSectionAfter(
-       id, NXThemesEditor.refreshCanvas);
+    var url = "/nxthemes/editor/insert_section_after?id=" + encodeURIComponent(id);
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemesEditor.refreshCanvas();
+         }
+    });
 };
 
 NXThemesEditor.alignSection = function(info) {
     var target = Event.element(info);
     var id = target.getAttribute('sectionid');
     var position = target.getAttribute('position');
-    Seam.Component.getInstance("nxthemesEditorAction").alignElement(
-       id, position, NXThemesEditor.refreshCanvas);
+    var url = "/nxthemes/editor/align_element?id=" + encodeURIComponent(id) + "&position=" + encodeURIComponent(position); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+           NXThemesEditor.refreshCanvas();
+         }
+    }); 
 };
 
 NXThemesEditor.setAreaStyle = function(info) {
@@ -437,10 +558,13 @@ NXThemesEditor.setAreaStyle = function(info) {
     } else if (property == 'border-right') {
       category = 'border';
     }
-    Seam.Component.getInstance("nxthemesEditorAction").setStyleCategory(category,
-      function(r) {
-        NXThemes.getControllerById('area style perspectives').switchTo('style chooser');
-      });
+    var url = "/nxthemes/editor/select_style_category?category=" + encodeURIComponent(category); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+           NXThemes.getControllerById('area style perspectives').switchTo('style chooser');
+         }
+    });
 };
 
 NXThemesEditor.updateAreaStyle = function(value) {
@@ -451,20 +575,29 @@ NXThemesEditor.updateAreaStyle = function(value) {
   }
   var property = NXThemesEditor.currentProperty;
   if (property !== null) {
-      Seam.Component.getInstance("nxthemesEditorAction").assignStyleProperty(element_id, property,
-          value,
-      function(r) {
-        NXThemes.getViewById("style css").hide();
-        NXThemes.getViewById("style css").show();
-        NXThemesEditor.refreshCanvas();
+      if (value == null) {
+          value = '';
+      }
+      var url = "/nxthemes/editor/assign_style_property?element_id=" + encodeURIComponent(element_id) + "&property=" + encodeURIComponent(property) + "&value=" + encodeURIComponent(value); 
+      new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+           NXThemes.getViewById("style css").hide();
+           NXThemes.getViewById("style css").show();
+           NXThemesEditor.refreshCanvas();
+         }
       });
   }
 };
 
 NXThemesEditor.setPresetGroup = function(select) {
-  Seam.Component.getInstance("nxthemesEditorAction").setPresetGroup(select.value,
-    function(r) {
-      NXThemes.getViewById("area style chooser").refresh();
+    var group = select.value;
+    var url = "/nxthemes/editor/select_preset_group?group=" + encodeURIComponent(group); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+           NXThemes.getViewById("area style chooser").refresh();
+         }
     });
 };
 
@@ -473,47 +606,64 @@ NXThemesEditor.closeAreaStyleChooser = function() {
 };
 
 NXThemesEditor.refresh = function() {
-  Seam.Component.getInstance("nxthemesEditorAction").expireThemes(
-        NXThemesEditor.refreshCanvas);
-  NXThemesEditor.writeMessage("Canvas refreshed.");
+  var url = "/nxthemes/editor/expire_themes"; 
+  new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemesEditor.refreshCanvas();
+             NXThemesEditor.writeMessage("Canvas refreshed.");
+         }
+  });
 };
 
 NXThemesEditor.exit = function() {
   NXThemes.expireCookie("nxthemes.theme");
   NXThemes.expireCookie("nxthemes.engine");
   NXThemes.expireCookie("nxthemes.perspective");
-  Seam.Component.getInstance("nxthemesEditorAction").clearSelections(function() {
-    window.location.reload();
+  var url = "/nxthemes/editor/clear_selections"; 
+  new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             window.location.reload();
+         }
   });
 };
 
 NXThemesEditor.repairTheme = function(themeName) {
-    Seam.Component.getInstance("nxthemesEditorAction").repairTheme(
-       themeName,
-    function(r) {
-      NXThemes.getViewById("theme manager").refresh();
-      NXThemesEditor.writeMessage("Theme repaired.");
+    var url = "/nxthemes/editor/repair_theme?themeName=" + encodeURIComponent(themeName); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemes.getViewById("theme manager").refresh();
+             NXThemesEditor.writeMessage("Theme repaired.");
+         }
     });
 };
 
 NXThemesEditor.loadTheme = function(src) {
-    Seam.Component.getInstance("nxthemesEditorAction").loadTheme(
-       src,
-      function(r) {
-        var msg = r ? "Theme loaded." : "The theme could not be loaded.";
-        NXThemes.getViewById("theme manager").refresh();
-        NXThemesEditor.writeMessage(msg);
-      });
+    var url = "/nxthemes/editor/load_theme?src=" + encodeURIComponent(src); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+           var text = r.responseText;
+           var msg = text ? "Theme loaded." : "The theme could not be loaded.";
+           NXThemes.getViewById("theme manager").refresh();
+           NXThemesEditor.writeMessage(msg);
+         }
+    });
 };
 
 NXThemesEditor.saveTheme = function(src, indent) {
-    Seam.Component.getInstance("nxthemesEditorAction").saveTheme(
-       src, indent,
-      function(r) {
-        var msg = r ? "Theme saved." : "The theme could not be saved.";
-        NXThemes.getViewById("theme manager").refresh();
-        NXThemesEditor.writeMessage(msg);
-      });
+    var url = "/nxthemes/editor/save_theme?src=" + encodeURIComponent(src) + "&indent=" + encodeURIComponent(indent); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+           var text = r.responseText;
+           var msg = text ? "Theme saved." : "The theme could not be saved.";
+           NXThemes.getViewById("theme manager").refresh();
+           NXThemesEditor.writeMessage(msg);
+         }
+    });
 };
 
 NXThemesEditor.refreshCanvas = function() {
@@ -546,7 +696,6 @@ NXThemes.registerWidgets({
 });
 
 // Initialization
-NXThemes.setContextPath('/nuxeo');
 
 NXThemes.addActions({
     'move element': NXThemesEditor.moveElement,

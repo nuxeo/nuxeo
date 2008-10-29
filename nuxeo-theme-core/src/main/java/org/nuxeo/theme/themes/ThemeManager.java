@@ -38,20 +38,25 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.NegotiationDef;
 import org.nuxeo.theme.Registrable;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFactory;
 import org.nuxeo.theme.elements.ElementFormatter;
+import org.nuxeo.theme.elements.ElementType;
 import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.engines.EngineType;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.formats.FormatType;
+import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentFactory;
 import org.nuxeo.theme.fragments.FragmentType;
+import org.nuxeo.theme.models.ModelType;
 import org.nuxeo.theme.nodes.Node;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
@@ -68,6 +73,7 @@ import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 import org.nuxeo.theme.uids.Identifiable;
 import org.nuxeo.theme.uids.UidManager;
+import org.nuxeo.theme.views.ViewType;
 
 public final class ThemeManager implements Registrable {
 
@@ -97,6 +103,20 @@ public final class ThemeManager implements Registrable {
         pages.clear();
         formatsByTypeName.clear();
         namedObjects.clear();
+    }
+
+    public static String getDefaultTheme(final String applicationPath) {
+        String defaultTheme = "";
+        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        final ApplicationType application = (ApplicationType) typeRegistry.lookup(
+                TypeFamily.APPLICATION, applicationPath);
+        if (application != null) {
+            NegotiationDef negotiation = application.getNegotiation();
+            if (negotiation != null) {
+                defaultTheme = negotiation.getDefaultTheme();
+            }
+        }
+        return defaultTheme;
     }
 
     public Set<String> getThemeNames() {
@@ -178,7 +198,7 @@ public final class ThemeManager implements Registrable {
         return (TemplateEngineType) Manager.getTypeRegistry().lookup(
                 TypeFamily.TEMPLATE_ENGINE, templateEngineName);
     }
-    
+
     public ThemeElement getThemeByUrl(final URL url) {
         String themeName = getThemeNameByUrl(url);
         if (themeName == null) {
@@ -200,7 +220,7 @@ public final class ThemeManager implements Registrable {
         }
         return path[4];
     }
-    
+
     public String getPagePathByUrl(final URL url) {
         if (url == null) {
             return null;
@@ -323,6 +343,29 @@ public final class ThemeManager implements Registrable {
 
     public void removeNamedObjects(final String themeName) {
         namedObjects.remove(themeName);
+    }
+
+    public void makeElementUseNamedStyle(final String id,
+            final String inheritedName, final String currentThemeName) {
+        final Element element = ThemeManager.getElementById(id);
+        final FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(
+                TypeFamily.FORMAT, "style");
+        Style style = (Style) ElementFormatter.getFormatByType(element,
+                styleType);
+        // Make the style no longer inherits from other another style if
+        // 'inheritedName' is null
+        if (inheritedName == null) {
+            ThemeManager.removeInheritanceTowards(style);
+        } else {
+            final String themeName = currentThemeName.split("/")[0];
+            final Style inheritedStyle = (Style) getNamedObject(themeName,
+                    "style", inheritedName);
+            if (inheritedStyle == null) {
+                log.error("Unknown style: " + inheritedName);
+            } else {
+                makeFormatInherit(style, inheritedStyle);
+            }
+        }
     }
 
     // Element actions
@@ -623,7 +666,7 @@ public final class ThemeManager implements Registrable {
     public static void repairTheme(ThemeElement theme) {
         ThemeRepairer.repair(theme);
     }
-    
+
     public static String renderElement(URL url) {
         String result = null;
         InputStream is = null;
@@ -807,19 +850,97 @@ public final class ThemeManager implements Registrable {
     public synchronized void setResource(String name, String content) {
         cachedResources.put(name, content);
     }
-    
+
+    public static List<ViewType> getViewTypesForFragmentType(
+            final FragmentType fragmentType) {
+        final List<ViewType> viewTypes = new ArrayList<ViewType>();
+        for (Type v : Manager.getTypeRegistry().getTypes(TypeFamily.VIEW)) {
+            final ViewType viewType = (ViewType) v;
+
+            // select fragment views
+            final ElementType elementType = viewType.getElementType();
+            if (elementType != null
+                    && !elementType.getTypeName().equals("fragment")) {
+                continue;
+            }
+
+            // select widget view types
+            if (!viewType.getFormatType().getTypeName().equals("widget")) {
+                continue;
+            }
+
+            // match model types
+            final ModelType modelType = viewType.getModelType();
+            if (fragmentType.getModelType() == modelType) {
+                viewTypes.add(viewType);
+            }
+        }
+        return viewTypes;
+    }
+
+    public static List<ThemeDescriptor> getThemesDescriptors() {
+        final List<ThemeDescriptor> themeDescriptors = new ArrayList<ThemeDescriptor>();
+        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        final Set<String> themeNames = Manager.getThemeManager().getThemeNames();
+        for (Type type : typeRegistry.getTypes(TypeFamily.THEME)) {
+            if (type != null) {
+                ThemeDescriptor themeDescriptor = (ThemeDescriptor) type;
+                themeDescriptors.add(themeDescriptor);
+                themeNames.remove(themeDescriptor.getName());
+            }
+        }
+        /* Create temporary theme descriptors for unregistered themes */
+        for (String themeName : themeNames) {
+            ThemeDescriptor themeDescriptor = new ThemeDescriptor();
+            themeDescriptor.setName(themeName);
+            themeDescriptors.add(themeDescriptor);
+        }
+        return themeDescriptors;
+    }
+
     // Template engines
     public static List<String> getTemplateEngineNames() {
         List<String> types = new ArrayList<String>();
-        for (Type type : Manager.getTypeRegistry().getTypes(TypeFamily.TEMPLATE_ENGINE)) {
+        for (Type type : Manager.getTypeRegistry().getTypes(
+                TypeFamily.TEMPLATE_ENGINE)) {
             types.add(type.getTypeName());
         }
         return types;
     }
-    
+
+    public static String getTemplateEngine(String applicationPath) {
+        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        if (applicationPath == null) {
+            return ThemeManager.getDefaultTemplateEngineName();
+        }
+        final ApplicationType application = (ApplicationType) typeRegistry.lookup(
+                TypeFamily.APPLICATION, applicationPath);
+
+        if (application != null) {
+            return application.getTemplateEngine();
+        }
+        return getDefaultTemplateEngineName();
+    }
+
     public static String getDefaultTemplateEngineName() {
         // TODO use XML configuration
         return "jsf-facelets";
+    }
+
+    public static Element getElementById(final Integer id) {
+        return (Element) Manager.getUidManager().getObjectByUid(id);
+    }
+
+    public static Element getElementById(final String id) {
+        return getElementById(Integer.valueOf(id));
+    }
+
+    public static Format getFormatById(final Integer id) {
+        return (Format) Manager.getUidManager().getObjectByUid(id);
+    }
+
+    public static Format getFormatById(final String id) {
+        return (Format) getFormatById(Integer.valueOf(id));
     }
 
 }

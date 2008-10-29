@@ -43,14 +43,11 @@ import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
-import org.nuxeo.theme.NegotiationDef;
 import org.nuxeo.theme.editor.previews.Preview;
 import org.nuxeo.theme.editor.states.UiStatesLocal;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFormatter;
-import org.nuxeo.theme.elements.ElementType;
 import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.Format;
@@ -62,7 +59,6 @@ import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentType;
 import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.jsf.negotiation.CookieManager;
-import org.nuxeo.theme.models.ModelType;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.presets.PresetType;
@@ -191,9 +187,10 @@ public class UiManager implements UiManagerLocal {
         for (Type f : fragmentTypes) {
             final FragmentType fragmentType = (FragmentType) f;
             final FragmentInfo fragmentInfo = new FragmentInfo(fragmentType);
-            for (ViewType viewType : getViewTypesForFragmentType(fragmentType)) {
+            for (ViewType viewType : ThemeManager.getViewTypesForFragmentType(fragmentType)) {
                 final String viewTemplateEngine = viewType.getTemplateEngine();
-                if (!"*".equals(viewType.getViewName()) && templateEngine.equals(viewTemplateEngine)) {
+                if (!"*".equals(viewType.getViewName())
+                        && templateEngine.equals(viewTemplateEngine)) {
                     fragmentInfo.addView(viewType);
                 }
             }
@@ -202,33 +199,6 @@ public class UiManager implements UiManagerLocal {
             }
         }
         return fragments;
-    }
-
-    public final List<ViewType> getViewTypesForFragmentType(
-            final FragmentType fragmentType) {
-        final List<ViewType> viewTypes = new ArrayList<ViewType>();
-        for (Type v : Manager.getTypeRegistry().getTypes(TypeFamily.VIEW)) {
-            final ViewType viewType = (ViewType) v;
-
-            // select fragment views
-            final ElementType elementType = viewType.getElementType();
-            if (elementType != null
-                    && !elementType.getTypeName().equals("fragment")) {
-                continue;
-            }
-
-            // select widget view types
-            if (!viewType.getFormatType().getTypeName().equals("widget")) {
-                continue;
-            }
-
-            // match model types
-            final ModelType modelType = viewType.getModelType();
-            if (fragmentType.getModelType() == modelType) {
-                viewTypes.add(viewType);
-            }
-        }
-        return viewTypes;
     }
 
     /* Perspectives */
@@ -258,24 +228,7 @@ public class UiManager implements UiManagerLocal {
 
     /* Themes */
     public List<ThemeDescriptor> getThemesDescriptors() {
-        final List<ThemeDescriptor> themeDescriptors = new ArrayList<ThemeDescriptor>();
-        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        final Set<String> themeNames = Manager.getThemeManager().getThemeNames();
-        for (Type type : typeRegistry.getTypes(TypeFamily.THEME)) {
-            if (type != null) {
-                ThemeDescriptor themeDescriptor = (ThemeDescriptor) type;
-                themeDescriptors.add(themeDescriptor);
-                themeNames.remove(themeDescriptor.getName());
-            }
-        }
-
-        /* Create temporary theme descriptors for unregistered themes */
-        for (String themeName : themeNames) {
-            ThemeDescriptor themeDescriptor = new ThemeDescriptor();
-            themeDescriptor.setName(themeName);
-            themeDescriptors.add(themeDescriptor);
-        }
-        return themeDescriptors;
+        return ThemeManager.getThemesDescriptors();
     }
 
     public static class ThemeInfo {
@@ -335,8 +288,8 @@ public class UiManager implements UiManagerLocal {
     public List<ThemeInfo> getAvailableThemes() {
         final List<ThemeInfo> themes = new ArrayList<ThemeInfo>();
 
-        final String defaultThemeName = getDefaultTheme();
-        final String defaultPageName = defaultThemeName.split("/")[1];
+        final String defaultTheme = getDefaultTheme();
+        final String defaultPageName = defaultTheme.split("/")[1];
 
         final ThemeManager themeManager = Manager.getThemeManager();
         final String currentPagePath = getCurrentPagePath();
@@ -346,7 +299,7 @@ public class UiManager implements UiManagerLocal {
                     defaultPageName);
             String className = themeName.equals(currentThemeName) ? "selected"
                     : "";
-            if (link.equals(defaultThemeName)) {
+            if (link.equals(defaultTheme)) {
                 className += " default";
             }
             themes.add(new ThemeInfo(themeName, link, className));
@@ -355,8 +308,8 @@ public class UiManager implements UiManagerLocal {
     }
 
     public List<PageInfo> getAvailablePages() {
-        final String defaultThemeName = getDefaultTheme();
-        final String defaultPageName = defaultThemeName.split("/")[1];
+        final String defaultTheme = getDefaultTheme();
+        final String defaultPageName = defaultTheme.split("/")[1];
         final List<PageInfo> availablePages = new ArrayList<PageInfo>();
         final String currentPagePath = getCurrentPagePath();
         final String currentThemeName = currentPagePath.split("/")[0];
@@ -715,10 +668,11 @@ public class UiManager implements UiManagerLocal {
         }
         final String templateEngine = getTemplateEngine();
         FragmentType fragmentType = ((Fragment) selectedElement).getFragmentType();
-        for (ViewType viewType : getViewTypesForFragmentType(fragmentType)) {
+        for (ViewType viewType : ThemeManager.getViewTypesForFragmentType(fragmentType)) {
             final String viewName = viewType.getViewName();
             final String viewTemplateEngine = viewType.getTemplateEngine();
-            if (!"*".equals(viewName) && templateEngine.equals(viewTemplateEngine)) {
+            if (!"*".equals(viewName)
+                    && templateEngine.equals(viewTemplateEngine)) {
                 selectItemList.add(new SelectItem(viewName, viewName));
             }
         }
@@ -969,33 +923,11 @@ public class UiManager implements UiManagerLocal {
     }
 
     private String getDefaultTheme() {
-        String defaultTheme = "";
-        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        final String applicationPath = getApplicationPath();
-        final ApplicationType application = (ApplicationType) typeRegistry.lookup(
-                TypeFamily.APPLICATION, applicationPath);
-        if (application != null) {
-            NegotiationDef negotiation = application.getNegotiation();
-            if (negotiation != null) {
-                defaultTheme = negotiation.getDefaultTheme();
-            }
-        }
-        return defaultTheme;
+        return ThemeManager.getDefaultTheme(getApplicationPath());
     }
 
     private String getTemplateEngine() {
-        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        final String applicationPath = getApplicationPath();
-        if (applicationPath == null) {
-            return ThemeManager.getDefaultTemplateEngineName();
-        }
-        final ApplicationType application = (ApplicationType) typeRegistry.lookup(
-                TypeFamily.APPLICATION, applicationPath);
-
-        if (application != null) {
-            return application.getTemplateEngine();
-        }
-        return ThemeManager.getDefaultTemplateEngineName();
+        return ThemeManager.getTemplateEngine(getApplicationPath());
     }
 
 }

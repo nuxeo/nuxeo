@@ -45,7 +45,7 @@ public final class ViewType implements Type {
     public String mode = "*";
 
     @XNode("icon")
-    public String icon = "/nuxeo/nxthemes/icons/no-icon.png";
+    public String icon = "";
 
     @XNode("element-type")
     public String elementTypeName = "*";

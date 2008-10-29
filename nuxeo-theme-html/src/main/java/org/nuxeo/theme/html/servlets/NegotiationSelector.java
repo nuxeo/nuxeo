@@ -47,41 +47,37 @@ public final class NegotiationSelector extends HttpServlet {
             return;
         }
 
-        final String root = request.getContextPath();
-
         final String engine = request.getParameter("engine");
         if (engine != null) {
-            response.addCookie(createCookie("nxthemes.engine", engine, root));
+            response.addCookie(createCookie("nxthemes.engine", engine));
         }
 
         final String mode = request.getParameter("mode");
         if (mode != null) {
-            response.addCookie(createCookie("nxthemes.mode", mode, root));
+            response.addCookie(createCookie("nxthemes.mode", mode));
         }
 
         final String theme = request.getParameter("theme");
         if (theme != null) {
-            response.addCookie(createCookie("nxthemes.theme", theme, root));
+            response.addCookie(createCookie("nxthemes.theme", theme));
         }
 
         final String perspective = request.getParameter("perspective");
         if (perspective != null) {
-            response.addCookie(createCookie("nxthemes.perspective",
-                    perspective, root));
+            response.addCookie(createCookie("nxthemes.perspective", perspective));
         }
 
         response.sendRedirect(referer);
     }
 
-    private Cookie createCookie(final String name, final String value,
-            final String root) {
+    private Cookie createCookie(final String name, final String value) {
         final Cookie cookie = new Cookie(name, value);
 
         // remove the cookie of the value is an empty string
         if (value.equals("")) {
             cookie.setMaxAge(0);
         }
-        cookie.setPath(root);
+        cookie.setPath("/");
         return cookie;
     }
 }

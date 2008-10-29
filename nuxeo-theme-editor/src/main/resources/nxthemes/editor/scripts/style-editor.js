@@ -12,10 +12,14 @@ NXThemesStyleEditor.refreshPreview = function() {
 };
 
 NXThemesStyleEditor.refreshCssPreview = function() {
-    Seam.Component.getInstance("nxthemesEditorAction").renderCssPreview(
-       'stylePreviewArea', function(r) {
-         $('previewCss').innerHTML = r;
-       });
+    var url = "/nxthemes/editor/render_css_preview"; 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+           var text = r.responseText;
+           $('previewCss').innerHTML = text;
+         }
+    });
 };
 
 NXThemesStyleEditor.closeStylePicker = function() {
@@ -61,29 +65,25 @@ NXThemesStyleEditor.chooseStyleSelector = function(select) {
 };
 
 NXThemesStyleEditor.setPresetGroup = function(select) {
-    Seam.Component.getInstance("nxthemesEditorAction").setPresetGroup(
-       select.value, NXThemesStyleEditor.refreshStylePicker);
+    var group = select.value;
+    var url = "/nxthemes/editor/select_preset_group?group=" + encodeURIComponent(group); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+           NXThemesStyleEditor.refreshStylePicker();
+         }
+    });
 };
 
 NXThemesStyleEditor.setStyleSelector = function(selector) {
-    Seam.Component.getInstance("nxthemesEditorAction").setCurrentStyleSelector(
-       selector, function(r) {
-         NXThemes.getControllerById("style editor perspectives").switchTo("style properties");
-         NXThemes.getViewById("style properties").refresh();
-       });
-};
-
-NXThemesStyleEditor.createStyle = function() {
-    Seam.Component.getInstance("nxthemesEditorAction").createStyle(
-       function(r) {
-         NXThemes.getViewById("element style").refresh();
-         NXThemesEditor.writeMessage("New style created.");
-       });
-};
-
-NXThemesStyleEditor.toggleIgnoreWidgetView = function() {
-    Seam.Component.getInstance("nxthemesEditorAction").toggleIgnoreWidgetView(
-       NXThemesStyleEditor.refreshEditor);
+    var url = "/nxthemes/editor/select_style_selector?selector=" + encodeURIComponent(selector); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemes.getControllerById("style editor perspectives").switchTo("style properties");
+             NXThemes.getViewById("style properties").refresh();
+         }
+    });
 };
 
 NXThemesStyleEditor.getSelectorInContext = function(element, context) {
@@ -143,21 +143,27 @@ NXThemesStyleEditor.selectTag = function(info) {
 };
 
 NXThemesStyleEditor.setCurrentStyleLayer = function(uid) {
-    Seam.Component.getInstance("nxthemesEditorAction").setCurrentStyleLayer(uid,
-        function() {
-          NXThemes.getControllerById('style editor perspectives').switchTo('default');
-          NXThemes.getViewById("element style").refresh();
-        });
+    var url = "/nxthemes/editor/select_style_layer?uid=" + encodeURIComponent(uid); 
+      new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemes.getControllerById('style editor perspectives').switchTo('default');
+             NXThemes.getViewById("element style").refresh();
+         }
+      });
 };
 
 NXThemesStyleEditor.pickPropertyValue = function(info) {
     var target = info.target;
     var category = target.getAttribute('category');
     NXThemesStyleEditor.currentProperty = target.getAttribute('property');
-    Seam.Component.getInstance("nxthemesEditorAction").setStyleCategory(category,
-        function(r) {
-          NXThemes.getControllerById('style editor perspectives').switchTo('style picker');
-        });
+    var url = "/nxthemes/editor/select_style_category?category=" + encodeURIComponent(category); 
+      new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+           NXThemes.getControllerById('style editor perspectives').switchTo('style picker');
+         }
+      });
 };
 
 NXThemesStyleEditor.setStyleEditMode = function(mode, fromMode) {
@@ -167,56 +173,75 @@ NXThemesStyleEditor.setStyleEditMode = function(mode, fromMode) {
     if (fromMode == 'css') {
       NXThemesEditor.updateElementStyleCss();
     }
-    Seam.Component.getInstance("nxthemesEditorAction").setStyleEditMode(mode,
-        function(r) {
-          NXThemes.getViewById("style properties").refresh();
-        });
+    var url = "/nxthemes/editor/select_style_edit_mode?mode=" + encodeURIComponent(mode); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(req) {
+           NXThemes.getViewById("style properties").refresh();
+         }
+    });
 };
 
 NXThemesStyleEditor.setStylePropertyCategory = function(category) {
-    Seam.Component.getInstance("nxthemesEditorAction").setStylePropertyCategory(category,
-        function(r) {
-          NXThemes.getViewById("style properties").refresh();
-        });
+    var url = "/nxthemes/editor/select_style_property_category?category=" + encodeURIComponent(category); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(req) {
+           NXThemes.getViewById("style properties").refresh();
+         }
+    });
 };
 
 NXThemesStyleEditor.makeElementUseNamedStyle = function(select) {
-  var value = select.value;
-  if (value === '') {
-    value = null;
-  }
-  var form = $(select).up("form");
-  var id = form.getAttribute("element");
-  var currentThemeName = form.getAttribute("currentThemeName");
-  Seam.Component.getInstance("nxthemesEditorAction").makeElementUseNamedStyle(id, value, currentThemeName,
-    function(r) {
-      NXThemes.getViewById("element style").refresh();
+    var value = select.value;
+    if (value === '') {
+        value = null;
+    }
+    var form = $(select).up("form");
+    var id = form.getAttribute("element");
+    var theme_name = form.getAttribute("currentThemeName");
+    var style_name = value;
+    var url = "/nxthemes/editor/make_element_use_named_style?id=" + encodeURIComponent(id) + "&theme_name=" + encodeURIComponent(theme_name);
+    if (style_name) { 
+        url += "&style_name=" + encodeURIComponent(style_name);
+    }
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(req) {
+             NXThemes.getViewById("element style").refresh();
+         }
     });
 };
 
 NXThemesStyleEditor.createNamedStyle = function(id, currentThemeName) {
-  var styleName = prompt("Please enter a style name:", "");
-  if (styleName === null) {
-    return;
-  }
-  if (styleName === "") {
-    window.alert("Style names cannot be empty.");
-    return;
-  }
-  Seam.Component.getInstance("nxthemesEditorAction").createNamedStyle(id, styleName, currentThemeName,
-    function(r) {
-      NXThemes.getViewById("element style").refresh();
+    var styleName = prompt("Please enter a style name:", "");
+    if (styleName === null) {
+        return;
+    }
+    if (styleName === "") {
+        window.alert("Style names cannot be empty.");
+        return;
+    }
+    var url = "/nxthemes/editor/create_named_style?id=" + encodeURIComponent(id) + "&style_name=" + encodeURIComponent(styleName) + "&theme_name=" + encodeURIComponent(currentThemeName); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(req) {
+             NXThemes.getViewById("element style").refresh();
+         }
     });
 };
 
 NXThemesStyleEditor.deleteNamedStyle = function(id, currentThemeName, styleName) {
-  var ok = confirm("Deleting style, are you sure?");
-  if (!ok) {
-    return;
-  }
-  Seam.Component.getInstance("nxthemesEditorAction").deleteNamedStyle(id, styleName, currentThemeName,
-    function(r) {
-      NXThemes.getViewById("element style").refresh();
+    var ok = confirm("Deleting style, are you sure?");
+    if (!ok) {
+        return;
+    }
+    var url = "/nxthemes/editor/delete_named_style?id=" + encodeURIComponent(id) + "&style_name=" + encodeURIComponent(styleName) + "&theme_name=" + encodeURIComponent(currentThemeName); 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(req) {
+             NXThemes.getViewById("element style").refresh();
+         }
     });
 };
 

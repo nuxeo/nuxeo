@@ -55,8 +55,13 @@ public class NXThemesPanelDirective implements TemplateDirectiveModel {
         WebContext context = (WebContext) Utils.getWrappedObject("Context", env);
 
         Map<String, String> attributes = Utils.getTemplateDirectiveParameters(params);
-        attributes.put("org.nuxeo.theme.application.path", context.getBasePath());
-        
+        String applicationPath = context.getRequest().getParameter(
+                "org.nuxeo.theme.application.path");
+        if (applicationPath == null) {
+            applicationPath = context.getApplicationPath();
+        }
+        attributes.put("org.nuxeo.theme.application.path", applicationPath);
+
         writer.write(Panel.render(attributes));
     }
 }

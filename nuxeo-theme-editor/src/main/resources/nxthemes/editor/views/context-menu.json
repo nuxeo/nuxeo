@@ -2,15 +2,15 @@
      "area": "nxthemesCanvasArea",
      "widget": {
        "type": "contextmenu",
-       "noIcon": "/nuxeo/nxthemes/editor/icons/noicon-16.png",
-       "arrow":  "/nuxeo/nxthemes/editor/icons/arrow-16.png",
+       "noIcon": "/nuxeo/site/files/nxthemes-editor/icons/noicon-16.png",
+       "arrow":  "/nuxeo/site/files/nxthemes-editor/icons/arrow-16.png",
        "showDisabled": false,
        "items": [
          {"type": "title"
          },
          {"type": "item",
           "label": "Edit",
-          "icon": "/nuxeo/nxthemes/editor/icons/edit-16.png",
+          "icon": "/nuxeo/site/files/nxthemes-editor/icons/edit-16.png",
           "action": "edit element",
           "visible": "editable"
          },
@@ -19,7 +19,7 @@
          {"type": "submenu",
           "label": "Widget",
           "visible": "has widget",
-          "icon": "/nuxeo/nxthemes/editor/icons/set-widget-16.png",
+          "icon": "/nuxeo/site/files/nxthemes-editor/icons/set-widget-16.png",
           "items": [
             {"type": "selection",
              "action": "set element widget",
@@ -29,7 +29,7 @@
          },
          {"type": "item",
           "label": "Style",
-          "icon": "/nuxeo/nxthemes/editor/icons/style-16.png",
+          "icon": "/nuxeo/site/files/nxthemes-editor/icons/style-16.png",
           "action": "change element style",
           "visible": "has style"
          },
@@ -37,13 +37,13 @@
          },
          {"type": "item",
           "label": "Duplicate",
-          "icon": "/nuxeo/nxthemes/editor/icons/duplicate-16.png",
+          "icon": "/nuxeo/site/files/nxthemes-editor/icons/duplicate-16.png",
           "action": "duplicate element",
           "visible": "duplicable"
          },
          {"type": "submenu",
           "label": "Align",
-          "icon": "/nuxeo/nxthemes/editor/icons/align-16.png",
+          "icon": "/nuxeo/site/files/nxthemes-editor/icons/align-16.png",
           "visible": "alignable",
           "items": [
             {"type": "selection",
@@ -54,25 +54,25 @@
          },
          {"type": "item",
           "label": "Padding",
-          "icon": "/nuxeo/nxthemes/editor/icons/padding-16.png",
+          "icon": "/nuxeo/site/files/nxthemes-editor/icons/padding-16.png",
           "action": "set element padding",
           "visible": "has padding"
          },
          {"type": "item",
           "label": "Split",
-          "icon": "/nuxeo/nxthemes/editor/icons/split-16.png",
+          "icon": "/nuxeo/site/files/nxthemes-editor/icons/split-16.png",
           "action": "split element",
           "visible": "splittable"
          },
          {"type": "item",
           "label": "Copy",
-          "icon": "/nuxeo/nxthemes/editor/icons/copy-16.png",
+          "icon": "/nuxeo/site/files/nxthemes-editor/icons/copy-16.png",
           "action": "copy element",
           "visible": "copyable"
          },
          {"type": "item",
           "label": "Paste",
-          "icon": "/nuxeo/nxthemes/editor/icons/paste-16.png",
+          "icon": "/nuxeo/site/files/nxthemes-editor/icons/paste-16.png",
           "action": "paste element",
           "visible": "pastable"
          },
@@ -80,7 +80,7 @@
          },
          {"type": "item",
           "label": "Delete",
-          "icon": "/nuxeo/nxthemes/editor/icons/delete-16.png",
+          "icon": "/nuxeo/site/files/nxthemes-editor/icons/delete-16.png",
           "action": "delete element",
           "confirm": "Deleting, are you sure?",
           "visible": "deletable"
