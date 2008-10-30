@@ -25,8 +25,6 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.core.MediaType;
-
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
@@ -35,12 +33,6 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
  *
  */
 public class Template {
-
-    protected static final Map<String,String> mediaTypeNames = new HashMap<String, String>();
-    static {
-        mediaTypeNames.put(MediaType.APPLICATION_ATOM_XML, "atom");
-        mediaTypeNames.put(MediaType.APPLICATION_JSON, "json");
-    }
 
     protected final Resource resource;
     protected Map<String, Object> args;

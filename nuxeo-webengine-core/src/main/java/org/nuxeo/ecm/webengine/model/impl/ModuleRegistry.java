@@ -112,9 +112,14 @@ public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleD
         return object.fragment == null || object.fragment.length() == 0;
     }
 
-    public void registerDescriptor(File root, ModuleDescriptor desc) {
+    public boolean registerDescriptor(File root, ModuleDescriptor desc) {
+        // avoid loading twice the same module
+        if (moduleRoots.containsKey(root.getName())) {
+            return false;
+        }
         desc.directory = root;
         addFragment(desc.name, desc, desc.base);
+        return true;
     }
 
     public void unregisterDescriptor(ModuleDescriptor desc) {

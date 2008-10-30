@@ -31,6 +31,7 @@ import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.exceptions.WebDeployException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RuntimeContext;
@@ -45,8 +46,8 @@ public class Installer {
 
     private static final Log log = LogFactory.getLog(Installer.class);
 
-    @XNode("@guard")
-    public String guard;
+    @XNode("@module")
+    public String module;
 
     @XNodeList(value="copy", type=ArrayList.class, componentType=CopyOperation.class)
     private List<CopyOperation> copyOperations;
@@ -86,8 +87,8 @@ public class Installer {
 
     public void install(RuntimeContext ctx, File installDir) {
         this.ctx = ctx;
-        if (guard != null) {
-            if (new File(installDir, guard).exists()) {
+        if (module != null) {
+            if (new File(installDir, module).exists()) {
                 return;
             }
         }
@@ -115,6 +116,10 @@ public class Installer {
                 for (AppendOperation append : appendOperations) {
                     append.run(this, bundleDir, installDir);
                 }
+            }
+            if (module != null) {
+                WebEngine engine = Framework.getService(WebEngine.class);
+                engine.loadModule(new File(engine.getRootDirectory(), module));
             }
         } catch (Exception e) {
             throw new WebDeployException("Installation failed for bundle: "+ctx.getBundle().getSymbolicName(), e);

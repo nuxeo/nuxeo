@@ -220,33 +220,44 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         };
     }
 
+    /**
+     * Try to load the module in the given directory
+     * If the directory dooesn't contain a WebModule nfalse is returned. 
+     * @param file the module directory
+     */
+    public  boolean loadModule(File file) throws Exception {
+        ModuleDescriptor ad = null;
+        File appFile = new File(file, "Main.groovy");
+        if (appFile.isFile()) {
+            ad = loadModuleDescriptor(file.getName()+".Main");
+            appFile = new File(file, "module.xml");
+            if (appFile.isFile()) {
+                ModuleDescriptor ad2 = loadModuleDescriptor(appFile);
+                ad.links = ad2.links;
+                ad2.links = null;
+            }
+        } else {
+            appFile = new File(file, "module.xml");
+            if (appFile.isFile()) {
+                ad = loadModuleDescriptor(appFile);
+            }
+        }
+        if (ad != null) {
+            moduleReg.registerDescriptor(file, ad);
+            if (notifier != null) {
+                notifier.watch(file);
+            }
+            return true;
+        }        
+        return false;
+    }
+    
     protected  void loadModules() {
         moduleReg = new ModuleRegistry(this);
         for (File file : root.listFiles()) {
             try {
                 if (file.isDirectory()) {
-                    ModuleDescriptor ad = null;
-                    File appFile = new File(file, "Main.groovy");
-                    if (appFile.isFile()) {
-                        ad = loadModuleDescriptor(file.getName()+".Main");
-                        appFile = new File(file, "module.xml");
-                        if (appFile.isFile()) {
-                            ModuleDescriptor ad2 = loadModuleDescriptor(appFile);
-                            ad.links = ad2.links;
-                            ad2.links = null;
-                        }
-                    } else {
-                        appFile = new File(file, "module.xml");
-                        if (appFile.isFile()) {
-                            ad = loadModuleDescriptor(appFile);
-                        }
-                    }
-                    if (ad != null) {
-                        moduleReg.registerDescriptor(file, ad);
-                        if (notifier != null) {
-                            notifier.watch(file);
-                        }
-                    }
+                    loadModule(file);
                 }
             } catch (Exception e) {
                 e.printStackTrace(); // TODO log
@@ -426,8 +437,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
             log.info("File changed: "+entry.file);
             loadMessageBundle();
         } else if (type == FileChangeListener.DELETED || type ==FileChangeListener.CREATED) {
-            // FIXME: this can't work, comparison between a String and a File
-            if (entry.file.getParent().equals(root)) {
+            if (entry.file.getParentFile().equals(root)) {
                 log.info("File changed: "+entry.file);
                 reload();
             } else {
