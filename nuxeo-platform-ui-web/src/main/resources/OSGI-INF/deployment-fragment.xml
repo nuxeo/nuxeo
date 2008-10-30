@@ -101,10 +101,6 @@
 
   <extension target="web#FIRST-FILTER">
 
-    <!-- auth filter mapping -->
-
-
-
     <filter>
       <display-name>Nuxeo Fancy URL Filter</display-name>
       <filter-name>NuxeoFancyURLFilter</filter-name>
@@ -142,8 +138,8 @@
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
 
-
     <!-- filter for web services configuration -->
+
     <filter>
       <filter-name>Seam Context Filter</filter-name>
       <filter-class>org.jboss.seam.web.ContextFilter</filter-class>
@@ -273,22 +269,22 @@
     </context-param>
 
     <!-- glefter: leave this set to false for now
-        if true, chainSelects are not updated properly - issue NXP-589
-        -->
+      if true, chainSelects are not updated properly - issue NXP-589
+    -->
     <context-param>
       <param-name>facelets.DEVELOPMENT</param-name>
       <param-value>false</param-value>
     </context-param>
 
     <!-- When a page is requested, what interval in seconds should the compiler
-        check for changes. If you don't want the compiler to check for changes
-        once the page is compiled, then use a value of -1.
-
-        Setting a low refresh period helps during development to be able to edit
-        pages in a running application but slows down page rendering.
-
-        Default: 2 seconds.
-        -->
+      check for changes. If you don't want the compiler to check for changes
+      once the page is compiled, then use a value of -1.
+      
+      Setting a low refresh period helps during development to be able to edit
+      pages in a running application but slows down page rendering.
+      
+      Default: 2 seconds.
+    -->
     <context-param>
       <param-name>facelets.REFRESH_PERIOD</param-name>
       <param-value>-1</param-value>
@@ -579,36 +575,36 @@
   </extension>
 
   <!-- uncomment that to enable filter based auth
-      <extension target="web#SECURITY-CONSTRAINT">
-      <security-constraint>
-      <web-resource-collection>
-      <web-resource-name>Secure area</web-resource-name>
-      <description>Security for Protected Pages</description>
-      <url-pattern>*.faces</url-pattern>
-      <http-method>HEAD</http-method>
-      <http-method>GET</http-method>
-      <http-method>POST</http-method>
-      <http-method>PUT</http-method>
-      <http-method>DELETE</http-method>
-      </web-resource-collection>
-      <web-resource-collection>
-      <web-resource-name>Secure area nxdoc</web-resource-name>
-      <description>Security for Protected Pages</description>
-      <url-pattern>/nxdoc/*</url-pattern>
-      <url-pattern>/nxpath/*</url-pattern>
-      <http-method>HEAD</http-method>
-      <http-method>GET</http-method>
-      <http-method>POST</http-method>
-      <http-method>PUT</http-method>
-      <http-method>DELETE</http-method>
-      </web-resource-collection>
-      <auth-constraint>
-      <description>Only the regular users can see this</description>
-      <role-name>regular</role-name>
-      </auth-constraint>
-      </security-constraint>
-      </extension>
-      -->
+    <extension target="web#SECURITY-CONSTRAINT">
+    <security-constraint>
+    <web-resource-collection>
+    <web-resource-name>Secure area</web-resource-name>
+    <description>Security for Protected Pages</description>
+    <url-pattern>*.faces</url-pattern>
+    <http-method>HEAD</http-method>
+    <http-method>GET</http-method>
+    <http-method>POST</http-method>
+    <http-method>PUT</http-method>
+    <http-method>DELETE</http-method>
+    </web-resource-collection>
+    <web-resource-collection>
+    <web-resource-name>Secure area nxdoc</web-resource-name>
+    <description>Security for Protected Pages</description>
+    <url-pattern>/nxdoc/*</url-pattern>
+    <url-pattern>/nxpath/*</url-pattern>
+    <http-method>HEAD</http-method>
+    <http-method>GET</http-method>
+    <http-method>POST</http-method>
+    <http-method>PUT</http-method>
+    <http-method>DELETE</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+    <description>Only the regular users can see this</description>
+    <role-name>regular</role-name>
+    </auth-constraint>
+    </security-constraint>
+    </extension>
+  -->
 
   <extension target="faces-config#CONVERTER">
 
