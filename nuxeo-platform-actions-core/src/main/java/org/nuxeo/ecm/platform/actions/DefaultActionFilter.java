@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.actions.elcache.CachedJEXLManager;
 import org.nuxeo.runtime.expression.Context;
 import org.nuxeo.runtime.expression.JexlExpression;
 
@@ -251,7 +252,7 @@ public class DefaultActionFilter implements ActionFilter {
 
         for (String condition : conditions) {
             try {
-                JexlExpression exp = new JexlExpression(condition);
+                JexlExpression exp = CachedJEXLManager.getExpression(condition);
                 Context ctx = new Context();
                 ctx.put("document", doc);
                 ctx.put("principal", currentPrincipal);
