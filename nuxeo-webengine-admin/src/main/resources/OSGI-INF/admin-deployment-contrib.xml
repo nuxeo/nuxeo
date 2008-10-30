@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.admin.deployment">
+
+	<extension
+		target="org.nuxeo.ecm.webengine.WebEngineComponent"
+		point="install">
+
+	    <install guard="/admin">
+	      <copy path="web/admin" target="/" />
+	      <copy path="web/resources" target="/" />
+	      <append path="web/i18n/messages.properties" target="/i18n/messages.properties"/>
+	    </install>
+
+	</extension>
+
+</component>

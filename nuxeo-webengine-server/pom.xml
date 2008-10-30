@@ -160,6 +160,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-admin</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-wiki</artifactId>
     </dependency>
 
