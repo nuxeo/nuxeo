@@ -37,6 +37,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -117,6 +118,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
             EventNames.DOMAIN_SELECTION_CHANGED,
             EventNames.LOCATION_SELECTION_CHANGED,
             AuditEventTypes.HISTORY_CHANGED }, create = false, inject = false)
+   @BypassInterceptors
     public void invalidateLogEntries() {
         log.debug("Invalidate log entries.................");
         logEntries = null;
