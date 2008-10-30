@@ -58,6 +58,9 @@ public class UserSession extends HashMap<String, Object> implements HttpSessionB
 
 
     public static UserSession getCurrentSession(HttpSession session) {
+        if (session == null) {
+            return null;
+        }
         return (UserSession) session.getAttribute("nuxeo.webengine.user_session");
     }
 
@@ -66,7 +69,9 @@ public class UserSession extends HashMap<String, Object> implements HttpSessionB
 //        if (currentUs != null) {
 //
 //        }
-        session.setAttribute("nuxeo.webengine.user_session", us);
+        if (session != null) {
+            session.setAttribute("nuxeo.webengine.user_session", us);
+        }
     }
 
     public static UserSession getAnonymousSession(UserManager mgr) throws ClientException {

@@ -47,6 +47,10 @@ public class WebEngineSessionManager extends DefaultSessionManager {
             userSession = new UserSession(cachebleUserInfo.getPrincipal(),
                     cachebleUserInfo.getUserInfo().getPassword());
         }
+        // check for a valid session
+        if (httpSession == null) {
+            httpSession = ((HttpServletRequest)request).getSession();
+        }
         UserSession.setCurrentSession(httpSession, userSession);
     }
 
