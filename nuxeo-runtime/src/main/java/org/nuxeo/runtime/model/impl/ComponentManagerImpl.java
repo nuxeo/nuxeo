@@ -200,7 +200,7 @@ public class ComponentManagerImpl implements ComponentManager {
                     }
                 }
 
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log.error("Failed to create component: " + ri.name, e);
             }
 
