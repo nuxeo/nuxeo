@@ -1,8 +1,0 @@
-    {"id": "style css",
-     "widget": {
-       "type": "stylecss"
-     },
-     "model": "theme editor",
-     "controllers": ["editor perspectives"],
-     "perspectives": ["edit canvas","add fragments","edit padding"]
-    }

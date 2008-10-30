@@ -1,8 +1,0 @@
-  {"id": "theme switcher",
-   "type": "behaviour",
-   "rules": {
-      "a.switcher": {
-        "click": "switch theme"
-      }
-   }
-  }

@@ -1,8 +1,0 @@
-    {"id": "style preview",
-     "widget": {
-       "type": "stylepreview"
-     },
-     "model": "theme editor",
-     "controllers": ["style editor perspectives"],
-     "perspectives": ["default"]
-    }

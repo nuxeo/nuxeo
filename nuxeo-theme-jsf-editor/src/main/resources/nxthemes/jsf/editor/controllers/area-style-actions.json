@@ -1,7 +1,0 @@
-  {"id": "area style actions",
-   "type": "behaviour",
-   "rules": {
-     "img.picker": {
-       "click": "set area style"
-     }
-  }}

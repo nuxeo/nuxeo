@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: NXThemes JSF editor
-Bundle-SymbolicName: org.nuxeo.theme.jsf.editor;singleton:=true
-Bundle-Vendor: Chalmers
-Nuxeo-Component: OSGI-INF/nxthemes-jsf-editor-contrib.xml
-Bundle-Localization: bundle
-Bundle-Version: ${eclipseVersion}-r${buildNumber}
-Require-Bundle: org.nuxeo.theme.jsf
