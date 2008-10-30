@@ -42,6 +42,9 @@
   </extension>
 
   <extension target="web#STD-AUTH-FILTER">
+
+    <!-- auth filter configuration, filter is defined in web-common -->
+
     <filter-mapping>
       <filter-name>NuxeoAuthenticationFilter</filter-name>
       <url-pattern>*.faces</url-pattern>
@@ -133,29 +136,32 @@
 
     <filter-mapping>
       <filter-name>Seam Filter</filter-name>
-      <url-pattern>/*</url-pattern>
+      <url-pattern>*.seam</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>Seam Filter</filter-name>
+      <url-pattern>*.faces</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>Seam Filter</filter-name>
+      <url-pattern>*.xhtml</url-pattern>
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
 
     <!-- filter for web services configuration -->
-
     <filter>
       <filter-name>Seam Context Filter</filter-name>
       <filter-class>org.jboss.seam.web.ContextFilter</filter-class>
     </filter>
-
-    <filter>
-      <display-name>Nuxeo Simple Cache Filter</display-name>
-      <filter-name>simpleCacheFilter</filter-name>
-      <filter-class>
-        org.nuxeo.ecm.platform.ui.web.cache.SimpleCacheFilter
-      </filter-class>
-      <init-param>
-        <param-name>cacheTime</param-name>
-        <param-value>3600</param-value>
-      </init-param>
-    </filter>
+    
+    <!-- simple cache filter configuration, filter is defined in web-common -->
 
     <filter-mapping>
       <filter-name>simpleCacheFilter</filter-name>
@@ -194,7 +200,7 @@
 
     <filter-mapping>
       <filter-name>simpleCacheFilter</filter-name>
-      <url-pattern>/a4j.res/*</url-pattern>
+      <url-pattern>/a4j_3_2_1-SNAPSHOT*</url-pattern>
     </filter-mapping>
 
   </extension>
