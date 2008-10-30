@@ -38,6 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
@@ -692,6 +693,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
     /*
      * Called by document_publish.xhtml
      */
+    @Factory(autoCreate=true,scope=ScopeType.EVENT, value="currentPublishingSectionsModel")
     public SelectDataModel getSectionsModel() throws ClientException {
         if (sectionsModel == null) {
             getSectionsSelectModel();

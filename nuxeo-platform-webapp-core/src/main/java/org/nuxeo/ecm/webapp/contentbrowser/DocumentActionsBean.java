@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -148,6 +149,7 @@ public class DocumentActionsBean extends InputController implements
         log.debug("PostActivate");
     }
 
+    @Factory(autoCreate=true, value="currentDocumentType", scope = ScopeType.EVENT)
     public Type getCurrentType() {
         DocumentModel doc = navigationContext.getCurrentDocument();
         if (doc == null) {

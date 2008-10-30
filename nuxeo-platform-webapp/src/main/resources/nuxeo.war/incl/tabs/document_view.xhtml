@@ -18,12 +18,12 @@
     <ui:include src="/incl/lock_details.xhtml" />
   </a4j:outputPanel>
 
-  <c:if test="#{empty documentActions.currentType.layout}">
+  <c:if test="#{empty currentDocumentType.layout}">
     <nxl:documentLayout mode="view" value="#{currentDocument}" />
   </c:if>
 
-  <h:dataTable var="field" value="#{documentActions.currentType.layout}"
-    rendered="#{!empty documentActions.currentType.layout}"
+  <h:dataTable var="field" value="#{currentDocumentType.layout}"
+    rendered="#{!empty currentDocumentType.layout}"
     class="dataInput" columnClasses="labelColumn, fieldColumn">
     <h:column>
       <h:outputText value="#{messages[field.displayLabel]}" />
@@ -67,12 +67,12 @@
             <h:outputLink
               value="#{nxd:liveEditUrl(changeableDocument, field.schemaName, field.fieldName, 'filename')}">
               <h:outputText value="#{messages['label.document.directEdit']}" />
-            </h:outputLink> 
+            </h:outputLink>
             <h:outputText value=" | " />
             <h:outputLink
               value="#{nxd:liveCreateFromTemplateUrl(changeableDocument, field.schemaName, field.fieldName, 'File', 'file', 'content','filename')}">
               <h:outputText value="#{messages['label.document.directCreateFromTemplate']}" />
-            </h:outputLink> 
+            </h:outputLink>
 
           </h:panelGroup>
         </nxu:methodResult>
@@ -120,7 +120,7 @@
   <h:outputText value="${messages[currentDocument.currentLifeCycleState]}" />
   <c:if test="#{deleteActions.trashManagementEnabled}">
     <h:outputText/>
-    <h:commandButton type="submit" value="#{messages['command.undeleteDocs']}" 
+    <h:commandButton type="submit" value="#{messages['command.undeleteDocs']}"
       styleClass="button" action="#{deleteActions.restoreCurrentDocument}"
       rendered="#{deleteActions.canRestoreCurrentDoc}" />
   </c:if>
@@ -134,9 +134,9 @@
   columnClasses="labelColumn, fieldColumn"
   rendered="#{versionable}">
   <h:outputText value="#{messages['label.versioning.currentVersion']}"
-    rendered="#{documentVersioning.uidInfoAvailable}"/>
+    rendered="#{currentDocumentVersionInfo.available}"/>
   <h:panelGroup>
-    <nxh:outputText value="#{documentVersioning.getVersionLabel(currentDocument)}" />
+    <nxh:outputText value="#{currentDocumentVersionInfo.versionLabel}" />
   </h:panelGroup>
 </h:panelGrid>
 </nxu:methodResult>

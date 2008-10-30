@@ -29,11 +29,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.web.RequestParameter;
+import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.remoting.WebRemote;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -47,12 +49,14 @@ import org.nuxeo.ecm.platform.transform.api.TransformServiceDelegate;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformServiceCommon;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.cache.ThreadSafeCacheHolder;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:florent.bonnet@nuxeo.com">Florent BONNET</a>
  */
 @Name("conversionActions")
+@Scope(ScopeType.EVENT)
 @Transactional
 public class ConversionActionBean implements ConversionAction {
 
@@ -72,6 +76,8 @@ public class ConversionActionBean implements ConversionAction {
 
     @RequestParameter
     private String filename;
+
+    protected static ThreadSafeCacheHolder<Boolean> exportableToPDFCache = new ThreadSafeCacheHolder<Boolean>(20);
 
     @Remove
     public void destroy() {
@@ -114,14 +120,26 @@ public class ConversionActionBean implements ConversionAction {
         return isSupported;
     }
 
+
     @WebRemote
     public boolean isFileExportableToPDF(String fieldName) {
         boolean isSupported = false;
 
         try {
-            String mimetype = getMimetypeFromDocument(fieldName);
-            TransformServiceCommon nxt = TransformServiceDelegate.getRemoteTransformService();
-            isSupported = nxt.isMimetypeSupportedByPlugin("any2pdf", mimetype);
+            DocumentModel doc = getDocument();
+
+            Boolean cacheResult = exportableToPDFCache.getFromCache(doc, fieldName);
+            if (cacheResult==null)
+            {
+                String mimetype = getMimetypeFromDocument(fieldName);
+                TransformServiceCommon nxt = TransformServiceDelegate.getRemoteTransformService();
+                isSupported = nxt.isMimetypeSupportedByPlugin("any2pdf", mimetype);
+                exportableToPDFCache.addToCache(doc, fieldName, isSupported);
+            }
+            else
+            {
+                isSupported=cacheResult.booleanValue();
+            }
         } catch (TransformException e) {
             log.error("error asking the any2pdf plugin whether " + fieldName
                     + " is supported: ",e);
@@ -131,6 +149,7 @@ public class ConversionActionBean implements ConversionAction {
 
         return isSupported;
     }
+
 
     @WebRemote
     public String generatePdfFile() {

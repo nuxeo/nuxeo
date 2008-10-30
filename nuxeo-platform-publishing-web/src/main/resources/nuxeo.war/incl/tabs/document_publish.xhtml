@@ -12,22 +12,20 @@
 <h:outputText value="#{messages['label.publish.noversions.available']}"
   rendered="#{!documentVersioning.uidDataAvailable}"/>
 
-<nxu:methodResult value="#{publishActions.getSectionsModel()}" name="documents">
 <f:subview
-  rendered="#{documents != null and documentVersioning.uidDataAvailable}">
-
+  rendered="#{currentPublishingSectionsModel != null and documentVersioning.uidDataAvailable}">
   <h:form >
     <h:outputText value="#{messages['label.sections.not.defined']}"
-      rendered="#{documents.rowCount == 0}" />
-    <nxu:dataTable id="dataTable" value="#{documents.rows}" var="row"
+      rendered="#{currentPublishingSectionsModel.rowCount == 0}" />
+    <nxu:dataTable id="dataTable" value="#{currentPublishingSectionsModel.rows}" var="row"
       rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput"
-      rendered="#{documents.rowCount > 0}">
+      rendered="#{currentPublishingSectionsModel.rowCount > 0}">
       <!-- id and selection -->
       <nxu:column styleClass="iconColumn" rendered="true">
         <!-- XXX AT: select all buggy right now -->
         <f:facet name="header">
           <h:selectBooleanCheckbox rendered="false"
-            onclilck="selectDataTablePage('#{documents.name}', this.checked)">
+            onclilck="selectDataTablePage('#{currentPublishingSectionsModel.name}', this.checked)">
           </h:selectBooleanCheckbox>
         </f:facet>
         <h:selectBooleanCheckbox value="#{row.selected}"
@@ -66,10 +64,10 @@
     </h:column>
 
     </nxu:dataTable>
-    <f:subview rendered="#{documents.rowCount != 0}">
+    <f:subview rendered="#{currentPublishingSectionsModel.rowCount != 0}">
       <ui:include src="/incl/publish_buttons.xhtml" />
     </f:subview>
   </h:form>
 </f:subview>
-</nxu:methodResult>
+
 </div>

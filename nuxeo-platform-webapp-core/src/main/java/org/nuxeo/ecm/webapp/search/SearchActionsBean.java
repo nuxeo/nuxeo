@@ -185,6 +185,7 @@ public class SearchActionsBean extends InputController implements
     // business methods
     //
 
+    @BypassInterceptors
     public String getSimpleSearchKeywords() {
         return simpleSearchKeywords;
     }
@@ -201,6 +202,7 @@ public class SearchActionsBean extends InputController implements
         nxql = k;
     }
 
+    @BypassInterceptors
     public String getSearchTypeId() {
         return searchTypeId.name();
     }

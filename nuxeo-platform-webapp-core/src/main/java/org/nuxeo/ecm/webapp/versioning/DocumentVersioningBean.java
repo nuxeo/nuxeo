@@ -146,6 +146,14 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return getIncRulesResult();
     }
 
+
+    @Factory(autoCreate=true, value="currentDocumentVersionInfo", scope=org.jboss.seam.ScopeType.EVENT)
+    public VersionInfo getCurrentDocumentVersionInfo() throws ClientException{
+            DocumentModel docModel = navigationContext.getCurrentDocument();
+            VersionInfo vInfo = new VersionInfo(getVersionLabel(docModel),getUidInfoAvailable());
+            return vInfo;
+    }
+
     /**
      * Get incrementation rules text info. If this is null, inc options for user
      * selection could be rendered. Otherwise this info could be shown to the

@@ -150,7 +150,7 @@ public class SubscriptionsAction extends InputController implements
         getNotificationsList();
     }
 
-    @Observer(EventNames.DOCUMENT_SELECTION_CHANGED)
+    @Observer(value=EventNames.DOCUMENT_SELECTION_CHANGED, create=false)
     @BypassInterceptors
     public void invalidateNotificationsSelection() {
         log.debug("Invalidate archive records.................");
