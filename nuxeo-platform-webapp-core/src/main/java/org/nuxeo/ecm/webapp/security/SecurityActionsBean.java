@@ -40,14 +40,13 @@ import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.usertype.UserVersionType;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.i18n.Labeler;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -59,7 +58,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -88,9 +86,6 @@ public class SecurityActionsBean extends InputController implements
         SecurityActions, Serializable {
 
     private static final long serialVersionUID = -7190826911734958662L;
-
-    // XXX temporary
-    protected static final String ADMIN_GROUP = "administrators";
 
     protected static final String[] SEED_PERMISSIONS_TO_CHECK = {
             SecurityConstants.WRITE_SECURITY, SecurityConstants.READ_SECURITY };
@@ -170,7 +165,7 @@ public class SecurityActionsBean extends InputController implements
                 obsoleteSecurityData = false;
             }
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -316,7 +311,7 @@ public class SecurityActionsBean extends InputController implements
             return null;
 
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -525,7 +520,7 @@ public class SecurityActionsBean extends InputController implements
                     "WriteSecurity")
                     && !getDataTableModel().getSelectedRows().isEmpty();
         } catch (Exception e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -611,7 +606,7 @@ public class SecurityActionsBean extends InputController implements
                 securityData.addModifiablePrivilege(currentUser.getName(),
                         SecurityConstants.EVERYTHING, true);
                 // add administrators to avoid LockUp
-                securityData.addModifiablePrivilege(ADMIN_GROUP,
+                securityData.addModifiablePrivilege(SecurityConstants.ADMINISTRATORS,
                         SecurityConstants.EVERYTHING, true);
             }
         } else {

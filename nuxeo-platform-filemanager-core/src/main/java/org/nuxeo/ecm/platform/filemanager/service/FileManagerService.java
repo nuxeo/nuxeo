@@ -415,7 +415,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     private void registerUnicityOptions(UnicityExtension unicityExtension,
-            Extension extension) throws Exception {
+            Extension extension) {
         if (unicityExtension.getAlgo() != null) {
             digestAlgorithm = unicityExtension.getAlgo();
         }
@@ -440,32 +440,26 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         String className = pluginExtension.getClassName();
         boolean enabled = pluginExtension.isEnabled();
 
-        if (fileImporters.containsKey(name))
-        {
+        if (fileImporters.containsKey(name)) {
             log.info("Overriding FileImporter plugin " + name);
-            if (className!=null)
-            {
-                Plugin plugin = (Plugin) extension.getContext().loadClass(className).newInstance();
+            if (className != null) {
+                Plugin plugin = (Plugin) extension.getContext().loadClass(
+                        className).newInstance();
                 plugin.setName(name);
                 plugin.setFilters(filters);
                 plugin.setFileManagerService(this);
                 plugin.setEnabled(enabled);
                 fileImporters.put(name, plugin);
-            }
-            else
-            {
+            } else {
                 Plugin plugin = fileImporters.get(name);
 
-                if (filters!=null && filters.size()>0)
-                {
+                if (filters != null && filters.size() > 0) {
                     plugin.setFilters(filters);
                 }
                 plugin.setEnabled(enabled);
                 plugin.setFileManagerService(this);
             }
-        }
-        else
-        {
+        } else {
             Plugin plugin = (Plugin) extension.getContext().loadClass(className).newInstance();
             plugin.setName(name);
             plugin.setFilters(filters);
@@ -534,9 +528,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     private void unregisterCreationContainerListProvider(
-            CreationContainerListProviderDescriptor ccListProviderDescriptor)
-            throws Exception {
-
+            CreationContainerListProviderDescriptor ccListProviderDescriptor) {
         String name = ccListProviderDescriptor.getName();
         CreationContainerListProvider providerToRemove = null;
         for (CreationContainerListProvider provider : creationContainerListProviders) {
@@ -567,16 +559,15 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return base64Digest;
     }
 
+    // FIXME: infinite recursion!
     public boolean isFileAlreadyPresentInPath(String path, Blob blob,
             Principal principal) {
         return isFileAlreadyPresentInPath(path, blob, principal);
-
     }
 
     public boolean isFileAlreadyPresentInPath(String path, String digest,
             Principal principal) throws SearchException, QueryException {
         int maxResultsCount = 15;
-        long nbresult = -1;
         // TODO: OG: we should use an overridable query model instead of
         // hardcoding the NXQL query
         String nxql = "SELECT * FROM Document WHERE file:content:digest = "
@@ -585,18 +576,15 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         ComposedNXQueryImpl query = new ComposedNXQueryImpl(
                 SQLQueryParser.parse(nxql),
                 service.getSearchPrincipal(principal));
-        SearchPageProvider nxqlProvider;
-        nxqlProvider = new SearchPageProvider(service.searchQuery(query, 0,
-                maxResultsCount), false, null, nxql);
+        SearchPageProvider nxqlProvider = new SearchPageProvider(
+                service.searchQuery(query, 0, maxResultsCount), false, null,
+                nxql);
 
-        nbresult = nxqlProvider.getResultsCount();
-        if (nbresult != 0) {
-            return false;
-        } else {
-            return true;
-        }
+        long nbresult = nxqlProvider.getResultsCount();
+        return nbresult == 0;
     }
 
+    // FIXME: infinite recursion
     public List<DocumentLocation> findExistingDocumentWithFile(String path,
             Blob blob, Principal principal) {
         return findExistingDocumentWithFile(path, blob, principal);
@@ -615,16 +603,16 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         ComposedNXQueryImpl query = new ComposedNXQueryImpl(
                 SQLQueryParser.parse(nxql),
                 service.getSearchPrincipal(principal));
-        SearchPageProvider nxqlProvider = null;
-        nxqlProvider = new SearchPageProvider(service.searchQuery(query, 0,
-                maxResultsCount), false, null, nxql);
+        SearchPageProvider nxqlProvider = new SearchPageProvider(
+                service.searchQuery(query, 0, maxResultsCount), false, null,
+                nxql);
 
         nxqlProvider.getResultsCount();
         DocumentModelList documentModelList = nxqlProvider.getCurrentPage();
         List<DocumentLocation> docLocationList = new ArrayList<DocumentLocation>();
-        DocumentLocation docLocation;
         for (DocumentModel documentModel : documentModelList) {
-            docLocation = new DocumentLocationImpl(documentModel);
+            DocumentLocation docLocation = new DocumentLocationImpl(
+                    documentModel);
             docLocationList.add(docLocation);
         }
         return docLocationList;

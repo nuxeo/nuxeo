@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://project.nuxeo.com/geide/schemas/uid/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="uid2" type="xs:string" />
+
+</xs:schema>
+
+

@@ -43,8 +43,9 @@ public abstract class AbstractDirectory implements Directory {
     protected final DirectoryCache cache = new DirectoryCache();
 
     /**
-     * Invalidate my cache and the caches of linked directories by references
-     * @throws ClientException
+     * Invalidate my cache and the caches of linked directories by references.
+     *
+     * @throws DirectoryException
      */
     public void invalidateCaches() throws DirectoryException {
         cache.invalidateAll();

@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.jboss.seam.annotations.In;
@@ -39,11 +40,12 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-
 @Name("pluginUploadRestlet")
 @Scope(EVENT)
-public class PluginUploadRestlet extends BaseNuxeoRestlet {
+public class PluginUploadRestlet extends BaseNuxeoRestlet implements
+        Serializable {
 
+    private static final long serialVersionUID = 1L;
 
     @In(create = true)
     protected NavigationContext navigationContext;
@@ -73,8 +75,8 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet {
         try {
             if (navigationContext.getCurrentServerLocation() == null) {
                 // init context if needed
-                navigationContext.setCurrentServerLocation(
-                        new RepositoryLocation(repo));
+                navigationContext.setCurrentServerLocation(new RepositoryLocation(
+                        repo));
             }
 
             documentManager = navigationContext.getOrCreateDocumentManager();

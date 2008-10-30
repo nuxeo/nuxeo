@@ -114,6 +114,7 @@ public class IndexingDocumentModelPrefetchedListener extends
         return typeManager;
     }
 
+    @Override
     public void notifyEvent(CoreEvent event) throws Exception {
 
         String eventId = event.getEventId();
@@ -130,9 +131,8 @@ public class IndexingDocumentModelPrefetchedListener extends
 
 
         if (dm.getContextData(EventMessage.BLOCK_SYNC_INDEXING) != null
-                && (Boolean) dm.getContextData(EventMessage.BLOCK_SYNC_INDEXING) == true) {
-            log.debug("sync indexing is blocked for doc "
-                    + dm.getRef().toString());
+                && (Boolean) dm.getContextData(EventMessage.BLOCK_SYNC_INDEXING)) {
+            log.debug("sync indexing is blocked for doc " + dm.getRef().toString());
             return;
         }
 
@@ -238,8 +238,7 @@ public class IndexingDocumentModelPrefetchedListener extends
         }
     }
 
-    public static IndexableResources computeResourcesFor(DocumentModel dm)
-            throws IndexingException {
+    public static IndexableResources computeResourcesFor(DocumentModel dm) {
         return IndexableResourcesFactory.computeResourcesFor(dm,
                 dm.getSessionId());
     }

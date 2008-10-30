@@ -16,6 +16,7 @@
 package org.nuxeo.ecm.platform.ui.web.component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -130,9 +131,7 @@ public class UISelectItems extends javax.faces.component.UISelectItems {
                 if (currentItem instanceof SelectItemGroup) {
                     SelectItemGroup itemGroup = (SelectItemGroup) currentItem;
                     SelectItem[] itemsFromGroup = itemGroup.getSelectItems();
-                    for (SelectItem item : itemsFromGroup) {
-                        items.add(item);
-                    }
+                    items.addAll(Arrays.asList(itemsFromGroup));
                 } else {
                     putIteratorToRequestParam(currentItem);
                     SelectItem selectItem = createSelectItem();

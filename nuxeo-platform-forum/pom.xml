@@ -5,7 +5,7 @@
   <parent>
     <artifactId>nuxeo-platform-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <version>5.1.7-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-forum</artifactId>
@@ -30,6 +30,7 @@
       <artifactId>nuxeo-platform-comment-web</artifactId>
       <type>ejb</type>
     </dependency>
+ 
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-ui-web</artifactId>
@@ -59,7 +60,7 @@
     </dependency>
     <dependency>
       <groupId>javax.ejb</groupId>
-      <artifactId>ejb</artifactId>
+      <artifactId>ejb-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.faces</groupId>
@@ -67,6 +68,10 @@
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
+      <artifactId>jboss-j2ee</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
     </dependency>
   </dependencies>

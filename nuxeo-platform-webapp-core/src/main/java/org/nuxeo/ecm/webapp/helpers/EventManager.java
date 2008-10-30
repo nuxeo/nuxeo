@@ -103,7 +103,7 @@ public class EventManager implements Serializable {
      * call is ended. Intended to be used when a document gets selected. If the
      * docType is NULL then the GO_HOME event is fired.
      *
-     * @param docType
+     * @param document
      * @return events fired
      */
     public static List<String> raiseEventsOnDocumentSelected(DocumentModel document) {
@@ -151,11 +151,11 @@ public class EventManager implements Serializable {
     }
 
     /**
-     * Fires the necessary events so that the nuxeo infrastructure componets get
+     * Fires the necessary events so that the nuxeo infrastructure components get
      * updated. The raised events will be processed immediately, before this
      * call is ended. Intended to be used when a document gets edited/changed.
      *
-     * @param docType
+     * @param document
      * @return events fired
      */
     public static List<String> raiseEventsOnDocumentChange(DocumentModel document) {
@@ -188,9 +188,9 @@ public class EventManager implements Serializable {
      * Fires the necessary events so that the nuxeo infrastructure components get
      * updated. The raised events will be processed immediately, before this
      * call is ended. Intended to be used when a the content of a folderish
-     *  document gets changed.
+     * document gets changed.
      *
-     * @param docType
+     * @param document
      * @return events fired
      */
     public static List<String> raiseEventsOnDocumentChildrenChange(DocumentModel document) {
