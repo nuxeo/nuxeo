@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<module>
+  <links>
+    
+    <link id="link_print" path="/@views/print">
+      <category>TOOLBOX</category>
+    </link>
+
+    
+    <link id="link_help" path="/help">
+      <category>HELP</category>
+    </link>
+    <link id="link_about" path="/about">
+      <category>HELP</category>
+    </link>
+
+  </links>
+</module>

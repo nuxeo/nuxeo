@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -110,6 +111,33 @@ public class ModuleImpl implements Module {
 
     public WebEngine getEngine() {
         return engine;
+    }
+    
+    public String getModuleTitle() {
+        String title = null;
+        try {
+            title = messages.getString("module."+descriptor.name);
+            if (title == null) {
+                title = descriptor.name;
+            }
+        } catch (MissingResourceException e) {
+            title = descriptor.name;
+        }
+        return title;
+    }
+    
+    public File getModuleIcon() {
+        String icon = null;
+        try {
+            icon = messages.getString("module.icon");
+            if (icon == null) {
+                return null;
+            }
+        } catch (MissingResourceException e) {
+            return null;
+        }
+        File f = new File(descriptor.directory, icon);
+        return f.isFile() ? f : null;
     }
 
     public void flushSkinCache() {

@@ -11,29 +11,21 @@ import org.nuxeo.ecm.webengine.*;
 import org.nuxeo.ecm.core.api.*;
 
 @WebModule(name="wiki")
-@Path("/")
+@Path("/wikis")
 @Produces(["text/html", "*/*"])
 public class Main extends DefaultModule {
 
-  public DocumentModel getDocument(String path) {
-    try {
-      PathRef pathRef = new PathRef(path);
-      return ctx.getCoreSession().getDocument(pathRef);
-    } catch (Exception e) {
-      throw WebException.wrap(e);
-    }
-  }
-    
   @GET
   public Object doGet() {
     return getView("index");
   } 
   
   @Path("wikis")
-  public DocumentObject wikis() {
-    try {
+  public Object getWikis() {
+    try{
       return new DocumentRoot(ctx, "/default-domain/workspaces/wikis/");
-    } catch(Exception e) {
+    }
+    catch(Exception e){
       throw WebException.wrap(e);
     }
   }
@@ -74,7 +66,6 @@ class WikiFilter implements Filter{
   public boolean accept(DocumentModel doc) {
     return "Wiki".equals(doc.getType());
   }
-
 }
     
 

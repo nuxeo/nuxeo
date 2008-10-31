@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webengine.model;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,10 @@ public interface Module extends MessagesProvider {
 
     WebEngine getEngine();
 
+    String getModuleTitle();
+    
+    File getModuleIcon();
+    
     void flushCache();
     
     Module getSuperModule();

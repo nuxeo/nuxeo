@@ -90,4 +90,25 @@ public class ResourceBinding {
         return binding;
     }
 
+    /**
+     * @return the path.
+     */
+    public String getPath() {
+        return path;
+    }
+    
+    /**
+     * @return the clazz.
+     */
+    public Class<?> getClazz() {
+        return clazz;
+    }
+
+    /**
+     * @return the singleton.
+     */
+    public boolean isSingleton() {
+        return singleton;
+    }
+    
 }
