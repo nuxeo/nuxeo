@@ -88,7 +88,7 @@ public class LocaleMessagesMethod implements TemplateMethodModelEx {
             return '!' + key + '!';
         }
         if (size > 2) { // format the string using given args
-            String[] args = new String[size - 1];
+            String[] args = new String[size - 2];
             for (int i = 0; i < args.length; i++) {
                 args[i] = ((SimpleScalar) arguments.get(i + 2)).getAsString();
             }
