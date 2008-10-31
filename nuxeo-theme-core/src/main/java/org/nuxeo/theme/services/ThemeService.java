@@ -210,7 +210,8 @@ public class ThemeService extends DefaultComponent {
                 if (templateEngine == null) {
                     final String defaultTemplateEngine = ThemeManager.getDefaultTemplateEngineName();
                     log.warn(String.format(
-                            "Please set the 'template-engine' attribute on <application root=\"%s\" template-engine=\"...\"> (default is '%s')", application.getRoot(), defaultTemplateEngine));
+                            "Please set the 'template-engine' attribute on <application root=\"%s\" template-engine=\"...\"> (default is '%s')",
+                            application.getRoot(), defaultTemplateEngine));
                     application.setTemplateEngine(defaultTemplateEngine);
                 }
                 typeRegistry.register(application);
@@ -439,30 +440,22 @@ public class ThemeService extends DefaultComponent {
     private void registerViewExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
-        StringBuilder sb = new StringBuilder();
-        final List<String> templateEngineNames = ThemeManager.getTemplateEngineNames();
-        for (String n : templateEngineNames) {
-            sb.append(String.format(" '%s'", n));
-        }
         for (Object contrib : contribs) {
             ViewType viewType = (ViewType) contrib;
-            final String templateEngine = viewType.getTemplateEngine();
+            String templateEngineAttr = viewType.getTemplateEngine();
             final String viewName = viewType.getViewName();
-            if (templateEngine == null) {
+            if (templateEngineAttr == null) {
                 final String defaultTemplateEngineName = ThemeManager.getDefaultTemplateEngineName();
-                viewType.setTemplateEngine(defaultTemplateEngineName);
-                if (templateEngineNames.size() > 0) {
-                    log.warn(String.format(
-                            "Please set the 'template-engine' attribute on <view name=\"%s\" template-engine=\"...\"> to one of%s (default is '%s')",
-                            viewName, sb.toString(), defaultTemplateEngineName));
+                templateEngineAttr = defaultTemplateEngineName;
+                log.warn(String.format(
+                        "Please set the 'template-engine' attribute on <view name=\"%s\" template-engine=\"...\"> (using default '%s')",
+                        viewName, defaultTemplateEngineName));
+            } else {
+                for (String templateEngineName : templateEngineAttr.split(",")) {
+                    viewType.setTemplateEngine(templateEngineName);
+                    typeRegistry.register(viewType);
                 }
-            } else if (!templateEngineNames.contains(templateEngine)) {
-                log.debug(String.format(
-                        "Unknown template-engine: '%s' on <view name=\"%s\" template-engine=\"...\"> (registered template engines are:%s)",
-                        templateEngine, viewName, sb.toString()));
-                continue;
             }
-            typeRegistry.register(viewType);
         }
     }
 

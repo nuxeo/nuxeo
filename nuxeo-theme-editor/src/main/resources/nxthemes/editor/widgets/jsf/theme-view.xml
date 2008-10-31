@@ -12,13 +12,6 @@
 
     <nxthemes:resources />
 
-    <script type="text/javascript"
-      src="/nuxeo/seam/resource/remoting/interface.js?nxthemesEditorAction">
-      <!--
-        // This space intentionally left blank
-        //-->
-    </script>
-
   </head>
 
 <body style="padding: 0; margin: 0">
@@ -54,23 +47,23 @@
       </div>
 
       <nxthemes:panel identifier="perspective selector"
-        url="/nuxeo/nxthemes/editor/perspectiveSelector.faces"
+        url="/nuxeo/site/nxthemes/editor/perspectiveSelector.ftl"
         controlledBy="editor perspectives,perspective selector"
         visibleInPerspectives="add fragments,edit canvas,edit padding" />
 
       <div id="nxthemesWaitAnimation" style="display:none">
-        <img src="/nuxeo/nxthemes/editor/img/loader.gif" alt="" width="16" height="16" /> loading ...
+        <img src="/nuxeo/site/nxthemes/editor/img/loader.gif" alt="" width="16" height="16" /> loading ...
       </div>
 
       <!--  theme selector -->
       <nxthemes:panel identifier="theme selector"
-        url="/nuxeo/nxthemes/editor/themeSelector.faces"
+        url="/nuxeo/site/nxthemes/editor/themeSelector.ftl"
         controlledBy="editor perspectives,theme switcher"
         visibleInPerspectives="add fragments,edit canvas,edit padding" />
 
       <!-- canvas mode selector -->
       <nxthemes:panel identifier="canvas mode selector"
-        url="/nuxeo/nxthemes/editor/canvasModeSelector.faces"
+        url="/nuxeo/site/nxthemes/editor/canvasModeSelector.ftl"
         controlledBy="editor perspectives,canvas mode selector"
         visibleInPerspectives="add fragments,edit canvas,edit padding" />
 
@@ -78,7 +71,7 @@
       <div id="nxthemesStatusMessage" style="display:none"></div>
 
       <nxthemes:panel identifier="back to canvas"
-        url="/nuxeo/nxthemes/editor/backToCanvas.faces"
+        url="/nuxeo/site/nxthemes/editor/backToCanvas.ftl"
         controlledBy="editor perspectives"
         visibleInPerspectives="edit element,manage themes" />
 
@@ -131,32 +124,32 @@
 
     <!-- element editor -->
     <nxthemes:panel identifier="element editor"
-      url="/nuxeo/nxthemes/editor/elementEditor.faces"
+      url="/nuxeo/site/nxthemes/editor/elementEditor.ftl"
       controlledBy="editor perspectives"
       visibleInPerspectives="edit element" />
 
     <!-- element padding editor -->
     <nxthemes:panel identifier="element padding"
-      url="/nuxeo/nxthemes/editor/elementPadding.faces"
+      url="/nuxeo/site/nxthemes/editor/elementPadding.ftl"
       controlledBy="editor perspectives,layout editor actions,toolbox mover"
       visibleInPerspectives="edit padding" />
 
     <!-- theme manager -->
     <nxthemes:panel identifier="theme manager"
-      url="/nuxeo/nxthemes/editor/themeManager.faces"
+      url="/nuxeo/site/nxthemes/editor/themeManager.ftl"
       controlledBy="editor perspectives"
       visibleInPerspectives="manage themes" />
 
     <!--  fragment factory -->
     <nxthemes:panel identifier="fragment factory"
-      url="/nuxeo/nxthemes/editor/fragmentFactory.faces"
+      url="/nuxeo/site/nxthemes/editor/fragmentFactory.ftl"
       controlledBy="editor perspectives,fragment factory expander,toolbox mover,fragment inserter"
       visibleInPerspectives="add fragments" />
 
     <!--  Area style chooser -->
     <nxthemes:panel
       identifier="area style chooser"
-      url="/nuxeo/nxthemes/editor/areaStyleChooser.faces"
+      url="/nuxeo/site/nxthemes/editor/areaStyleChooser.ftl"
       controlledBy="area style perspectives,toolbox mover"
       visibleInPerspectives="style chooser" />
 

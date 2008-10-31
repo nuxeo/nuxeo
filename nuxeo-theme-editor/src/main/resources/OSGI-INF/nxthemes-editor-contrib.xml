@@ -27,12 +27,10 @@
 
     <resource name="nxthemes-editor-authoring.js">
       <path>nxthemes/editor/scripts/authoring.js</path>
-      <require>seam-remote.js</require>
     </resource>
 
     <resource name="nxthemes-style-editor.js">
       <path>nxthemes/editor/scripts/style-editor.js</path>
-      <require>seam-remote.js</require>
     </resource>
 
     <resource name="nxthemes-editor-authoring.css">
@@ -226,11 +224,13 @@
   </extension>
 
 
-  <!-- Freemarker Views -->
+
 
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="views">
-
+        
+    <!-- Freemarker Views -->
+  
     <view name="theme view" template-engine="freemarker">
       <engine>editor</engine>
       <element-type>theme</element-type>
@@ -245,7 +245,6 @@
       <resource>nxthemes-editor-authoring.css</resource>
     </view>
 
-    <!--  Pages -->
     <view name="page frame" template-engine="freemarker">
       <engine>page-editor</engine>
       <element-type>page</element-type>
@@ -255,7 +254,7 @@
       </template>
     </view>
 
-    <view name="page frame" template-engine="freemarker">
+    <view name="page frame" template-engine="freemarker,jsf-facelets">
       <engine>page-editor</engine>
       <mode>area-styles-page</mode>
       <element-type>page</element-type>
@@ -283,8 +282,6 @@
       </template>
     </view>
 
-
-    <!-- sections -->
     <view name="section frame" template-engine="freemarker">
       <engine>page-editor</engine>
       <element-type>section</element-type>
@@ -294,7 +291,7 @@
       </template>
     </view>
 
-    <view name="section frame" template-engine="freemarker">
+    <view name="section frame" template-engine="freemarker,jsf-facelets">
       <engine>page-editor</engine>
       <mode>area-styles-section</mode>
       <element-type>section</element-type>
@@ -312,7 +309,7 @@
       </template>
     </view>
 
-    <view template-engine="freemarker">
+    <view template-engine="freemarker,jsf-facelets">
       <engine>page-editor</engine>
       <mode>layout</mode>
       <element-type>section</element-type>
@@ -323,7 +320,7 @@
     </view>
 
     <!-- cell -->
-    <view name="cell frame" template-engine="freemarker">
+    <view name="cell frame" template-engine="freemarker,jsf-facelets">
       <engine>page-editor</engine>
       <element-type>cell</element-type>
       <format-type>widget</format-type>
@@ -332,7 +329,7 @@
       </class>
     </view>
 
-    <view name="cell frame" template-engine="freemarker">
+    <view name="cell frame" template-engine="freemarker,jsf-facelets">
       <engine>page-editor</engine>
       <mode>area-styles-cell</mode>
       <element-type>cell</element-type>
@@ -340,7 +337,7 @@
       <class>org.nuxeo.theme.editor.views.CellFrameAreaStyle</class>
     </view>
 
-    <view template-engine="freemarker">
+    <view template-engine="freemarker,jsf-facelets">
       <engine>page-editor</engine>
       <mode>layout</mode>
       <element-type>cell</element-type>
@@ -349,20 +346,75 @@
     </view>
 
     <!-- Override the default style view in layout mode-->
-    <view template-engine="freemarker">
+    <view template-engine="freemarker,jsf-facelets">
       <engine>page-editor</engine>
       <mode>layout</mode>
       <format-type>style</format-type>
       <class>org.nuxeo.theme.html.filters.BypassView</class>
     </view>
 
-    <view template-engine="freemarker">
+    <view template-engine="freemarker,jsf-facelets">
       <engine>page-editor</engine>
       <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <class>org.nuxeo.theme.editor.views.UnregisteredWidget</class>
     </view>
     
+
+    <!--  JSF/Facelets views -->
+
+    <view name="theme view" template-engine="jsf-facelets">
+      <engine>editor</engine>
+      <element-type>theme</element-type>
+      <format-type>widget</format-type>
+      <template>
+        nxthemes/editor/widgets/jsf/theme-view.xml
+      </template>
+      <resource>nxthemes.css</resource>
+      <resource>nxthemes-widgets.js</resource>
+      <resource>nxthemes-controllers.js</resource>
+      <resource>nxthemes-editor-authoring.js</resource>
+      <resource>nxthemes-editor-authoring.css</resource>
+    </view>
+
+    <view name="page frame" template-engine="jsf-facelets">
+      <engine>page-editor</engine>
+      <element-type>page</element-type>
+      <format-type>widget</format-type>
+      <template>
+        nxthemes/editor/widgets/jsf/page-frame.xml
+      </template>
+    </view>
+    
+    <view name="page frame" template-engine="jsf-facelets">
+      <engine>page-editor</engine>
+      <mode>area-styles-section</mode>
+      <element-type>page</element-type>
+      <format-type>widget</format-type>
+      <template>
+        nxthemes/editor/widgets/jsf/page-frame.xml
+      </template>
+    </view>
+
+    <view name="page frame" template-engine="jsf-facelets">
+      <engine>page-editor</engine>
+      <mode>area-styles-cell</mode>
+      <element-type>page</element-type>
+      <format-type>widget</format-type>
+      <template>
+        nxthemes/editor/widgets/jsf/page-frame.xml
+      </template>
+    </view>
+
+    <view name="section frame" template-engine="jsf-facelets">
+      <engine>page-editor</engine>
+      <element-type>section</element-type>
+      <format-type>widget</format-type>
+      <template>
+        nxthemes/editor/widgets/jsf/section-frame.xml
+      </template>
+    </view>
+        
   </extension>
 
 
