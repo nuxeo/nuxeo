@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine.model;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
@@ -110,6 +111,17 @@ public class Template {
         } catch (Exception e) {
             WebException.wrap("Failed to write response", e);
         }
+    }
+    
+    public String render() {
+        StringWriter w = new StringWriter();
+        try {
+            ctx.render(script(), args, w);
+            w.flush();
+        } catch (Exception e) {
+            WebException.wrap("Failed to write response", e);
+        }        
+        return w.getBuffer().toString();
     }
 
 }
