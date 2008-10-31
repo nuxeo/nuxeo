@@ -89,7 +89,7 @@ public class ModuleImpl implements Module {
         this.descriptor = descriptor;
         this.engine = engine;
         if (descriptor.base != null) {
-            superModule = (ModuleImpl)engine.getModule(descriptor.base);
+            superModule = (ModuleImpl) engine.getModule(descriptor.base);
         }
         loadDirectoryStack();
         loadLinks();
@@ -141,7 +141,7 @@ public class ModuleImpl implements Module {
     public ResourceBinding getModuleBinding() {
         return descriptor.binding;
     }
-    
+
     public List<ResourceBinding> getResourceBindings() {
         return descriptor.resources;
     }
@@ -168,11 +168,11 @@ public class ModuleImpl implements Module {
     public ModuleImpl getSuperModule() {
         return superModule;
     }
-    
+
     public String getTemplateFileExt() {
-        return descriptor.templateFileExt;    
+        return descriptor.templateFileExt;
     }
-    
+
     public String getMediaTypeId(MediaType mt) {
         if (descriptor.mediatTypeRefs == null) {
             return null;

@@ -38,7 +38,6 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebModule;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -93,9 +92,8 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
         return Response.status(500).entity(sw.toString()).build();
     }
 
-
     /**
-     * This method try to guess the actual path under this resource was called.
+     * Tries to guess the actual path under this resource was called.
      * RestEasy version 1.0-beta-8 has a bug in UriInfo.getMatchedURIs(). See:
      * https://jira.jboss.org/jira/browse/RESTEASY-100
      * <p>

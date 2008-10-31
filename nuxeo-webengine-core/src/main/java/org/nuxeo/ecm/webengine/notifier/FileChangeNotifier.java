@@ -81,7 +81,7 @@ public class FileChangeNotifier implements FileChangeListener {
     public void fileChanged(FileEntry entry, int type, long tm) {
         for (Object listener : listeners.getListeners()) {
             try {
-                ((FileChangeListener)listener).fileChanged(entry, type, tm);
+                ((FileChangeListener) listener).fileChanged(entry, type, tm);
             } catch (Throwable t) {
                 log.error("Error while to notifying file change for: "+entry.file, t);
             }
@@ -92,7 +92,7 @@ public class FileChangeNotifier implements FileChangeListener {
         @Override
         public void run() {
             try {
-                Collection<FileEntry> entries = ((Map<String, FileEntry>)roots.clone()).values();
+                Collection<FileEntry> entries = ((Map<String, FileEntry>) roots.clone()).values();
                 for (FileEntry entry : entries) {
                     entry.scanForChanges(FileChangeNotifier.this);
                 }

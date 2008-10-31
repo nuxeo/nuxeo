@@ -467,7 +467,8 @@ public abstract class AbstractWebContext implements WebContext {
             engine.getRendering().render(template, bindings, writer);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new WebException("Failed to render template: "+script.getAbsolutePath(), e);
+            throw new WebException("Failed to render template: "
+                    + (script == null ? script : script.getAbsolutePath()), e);
         } finally {
             if (!scriptExecutionStack.isEmpty()) {
                 popScriptFile();
