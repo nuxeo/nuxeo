@@ -53,9 +53,6 @@ public class Messages {
         MessagesBundle bundle = messages.get(language);
         if (bundle == null) {
             Map<String,String> map = provider.getMessages(language);
-            if (map == null) {
-                return null;
-            } 
             MessagesBundle parentBundle = parent != null ? parent.getMessagesBundle(language) : null;
             bundle = new MessagesBundle(parentBundle, map);
             messages.put(language, bundle);

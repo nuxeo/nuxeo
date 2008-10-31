@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.model;
 
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -35,7 +36,7 @@ public class MessagesBundle extends ResourceBundle {
 
     public MessagesBundle(ResourceBundle parent, Map<String,String> messages) {
         this.parent = parent;
-        this.messages = messages;
+        this.messages = messages == null ? new HashMap<String, String>() : messages;
     }
     
     

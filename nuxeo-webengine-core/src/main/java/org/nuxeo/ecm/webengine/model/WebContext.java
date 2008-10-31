@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
-import org.nuxeo.ecm.webengine.model.impl.DefaultModule;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.model.Adaptable;
@@ -276,7 +275,7 @@ public interface WebContext extends Adaptable {
 
     /** object stack API */
 
-    DefaultModule getModuleInstance();
+    ModuleResource  getModuleInstance();
 
     Resource push(Resource obj);
 

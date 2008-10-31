@@ -27,11 +27,11 @@ import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.webengine.model.ModuleResource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebDocumentException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
-import org.nuxeo.ecm.webengine.model.impl.DefaultModule;
 
 public class WebException extends WebApplicationException {
 
@@ -110,7 +110,7 @@ public class WebException extends WebApplicationException {
         if (!byPassAppResponse) {
             WebContext ctx = WebEngine.getActiveContext();
             if (ctx != null) {
-                DefaultModule rs = ctx.getModuleInstance();
+                ModuleResource rs = ctx.getModuleInstance();
                 if (rs == null) {
                     // no context print error on screen
                     return toResponse(this);

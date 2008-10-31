@@ -12,24 +12,25 @@ import org.nuxeo.ecm.core.api.*;
 
 @WebModule(name="wiki")
 @Path("/wikis")
-@Produces(["text/html", "*/*"])
-public class Main extends DefaultModule {
+@Produces(["text/html; charset=UTF-8", "*/*; charset=UTF-8"])
+public class Main extends DocumentModule {
+
+  public Main() {
+    super ("/default-domain/workspaces/wikis");
+  }
 
   @GET
   public Object doGet() {
-    return getView("index");
-  } 
-  
-  @Path("wikis")
-  public Object getWikis() {
-    try{
-      return new DocumentRoot(ctx, "/default-domain/workspaces/wikis/");
-    }
-    catch(Exception e){
-      throw WebException.wrap(e);
-    }
+    def docs = ctx.getCoreSession().getChildren(doc.getRef(), "Wiki");
+    return getView("index").arg("wikis", docs);
   }
-  
+
+  @Path("{segment}")
+  public Object getWiki(@PathParam("segment") String segment) {
+    return DocumentFactory.newDocument(ctx, doc.getPath().append(segment).toString());
+  }
+
+
   @GET
   @Path("create/{segment}")
   public Response createPage(@PathParam("segment") String segment) {
@@ -58,16 +59,4 @@ public class Main extends DefaultModule {
     } 
   }
 }
-
-/**
- * Get only the wikis object from the list
- */
-class WikiFilter implements Filter{
-  public boolean accept(DocumentModel doc) {
-    return "Wiki".equals(doc.getType());
-  }
-}
-    
-
-
 

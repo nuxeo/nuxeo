@@ -45,6 +45,7 @@ import org.nuxeo.ecm.webengine.model.AdapterResource;
 import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.ecm.webengine.model.Messages;
 import org.nuxeo.ecm.webengine.model.Module;
+import org.nuxeo.ecm.webengine.model.ModuleResource;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -325,8 +326,8 @@ public abstract class AbstractWebContext implements WebContext {
 
     /** object stack API */
 
-    public DefaultModule getModuleInstance() {
-        return (DefaultModule)head;
+    public ModuleResource getModuleInstance() {
+        return (ModuleResource)head;
     }
 
 
