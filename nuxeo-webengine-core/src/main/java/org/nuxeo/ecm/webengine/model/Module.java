@@ -21,6 +21,8 @@ package org.nuxeo.ecm.webengine.model;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 import javax.ws.rs.core.MediaType;
 
@@ -33,7 +35,7 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Module {
+public interface Module extends MessagesProvider {
 
     String getName();
 
@@ -42,13 +44,17 @@ public interface Module {
     WebEngine getEngine();
 
     void flushCache();
-
+    
     Module getSuperModule();
 
     String getTemplateFileExt();
 
     String getMediaTypeId(MediaType mt);
 
+    Map<String,String> getMessages(String language);
+    
+    Messages getMessages();
+    
     /**
      * The root resource type.
      *

@@ -22,9 +22,11 @@ package org.nuxeo.ecm.webengine.model.impl;
 import java.io.File;
 import java.io.Writer;
 import java.security.Principal;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.MissingResourceException;
 
 import javax.script.Bindings;
 import javax.script.SimpleBindings;
@@ -41,6 +43,7 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.AdapterResource;
 import org.nuxeo.ecm.webengine.model.AdapterType;
+import org.nuxeo.ecm.webengine.model.Messages;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
@@ -133,6 +136,50 @@ public abstract class AbstractWebContext implements WebContext {
 
     public String getModulePath() {
         return head.getPath();
+    }
+    
+    public String getMessage(String key) {
+        Messages messages = module.getMessages();
+        try {
+            return messages.getString(key);
+        } catch (MissingResourceException e) {
+            return '!' + key + '!';
+        }        
+    }
+    
+    public String getMessage(String key, String ... args) {
+        Messages messages = module.getMessages();
+        try {
+            String msg = messages.getString(key);
+            if (args != null && args.length > 0) { // format the string using given args
+                msg = MessageFormat.format(msg, (Object[]) args);
+            }
+            return msg;
+        } catch (MissingResourceException e) {
+            return '!' + key + '!';
+        }
+    }
+
+    public String getMessageL(String key, String language) {
+        Messages messages = module.getMessages();
+        try {
+            return messages.getString(key, language);
+        } catch (MissingResourceException e) {
+            return '!' + key + '!';
+        }
+    }
+
+    public String getMessageL(String key, String language, String ... args) {
+        Messages messages = module.getMessages();
+        try {
+            String msg = messages.getString(key, language);
+            if (args != null && args.length > 0) { // format the string using given args
+                msg = MessageFormat.format(msg, (Object[]) args);
+            }
+            return msg;
+        } catch (MissingResourceException e) {
+            return '!' + key + '!';
+        }
     }
 
     public Resource newObject(String typeName, Object ...  args) {

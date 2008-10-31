@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.ResourceBundle;
 
 import javax.ws.rs.Path;
 
@@ -41,8 +40,8 @@ import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
-import org.nuxeo.ecm.platform.rendering.fm.i18n.ResourceComposite;
-import org.nuxeo.ecm.webengine.loader.WebClassLoader;
+import org.nuxeo.ecm.webengine.model.Messages;
+import org.nuxeo.ecm.webengine.model.MessagesProvider;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
@@ -72,7 +71,7 @@ import org.osgi.framework.Bundle;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebEngine implements FileChangeListener, ResourceLocator, AnnotationLoader {
+public class WebEngine implements FileChangeListener, ResourceLocator, AnnotationLoader, MessagesProvider {
 
     private static final Log log = LogFactory.getLog(WebEngine.class);
 
@@ -115,7 +114,6 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     protected Scripting scripting;
     protected RenderingEngine rendering;
     protected Map<String, Object> env;
-    protected ResourceBundle messages;
     protected boolean isDebug = false;
 
     protected BundleTypeProvider bundleTypeProvider;
@@ -124,7 +122,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     protected AnnotationManager annoMgr;
 
     protected ResourceRegistry registry;
-
+    protected Messages messages;
 
     public WebEngine(ResourceRegistry registry, File root) throws IOException {
         this.registry = registry;
@@ -160,7 +158,9 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         rendering = new FreemarkerEngine();
         rendering.setResourceLocator(this);
         rendering.setSharedVariable("env", getEnvironment());
-        loadMessageBundle();
+        
+        messages = new Messages(null, this);
+        
         // register annotation loader
         BundleAnnotationsLoader.getInstance().addLoader(Path.class.getName(), this);
 
@@ -191,14 +191,34 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         return (String)mimeTypes.get(ext);
     }
 
-    private void loadMessageBundle() {
+    public Messages getMessages() {
+        return messages;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public Map<String,String> getMessages(String language) {
         log.info("Loading i18n files");
-        File file = new File(root, "i18n");
-        WebClassLoader cl = new WebClassLoader();
-        cl.addFile(file);
-        //messages = ResourceBundle.getBundle("messages", Locale.getDefault(), cl);
-        messages = new ResourceComposite(cl);
-        rendering.setMessageBundle(messages);
+        File file = new File(root,  new StringBuilder()
+                    .append("WEB-INF/i18n/messages_")
+                    .append(language)
+                    .append(".properties").toString());
+        InputStream in = null;
+        try {
+            in = new FileInputStream(file);
+            Properties p = new Properties();
+            p.load(in);
+            return new HashMap(p); // HashMap is faster than Properties
+        } catch (IOException e) {
+            return null;
+        } finally {
+            if (in != null) { 
+                try { 
+                    in.close(); 
+                } catch (IOException ee) {
+                    ee.printStackTrace();
+                }
+            }
+        }
     }
 
     public AnnotationManager getAnnotationManager() {
@@ -332,10 +352,6 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         return env;
     }
 
-    public ResourceBundle getMessageBundle() {
-        return messages;
-    }
-
     public Scripting getScripting() {
         return scripting;
     }
@@ -382,7 +398,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         directoryTypeProvider.flushCache();
         reloadModules();
     }
-
+    
     public synchronized void reloadModules() {
         for (Module module : moduleReg.getModules()) {
             ResourceBinding binding = module.getModuleBinding();
@@ -431,11 +447,12 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
             return;
         }
         String name = entry.file.getName();
-        if (name.endsWith("~") || entry.file.getParent().equals("i18n")) {
+        String parentName = entry.file.getParentFile().getName();
+        if (name.endsWith("~") || parentName.equals("i18n")) {
             return;
-        } else if (name.equals("i18n")) {
+        } else if (name.equals("i18n") && parentName.equals("WEB-INF")) {
             log.info("File changed: "+entry.file);
-            loadMessageBundle();
+            messages = new Messages(null, this);
         } else if (type == FileChangeListener.DELETED || type ==FileChangeListener.CREATED) {
             if (entry.file.getParentFile().equals(root)) {
                 log.info("File changed: "+entry.file);
@@ -446,6 +463,8 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
                     log.info("File changed: "+entry.file);
                     if (path.indexOf("/skin/", 0) > 0) {
                         ((ModuleImpl)module).flushSkinCache();
+                    } else if (name.equals("i18n")) {
+                        ((ModuleImpl)module).reloadMessages();
                     } else { // not a skin may be a type
                         //module.flushCache();
                         ((ModuleImpl)module).flushTypeCache();

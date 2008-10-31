@@ -11,7 +11,7 @@ $(document).ready(function(){
 <div id="entry-actions">
   <ul>
   <#list Context.getActions("TABVIEW") as action>
-    <li><a href="${This.urlPath}@@${action.id}" title="${action.id}"><span>${message('action.' + action.id)}</span></a></li>
+    <li><a href="${This.urlPath}@@${action.id}" title="${action.id}"><span>${Context.getMessage('action.' + action.id)}</span></a></li>
   </#list>
   </ul>
   

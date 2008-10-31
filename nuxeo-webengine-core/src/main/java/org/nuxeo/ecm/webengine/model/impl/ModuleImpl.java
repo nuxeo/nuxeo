@@ -20,9 +20,14 @@
 package org.nuxeo.ecm.webengine.model.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -37,6 +42,7 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.AdapterNotFoundException;
 import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
+import org.nuxeo.ecm.webengine.model.Messages;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.ModuleType;
 import org.nuxeo.ecm.webengine.model.Resource;
@@ -73,7 +79,10 @@ public class ModuleImpl implements Module {
 
     protected ModuleTypeImpl type;
     protected ModuleImpl superModule;
-
+    
+    protected Messages messages;
+    
+    
     public ModuleImpl(WebEngine engine, File root, ModuleDescriptor descriptor) {
         fileCache = new ConcurrentHashMap<String, ScriptFile>();
         this.root = root;
@@ -84,6 +93,7 @@ public class ModuleImpl implements Module {
         }
         loadDirectoryStack();
         loadLinks();
+        reloadMessages();
     }
 
     public boolean isFragment() {
@@ -313,6 +323,42 @@ public class ModuleImpl implements Module {
         return linkReg;
     }
 
+    public void reloadMessages() {
+        messages = new Messages(superModule != null 
+                ? superModule.getMessages() : engine.getMessages(), this);
+    }
+
+    public Messages getMessages() {
+        return messages;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public Map<String,String> getMessages(String language) {
+        log.info("Loading i18n files");
+        File file = new File(root,  new StringBuilder()
+                    .append("/i18n/messages_")
+                    .append(language)
+                    .append(".properties").toString());
+        InputStream in = null;
+        try {
+            in = new FileInputStream(file);
+            Properties p = new Properties();
+            p.load(in);
+            return new HashMap(p); // HashMap is faster than Properties
+        } catch (IOException e) {
+            return null;
+        } finally {
+            if (in != null) { 
+                try { 
+                    in.close(); 
+                } catch (IOException ee) {
+                    ee.printStackTrace();
+                }
+            }
+        }
+    }
+
+    
     @Override
     public String toString() {
         return getName();
