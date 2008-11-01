@@ -22,19 +22,21 @@ import java.io.Serializable;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Simple leaf filter that stops the tree at the Folders.
+ * Simple filter that accepts if the document has the {@code BigFolder} facet.
  *
  * @author Florent Guillaume
  */
-public class FolderLeafFilter implements DocumentFilter, Serializable {
+public class BigFolderLeafFilter implements DocumentFilter, Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public static final String BIG_FOLDER_FACET = "BigFolder";
+
     /**
-     * Consider that a document of type Folder is a leaf.
+     * Accepts if the document has the {@code BigFolder} facet.
      */
     public boolean accept(DocumentModel document) {
-        return "Folder".equals(document.getType());
+        return document.hasFacet(BIG_FOLDER_FACET);
     }
 
 }
