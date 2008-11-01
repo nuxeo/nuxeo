@@ -22,6 +22,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService;
+import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
@@ -46,6 +49,8 @@ public class TreeManagerService extends DefaultComponent {
      * leaf and have no children.
      */
     private static DocumentFilter leafFilter;
+
+    private static QueryModelDescriptor queryModelDescriptor;
 
     public TreeManagerService() {
         setupTreeFilter(null);
@@ -93,6 +98,15 @@ public class TreeManagerService extends DefaultComponent {
             } catch (Throwable e) {
                 log.error(e);
             }
+        }
+
+        String queryModelName = treePlugin.getQueryModelName();
+        if (queryModelName == null) {
+            queryModelDescriptor = null;
+        } else {
+            QueryModelService service = (QueryModelService) Framework.getRuntime().getComponent(
+                    QueryModelService.NAME);
+            queryModelDescriptor = service.getQueryModelDescriptor(queryModelName);
         }
     }
 
@@ -144,6 +158,13 @@ public class TreeManagerService extends DefaultComponent {
             setupTreeFilter(null);
         }
         return leafFilter;
+    }
+
+    public static QueryModelDescriptor getQueryModelDescriptor() {
+        if (treeFilter == null) { // not a typo
+            setupTreeFilter(null);
+        }
+        return queryModelDescriptor;
     }
 
 }

@@ -33,6 +33,8 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.search.api.client.query.QueryException;
+import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.tree.LazyTreeModel;
 import org.nuxeo.ecm.webapp.action.TypesTool;
@@ -82,8 +84,11 @@ public class LazyTreeNode extends TreeNodeBase {
 
     protected final DocumentFilter leafFilter;
 
+    protected final QueryModel queryModel;
+
     public LazyTreeNode(DocumentModel document, CoreSession session,
-            DocumentFilter docFilter, DocumentFilter leafFilter) {
+            DocumentFilter docFilter, DocumentFilter leafFilter,
+            QueryModel queryModel) {
         super(TREE_FACET_NAME, getDefaultDescription(document),
                 document == null ? null : document.getRef().toString(),
                 document == null ? false : !document.isFolder());
@@ -93,19 +98,20 @@ public class LazyTreeNode extends TreeNodeBase {
         setDocumentIdentifier(document == null ? null : document.getRef());
         this.docFilter = docFilter;
         this.leafFilter = leafFilter;
+        this.queryModel = queryModel;
         noData = true;
     }
 
     @Deprecated
     public LazyTreeNode(DocumentModel document, CoreSession session,
             DocumentFilter docFilter) {
-        this(document, session, docFilter, null);
+        this(document, session, docFilter, null, null);
     }
 
     @Deprecated
     public LazyTreeNode(DocumentModel document, CoreSession session,
             DocumentFilter docFilter, boolean leaf) {
-        this(document, session, docFilter, null);
+        this(document, session, docFilter, null, null);
         setLeaf(leaf);
     }
 
@@ -121,6 +127,7 @@ public class LazyTreeNode extends TreeNodeBase {
         setDocumentIdentifier(identifier);
         this.docFilter = docFilter;
         leafFilter = null;
+        queryModel = null;
         noData = true;
     }
 
@@ -247,12 +254,24 @@ public class LazyTreeNode extends TreeNodeBase {
             // filter says this is a leaf, don't look at children
             return;
         }
-
         CoreSession session = getHandle();
-        List<DocumentModel> coreChildren = session.getChildren(
-                documentIdentifier, null, SecurityConstants.READ, facetFilter,
-                null);
-        for (DocumentModel document : coreChildren) {
+        List<DocumentModel> documents;
+        if (queryModel == null) {
+            // get the children using the core
+            documents = session.getChildren(
+                    documentIdentifier, null, SecurityConstants.READ,
+                    facetFilter, null);
+        } else {
+            // get the children using a query model
+            try {
+                documents = queryModel.getDocuments(new Object[] { doc.getId() });
+            } catch (QueryException e) {
+                log.warn("Could not query children", e);
+                documents = Collections.emptyList();
+            }
+        }
+        // filter the documents
+        for (DocumentModel document : documents) {
             String title = getDefaultDescription(document);
             if (title == null) {
                 continue;
@@ -261,9 +280,12 @@ public class LazyTreeNode extends TreeNodeBase {
                 continue;
             }
             children.add(new LazyTreeNode(document, session, docFilter,
-                    leafFilter));
+                    leafFilter, queryModel));
         }
-        Collections.sort(children); // sort according to TreeSorter
+        if (queryModel == null) {
+            // no query model, sort according to TreeSorter
+            Collections.sort(children);
+        }
         int i = 0;
         for (LazyTreeNode child : children) {
             child.nodeId = nodeId + LazyTreeModel.SEPARATOR + i++;

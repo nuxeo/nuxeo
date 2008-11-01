@@ -14,6 +14,7 @@
       <showFiles>false</showFiles>
       <showSection>true</showSection>
       <leafFilterClass>org.nuxeo.ecm.webapp.navigation.BigFolderLeafFilter</leafFilterClass>
+      <!-- <queryModel>TREE_CHILDREN</queryModel> -->
     </treeManagerPlugin>
   </extension>
 </component>

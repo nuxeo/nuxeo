@@ -47,6 +47,9 @@ public class TreeManagerPluginExtension implements Serializable {
     @XNode("leafFilterClass")
     String leafFilterClassName;
 
+    @XNode("queryModel")
+    String queryModelName;
+
     @XNode("showFiles")
     Boolean showFiles;
 
@@ -96,6 +99,10 @@ public class TreeManagerPluginExtension implements Serializable {
 
     public String getLeafFilterClassName() {
         return leafFilterClassName;
+    }
+
+    public String getQueryModelName() {
+        return queryModelName;
     }
 
 }
