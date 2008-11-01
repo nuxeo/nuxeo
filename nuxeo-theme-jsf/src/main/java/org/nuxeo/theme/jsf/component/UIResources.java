@@ -23,13 +23,9 @@ import javax.faces.component.UIOutput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.html.ui.Resources;
 
 public class UIResources extends UIOutput {
-
-    private static final Log log = LogFactory.getLog(UIResources.class);
 
     @Override
     public void encodeAll(final FacesContext context) throws IOException {

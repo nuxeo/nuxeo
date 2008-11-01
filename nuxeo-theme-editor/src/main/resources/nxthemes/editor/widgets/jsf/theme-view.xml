@@ -8,6 +8,10 @@
       <ui:insert name="page title">Page title</ui:insert>
     </title>
 
+    <script type="text/javascript"><!-- 
+      var webEngineContextPath = "/nuxeo/site";
+    //--></script>
+    
     <nxthemes:head />
 
     <nxthemes:resources />
