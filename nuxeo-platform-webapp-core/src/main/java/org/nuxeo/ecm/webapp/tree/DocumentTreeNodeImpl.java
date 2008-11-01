@@ -56,17 +56,27 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
     protected final Filter filter;
 
+    protected final Filter leafFilter;
+
     protected final Sorter sorter;
 
     protected Map<Object, DocumentTreeNodeImpl> children = null;
 
     public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
-            Sorter sorter) {
+            Filter leafFilter, Sorter sorter) {
         super();
         this.document = document;
         this.sessionId = document.getSessionId();
         this.filter = filter;
+        this.leafFilter = leafFilter;
         this.sorter = sorter;
+    }
+
+    /** @deprecated use the other constructor */
+    @Deprecated
+    public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
+            Sorter sorter) {
+        this(document, filter, null, sorter);
     }
 
     public List<DocumentTreeNode> getChildren() {
@@ -106,20 +116,22 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
     public void fetchChildren() {
         try {
             children = new LinkedHashMap<Object, DocumentTreeNodeImpl>();
+            if (leafFilter != null && leafFilter.accept(document)) {
+                // filter says this is a leaf, don't look at children
+                return;
+            }
+            // get and filter
             CoreSession session = CoreInstance.getInstance().getSession(
                     sessionId);
-
-            // get and filter
             DocumentModelList coreChildren = session.getChildren(
                     document.getRef(), null, SecurityConstants.READ, filter,
                     sorter);
             for (DocumentModel child : coreChildren) {
                 String identifier = child.getId();
                 DocumentTreeNodeImpl childNode = new DocumentTreeNodeImpl(
-                        child, filter, sorter);
+                        child, filter, leafFilter, sorter);
                 children.put(identifier, childNode);
             }
-
         } catch (ClientException e) {
             log.error(e);
         }

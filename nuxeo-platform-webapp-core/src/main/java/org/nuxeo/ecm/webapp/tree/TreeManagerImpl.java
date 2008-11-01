@@ -49,6 +49,8 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
 
     protected Map<String, Filter> filters;
 
+    protected Map<String, Filter> leafFilters;
+
     protected Map<String, Sorter> sorters;
 
     @SuppressWarnings("unchecked")
@@ -64,12 +66,14 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
         filters = new HashMap<String, Filter>();
+        leafFilters = new HashMap<String, Filter>();
         sorters = new HashMap<String, Sorter>();
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         filters = null;
+        leafFilters = null;
         sorters = null;
         super.deactivate(context);
     }
@@ -87,8 +91,18 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
                 log.info("Overriding filter for plugin " + name);
                 filters.remove(name);
             }
-            log.info("Registering filter for plugin " + name);
             filters.put(name, buildFilter(plugin));
+            // leaf filter
+            Filter leafFilter = buildLeafFilter(plugin);
+            if (leafFilter != null) {
+                if (leafFilters.containsKey(name)) {
+                    // FIXME handle merge?
+                    log.info("Overriding leaf filter for plugin " + name);
+                    leafFilters.remove(name);
+                }
+                log.info("Registering leaf filter for plugin " + name);
+                leafFilters.put(name, leafFilter);
+            }
             // sorter
             if (sorters.containsKey(name)) {
                 // FIXME handle merge?
@@ -111,6 +125,10 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
             if (filters.containsKey(name)) {
                 log.info("Unregistering filter for plugin " + name);
                 filters.remove(name);
+            }
+            if (leafFilters.containsKey(name)) {
+                log.info("Unregistering leaf filter for plugin " + name);
+                leafFilters.remove(name);
             }
             // sorter
             if (sorters.containsKey(name)) {
@@ -155,6 +173,26 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         return filter;
     }
 
+    protected Filter buildLeafFilter(TreeManagerPluginDescriptor plugin) {
+        String leafFilterClass = plugin.getLeafFilterClassName();
+        if (leafFilterClass == null || "".equals(leafFilterClass)) {
+            return null;
+        }
+        try {
+            Object instance = TreeManagerImpl.class.getClassLoader().loadClass(
+                    leafFilterClass).newInstance();
+            if (instance instanceof Filter) {
+                return (Filter) instance;
+            } else {
+                log.error(String.format("Class %s should follow %s interface",
+                        leafFilterClass, Filter.class.getName()));
+            }
+        } catch (Throwable e) {
+            log.error(e);
+        }
+        return null;
+    }
+
     protected Sorter buildSorter(TreeManagerPluginDescriptor plugin) {
         Sorter sorter = null;
 
@@ -190,6 +228,10 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
 
     public Filter getFilter(String pluginName) {
         return filters.get(pluginName);
+    }
+
+    public Filter getLeafFilter(String pluginName) {
+        return leafFilters.get(pluginName);
     }
 
     public Sorter getSorter(String pluginName) {

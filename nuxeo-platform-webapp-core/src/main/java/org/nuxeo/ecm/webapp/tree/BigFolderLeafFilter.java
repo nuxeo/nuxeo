@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,38 +12,30 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.webapp.tree;
 
-import java.io.Serializable;
-
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
-import org.nuxeo.ecm.core.api.Sorter;
 
 /**
- * Interface for the tree manager service
+ * Simple filter that accepts if the document has the {@code BigFolder} facet.
  *
- * @author Anahide Tchertchian
+ * @author Florent Guillaume
  */
-public interface TreeManager extends Serializable {
+public class BigFolderLeafFilter implements Filter {
+
+    private static final long serialVersionUID = 1L;
+
+    public static final String BIG_FOLDER_FACET = "BigFolder";
 
     /**
-     * Return filter to use for given plugin names.
+     * Accepts if the document has the {@code BigFolder} facet.
      */
-    Filter getFilter(String pluginName);
-
-    /**
-     * Return leaf filter to use for given plugin names.
-     */
-    Filter getLeafFilter(String pluginName);
-
-    /**
-     * Returns sorter to use for given plugin name.
-     */
-    Sorter getSorter(String pluginName);
+    public boolean accept(DocumentModel document) {
+        return document.hasFacet(BIG_FOLDER_FACET);
+    }
 
 }

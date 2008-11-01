@@ -37,6 +37,7 @@
           </excludedTypes>
           <sortPropertyPath>dc:title</sortPropertyPath>
           <filterClass>org.example.com.MyFilterClass</filterClass>
+          <leafFilterClass>org.example.com.MyLeafFilterClass</leafFilterClass>
           <sorterClass>org.example.com.MySorterClass</sorterClass>
         </treeManagerPlugin>
       </code>
@@ -60,14 +61,19 @@
         </li>
         <li>
           filterClass: the filter class has to implement the
-          org.nuxeo.ecm.core.api.Filter class. If it implements the
+          org.nuxeo.ecm.core.api.Filter interface. If it implements the
           org.nuxeo.ecm.webapp.tree.DocumentTreeFilter interface, the above
           filter properties will be set on it. Defaults to
           org.nuxeo.ecm.webapp.tree.DefaultDocumentTreeFilter class if not set.
         </li>
         <li>
+          leafFilterClass: filter that can decide that a document is shown
+          with no children. The leaf filter class has to implement the
+          org.nuxeo.ecm.core.api.Filter interface.
+        </li>
+        <li>
           sorterClass: the sorter class has to implement the
-          org.nuxeo.ecm.core.api.Sorter class. If it implements the
+          org.nuxeo.ecm.core.api.Sorter interface. If it implements the
           org.nuxeo.ecm.webapp.tree.DocumentTreeSorter interface, the above sort
           property will be set on it. Defaults to
           org.nuxeo.ecm.webapp.tree.DefaultDocumentTreeSorter class if not set.

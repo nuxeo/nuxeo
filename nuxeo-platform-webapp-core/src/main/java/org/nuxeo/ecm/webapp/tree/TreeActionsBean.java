@@ -95,10 +95,12 @@ public class TreeActionsBean implements TreeActions {
             }
             if (firstAccessibleParent != null) {
                 Filter filter = null;
+                Filter leafFilter = null;
                 Sorter sorter = null;
                 try {
                     TreeManager treeManager = Framework.getService(TreeManager.class);
                     filter = treeManager.getFilter(DEFAULT_TREE_PLUGIN_NAME);
+                    leafFilter = treeManager.getLeafFilter(DEFAULT_TREE_PLUGIN_NAME);
                     sorter = treeManager.getSorter(DEFAULT_TREE_PLUGIN_NAME);
                 } catch (Exception e) {
                     log.error(
@@ -106,7 +108,7 @@ public class TreeActionsBean implements TreeActions {
                             e);
                 }
                 DocumentTreeNode treeRoot = new DocumentTreeNodeImpl(
-                        firstAccessibleParent, filter, sorter);
+                        firstAccessibleParent, filter, leafFilter, sorter);
                 tree.add(treeRoot);
                 log.debug("Tree initialized with document: "
                         + firstAccessibleParent.getId());

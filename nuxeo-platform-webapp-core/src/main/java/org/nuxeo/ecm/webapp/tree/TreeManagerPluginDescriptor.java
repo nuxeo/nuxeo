@@ -44,6 +44,9 @@ public class TreeManagerPluginDescriptor implements Serializable {
     @XNode("filterClass")
     protected String filterClassName;
 
+    @XNode("leafFilterClass")
+    protected String leafFilterClassName;
+
     @XNode("sorterClass")
     protected String sorterClassName;
 
@@ -65,6 +68,10 @@ public class TreeManagerPluginDescriptor implements Serializable {
 
     public String getFilterClassName() {
         return filterClassName;
+    }
+
+    public String getLeafFilterClassName() {
+        return leafFilterClassName;
     }
 
     public String getSorterClassName() {
