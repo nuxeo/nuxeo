@@ -44,7 +44,7 @@
       </div>
 
       <@nxthemes_panel identifier="perspective selector"
-        url="/nxthemes/editor/perspectiveSelector.ftl"
+        url="${basePath}/nxthemes/editor/perspectiveSelector.ftl"
         controlledBy="editor perspectives,perspective selector"
         visibleInPerspectives="add fragments,edit canvas,edit padding" />
 
@@ -54,13 +54,13 @@
 
       <!--  theme selector -->
       <@nxthemes_panel identifier="theme selector"
-        url="/nxthemes/editor/themeSelector.ftl"
+        url="${basePath}/nxthemes/editor/themeSelector.ftl"
         controlledBy="editor perspectives,theme switcher"
         visibleInPerspectives="add fragments,edit canvas,edit padding" />
 
       <!-- canvas mode selector -->
       <@nxthemes_panel identifier="canvas mode selector"
-        url="/nxthemes/editor/canvasModeSelector.ftl"
+        url="${basePath}/nxthemes/editor/canvasModeSelector.ftl"
         controlledBy="editor perspectives,canvas mode selector"
         visibleInPerspectives="add fragments,edit canvas,edit padding" />
 
@@ -68,7 +68,7 @@
       <div id="nxthemesStatusMessage" style="display:none"></div>
 
       <@nxthemes_panel identifier="back to canvas"
-        url="/nxthemes/editor/backToCanvas.ftl"
+        url="${basePath}/nxthemes/editor/backToCanvas.ftl"
         controlledBy="editor perspectives"
         visibleInPerspectives="edit element,manage themes" />
 
@@ -118,32 +118,32 @@
 
     <!-- element editor -->
     <@nxthemes_panel identifier="element editor"
-      url="/nxthemes/editor/elementEditor.ftl"
+      url="${basePath}/nxthemes/editor/elementEditor.ftl"
       controlledBy="editor perspectives"
       visibleInPerspectives="edit element" />
 
     <!-- element padding editor -->
     <@nxthemes_panel identifier="element padding"
-      url="/nxthemes/editor/elementPadding.ftl"
+      url="${basePath}/nxthemes/editor/elementPadding.ftl"
       controlledBy="editor perspectives,layout editor actions,toolbox mover"
       visibleInPerspectives="edit padding" />
 
     <!-- theme manager -->
     <@nxthemes_panel identifier="theme manager"
-      url="/nxthemes/editor/themeManager.ftl"
+      url="${basePath}/nxthemes/editor/themeManager.ftl"
       controlledBy="editor perspectives"
       visibleInPerspectives="manage themes" />
 
     <!--  fragment factory -->
     <@nxthemes_panel identifier="fragment factory"
-      url="/nxthemes/editor/fragmentFactory.ftl"
+      url="${basePath}/nxthemes/editor/fragmentFactory.ftl"
       controlledBy="editor perspectives,fragment factory expander,toolbox mover,fragment inserter"
       visibleInPerspectives="add fragments" />
 
     <!--  Area style chooser -->
     <@nxthemes_panel
       identifier="area style chooser"
-      url="/nxthemes/editor/areaStyleChooser.ftl"
+      url="${basePath}/nxthemes/editor/areaStyleChooser.ftl"
       controlledBy="area style perspectives,toolbox mover"
       visibleInPerspectives="style chooser" />
 
