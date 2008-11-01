@@ -220,40 +220,11 @@
       <artifactId>hibernate-annotations</artifactId>
     </dependency>
 
-
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jcr-connector-test</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
-  <!--  do some variable replacement in deployment-fragment.xml -->
-  <build>
-    <resources>
-      <resource>
-        <directory>${basedir}/src/main/resources</directory>
-        <includes>
-          <include>OSGI-INF/deployment-fragment.xml</include>
-        </includes>
-        <filtering>true</filtering>
-      </resource>
-      <resource>
-        <directory>${basedir}/src/main/resources</directory>
-        <excludes>
-          <exclude>OSGI-INF/deployment-fragment.xml</exclude>
-        </excludes>
-        <filtering>false</filtering>
-      </resource>
-    </resources>
-  </build>
-
-  <!-- this is used (the above build section also)
-    to replace jboss.ws:di endpoint impl location in web.xml -->
-  <properties>
-    <nuxeo-platform-webapp-core-artifact.name>
-      ${pom.artifactId}-${pom.version}.jar
-    </nuxeo-platform-webapp-core-artifact.name>
-  </properties>
 </project>
