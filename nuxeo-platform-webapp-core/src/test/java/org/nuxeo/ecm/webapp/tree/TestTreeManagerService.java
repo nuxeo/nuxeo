@@ -62,7 +62,7 @@ public class TestTreeManagerService extends RepositoryOSGITestCase {
         Filter filter = treeManager.getFilter("navigation");
         assertNotNull(filter);
         filter = treeManager.getLeafFilter("navigation");
-        assertNull(filter);
+        assertNotNull(filter);
         Sorter sorter = treeManager.getSorter("navigation");
         assertNotNull(sorter);
     }
