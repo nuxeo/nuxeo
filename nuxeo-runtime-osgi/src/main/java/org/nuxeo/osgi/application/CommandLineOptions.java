@@ -17,21 +17,22 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.launcher;
+package org.nuxeo.osgi.application;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class CommandLineArgs {
+public class CommandLineOptions {
 
-    private final Map<String, String> args = new HashMap<String, String>();
+    private final LinkedHashMap<Object, String> args = new LinkedHashMap<Object, String>();
 
 
-    public CommandLineArgs(String[] args) {
+    public CommandLineOptions(String[] args) {
         String op = null;
         int i = 0;
         for (String arg : args) {
@@ -42,7 +43,7 @@ public class CommandLineArgs {
                 this.args.put(op, arg);
                 op = null;
             } else {
-                this.args.put('#' + String.valueOf(i++), arg);
+                this.args.put(new Integer(i++), arg);
                 op = null;
             }
         }
@@ -54,6 +55,18 @@ public class CommandLineArgs {
 
     public String getOption(String option) {
         return args.get(option);
+    }
+
+    public boolean hasOption(String option) {
+        return args.containsKey(option);
+    }
+
+    public LinkedHashMap<Object, String> getOptions() {
+        return args;
+    }
+
+    public Set<Map.Entry<Object,String>> entrySet() {
+        return args.entrySet();
     }
 
 }

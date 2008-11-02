@@ -24,6 +24,7 @@
     <module>nuxeo-runtime-jboss-adapter</module>
     <module>nuxeo-runtime-jboss-extensions</module>
     <module>nuxeo-runtime-osgi</module>
+    <module>nuxeo-runtime-launcher</module>
     <module>nuxeo-runtime-test</module>
     <module>nuxeo-runtime-scripting</module>
   </modules>
@@ -48,6 +49,11 @@
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-osgi</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-launcher</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
       <dependency>

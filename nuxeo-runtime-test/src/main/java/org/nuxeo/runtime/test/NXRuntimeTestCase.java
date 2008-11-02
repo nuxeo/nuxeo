@@ -34,13 +34,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jmock.MockObjectTestCase;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.osgi.BundleFile;
+import org.nuxeo.osgi.DirectoryBundleFile;
+import org.nuxeo.osgi.JarBundleFile;
 import org.nuxeo.osgi.OSGiAdapter;
+import org.nuxeo.osgi.application.StandaloneBundleLoader;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.launcher.BundleFile;
-import org.nuxeo.runtime.launcher.DirectoryBundleFile;
-import org.nuxeo.runtime.launcher.JarBundleFile;
-import org.nuxeo.runtime.launcher.StandaloneBundleLoader;
 import org.osgi.framework.Bundle;
 
 /**

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,38 +12,34 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     bstefanescu
  *
  * $Id$
  */
 
-package org.nuxeo.runtime.launcher;
-
-import java.net.URL;
-import java.net.URLClassLoader;
+package org.nuxeo.osgi.application;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class SharedClassLoader extends URLClassLoader {
+class RootClassLoader extends ClassLoader {
 
-    public SharedClassLoader(ClassLoader parent) {
-        super(new URL[0], parent);
-    }
+    private final Class<?> loaderClass;
+    private final String loaderName;
 
-    public SharedClassLoader(URL[] urls) {
-        super(urls);
-    }
-
-    public SharedClassLoader(URL[] urls, ClassLoader parent) {
-        super(urls, parent);
+    RootClassLoader(ClassLoader parent, Class<?> loaderClass) {
+        super(parent);
+        this.loaderClass = loaderClass;
+        this.loaderName = loaderClass.getName();
     }
 
     @Override
-    public void addURL(URL url) {
-        super.addURL(url);
-        //System.out.println("@@@@@@@@ ADDED URL: "+url);
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
+        if (loaderName.equals(name)) {
+            return loaderClass;
+        }
+        throw new ClassNotFoundException(name);
     }
 
 }

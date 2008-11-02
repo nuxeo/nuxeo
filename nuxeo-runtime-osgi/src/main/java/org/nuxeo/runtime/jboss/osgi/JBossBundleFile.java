@@ -28,8 +28,8 @@ import java.util.jar.Manifest;
 
 import org.jboss.deployment.DeploymentInfo;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.BundleManifestReader;
-import org.nuxeo.runtime.launcher.BundleFile;
 import org.osgi.framework.Constants;
 
 /**
