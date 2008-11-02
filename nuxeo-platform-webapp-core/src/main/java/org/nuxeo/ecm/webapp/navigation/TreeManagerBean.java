@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
+import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
 import org.nuxeo.ecm.platform.cache.AbstractCacheListener;
 import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -95,9 +96,10 @@ public class TreeManagerBean extends InputController implements TreeManager,
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             DocumentModel firstAccessibleParent = getFirstAccessibleParent(currentDocument);
             if (firstAccessibleParent != null) {
-                QueryModel queryModel = new QueryModel(
-                        TreeManagerService.getQueryModelDescriptor(),
-                        (NuxeoPrincipal) documentManager.getPrincipal());
+                QueryModelDescriptor queryModelDescriptor = TreeManagerService.getQueryModelDescriptor();
+                QueryModel queryModel = queryModelDescriptor == null ? null
+                        : new QueryModel(queryModelDescriptor,
+                                (NuxeoPrincipal) documentManager.getPrincipal());
                 LazyTreeNode treeNode = new LazyTreeNode(firstAccessibleParent,
                         documentManager,
                         TreeManagerService.getDocumentFilter(),
