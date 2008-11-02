@@ -21,93 +21,34 @@ package org.nuxeo.ecm.platform.ui.web.util;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
 public final class BaseURL {
 
     private static final Log log = LogFactory.getLog(BaseURL.class);
 
-    private static final String X_FORWARDED_HOST = "x-forwarded-host";
-
-    private static final String VH_HEADER = "nuxeo-virtual-host";
-
-    private BaseURL() {
+    protected static ServletRequest getRequest()
+    {
+        final FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext==null)
+            return null;
+        ServletRequest request = (ServletRequest) facesContext.getExternalContext().getRequest();
+        return request;
     }
 
     public static String getServerURL() {
-        return getServerURL(null, false);
+        return getServerURL(getRequest(), false);
     }
 
-    private static String getServerUrl(String scheme, String serverName,
-            int serverPort) {
-        StringBuilder sbaseURL = new StringBuilder();
-        sbaseURL.append(scheme);
-        sbaseURL.append("://");
-        sbaseURL.append(serverName);
-        if (serverPort != 0) {
-            if ("http".equals(scheme) && serverPort != 80
-                    || "https".equals(scheme) && serverPort != 443) {
-                sbaseURL.append(':');
-                sbaseURL.append(serverPort);
-            }
-        }
-        sbaseURL.append('/');
-        return sbaseURL.toString();
-    }
-
-    private static HttpServletRequest getHttpServletRequest(
-            ServletRequest request) {
-        if (request == null) {
-            final FacesContext facesContext = FacesContext.getCurrentInstance();
-            if (facesContext != null) {
-                request = (ServletRequest) facesContext.getExternalContext().getRequest();
-            }
-        }
-        if (request instanceof HttpServletRequest) {
-            return (HttpServletRequest) request;
-        }
-        return null;
-    }
 
     /**
      * @return Server URL as : protocol://serverName:port/
      */
     public static String getServerURL(ServletRequest request, boolean local) {
-        String baseURL = null;
-        HttpServletRequest httpRequest = getHttpServletRequest(request);
-        if (httpRequest != null) {
-            // Detect Nuxeo specific header for VH
-            String nuxeoVH = httpRequest.getHeader(VH_HEADER);
-            if (!local && nuxeoVH != null && nuxeoVH.contains("http")) {
-                baseURL = nuxeoVH;
-            } else {
-                // default values
-                String serverName = httpRequest.getServerName();
-                int serverPort = httpRequest.getServerPort();
-                if (!local) {
-                    // Detect virtual hosting based in standard header
-                    String forwardedHost = httpRequest.getHeader(X_FORWARDED_HOST);
-                    if (forwardedHost != null) {
-                        if (forwardedHost.contains(":")) {
-                            serverName = forwardedHost.split(":")[0];
-                            serverPort = Integer.valueOf(forwardedHost.split(":")[1]);
-                        } else {
-                            serverName = forwardedHost;
-                            serverPort = 80; // fallback
-                        }
-                    }
-                }
-                String scheme = httpRequest.getScheme();
-                baseURL = getServerUrl(scheme, serverName, serverPort);
-            }
-        }
-        if (baseURL == null) {
-            log.error("Could not retrieve base url correctly");
-        }
-        return baseURL;
+        return VirtualHostHelper.getServerURL(request, local);
     }
 
     /**
@@ -117,6 +58,7 @@ public final class BaseURL {
         final FacesContext facesContext = FacesContext.getCurrentInstance();
         if (facesContext != null) {
             String baseURL = facesContext.getExternalContext().getRequestContextPath();
+
             baseURL = baseURL.replace("/", "");
             return baseURL;
         } else {
@@ -128,27 +70,11 @@ public final class BaseURL {
      * @return base URL as protocol://serverName:port/webappName/
      */
     public static String getBaseURL() {
-        String baseURL = null;
-        String serverUrl = getServerURL();
-        if (serverUrl != null) {
-            baseURL = serverUrl + getWebAppName() + '/';
-        }
-        if (baseURL == null) {
-            log.error("Could not retrieve base url correctly");
-        }
-        return baseURL;
+        return getBaseURL(getRequest());
     }
 
     public static String getBaseURL(ServletRequest request) {
-        String baseURL = null;
-        String serverUrl = getServerURL(request, false);
-        if (serverUrl != null) {
-            baseURL = serverUrl + getWebAppName() + '/';
-        }
-        if (baseURL == null) {
-            log.error("Could not retrieve base url correctly");
-        }
-        return baseURL;
+        return VirtualHostHelper.getBaseURL(request);
     }
 
     public static String getLocalBaseURL(ServletRequest request) {

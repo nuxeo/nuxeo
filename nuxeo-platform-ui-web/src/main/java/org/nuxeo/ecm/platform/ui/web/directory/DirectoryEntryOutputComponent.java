@@ -119,6 +119,7 @@ public class DirectoryEntryOutputComponent extends DirectoryAwareComponent {
     /**
      * @deprecated never used
      */
+    @Override
     @Deprecated
     public String getDisplay() {
         return this.display;
@@ -127,6 +128,7 @@ public class DirectoryEntryOutputComponent extends DirectoryAwareComponent {
     /**
      * @deprecated never used
      */
+    @Override
     @Deprecated
     public void setDisplay(String display) {
         this.display = display;

@@ -78,7 +78,8 @@
         </f:facet>
 
         <h:outputText value="#{doc.dublincore.modified}">
-          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}" />
+          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+            timeZone="#{timeZone}" />
         </h:outputText>
       </nxu:column>
 

@@ -1844,6 +1844,7 @@
     </match>
   </match-list>
 </match>
+<!--
 <match>
   <mimetype>text/html</mimetype>
   <extension>html</extension>
@@ -1936,7 +1937,7 @@
     </match>
   </match-list>
 </match>
-
+-->
 <!--
 <match>
   <mimetype>text/x-java</mimetype>
