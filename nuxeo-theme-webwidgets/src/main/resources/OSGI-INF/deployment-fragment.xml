@@ -10,37 +10,6 @@
 
   </extension>
 
-  <extension target="web#LISTENER">
-
-    <listener>
-      <listener-class>
-        org.jboss.seam.servlet.SeamListener
-      </listener-class>
-    </listener>
-
-  </extension>
-
-  <extension target="web#FILTER">
-
-    <filter>
-      <filter-name>Seam Servlet Filter</filter-name>
-      <filter-class>
-        org.jboss.seam.servlet.SeamServletFilter
-      </filter-class>
-    </filter>
-
-    <filter-mapping>
-      <filter-name>Seam Servlet Filter</filter-name>
-      <url-pattern>/nxthemes-webwidgets-data/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-      <filter-name>Seam Servlet Filter</filter-name>
-      <url-pattern>/nxthemes-webwidgets-file-upload/*</url-pattern>
-    </filter-mapping>
-
-  </extension>
-
   <extension target="web#SERVLET">
 
     <servlet>
@@ -96,14 +65,6 @@
     </servlet-mapping>
 
   </extension>
-
-  <install>
-
-    <unzip from="${bundle.fileName}" to="/">
-      <include>nuxeo.war/**</include>
-    </unzip>
-
-  </install>
 
 </fragment>
 

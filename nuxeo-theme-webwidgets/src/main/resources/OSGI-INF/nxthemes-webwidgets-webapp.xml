@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.theme.webwidgets.webapp">
+
+  <documentation>
+    Theme editor
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="application-mapping">
+    <mapping path="/nxthemes/webwidgets" webapp="nxthemes-webwidgets" />
+  </extension>
+
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="application">
+
+    <webapp id="nxthemes-webwidgets">
+      <roots>
+        <root priority="1">nxthemes-webwidgets</root>
+      </roots>
+    </webapp>
+
+  </extension>
+
+</component>

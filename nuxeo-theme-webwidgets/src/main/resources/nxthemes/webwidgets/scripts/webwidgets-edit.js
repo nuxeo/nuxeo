@@ -280,7 +280,7 @@ NXThemesWebWidgets.ImageUploader.prototype = Object.extend(new NXThemesWebWidget
            info['filename'] + ' (' + info['content-type'] + ')' +
            '<input type="hidden" name="' + name + '" value="' + src + '" />';
       } else {
-        controlEl.innerHTML = '<img src="/nuxeo/nxthemes-web-widgets/images/exclamation.png" />';
+        controlEl.innerHTML = '<img src="/nuxeo/site/files/nxthemes-webwidgets/img/exclamation.png" />';
       }
       controlEl.show();
       boxEl.hide();
@@ -332,7 +332,7 @@ NXThemesWebWidgets.FileUploader.prototype = Object.extend(new NXThemesWebWidgets
         controlEl.innerHTML = info['filename'] + ' (' + info['content-type'] + ')' +
            '<input type="hidden" name="' + name + '" value="' + src + '" />';
       } else {
-        controlEl.innerHTML = '<img src="/nuxeo/nxthemes-web-widgets/images/exclamation.png" />';
+        controlEl.innerHTML = '<img src="/nuxeo/site/files/nxthemes-webwidgets/img/exclamation.png" />';
       }
       controlEl.show();
       boxEl.hide();

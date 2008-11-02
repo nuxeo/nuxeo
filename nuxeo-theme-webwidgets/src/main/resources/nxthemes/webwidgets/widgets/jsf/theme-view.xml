@@ -6,16 +6,15 @@
       <ui:insert name="page title">Page title</ui:insert>
     </title>
 
+    <script type="text/javascript"><!-- 
+      var webEngineContextPath = "/nuxeo/site";
+    //--></script>
+    
     <ui:insert name="bookmark"><!-- Bookmark URL --></ui:insert>
-    <nxthemes:head />
-    <nxthemes:resources />
 
-    <script type="text/javascript"
-      src="/nuxeo/seam/remoting/interface.js?nxthemesWebWidgetManager">
-      <!--
-        // This space intentionally left blank
-        //-->
-    </script>
+    <nxthemes:head />
+
+    <nxthemes:resources />
 
   </head>
   [nxthemes markup]
