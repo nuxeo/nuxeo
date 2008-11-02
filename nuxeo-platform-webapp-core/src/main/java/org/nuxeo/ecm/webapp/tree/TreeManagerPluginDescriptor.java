@@ -50,6 +50,9 @@ public class TreeManagerPluginDescriptor implements Serializable {
     @XNode("sorterClass")
     protected String sorterClassName;
 
+    @XNode("queryModel")
+    protected String queryModelName;
+
     @XNodeList(value = "excludedTypes/type", type = ArrayList.class, componentType = String.class)
     protected List<String> excludedTypes;
 
@@ -76,6 +79,10 @@ public class TreeManagerPluginDescriptor implements Serializable {
 
     public String getSorterClassName() {
         return sorterClassName;
+    }
+
+    public String getQueryModelName() {
+        return queryModelName;
     }
 
     public List<String> getExcludedTypes() {

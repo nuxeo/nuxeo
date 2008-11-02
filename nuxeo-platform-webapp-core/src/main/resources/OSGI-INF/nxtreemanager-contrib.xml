@@ -22,6 +22,7 @@
       </includedFacets>
       <leafFilterClass>org.nuxeo.ecm.webapp.tree.BigFolderLeafFilter</leafFilterClass>
       <sortPropertyPath>dc:title</sortPropertyPath>
+      <!-- <queryModel>TREE_CHILDREN</queryModel> -->
     </treeManagerPlugin>
 
   </extension>

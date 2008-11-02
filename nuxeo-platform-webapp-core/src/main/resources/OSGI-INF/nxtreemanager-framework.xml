@@ -78,6 +78,11 @@
           property will be set on it. Defaults to
           org.nuxeo.ecm.webapp.tree.DefaultDocumentTreeSorter class if not set.
         </li>
+        <li>
+          queryModel: the query model (with one free parameter) to use to list
+          the children of a document in the tree. When not defined, a core query
+          using the filterClass and sorterClass is used.
+        </li>
       </ul>
 
 

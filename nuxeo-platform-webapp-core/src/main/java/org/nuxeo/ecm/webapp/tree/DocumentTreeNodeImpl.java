@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.webapp.tree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,10 +30,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.Sorter;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.search.api.client.query.QueryException;
+import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 
 /**
  * Tree node of documents.
@@ -60,23 +62,26 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
     protected final Sorter sorter;
 
+    protected final QueryModel queryModel;
+
     protected Map<Object, DocumentTreeNodeImpl> children = null;
 
     public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
-            Filter leafFilter, Sorter sorter) {
+            Filter leafFilter, Sorter sorter, QueryModel queryModel) {
         super();
         this.document = document;
         this.sessionId = document.getSessionId();
         this.filter = filter;
         this.leafFilter = leafFilter;
         this.sorter = sorter;
+        this.queryModel = queryModel;
     }
 
     /** @deprecated use the other constructor */
     @Deprecated
     public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
             Sorter sorter) {
-        this(document, filter, null, sorter);
+        this(document, filter, null, sorter, null);
     }
 
     public List<DocumentTreeNode> getChildren() {
@@ -120,16 +125,27 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
                 // filter says this is a leaf, don't look at children
                 return;
             }
-            // get and filter
-            CoreSession session = CoreInstance.getInstance().getSession(
-                    sessionId);
-            DocumentModelList coreChildren = session.getChildren(
-                    document.getRef(), null, SecurityConstants.READ, filter,
-                    sorter);
-            for (DocumentModel child : coreChildren) {
+            List<DocumentModel> documents;
+            if (queryModel == null) {
+                // get the children using the core
+                CoreSession session = CoreInstance.getInstance().getSession(
+                        sessionId);
+                documents = session.getChildren(document.getRef(), null,
+                        SecurityConstants.READ, filter, sorter);
+            } else {
+                // get the children using a query model
+                try {
+                    documents = queryModel.getDocuments(new Object[] { getId() });
+                } catch (QueryException e) {
+                    log.warn("Could not query children", e);
+                    documents = Collections.emptyList();
+                }
+            }
+            // build the children nodes
+            for (DocumentModel child : documents) {
                 String identifier = child.getId();
                 DocumentTreeNodeImpl childNode = new DocumentTreeNodeImpl(
-                        child, filter, leafFilter, sorter);
+                        child, filter, leafFilter, sorter, queryModel);
                 children.put(identifier, childNode);
             }
         } catch (ClientException e) {

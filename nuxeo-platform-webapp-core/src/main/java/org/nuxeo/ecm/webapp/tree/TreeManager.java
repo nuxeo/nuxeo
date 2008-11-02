@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.Sorter;
+import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
 
 /**
  * Interface for the tree manager service
@@ -45,5 +46,10 @@ public interface TreeManager extends Serializable {
      * Returns sorter to use for given plugin name.
      */
     Sorter getSorter(String pluginName);
+
+    /**
+     * Returns the query model descriptor to use for given plugin name.
+     */
+    QueryModelDescriptor getQueryModelDescriptor(String pluginName);
 
 }

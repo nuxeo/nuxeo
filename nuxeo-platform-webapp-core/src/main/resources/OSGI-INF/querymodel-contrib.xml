@@ -131,6 +131,20 @@
       -->
     </queryModel>
 
+    <!-- This query model may be used to list children in the tree navigation -->
+    <queryModel name="TREE_CHILDREN">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:parentId = ?
+        AND ecm:mixinType = 'Folderish'
+        AND ecm:mixinType != 'HiddenInNavigation'
+        AND ecm:isCheckedInVersion = 0
+        AND ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sortable value="true" defaultSortColumn="dc:title"
+        defaultSortAscending="true" />
+      <max>50</max>
+    </queryModel>
+
     <queryModel name="SIMPLE_SEARCH">
       <pattern>
         SELECT * FROM Document WHERE ecm:fulltext LIKE ? AND

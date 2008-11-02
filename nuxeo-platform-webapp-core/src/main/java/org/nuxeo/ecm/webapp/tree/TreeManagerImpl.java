@@ -27,6 +27,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.Sorter;
+import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService;
+import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -53,6 +56,8 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
 
     protected Map<String, Sorter> sorters;
 
+    protected Map<String, QueryModelDescriptor> queryModelDescriptors;
+
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getAdapter(Class<T> adapter) {
@@ -68,6 +73,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         filters = new HashMap<String, Filter>();
         leafFilters = new HashMap<String, Filter>();
         sorters = new HashMap<String, Sorter>();
+        queryModelDescriptors = new HashMap<String, QueryModelDescriptor>();
     }
 
     @Override
@@ -75,6 +81,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         filters = null;
         leafFilters = null;
         sorters = null;
+        queryModelDescriptors = null;
         super.deactivate(context);
     }
 
@@ -91,18 +98,16 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
                 log.info("Overriding filter for plugin " + name);
                 filters.remove(name);
             }
+            log.info("Registering filter for plugin " + name);
             filters.put(name, buildFilter(plugin));
             // leaf filter
-            Filter leafFilter = buildLeafFilter(plugin);
-            if (leafFilter != null) {
-                if (leafFilters.containsKey(name)) {
-                    // FIXME handle merge?
-                    log.info("Overriding leaf filter for plugin " + name);
-                    leafFilters.remove(name);
-                }
-                log.info("Registering leaf filter for plugin " + name);
-                leafFilters.put(name, leafFilter);
+            if (leafFilters.containsKey(name)) {
+                // FIXME handle merge?
+                log.info("Overriding leaf filter for plugin " + name);
+                leafFilters.remove(name);
             }
+            log.info("Registering leaf filter for plugin " + name);
+            leafFilters.put(name, buildLeafFilter(plugin));
             // sorter
             if (sorters.containsKey(name)) {
                 // FIXME handle merge?
@@ -111,6 +116,14 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
             }
             log.info("Registering sorter for plugin " + name);
             sorters.put(name, buildSorter(plugin));
+            // query model
+            if (queryModelDescriptors.containsKey(name)) {
+                // FIXME handle merge?
+                log.info("Overriding query model for plugin " + name);
+                queryModelDescriptors.remove(name);
+            }
+            log.info("Registering query model for plugin " + name);
+            queryModelDescriptors.put(name, buildQueryModelDescriptor(plugin));
         }
     }
 
@@ -126,6 +139,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
                 log.info("Unregistering filter for plugin " + name);
                 filters.remove(name);
             }
+            // leaf filter
             if (leafFilters.containsKey(name)) {
                 log.info("Unregistering leaf filter for plugin " + name);
                 leafFilters.remove(name);
@@ -134,6 +148,11 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
             if (sorters.containsKey(name)) {
                 log.info("Unregistering sorter for plugin " + name);
                 sorters.remove(name);
+            }
+            // query model
+            if (queryModelDescriptors.containsKey(name)) {
+                log.info("Unregistering query model for plugin " + name);
+                queryModelDescriptors.remove(name);
             }
         }
     }
@@ -226,6 +245,17 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         return sorter;
     }
 
+    protected QueryModelDescriptor buildQueryModelDescriptor(
+            TreeManagerPluginDescriptor plugin) {
+        String queryModelName = plugin.getQueryModelName();
+        if (queryModelName == null || "".equals(queryModelName)) {
+            return null;
+        }
+        QueryModelService service = (QueryModelService) Framework.getRuntime().getComponent(
+                QueryModelService.NAME);
+        return service.getQueryModelDescriptor(queryModelName);
+    }
+
     public Filter getFilter(String pluginName) {
         return filters.get(pluginName);
     }
@@ -238,4 +268,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         return sorters.get(pluginName);
     }
 
+    public QueryModelDescriptor getQueryModelDescriptor(String pluginName) {
+        return queryModelDescriptors.get(pluginName);
+    }
 }

@@ -43,7 +43,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.Sorter;
+import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
@@ -65,8 +67,8 @@ public class TreeActionsBean implements TreeActions {
 
     private static final Log log = LogFactory.getLog(TreeActionsBean.class);
 
-    public static final String NODE_SELECTED_MARKER = TreeActionsBean.class.getName()
-            + "_NODE_SELECTED_MARKER";
+    public static final String NODE_SELECTED_MARKER = TreeActionsBean.class.getName() +
+            "_NODE_SELECTED_MARKER";
 
     @In(create = true, required = false)
     protected CoreSession documentManager;
@@ -87,8 +89,8 @@ public class TreeActionsBean implements TreeActions {
                 List<DocumentModel> parents = documentManager.getParentDocuments(currentDocument.getRef());
                 if (!parents.isEmpty()) {
                     firstAccessibleParent = parents.get(0);
-                } else if (!"Root".equals(currentDocument.getType())
-                        && currentDocument.isFolder()) {
+                } else if (!"Root".equals(currentDocument.getType()) &&
+                        currentDocument.isFolder()) {
                     // default on current doc
                     firstAccessibleParent = currentDocument;
                 }
@@ -97,21 +99,26 @@ public class TreeActionsBean implements TreeActions {
                 Filter filter = null;
                 Filter leafFilter = null;
                 Sorter sorter = null;
+                QueryModel queryModel = null;
                 try {
                     TreeManager treeManager = Framework.getService(TreeManager.class);
                     filter = treeManager.getFilter(DEFAULT_TREE_PLUGIN_NAME);
                     leafFilter = treeManager.getLeafFilter(DEFAULT_TREE_PLUGIN_NAME);
                     sorter = treeManager.getSorter(DEFAULT_TREE_PLUGIN_NAME);
+                    queryModel = new QueryModel(
+                            treeManager.getQueryModelDescriptor(DEFAULT_TREE_PLUGIN_NAME),
+                            (NuxeoPrincipal) documentManager.getPrincipal());
                 } catch (Exception e) {
                     log.error(
                             "Could not fetch filter, sorter or node type for tree ",
                             e);
                 }
                 DocumentTreeNode treeRoot = new DocumentTreeNodeImpl(
-                        firstAccessibleParent, filter, leafFilter, sorter);
+                        firstAccessibleParent, filter, leafFilter, sorter,
+                        queryModel);
                 tree.add(treeRoot);
-                log.debug("Tree initialized with document: "
-                        + firstAccessibleParent.getId());
+                log.debug("Tree initialized with document: " +
+                        firstAccessibleParent.getId());
             } else {
                 log.warn("Could not initialize the navigation tree: no parent"
                         + " found for current document");
@@ -157,8 +164,8 @@ public class TreeActionsBean implements TreeActions {
                     DocumentTreeNode treeNode = (DocumentTreeNode) value;
                     String nodePath = treeNode.getPath();
                     String currentDocPath = getCurrentDocumentPath();
-                    if (currentDocPath != null && nodePath != null
-                            && currentDocPath.startsWith(nodePath)) {
+                    if (currentDocPath != null && nodePath != null &&
+                            currentDocPath.startsWith(nodePath)) {
                         return true;
                     }
                 }
