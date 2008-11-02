@@ -24,6 +24,7 @@ import java.util.Map;
 import org.dom4j.Document;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 
 /**
  * A representation for an exported document.
@@ -32,49 +33,27 @@ import org.nuxeo.ecm.core.api.Blob;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@SuppressWarnings("unchecked")
 public interface ExportedDocument {
 
     /**
      * @return source DocumentLocation
      */
-    org.nuxeo.ecm.core.api.DocumentLocation getSourceLocation();
+    DocumentLocation getSourceLocation();
 
-    /**
-     * @return the path.
-     */
     Path getPath();
 
-    /**
-     * @param path the path to set.
-     */
     void setPath(Path path);
 
-    /**
-     * @return the id.
-     */
     String getId();
 
-    /**
-     * @param id the id to set.
-     */
     void setId(String id);
 
     String getType();
 
-    /**
-     * @return the document.
-     */
     Document getDocument();
 
-    /**
-     * @param document the document to set.
-     */
     void setDocument(Document document);
 
-    /**
-     * @return the blobs.
-     */
     Map<String, Blob> getBlobs();
 
     void putBlob(String id, Blob blob);
@@ -85,9 +64,6 @@ public interface ExportedDocument {
 
     boolean hasExternalBlobs();
 
-    /**
-     * @return the documents.
-     */
     Map<String, Document> getDocuments();
 
     Document getDocument(String id);

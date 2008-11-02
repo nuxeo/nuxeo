@@ -2,25 +2,21 @@ Nuxeo repository SQL connector installation documentation
 
 1. Install nuxeo
 
-Download the latest 5.1.6 snapshot, for instance
-http://www.nuxeo.org/static/snapshots/nuxeo-ep-5.1.6.SNAPSHOT-installer-20080810.jar
-
-You can also use Nuxeo 5.1.5 provided you install specially backported Jars in it,
-see http://jira.nuxeo.org/browse/NXP-2567.
-
-Install Nuxeo in a directory called $JBOSS in this document.
+Download the latest 5.2 snapshot, for instance
+http://www.nuxeo.org/static/snapshots/nuxeo-ep-5.2.0.SNAPSHOT-installer-20080810.jar
+Install it in a directory called $JBOSS in this document.
 
 2. Remove the old JCR connector
 
 rm $JBOSS/server/default/deploy/nuxeo.ear/config/default-repository-config.xml
 rm $JBOSS/server/default/deploy/nuxeo.ear/config/default-versioning-config.xml
-rm $JBOSS/server/default/deploy/nuxeo.ear/system/nuxeo-core-jcr-connector-1.4.4-SNAPSHOT.jar
-rm $JBOSS/server/default/deploy/nuxeo.ear/system/nuxeo-core-jca-1.4.4-SNAPSHOT.rar
+rm $JBOSS/server/default/deploy/nuxeo.ear/system/nuxeo-core-jcr-connector-1.5-SNAPSHOT.jar
+rm $JBOSS/server/default/deploy/nuxeo.ear/system/nuxeo-core-jca-1.5-SNAPSHOT.rar
   
 3. Install the SQL connector
 
-cp nuxeo-core-storage-sql-ra-1.4.4-SNAPSHOT.rar $JBOSS/server/default/deploy/nuxeo.ear/system
-cp nuxeo-core-storage-sql-1.4.4-SNAPSHOT.jar $JBOSS/server/default/deploy/nuxeo.ear/system
+cp nuxeo-core-storage-sql-ra-1.5-SNAPSHOT.rar $JBOSS/server/default/deploy/nuxeo.ear/system
+cp nuxeo-core-storage-sql-1.5-SNAPSHOT.jar $JBOSS/server/default/deploy/nuxeo.ear/system
 
 4. Configure the SQL connector
 
