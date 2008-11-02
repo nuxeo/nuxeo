@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -25,6 +25,15 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface RepositoryInstance extends CoreSession, RepositoryConnection {
+public interface RepositoryConnection {
+
+    Repository getRepository();
+
+    /**
+     * @return the session.
+     */
+    CoreSession getSession() throws Exception;
+
+    void close() throws Exception;
 
 }

@@ -33,6 +33,8 @@ import javax.security.auth.login.LoginException;
 import org.jboss.remoting.InvokerLocator;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryInstance;
+import org.nuxeo.ecm.core.api.repository.RepositoryInstanceHandler;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
