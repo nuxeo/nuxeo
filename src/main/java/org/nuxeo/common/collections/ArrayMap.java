@@ -21,8 +21,6 @@ package org.nuxeo.common.collections;
 
 import java.util.Map;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * A mixture of an array list and a map used to store
  * small table of elements using both indices and keys.
@@ -50,22 +48,21 @@ public class ArrayMap<K, V> {
         elements = new Object[initialCapacity == 0 ? DEFAULT_SIZE : initialCapacity * 2];
     }
 
-    public ArrayMap(Map map) {
+    public ArrayMap(Map<K, V> map) {
         this(map.size());
         putAll(map);
     }
 
-    public ArrayMap(ArrayMap map) {
+    public ArrayMap(ArrayMap<K, V> map) {
         count = map.count;
         elements = new Object[map.elements.length];
         System.arraycopy(map.elements, 0, elements, 0, count * 2);
     }
 
-    public void putAll(Map map) {
-        for (Object o : map.entrySet()) {
-            Map.Entry entry = (Map.Entry) o;
-            K key = (K) entry.getKey();
-            V value = (V) entry.getValue();
+    public void putAll(Map<K, V> map) {
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            K key = entry.getKey();
+            V value = entry.getValue();
             add(key, value);
         }
     }
@@ -141,7 +138,7 @@ public class ArrayMap<K, V> {
         return (K) elements[i << 1];
     }
 
-    public V put(@NotNull K key, V value) {
+    public V put(K key, V value) {
         // handle the case where we don't have any attributes yet
         if (elements == null) {
             elements = new Object[DEFAULT_SIZE];
@@ -174,7 +171,7 @@ public class ArrayMap<K, V> {
         return null;
     }
 
-    public void add(@NotNull K key, V value) {
+    public void add(K key, V value) {
         // handle the case where we don't have any attributes yet
         int insertIndex;
         if (elements == null) {

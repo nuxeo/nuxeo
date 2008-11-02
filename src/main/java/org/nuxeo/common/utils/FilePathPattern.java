@@ -29,7 +29,7 @@ public class FilePathPattern {
     private final FileNamePattern[] patterns;
 
     public FilePathPattern(String path) {
-        this (new Path(path));
+        this(new Path(path));
     }
 
     public FilePathPattern(Path path) {

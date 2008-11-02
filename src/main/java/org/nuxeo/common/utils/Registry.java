@@ -20,11 +20,8 @@
 package org.nuxeo.common.utils;
 
 import java.util.HashMap;
-import java.util.Set;
 import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.Set;
 
 /**
  * Generic registry implementation.
@@ -32,8 +29,6 @@ import org.apache.commons.logging.LogFactory;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class Registry<T> {
-
-    private static final Log log = LogFactory.getLog(Registry.class);
 
     private final String name;
 

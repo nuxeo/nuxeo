@@ -34,6 +34,10 @@ public class RFC2231 {
 
     private static final byte[] UNKNOWN_BYTES = new byte[] { '?' };
 
+    // Utility class
+    private RFC2231() {
+    }
+
     /**
      * Does a simple %-escaping of the UTF-8 bytes of the value. Keep only some
      * know safe characters.
