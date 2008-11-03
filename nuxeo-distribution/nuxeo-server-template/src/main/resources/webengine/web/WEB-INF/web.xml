@@ -5,11 +5,19 @@
   version="2.4">
 
   <filter>
-    <display-name>Nuxeo Authentication Filter</display-name>
+    <display-name>WebEngine Authentication Filter</display-name>
     <filter-name>NuxeoAuthenticationFilter</filter-name>
     <filter-class>
-      org.nuxeo.ecm.webengine.login.NuxeoAuthenticationFilter
+      org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter
     </filter-class>
+    <init-param>
+      <param-name>byPassAuthenticationLog</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>securityDomain</param-name>
+      <param-value>nuxeo-webengine</param-value>
+    </init-param>
   </filter>
   <filter-mapping>
     <filter-name>NuxeoAuthenticationFilter</filter-name>
@@ -19,7 +27,7 @@
   <servlet>
     <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
     <servlet-class>
-    org.nuxeo.ecm.webengine.servlet.WebServlet
+    org.nuxeo.ecm.webengine.server.resteasy.WebEngineServlet
     </servlet-class>
   </servlet>
   <servlet-mapping>
@@ -33,7 +41,6 @@
         org.nuxeo.ecm.webengine.servlet.ResourceServlet
     </servlet-class>
   </servlet>
-
   <servlet-mapping>
     <servlet-name>Nuxeo Resource Servlet</servlet-name>
     <url-pattern>/nuxeo/site/files/*</url-pattern>

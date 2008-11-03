@@ -41,7 +41,7 @@
     <graph name="documentComments" type="jena">
       <option name="backend">sql</option>
       <option name="databaseType">Derby</option>
-      <option name="datasource">jdbc/comment-relations</option>
+      <option name="datasource">java:/comment-relations</option>
       <option name="databaseDoCompressUri">false</option>
       <option name="databaseTransactionEnabled">false</option>
       <namespaces>

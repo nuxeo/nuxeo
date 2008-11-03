@@ -25,6 +25,10 @@
         <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-jca" profile="jca"/>
         <artifact group="org.nuxeo.ecm.core" name="nuxeo-core"/>
         <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-jcr-connector"/>
+        <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-web-common"/>
+	<!-- needed for UserIdentificationInfo - must be moved in web-common -->	
+        <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-api"/>	
+        <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-login"/>		
         <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-dublincore"/>
         <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-content-template-manager"/>
     </artifacts>
@@ -61,6 +65,8 @@
   <artifactSet id="webengine-bundles" profile="webengine">
     <artifacts>
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-core" version="${nuxeo.webengine.version}"/>
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-resteasy-adapter" version="${nuxeo.webengine.version}"/>
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-admin" version="${nuxeo.webengine.version}"/>
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-ui" version="${nuxeo.webengine.version}"/>
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-wiki" version="${nuxeo.webengine.version}"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-rendering" version="${nuxeo.platform.version}"/>
@@ -87,6 +93,8 @@
       <artifact group="org.apache.lucene" name="lucene-core" />
       <artifact group="commons-collections" name="commons-collections" />
       <artifact group="concurrent" name="concurrent" />
+      <artifact group="org.resteasy" name="resteasy-jaxrs" version="1.0-beta-8-nx" />
+      <artifact group="org.resteasy" name="jaxrs-api" version="1.0-beta-8" />
     </artifacts>
   </artifactSet>
 

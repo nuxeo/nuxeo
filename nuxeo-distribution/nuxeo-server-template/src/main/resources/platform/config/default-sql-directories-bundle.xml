@@ -13,7 +13,7 @@
 
       <schema>user</schema>
 
-      <dataSource>jdbc/nxsqldirectory</dataSource>
+      <dataSource>java:/nxsqldirectory</dataSource>
 
       <table>users</table>
       <idField>username</idField>
@@ -33,7 +33,7 @@
     <directory name="groupDirectory">
 
       <schema>group</schema>
-      <dataSource>jdbc/nxsqldirectory</dataSource>
+      <dataSource>java:/nxsqldirectory</dataSource>
       <table>groups</table>
       <idField>groupname</idField>
       <dataFile>groups.csv</dataFile>
