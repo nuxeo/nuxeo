@@ -32,12 +32,10 @@ public class ForumStartupActionHandler extends
     private static final long serialVersionUID = 1L;
 
     public void execute(ExecutionContext ec) throws Exception {
-
         log.info("Moderation started on : "
                 + ec.getVariable(WorkflowConstants.DOCUMENT_REF));
 
         bindDocumentToProcess(ec);
-
     }
 
 }

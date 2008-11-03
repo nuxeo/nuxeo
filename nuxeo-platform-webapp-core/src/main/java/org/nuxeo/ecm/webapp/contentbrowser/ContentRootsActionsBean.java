@@ -39,7 +39,7 @@ import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.contexts.Context;
@@ -49,7 +49,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.interfaces.ejb.ECContentRoot;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
@@ -78,6 +77,7 @@ import org.nuxeo.ecm.webapp.table.row.TableRow;
 @Name("contentRootsActions")
 @Scope(SESSION)
 @Deprecated
+@SuppressWarnings({"ALL"})
 public class ContentRootsActionsBean extends InputController implements
         ContentRootsActions, Serializable {
 
@@ -99,7 +99,7 @@ public class ContentRootsActionsBean extends InputController implements
     @In
     protected transient Context sessionContext;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected transient ECContentRoot ecContentRoot;
 
     DocumentModel currentItem;
@@ -150,7 +150,7 @@ public class ContentRootsActionsBean extends InputController implements
                     .getSelectedDocModel();
             return navigationContext.getActionResult(doc, UserAction.VIEW);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -162,7 +162,7 @@ public class ContentRootsActionsBean extends InputController implements
                     .getSelectedDocModel();
             return navigationContext.getActionResult(doc, UserAction.VIEW);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -186,7 +186,7 @@ public class ContentRootsActionsBean extends InputController implements
             return navigationContext
                     .getActionResult(doc, UserAction.AFTER_EDIT);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -253,9 +253,9 @@ public class ContentRootsActionsBean extends InputController implements
                     selectedTab, currentDomain.getRef(), documentManager);
 
             log.debug("Retrieved workspace type children for domain: "
-                    + currentDomain + " " + workspacesChildren);
+                    + currentDomain + ' ' + workspacesChildren);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -279,9 +279,9 @@ public class ContentRootsActionsBean extends InputController implements
                     selectedTab, currentDomain.getRef(), documentManager);
 
             log.debug("Retrieved workspace type children for domain: "
-                    + currentDomain + " " + sectionsChildren);
+                    + currentDomain + ' ' + sectionsChildren);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -293,19 +293,17 @@ public class ContentRootsActionsBean extends InputController implements
         contentRootDocuments = null;
     }
 
-    protected List<DocumentModel> getContentRoots()
-            throws AlreadyConnectedException, ClientException {
+    protected List<DocumentModel> getContentRoots() throws ClientException {
         if (null == contentRootDocuments) {
             getContentRootDocuments();
         }
-
         return contentRootDocuments;
     }
 
     // @Observer( { EventNames.DOMAIN_SELECTION_CHANGED })
     // @Factory("contentRootDocumentList")
     public List<DocumentModel> getContentRootDocuments()
-            throws ClientException, AlreadyConnectedException {
+            throws ClientException {
         try {
             contentRootDocuments = ecContentRoot.getContentRootDocuments(
                     currentDomain.getRef(), documentManager);
@@ -315,7 +313,7 @@ public class ContentRootsActionsBean extends InputController implements
 
             return contentRootDocuments;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -325,10 +323,9 @@ public class ContentRootsActionsBean extends InputController implements
      * @param type
      * @return
      * @throws ClientException
-     * @throws AlreadyConnectedException
      */
     protected DocumentModel getContentRootWithType(String type)
-            throws AlreadyConnectedException, ClientException {
+            throws ClientException {
         for (DocumentModel rightDocModel : getContentRoots()) {
             if (type.equalsIgnoreCase((String) rightDocModel.getProperty(
                     "dublincore", "description"))) {
@@ -366,7 +363,7 @@ public class ContentRootsActionsBean extends InputController implements
                         || !getSectionsTableModel().getSelectedRows().isEmpty())
                     && currentItem.isFolder();
         } catch (Exception e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -377,7 +374,7 @@ public class ContentRootsActionsBean extends InputController implements
             selectedDocs.addAll(getSectionsTableModel().getSelectedDocs());
             return selectedDocs;
         } catch (ECInvalidParameterException e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -466,8 +463,7 @@ public class ContentRootsActionsBean extends InputController implements
     }
 
     public DocModelTableModel getWorkspacesTableModel()
-            throws AlreadyConnectedException, ClientException,
-            ECInvalidParameterException {
+            throws ClientException, ECInvalidParameterException {
         if (null == workspacesTableModel) {
             workspacesTableModel = reconstructWorkspacesTableModel();
         }
@@ -476,8 +472,7 @@ public class ContentRootsActionsBean extends InputController implements
     }
 
     public DocModelTableModel getSectionsTableModel()
-            throws AlreadyConnectedException, ClientException,
-            ECInvalidParameterException {
+            throws ClientException, ECInvalidParameterException {
         if (null == sectionsTableModel) {
             sectionsTableModel = reconstructSectionsTableModel();
         }

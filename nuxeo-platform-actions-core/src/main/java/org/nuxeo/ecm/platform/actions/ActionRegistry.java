@@ -113,7 +113,7 @@ public class ActionRegistry implements Serializable {
         return actions.get(id);
     }
 
-    private Collection<Action> sortActions(Collection<Action> actions) {
+    private static Collection<Action> sortActions(Collection<Action> actions) {
         Collection<Action> sortedActions;
         if (actions == null) {
             sortedActions = new ArrayList<Action>();

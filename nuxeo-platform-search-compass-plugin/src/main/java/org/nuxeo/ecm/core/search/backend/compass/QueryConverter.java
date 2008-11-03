@@ -275,7 +275,6 @@ public class QueryConverter {
      *
      * @param op The operator
      * @param right Right hand side of the clause
-     * @param left Left hand side of the clause
      * @param analyzer if necessary
      * @param type the indexing type. Case insensitive.
      * @return a compass Query or null to mean it's logically equivalent to a
@@ -394,7 +393,7 @@ public class QueryConverter {
             }
         } else if (right instanceof IntegerLiteral) {
             if ("int".equals(type) || "long".equals(type)) {
-                rightOb = (long) ((IntegerLiteral) right).value;
+                rightOb = ((IntegerLiteral) right).value;
             } else {
                 rightOb = ((IntegerLiteral) right).value;
             }
@@ -475,9 +474,8 @@ public class QueryConverter {
             // TODO only lists of String Literal are actually supported
             LiteralList value = (LiteralList) right;
             BooleanQuery lQuery = new BooleanQuery();
-            String lv;
             for (Literal l : value) {
-                lv = Util.escapeSpecialMarkers(((StringLiteral) l).value);
+                String lv = Util.escapeSpecialMarkers(((StringLiteral) l).value);
                 lQuery.add(new BooleanClause(new TermQuery(new Term(name, lv)),
                         BooleanClause.Occur.SHOULD));
             }
