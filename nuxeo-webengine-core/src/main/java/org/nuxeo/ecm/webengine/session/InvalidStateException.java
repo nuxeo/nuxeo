@@ -28,7 +28,7 @@ public class InvalidStateException extends SessionException {
     private static final long serialVersionUID = 1L;
 
     public InvalidStateException(Component comp, String transition) {
-        super ("Cannot call transition "+transition+" on the component "
+        super("Cannot call transition "+transition+" on the component "
                 +comp.getClass()+"#"+comp.getName()
                 +". Component state:  "+(comp.isLive()?"active":"destroyed"));
     }

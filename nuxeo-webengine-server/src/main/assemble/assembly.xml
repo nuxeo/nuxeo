@@ -20,6 +20,7 @@
     </includes>
     <excludes>
       <artifact name="nuxeo-runtime-launcher"/>
+      <artifact name="nuxeo-webengine-apt"/>
     </excludes>
   </artifactSet>
 
@@ -51,6 +52,7 @@
       <artifact group="org.hibernate" />
       <artifact name="hibernate-annotations" />
       <artifact group="org.hibernate" name="hibernate"/>
+      <artifact group="org.resteasy" />
     </includes>
     <excludes>
       <artifact group="org.mortbay.jetty" name="servlet-api-2.5" />

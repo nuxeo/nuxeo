@@ -55,7 +55,7 @@ public class DocumentObjectWrapper extends DefaultObjectWrapper {
             if (p.isScalar()) {
                 return new PropertyWrapper(this).wrap(p);
             } else if (p.isList()) {
-                return new ListPropertyTemplate(this, (ListProperty)obj);
+                return new ListPropertyTemplate(this, (ListProperty) obj);
             } else if (p.getClass() == BlobProperty.class) {
                 try {
                     Blob blob = (Blob)p.getValue();

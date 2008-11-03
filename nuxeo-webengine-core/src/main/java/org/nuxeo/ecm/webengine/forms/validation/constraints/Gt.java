@@ -37,7 +37,7 @@ public class Gt extends SimpleConstraint {
         if (!(decodedValue instanceof Comparable)) {
             throw new IllegalArgumentException("Only Comparable objects are supported: "+this.value.getClass());
         }
-        this.value = (Comparable)decodedValue;
+        this.value = (Comparable) decodedValue;
     }
 
 
@@ -45,7 +45,7 @@ public class Gt extends SimpleConstraint {
     @SuppressWarnings("unchecked")
     public Status doValidate(FormInstance form, Field field, String rawValue, Object value) {
         assert this.value != null;
-        return this.value.compareTo((Comparable)value) < 0 ? Status.OK
+        return this.value.compareTo(value) < 0 ? Status.OK
                 : error(field);
     }
 

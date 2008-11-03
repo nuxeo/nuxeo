@@ -20,8 +20,8 @@
 package org.nuxeo.ecm.webengine.ui.tree.document;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.ui.tree.ContentProvider;
 import org.nuxeo.ecm.webengine.ui.tree.JSonTree;
 import org.nuxeo.ecm.webengine.ui.tree.JSonTreeSerializer;
@@ -38,26 +38,28 @@ public class DocumentTree extends JSonTree {
         ctx.getUserSession().getComponent(DocumentTree.class, treeId).updateSelection(ctx);
     }
 
-    public static void updateSelection(WebContext ctx, String treeId, ContentProvider provider, JSonTreeSerializer serializer) throws Exception {
+    public static void updateSelection(WebContext ctx, String treeId,
+            ContentProvider provider, JSonTreeSerializer serializer) throws Exception {
         ctx.getUserSession().getComponent(DocumentTree.class, treeId).updateSelection(ctx, provider, serializer);
     }
 
-    public void updateSelection(WebContext ctx) throws WebException {
+    @Override
+    public void updateSelection(WebContext ctx) {
         super.updateSelection(ctx, getProvider(ctx), getSerializer(ctx));
     }
 
     @Override
-    protected ContentProvider getProvider(WebContext ctx) throws WebException {
+    protected ContentProvider getProvider(WebContext ctx) {
         return new DocumentContentProvider(ctx.getCoreSession());
     }
 
     @Override
-    protected JSonTreeSerializer getSerializer(WebContext ctx) throws WebException {
+    protected JSonTreeSerializer getSerializer(WebContext ctx) {
         return new JSonDocumentTreeSerializer(ctx);
     }
 
     @Override
-    protected Object getInput(WebContext ctx) throws WebException {
+    protected Object getInput(WebContext ctx) {
         try {
             return ctx.getCoreSession().getRootDocument();
         } catch (ClientException e) {

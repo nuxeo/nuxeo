@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<module name="sample1">
+  <resources>
+    <resource class="sample1.HelloWorld"/>
+    <resource class="sample1.HelloWorldSingleton" path="/sample1/singleton" singleton="true"/>
+  </resources>
+</module>
+

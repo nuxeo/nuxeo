@@ -22,12 +22,11 @@ package org.nuxeo.ecm.webengine.ui.tree.directory;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.ui.tree.ContentProvider;
 import org.nuxeo.ecm.webengine.ui.tree.JSonTree;
 import org.nuxeo.ecm.webengine.ui.tree.JSonTreeSerializer;
-import org.nuxeo.ecm.webengine.ui.tree.document.DocumentTree;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -48,17 +47,17 @@ public abstract class DirectoryTree extends JSonTree {
         this (Framework.getService(DirectoryService.class).getDirectory(directory));
     }
 
-    protected DirectoryTree(Directory dir) throws DirectoryException {
+    protected DirectoryTree(Directory dir) {
         this.dir = dir;
     }
 
     @Override
-    protected Object getInput(WebContext ctx) throws WebException {
-        return this.dir;
+    protected Object getInput(WebContext ctx) {
+        return dir;
     }
 
     @Override
-    protected ContentProvider getProvider(WebContext ctx) throws WebException {
+    protected ContentProvider getProvider(WebContext ctx) {
         try {
             return new DirectoryContentProvider(dir.getSession());
         } catch (DirectoryException e) {
@@ -67,8 +66,7 @@ public abstract class DirectoryTree extends JSonTree {
     }
 
     @Override
-    protected JSonTreeSerializer getSerializer(WebContext ctx)
-            throws WebException {
+    protected JSonTreeSerializer getSerializer(WebContext ctx) {
         return new JSonTreeSerializer();
     }
 

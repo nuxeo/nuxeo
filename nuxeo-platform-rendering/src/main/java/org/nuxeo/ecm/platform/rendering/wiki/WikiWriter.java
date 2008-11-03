@@ -42,7 +42,7 @@ public class WikiWriter implements IWikiPrinter, WikiText {
 
     protected static final String LINE_SEP = System.getProperty("line.separator");
 
-    protected WikiWriter parent = null;
+    protected WikiWriter parent;
     protected final List<String> segments = new ArrayList<String>();
     protected final List<WikiText> dynamicSegments = new ArrayList<WikiText>();
     protected final StringBuilder buf = new StringBuilder();

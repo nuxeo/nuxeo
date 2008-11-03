@@ -39,6 +39,11 @@ public class DirectoryStack {
         dirs = new ArrayList<Entry>();
     }
 
+    public DirectoryStack(List<Entry> entries) {
+        this();
+        dirs.addAll(entries);
+    }
+
     public List<Entry> getEntries() {
         return dirs;
     }

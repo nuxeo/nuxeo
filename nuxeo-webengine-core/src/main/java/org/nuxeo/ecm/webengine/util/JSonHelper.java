@@ -35,20 +35,19 @@ public class JSonHelper {
     private JSonHelper() {
     }
 
-    public static String toJSon(DocumentModel doc)  throws WebException {
+    public static String toJSon(DocumentModel doc) {
         return doc2JSon(doc).toString();
     }
 
-    public static String toJSon(DocumentModel doc, String ... schemas) throws WebException {
+    public static String toJSon(DocumentModel doc, String ... schemas) {
         return doc2JSon(doc).toString();
     }
 
-    public static JSONObject doc2JSon(DocumentModel doc) throws WebException {
+    public static JSONObject doc2JSon(DocumentModel doc) {
         return doc2JSon(doc, (String[]) null);
     }
 
-    public static JSONObject doc2JSon(DocumentModel doc, String... schemas)
-            throws WebException {
+    public static JSONObject doc2JSon(DocumentModel doc, String... schemas) {
         try {
             JSONObject obj = new JSONObject();
             obj.put("id", doc.getId());

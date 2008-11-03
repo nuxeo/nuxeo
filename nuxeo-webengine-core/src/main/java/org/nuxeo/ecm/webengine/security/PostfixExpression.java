@@ -160,11 +160,11 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
                 stack.pop(); // remove LPARA from stack
                 break;
             default:
-                if (token.equals("OR")) {
+                if ("OR".equals(token)) {
                     pushOp(new Token(OR, "OR"), stack, result);
-                } else if (token.equals("AND") ){
+                } else if ("AND".equals(token)){
                     pushOp(new Token(AND, "AND"), stack, result);
-                } else if (token.equals("NOT")) {
+                } else if ("NOT".equals(token)) {
                     pushOp(new Token(NOT, "NOT"), stack, result);
                 } else {
                     result.add(new Token(ARG, token));

@@ -53,6 +53,10 @@ public final class ScriptFile {
         this.file = file.getCanonicalFile();
     }
 
+    public boolean isTemplate() {
+        return "ftl".equals(ext);
+    }
+
     public File getFile() {
         return file;
     }

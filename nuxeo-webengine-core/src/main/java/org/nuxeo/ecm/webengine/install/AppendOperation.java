@@ -53,8 +53,17 @@ public class AppendOperation {
                 text = crlf + text + crlf;
             }
             File file = new File(installDir, target);
-            FileOutputStream out = new FileOutputStream(file, true);
-            out.write(text.getBytes());
+            File parent = file.getParentFile();
+            if (!parent.isDirectory()) {
+                parent.mkdirs();
+            }
+            boolean append = file.exists();
+            FileOutputStream out = new FileOutputStream(file, append);
+            try {
+                out.write(text.getBytes());
+            } finally {
+                out.close();
+            }
         } else {
             installer.logWarning("Could not find path: "+path+" to append");
         }

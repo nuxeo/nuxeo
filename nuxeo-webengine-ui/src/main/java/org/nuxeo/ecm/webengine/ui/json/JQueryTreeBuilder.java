@@ -32,7 +32,7 @@ import org.nuxeo.common.utils.StringUtils;
  */
 public abstract class JQueryTreeBuilder<T> {
 
-    public final static String CHILDREN = "children";
+    public static final String CHILDREN = "children";
 
     public JSONArray buildTree(String rootName, String path) {
         return buildTree(rootName, path);
@@ -42,15 +42,14 @@ public abstract class JQueryTreeBuilder<T> {
         if (path == null || path.length() == 0 || "/".equals(path)) {
             return buildChildren(root);
         }
-        if (path != null) {
-            String[] ar = StringUtils.split(path, '/', false);
-            if (ar.length > 1) {
-                String name = getName(root);
-                if (name.equals(ar[0]))  {
-                    return buildChildren(root, ar, 1);
-                }
+        String[] ar = StringUtils.split(path, '/', false);
+        if (ar.length > 1) {
+            String name = getName(root);
+            if (name.equals(ar[0])) {
+                return buildChildren(root, ar, 1);
             }
         }
+
         return buildChildren(root);
     }
 

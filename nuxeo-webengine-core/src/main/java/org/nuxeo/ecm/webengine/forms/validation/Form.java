@@ -28,7 +28,6 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormInstance;
 
 /**
@@ -47,7 +46,8 @@ public class Form {
             addField(field);
         }
     }
-    protected Map<String, Field> fields = new HashMap<String, Field>();
+
+    protected final Map<String, Field> fields = new HashMap<String, Field>();
 
 
     public Form() {
@@ -62,9 +62,6 @@ public class Form {
         fields.put(field.getId(), field);
     }
 
-    /**
-     * @return the fields.
-     */
     public Map<String, Field> getFields() {
         return fields;
     }
@@ -73,18 +70,15 @@ public class Form {
         return fields.get(id);
     }
 
-    /**
-     * @return the id.
-     */
     public String getId() {
         return id;
     }
 
-    public Status validate(FormInstance data) throws WebException, ValidationException {
+    public Status validate(FormInstance data) {
         return validate(data, true);
     }
 
-    public Status validate(FormInstance data, boolean collectAll) throws WebException, ValidationException {
+    public Status validate(FormInstance data, boolean collectAll) {
         MultiStatus multiStatus = new MultiStatus();
         Collection<String>keys = data.getKeys();
         for (String key : keys) {

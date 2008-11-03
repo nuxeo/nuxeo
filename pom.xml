@@ -18,8 +18,10 @@
 
   <modules>
     <module>nuxeo-platform-rendering</module>
+    <module>nuxeo-webengine-resteasy-adapter</module>    
     <module>nuxeo-webengine-core</module>
     <module>nuxeo-webengine-ui</module>
+    <module>nuxeo-webengine-admin</module>
     <module>nuxeo-webengine-wiki</module>
     <module>nuxeo-webengine-server</module>
     <module>nuxeo-webengine-wiki-jsf</module>
@@ -29,6 +31,24 @@
     <nuxeo.webengine.version>5.2-SNAPSHOT</nuxeo.webengine.version>
   </properties>
 
+  <dependencies>
+        <!--this is required to index annotations at build time -->
+    <dependency>
+      <groupId>org.nuxeo.build</groupId>
+      <artifactId>nuxeo-webengine-apt</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>compile</scope>
+      <!-- workaround for Mac OS X -->
+      <exclusions>
+        <exclusion>
+          <groupId>sun.jdk</groupId>
+          <artifactId>tools</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
+  </dependencies>
+    
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -39,6 +59,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-core</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-admin</artifactId>
         <version>${nuxeo.webengine.version}</version>
       </dependency>
       <dependency>
@@ -54,6 +79,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-wiki-jsf</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-resteasy-adapter</artifactId>
         <version>${nuxeo.webengine.version}</version>
       </dependency>
 
@@ -88,6 +118,23 @@
         <artifactId>nuxeo-platform-versioning-core</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-web-common</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <!-- needed by web-common -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-api</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-login</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <!-- END needed by web-common -->
 
       <!-- nuxeo-addons -->
       <dependency>

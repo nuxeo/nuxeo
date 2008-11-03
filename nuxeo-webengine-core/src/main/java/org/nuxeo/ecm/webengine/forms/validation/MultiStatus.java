@@ -29,10 +29,10 @@ import java.util.List;
  */
 public class MultiStatus extends AbstractStatus implements Iterable<Status>{
 
-    protected List<Status> children;
+    protected final List<Status> children;
 
     public MultiStatus() {
-        this (null);
+        this(null);
     }
 
     public MultiStatus(String field, String message) {
@@ -43,7 +43,7 @@ public class MultiStatus extends AbstractStatus implements Iterable<Status>{
     }
 
     public MultiStatus(String field) {
-        this (field, null);
+        this(field, null);
     }
 
     public void add(Status status) {

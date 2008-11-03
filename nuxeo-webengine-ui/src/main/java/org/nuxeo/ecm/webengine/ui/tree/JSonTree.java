@@ -19,13 +19,10 @@
 
 package org.nuxeo.ecm.webengine.ui.tree;
 
-import java.io.IOException;
-
 import net.sf.json.JSONArray;
 
-import org.nuxeo.ecm.webengine.WebContext;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.session.AbstractComponent;
 import org.nuxeo.ecm.webengine.session.SessionException;
 import org.nuxeo.ecm.webengine.session.UserSession;
@@ -40,19 +37,13 @@ public abstract class JSonTree extends AbstractComponent {
 
     protected TreeViewImpl tree;
 
-
-    public JSonTree() {
-    }
-
     public TreeView getTree() {
         return tree;
     }
 
-
-    protected abstract Object getInput(WebContext ctx) throws WebException;
-    protected abstract ContentProvider  getProvider(WebContext ctx) throws WebException;
-    protected abstract JSonTreeSerializer getSerializer(WebContext ctx) throws WebException;
-
+    protected abstract Object getInput(WebContext ctx);
+    protected abstract ContentProvider  getProvider(WebContext ctx);
+    protected abstract JSonTreeSerializer getSerializer(WebContext ctx);
 
     @Override
     public void doInitialize(UserSession session, String name)
@@ -60,7 +51,8 @@ public abstract class JSonTree extends AbstractComponent {
         try {
             tree = new TreeViewImpl();
         } catch (Exception e) {
-            throw new SessionException("Failed to initialize tree component "+getClass()+"#"+name+ ". Cause: "+e.getMessage(), e);
+            throw new SessionException(
+                    "Failed to initialize tree component "+getClass()+"#"+name+ ". Cause: "+e.getMessage(), e);
         }
     }
 
@@ -69,7 +61,7 @@ public abstract class JSonTree extends AbstractComponent {
         tree = null;
     }
 
-    public void updateSelection(WebContext ctx) throws WebException {
+    public void updateSelection(WebContext ctx) {
         updateSelection(ctx, getProvider(ctx), getSerializer(ctx));
     }
 
@@ -77,7 +69,7 @@ public abstract class JSonTree extends AbstractComponent {
     root=ID   - enter node ID
     toggle=ID - toggle expanded state for node ID
     */
-    public synchronized void updateSelection(WebContext ctx, ContentProvider provider, JSonTreeSerializer serializer) throws WebException {
+    public synchronized String updateSelection(WebContext ctx, ContentProvider provider, JSonTreeSerializer serializer) {
         try {
             tree.setContentProvider(provider);
             if (!tree.hasInput()) {
@@ -93,12 +85,7 @@ public abstract class JSonTree extends AbstractComponent {
             } else {
                 String result = enter(ctx, selection, serializer);
                 if (result != null) {
-                    try {
-                      System.out.println(result);
-                        ctx.print(result);
-                    } catch (IOException e) {
-                        throw WebException.wrap(e);
-                    }
+                    return result;
                 } else {
                     ctx.getLog().warn("TreeItem: "+selection+" not found");
                 }
@@ -106,15 +93,16 @@ public abstract class JSonTree extends AbstractComponent {
         } finally {
             tree.setContentProvider(null);
         }
+        return null;
     }
 
-    protected String enter(WebContext ctx, String path, JSonTreeSerializer serializer) throws WebException {
+    protected String enter(WebContext ctx, String path, JSonTreeSerializer serializer) {
         TreeItem item = tree.findAndReveal(path);
         if (item != null) {
             item.expand();
             JSONArray result = new JSONArray();
-            if (item != null && item.isContainer()) {
-                result = serializer.toJSON((item.getChildren()));
+            if (item.isContainer()) {
+                result = serializer.toJSON(item.getChildren());
             }
             return result.toString();
         } else {
@@ -122,7 +110,7 @@ public abstract class JSonTree extends AbstractComponent {
         }
     }
 
-    protected void toggle(String path) throws WebException {
+    protected void toggle(String path) {
         TreeItem item = tree.findAndReveal(path);
         if (item.isExpanded()) {
             item.collapse();
@@ -130,4 +118,5 @@ public abstract class JSonTree extends AbstractComponent {
             item.expand();
         }
     }
+
 }

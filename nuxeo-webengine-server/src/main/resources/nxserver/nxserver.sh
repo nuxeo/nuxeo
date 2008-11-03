@@ -69,7 +69,7 @@ JAVA_OPTS="-Djava.rmi.server.RMIClassLoaderSpi=org.nuxeo.runtime.launcher.NuxeoR
 JAVA_OPTS="$JAVA_OPTS -Dderby.system.home=data/derby"
 
 if [ "x$1" = "x-debug" ] ; then
-    JAVA_OPTS="$JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=127.0.0.1:8788,server=y,suspend=y"
+    JAVA_OPTS="$JAVA_OPTS -Ddebug=true -Xdebug -Xrunjdwp:transport=dt_socket,address=127.0.0.1:8788,server=y,suspend=n"
 fi 
 
 java $JAVA_OPTS -jar nuxeo-runtime-launcher-1.5-SNAPSHOT.jar \
