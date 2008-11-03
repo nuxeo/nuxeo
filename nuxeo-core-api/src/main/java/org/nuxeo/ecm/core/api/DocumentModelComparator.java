@@ -105,8 +105,8 @@ public class DocumentModelComparator implements Sorter {
                 final Object v1 = d1.getData(fieldName);
                 final Object v2 = d2.getData(fieldName);
                 cmp = compare(v1, v2, asc);
-                if (cmp == 0) {
-                    continue;
+                if (cmp != 0) {
+                    break;
                 }
             }
         } else {
@@ -126,8 +126,8 @@ public class DocumentModelComparator implements Sorter {
                     v2 = null;
                 }
                 cmp = compare(v1, v2, asc);
-                if (cmp == 0) {
-                    continue;
+                if (cmp != 0) {
+                    break;
                 }
             }
         }
