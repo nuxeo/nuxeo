@@ -95,7 +95,7 @@ public class DocumentModelComparator implements Sorter {
     }
 
     public int compare(DocumentModel doc1, DocumentModel doc2) {
-        int cmp;
+        int cmp = 0;
         if (schemaName != null) {
             final DataModel d1 = doc1.getDataModel(schemaName);
             final DataModel d2 = doc2.getDataModel(schemaName);
@@ -131,13 +131,16 @@ public class DocumentModelComparator implements Sorter {
                 }
             }
         }
-        // everything being equal, provide consistent ordering
-        if (doc1.hashCode() == doc2.hashCode()) {
-            return 0;
-        } else if (doc1.hashCode() < doc2.hashCode()) {
-            return -1;
-        } else {
-            return 1;
+        if (cmp == 0) {
+            // everything being equal, provide consistent ordering
+            if (doc1.hashCode() == doc2.hashCode()) {
+                cmp = 0;
+            } else if (doc1.hashCode() < doc2.hashCode()) {
+                cmp = -1;
+            } else {
+                cmp = 1;
+            }
         }
+        return cmp;
     }
 }
