@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.webengine.WebEngineComponent">
+  <require>org.nuxeo.ecm.webengine.server</require>
   <implementation
           class="org.nuxeo.ecm.webengine.WebEngineComponent" />
   <documentation>
@@ -12,9 +13,10 @@
   -->
 
   <service>
-  	<provide interface="org.nuxeo.ecm.webengine.WebEngine" />
   	<provide
   		interface="org.nuxeo.ecm.webengine.util.FileChangeNotifier" />
+    <!-- temporary entry remove it -->
+    <provide interface="org.nuxeo.ecm.webengine.WebEngine" />
   </service>
 
   <extension-point name="rendering-extension">
@@ -31,38 +33,6 @@
       class="org.nuxeo.ecm.webengine.rendering.RenderingExtensionDescriptor" />
   </extension-point>
 
-  <extension-point name="webObject">
-  <documentation>
-    @author Bogdan Stefanescu (bs@nuxeo.com)
-    Expose the registration of site object descriptors
-    <code>
-      <object id="WebFolder" extends="default">
-        <requestHandler>org.nuxeo.ecm.webengine.DefaultRequestHandler</requestHandler> <!-- this is the default value -->
-        <actions>
-          <action id="update" enabled="true" permissions=".|WRITE"
-            script="/my/optional/script/path" handler="myOptionalActionHandler"/>
-        </actions>
-      </object>
-    </code>
-  </documentation>
-
-    <object
-      class="org.nuxeo.ecm.webengine.WebObjectDescriptor" />
-  </extension-point>
-
-  <extension-point name="binding">
-  <documentation>
-    @author Bogdan Stefanescu (bs@nuxeo.com)
-    Binds web objects to document types. Bindings are used at runtime
-    to adapt a document to a web object given the document type
-    <code>
-      <binding type="Folder" object="WebFolder"/>
-    </code>
-  </documentation>
-
-    <object
-      class="org.nuxeo.ecm.webengine.WebObjectBindingDescriptor" />
-  </extension-point>
 
   <extension-point name="guard">
   <documentation>
@@ -79,49 +49,6 @@
       class="org.nuxeo.ecm.webengine.security.GuardDescriptor" />
   </extension-point>
 
-  <extension-point name="application-mapping">
-  <documentation>
-    @author Bogdan Stefanescu (bs@nuxeo.com)
-    Register application mappings
-    <code>
-      <mapping path="/wiki" webapp="wiki" document="/default-domain/workspaces/ws/wiki"/>
-    </code>
-  </documentation>
-
-    <object
-      class="org.nuxeo.ecm.webengine.WebApplicationMapping" />
-  </extension-point>
-
-  <extension-point name="application">
-  <documentation>
-    @author Bogdan Stefanescu (bs@nuxeo.com)
-    Register global guards. Guards are used to define permissions
-    <code>
-      <webapp id="nuxeo-web">
-        <roots>
-          <root priority="0">default</root>
-          <root priority="1">wiki</root>
-        </roots>
-        <documentResolver>org.MyDocumentResolver</documentResolver>
-        <errorPage>error.ftl</errorPage>
-        <indexPage>index.ftl</indexPage>
-        <defaultPage>default.ftl</defaultPage>
-        <bindings>
-          <binding type="Folder" object="MyWebFolder"/>
-        </bindings>
-        <mappings>
-          <mapping pattern="/?">
-            <traversalPath>a/b/c</traversalPath>
-            <script>index.ftl</script>
-          </mapping>
-        </mappings>
-      </webapp>
-    </code>
-  </documentation>
-
-    <object
-      class="org.nuxeo.ecm.webengine.WebApplicationDescriptor" />
-  </extension-point>
 
   <extension-point name="install">
   <documentation>
@@ -150,53 +77,17 @@
       class="org.nuxeo.ecm.webengine.ConfigurationFileDescriptor" />
   </extension-point>
 
-  <extension-point name="form">
+  <extension-point name="resource">
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)
-    Defines form templates to be used to validate web forms.
+    Register a JAX-RS root resource
     <code>
-      <form id="MyForm">
-        <!-- a simple regex constraint -->
-        <field id="dc:title" required="true" min-length="3">
-          <label>Title</label>
-          <constraints>
-            <like>regex</like>
-          </constraints>
-        </field>
-        <!-- example of composite constraints -->
-        <field id="my:age" required="false" type="integer">
-          <label>Age</label>
-          <constraints>
-            <lt>70</lt>
-            <gteq>20</gteq>
-            <or>
-              <not><eq>50</eq></not>
-            </or>
-          </constraints>
-        </field>
-        <!-- example of enumerations-->
-        <field id="my:country" required="false" type="string">
-          <label>Country</label>
-          <constraints>
-            <enum>France Belgium USA Romania</enum>
-          </constraints>
-        </field>
-        <!-- example of references to other fields -->
-        <field id="confirm_email" required="false" type="string">
-          <label>Confirm E-Mail</label>
-          <constraints>
-            <!-- example on how to setup an error message: the variable %s
-            will be replaced with the actual value -->
-            <eq ref="my:email"  error-message="Confirmation E-mail address doesn't match: %s" />
-          </constraints>
-        </field>
-        <field id="my:email" required="true"/>
-      </form>
+    <resource path="{lang:[a-z]}" singleton="false" class="org.nuxeo.Resource" />
     </code>
   </documentation>
 
     <object
-      class="org.nuxeo.ecm.webengine.forms.validation.Form" />
+      class="org.nuxeo.ecm.webengine.ResourceBinding" />
   </extension-point>
 
 </component>

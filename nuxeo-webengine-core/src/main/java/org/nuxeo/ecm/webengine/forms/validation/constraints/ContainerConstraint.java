@@ -30,7 +30,7 @@ import org.nuxeo.ecm.webengine.forms.validation.Constraint;
  */
 public abstract class ContainerConstraint extends AbstractConstraint {
 
-    protected List<Constraint> children = new ArrayList<Constraint>();
+    protected final List<Constraint> children = new ArrayList<Constraint>();
 
     @Override
     public void add(Constraint constraint) {
@@ -42,13 +42,8 @@ public abstract class ContainerConstraint extends AbstractConstraint {
         return true;
     }
 
-
-    /**
-     * @return the children.
-     */
     public List<Constraint> getChildren() {
         return children;
     }
-
 
 }

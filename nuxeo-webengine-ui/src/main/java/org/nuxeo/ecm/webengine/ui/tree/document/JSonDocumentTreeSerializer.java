@@ -20,7 +20,7 @@
 package org.nuxeo.ecm.webengine.ui.tree.document;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.ui.tree.JSonTreeSerializer;
 import org.nuxeo.ecm.webengine.ui.tree.TreeItem;
 
@@ -30,7 +30,7 @@ import org.nuxeo.ecm.webengine.ui.tree.TreeItem;
  */
 public class JSonDocumentTreeSerializer extends JSonTreeSerializer {
 
-    protected WebContext ctx;
+    protected final WebContext ctx;
 
     public JSonDocumentTreeSerializer(WebContext ctx) {
         this.ctx = ctx;

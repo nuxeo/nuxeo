@@ -22,12 +22,10 @@ package org.nuxeo.ecm.webengine.forms.validation;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormInstance;
 import org.nuxeo.ecm.webengine.forms.validation.constraints.And;
 import org.nuxeo.ecm.webengine.forms.validation.constraints.SimpleConstraint;
 import org.w3c.dom.DocumentFragment;
-import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -206,7 +204,7 @@ public class Field {
         return handler.decode(value);
     }
 
-    public Status validate(FormInstance form) throws WebException {
+    public Status validate(FormInstance form) {
         String value = form.getString(id);
         return validate(form, value);
     }
@@ -251,7 +249,7 @@ public class Field {
         for (int i=0, len=nodes.getLength(); i<len; i++) {
             Node node = nodes.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                loadElement(field, (Element)node, constraint);
+                loadElement(field, node, constraint);
             }
         }
     }

@@ -47,7 +47,7 @@ public interface Component extends Serializable {
      * @throws InvalidStateException if the component is not in an appropriate life cycle state
      * @throws SessionException an internal error occurred
      */
-    public void initialize(UserSession session, String name) throws SessionException;
+    void initialize(UserSession session, String name) throws SessionException;
 
     /**
      * Destroy this component.
@@ -59,7 +59,7 @@ public interface Component extends Serializable {
      * @throws InvalidStateException if the component is not in an appropriate life cycle state
      * @throws SessionException an internal error occurred
      */
-    public void destroy(UserSession session) throws SessionException;
+    void destroy(UserSession session) throws SessionException;
 
     /**
      * Get the component name if any.
@@ -67,12 +67,12 @@ public interface Component extends Serializable {
      * For singleton components no name is needed so this method might return null.
      * @return the name if any otherwise null
      */
-    public String getName();
+    String getName();
 
     /**
      * Check whether this component was initialized and can be used
      * @return
      */
-    public boolean isLive();
+    boolean isLive();
 
 }

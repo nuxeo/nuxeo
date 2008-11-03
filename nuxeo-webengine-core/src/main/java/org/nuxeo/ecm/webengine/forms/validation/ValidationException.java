@@ -31,7 +31,7 @@ public class ValidationException extends Exception {
 
     private static final long serialVersionUID = 531665422854150881L;
 
-    protected Collection<ErrorStatus> errors;
+    protected final Collection<ErrorStatus> errors;
 
     public ValidationException(Collection<ErrorStatus> errors) {
         this.errors = errors;
@@ -39,15 +39,11 @@ public class ValidationException extends Exception {
 
     @SuppressWarnings("unchecked")
     public ValidationException(ErrorStatus error) {
-        this.errors = Collections.singleton(error);
+        errors = Collections.singleton(error);
     }
 
-    /**
-     * @return the errors.
-     */
     public Collection<ErrorStatus> getErrors() {
         return errors;
     }
-
 
 }

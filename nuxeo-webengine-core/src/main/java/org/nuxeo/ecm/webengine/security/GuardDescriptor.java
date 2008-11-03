@@ -67,6 +67,20 @@ public class GuardDescriptor {
         return guards;
     }
 
+    /**
+     * @param expression the expression to set.
+     */
+    public void setExpression(String expression) {
+        this.expression = expression;
+    }
+
+    /**
+     * @return the expression.
+     */
+    public String getExpression() {
+        return expression;
+    }
+
     @XContent
     protected void setGuards(DocumentFragment content) {
         Node node = content.getFirstChild();

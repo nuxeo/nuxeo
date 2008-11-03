@@ -27,15 +27,11 @@ public class TypeException extends Exception {
 
     private static final long serialVersionUID = -7278027648077598245L;
 
-    /**
-     *
-     */
     public TypeException() {
-        // TODO Auto-generated constructor stub
     }
 
     public TypeException(String message) {
-        super (message);
+        super(message);
     }
 
 }

@@ -31,7 +31,7 @@ public class FakeServletInputStream extends ServletInputStream {
 
     private Blob blob;
 
-    private InputStream stream;
+    private final InputStream stream;
 
     public FakeServletInputStream(String data) throws IOException {
         blob = new StringBlob(data);

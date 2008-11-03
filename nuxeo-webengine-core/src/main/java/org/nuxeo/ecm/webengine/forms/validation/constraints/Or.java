@@ -31,12 +31,12 @@ import org.nuxeo.ecm.webengine.forms.validation.Status;
  */
 public class Or extends ContainerConstraint {
 
-
     @Override
     public Status validate(FormInstance form, Field field, String rawValue, Object value) {
         if (children.isEmpty()) {
             throw new IllegalStateException("Or constraint have no content");
         }
+        // FIXME: this loop doesn't loop
         for (Constraint child : children) {
             Status status = child.validate(form, field, rawValue, value);
             if (status.isOk()) {
