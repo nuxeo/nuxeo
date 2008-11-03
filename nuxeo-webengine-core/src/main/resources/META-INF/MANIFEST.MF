@@ -15,7 +15,8 @@ Nuxeo-Require: org.nuxeo.runtime.scripting,
 Nuxeo-Component: OSGI-INF/webengine-framework.xml,
  OSGI-INF/webengine-config.xml,
  OSGI-INF/web-deployment-contrib.xml,
- OSGI-INF/authentication-contrib.xml
+ OSGI-INF/authentication-contrib.xml,
+ OSGI-INF/wiki-transformer-contrib.xml
 Provide-Package: org.nuxeo.ecm.webengine,
  org.nuxeo.ecm.webengine.actions,
  org.nuxeo.ecm.webengine.exceptions,
