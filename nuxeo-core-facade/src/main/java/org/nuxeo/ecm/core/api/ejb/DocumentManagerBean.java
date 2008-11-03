@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.api.ejb;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
@@ -29,11 +30,13 @@ import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJBContext;
+import javax.ejb.EJBException;
 import javax.ejb.Local;
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
 import javax.ejb.Remote;
 import javax.ejb.Remove;
+import javax.ejb.SessionSynchronization;
 import javax.ejb.Stateful;
 import javax.interceptor.Interceptors;
 import javax.persistence.Transient;
@@ -72,7 +75,7 @@ import org.nuxeo.ecm.core.model.Session;
 @Remote(CoreSession.class)
 // @Interceptors(DocumentParameterInterceptor.class)
 @SerializedConcurrentAccess
-public class DocumentManagerBean extends AbstractSession {
+public class DocumentManagerBean extends AbstractSession implements SessionSynchronization {
 
     private static final long serialVersionUID = 6781675353273516393L;
 
@@ -87,7 +90,8 @@ public class DocumentManagerBean extends AbstractSession {
 
     @Resource
     transient EJBContext context;
-
+    
+    
     @Override
     @Remove
     @PermitAll
@@ -311,4 +315,43 @@ public class DocumentManagerBean extends AbstractSession {
         }
     }
 
+    
+    public void afterBegin() throws EJBException, RemoteException {
+//        System.out.println("# "+Thread.currentThread().getId()+ " #### TRANSACTION STARTED: ");
+//        if (log.isDebugEnabled()) {
+//            log.debug("Transaction started");
+//        }
+//        CoreEventListenerService service = NXCore.getCoreEventListenerService();
+//        if (service != null) {
+//            service.transactionStarted();
+//        }
+    }
+
+    public void beforeCompletion() throws EJBException, RemoteException {
+//        System.out.println("# "+Thread.currentThread().getId()+ " #### TRANSACTION ABOUT TO COMMIT");
+//        if (log.isDebugEnabled()) {
+//            log.debug("Transaction about to commit");
+//        }
+//        CoreEventListenerService service = NXCore.getCoreEventListenerService();
+//        if (service != null) {
+//            service.transactionAboutToCommit();
+//        }       
+    }
+    
+    public void afterCompletion(boolean committed) throws EJBException,
+            RemoteException {
+//        System.out.println("# "+Thread.currentThread().getId()+ " #### TRANSACTION COMMITTED: "+committed);
+//        if (log.isDebugEnabled()) {
+//            log.debug("Transaction "+(committed ? "committed" : "rollbacked"));
+//        }
+//        CoreEventListenerService service = NXCore.getCoreEventListenerService();
+//        if (service != null) {
+//            if (committed) {
+//                service.transactionCommited();
+//            } else {
+//                service.transactionRollbacked();
+//            }
+//        }        
+    }
+    
 }
