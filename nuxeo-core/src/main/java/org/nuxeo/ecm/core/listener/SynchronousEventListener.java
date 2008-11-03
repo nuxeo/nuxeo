@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.event.CoreEvent;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
  */
+/// XXX: not used. Will be removed.
 public interface SynchronousEventListener extends EventListener {
 
     /**

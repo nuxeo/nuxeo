@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -25,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -49,7 +51,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.exception.JDBCExceptionHelper;
 import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.core.query.QueryResult;
+import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionFragmentIterator;
@@ -57,7 +59,6 @@ import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.SQLInfo.StoredProcedureInfo;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
-import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
 import org.nuxeo.ecm.core.storage.sql.db.Update;
 
@@ -244,6 +245,19 @@ public class Mapper {
         }
         if (value instanceof Binary) {
             return "'" + ((Binary) value).getDigest() + "'";
+        }
+        if (value.getClass().isArray()) {
+            Serializable[] v = (Serializable[]) value;
+            StringBuilder b = new StringBuilder();
+            b.append('[');
+            for (int i = 0; i < v.length; i++) {
+                if (i > 0) {
+                    b.append(',');
+                }
+                b.append(loggedValue(v[i]));
+            }
+            b.append(']');
+            return b.toString();
         }
         return value.toString();
     }
@@ -1407,14 +1421,16 @@ public class Mapper {
      * Makes a NXQL query to the database.
      *
      * @param query the query as a parsed tree
+     * @param queryFilter the query filter
      * @param session the current session (to resolve paths)
      * @return the results
      * @throws StorageException
      * @throws SQLException
      */
-    public List<Serializable> query(SQLQuery query, Session session)
-            throws StorageException, SQLException {
-        QueryMaker queryMaker = new QueryMaker(sqlInfo, model, session, query);
+    public List<Serializable> query(SQLQuery query, QueryFilter queryFilter,
+            Session session) throws StorageException, SQLException {
+        QueryMaker queryMaker = new QueryMaker(sqlInfo, model, session, query,
+                queryFilter);
         queryMaker.makeQuery();
         if (log.isDebugEnabled()) {
             logSQL(queryMaker.selectInfo.sql, queryMaker.selectParams);
@@ -1427,6 +1443,10 @@ public class Mapper {
                     Calendar cal = (Calendar) object;
                     Timestamp ts = new Timestamp(cal.getTimeInMillis());
                     ps.setTimestamp(i++, ts, cal); // cal passed for timezone
+                } else if (object instanceof String[]) {
+                    Array array = sqlInfo.dialect.createArrayOf(Types.VARCHAR,
+                            (Object[]) object);
+                    ps.setArray(i++, array);
                 } else {
                     ps.setObject(i++, object);
                 }

@@ -27,7 +27,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.api.impl.FacetFilter;
+import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
 import org.nuxeo.ecm.core.query.sql.model.DefaultQueryVisitor;
 import org.nuxeo.ecm.core.query.sql.model.DoubleLiteral;
@@ -49,7 +53,6 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
 import org.nuxeo.ecm.core.storage.sql.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
-import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Select;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
 
@@ -84,6 +87,14 @@ import org.nuxeo.ecm.core.storage.sql.db.Table;
  */
 public class QueryMaker {
 
+    private static final Log log = LogFactory.getLog(QueryMaker.class);
+
+    /**
+     * Name of the Immutable facet, added by {@link DocumentModelFactory} when
+     * instantiating a proxy or a version.
+     */
+    public static final Object FACET_IMMUTABLE = "Immutable";
+
     protected final SQLInfo sqlInfo;
 
     protected final Model model;
@@ -92,16 +103,30 @@ public class QueryMaker {
 
     protected final SQLQuery query;
 
+    protected final FacetFilter facetFilter;
+
+    protected final QueryFilter queryFilter;
+
     public SQLInfoSelect selectInfo;
 
     public List<Serializable> selectParams;
 
     public QueryMaker(SQLInfo sqlInfo, Model model, Session session,
-            SQLQuery query) {
+            SQLQuery query, QueryFilter queryFilter) {
         this.sqlInfo = sqlInfo;
         this.model = model;
         this.session = session;
+        if (queryFilter == null) {
+            queryFilter = QueryFilter.EMPTY;
+        }
+        // transform the query according to the transformers defined by the
+        // security policies
+        for (SQLQuery.Transformer transformer : queryFilter.getQueryTransformers()) {
+            query = transformer.transform(query);
+        }
         this.query = query;
+        this.facetFilter = queryFilter.getFacetFilter();
+        this.queryFilter = queryFilter;
     }
 
     public void makeQuery() throws StorageException {
@@ -166,6 +191,7 @@ public class QueryMaker {
         /*
          * Create the structural WHERE clauses for the type.
          */
+        // TODO proxies
         selectParams = new LinkedList<Serializable>();
         String qprimary = hierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY).getQuotedName();
         // String qisprop =
@@ -176,6 +202,9 @@ public class QueryMaker {
                 // skip root in types
                 continue;
             }
+            if (!facetFilterAllows(type)) {
+                continue;
+            }
             typeStrings.add("?");
             selectParams.add(type);
         }
@@ -184,6 +213,12 @@ public class QueryMaker {
         // qisprop, sqlInfo.dialect.toBooleanValueString(false));
         String whereClause = String.format("%s.%s IN (%s)", qhier, qprimary,
                 StringUtils.join(typeStrings, ", "));
+
+        Boolean immutable = facetFilterImmutable();
+        if (immutable != null) {
+            // TODO filter on proxies + versions
+            log.warn("Cannot filter on Immutable facet");
+        }
 
         /*
          * Create the part of the WHERE clause that comes from the original
@@ -199,11 +234,25 @@ public class QueryMaker {
             }
         }
 
-        // XXX security check
-        if (false) {
+        /*
+         * Security check.
+         */
+        if (queryFilter.getPrincipals() != null) {
             whereClause = whereClause +
-                    String.format(" AND NX_CAN_BROWSE(%s) = %s", qhierid,
-                            sqlInfo.dialect.toBooleanValueString(true));
+                    String.format(" AND NX_ACCESS_ALLOWED(%s, ?, ?) = %s",
+                            qhierid, sqlInfo.dialect.toBooleanValueString(true));
+            Serializable principals;
+            Serializable permissions;
+            if (sqlInfo.dialect.supportsArrays()) {
+                principals = queryFilter.getPrincipals();
+                permissions = queryFilter.getPermissions();
+            } else {
+                principals = StringUtils.join(queryFilter.getPrincipals(), '|');
+                permissions = StringUtils.join(queryFilter.getPermissions(),
+                        '|');
+            }
+            selectParams.add(principals);
+            selectParams.add(permissions);
         }
 
         if (query.orderBy != null) {
@@ -238,6 +287,52 @@ public class QueryMaker {
                 Collections.<Column> emptyList());
     }
 
+    public boolean facetFilterAllows(String typeName) {
+        if (facetFilter == null) {
+            return true;
+        }
+        if (facetFilter.excluded != null) {
+            for (String facet : facetFilter.excluded) {
+                if (FACET_IMMUTABLE.equals(facet)) {
+                    continue;
+                }
+                if (model.documentTypeHasFacet(typeName, facet)) {
+                    return false;
+                }
+            }
+        }
+        if (facetFilter.required != null) {
+            for (String facet : facetFilter.required) {
+                if (FACET_IMMUTABLE.equals(facet)) {
+                    continue;
+                }
+                if (!model.documentTypeHasFacet(typeName, facet)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Checks if the Immutable facet is excluded ({@code FALSE}), required (
+     * {@code TRUE}) or not filtered on ({@code null}).
+     */
+    public Boolean facetFilterImmutable() {
+        if (facetFilter == null) {
+            return null;
+        }
+        if (facetFilter.excluded != null &&
+                facetFilter.excluded.contains(FACET_IMMUTABLE)) {
+            return Boolean.FALSE;
+        }
+        if (facetFilter.required != null &&
+                facetFilter.required.contains(FACET_IMMUTABLE)) {
+            return Boolean.TRUE;
+        }
+        return null;
+    }
+
     public static class InfoCollector extends DefaultQueryVisitor {
 
         private static final long serialVersionUID = 1L;
@@ -257,6 +352,9 @@ public class QueryMaker {
 
         @Override
         public void visitReference(Reference node) {
+            if (node.name.equals("ecm:path")) {
+                return;
+            }
             keys.add(node.name);
         }
 
@@ -295,9 +393,8 @@ public class QueryMaker {
             buf.append('(');
             if (node.operator == Operator.STARTSWITH) {
                 // left must be ecm:path
-                // TODO change nxql.cup to use Reference, not StringLiteral
-                if (!(node.lvalue instanceof StringLiteral) ||
-                        !((StringLiteral) node.lvalue).value.equals("ecm:path")) {
+                if (!(node.lvalue instanceof Reference) ||
+                        !((Reference) node.lvalue).name.equals("ecm:path")) {
                     throw new IllegalArgumentException(
                             "STARTSWITH requires ecm:path as left argument");
                 }

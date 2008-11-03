@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
- * $Id$
+ *     Anahide Tchertchian
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.security;
@@ -24,12 +23,13 @@ import java.security.Principal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 
 /**
  * Interface for pluggable core security policy.
  *
  * @author Anahide Tchertchian
- *
+ * @author Florent Guillaume
  */
 public interface SecurityPolicy {
 
@@ -37,12 +37,12 @@ public interface SecurityPolicy {
      * Checks given permission for doc and principal.
      *
      * @param doc the document to check
-     * @param mergedAcp merged acp resolved for this document
+     * @param mergedAcp merged ACP resolved for this document
      * @param principal principal to check
      * @param permission permission to check
      * @param resolvedPermissions permissions or groups of permissions
      *            containing permission
-     * @param principalsToCheck principals (groups) to check for principal
+     * @param additionalPrincipals
      * @return access: true, false, or nothing. When nothing is returned,
      *         following policies or default core security are applied.
      * @throws SecurityException
@@ -50,5 +50,33 @@ public interface SecurityPolicy {
     Access checkPermission(Document doc, ACP mergedAcp, Principal principal,
             String permission, String[] resolvedPermissions,
             String[] additionalPrincipals) throws SecurityException;
+
+    /**
+     * Checks if this policy is restricting the given permission.
+     * <p>
+     * Queries check the BROWSE permission.
+     *
+     * @param permission the permission to check for
+     * @return {@code true} if the policy restricts the permission
+     */
+    boolean isRestrictingPermission(String permission);
+
+    /**
+     * Checks if this policy can be expressed in a query.
+     * <p>
+     * If not, then any query made will have to be post-filtered.
+     *
+     * @return {@code true} if the policy can be expressed in a query
+     */
+    boolean isExpressibleInQuery();
+
+    /**
+     * Get the transformer to use to apply this policy to a query.
+     * <p>
+     * Called only when {@link #isExpressibleInQuery()} returned {@code true}
+     *
+     * @return the transformer
+     */
+    SQLQuery.Transformer getQueryTransformer();
 
 }

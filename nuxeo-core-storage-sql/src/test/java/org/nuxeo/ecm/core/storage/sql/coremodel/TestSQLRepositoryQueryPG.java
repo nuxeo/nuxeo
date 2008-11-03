@@ -22,12 +22,14 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.nuxeo.ecm.core.query.test.QueryTestCase;
+
 /**
  * This testcase should be run by hand with suitable PG_* constants.
  *
  * @author Florent Guillaume
  */
-public class TestSQLRepositoryQueryPG extends TestSQLRepositoryQuery {
+public class TestSQLRepositoryQueryPG extends QueryTestCase {
 
     public static final String PG_HOST = "localhost";
 
@@ -74,7 +76,6 @@ public class TestSQLRepositoryQueryPG extends TestSQLRepositoryQuery {
         deployRepositoryContribs();
     }
 
-    @Override
     protected void deployRepositoryContribs() throws Exception {
         deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
                 "OSGI-INF/test-repo-repository-pg-contrib.xml");
