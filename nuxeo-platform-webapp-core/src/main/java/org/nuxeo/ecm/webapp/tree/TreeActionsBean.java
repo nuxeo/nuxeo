@@ -169,7 +169,10 @@ public class TreeActionsBean implements TreeActions {
                     String currentDocPath = getCurrentDocumentPath();
                     if (currentDocPath != null && nodePath != null &&
                             currentDocPath.startsWith(nodePath)) {
-                        return true;
+                        // additional slower check for strict path prefix
+                        if ((currentDocPath + '/').startsWith(nodePath + '/')) {
+                            return true;
+                        }
                     }
                 }
             } catch (ClientException e) {
