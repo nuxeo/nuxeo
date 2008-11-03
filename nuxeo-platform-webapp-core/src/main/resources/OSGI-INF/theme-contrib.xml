@@ -25,6 +25,11 @@
       <src>themes/theme-alternative.xml</src>
     </theme>
 
+    <theme>
+      <src>themes/theme-default5-2.xml</src>
+    </theme>
+
+
 
   </extension>
 
@@ -51,6 +56,11 @@
     <view name="nuxeo5 alternate logo" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/logo_alternate.xhtml</template>
+    </view>
+
+    <view name="nuxeo5-2 logo" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/logo_5-2.xhtml</template>
     </view>
 
     <view name="nuxeo5 includes" template-engine="jsf-facelets">
@@ -337,6 +347,12 @@
       src="themes/palettes/courrier_backgrounds.properties" category="background" />
     <palette name="Courrier default borders"
       src="themes/palettes/courrier_borders.properties" category="border" />
+      <palette name="Nuxeo5-2 default fonts" src="themes/palettes/nx5-2_fonts.properties"
+      category="font" />
+    <palette name="Nuxeo5-2 default backgrounds"
+      src="themes/palettes/nx5-2_backgrounds.properties" category="background" />
+    <palette name="Nuxeo5-2 default borders"
+      src="themes/palettes/nx5-2_borders.properties" category="border" />
 
   </extension>
 
