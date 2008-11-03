@@ -1,4 +1,4 @@
-= Nuxeo WebEngine
+﻿= Nuxeo WebEngine
 
 {toc}{/toc}
 
@@ -78,9 +78,9 @@ An WebEngine application is known as a Web Module. You can deploy how many modul
 ==== Object Model
 
 The WebEngine model is defining three type of JAX-RS resources:
-* Module Resource - this is the Root Resource that is used as an entry point into an WebEngine Module
-* Object Resource - this is a regular sub-resource that usually is used to expose an object or some logical entity.
-* Adapter Resource - this is a special sub-resource that can be used to extend Object Resources with new functionalities.
+* WebModule Resource - this is the Root Resource that is used as an entry point into an WebEngine Module
+* WebObject Resource - this is a regular sub-resource that usually is used to expose an object or some logical entity.
+* WebAdapter Resource - this is a special sub-resource that can be used to extend Object Resources with new functionalities.
 To extend existing resources using adapters you don't need to modify these resources. You can imagine a scenario where you want to add new functionalities
 to an existing module. Instead of modifying this module, you can create a new one that extends the existing one and declare the new adapters you want.
 Adapters 
@@ -97,7 +97,7 @@ WebEngine also provides a mechanism to define stateful resources (that are insta
 
 ==== Exposing Nuxeo Platform Documents
 
-Nuxeo Documents are transparently mapped to Web Objects so that you can easily access your documents through WebEngine. Document types and facets are automatically imported as Resource Types and Resource Facets. The base type of all documents __Document__ is mapped to a built-in resource class:
+Nuxeo Documents are transparently mapped to WebObjects so that you can easily access your documents through WebEngine. Document types and facets are automatically imported as Resource Types and Resource Facets. The base type of all documents __Document__ is mapped to a built-in resource class:
 {{{ org.nuxeo.ecm.core.rest.DocumentObject }}} 
 This builtin implementation covers all the basic functionalities of Documents as creation, update, browsing, versioning, locking etc.\
 You can always write you custom Document Resource by extending the existing __DocumentObject__ class.
