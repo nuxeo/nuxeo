@@ -31,6 +31,7 @@ import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriter;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriterRegistry;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.DocRefMethod;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.ExtendsDirective;
+import org.nuxeo.ecm.platform.rendering.fm.extensions.FormatDate;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.LocaleMessagesMethod;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.MessagesMethod;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.NewMethod;
@@ -83,6 +84,7 @@ public class FreemarkerEngine implements RenderingEngine {
         this.cfg.setSharedVariable("new", new NewMethod());
         this.cfg.setSharedVariable("message", messages);
         this.cfg.setSharedVariable("lmessage", localeMessages);
+        this.cfg.setSharedVariable("formatDate", new FormatDate());
 
         this.cfg.setCustomAttribute(RENDERING_ENGINE_KEY, this);
         setResourceLocator(locator);
