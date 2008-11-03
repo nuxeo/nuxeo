@@ -34,6 +34,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.model.ComponentName;
@@ -52,10 +53,13 @@ import org.osgi.framework.FrameworkListener;
 public class OSGiRuntimeService extends AbstractRuntimeService implements
         FrameworkListener {
 
+    /** Can be used to change the runtime home directory */
+    public static final String PROP_HOME_DIR = "org.nuxeo.runtime.home";
+
     /** The OSGi application install directory. */
     public static final String PROP_INSTALL_DIR = "INSTALL_DIR";
 
-    /** The osgi application config directory. */
+    /** The OSGi application config directory. */
     public static final String PROP_CONFIG_DIR = "CONFIG_DIR";
 
     /** The host adapter. */
@@ -77,11 +81,17 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         super(new OSGiRuntimeContext(context.getBundle()));
         bundleContext = context;
         contexts = new HashMap<Bundle, RuntimeContext>();
-        workingDir = bundleContext.getDataFile("/");
         String bindAddress = context.getProperty(PROP_NUXEO_BIND_ADDRESS);
         if (bindAddress != null) {
             properties.put(PROP_NUXEO_BIND_ADDRESS, bindAddress);
         }
+        String homeDir = getProperty(PROP_HOME_DIR);
+        if (homeDir != null) {
+            workingDir = new File(homeDir);
+        } else {
+            workingDir = bundleContext.getDataFile("/");
+        }
+        workingDir.mkdirs();
     }
 
     public String getName() {
@@ -100,6 +110,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             throws Exception {
         RuntimeContext ctx = contexts.get(bundle);
         if (ctx == null) {
+            // hack to handle fragment bundles
             ctx = new OSGiRuntimeContext(bundle);
             contexts.put(bundle, ctx);
             loadComponents(bundle, ctx);
@@ -166,6 +177,34 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     protected void loadConfig() throws Exception {
+        Environment env = Environment.getDefault();
+        // TODO: in JBoss there is a deployer that will deploy nuxeo configuration files ..
+        if (env != null && !"JBoss".equals(env.getHostApplicationName())) {
+            File dir = env.getConfig() ;
+            if (dir != null) {
+                System.out.println(dir.getAbsolutePath());
+                if (dir.isDirectory()) {
+                    for (String name : dir.list()) {
+                        if (name.endsWith("-config.xml") || name.endsWith("-bundle.xml")) {
+                            //TODO
+                            // because of some dep bugs (regarding the deployment of demo-ds.xml)
+                            // we cannot let the runtime deploy config dir at beginning...
+                            // until fixing this we deploy config dir from
+                            // NuxeoDeployer
+                            File file = new File(dir, name);
+                            context.deploy(file.toURL());
+                        } else if (name.endsWith(".config")
+                                || name.endsWith(".ini")
+                                || name.endsWith(".properties")) {
+                            File file = new File(dir, name);
+                            loadProperties(file);
+                        }
+                    }
+                    return;
+                }
+            }
+        }
+
         String configDir = bundleContext.getProperty(PROP_CONFIG_DIR);
         if (configDir == null) {
             return;
@@ -183,10 +222,10 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                 if (name.endsWith("-config.xml")
                         || name.endsWith("-bundle.xml")) {
                     // TODO
-                    // because of somen dep bugs (regarding the depoyment of
+                    // because of some dep bugs (regarding the deployment of
                     // demo-ds.xml)
                     // we cannot let the runtime deploy config dir at
-                    // begining...
+                    // beginning...
                     // until fixing this we deploy config dir from
                     // NuxeoDeployer
 
@@ -210,9 +249,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         try {
             loadProperties(in);
         } finally {
-            if (in != null) {
-                in.close();
-            }
+            in.close();
         }
     }
 
@@ -233,6 +270,21 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         for (Map.Entry<Object, Object> prop : props.entrySet()) {
             properties.put(prop.getKey().toString(), prop.getValue().toString());
         }
+    }
+
+    /**
+     * Overrides the default method to be able to include OSGi properties.
+     */
+    @Override
+    public String getProperty(String name, String defValue) {
+        String value = properties.getProperty(name);
+        if (value == null) {
+            value = bundleContext.getProperty(name);
+            if (value == null) {
+                return defValue == null ? null : expandVars(defValue);
+            }
+        }
+        return expandVars(value);
     }
 
     /* --------------- FrameworkListener API ------------------ */
