@@ -31,6 +31,7 @@ import javax.servlet.ServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.contexts.FacesLifecycle;
 import org.jboss.seam.transaction.Transaction;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -238,13 +239,16 @@ public class NuxeoExceptionFilter implements Filter {
     }
 
     private static void rollbackTransactionIfNecessary() {
-        try {
-            if (Transaction.instance().isActiveOrMarkedRollback()) {
-                log.info("killing transaction");
-                Transaction.instance().rollback();
+        if (Contexts.isEventContextActive())
+        {
+            try {
+                if (Transaction.instance().isActiveOrMarkedRollback()) {
+                    log.info("killing transaction");
+                    Transaction.instance().rollback();
+                }
+            } catch (Exception te) {
+                log.error("could not roll back transaction", te);
             }
-        } catch (Exception te) {
-            log.error("could not roll back transaction", te);
         }
     }
 
