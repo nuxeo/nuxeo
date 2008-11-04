@@ -17,7 +17,7 @@ package org.nuxeo.theme.webengine.negotiation;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
-import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.model.WebContext;
 
 public final class CookieManager {
 

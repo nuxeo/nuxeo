@@ -14,7 +14,7 @@
 
 package org.nuxeo.theme.webengine.negotiation;
 
-import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.negotiation.AbstractNegotiator;
 
 public final class WebNegotiator extends AbstractNegotiator {

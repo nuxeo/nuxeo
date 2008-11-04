@@ -14,7 +14,7 @@
 
 package org.nuxeo.theme.webengine.negotiation.perspective;
 
-import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.ViewDef;
@@ -27,7 +27,7 @@ public final class ViewId implements Scheme {
 
     public String getOutcome(final Object context) {
         WebContext webContext = (WebContext) context;
-        final String viewId = webContext.getPathInfo().getAction();
+        final String viewId = webContext.getMethod();
         
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         final String applicationPath = webContext.getBasePath();

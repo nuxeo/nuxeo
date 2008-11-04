@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
-import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.html.ui.Panel;
 
 import freemarker.core.Environment;
@@ -58,7 +58,7 @@ public class NXThemesPanelDirective implements TemplateDirectiveModel {
         String applicationPath = context.getRequest().getParameter(
                 "org.nuxeo.theme.application.path");
         if (applicationPath == null) {
-            applicationPath = context.getApplicationPath();
+            applicationPath = context.getBasePath();
         }
         attributes.put("org.nuxeo.theme.application.path", applicationPath);
 

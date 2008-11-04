@@ -16,7 +16,7 @@ package org.nuxeo.theme.webengine.negotiation.engine;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.negotiation.Scheme;
 
 public final class DefaultEngine implements Scheme {

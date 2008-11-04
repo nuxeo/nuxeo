@@ -25,7 +25,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.html.ui.Head;
 import org.nuxeo.theme.themes.ThemeManager;
 

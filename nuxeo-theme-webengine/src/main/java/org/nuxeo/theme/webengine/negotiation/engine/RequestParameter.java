@@ -14,7 +14,7 @@
 
 package org.nuxeo.theme.webengine.negotiation.engine;
 
-import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.negotiation.Scheme;
 import org.nuxeo.theme.types.TypeFamily;

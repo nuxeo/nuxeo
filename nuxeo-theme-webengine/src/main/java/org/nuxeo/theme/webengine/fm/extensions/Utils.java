@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
@@ -82,7 +82,7 @@ public class Utils {
         HttpServletResponse response = context.getResponse();
 
         // Get the negotiation strategy
-        final String root = context.getApplicationPath();
+        final String root = context.getBasePath();
 
         final ApplicationType application = (ApplicationType) Manager.getTypeRegistry().lookup(
                 TypeFamily.APPLICATION, root);

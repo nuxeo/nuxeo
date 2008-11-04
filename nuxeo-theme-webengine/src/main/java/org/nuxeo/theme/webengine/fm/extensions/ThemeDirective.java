@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriter;
-import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.themes.ThemeManager;
 
