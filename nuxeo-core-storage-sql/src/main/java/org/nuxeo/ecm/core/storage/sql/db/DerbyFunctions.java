@@ -126,11 +126,13 @@ public class DerbyFunctions {
         Connection connection = DriverManager.getConnection("jdbc:default:connection");
         PreparedStatement ps1 = null;
         PreparedStatement ps2 = null;
+        PreparedStatement ps3 = null;
         try {
             ps1 = connection.prepareStatement( //
             "SELECT \"GRANT\", \"PERMISSION\", \"USER\" FROM \"ACLS\" "
                     + "WHERE ID = ? ORDER BY POS");
             ps2 = connection.prepareStatement("SELECT PARENTID FROM HIERARCHY WHERE ID = ?");
+            boolean first = true;
             do {
                 /*
                  * Check permissions at this level.
@@ -155,17 +157,36 @@ public class DerbyFunctions {
                 /*
                  * Nothing conclusive found, repeat on the parent.
                  */
+                Serializable newId;
                 ps2.setObject(1, id);
                 rs = ps2.executeQuery();
                 if (rs.next()) {
-                    id = (Serializable) rs.getObject(1);
+                    newId = (Serializable) rs.getObject(1);
                     if (rs.wasNull()) {
-                        id = null;
+                        newId = null;
                     }
                 } else {
                     // no such id
-                    id = null;
+                    newId = null;
                 }
+                if (first && newId == null) {
+                    // there is no parent for the first level
+                    // we may have a version on our hands, find the live doc
+                    ps3 = connection.prepareStatement("SELECT VERSIONABLEID FROM VERSIONS WHERE ID = ?");
+                    ps3.setObject(1, id);
+                    rs = ps3.executeQuery();
+                    if (rs.next()) {
+                        newId = (Serializable) rs.getObject(1);
+                        if (rs.wasNull()) {
+                            newId = null;
+                        }
+                    } else {
+                        // no such id
+                        newId = null;
+                    }
+                }
+                first = false;
+                id = newId;
             } while (id != null);
             /*
              * We reached the root, deny access.
@@ -181,6 +202,9 @@ public class DerbyFunctions {
                 }
                 if (ps2 != null) {
                     ps2.close();
+                }
+                if (ps3 != null) {
+                    ps3.close();
                 }
             } finally {
                 connection.close();

@@ -209,6 +209,14 @@ public class Dialect {
         return true;
     }
 
+    public boolean needsOrderByKeysAfterDistinct() {
+        if (dialect instanceof PostgreSQLDialect) {
+            return true;
+        }
+        return false;
+    }
+
+
     /**
      * When doing a comparison between a text field and something else, is some
      * casting required and with what pattern?

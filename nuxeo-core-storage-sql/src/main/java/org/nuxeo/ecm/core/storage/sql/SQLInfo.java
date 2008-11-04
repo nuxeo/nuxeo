@@ -1226,8 +1226,10 @@ public class SQLInfo {
                                     + "RETURNS boolean " //
                                     + "AS $$ " //
                                     + "DECLARE" //
-                                    + "  curid %<s := id; " //
-                                    + "  r record; " //
+                                    + "  curid %<s := id;" //
+                                    + "  newid %<s;" //
+                                    + "  r record;" //
+                                    + "  first boolean := true;" //
                                     + "BEGIN" //
                                     + "  WHILE curid IS NOT NULL LOOP" //
                                     + "    FOR r in SELECT acls.grant, acls.permission, acls.user FROM acls WHERE acls.id = curid ORDER BY acls.pos LOOP"
@@ -1235,7 +1237,12 @@ public class SQLInfo {
                                     + "        RETURN r.grant;" //
                                     + "      END IF;" //
                                     + "    END LOOP;" //
-                                    + "    SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;" //
+                                    + "    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;" //
+                                    + "    IF first AND newid IS NULL THEN" //
+                                    + "      SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;" //
+                                    + "    END IF;" //
+                                    + "    first := false;" //
+                                    + "    curid := newid;" //
                                     + "  END LOOP;" //
                                     + "  RETURN false; " //
                                     + "END " //
