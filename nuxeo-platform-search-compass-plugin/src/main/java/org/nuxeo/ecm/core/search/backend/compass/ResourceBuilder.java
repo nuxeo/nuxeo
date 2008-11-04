@@ -43,6 +43,7 @@ import org.compass.core.engine.naming.StaticPropertyPath;
 import org.compass.core.lucene.LuceneProperty;
 import org.compass.core.lucene.util.LuceneUtils;
 import org.compass.core.mapping.rsem.RawResourcePropertyMapping;
+import org.compass.core.spi.InternalCompassSession;
 import org.nuxeo.common.utils.Null;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.StringUtils;
@@ -56,7 +57,9 @@ import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedData;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory.BuiltinDocumentFields;
 import org.nuxeo.ecm.core.search.api.backend.security.SecurityFiltering;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
+import org.nuxeo.ecm.core.search.api.helper.DoubleConverter;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.FieldConstants;
+
 import sun.misc.BASE64Encoder;
 
 /**
@@ -74,12 +77,12 @@ public class ResourceBuilder {
     // TODO others: use a better naming for id properties. They don't need
     // to be different from one nuxeo-handled alias to the other.
 
-    private final CompassSession session;
+    private final InternalCompassSession session;
 
     private final Resource resource;
 
     public ResourceBuilder(CompassSession session, String alias, String id) {
-        this.session = session;
+        this.session = (InternalCompassSession) session;
         resource = session.createResource(alias);
 
         // Primary ids
@@ -233,26 +236,51 @@ public class ResourceBuilder {
                     : Property.Index.TOKENIZED;
         }
 
-        // Sortable configuration.
-        if (sortable && sValue != null) {
-            final String sname = name + Util.SORTABLE_FIELD_SUFFIX;
-            String sortValue;
-            if (sortOption != null) {
-                sortOption = sortOption.toLowerCase();
-            }
-            if ("case-insensitive".equals(sortOption)) {
-                sortValue = StringUtils.toAscii(sValue).toLowerCase();
-            } else {
-                sortValue = sValue;
-            }
-            // TODO maybe some escaping to be done here
-            log.debug("Adding a sort field name=" + sname + " and value="
-                    + sortValue);
-            addTermProperty(sname, sortValue, true, false);
-        }
-
         try {
             resource.addProperty(name, value);
+            if (sortable && sValue != null) {
+                if (value instanceof Double) {
+                    String stval = DoubleConverter.format(value);
+                    addTermProperty(name + Util.SORTABLE_FIELD_SUFFIX, stval,
+                            true, false);
+                } else {
+
+                    // :FIXME: Pluggable String Formatter, Have to fix QueryConverter issues before using it 
+                    // String alias = resource.getAlias(); ResourceMapping
+                    // resourceMapping =
+                    // session.getMapping().getResourceMappingByAlias( alias);
+                    // ResourcePropertyMapping propertyMapping =
+                    // resourceMapping.getResourcePropertyMapping(name); if
+                    // (propertyMapping == null) { throw new
+                    // SearchEngineException(
+                    // "No resource property mapping is defined for alias [" +
+                    // alias + "] and resource property [" + name + "]"); }
+                    // ResourcePropertyConverter converter =
+                    // (ResourcePropertyConverter)
+                    // propertyMapping.getConverter();
+                    //
+                    // if (converter == null) { converter =
+                    // (ResourcePropertyConverter)
+                    // session.getMapping().getConverterLookup
+                    // ().lookupConverter( value.getClass()); } String strValue
+                    // = converter.toString(value, propertyMapping);
+
+                    final String sname = name + Util.SORTABLE_FIELD_SUFFIX;
+                    String sortValue;
+                    if (sortOption != null) {
+                        sortOption = sortOption.toLowerCase();
+                    }
+                    if ("case-insensitive".equals(sortOption)) {
+                        sortValue = StringUtils.toAscii(sValue).toLowerCase();
+                    } else {
+                        sortValue = sValue;
+                    }
+                    // TODO maybe some escaping to be done here
+                    log.debug("Adding a sort field name=" + sname
+                            + " and value=" + sortValue);
+                    addTermProperty(sname, sortValue, true, false);
+                }
+            }
         } catch (SearchEngineException see) {
             // If Compass doesn't find a PropertyMapping, fall back
             // to lower level creation
@@ -287,6 +315,24 @@ public class ResourceBuilder {
                         (String) properties.get(FieldConstants.PROPERTY_PATH_SEPARATOR),
                         indexed, stored);
                 return;
+            }
+
+            // Sortable configuration.
+            if (sortable && sValue != null) {
+                final String sname = name + Util.SORTABLE_FIELD_SUFFIX;
+                String sortValue;
+                if (sortOption != null) {
+                    sortOption = sortOption.toLowerCase();
+                }
+                if ("case-insensitive".equals(sortOption)) {
+                    sortValue = StringUtils.toAscii(sValue).toLowerCase();
+                } else {
+                    sortValue = sValue;
+                }
+                // TODO maybe some escaping to be done here
+                log.debug("Adding a sort field name=" + sname + " and value="
+                        + sortValue);
+                addTermProperty(sname, sortValue, true, false);
             }
 
             if (sValue == null) {
@@ -383,8 +429,7 @@ public class ResourceBuilder {
     /**
      * @param name
      * @param value
-     * @param separator The separator, if <code>null</code> defaults to a
-     *            slash
+     * @param separator The separator, if <code>null</code> defaults to a slash
      */
     public void addPathProperty(String name, String value, String separator,
             boolean indexed, boolean stored) {
@@ -409,9 +454,9 @@ public class ResourceBuilder {
      * <p>
      * Internal storage convention:
      * <ul>
-     * <li> a positive ACE on perm <em>perm</em> for name <em>name</em>
-     * becomes <em>+name:perm</em>
-     * <li> a negative ACE becomes <em>-name:perm</em>
+     * <li>a positive ACE on perm <em>perm</em> for name <em>name</em> becomes
+     * <em>+name:perm</em>
+     * <li>a negative ACE becomes <em>-name:perm</em>
      * </ul>
      * This is a bijection. We don't need any escaping.
      * <p>

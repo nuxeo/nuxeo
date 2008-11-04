@@ -61,6 +61,7 @@ import org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory.BuiltinD
 import org.nuxeo.ecm.core.search.api.backend.security.SecurityFiltering;
 import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.core.search.api.client.query.SearchPrincipal;
+import org.nuxeo.ecm.core.search.api.helper.DoubleConverter;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceDataConf;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.FulltextFieldDescriptor;
 import org.nuxeo.ecm.core.search.api.internals.SearchServiceInternals;
@@ -182,13 +183,15 @@ public class QueryConverter {
 
     /**
      * Direct query string for experts.
-     *
+     * 
      * @param query
      * @param principal
      * @return The wrapped query, intersected with security query
-     * @throws QueryException if the list of permissions to query cannot be fetched
+     * @throws QueryException if the list of permissions to query cannot be
+     *             fetched
      */
-    public CompassQuery toCompassQuery(String query, SearchPrincipal principal) throws QueryException {
+    public CompassQuery toCompassQuery(String query, SearchPrincipal principal)
+            throws QueryException {
         CompassQueryBuilder builder = session.queryBuilder();
 
         CompassQuery sQuery = builder.queryString(query).toQuery();
@@ -208,11 +211,14 @@ public class QueryConverter {
      *
      * @param principal
      * @return the security query, wrapped as a CompassQuery
-     * @throws QueryException if the list of permissions to query cannot be fetched
+     * @throws QueryException if the list of permissions to query cannot be
+     *             fetched
      */
-    public CompassQuery makeSecurityQuery(SearchPrincipal principal) throws QueryException {
+    public CompassQuery makeSecurityQuery(SearchPrincipal principal)
+            throws QueryException {
         try {
-            return makeSecurityQuery(principal, SecurityFiltering.getBrowsePermissionList(),
+            return makeSecurityQuery(principal,
+                    SecurityFiltering.getBrowsePermissionList(),
                     BuiltinDocumentFields.FIELD_ACP_INDEXED);
         } catch (Throwable t) {
             throw new QueryException(t);
@@ -223,9 +229,10 @@ public class QueryConverter {
      * Builds a query for given principal, to check the given list of perms in
      * given indexing field.
      * <p>
-     * This is translated in a {@Link MatchBeforeQuery} to require a positive
-     * occurence of one of the principal's security tokens (name or group),
-     * paired with one of the relevant permissions before any negative one.
+     * This is translated in a {@Link MatchBeforeQuery} to require a
+     * positive occurence of one of the principal's security tokens (name or
+     * group), paired with one of the relevant permissions before any negative
+     * one.
      * <p>
      * Of course the field has to have been constructed accordingly.
      *
@@ -392,17 +399,9 @@ public class QueryConverter {
                         "A boolean field can be queried on 0 and 1 only");
             }
         } else if (right instanceof IntegerLiteral) {
-            if ("int".equals(type) || "long".equals(type)) {
-                rightOb = ((IntegerLiteral) right).value;
-            } else {
-                rightOb = ((IntegerLiteral) right).value;
-            }
+            rightOb = ((IntegerLiteral) right).value;
         } else if (right instanceof DoubleLiteral) {
-            if ("float".equals(type) || "double".equals(type)) {
-                rightOb = ((DoubleLiteral) right).value;
-            } else {
-                rightOb = ((DoubleLiteral) right).value;
-            }
+            rightOb = ((DoubleLiteral) right).value;
         }
 
         // STARTSWITH for paths boils down to a EQ
@@ -481,8 +480,12 @@ public class QueryConverter {
             }
             return LuceneHelper.createCompassQuery(session, lQuery);
         }
+        if (rightOb instanceof Double) {
+            rightOb = DoubleConverter.format(rightOb);
+        }
 
         if (op.equals(Operator.GT)) {
+
             return builder.gt(name, rightOb);
         }
         if (op.equals(Operator.GTEQ)) {
@@ -505,7 +508,8 @@ public class QueryConverter {
                 String.format("%s:(%s)", name.replaceAll(PER_PROP_ESCAPE,
                         "\\\\$0"), value.replaceAll(PER_PROP_ESCAPE, "\\\\$0")));
 
-        if (session.getSettings().getSettingAsBoolean("useAndDefaultOperator", false))
+        if (session.getSettings().getSettingAsBoolean("useAndDefaultOperator",
+                false))
             sBuilder.useAndDefaultOperator();
 
         if (analyzer != null) {
@@ -563,8 +567,8 @@ public class QueryConverter {
     }
 
     /**
-     * Transforms a where predicate into a {@link CompassQuery}. Returns null
-     * if the predicate matches everything.
+     * Transforms a where predicate into a {@link CompassQuery}. Returns null if
+     * the predicate matches everything.
      *
      * @param predicate
      * @return the resulting CompassQuery or null
@@ -585,7 +589,7 @@ public class QueryConverter {
         } else if (op.equals(Operator.NOTBETWEEN)) {
             notOp = Operator.BETWEEN;
         } else if (op.equals(Operator.NOT)) { // generic NOT
-                return negateQuery(wherePredicate((Predicate) predicate.lvalue));
+            return negateQuery(wherePredicate((Predicate) predicate.lvalue));
         }
         if (notOp != null) {
             return negateQuery(wherePredicate(new Predicate(predicate.lvalue,

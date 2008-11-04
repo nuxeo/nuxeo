@@ -45,7 +45,7 @@
         <setting name="format" value="#00000000000000000000" />
       </converter>
       <converter name="double" type="org.compass.core.converter.basic.DoubleConverter">
-        <setting name="format" value="#0000000000000000.00"/>
+        <setting name="format" value="0000000000000000.00"/>
       </converter>
     </converters>
 
