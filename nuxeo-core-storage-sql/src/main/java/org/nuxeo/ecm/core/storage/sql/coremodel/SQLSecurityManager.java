@@ -78,10 +78,9 @@ public class SQLSecurityManager implements SecurityManager {
         }
     }
 
-    // TODO XXX
     public ACP getMergedACP(Document doc) throws SecurityException {
         try {
-            ACP acp = getACP(doc);
+            ACP acp = getACP(doc.isVersion() ? doc.getSourceDocument() : doc);
             if (doc.getParent() == null) {
                 return acp;
             }
