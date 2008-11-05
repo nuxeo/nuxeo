@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
- * $Id$
+ *     Anahide Tchertchian
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.security;
@@ -28,12 +27,14 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 
 /**
  * Security policy that blocks WRITE permission on a document if it is locked by
  * someone else.
  *
  * @author Anahide Tchertchian
+ * @author Florent Guillaume
  */
 public class LockSecurityPolicy extends AbstractSecurityPolicy {
 
@@ -47,10 +48,10 @@ public class LockSecurityPolicy extends AbstractSecurityPolicy {
         try {
             String username = principal.getName();
             String lock = doc.getLock();
-            if (lock != null
-                    && !lock.startsWith(username + ':')
-                    && resolvedPermissions != null
-                    && Arrays.asList(resolvedPermissions).contains(
+            if (lock != null &&
+                    !lock.startsWith(username + ':') &&
+                    resolvedPermissions != null &&
+                    Arrays.asList(resolvedPermissions).contains(
                             SecurityConstants.WRITE)) {
                 // locked by another user => deny
                 access = Access.DENY;
@@ -60,6 +61,22 @@ public class LockSecurityPolicy extends AbstractSecurityPolicy {
             log.debug("Failed to get lock status on document ", e);
         }
         return access;
+    }
+
+    @Override
+    public boolean isRestrictingPermission(String permission) {
+        assert permission.equals("Browse"); // others not coded
+        return false;
+    }
+
+    @Override
+    public boolean isExpressibleInQuery() {
+        return true;
+    }
+
+    @Override
+    public SQLQuery.Transformer getQueryTransformer() {
+        return SQLQuery.Transformer.IDENTITY;
     }
 
 }

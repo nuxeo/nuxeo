@@ -20,8 +20,10 @@ package org.nuxeo.ecm.core.query.test;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -34,7 +36,12 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -180,6 +187,18 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         file4 = session.createDocument(file4);
 
         session.save();
+    }
+
+    /**
+     * Publishes testfile4 to testfolder1
+     */
+    protected DocumentModel publishDoc() throws Exception {
+        DocumentModel doc = session.getDocument(new PathRef(
+                "/testfolder2/testfolder3/testfile4"));
+        DocumentModel sec = session.getDocument(new PathRef("/testfolder1"));
+        DocumentModel proxy = session.publishDocument(doc, sec);
+        session.save();
+        return proxy;
     }
 
     // from TestAPI
@@ -432,4 +451,73 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(1, dml.size());
     }
 
+    // other tests
+
+    public void testQueryWithSecurity() throws Exception {
+        createDocs();
+        DocumentModel root = session.getRootDocument();
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(new ACE("bob", "Browse", true));
+        acp.addACL(acl);
+        root.setACP(acp, true);
+        DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
+        acp = new ACPImpl();
+        acl = new ACLImpl();
+        acl.add(new ACE("bob", "Browse", false));
+        acp.addACL(acl);
+        folder1.setACP(acp, true);
+        session.save();
+        closeSession();
+        session = openSessionAs("bob");
+
+        DocumentModelList dml = session.query("SELECT * FROM Document");
+        assertEquals(3, dml.size());
+    }
+
+    private void assertIdSet(DocumentModelList dml, String... ids) {
+        assertEquals(ids.length, dml.size());
+        HashSet<String> expected = new HashSet<String>(Arrays.asList(ids));
+        HashSet<String> actual = new HashSet<String>();
+        for (DocumentModel d : dml) {
+            actual.add(d.getId());
+        }
+        assertEquals(expected, actual);
+    }
+
+    public void testQueryWithProxies() throws Exception {
+        createDocs();
+        DocumentModel proxy = publishDoc();
+
+        DocumentModel doc = session.getDocument(new PathRef(
+                "/testfolder2/testfolder3/testfile4"));
+        String docId = doc.getId();
+        String proxyId = proxy.getId();
+        String versionId = proxy.getSourceId();
+        assertNotSame(docId, proxyId);
+        assertNotNull(versionId);
+        assertNotSame(docId, versionId);
+        assertNotSame(proxyId, versionId);
+
+        // queries must return proxies *and versions*
+        DocumentModelList dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4_Title'");
+        assertIdSet(dml, docId, proxyId, versionId);
+
+        // filter out proxies explicitely, keeps live and version
+        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4_Title' AND ecm:isProxy = 0");
+        assertIdSet(dml, docId, versionId);
+
+        // only keep proxies
+        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4_Title' AND ecm:isProxy = 1");
+        assertIdSet(dml, proxyId);
+
+        // only keep versions
+        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4_Title' AND ecm:isCheckedInVersion = 1");
+        assertIdSet(dml, versionId);
+
+        // only keep immutable
+        // dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Immutable'");
+        // assertIdSet(dml, proxyId, versionId);
+    }
 }

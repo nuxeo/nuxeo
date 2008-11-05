@@ -29,7 +29,11 @@ import org.nuxeo.ecm.core.api.operation.Operation;
 import org.nuxeo.ecm.core.listener.CoreEventListenerService;
 import org.nuxeo.ecm.core.listener.EventListener;
 import org.nuxeo.ecm.core.listener.EventListenerOrderComparator;
+import org.nuxeo.ecm.core.listener.TransactedEventService;
+import org.nuxeo.ecm.core.listener.TransactedEventServiceImpl;
+import org.nuxeo.ecm.core.listener.TransactedListener;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -45,13 +49,33 @@ public class DefaultEventService extends DefaultComponent implements
 
     private final ListenerList eventListeners = new ListenerList(new EventListenerOrderComparator());
 
+    private TransactedEventService txEventMgr = null;
+
+    public DefaultEventService() {
+        this (Boolean.parseBoolean(Framework.getProperty("activateCoreNotificationTransaction", "true")));
+    }
+
+    public DefaultEventService(boolean activatePostCommit) {
+        if (activatePostCommit) {
+            log.info("Activating transaction support for core event notification");
+            txEventMgr = new TransactedEventServiceImpl();
+        }
+    }
 
     public void addEventListener(EventListener listener) {
-        eventListeners.add(listener);
+        if (txEventMgr != null && listener instanceof TransactedListener) {
+            txEventMgr.addListener((TransactedListener)listener);
+        } else {
+            eventListeners.add(listener);
+        }
     }
 
     public void removeEventListener(EventListener listener) {
-        eventListeners.remove(listener);
+        if (txEventMgr != null && listener instanceof TransactedListener) {
+            txEventMgr.removeListener((TransactedListener)listener);
+        } else {
+            eventListeners.remove(listener);
+        }
     }
 
     public EventListener getEventListenerByName(String name) {
@@ -93,6 +117,10 @@ public class DefaultEventService extends DefaultComponent implements
     }
 
     public void fireEvent(CoreEvent event) {
+        // record event for post commit notifications
+        if (txEventMgr != null) {
+            txEventMgr.record(event);
+        }
         //logEvent(event);
         // send the event to all listeners that accept it
         String eventId = event.getEventId();
@@ -114,6 +142,10 @@ public class DefaultEventService extends DefaultComponent implements
     }
 
     public void fireOperationStarted(Operation<?> command) {
+        // record event for post commit notifications
+        if (txEventMgr != null) {
+            txEventMgr.recordOperation(command);
+        }
         for (Object object : eventListeners.getListeners()) {
             EventListener listener = (EventListener) object;
             try {
@@ -130,6 +162,10 @@ public class DefaultEventService extends DefaultComponent implements
     }
 
     public void fireOperationTerminated(Operation<?> command) {
+        // record event for post commit notifications
+        if (txEventMgr != null) {
+            txEventMgr.recordOperation(command);
+        }
         for (Object object : eventListeners.getListeners()) {
             EventListener listener = (EventListener) object;
             try {
@@ -145,6 +181,38 @@ public class DefaultEventService extends DefaultComponent implements
         }
     }
 
+    public void transactionCommited() {
+        if (txEventMgr != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("commiting events ...");
+            }
+            txEventMgr.transactionCommitted();
+        }
+    }
+
+    public void transactionRollbacked() {
+        if (txEventMgr != null) {
+            txEventMgr.transactionRollbacked();
+        }
+    }
+
+    public void transactionStarted() {
+        if (txEventMgr != null) {
+            txEventMgr.transactionStarted();
+        }
+    }
+    
+    public void transactionAboutToCommit() {
+        if (txEventMgr != null) {
+            txEventMgr.transactionAboutToCommit();
+        }        
+    }
+
+    public boolean isPostCommitEnabled() {
+        return txEventMgr != null;
+    }
+
+    
 //    private void logEvent(CoreEvent event) {
 //      if (log.isInfoEnabled()) {
 //          String path = null;

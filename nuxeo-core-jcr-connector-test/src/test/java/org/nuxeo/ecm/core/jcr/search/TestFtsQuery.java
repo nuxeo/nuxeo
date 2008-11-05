@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.jcr.search;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 
@@ -182,15 +181,8 @@ public class TestFtsQuery extends RepositoryTestCase {
 
     /**
      * Tests selection with full text by node extracted binary content.
-     *
-     * @throws QueryException
-     * @throws RepositoryException
-     * @throws DocumentException
-     * @throws IOException
      */
-    public void testXPathWithDocTypeExtractedContent_file1() throws
-            QueryException, RepositoryException, DocumentException,
-            IOException {
+    public void testXPathWithDocTypeExtractedContent_file1() throws Exception {
         final String logPrefix = "<testJCRXPathContainProp_file1> ";
 
         log.info(logPrefix + "...");
@@ -212,7 +204,6 @@ public class TestFtsQuery extends RepositoryTestCase {
         assertEquals("testfile1_description", doc.getString("description"));
     }
 
-
     public void testXPathContainAndJoin() throws Exception {
         final String logPrefix = "<testJCRXPathContainAndJoin> ";
 
@@ -232,17 +223,10 @@ public class TestFtsQuery extends RepositoryTestCase {
         assertEquals(1, qr.count());
     }
 
-
     /**
      * Tests selection with full text by node properties values.
-     *
-     * @throws QueryException
-     * @throws RepositoryException
-     * @throws DocumentException
-     * @throws IOException
      */
-    public void testXPathContainProp_file1() throws QueryException,
-            RepositoryException, DocumentException, IOException {
+    public void testXPathContainProp_file1() throws Exception {
         final String logPrefix = "<testJCRXPathContainProp_file1> ";
 
         log.info(logPrefix + "...");
@@ -266,14 +250,8 @@ public class TestFtsQuery extends RepositoryTestCase {
 
     /**
      * Test selection with full text by node properties values.
-     *
-     * @throws QueryException
-     * @throws RepositoryException
-     * @throws DocumentException
-     * @throws IOException
      */
-    public void testXPathWithDocTypeContainProp_file1() throws QueryException,
-            RepositoryException, DocumentException, IOException {
+    public void testXPathWithDocTypeContainProp_file1() throws Exception {
         final String logPrefix = "<testJCRXPathContainProp_file1> ";
 
         log.info(logPrefix + "...");
@@ -297,17 +275,8 @@ public class TestFtsQuery extends RepositoryTestCase {
 
     /**
      * Test selection with full text by node properties values.
-     *
-     * @throws QueryException
-     *
-     * @throws QueryException
-     * @throws RepositoryException
-     * @throws RepositoryException
-     * @throws DocumentException
-     * @throws DocumentException
-     * @throws IOException
      */
-    public void testXPathContainProp_file2() throws QueryException, RepositoryException, DocumentException, IOException {
+    public void testXPathContainProp_file2() throws Exception {
         final String logPrefix = "<testJCRXPathContainProp_file2> ";
 
         log.info(logPrefix + "...");
@@ -361,7 +330,6 @@ public class TestFtsQuery extends RepositoryTestCase {
         QueryResult qr = qry.execute();
         printResults(qr, logPrefix);
         assertEquals(1, qr.count());
-
     }
 
     public void OBSOLETEtestXPathQueryAfterEdit() throws Exception {
@@ -375,7 +343,7 @@ public class TestFtsQuery extends RepositoryTestCase {
         printResults(qr, logPrefix);
         assertEquals(1, qr.count());
 
-        final Document doc = (JCRDocument) qr.getObject();
+        final Document doc = (Document) qr.getObject();
         // need to do the test for document with attached content
         final BlobProperty blob = (BlobProperty) doc.getProperty("content");
         assertNotNull(blob);
@@ -393,7 +361,6 @@ public class TestFtsQuery extends RepositoryTestCase {
         printResults(qr2, logPrefix);
         assertEquals(1, qr2.count());
     }
-
 
     /* -- these won't work any more :
      * TODO enable them when CONTAINS is added to NXQL
@@ -465,7 +432,7 @@ public class TestFtsQuery extends RepositoryTestCase {
      * @throws RepositoryException
      * @throws QueryException
      */
-    private void printResults(final QueryResult qr, final String logPrefix)
+    private static void printResults(final QueryResult qr, final String logPrefix)
             throws RepositoryException, QueryException {
         while (qr.next()) {
 
