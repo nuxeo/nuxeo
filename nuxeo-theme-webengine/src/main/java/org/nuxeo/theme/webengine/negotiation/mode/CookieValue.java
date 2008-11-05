@@ -16,12 +16,12 @@ package org.nuxeo.theme.webengine.negotiation.mode;
 
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.negotiation.Scheme;
-import org.nuxeo.theme.webengine.negotiation.CookieManager;
 
 public class CookieValue implements Scheme {
 
     public String getOutcome(final Object context) {
-        return CookieManager.getCookie("nxthemes.mode", ((WebContext) context));
+        final WebContext webContext =  (WebContext) context;
+        return webContext.getCookie("nxthemes.mode");
     }
 
 }

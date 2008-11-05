@@ -18,13 +18,12 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.negotiation.Scheme;
 import org.nuxeo.theme.types.TypeFamily;
-import org.nuxeo.theme.webengine.negotiation.CookieManager;
 
 public class CookieValue implements Scheme {
 
     public String getOutcome(final Object context) {
-        final String engineName = CookieManager.getCookie("nxthemes.engine",
-                ((WebContext) context));
+        final WebContext webContext =  (WebContext) context;
+        final String engineName = webContext.getCookie("nxthemes.engine");
         if (engineName == null) {
             return null;
         }

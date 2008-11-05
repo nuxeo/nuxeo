@@ -78,12 +78,10 @@ public class Utils {
         if (themeUrl != null) {
             return themeUrl;
         }
-        
-        HttpServletResponse response = context.getResponse();
 
         // Get the negotiation strategy
-        final String root = context.getBasePath();
-
+        final String root = context.getModulePath();
+        
         final ApplicationType application = (ApplicationType) Manager.getTypeRegistry().lookup(
                 TypeFamily.APPLICATION, root);
 
@@ -104,7 +102,7 @@ public class Utils {
         if (strategy == null) {
             log.error("Could not obtain the negotiation strategy for " + root);
             // FIXME
-            response.sendRedirect("/nuxeo/nxthemes/error/negotiationStrategyNotSet.faces");
+            // response.sendRedirect("/nuxeo/nxthemes/error/negotiationStrategyNotSet.faces");
         } else {
             try {
                 final String spec = new WebNegotiator(strategy, context).getSpec();
@@ -113,7 +111,7 @@ public class Utils {
             } catch (NegotiationException e) {
                 log.error("Could not get default negotiation settings.", e);
                 // FIXME
-                response.sendRedirect("/nuxeo/nxthemes/error/negotiationDefaultValuesNotSet.faces");
+                // response.sendRedirect("/nuxeo/nxthemes/error/negotiationDefaultValuesNotSet.faces");
             }
         }
 

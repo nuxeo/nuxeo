@@ -17,13 +17,12 @@ package org.nuxeo.theme.webengine.negotiation.perspective;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.negotiation.Scheme;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
-import org.nuxeo.theme.webengine.negotiation.CookieManager;
 
 public class CookieValue implements Scheme {
 
     public String getOutcome(final Object context) {
-        final String perspectiveName = CookieManager.getCookie("nxthemes.perspective",
-                ((WebContext) context));
+        final WebContext webContext =  (WebContext) context;
+        final String perspectiveName = webContext.getCookie("nxthemes.perspective");
         if (perspectiveName == null) {
             return null;
         }
