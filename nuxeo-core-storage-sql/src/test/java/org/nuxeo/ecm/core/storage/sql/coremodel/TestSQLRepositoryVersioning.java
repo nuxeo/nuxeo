@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -506,6 +507,18 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         acl = acls[1];
         assertEquals(1 + 4, acl.size()); // 1 + 4 root defaults
         assertEquals("princ1", acl.get(0).getUsername());
+
+        // remove live document (create a proxy so the version stays)
+        session.createProxy(folder.getRef(), file.getRef(), vm, true);
+        session.save();
+        session.removeDocument(file.getRef());
+        // recheck security on version
+        try {
+            session.getACP(version.getRef());
+            fail();
+        } catch (DocumentSecurityException e) {
+            // ok
+        }
     }
 
 }
