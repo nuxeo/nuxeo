@@ -20,19 +20,23 @@
 package org.nuxeo.ecm.core.api.ejb;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJBContext;
+import javax.ejb.EJBException;
 import javax.ejb.Local;
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
 import javax.ejb.Remote;
 import javax.ejb.Remove;
+import javax.ejb.SessionSynchronization;
 import javax.ejb.Stateful;
 import javax.interceptor.Interceptors;
 import javax.persistence.Transient;
@@ -71,7 +75,7 @@ import org.nuxeo.ecm.core.model.Session;
 @Remote(CoreSession.class)
 // @Interceptors(DocumentParameterInterceptor.class)
 @SerializedConcurrentAccess
-public class DocumentManagerBean extends AbstractSession {
+public class DocumentManagerBean extends AbstractSession implements SessionSynchronization {
 
     private static final long serialVersionUID = 6781675353273516393L;
 
@@ -86,12 +90,25 @@ public class DocumentManagerBean extends AbstractSession {
 
     @Resource
     transient EJBContext context;
-
+    
+    
     @Override
     @Remove
     @PermitAll
     public void destroy() {
         log.debug("@Remove");
+        //super.destroy();
+    }
+
+    @PreDestroy
+    /**
+     * This method is called before the stateful bean instance is destroyed.
+     * <p>
+     * When a client is explicitly destroying a bean using the @Remove method this method will be automatically
+     * called before the instance is destroyed
+     */
+    public void preDestroy() {
+        log.debug("@PreDestroy");
         super.destroy();
     }
 
@@ -119,7 +136,6 @@ public class DocumentManagerBean extends AbstractSession {
             log.error("Failed to close session", e);
         }
     }
-
 
     @Override
     public Principal getPrincipal() {
@@ -169,7 +185,7 @@ public class DocumentManagerBean extends AbstractSession {
             }
             return super.connect(repositoryName, sessionContext);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -184,13 +200,13 @@ public class DocumentManagerBean extends AbstractSession {
             try {
                 NXCore.getRepository(repositoryName);
             } catch (Exception e) {
-                throw EJBExceptionHandler.wrapException(e);
+                throw ClientException.wrap(e);
             }
             try {
                 session = createSession(repositoryName, "default",
                         sessionContext);
             } catch (Exception e) {
-                throw EJBExceptionHandler.wrapException(e);
+                throw ClientException.wrap(e);
             }
         }
         return session;
@@ -212,7 +228,7 @@ public class DocumentManagerBean extends AbstractSession {
         try {
             return super.getDocument(docRef);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -223,7 +239,7 @@ public class DocumentManagerBean extends AbstractSession {
         try {
             return super.getDocument(docRef, schemas);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -237,7 +253,7 @@ public class DocumentManagerBean extends AbstractSession {
             }
             return super.getChild(parent, name);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -251,7 +267,7 @@ public class DocumentManagerBean extends AbstractSession {
             }
             return super.getChildren(parent);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -265,7 +281,7 @@ public class DocumentManagerBean extends AbstractSession {
             }
             return super.getChildren(parent, type);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -279,7 +295,7 @@ public class DocumentManagerBean extends AbstractSession {
             }
             return super.getChildren(parent, type, perm);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -295,8 +311,47 @@ public class DocumentManagerBean extends AbstractSession {
         try {
             return super.getSecuritySummary(docModel, includeParents);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
+    
+    public void afterBegin() throws EJBException, RemoteException {
+//        System.out.println("# "+Thread.currentThread().getId()+ " #### TRANSACTION STARTED: ");
+//        if (log.isDebugEnabled()) {
+//            log.debug("Transaction started");
+//        }
+//        CoreEventListenerService service = NXCore.getCoreEventListenerService();
+//        if (service != null) {
+//            service.transactionStarted();
+//        }
+    }
+
+    public void beforeCompletion() throws EJBException, RemoteException {
+//        System.out.println("# "+Thread.currentThread().getId()+ " #### TRANSACTION ABOUT TO COMMIT");
+//        if (log.isDebugEnabled()) {
+//            log.debug("Transaction about to commit");
+//        }
+//        CoreEventListenerService service = NXCore.getCoreEventListenerService();
+//        if (service != null) {
+//            service.transactionAboutToCommit();
+//        }       
+    }
+    
+    public void afterCompletion(boolean committed) throws EJBException,
+            RemoteException {
+//        System.out.println("# "+Thread.currentThread().getId()+ " #### TRANSACTION COMMITTED: "+committed);
+//        if (log.isDebugEnabled()) {
+//            log.debug("Transaction "+(committed ? "committed" : "rollbacked"));
+//        }
+//        CoreEventListenerService service = NXCore.getCoreEventListenerService();
+//        if (service != null) {
+//            if (committed) {
+//                service.transactionCommited();
+//            } else {
+//                service.transactionRollbacked();
+//            }
+//        }        
+    }
+    
 }

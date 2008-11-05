@@ -259,8 +259,8 @@ public class Model {
     /** Maps schema to simple+collection fragments. */
     protected final Map<String, Set<String>> typeFragments;
 
-    /** Set of doc types, for search. */
-    protected final Set<String> documentTypes;
+    /** Map of doc types to facets, for search. */
+    protected final Map<String, Set<String>> documentTypesFacets;
 
     /** Map of doc type to its supertype, for search. */
     protected final Map<String, String> documentSuperTypes;
@@ -291,7 +291,7 @@ public class Model {
         typeSimpleFragments = new HashMap<String, Set<String>>();
         typeCollectionFragments = new HashMap<String, Set<String>>();
 
-        documentTypes = new HashSet<String>();
+        documentTypesFacets = new HashMap<String, Set<String>>();
         documentSuperTypes = new HashMap<String, String>();
         documentSubTypes = new HashMap<String, Set<String>>();
 
@@ -568,7 +568,7 @@ public class Model {
     }
 
     public boolean isDocumentType(String typeName) {
-        return documentTypes.contains(typeName);
+        return documentTypesFacets.containsKey(typeName);
     }
 
     public String getDocumentSuperType(String typeName) {
@@ -577,6 +577,11 @@ public class Model {
 
     public Set<String> getDocumentSubTypes(String typeName) {
         return documentSubTypes.get(typeName);
+    }
+
+    public boolean documentTypeHasFacet(String typeName, String facet) {
+        Set<String> facets = documentTypesFacets.get(typeName);
+        return facets == null ? false : facets.contains(facet);
     }
 
     /**
@@ -636,8 +641,9 @@ public class Model {
             log.debug("Fragments for " + typeName + ": " +
                     getTypeFragments(typeName));
 
-            // record doc type, super type, sub types
-            documentTypes.add(typeName);
+            // record doc type and facets, super type, sub types
+            documentTypesFacets.put(typeName, new HashSet<String>(
+                    documentType.getFacets()));
             Type superType = documentType.getSuperType();
             if (superType != null) {
                 String superTypeName = superType.getName();
@@ -645,7 +651,7 @@ public class Model {
             }
         }
         // compute subtypes for all types
-        for (String type : documentTypes) {
+        for (String type : documentTypesFacets.keySet()) {
             String superType = type;
             do {
                 Set<String> subTypes = documentSubTypes.get(superType);

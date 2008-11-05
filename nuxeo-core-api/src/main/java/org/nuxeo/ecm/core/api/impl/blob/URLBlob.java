@@ -50,7 +50,7 @@ public class URLBlob extends DefaultStreamBlob {
 
     public URLBlob(URL url, String ctype, String encoding, String filename, String digest) {
         this.url = url;
-        this.mimeType = ctype;
+        mimeType = ctype;
         this.encoding = encoding;
         this.filename = filename;
         this.digest = digest;

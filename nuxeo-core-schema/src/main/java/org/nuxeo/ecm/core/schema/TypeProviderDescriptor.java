@@ -26,18 +26,18 @@ import org.nuxeo.runtime.api.ServiceLocatorFactory;
 /**
  * A object describing a type provider.
  * <p>
- * A type provider is useful to import types from remote servers
- * and it is described by an uri or a service group
+ * A type provider is useful to import types from remote servers and it is
+ * described by an URI or a service group.
  * <p>
- * I an uri is given it will be used to lookup the type provider service
- * using a service locatror as returned by {@link ServiceLocatorFactory}
+ * I an URI is given, it will be used to lookup the type provider service using
+ * a service locator as returned by {@link ServiceLocatorFactory}.
  * <p>
- * If a service group is given the service locator bound to the group will be used to locate the service
+ * If a service group is given the service locator bound to the group will be
+ * used to locate the service
  * <p>
- * If both the uri and group are defined, the uri will take precedence.
+ * If both the URI and group are defined, the URI will take precedence.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("provider")
 public class TypeProviderDescriptor {

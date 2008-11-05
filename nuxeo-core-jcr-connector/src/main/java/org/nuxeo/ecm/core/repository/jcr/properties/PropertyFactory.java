@@ -49,7 +49,6 @@ public final class PropertyFactory {
      * @param item the JCR property. Must be not null
      * @return the ECM property instance
      * @throws DocumentException
-     * @throws NoSuchPropertyException
      */
     public static Property getProperty(JCRNodeProxy parent, javax.jcr.Property item)
                 throws DocumentException {
@@ -107,11 +106,11 @@ public final class PropertyFactory {
      * <p>
      * The parent can be null if not known. In this case it will be computed
      * by introspecting the JCR tree.
+     *
      * @param parent the parent node proxy. May be null.
      * @param item the JCR property. Must be not null
      * @return the ECM property instance
      * @throws DocumentException
-     * @throws NoSuchPropertyException
      */
     public static Property getProperty(JCRNodeProxy parent, Node item)
                 throws DocumentException {
