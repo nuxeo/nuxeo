@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
@@ -517,7 +518,87 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertIdSet(dml, versionId);
 
         // only keep immutable
-        // dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Immutable'");
+        // dml = session.query(
+        // "SELECT * FROM Document WHERE ecm:mixinType = 'Immutable'");
         // assertIdSet(dml, proxyId, versionId);
+    }
+
+    public void testQuerySpecialFields() throws Exception {
+        // ecm:isProxy and ecm:isCheckedInVersion are already tested in
+        // testQueryWithProxies
+
+        // ecm:path already tested in testStartsWith
+
+        createDocs();
+        DocumentModel proxy = publishDoc();
+        DocumentModel version = session.getDocument(new IdRef(
+                proxy.getSourceId()));
+
+        DocumentModelList dml;
+        DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        DocumentModel file2 = session.getDocument(new PathRef(
+                "/testfolder1/testfile2"));
+        DocumentModel file3 = session.getDocument(new PathRef(
+                "/testfolder1/testfile3"));
+        DocumentModel file4 = session.getDocument(new PathRef(
+                "/testfolder2/testfolder3/testfile4"));
+
+        /*
+         * ecm:uuid
+         */
+        dml = session.query(String.format(
+                "SELECT * FROM Document WHERE ecm:uuid = '%s'", file1.getId()));
+        assertIdSet(dml, file1.getId());
+        dml = session.query(String.format(
+                "SELECT * FROM Document WHERE ecm:uuid = '%s'", proxy.getId()));
+        assertIdSet(dml, proxy.getId());
+
+        /*
+         * ecm:name
+         */
+        dml = session.query(String.format(
+                "SELECT * FROM Document WHERE ecm:name = '%s'", file1.getName()));
+        assertIdSet(dml, file1.getId());
+        dml = session.query(String.format(
+                "SELECT * FROM Document WHERE ecm:name = '%s'", file4.getName()));
+        assertIdSet(dml, file4.getId(), proxy.getId(), version.getId());
+
+        /*
+         * ecm:parentId
+         */
+        dml = session.query(String.format(
+                "SELECT * FROM Document WHERE ecm:parentId = '%s'",
+                folder1.getId()));
+        assertIdSet(dml, file1.getId(), file2.getId(), file3.getId(),
+                proxy.getId());
+
+        /*
+         * ecm:primaryType
+         */
+        dml = session.query("SELECT * FROM Document WHERE ecm:primaryType = 'Folder'");
+        assertEquals(3, dml.size());
+        dml = session.query("SELECT * FROM Document WHERE ecm:primaryType = 'File'");
+        // 4 files, 1 proxy, 1 version
+        assertEquals(6, dml.size());
+
+        // ecm:mixinType
+
+        /*
+         * ecm:currentLifeCycleState
+         */
+        dml = session.query("SELECT * FROM Document WHERE ecm:currentLifeCycleState = 'project'");
+        // 3 folders, 4 files, 1 proxy, 1 version
+        assertEquals(9, dml.size());
+
+        /*
+         * ecm:versionLabel
+         */
+        dml = session.query("SELECT * FROM Document WHERE ecm:versionLabel = '1'");
+        assertIdSet(dml, version.getId());
+
+        // ecm:fulltext
+
     }
 }

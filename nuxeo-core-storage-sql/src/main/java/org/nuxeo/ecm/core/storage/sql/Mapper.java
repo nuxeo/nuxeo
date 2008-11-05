@@ -293,7 +293,7 @@ public class Mapper {
                  * Create missing tables.
                  */
                 for (Table table : sqlInfo.getDatabase().getTables()) {
-                    String physicalName = table.getPhysicalName();
+                    String physicalName = table.getName();
                     if (tableNames.contains(physicalName) ||
                             tableNames.contains(physicalName.toUpperCase())) {
                         // table already present

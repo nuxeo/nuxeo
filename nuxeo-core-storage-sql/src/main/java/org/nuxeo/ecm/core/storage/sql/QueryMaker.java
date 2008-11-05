@@ -53,9 +53,11 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
 import org.nuxeo.ecm.core.storage.sql.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
+import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Dialect;
 import org.nuxeo.ecm.core.storage.sql.db.Select;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
+import org.nuxeo.ecm.core.storage.sql.db.TableAlias;
 
 /**
  * Transformer of NXQL queries into underlying SQL queries to the actual
@@ -114,13 +116,37 @@ public class QueryMaker {
      */
     public static final String FACET_IMMUTABLE = "Immutable";
 
+    /*
+     * Fields used by the search service.
+     */
+
+    public static final String ECM_PREFIX = "ecm:";
+
+    public static final String ECM_UUID = "ecm:uuid";
+
     public static final String ECM_PATH = "ecm:path";
+
+    public static final String ECM_NAME = "ecm:name";
+
+    public static final String ECM_PARENTID = "ecm:parentId";
+
+    public static final String ECM_MIXINTYPE = "ecm:mixinType";
+
+    public static final String ECM_PRIMARYTYPE = "ecm:primaryType";
 
     public static final String ECM_ISPROXY = "ecm:isProxy";
 
     public static final String ECM_ISVERSION = "ecm:isCheckedInVersion";
 
+    public static final String ECM_LIFECYCLESTATE = "ecm:currentLifeCycleState";
+
+    public static final String ECM_VERSIONLABEL = "ecm:versionLabel";
+
+    public static final String ECM_FULLTEXT = "ecm:fulltext";
+
     protected final SQLInfo sqlInfo;
+
+    protected final Database database;
 
     protected final Dialect dialect;
 
@@ -138,9 +164,30 @@ public class QueryMaker {
 
     public List<Serializable> selectParams;
 
+    /**
+     * The hierarchy table, which may be an alias table.
+     */
+    protected Table hierTable;
+
+    /**
+     * Quoted id in the hierarchy. This is the id returned by the query.
+     */
+    protected String hierId;
+
+    /**
+     * The hierarchy table of the data.
+     */
+    protected Table joinedHierTable;
+
+    /**
+     * Quoted id attached to the data that matches.
+     */
+    protected String joinedHierId;
+
     public QueryMaker(SQLInfo sqlInfo, Model model, Session session,
             SQLQuery query, QueryFilter queryFilter) {
         this.sqlInfo = sqlInfo;
+        database = sqlInfo.database;
         dialect = sqlInfo.dialect;
         this.model = model;
         this.session = session;
@@ -162,7 +209,11 @@ public class QueryMaker {
          * Find all relevant types and keys for the criteria.
          */
         InfoCollector info = new InfoCollector();
-        info.visitQuery(query);
+        try {
+            info.visitQuery(query);
+        } catch (QueryMakerException e) {
+            throw new StorageException(e.getMessage(), e);
+        }
 
         /*
          * Find all the types to take into account (all concrete types being a
@@ -184,10 +235,10 @@ public class QueryMaker {
          * Find the relevant tables.
          */
         Set<String> fragmentNames = new HashSet<String>();
-        for (String key : info.keys) {
-            PropertyInfo propertyInfo = model.getPropertyInfo(key);
+        for (String prop : info.props) {
+            PropertyInfo propertyInfo = model.getPropertyInfo(prop);
             if (propertyInfo == null) {
-                throw new StorageException("Unknown field: " + key);
+                throw new StorageException("Unknown field: " + prop);
             }
             fragmentNames.add(propertyInfo.fragmentName);
         }
@@ -208,47 +259,46 @@ public class QueryMaker {
          */
 
         List<String> joins = new ArrayList<String>(fragmentNames.size() + 1);
-        Table hierTable = sqlInfo.database.getTable(model.hierTableName);
-        Column hierIdColumn = hierTable.getColumn(model.MAIN_KEY);
-        String hieralias;
-        String hieraliasid;
-        String joinalias;
-        String joinid;
+        Table hier = database.getTable(model.hierTableName);
         if (usesJoinWithProxies) {
             // complex case where we have to add a left joins to link to the
             // proxies table and another join to select both proxies targets and
             // direct documents
-            hieralias = quotedAlias("_nxhier");
-            String hierfrom = hierTable.getQuotedName() + " " + hieralias;
-            hieraliasid = hieralias + '.' + hierIdColumn.getQuotedName();
-            joinalias = hierTable.getQuotedName();
-            joinid = joinalias + "." + hierIdColumn.getQuotedName();
-            Table proxies = sqlInfo.database.getTable(model.PROXY_TABLE_NAME);
-            String proxiestable = proxies.getQuotedName();
-            String proxiesid = proxiestable + '.' +
-                    proxies.getColumn(model.MAIN_KEY).getQuotedName();
-            String proxiestargetid = proxiestable + '.' +
-                    proxies.getColumn(model.PROXY_TARGET_KEY).getQuotedName();
+            // hier
+            String alias = dialect.storesUpperCaseIdentifiers() ? "_NXHIER"
+                    : "_nxhier";
+            hierTable = new TableAlias(hier, alias);
+            String hierfrom = hier.getQuotedName() + " " +
+                    hierTable.getQuotedName(); // TODO dialect
+            hierId = hierTable.getColumn(model.MAIN_KEY).getFullQuotedName();
+            // joined (data)
+            joinedHierTable = hier;
+            joinedHierId = hier.getColumn(model.MAIN_KEY).getFullQuotedName();
+            // proxies
+            Table proxies = database.getTable(model.PROXY_TABLE_NAME);
+            String proxiesid = proxies.getColumn(model.MAIN_KEY).getFullQuotedName();
+            String proxiestargetid = proxies.getColumn(model.PROXY_TARGET_KEY).getFullQuotedName();
+            // join all that
             joins.add(String.format(
                     "%s LEFT JOIN %s ON %s = %s JOIN %s ON (%s = %s OR %s = %s)",
-                    hierfrom, proxiestable, proxiesid, hieraliasid, joinalias,
-                    joinid, hieraliasid, joinid, proxiestargetid));
+                    hierfrom, proxies.getQuotedName(), proxiesid, hierId,
+                    joinedHierTable.getQuotedName(), joinedHierId, hierId,
+                    joinedHierId, proxiestargetid));
         } else {
             // simple case where we directly refer to the hierarchy table
-            hieralias = hierTable.getQuotedName();
-            hieraliasid = hieralias + "." + hierIdColumn.getQuotedName();
-            joinalias = hieralias;
-            joinid = hieraliasid;
-            joins.add(hieralias);
+            hierTable = hier;
+            hierId = hierTable.getColumn(model.MAIN_KEY).getFullQuotedName();
+            joinedHierTable = hierTable;
+            joinedHierId = hierId;
+            joins.add(hierTable.getQuotedName());
         }
         for (String fragmentName : fragmentNames) {
-            Table table = sqlInfo.database.getTable(fragmentName);
-            String qname = table.getQuotedName();
-            String qid = table.getColumn(model.MAIN_KEY).getQuotedName();
+            Table table = database.getTable(fragmentName);
             // the versions table joins on the real hier table
-            boolean joinWithHier = model.VERSION_TABLE_NAME.equals(fragmentName);
-            joins.add(qname + " ON " + (joinWithHier ? hieraliasid : joinid) +
-                    " = " + qname + "." + qid);
+            boolean useHier = fragmentName.equals(model.VERSION_TABLE_NAME);
+            joins.add(String.format("%s ON %s = %s", table.getQuotedName(),
+                    useHier ? hierId : joinedHierId, table.getColumn(
+                            model.MAIN_KEY).getFullQuotedName()));
         }
         String from = StringUtils.join(joins, " LEFT JOIN ");
 
@@ -268,9 +318,10 @@ public class QueryMaker {
             typeStrings.add("?");
             selectParams.add(type);
         }
-        String qprimary = hierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY).getQuotedName();
-        String whereClause = String.format("%s.%s IN (%s)", joinalias,
-                qprimary, StringUtils.join(typeStrings, ", "));
+        String whereClause = String.format(
+                "%s IN (%s)",
+                joinedHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(),
+                StringUtils.join(typeStrings, ", "));
 
         Boolean immutable = facetFilterImmutable();
         if (immutable != null) {
@@ -282,7 +333,12 @@ public class QueryMaker {
          * Create the part of the WHERE clause that comes from the original
          * query.
          */
-        WhereBuilder whereBuilder = new WhereBuilder();
+        WhereBuilder whereBuilder;
+        try {
+            whereBuilder = new WhereBuilder();
+        } catch (QueryMakerException e) {
+            throw new StorageException(e.getMessage(), e);
+        }
         if (query.where != null) {
             query.where.accept(whereBuilder);
             String w = whereBuilder.buf.toString();
@@ -298,7 +354,7 @@ public class QueryMaker {
         if (queryFilter.getPrincipals() != null) {
             whereClause = whereClause +
                     String.format(" AND NX_ACCESS_ALLOWED(%s, ?, ?) = %s",
-                            hieraliasid, dialect.toBooleanValueString(true));
+                            hierId, dialect.toBooleanValueString(true));
             Serializable principals;
             Serializable permissions;
             if (dialect.supportsArrays()) {
@@ -322,7 +378,7 @@ public class QueryMaker {
         /*
          * Check if we need a DISTINCT.
          */
-        String what = hieraliasid;
+        String what = hierId;
         if (whereBuilder.needsDistinct || usesJoinWithProxies) {
             // We do LEFT JOINs with collection tables, so we could get
             // identical results.
@@ -339,14 +395,13 @@ public class QueryMaker {
                         throw new StorageException("Unknown ORDER BY field: " +
                                 key);
                     }
-                    Table table = sqlInfo.database.getTable(propertyInfo.fragmentName);
+                    Table table = database.getTable(propertyInfo.fragmentName);
                     if (propertyInfo.propertyType.isArray()) {
                         throw new StorageException("Cannot use collection" +
                                 key + " in ORDER BY");
                     }
-                    Column column = table.getColumn(propertyInfo.fragmentKey);
-                    what += ", " + table.getQuotedName() + '.' +
-                            column.getQuotedName();
+                    what += ", " +
+                            table.getColumn(propertyInfo.fragmentKey).getFullQuotedName();
                 }
             }
         }
@@ -360,15 +415,9 @@ public class QueryMaker {
         select.setFrom(from);
         select.setWhere(whereClause);
 
-        List<Column> whatColumns = Collections.singletonList(hierIdColumn);
+        List<Column> whatColumns = Collections.singletonList(hierTable.getColumn(model.MAIN_KEY));
         selectInfo = new SQLInfoSelect(select.getStatement(), whatColumns,
                 Collections.<Column> emptyList());
-    }
-
-    protected String quotedAlias(String name) {
-        return dialect.openQuote() +
-                (dialect.storesUpperCaseIdentifiers() ? name.toUpperCase()
-                        : name) + dialect.closeQuote();
     }
 
     public boolean facetFilterAllows(String typeName) {
@@ -417,13 +466,25 @@ public class QueryMaker {
         return null;
     }
 
-    public static class InfoCollector extends DefaultQueryVisitor {
+    protected static class QueryMakerException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+
+        public QueryMakerException(String message) {
+            super(message);
+        }
+
+        public QueryMakerException(Throwable cause) {
+            super(cause);
+        }
+    }
+
+    public class InfoCollector extends DefaultQueryVisitor {
 
         private static final long serialVersionUID = 1L;
 
         public Set<String> types = new HashSet<String>();
 
-        public Set<String> keys = new HashSet<String>();
+        public Set<String> props = new HashSet<String>();
 
         public Set<String> orderKeys = new HashSet<String>();
 
@@ -447,26 +508,40 @@ public class QueryMaker {
             String name = node.name;
             if (name.equals(ECM_PATH)) {
                 if (inOrderBy) {
-                    throw new RuntimeException("Cannot order by " + ECM_PATH);
+                    throw new QueryMakerException("Cannot order by: " + name);
                 }
                 return;
             }
             if (name.equals(ECM_ISPROXY)) {
                 if (inOrderBy) {
-                    throw new RuntimeException("Cannot order by " + ECM_ISPROXY);
+                    throw new QueryMakerException("Cannot order by: " + name);
                 }
                 needsProxies = true;
                 return;
             }
             if (name.equals(ECM_ISVERSION)) {
                 if (inOrderBy) {
-                    throw new RuntimeException("Cannot order by " +
-                            ECM_ISVERSION);
+                    throw new QueryMakerException("Cannot order by: " + name);
                 }
                 needsVersions = true;
                 return;
             }
-            keys.add(name);
+            if (name.equals(ECM_PRIMARYTYPE) || name.equals(ECM_UUID) ||
+                    name.equals(ECM_NAME) || name.equals(ECM_PARENTID)) {
+                return;
+            }
+            if (name.equals(ECM_LIFECYCLESTATE)) {
+                props.add(model.MISC_LIFECYCLE_STATE_PROP);
+                return;
+            }
+            if (name.equals(ECM_VERSIONLABEL)) {
+                props.add(model.VERSION_LABEL_PROP);
+                return;
+            }
+            if (name.startsWith(ECM_PREFIX)) {
+                throw new QueryMakerException("Unknown field: " + name);
+            }
+            props.add(name);
             if (inOrderBy) {
                 orderKeys.add(name);
             }
@@ -474,7 +549,7 @@ public class QueryMaker {
 
         @Override
         public void visitFunction(Function node) {
-            throw new IllegalArgumentException("Function not supported: " +
+            throw new QueryMakerException("Function not supported: " +
                     node.toString());
         }
 
@@ -495,18 +570,11 @@ public class QueryMaker {
 
         public final List<Serializable> params;
 
-        public final String idColumnName;
-
         public boolean needsDistinct;
 
         public WhereBuilder() {
             buf = new StringBuilder();
             params = new LinkedList<Serializable>();
-
-            Table hierTable = sqlInfo.database.getTable(model.hierTableName);
-            Column hierIdColumn = hierTable.getColumn(model.MAIN_KEY);
-            idColumnName = hierTable.getQuotedName() + "." +
-                    hierIdColumn.getQuotedName();
         }
 
         @Override
@@ -516,23 +584,23 @@ public class QueryMaker {
                     : null;
             if (node.operator == Operator.STARTSWITH) {
                 if (!ECM_PATH.equals(lname)) {
-                    throw new IllegalArgumentException(
-                            "STARTSWITH requires ecm:path as left argument");
+                    throw new QueryMakerException("STARTSWITH requires " +
+                            ECM_PATH + "as left argument");
                 }
-                doStartsWith(node);
+                visitExpressionSpecialStartsWith(node);
             } else if (ECM_ISPROXY.equals(lname)) {
-                doIsProxy(node);
+                visitExpressionSpecialProxy(node);
             } else if (ECM_ISVERSION.equals(lname)) {
-                doIsVersion(node);
+                visitExpressionSpecialVersion(node);
             } else {
                 super.visitExpression(node);
             }
             buf.append(')');
         }
 
-        protected void doStartsWith(Expression node) {
+        protected void visitExpressionSpecialStartsWith(Expression node) {
             if (!(node.rvalue instanceof StringLiteral)) {
-                throw new IllegalArgumentException(
+                throw new QueryMakerException(
                         "STARTSWITH requires literal path as right argument");
             }
             String path = ((StringLiteral) node.rvalue).value;
@@ -545,59 +613,57 @@ public class QueryMaker {
                 Node n = session.getNodeByPath(path, null);
                 id = n == null ? null : n.getId();
             } catch (StorageException e) {
-                throw new RuntimeException(e);
+                throw new QueryMakerException(e);
             }
             if (id == null) {
                 // no such path, always return a false
+                // TODO remove the expression more intelligently from the parse
+                // tree
                 buf.append("0 = 1");
             } else {
-                buf.append("NX_IN_TREE(").append(idColumnName).append(", ?) = ");
+                buf.append("NX_IN_TREE(").append(hierId).append(", ?) = ");
                 params.add(id);
                 buf.append(dialect.toBooleanValueString(true));
             }
         }
 
-        protected void doIsProxy(Expression node) {
+        protected void visitExpressionSpecialProxy(Expression node) {
             if (node.operator != Operator.EQ && node.operator != Operator.NOTEQ) {
-                throw new IllegalArgumentException(ECM_ISPROXY +
+                throw new QueryMakerException(ECM_ISPROXY +
                         " requires = or <> operator");
             }
             if (!(node.rvalue instanceof IntegerLiteral)) {
-                throw new IllegalArgumentException(ECM_ISPROXY +
+                throw new QueryMakerException(ECM_ISPROXY +
                         " requires literal 0 or 1 as right argument");
             }
             long v = ((IntegerLiteral) node.rvalue).value;
             if (v != 0 && v != 1) {
-                throw new IllegalArgumentException(ECM_ISPROXY +
+                throw new QueryMakerException(ECM_ISPROXY +
                         " requires literal 0 or 1 as right argument");
             }
             boolean bool = node.operator == Operator.EQ ^ v == 0;
-            Table proxies = sqlInfo.database.getTable(model.PROXY_TABLE_NAME);
-            buf.append(proxies.getQuotedName());
-            buf.append('.');
-            buf.append(proxies.getColumn(model.MAIN_KEY).getQuotedName());
+            buf.append(database.getTable(model.PROXY_TABLE_NAME).getColumn(
+                    model.MAIN_KEY).getFullQuotedName());
             buf.append(bool ? " IS NOT NULL" : " IS NULL");
         }
 
-        protected void doIsVersion(Expression node) {
+        protected void visitExpressionSpecialVersion(Expression node) {
             if (node.operator != Operator.EQ && node.operator != Operator.NOTEQ) {
-                throw new IllegalArgumentException(ECM_ISVERSION +
+                throw new QueryMakerException(ECM_ISVERSION +
                         " requires = or <> operator");
             }
             if (!(node.rvalue instanceof IntegerLiteral)) {
-                throw new IllegalArgumentException(ECM_ISVERSION +
+                throw new QueryMakerException(ECM_ISVERSION +
                         " requires literal 0 or 1 as right argument");
             }
             long v = ((IntegerLiteral) node.rvalue).value;
             if (v != 0 && v != 1) {
-                throw new IllegalArgumentException(ECM_ISVERSION +
+                throw new QueryMakerException(ECM_ISVERSION +
                         " requires literal 0 or 1 as right argument");
             }
             boolean bool = node.operator == Operator.EQ ^ v == 0;
-            Table versions = sqlInfo.database.getTable(model.VERSION_TABLE_NAME);
-            buf.append(versions.getQuotedName());
-            buf.append('.');
-            buf.append(versions.getColumn(model.MAIN_KEY).getQuotedName());
+            buf.append(database.getTable(model.VERSION_TABLE_NAME).getColumn(
+                    model.MAIN_KEY).getFullQuotedName());
             buf.append(bool ? " IS NOT NULL" : " IS NULL");
         }
 
@@ -610,22 +676,26 @@ public class QueryMaker {
 
         @Override
         public void visitReference(Reference node) {
-            PropertyInfo propertyInfo = model.getPropertyInfo(node.name);
-            if (propertyInfo == null) {
-                throw new IllegalArgumentException("Unknown field: " +
-                        node.name);
-            }
-            Table table = sqlInfo.database.getTable(propertyInfo.fragmentName);
+            String name = node.name;
             Column column;
-            if (propertyInfo.propertyType.isArray()) {
-                column = table.getColumn(model.COLL_TABLE_VALUE_KEY);
-                needsDistinct = true; // table doesn't have unique keys
-                // TODO if operator is <>, we must use a different algorithm
-                // than just an outer join
+            if (name.startsWith(ECM_PREFIX)) {
+                column = getSpecialColumn(name);
             } else {
-                column = table.getColumn(propertyInfo.fragmentKey);
+                PropertyInfo propertyInfo = model.getPropertyInfo(name);
+                if (propertyInfo == null) {
+                    throw new QueryMakerException("Unknown field: " + name);
+                }
+                Table table = database.getTable(propertyInfo.fragmentName);
+                if (propertyInfo.propertyType.isArray()) {
+                    column = table.getColumn(model.COLL_TABLE_VALUE_KEY);
+                    needsDistinct = true; // table doesn't have unique keys
+                    // TODO if operator is <>, we must use a different algorithm
+                    // than just an outer join
+                } else {
+                    column = table.getColumn(propertyInfo.fragmentKey);
+                }
             }
-            String qname = table.getQuotedName() + '.' + column.getQuotedName();
+            String qname = column.getFullQuotedName();
             // some databases (Derby) can't do comparisons on CLOB
             if (column.getSqlType() == Types.CLOB) {
                 String colFmt = dialect.textComparisonCasting();
@@ -634,6 +704,30 @@ public class QueryMaker {
                 }
             }
             buf.append(qname);
+        }
+
+        protected Column getSpecialColumn(String name) {
+            if (name.equals(ECM_PRIMARYTYPE)) {
+                return joinedHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
+            }
+            if (name.equals(ECM_UUID)) {
+                return hierTable.getColumn(model.MAIN_KEY);
+            }
+            if (name.equals(ECM_NAME)) {
+                return hierTable.getColumn(model.HIER_CHILD_NAME_KEY);
+            }
+            if (name.equals(ECM_PARENTID)) {
+                return hierTable.getColumn(model.HIER_PARENT_KEY);
+            }
+            if (name.equals(ECM_LIFECYCLESTATE)) {
+                return database.getTable(model.MISC_TABLE_NAME).getColumn(
+                        model.MISC_LIFECYCLE_STATE_KEY);
+            }
+            if (name.equals(ECM_VERSIONLABEL)) {
+                return database.getTable(model.VERSION_TABLE_NAME).getColumn(
+                        model.VERSION_LABEL_KEY);
+            }
+            throw new QueryMakerException("Unknown field: " + name);
         }
 
         @Override

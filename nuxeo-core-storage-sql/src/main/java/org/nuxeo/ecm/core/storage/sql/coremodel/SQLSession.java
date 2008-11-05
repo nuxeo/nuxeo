@@ -335,12 +335,7 @@ public class SQLSession implements Session {
         }
 
         public QueryResult execute() throws QueryException {
-            try {
-                List<Serializable> ids = session.query(sqlQuery, null);
-                return new SQLQueryResult(SQLSession.this, ids);
-            } catch (StorageException e) {
-                throw new QueryException(e);
-            }
+            return execute(null);
         }
 
         public QueryResult execute(QueryFilter queryFilter)
@@ -349,7 +344,7 @@ public class SQLSession implements Session {
                 List<Serializable> ids = session.query(sqlQuery, queryFilter);
                 return new SQLQueryResult(SQLSession.this, ids);
             } catch (StorageException e) {
-                throw new QueryException(e);
+                throw new QueryException(e.getMessage(), e);
             }
         }
     }
