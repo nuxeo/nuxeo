@@ -65,6 +65,7 @@ import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
+import org.nuxeo.ecm.core.lifecycle.LifeCycleConstants;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleEventTypes;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
@@ -168,7 +169,8 @@ public abstract class AbstractSession implements CoreSession,
         // this session is valid until the disconnect method is called
         sessionId = createSessionId();
         sessionContext.put("SESSION_ID", sessionId);
-        // register this session locally -> this way document models can retrieve
+        // register this session locally -> this way document models can
+        // retrieve
         // their session on the server side
         CoreInstance.getInstance().registerSession(sessionId, this);
 
@@ -200,7 +202,8 @@ public abstract class AbstractSession implements CoreSession,
                             handler.initializeRepository(this);
                             session.save();
                         } catch (ClientException e) {
-                            // shouldn't remove the root? ... to restart with an empty repository
+                            // shouldn't remove the root? ... to restart with an
+                            // empty repository
                             log.error("Failed to initialize repository content , e");
                         } catch (DocumentException e) {
                             log.error("Unable to save session after repository init : "
@@ -231,8 +234,8 @@ public abstract class AbstractSession implements CoreSession,
      * be unique in the system)
      *
      * <ul>
-     * <li>A is the repository name (which uniquely identifies the repository in the
-     * system)
+     * <li>A is the repository name (which uniquely identifies the repository
+     * in the system)
      * <li>B is the time of the session creation in milliseconds
      * </ul>
      *
@@ -282,6 +285,18 @@ public abstract class AbstractSession implements CoreSession,
             throw new DocumentSecurityException("Privilege '" + permission
                     + "' is not granted to '" + getPrincipal().getName() + "'");
         }
+    }
+
+    protected Map<String, Object> getContextMapEventInfo(DocumentModel doc) {
+        Map<String, Object> options = new HashMap<String, Object>();
+        if (doc != null) {
+            ScopedMap ctxData = doc.getContextData();
+            if (ctxData != null) {
+                options.putAll(ctxData.getDefaultScopeValues());
+                options.putAll(ctxData.getScopeValues(ScopeType.REQUEST));
+            }
+        }
+        return options;
     }
 
     protected void notifyEvent(String eventId, DocumentModel source,
@@ -701,7 +716,16 @@ public abstract class AbstractSession implements CoreSession,
         try {
             Document folder = resolveReference(parentRef);
             checkPermission(folder, ADD_CHILDREN);
-            notifyEvent(DocumentEventTypes.ABOUT_TO_CREATE, docModel, null,
+
+            // get initial life cycle state info
+            String initialLifecycleState = null;
+            Object lifecycleStateinfo = docModel.getContextData(LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME);
+            if (lifecycleStateinfo instanceof String) {
+                initialLifecycleState = (String) lifecycleStateinfo;
+            }
+
+            Map<String, Object> options = getContextMapEventInfo(docModel);
+            notifyEvent(DocumentEventTypes.ABOUT_TO_CREATE, docModel, options,
                     null, null, false); // no lifecycle yet
             name = generateDocumentName(folder, name);
             Document doc = folder.addChild(name, typeName);
@@ -710,7 +734,7 @@ public abstract class AbstractSession implements CoreSession,
             LifeCycleService service = NXCore.getLifeCycleService();
             if (service != null) {
                 try {
-                    service.initialize(doc);
+                    service.initialize(doc, initialLifecycleState);
                 } catch (Exception e) {
                     throw new ClientException(
                             "Failed to initialize document lifecycle", e);
@@ -723,18 +747,10 @@ public abstract class AbstractSession implements CoreSession,
             docModel = writeModel(doc, docModel);
 
             // re-read docmodel
-            Map<String, Object> options = new HashMap<String, Object>();
             options.put(CoreEventConstants.DOCUMENT, doc);
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, docModel, options,
                     null, null, true);
             docModel = writeModel(doc, docModel);
-
-            // final Map<String, Object> ancestorOptions = new HashMap<String,
-            // Object>();
-            // ancestorOptions.put("newDocument", docModel);
-            // notifyAncestors(doc,
-            // DocumentEventTypes.CONTENT_SUBDOCUMENT_CREATED,
-            // ancestorOptions);
 
             return docModel;
         } catch (DocumentException e) {
@@ -1222,8 +1238,8 @@ public abstract class AbstractSession implements CoreSession,
             if (compiledQuery instanceof FilterableQuery) {
                 postFilterPermission = false;
                 postFilterPolicies = !securityService.arePoliciesExpressibleInQuery();
-                postFilterFilter = filter != null &&
-                        !(filter instanceof FacetFilter);
+                postFilterFilter = filter != null
+                        && !(filter instanceof FacetFilter);
                 String[] principals;
                 if (principal.getName().equals("system")) {
                     principals = null; // means: no security check needed
@@ -1251,8 +1267,8 @@ public abstract class AbstractSession implements CoreSession,
                 postFilterFilter = filter != null;
                 results = compiledQuery.execute();
             }
-            if (!postFilterPermission && !postFilterFilter &&
-                    !postFilterPolicies) {
+            if (!postFilterPermission && !postFilterFilter
+                    && !postFilterPolicies) {
                 // the backend has done all the needed filtering
                 return results.getDocumentModels();
             }
@@ -1427,26 +1443,28 @@ public abstract class AbstractSession implements CoreSession,
             Document doc = resolveReference(docRef);
             removeDocument(doc);
         } catch (DocumentException e) {
-            throw new ClientException("Failed to fetch document " + docRef +
-                    " before removal", e);
+            throw new ClientException("Failed to fetch document " + docRef
+                    + " before removal", e);
         }
     }
 
     protected void removeDocument(Document doc) throws ClientException {
         try {
             if (!canRemoveDocument(doc)) {
-                throw new DocumentSecurityException("Permission denied: cannot remove document " + doc.getUUID());
+                throw new DocumentSecurityException(
+                        "Permission denied: cannot remove document "
+                                + doc.getUUID());
             }
             removeNotifyOneDoc(doc);
 
         } catch (DocumentException e) {
             try {
-                throw new ClientException("Failed to remove document " +
-                        doc.getUUID(), e);
+                throw new ClientException("Failed to remove document "
+                        + doc.getUUID(), e);
             } catch (DocumentException e2) {
                 log.error("Failed to remove doc", e);
-                throw new ClientException("Failed to remove and " +
-                        "even to get UUID " + doc.toString());
+                throw new ClientException("Failed to remove and "
+                        + "even to get UUID " + doc.toString());
             }
         }
     }
@@ -1538,22 +1556,20 @@ public abstract class AbstractSession implements CoreSession,
             Document doc = resolveReference(docModel.getRef());
             checkPermission(doc, WRITE_PROPERTIES);
 
-            // add Document context data to core event
-            final ScopedMap ctxData = docModel.getContextData();
-            final Map<String, Object> options = new HashMap<String, Object>();
-            options.putAll(ctxData.getDefaultScopeValues());
-            options.putAll(ctxData.getScopeValues(ScopeType.REQUEST));
+            // add document context data to core event
+            Map<String, Object> options = getContextMapEventInfo(docModel);
 
             // TODO make this configurable or put in other place
+            final ScopedMap ctxData = docModel.getContextData();
             Boolean createSnapshot = (Boolean) ctxData.getScopedValue(
                     ScopeType.REQUEST,
                     VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY);
             DocumentModel oldDoc = null;
             if (createSnapshot != null && createSnapshot) {
                 // FIXME: remove this - pass the flag as an arg or create
-                // anotehr method!!!
-                save(); // creating versions failes if the documents involved
-                // are nmot saved
+                // another method!!!
+                save();
+                // creating versions fails if documents involved are not saved
                 oldDoc = createDocumentSnapshot(docModel);
                 // ok, now it is consumed
                 ctxData.putScopedValue(ScopeType.REQUEST,
@@ -1564,25 +1580,11 @@ public abstract class AbstractSession implements CoreSession,
             notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel,
                     options, null, null, true);
 
-            // modify document - DO NOT write doc twice -> since internal
-            // document listeners was removed
-            // docModel = writeModel(doc, docModel);
-
             docModel = writeModel(doc, docModel);
 
             notifyEvent(DocumentEventTypes.DOCUMENT_UPDATED, docModel, options,
                     null, null, true);
 
-            // Send events for parents that their content got modified
-            // final Map<String, Object> ancestorOptions = new HashMap<String,
-            // Object>();
-            // ancestorOptions.put("newDocument", docModel);
-            // notifyAncestors(doc,
-            // DocumentEventTypes.CONTENT_SUBDOCUMENT_UPDATED,
-            // ancestorOptions);
-
-            // NXGED-395: v. change notification to be sent after docModel
-            // changes
             if (oldDoc != null) {
                 VersioningChangeNotifier.notifyVersionChange(oldDoc, docModel,
                         options);
@@ -1594,22 +1596,6 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
-    /*
-     * Recursive method that sends a given eventName for all parents of the
-     * document that was modified.
-     *
-     * @param doc @throws DocumentException
-     */
-    /*
-     * private void notifyAncestors(Document doc, String eventName, Map<String,
-     * Object> options) throws DocumentException, ClientException { if (doc !=
-     * null) { log.debug("Document notified : " + doc.getName()); Document
-     * parent = doc.getParent(); if (parent != null) { DocumentModel parentModel =
-     * readModel(parent, null); if (options == null) { options = new HashMap<String,
-     * Object>(); } options.put(CoreEventConstants.DOCUMENT, parent);
-     * notifyEvent(eventName, parentModel, options, null, null, true);
-     * notifyAncestors(parent, eventName, options); } } }
-     */
     public boolean isDirty(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -1657,22 +1643,15 @@ public abstract class AbstractSession implements CoreSession,
         String vlabel = generateVersionLabelFor(docRef);
         newVersion.setLabel(vlabel);
 
-        // if session is not saved (i.e. there are pending changes), checkin
-        // might fail
-        // moved the decision to save in JCRDocument.checkin()
-        // save();
-
         checkIn(docRef, newVersion);
         log.debug("doc checked in " + doc.getTitle());
         checkOut(docRef);
         log.debug("doc checked out " + doc.getTitle());
 
-        // send notifications about new version
-        // TODO we need to make it clearer the fact that this event is
+        // TODO we need to make it clearer that this event is
         // about new version snapshot and not about versioning fields change
         // (i.e. major, minor version increment)
         DocumentModel oldDoc = getDocumentWithVersion(docRef, newVersion);
-        // VersioningChangeNotifier.notifyVersionChange(oldDoc, doc);
 
         return oldDoc;
     }
@@ -1768,9 +1747,9 @@ public abstract class AbstractSession implements CoreSession,
                     // discard root default version
                     continue;
                 }
-                if (docVersion.getType() == null) { //BUG
-                    System.out.println("######### FAILED TO GET VERSIONS FOR" + docRef + " with path: "+ doc.getPath());
-                    throw new RuntimeException("######### FAILED TO GET VERSIONS FOR" + docRef + " with path: "+ doc.getPath());
+                if (docVersion.getType() == null) {
+                    throw new RuntimeException("FAILED TO GET VERSIONS FOR"
+                            + docRef + " with path: " + doc.getPath());
                 }
                 DocumentModel versionModel = readModel(docVersion, null);
                 versions.add(versionModel);
@@ -1995,14 +1974,7 @@ public abstract class AbstractSession implements CoreSession,
 
             Map<String, Object> options = new HashMap<String, Object>();
 
-            // No need - this notification is sent from the ActionBean
-            // // save in history
-            // DocumentModel docModel = readModel(doc, null);
-            // options.put(CoreEventConstants.DOCUMENT, doc);
-            // notifyEvent(DocumentEventTypes.DOCUMENT_PUBLISHED, docModel,
-            // options, null, null, true);
-
-            // notify for reindexation
+            // notify for reindexing
             DocumentModel proxyModel = readModel(proxy, null);
             options.put(CoreEventConstants.DOCUMENT, proxy);
             notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
@@ -2291,8 +2263,8 @@ public abstract class AbstractSession implements CoreSession,
             }
         } catch (LifeCycleException e) {
             ClientException ce = new ClientException(
-                    "Unable to follow transition <" + transition +
-                            "> for document : " + docRef, e);
+                    "Unable to follow transition <" + transition
+                            + "> for document : " + docRef, e);
             ce.fillInStackTrace();
             throw ce;
         } catch (DocumentException e) {
@@ -2311,8 +2283,8 @@ public abstract class AbstractSession implements CoreSession,
             allowedStateTransitions = doc.getAllowedStateTransitions();
         } catch (LifeCycleException e) {
             ClientException ce = new ClientException(
-                    "Unable to get allowed state transitions for document : " +
-                            docRef, e);
+                    "Unable to get allowed state transitions for document : "
+                            + docRef, e);
             ce.fillInStackTrace();
             throw ce;
         } catch (DocumentException e) {
@@ -2347,13 +2319,8 @@ public abstract class AbstractSession implements CoreSession,
 
             Document parentDoc = doc.getParent();
             while (parentDoc != null) {
-                // docRef construction as in DocumentModelFactory
                 final DocumentRef parentDocRef = new IdRef(parentDoc.getUUID());
                 docRefs.add(parentDocRef);
-
-                // we don't actually read the parent doc data so not need to
-                // :: checkPermission(parentDoc, READ);
-
                 parentDoc = parentDoc.getParent();
             }
         } catch (DocumentException e) {
@@ -2416,7 +2383,8 @@ public abstract class AbstractSession implements CoreSession,
             }
             String username = getPrincipal().getName();
 
-            if (hasPermission(docRef, UNLOCK) || lockDetails[0].equals(username)) {
+            if (hasPermission(docRef, UNLOCK)
+                    || lockDetails[0].equals(username)) {
                 String lockKey = doc.unlock();
                 DocumentModel docModel = readModel(doc, null);
                 Map<String, Object> options = new HashMap<String, Object>();
@@ -2438,8 +2406,7 @@ public abstract class AbstractSession implements CoreSession,
             return true;
         }
         if (principal instanceof NuxeoPrincipal) {
-            return ((NuxeoPrincipal) principal).getGroups().contains(
-                    SecurityConstants.ADMINISTRATORS);
+            return ((NuxeoPrincipal) principal).isAdministrator();
         }
         return false;
     }
@@ -2524,26 +2491,11 @@ public abstract class AbstractSession implements CoreSession,
                     overwriteExistingProxy);
             return newProxy;
         }
-
-        /*
-         * -- this cannot resolve unwanted transition 'approved -> project'
-         * LifeCycleService lifeCycleService = NXCore.getLifeCycleService();
-         *
-         * try { String currentLifeCycle =
-         * lifeCycleService.getCurrentLifeCycleState(resolveReference(docToPublish.getRef()));
-         * lifeCycleService.setCurrentLifeCycleState(
-         * resolveReference(newProxy.getRef()), currentLifeCycle); } catch
-         * (LifeCycleException e) { throw new ClientException(e); } catch
-         * (DocumentException e) { throw new ClientException(e); }
-         */
-        // XXX OG: why this method does commit? The client should be able to
-        // decide when she wants to do the commit
-        // save();
     }
 
     public VersionModel isPublished(DocumentModel document,
             DocumentModel section) {
-        // TODO Auto-generated method stub
+        // FIXME: this is very useful API
         return null;
     }
 
@@ -2567,7 +2519,8 @@ public abstract class AbstractSession implements CoreSession,
 
             DocumentModel parent = getDirectAccessibleParent(doc.getRef());
             if (parent == null || "/".equals(parent.getPathAsString())) {
-                return getRootDocument(); // return Root instead of null
+                // return Root instead of null
+                return getRootDocument();
             } else {
                 return getSuperSpace(parent);
             }
@@ -2648,6 +2601,8 @@ public abstract class AbstractSession implements CoreSession,
 
         doc.setSystemProp(systemProperty, value);
         // FIXME BS: why this save() is done explicitely here?
+        // AT: because this is ******* code used by versioning, save should
+        // be moved there.
         save();
     }
 
@@ -2673,7 +2628,6 @@ public abstract class AbstractSession implements CoreSession,
             throw new ClientException("Failed to resolve documents: " + src
                     + ", " + dest, e);
         }
-        // save();
     }
 
     public <T> T run(Operation<T> op) throws ClientException {
@@ -2708,7 +2662,6 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     public void startOperation(Operation<?> operation) {
-        // TODO Auto-generated method stub
         CoreEventListenerService service = NXCore.getCoreEventListenerService();
         service.fireOperationStarted(operation);
     }
@@ -2748,8 +2701,8 @@ public abstract class AbstractSession implements CoreSession,
                         // TODO : should use documentpartreader
                         for (Field field : fields) {
                             Object value = doc.getPropertyValue(field.getName().getPrefixedName());
-                            prefetch.put(field.getDeclaringType().getName() +
-                                    '.' + field.getName().getLocalName(),
+                            prefetch.put(field.getDeclaringType().getName()
+                                    + '.' + field.getName().getLocalName(),
                                     value == null ? Null.VALUE
                                             : (Serializable) value);
                         }

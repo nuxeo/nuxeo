@@ -38,8 +38,12 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+<<<<<<< /home/anahide/workspaces/hg/nuxeo-ep/nuxeo-core/nuxeo-core-facade/src/test/java/org/nuxeo/ecm/core/api/TestLocalAPI.java
+import org.nuxeo.ecm.core.lifecycle.LifeCycleConstants;
+=======
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+>>>>>>> /tmp/TestLocalAPI.java~other.UmqukT
 import org.nuxeo.runtime.RuntimeService;
 
 /**
@@ -52,13 +56,10 @@ public class TestLocalAPI extends TestAPI {
     protected RuntimeService runtime;
 
     protected void doDeployments() throws Exception {
-        deployContrib(TestConstants.CORE_BUNDLE,
-                "OSGI-INF/CoreService.xml");
-        deployContrib(TestConstants.CORE_BUNDLE,
-                "OSGI-INF/SecurityService.xml");
+        deployContrib(TestConstants.CORE_BUNDLE, "OSGI-INF/CoreService.xml");
+        deployContrib(TestConstants.CORE_BUNDLE, "OSGI-INF/SecurityService.xml");
 
-        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
-                "TypeService.xml");
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE, "TypeService.xml");
         deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "permissions-contrib.xml");
         deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
@@ -480,8 +481,9 @@ public class TestLocalAPI extends TestAPI {
 
             joeContributorSession.saveDocument(joeContributorDoc);
 
-            DocumentRef childRef = joeContributorSession.createDocument(new DocumentModelImpl(
-                    joeContributorDoc.getPathAsString(), "child", "File")).getRef();
+            DocumentRef childRef = joeContributorSession.createDocument(
+                    new DocumentModelImpl(joeContributorDoc.getPathAsString(),
+                            "child", "File")).getRef();
             joeContributorSession.save();
 
             // joe contributor can copy the newly created doc
@@ -508,8 +510,9 @@ public class TestLocalAPI extends TestAPI {
 
             joeLocalManagerSession.saveDocument(joeLocalManagerDoc);
 
-            childRef = joeLocalManagerSession.createDocument(new DocumentModelImpl(
-                    joeLocalManagerDoc.getPathAsString(), "child2", "File")).getRef();
+            childRef = joeLocalManagerSession.createDocument(
+                    new DocumentModelImpl(joeLocalManagerDoc.getPathAsString(),
+                            "child2", "File")).getRef();
             joeLocalManagerSession.save();
 
             // joe local manager can copy the newly created doc
@@ -534,7 +537,8 @@ public class TestLocalAPI extends TestAPI {
         }
     }
 
-    protected static CoreSession openSession(String userName) throws ClientException {
+    protected static CoreSession openSession(String userName)
+            throws ClientException {
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("username", userName);
         ctx.put("principal", new UserPrincipal(userName));
@@ -570,7 +574,8 @@ public class TestLocalAPI extends TestAPI {
         // add the permission to remove children on the root
         ACP rootACP = root.getACP();
         ACL rootACL = rootACP.getOrCreateACL();
-        rootACL.add(new ACE("joe_localmanager", SecurityConstants.REMOVE_CHILDREN, true));
+        rootACL.add(new ACE("joe_localmanager",
+                SecurityConstants.REMOVE_CHILDREN, true));
         rootACP.addACL(rootACL);
         root.setACP(rootACP, true);
 
@@ -579,6 +584,24 @@ public class TestLocalAPI extends TestAPI {
         return doc.getRef();
     }
 
+<<<<<<< /home/anahide/workspaces/hg/nuxeo-ep/nuxeo-core/nuxeo-core-facade/src/test/java/org/nuxeo/ecm/core/api/TestLocalAPI.java
+    public void testDocumentInitialLifecycleState() throws Exception {
+        DocumentModel root = getRootDocument();
+        DocumentModel docProject = new DocumentModelImpl(root.getPathAsString(),
+                "DocWork", "File");
+        docProject = remote.createDocument(docProject);
+        assertEquals("project", docProject.getCurrentLifeCycleState());
+
+        DocumentModel docApproved = new DocumentModelImpl(
+                root.getPathAsString(), "DocApproved", "File");
+        docApproved.putContextData(
+                LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME,
+                "approved");
+        docApproved = remote.createDocument(docApproved);
+        assertEquals("approved", docApproved.getCurrentLifeCycleState());
+    }
+
+=======
     // see identical test in TestSQLRepositoryVersioning
 
     public void testVersionSecurity() throws Exception {
@@ -636,4 +659,5 @@ public class TestLocalAPI extends TestAPI {
         }
     }
 
+>>>>>>> /tmp/TestLocalAPI.java~other.UmqukT
 }
