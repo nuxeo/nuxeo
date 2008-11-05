@@ -45,4 +45,9 @@ public class TestJCRRepositoryQuery extends QueryTestCase {
         // JCR cannot do queries on proxies or versions
     }
 
+    @Override
+    public void testQuerySpecialFields() {
+        // JCR cannot do queries on special fields
+    }
+
 }
