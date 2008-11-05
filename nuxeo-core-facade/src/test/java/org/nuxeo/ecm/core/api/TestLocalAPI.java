@@ -38,12 +38,9 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-<<<<<<< /home/anahide/workspaces/hg/nuxeo-ep/nuxeo-core/nuxeo-core-facade/src/test/java/org/nuxeo/ecm/core/api/TestLocalAPI.java
-import org.nuxeo.ecm.core.lifecycle.LifeCycleConstants;
-=======
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
->>>>>>> /tmp/TestLocalAPI.java~other.UmqukT
+import org.nuxeo.ecm.core.lifecycle.LifeCycleConstants;
 import org.nuxeo.runtime.RuntimeService;
 
 /**
@@ -584,11 +581,10 @@ public class TestLocalAPI extends TestAPI {
         return doc.getRef();
     }
 
-<<<<<<< /home/anahide/workspaces/hg/nuxeo-ep/nuxeo-core/nuxeo-core-facade/src/test/java/org/nuxeo/ecm/core/api/TestLocalAPI.java
     public void testDocumentInitialLifecycleState() throws Exception {
         DocumentModel root = getRootDocument();
-        DocumentModel docProject = new DocumentModelImpl(root.getPathAsString(),
-                "DocWork", "File");
+        DocumentModel docProject = new DocumentModelImpl(
+                root.getPathAsString(), "DocWork", "File");
         docProject = remote.createDocument(docProject);
         assertEquals("project", docProject.getCurrentLifeCycleState());
 
@@ -601,7 +597,6 @@ public class TestLocalAPI extends TestAPI {
         assertEquals("approved", docApproved.getCurrentLifeCycleState());
     }
 
-=======
     // see identical test in TestSQLRepositoryVersioning
 
     public void testVersionSecurity() throws Exception {
@@ -630,7 +625,8 @@ public class TestLocalAPI extends TestAPI {
         session.checkOut(file.getRef());
 
         // check security on version
-        DocumentModel version = session.getDocumentWithVersion(file.getRef(), vm);
+        DocumentModel version = session.getDocumentWithVersion(file.getRef(),
+                vm);
         acp = session.getACP(version.getRef());
         ACL[] acls = acp.getACLs();
         if (this.getClass().getName().equals(TestLocalAPI.class.getName())) {
@@ -659,5 +655,4 @@ public class TestLocalAPI extends TestAPI {
         }
     }
 
->>>>>>> /tmp/TestLocalAPI.java~other.UmqukT
 }
