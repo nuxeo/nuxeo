@@ -248,7 +248,7 @@
       <negotiation>
         <strategy>nuxeo5</strategy>
         <default-engine>default</default-engine>
-        <default-theme>default/default</default-theme>
+        <default-theme>default5-2/default</default-theme>
         <default-perspective>default</default-perspective>
       </negotiation>
 
@@ -263,10 +263,10 @@
       </style-caching>
 
       <view id="/create_relation_search_document_popup.xhtml">
-        <theme>default/popup</theme>
+        <theme>default5-2/popup</theme>
       </view>
       <view id="/user_dashboard.xhtml">
-        <theme>default/user_dashboard</theme>
+        <theme>default5-2/user_dashboard</theme>
       </view>
       <view id="/view_calendar.xhtml">
         <perspective>view_calendar</perspective>
@@ -275,13 +275,13 @@
         <perspective>print</perspective>
       </view>
       <view id="/editor_link_search_document.xhtml">
-        <theme>default/popup</theme>
+        <theme>default5-2/popup</theme>
       </view>
       <view id="/editor_image_upload.xhtml">
-        <theme>default/popup</theme>
+        <theme>default5-2/popup</theme>
       </view>
       <view id="/search/choose_searchscope_popup.xhtml">
-        <theme>default/popup</theme>
+        <theme>default5-2/popup</theme>
       </view>
     </application>
   </extension>

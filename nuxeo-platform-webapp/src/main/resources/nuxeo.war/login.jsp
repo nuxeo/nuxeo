@@ -15,7 +15,7 @@
 <!--
       body {
   font: normal 10px Verdana, sans-serif;
-  background: url(/nuxeo/img/login/login_blue_background.jpg) 0 0 repeat-x #0099e5;
+  background: url(/nuxeo/img/theme5_2/login5_2/login_black_background.jpg) 0 0 repeat-x #393939;
   color: white;
 
 }
@@ -94,7 +94,7 @@ font-weight:bold;
 .formTitle {
        margin:0 0 20px 0;
        text-align:center;
-       color:#0066ff;
+       color:#4a4a4a;
        font-size:14px;
 }
 
@@ -120,14 +120,14 @@ font-weight:bold;
 
 .buttonsBar li {
   float:left;
-  background:url(/nuxeo/img/login/button_normal.gif) no-repeat left top;
+  background:url(/nuxeo/img/theme5_2/login5_2/button_normal.gif) no-repeat left top;
   margin:5px 0 0 0;
   padding:10px 0 0 0;
   }
 
   .buttonsBar li:hover {
   float:left;
-  background:url(/nuxeo/img/login/button_hover.gif) no-repeat left top;
+  background:url(/nuxeo/img/theme5_2/login5_2/button_hover.gif) no-repeat left top;
   }
 
 .buttonsBar a {
@@ -163,27 +163,27 @@ font-weight:bold;
   }
 
 .extensionsBar li.ie {
-  background:url(/nuxeo/img/login/ie_normal.gif) no-repeat left top;
+  background:url(/nuxeo/img/theme5_2/login5_2/ie_normal.gif) no-repeat left top;
   }
 
   .extensionsBar li.ie:hover {
-  background:url(/nuxeo/img/login/ie_hover.gif) no-repeat left top;
+  background:url(/nuxeo/img/theme5_2/login5_2/ie_hover.gif) no-repeat left top;
   }
 
 .extensionsBar li.ff {
-  background:url(/nuxeo/img/login/ff_normal.gif) no-repeat left top;
+  background:url(/nuxeo/img/theme5_2/login5_2/ff_normal.gif) no-repeat left top;
 }
 
   .extensionsBar li.ff:hover {
-  background:url(/nuxeo/img/login/ff_hover.gif) no-repeat left top;
+  background:url(/nuxeo/img/theme5_2/login5_2/ff_hover.gif) no-repeat left top;
   }
 
   .extensionsBar li.office {
-  background:url(/nuxeo/img/login/office_normal.gif) no-repeat left top;
+  background:url(/nuxeo/img/theme5_2/login5_2/office_normal.gif) no-repeat left top;
   }
 
   .extensionsBar li.office:hover {
-  background:url(/nuxeo/img/login/office_hover.gif) no-repeat left top;
+  background:url(/nuxeo/img/theme5_2/login5_2/office_hover.gif) no-repeat left top;
   }
 
 .extensionsBar a {
@@ -228,13 +228,13 @@ font-weight:bold;
 <table align="center" width="650" height="500" border="0"
         cellpadding="0" cellspacing="0">
         <tr>
-                <td colspan="6"><img src="/nuxeo/img/login/login_01.jpg"
+                <td colspan="6"><img src="/nuxeo/img/theme5_2/login5_2/login_01.jpg"
                         width="650" height="127" alt=""></td>
         </tr>
         <tr>
-                <td rowspan="5"><img src="/nuxeo/img/login/login_02.jpg"
+                <td rowspan="5"><img src="/nuxeo/img/theme5_2/login5_2/login_02.jpg"
                         width="41" height="372" alt=""></td>
-                <td rowspan="3" background="/nuxeo/img/login/login_03.jpg"
+                <td rowspan="3" background="/nuxeo/img/theme5_2/login5_2/login_03.jpg"
                         width="138" height="314" valign="middle">
                 <table cellspacing="0" cellpadding="0" border="0" align="center"
                         width="138">
@@ -280,13 +280,13 @@ font-weight:bold;
         </table>
 
         </td>
-        <td colspan="4"><img src="/nuxeo/img/login/login_04.jpg"
+        <td colspan="4"><img src="/nuxeo/img/theme5_2/login5_2/login_04.jpg"
             width="471" height="48" alt=""></td>
     </tr>
     <tr>
-        <td rowspan="2"><img src="/nuxeo/img/login/login_05.jpg"
+        <td rowspan="2"><img src="/nuxeo/img/theme5_2/login5_2/login_05.jpg"
             width="87" height="266" alt=""></td>
-        <td background="/nuxeo/img/login/login_06.jpg" width="303"
+        <td background="/nuxeo/img/theme5_2/login5_2/login_06.jpg" width="303"
             height="174">
 
         <table cellpadding="0" border="0" align="center" class="loginForm">
@@ -323,10 +323,10 @@ font-weight:bold;
 
         </td>
         <td colspan="2" rowspan="2"><img
-            src="/nuxeo/img/login/login_07.jpg" width="81" height="266" alt=""></td>
+            src="/nuxeo/img/theme5_2/login5_2/login_07.jpg" width="81" height="266" alt=""></td>
     </tr>
     <tr>
-        <td background="/nuxeo/img/login/login_08.jpg" width="303"
+        <td background="/nuxeo/img/theme5_2/login5_2/login_08.jpg" width="303"
             height="92">
           <c:if test="${param.loginFailed}">
             <div class="errorMessage">
@@ -341,35 +341,35 @@ font-weight:bold;
         </td>
     </tr>
     <tr>
-        <td colspan="4" background="/nuxeo/img/login/login_09.jpg"
+        <td colspan="4" background="/nuxeo/img/theme5_2/login5_2/login_09.jpg"
             width="558" height="43" align="center">
         <p class="loginLegal">
             <fmt:message bundle="${messages}" key="label.login.copyright" />
         </p>
         </td>
-        <td rowspan="2"><img src="/nuxeo/img/login/login_10.jpg"
+        <td rowspan="2"><img src="/nuxeo/img/theme5_2/login5_2/login_10.jpg"
             width="51" height="58" alt=""></td>
     </tr>
     <tr>
-        <td colspan="4"><img src="/nuxeo/img/login/login_11.jpg"
+        <td colspan="4"><img src="/nuxeo/img/theme5_2/login5_2/login_11.jpg"
             width="558" height="15" alt=""></td>
     </tr>
     <tr>
-        <td colspan="6"><img src="/nuxeo/img/login/login_reflect.jpg"
+        <td colspan="6"><img src="/nuxeo/img/theme5_2/login5_2/login_reflect.jpg"
             alt=""></td>
     </tr>
     <tr>
-        <td><img src="/nuxeo/img/login/spacer.gif" width="41"
+        <td><img src="/nuxeo/img/theme5_2/login5_2/spacer.gif" width="41"
             height="1" alt=""></td>
-        <td><img src="/nuxeo/img/login/spacer.gif" width="138"
+        <td><img src="/nuxeo/img/theme5_2/login5_2/spacer.gif" width="138"
             height="1" alt=""></td>
-        <td><img src="/nuxeo/img/login/spacer.gif" width="87"
+        <td><img src="/nuxeo/img/theme5_2/login5_2/spacer.gif" width="87"
             height="1" alt=""></td>
-        <td><img src="/nuxeo/img/login/spacer.gif" width="303"
+        <td><img src="/nuxeo/img/theme5_2/login5_2/spacer.gif" width="303"
             height="1" alt=""></td>
-        <td><img src="/nuxeo/img/login/spacer.gif" width="30"
+        <td><img src="/nuxeo/img/theme5_2/login5_2/spacer.gif" width="30"
             height="1" alt=""></td>
-        <td><img src="/nuxeo/img/login/spacer.gif" width="51"
+        <td><img src="/nuxeo/img/theme5_2/login5_2/spacer.gif" width="51"
             height="1" alt=""></td>
     </tr>
 </table>
