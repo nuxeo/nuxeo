@@ -80,7 +80,11 @@ public class SQLSecurityManager implements SecurityManager {
 
     public ACP getMergedACP(Document doc) throws SecurityException {
         try {
-            ACP acp = getACP(doc.isVersion() ? doc.getSourceDocument() : doc);
+            Document base = doc.isVersion() ? doc.getSourceDocument() : doc;
+            if (base == null) {
+                return null;
+            }
+            ACP acp = getACP(base);
             if (doc.getParent() == null) {
                 return acp;
             }

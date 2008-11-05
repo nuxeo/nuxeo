@@ -73,6 +73,18 @@ public class TestLocalAPIWithCustomVersioning extends TestLocalAPI {
         acl = acls[1];
         assertEquals(1 + 4, acl.size()); // 1 + 4 root defaults
         assertEquals("princ1", acl.get(0).getUsername());
+
+        // remove live document (create a proxy so the version stays)
+        session.createProxy(folder.getRef(), file.getRef(), vm, true);
+        session.save();
+        session.removeDocument(file.getRef());
+        // recheck security on version
+        try {
+            session.getACP(version.getRef());
+            fail();
+        } catch (DocumentSecurityException e) {
+            // ok
+        }
     }
 
 }
