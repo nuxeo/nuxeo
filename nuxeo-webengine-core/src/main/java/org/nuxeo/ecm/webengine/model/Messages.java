@@ -32,16 +32,23 @@ public class Messages {
 
     protected Messages parent;
     protected MessagesProvider provider;
-    protected Map<String, MessagesBundle> messages; 
+    protected Map<String, MessagesBundle> messages;
     protected MessagesBundle defaultMessages;
-    
+
+    protected final static String BUILT_IN_DEFAULT_LANG="en";
+
     public Messages(Messages parent, MessagesProvider provider) {
         this.parent = parent;
         this.provider = provider;
         this.messages = new ConcurrentHashMap<String, MessagesBundle>();
-        this.defaultMessages = getMessagesBundle(Locale.getDefault().getLanguage());
+        String serverDefaultLang = Locale.getDefault().getLanguage();
+        this.defaultMessages = getMessagesBundle(serverDefaultLang);
+        if ((defaultMessages.messages.size()==0) && (!BUILT_IN_DEFAULT_LANG.equals(serverDefaultLang)))
+        {
+            this.defaultMessages = getMessagesBundle(BUILT_IN_DEFAULT_LANG);
+        }
     }
-    
+
     public MessagesBundle getMessagesBundle() {
         return defaultMessages;
     }
