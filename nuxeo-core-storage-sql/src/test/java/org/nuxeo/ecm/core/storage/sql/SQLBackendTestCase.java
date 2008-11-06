@@ -18,8 +18,6 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.File;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,19 +31,13 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
 
-    private static final String DATABASE_DIRECTORY = "target/test/repository";
-
     public Repository repository;
-
-    public SQLBackendTestCase(String name) {
-        super(name);
-    }
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
         deployBundle("org.nuxeo.ecm.core.schema");
+        SQLBackendHelper.setUpRepository();
 
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         assertNotNull(schemaManager);
@@ -59,46 +51,43 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         if (repository != null) {
             repository.close();
         }
-        try {
-            DriverManager.getConnection("jdbc:derby:;shutdown=true");
-            fail("Expected Derby shutdown exception");
-        } catch (SQLException e) {
-            assertEquals("Derby system shutdown.", e.getMessage());
-        }
+        SQLBackendHelper.tearDownRepository();
         super.tearDown();
     }
 
-    protected File prepareDBDirectory() {
-        File dbdir = new File(DATABASE_DIRECTORY);
-        FileUtils.deleteTree(dbdir);
-        return dbdir;
+    protected RepositoryDescriptor prepareDescriptor() {
+        switch (SQLBackendHelper.DATABASE) {
+        case DERBY:
+            return prepareDescriptorDerby();
+        case POSTGRESQL:
+            return prepareDescriptorPostgreSQL();
+        }
+        throw new RuntimeException(); // not reached
     }
 
-    protected RepositoryDescriptor prepareDescriptor() {
-        System.setProperty(
-                "derby.stream.error.file",
-                new File(Framework.getRuntime().getHome(), "derby.log").getAbsolutePath());
+    protected RepositoryDescriptor prepareDescriptorDerby() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         String className = org.apache.derby.jdbc.EmbeddedXADataSource.class.getName();
         descriptor.xaDataSourceName = className;
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("createDatabase", "create");
-        properties.put("databaseName", prepareDBDirectory().getAbsolutePath());
+        properties.put("databaseName", new File(
+                SQLBackendHelper.DERBY_DIRECTORY).getAbsolutePath());
         properties.put("user", "sa");
         properties.put("password", "");
         descriptor.properties = properties;
         return descriptor;
     }
 
-    protected RepositoryDescriptor prepareDescriptorPG() {
+    protected RepositoryDescriptor prepareDescriptorPostgreSQL() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "org.postgresql.xa.PGXADataSource";
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("ServerName", "localhost");
-        properties.put("PortNumber", "5432");
-        properties.put("DatabaseName", "nuxeo");
-        properties.put("User", "postgres");
-        properties.put("Password", "");
+        properties.put("ServerName", SQLBackendHelper.PG_HOST);
+        properties.put("PortNumber/Integer", SQLBackendHelper.PG_PORT);
+        properties.put("DatabaseName", SQLBackendHelper.PG_DATABASE);
+        properties.put("User", SQLBackendHelper.PG_DATABASE_OWNER);
+        properties.put("Password", SQLBackendHelper.PG_DATABASE_PASSWORD);
         descriptor.properties = properties;
         return descriptor;
     }

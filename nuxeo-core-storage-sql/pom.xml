@@ -85,13 +85,12 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <excludes>
-            <exclude>**/Test*MemoryLeak.java</exclude>
             <!-- Derby leaks memory in this one: -->
             <exclude>**/TestSQLRepositoryAPI.java</exclude>
             <!-- Search implementation not yet done: -->
             <exclude>**/TestSQLRepositoryQuery.java</exclude>
-            <!-- PostgreSQL-specific test, launch manually: -->
-            <exclude>**/TestSQLRepositoryQueryPG.java</exclude>
+            <!--  Synthetic classes for switch() (surefire bug) -->
+            <exclude>**/*$1.java</exclude>
           </excludes>
         </configuration>
       </plugin>

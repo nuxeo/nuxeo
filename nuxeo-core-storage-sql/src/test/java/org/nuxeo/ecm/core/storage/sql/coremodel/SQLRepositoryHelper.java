@@ -17,23 +17,21 @@
 
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
-import org.nuxeo.ecm.core.query.test.QueryTestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLBackendHelper;
 
 /**
+ * Helper to set up and tear down a test database.
+ * <p>
+ * This can be used also to use another test database than Derby, for instance
+ * PostgreSQL.
+ *
  * @author Florent Guillaume
  */
-public class TestSQLRepositoryQuery extends QueryTestCase {
+public class SQLRepositoryHelper extends SQLBackendHelper {
 
-    @Override
-    public void deployRepository() throws Exception {
-        SQLRepositoryHelper.setUpRepository();
-        deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
-                SQLRepositoryHelper.getDeploymentContrib());
-    }
-
-    @Override
-    public void undeployRepository() throws Exception {
-        SQLRepositoryHelper.tearDownRepository();
+    public static String getDeploymentContrib() {
+        return String.format("OSGI-INF/test-repo-repository-%s-contrib.xml",
+                DATABASE.toString().toLowerCase());
     }
 
 }
