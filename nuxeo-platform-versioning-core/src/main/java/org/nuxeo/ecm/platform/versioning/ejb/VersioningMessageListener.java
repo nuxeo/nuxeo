@@ -76,6 +76,7 @@ import org.nuxeo.runtime.api.Framework;
                 + "','"
                 + WorkflowEventTypes.WORKFLOW_ENDED + "')") })
 @TransactionManagement(TransactionManagementType.CONTAINER)
+@TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class VersioningMessageListener implements MessageListener {
 
     private static final Log log = LogFactory.getLog(VersioningMessageListener.class);
@@ -153,8 +154,13 @@ public class VersioningMessageListener implements MessageListener {
             log.error("Cannot set versioning policy: " + e.getMessage(), e);
             // TODO maybe throw exception
         } finally {
-            CoreInstance.getInstance().close(coreSession);
-            loginContext.logout();
+            try {
+                CoreInstance.getInstance().close(coreSession);
+                loginContext.logout();
+            }
+            catch (Throwable t) {
+                log.error("Error during MDB cleanup", t);
+            }
         }
     }
 

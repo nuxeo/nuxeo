@@ -21,21 +21,24 @@ package org.nuxeo.ecm.platform.comment.ejb;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
-import javax.ejb.EJBException;
 import javax.ejb.MessageDriven;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
+import javax.security.auth.login.LoginContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.annotation.security.SecurityDomain;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceHelper;
@@ -72,66 +75,92 @@ import org.nuxeo.runtime.api.Framework;
                 + JMSConstant.NUXEO_EVENT_ID
                 + " = '"
                 + DocumentEventTypes.ABOUT_TO_REMOVE + "'") })
+@TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class CommentEventListenerBean implements MessageListener {
 
-    private static final Log log = LogFactory.getLog(CommentEventListenerBean.class);
-
-    RelationManager relationManager;
-
-    CommentServiceConfig config;
-
-    private CoreSession session;
-
-    private final String currentRepositoryName = null;
-
-    protected CoreSession getRepositorySession(String repositoryName) {
-        // return cached session
-        if (currentRepositoryName != null
-                && repositoryName.equals(currentRepositoryName)
-                && session != null) {
-            return session;
-        }
-
-        try {
-            log.debug("trying to connect to ECM platform");
-            Framework.login();
-            session = Framework.getService(RepositoryManager.class).getRepository(
-                    repositoryName).open();
-            log.debug("CommentManager connected to ECM");
-        } catch (Exception e) {
-            log.error("failed to connect to ECM platform", e);
-            throw new RuntimeException(e);
-        }
-        return session;
-    }
-
-    @PostConstruct
-    public void init() {
-        config = CommentServiceHelper.getCommentService().getConfig();
-        try {
-            relationManager = Framework.getService(RelationManager.class);
-        } catch (Exception e) {
-            log.error("Could not get relation manager");
-        }
-    }
+    private static final Log log = LogFactory
+            .getLog(CommentEventListenerBean.class);
 
     public void onMessage(Message message) {
+        DocumentMessage doc = null;
         try {
             Object obj = ((ObjectMessage) message).getObject();
             if (!(obj instanceof DocumentMessage)) {
                 return;
             }
-            DocumentMessage doc = (DocumentMessage) obj;
-            onDocumentRemoved(doc);
-            onCommentRemoved(doc);
-
+            doc = (DocumentMessage) obj;
         } catch (Exception e) {
-            throw new EJBException(e);
+            log.error("Error during message reception", e);
+            return;
+        }
+
+        try {
+            login();
+        } catch (Exception e) {
+            log.error("Unable to do Framework.login", e);
+            return;
+        }
+
+        String repoName = doc.getRepositoryName();
+        Repository repo = null;
+        CoreSession coreSession = null;
+        RelationManager relationManager = null;
+        CommentServiceConfig config = null;
+
+        try {
+            RepositoryManager mgr = Framework
+                    .getService(RepositoryManager.class);
+            if (repoName != null) {
+                repo = mgr.getRepository(repoName);
+            } else {
+                repo = mgr.getDefaultRepository();
+            }
+
+            if (repo == null) {
+                log.error("can not find repository, existing");
+                return;
+            }
+
+            coreSession = repo.open();
+
+            config = CommentServiceHelper.getCommentService().getConfig();
+            relationManager = Framework.getService(RelationManager.class);
+
+            onDocumentRemoved(coreSession, relationManager, config, doc);
+            onCommentRemoved(relationManager, config, doc);
+        } catch (Exception e) {
+            log.error("Error during message processing", e);
+        } finally {
+            try {
+                if (coreSession != null) {
+                      CoreInstance.getInstance().close(coreSession);
+                      coreSession = null;
+                }
+                logout();
+            } catch (Throwable t) {
+                log.error("Error during cleanup",t);
+            }
+
+        }
+
+    }
+
+    private LoginContext loginCtx;
+
+    private void login() throws Exception {
+        loginCtx = Framework.login();
+    }
+
+    private void logout() throws Exception {
+        if (loginCtx != null) {
+            loginCtx.logout();
+            loginCtx = null;
         }
     }
 
-    private void onDocumentRemoved(DocumentMessage docMessage)
-            throws ClientException {
+    private void onDocumentRemoved(CoreSession coreSession,
+            RelationManager relationManager, CommentServiceConfig config,
+            DocumentMessage docMessage) throws ClientException {
 
         Resource documentRes = relationManager.getResource(
                 config.documentNamespace, docMessage);
@@ -144,19 +173,18 @@ public class CommentEventListenerBean implements MessageListener {
         List<Statement> statementList = relationManager.getStatements(
                 config.graphName, pattern);
 
-        CoreSession mySession = getRepositorySession(docMessage.getRepositoryName());
-
         // remove comments
         for (Statement stmt : statementList) {
 
             QNameResource resource = (QNameResource) stmt.getSubject();
             String commentId = resource.getLocalName();
-            DocumentModel docModel = (DocumentModel) relationManager.getResourceRepresentation(
-                    config.commentNamespace, resource);
+            DocumentModel docModel = (DocumentModel) relationManager
+                    .getResourceRepresentation(config.commentNamespace,
+                            resource);
 
             if (docModel != null) {
                 try {
-                    mySession.removeDocument(docModel.getRef());
+                    coreSession.removeDocument(docModel.getRef());
                     log.debug("comment removal succeded for id: " + commentId);
                 } catch (Exception e) {
                     log.error("comment removal failed", e);
@@ -165,12 +193,13 @@ public class CommentEventListenerBean implements MessageListener {
                 log.warn("comment not found: id=" + commentId);
             }
         }
-        mySession.save();
+        coreSession.save();
         // remove relations
         relationManager.remove(config.graphName, statementList);
     }
 
-    private void onCommentRemoved(DocumentMessage docModel)
+    private void onCommentRemoved(RelationManager relationManager,
+            CommentServiceConfig config, DocumentMessage docModel)
             throws ClientException {
         Resource commentRes = relationManager.getResource(
                 config.commentNamespace, docModel);

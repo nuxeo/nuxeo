@@ -28,6 +28,8 @@ import java.util.Map;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
@@ -37,6 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -65,6 +68,7 @@ import org.nuxeo.runtime.api.Framework;
                 propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " IN ('" + JMSConstant.DOCUMENT_MESSAGE + "','"
                     + JMSConstant.EVENT_MESSAGE + "') AND " + JMSConstant.NUXEO_EVENT_ID + " IN ('"
                     + DocumentEventTypes.DOCUMENT_CREATED +"','" + DocumentEventTypes.DOCUMENT_UPDATED + "')") })
+@TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class UploadFileListener implements MessageListener {
 
     private static final Log log = LogFactory.getLog(UploadFileListener.class);
@@ -191,9 +195,13 @@ public class UploadFileListener implements MessageListener {
 
         } finally {
             try {
+                if (session!=null)
+                {
+                    CoreInstance.getInstance().close(session);
+                }
                 logout();
-            } catch (Exception e) {
-                log.error("Impossible to logout", e);
+            } catch (Throwable e) {
+                log.error("Error during cleanup", e);
             }
         }
     }
