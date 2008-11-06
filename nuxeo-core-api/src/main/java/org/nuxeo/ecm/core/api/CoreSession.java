@@ -161,7 +161,7 @@ public interface CoreSession {
      * to use.
      * <p>
      * Same as the previous method with the difference that the default schemas
-     * are overwriten by the given schemas.
+     * are overwritten by the given schemas.
      *
      * @param docRef the document reference
      * @param schemas the initial schemas to use to populate the document model
@@ -209,7 +209,7 @@ public interface CoreSession {
     DocumentModelList getChildren(DocumentRef parent) throws ClientException;
 
     /**
-     * Gets the children of the given parent.
+     * Gets an iterator to the children of the given parent.
      *
      * @param parent the parent reference
      * @return iterator over the children collection or null if the specified
@@ -232,6 +232,10 @@ public interface CoreSession {
     DocumentModelList getChildren(DocumentRef parent, String type)
             throws ClientException;
 
+    /**
+     * Gets an iterator to the children of the given parent filtered according to the given
+     * document type.
+     */
     DocumentModelIterator getChildrenIterator(DocumentRef parent, String type)
             throws ClientException;
 
@@ -250,8 +254,8 @@ public interface CoreSession {
             throws ClientException;
 
     /**
-     * Same as the previous method but the result is filtered and then sorted
-     * using the specified filter and sorter.
+     * Same as {@link #getChildren(DocumentRef, String, String)} but the result
+     * is filtered and then sorted using the specified filter and sorter.
      *
      * @param parent the parent reference
      * @param type the wanted type
@@ -311,7 +315,8 @@ public interface CoreSession {
             String perm, Filter filter) throws ClientException;
 
     /**
-     * Same as the previous method without specific permission filtering.
+     * Same as {@link #getChildren(DocumentRef, String, String, Filter, Sorter)}
+     * without specific permission filtering.
      *
      * @param parent the parent reference
      * @param type the wanted type
@@ -339,16 +344,17 @@ public interface CoreSession {
      * Same as {@link CoreSession#getFolders(DocumentRef)} but returns a lazy
      * loading iterator over the list of children.
      *
-     * @param parent
-     * @return
+     * @param parent the parent reference
+     * @return a list of children if any, an empty one if none or null if the
+     *         given parent is not a folder
      * @throws ClientException
      */
     DocumentModelIterator getFoldersIterator(DocumentRef parent)
             throws ClientException;
 
     /**
-     * Same as the previous method but use an optional filter and sorter on the
-     * result.
+     * Same as {@link CoreSession#getFolders(DocumentRef)} but uses an optional filter
+     * and sorter on the result.
      *
      * @param parent the parent reference
      * @param filter the filter to use or null if none
@@ -361,8 +367,8 @@ public interface CoreSession {
             Sorter sorter) throws ClientException;
 
     /**
-     * Same as {@link CoreSession#getChildren(DocumentRef)} but returns a lazy
-     * loading iterator over the list of children.
+     * Same as {@link CoreSession#getChildren(DocumentRef)} but returns only
+     * non-folder documents.
      *
      * @param parent the parent reference
      * @return a list of children if any, an empty one if none or null if the
@@ -372,8 +378,7 @@ public interface CoreSession {
     DocumentModelList getFiles(DocumentRef parent) throws ClientException;
 
     /**
-     * Same as {@link CoreSession#getFiles(DocumentRef)} but returns only
-     * non-folder documents.
+     * Same as {@link CoreSession#getFiles(DocumentRef)} but returns an iterator.
      *
      * @param parent
      * @return
@@ -383,7 +388,7 @@ public interface CoreSession {
             throws ClientException;
 
     /**
-     * Same as the previous method but uses an optional filter and sorter on the
+     * Same as {@link #getFiles} but uses an optional filter and sorter on the
      * result.
      *
      * @param parent the parent reference
@@ -424,10 +429,8 @@ public interface CoreSession {
      * <p>
      * This operation makes no difference between non-existence and permission
      * problems.
-     * </p>
      * <p>
      * If the parent is null or its path is null, then root is considered.
-     * </p>
      *
      * @param docRef the reference to the document to test for existence
      * @return true if the referenced document exists, false otherwise
@@ -453,7 +456,6 @@ public interface CoreSession {
      * Creates a document model using type name.
      * <p>
      * Used to fetch initial datamodels from the type definition.
-     *
      * <p>
      * DocumentModel creation notifies a
      * {@link DocumentEventTypes.EMPTY_DOCUMENTMODEL_CREATED} so that core event
