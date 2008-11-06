@@ -44,7 +44,7 @@ public class Insert implements Serializable {
 
     public Insert(Table table) {
         this.table = table;
-        this.dialect = table.dialect;
+        this.dialect = table.getDialect();
         columns = new LinkedList<Column>();
     }
 

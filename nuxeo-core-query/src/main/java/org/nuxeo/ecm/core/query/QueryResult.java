@@ -23,7 +23,6 @@ import java.util.Iterator;
 
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
-
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -37,7 +36,7 @@ public interface QueryResult {
     boolean next();
 
     /**
-     * Retrieve the current row number. (1 based index)
+     * Retrieves the current row number. (1 based index)
      * <p>
      * If there is no current row (no next() was called) returns 0
      *

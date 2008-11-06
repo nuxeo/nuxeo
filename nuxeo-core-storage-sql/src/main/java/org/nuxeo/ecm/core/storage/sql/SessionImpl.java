@@ -41,12 +41,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.query.QueryResult;
+import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLQueryResult;
 
 /**
  * The session is the main high level access point to data from the underlying
@@ -529,9 +528,10 @@ public class SessionImpl implements Session {
         return nodes;
     }
 
-    public List<Serializable> query(SQLQuery query) throws StorageException {
+    public List<Serializable> query(SQLQuery query, QueryFilter queryFilter)
+            throws StorageException {
         try {
-            return mapper.query(query, this);
+            return mapper.query(query, queryFilter, this);
         } catch (SQLException e) {
             throw new StorageException("Invalid query: " + query, e);
         }

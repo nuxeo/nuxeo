@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 public class TestLifeCycleService extends RepositoryTestCase {
 
     Session session;
+
     Document root;
 
     private LifeCycleService lifeCycleService;
@@ -87,6 +88,26 @@ public class TestLifeCycleService extends RepositoryTestCase {
         lifeCycleService.initialize(doc);
         doc.save();
         assertEquals("work", lifeCycleService.getCurrentLifeCycleState(doc));
+    }
+
+    public void testInitializeWithAdditionalInitialState()
+            throws LifeCycleException, DocumentException {
+        Document doc = root.addChild("doc", "File");
+        root.save();
+        // invalid initial states
+        try {
+            lifeCycleService.initialize(doc, "xxx");
+            fail("Invalid initial state, intialization should fail");
+        } catch (LifeCycleException e) {
+        }
+        try {
+            lifeCycleService.initialize(doc, "cancelled");
+            fail("Invalid initial state, intialization should fail");
+        } catch (LifeCycleException e) {
+        }
+        lifeCycleService.initialize(doc, "approved");
+        doc.save();
+        assertEquals("approved", lifeCycleService.getCurrentLifeCycleState(doc));
     }
 
     public void testChain() throws LifeCycleException, DocumentException {
@@ -154,7 +175,7 @@ public class TestLifeCycleService extends RepositoryTestCase {
                 "SELECT * FROM Document WHERE ecm:currentLifecycleState='work'",
                 Query.Type.NXQL);
         QueryResult qr = query.execute();
-        DocumentModelList dml =  qr.getDocumentModels();
+        DocumentModelList dml = qr.getDocumentModels();
         assertEquals(3, dml.size());
         List<String> docs = new ArrayList<String>();
         for (DocumentModel dm : dml) {
