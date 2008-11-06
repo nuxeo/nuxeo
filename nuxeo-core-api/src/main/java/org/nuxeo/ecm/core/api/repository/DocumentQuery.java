@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  *
  */
 // TODO: never used. Remove?
+@Deprecated
 public class DocumentQuery {
 
     public DocumentModelList query(String query) {

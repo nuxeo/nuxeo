@@ -52,7 +52,7 @@ public interface LifeCycleService {
      * @param initialStateName the initial state name
      * @throws LifeCycleException
      */
-    void initialize(Document doc, String initalStateName) throws LifeCycleException;
+    void initialize(Document doc, String initialStateName) throws LifeCycleException;
 
     /**
      * Follows a given transition.

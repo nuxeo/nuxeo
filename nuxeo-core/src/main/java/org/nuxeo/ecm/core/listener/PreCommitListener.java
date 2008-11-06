@@ -22,29 +22,31 @@ package org.nuxeo.ecm.core.listener;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.operation.Operation;
 
-
 /**
  * This listener is notified before a transaction is committed.
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface PreCommitListener extends TransactedListener {
 
     /**
-     * Current transaction is about to commit. 
-     * This method should be used by listeners using the CoreEvent model 
-     * and ignored by the one using Operation events. 
-     * @param all core events collected in current transaction.
+     * Current transaction is about to commit.
+     * <p>
+     * This method should be used by listeners using the CoreEvent model
+     * and ignored by the one using Operation events.
+     *
+     * @param events all core events collected in current transaction.
      */
-    public void aboutToCommit(CoreEvent[] events);       
-    
+    void aboutToCommit(CoreEvent[] events);
+
     /**
-     * Current transaction is about to commit. 
-     * This method should be used by listeners using the Operation events 
-     * and ignored by the one using CoreEvent events. 
-     * @param events all operation events collected in current transaction  
-     */    
-    public void aboutToCommit(Operation<?>[] events);
+     * Current transaction is about to commit.
+     * <p>
+     * This method should be used by listeners using the Operation events
+     * and ignored by the one using CoreEvent events.
+     *
+     * @param events all operation events collected in current transaction
+     */
+    void aboutToCommit(Operation<?>[] events);
 
 }

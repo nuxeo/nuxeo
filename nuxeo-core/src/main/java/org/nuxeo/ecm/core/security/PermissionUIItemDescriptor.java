@@ -28,9 +28,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("item")
 public class PermissionUIItemDescriptor implements Serializable{
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     @XNode("@show")
@@ -84,21 +81,20 @@ public class PermissionUIItemDescriptor implements Serializable{
         return permission;
     }
 
-
-    public String getDenyPermission()
-    {
-        if (denyPermission!=null)
+    public String getDenyPermission() {
+        if (denyPermission != null) {
             return denyPermission;
-        else
+        } else {
             return permission;
+        }
     }
 
-    public String getId()
-    {
-        if (id!=null)
+    public String getId() {
+        if (id != null) {
             return id;
-        else
+        } else {
             return permission;
+        }
     }
 
     @Override
@@ -126,27 +122,23 @@ public class PermissionUIItemDescriptor implements Serializable{
                     return false;
                 }
             }
-            if (getId() !=null)
-            {
+            if (getId() != null) {
                 if (!getId().equals(otherPid.getId())) {
                     return false;
                 }
-            }
-            else
-            {
-                if (otherPid.getId()!=null)
-                    return false;
-            }
-            if (getDenyPermission() !=null)
-            {
-                if (!getDenyPermission().equals(otherPid.getDenyPermission())) {
+            } else {
+                if (otherPid.getId() != null) {
                     return false;
                 }
             }
-            else
-            {
-                if (otherPid.getDenyPermission()!=null)
+            if (getDenyPermission() != null) {
+                if (!getDenyPermission().equals(otherPid.getDenyPermission())) {
                     return false;
+                }
+            } else {
+                if (otherPid.getDenyPermission() != null) {
+                    return false;
+                }
             }
 
             return true;
@@ -172,10 +164,11 @@ public class PermissionUIItemDescriptor implements Serializable{
 
     @Override
     public String toString() {
-        if (denyPermission!=null)
+        if (denyPermission!=null) {
             return String.format("PermissionUIItemDescriptor[%s (deny %s)]", permission, denyPermission);
-        else
+        } else {
             return String.format("PermissionUIItemDescriptor[%s]", permission);
+        }
     }
 
 }

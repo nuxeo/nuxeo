@@ -79,4 +79,9 @@ public class PropertyDiff implements Iterable<PropertyDiff> {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return (name == null) ? 0 : name.hashCode();
+    }
+
 }

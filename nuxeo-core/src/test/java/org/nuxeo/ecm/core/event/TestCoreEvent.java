@@ -36,9 +36,9 @@ import org.nuxeo.ecm.core.model.Document;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class TestCoreEvent extends MockObjectTestCase {
-    private final static String COMMENT = "comment";
+    private static final String COMMENT = "comment";
 
-    private final static String CATEGORY = "category";
+    private static final String CATEGORY = "category";
 
     public void testCoreEventVarious() {
         String eventId = "someEvent";

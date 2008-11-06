@@ -287,7 +287,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         }
     }
 
-    /** ---------------------------- type conversion ------------------------ */
+    /* ---------------------------- type conversion ------------------------ */
 
     @Override
     public boolean isNormalized(Object value) {

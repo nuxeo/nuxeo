@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.core.repository;
 
-import java.util.LinkedList;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
@@ -77,6 +75,7 @@ public abstract class RepositoryInitializationHandler {
      * The parent handler if any otherwise null
      */
     protected RepositoryInitializationHandler previous;
+
     /**
      * The next handler in the chain if any or null otherwise
      */
@@ -99,15 +98,11 @@ public abstract class RepositoryInitializationHandler {
         }
     }
 
-
-    /**
-     * @param parent the parent to set.
-     */
     public void install() {
         synchronized (RepositoryInitializationHandler.class) {
-            this.previous = RepositoryInitializationHandler.instance;
-            if (this.previous != null) {
-                this.previous.next = this;
+            previous = RepositoryInitializationHandler.instance;
+            if (previous != null) {
+                previous.next = this;
             }
             RepositoryInitializationHandler.instance = this;
         }
@@ -116,9 +111,9 @@ public abstract class RepositoryInitializationHandler {
     public void uninstall() {
         synchronized (RepositoryInitializationHandler.class) {
             if (previous != null) {
-                this.previous.next = next;
+                previous.next = next;
                 if (next != null) {
-                    next.previous = this.previous;
+                    next.previous = previous;
                 }
             }
             if (RepositoryInitializationHandler.instance == this) {
@@ -127,9 +122,6 @@ public abstract class RepositoryInitializationHandler {
         }
     }
 
-    /**
-     * @return the parent.
-     */
     public RepositoryInitializationHandler getPrevious() {
         return previous;
     }

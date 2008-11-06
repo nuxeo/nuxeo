@@ -31,4 +31,7 @@ public class CoreTestConstants {
 
     public static final String SCHEMA_BUNDLE = "org.nuxeo.ecm.core.schema";
 
+    private CoreTestConstants() {
+    }
+
 }

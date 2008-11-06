@@ -24,25 +24,25 @@ import org.nuxeo.ecm.core.api.operation.Operation;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface TransactedEventService {
 
-	void addListener(TransactedListener listener);
-	
-	void removeListener(TransactedListener listener);
-	
-	void transactionStarted();
-	
-	void transactionAboutToCommit();
-	
-	void transactionCommitted();
-	
-	void transactionRollbacked();
+    void addListener(TransactedListener listener);
 
-	void record(Object event);
-	
-	void recordEvent(CoreEvent event);
-	
-	void recordOperation(Operation<?> event);
+    void removeListener(TransactedListener listener);
+
+    void transactionStarted();
+
+    void transactionAboutToCommit();
+
+    void transactionCommitted();
+
+    void transactionRollbacked();
+
+    void record(Object event);
+
+    void recordEvent(CoreEvent event);
+
+    void recordOperation(Operation<?> event);
+
 }

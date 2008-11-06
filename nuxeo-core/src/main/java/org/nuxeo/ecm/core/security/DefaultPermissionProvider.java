@@ -254,7 +254,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         }
     }
 
-    synchronized public void registerDescriptor(
+    public synchronized void registerDescriptor(
             PermissionDescriptor descriptor) throws Exception {
         // check that all included permission have previously been registered
         Set<String> alreadyRegistered = new HashSet<String>();

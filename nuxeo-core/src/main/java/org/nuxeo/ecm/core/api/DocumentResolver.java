@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.model.Session;
  */
 // XXX: this is actually untrue: only AbstractSession references this class. This
 // could be refactored.
+// TODO: this is an utility class but it is instanciated anyway -> refactor.
 public class DocumentResolver implements Serializable {
 
     private static final long serialVersionUID = -2261223293670404568L;

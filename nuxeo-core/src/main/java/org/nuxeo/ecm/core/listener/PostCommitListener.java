@@ -22,29 +22,32 @@ package org.nuxeo.ecm.core.listener;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.operation.Operation;
 
-
 /**
- * This listener will be notified after the transaction was committed.  
- * 
+ * This listener will be notified after the transaction was committed.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public interface PostCommitListener extends TransactedListener {
 
     /**
-     * Current transaction was  committed. 
-     * This method should be used by listeners using the CoreEvent model 
-     * and ignored by the one using Operation events. 
-     * @param all core events collected in current transaction.
-     */    
-	public void onCommit(CoreEvent[] events);		
+     * Current transaction was  committed.
+     * <p>
+     * This method should be used by listeners using the CoreEvent model
+     * and ignored by the one using Operation events.
+     *
+     * @param events all core events collected in current transaction.
+     */
+    void onCommit(CoreEvent[] events);
 
     /**
-     * Current transaction was committed. 
-     * This method should be used by listeners using the Operation events 
-     * and ignored by the one using CoreEvent events. 
-     * @param events all operation events collected in current transaction  
-     */    
-	public void onCommit(Operation<?>[] events);
+     * Current transaction was committed.
+     * <p>
+     * This method should be used by listeners using the Operation events
+     * and ignored by the one using CoreEvent events.
+     *
+     * @param events all operation events collected in current transaction
+     */
+    void onCommit(Operation<?>[] events);
 
 }
