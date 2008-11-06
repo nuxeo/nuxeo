@@ -51,6 +51,7 @@
       <schema name="dublincore"/>
       <schema name="files"/>
       <schema name="wikiPage"/>
+      <schema name="uid" />
       <facet name="Versionable"/>
       <facet name="Publishable"/>
       <facet name="Indexable"/>

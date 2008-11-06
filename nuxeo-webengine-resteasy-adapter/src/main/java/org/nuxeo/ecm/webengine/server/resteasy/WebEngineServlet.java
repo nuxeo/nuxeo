@@ -127,16 +127,12 @@ public class WebEngineServlet extends HttpServlet {
         UriInfoImpl uriInfo = UriInfoImpl.create(request);
 
         HttpRequest in;
-        try {
-            in = new HttpServletInputMessage(headers, request.getInputStream(),
+        in = new HttpServletInputMessage(headers, new HttpRequestLazyInputStream(request),
                     uriInfo, httpMethod.toUpperCase());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         HttpResponse theResponse = new HttpServletResponseWrapper(response,
                 dispatcher.getProviderFactory());
 //        double d = System.currentTimeMillis();
-        try {           
+        try {
             // bs: initialize webengine context
             WebContext ctx = new WebEngineContext(in, request);
             WebEngine.setActiveContext(ctx);

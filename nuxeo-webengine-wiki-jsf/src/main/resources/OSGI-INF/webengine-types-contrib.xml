@@ -62,13 +62,6 @@
       </layouts>
     </type>
 
-    <type id="Workspace" coretype="Workspace">
-      <subtypes>
-        <type>Blog</type>
-        <type>Wiki</type>
-      </subtypes>
-    </type>
-
   </extension>
 
 </component>
