@@ -33,7 +33,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
-      <version>${nuxeo.webengine.version}</version>
+      <version>5.2-jax-rs</version>
     </dependency>
     
     <dependency>
