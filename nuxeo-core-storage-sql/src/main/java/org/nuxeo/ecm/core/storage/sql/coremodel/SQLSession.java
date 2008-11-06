@@ -659,6 +659,9 @@ public class SQLSession implements Session {
                     if (complexListSize == -1) {
                         // get existing
                         childNodes = session.getChildren(node, name, true);
+                        // as Children are not ordered for now, order by hand
+                        Collections.sort(childNodes,
+                                new Node.PositionComparator(model));
                     } else {
                         // create with given size (after a remove)
                         childNodes = new ArrayList<Node>(complexListSize);

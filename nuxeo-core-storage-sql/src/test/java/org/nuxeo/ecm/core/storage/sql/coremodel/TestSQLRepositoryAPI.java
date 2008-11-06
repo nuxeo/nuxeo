@@ -58,6 +58,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
  * NOTE: to run these tests in Eclipse, make sure your test runner allocates at
@@ -268,6 +269,76 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 "cmpf:attachedFile/vignettes/vignette[0]/content").getValue();
         assertEquals("file.bin", b.getFilename());
 
+    }
+
+    public void testComplexTypeOrdering() throws Exception {
+        // test case to reproduce an ordering content related Heisenbug on
+        // postgresql: NXP-2810: Preserve creation order of children of a
+        // complex type property in SQL storage with PostgreSQL
+
+        // create documents with a list of ordered vignettes
+        createComplexDocs(0, 5);
+
+        // check that the created docs hold their complex content in the
+        // creation order
+        checkComplexDocs(0, 5);
+
+        // add some more docs
+        createComplexDocs(5, 10);
+
+        // check that both the old and new document still hold their complex
+        // content in the same creation order
+        checkComplexDocs(0, 10);
+    }
+
+    protected void createComplexDocs(int iMin, int iMax) throws ClientException,
+            PropertyException {
+        for (int i = iMin; i < iMax; i++) {
+            DocumentModel doc = session.createDocumentModel("/", "doc" + i,
+                    "ComplexDoc");
+
+            Map<String, Object> attachedFile = new HashMap<String, Object>();
+            List<Map<String, Object>> vignettes = new ArrayList<Map<String, Object>>();
+            attachedFile.put("name", "some name");
+            attachedFile.put("vignettes", vignettes);
+
+            for (int j = 0; j < 3; j++) {
+                Map<String, Object> vignette = new HashMap<String, Object>();
+                vignette.put("width", Long.valueOf(j));
+                vignette.put("height", Long.valueOf(j));
+                vignette.put("content",
+                        StreamingBlob.createFromString(String.format("document %d, vignette %d", i, j)));
+                vignettes.add(vignette);
+            }
+            doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
+            doc = session.createDocument(doc);
+
+            session.save();
+            closeSession();
+            openSession();
+        }
+    }
+
+    protected void checkComplexDocs(int iMin, int iMax) throws ClientException,
+            PropertyException, IOException {
+        for (int i = iMin; i < iMax; i++) {
+            DocumentModel doc = session.getDocument(new PathRef("/doc" + i));
+
+            for (int j = 0; j < 3; j++) {
+                String propertyPath = String.format(
+                        "cmpf:attachedFile/vignettes/%d/", j);
+                assertEquals(Long.valueOf(j), doc.getProperty(
+                        propertyPath + "height").getValue());
+                assertEquals(Long.valueOf(j), doc.getProperty(
+                        propertyPath + "width").getValue());
+                assertEquals(String.format("document %d, vignette %d", i, j),
+                        doc.getProperty(propertyPath + "content").getValue(
+                                Blob.class).getString());
+            }
+
+            closeSession();
+            openSession();
+        }
     }
 
     public void testMarkDirty() throws Exception {
