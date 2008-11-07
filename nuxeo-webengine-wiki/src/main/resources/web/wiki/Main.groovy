@@ -11,7 +11,7 @@ import org.nuxeo.ecm.webengine.*;
 import org.nuxeo.ecm.core.api.*;
 
 
-@WebModule(name="wiki")
+@WebModule(name="wiki", facets = ["mainWiki"])
 @Path("/wikis")
 @Produces(["text/html; charset=UTF-8", "*/*; charset=UTF-8"])
 public class Main extends DocumentModule {
@@ -42,6 +42,14 @@ public class Main extends DocumentModule {
       }
   }
   
+  
+  @POST
+  public Response doPost() {      
+      String name = ctx.getForm().getString("name");
+      DocumentModel newDoc = DocumentHelper.createDocument(ctx, doc, name);
+      return redirect(getPath()+'/'+newDoc.getName());
+  }
+  
   @GET
   public Object doGet() {
     def docs = ctx.getCoreSession().getChildren(doc.getRef(), "Wiki");
@@ -50,14 +58,12 @@ public class Main extends DocumentModule {
 
   @Path("{segment}")
   public Object getWiki(@PathParam("segment") String segment) {
-    System.out.println("segment path");
     return DocumentFactory.newDocument(ctx, doc.getPath().append(segment).toString());
   }
 
   @GET
   @Path("create/{segment}")
   public Response createPage(@PathParam("segment") String segment) {
-      System.out.println("segment path");
     try{
       def session = ctx.getCoreSession();
       def newDoc = session.createDocumentModel("/default-domain/workspaces/", segment, "Workspace");

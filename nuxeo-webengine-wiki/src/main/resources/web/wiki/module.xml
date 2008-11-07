@@ -26,5 +26,10 @@
       <category>TOOLBOX</category>
     </link> 
     
+    <link id="link_create_wikis" path="/@views/create">
+      <facet>mainWiki</facet>
+      <category>TOOLBOX</category>
+    </link> 
+    
   </links>
 </module>
