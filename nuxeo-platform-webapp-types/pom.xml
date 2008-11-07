@@ -5,7 +5,7 @@
   <parent>
     <artifactId>nuxeo-platform-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <version>5.1.7-SNAPSHOT</version>
+    <version>5.1.7-20081107</version>
   </parent>
 
   <artifactId>nuxeo-platform-webapp-types</artifactId>
