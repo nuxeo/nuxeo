@@ -95,10 +95,10 @@ public class NuxeoAuthenticationFilter implements Filter {
      */
     protected boolean byPassAuthenticationLog = false;
     /**
-     * Which security domain to use 
+     * Which security domain to use
      */
     protected String securityDomain = LOGIN_DOMAIN;
-    
+
     protected static List<String> validStartURLs;
 
     protected static final String URLPolicyService_DISABLE_REDIRECT_REQUEST_KEY = "nuxeo.disable.redirect.wrapper";
@@ -161,7 +161,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             boolean success) {
         if (byPassAuthenticationLog) {
             return true;
-        }            
+        }
         String userName = userInfo.getUserName();
         if (userName == null || userName.length() == 0) {
             userName = userInfo.getToken();
@@ -203,18 +203,14 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         LoginContext loginContext;
         try {
-            // handler = new
-            // JbossSecurityPropagationCallbackHandler(cachableUserIdent.getUserInfo());
-            // handler = new
-            // UserIdentificationInfoCallbackHandler(cachableUserIdent.getUserInfo());
-            // CallbackHandler handler = new
-            // JBossUserIdentificationInfoCallbackHandler(
-            // cachableUserIdent.getUserInfo());
 
             CallbackHandler handler = service.getCallbackHandler(cachableUserIdent.getUserInfo());
 
             loginContext = new LoginContext(securityDomain, handler);
-            loginContext.login();
+
+            synchronized (NuxeoAuthenticationFilter.class) {
+                loginContext.login();
+            }
 
             Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
             cachableUserIdent.setPrincipal(principal);
@@ -222,7 +218,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             // re-set the userName since for some SSO based on token,
             // the userName is not known before login is completed
             cachableUserIdent.getUserInfo().setUserName(principal.getName());
-            
+
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), true);
         } catch (LoginException e) {
             // TODO Auto-generated catch block
@@ -231,7 +227,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
 
         // store login context for the time of the request
-        // TODO logincontext is also stored in cachableUserIdent - it is really needed to store it?? 
+        // TODO logincontext is also stored in cachableUserIdent - it is really needed to store it??
         httpRequest.setAttribute(NXAuthContants.LOGINCONTEXT_KEY, loginContext);
 
         // store user ident
@@ -322,7 +318,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         } else {
             log.debug("Entering Nuxeo Authentication Filter");
         }
-        
+
 
         String targetPageURL = null;
         CachableUserIdentificationInfo cachableUserIdent = null;
@@ -333,7 +329,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         if (principal == null) {
             log.debug("Principal not found inside Request via getUserPrincipal");
             // need to authenticate !
-            
+
             // retrieve user & password
             if (avoidReauthenticate) {
                 log.debug("Try getting authentication from cache");
@@ -342,7 +338,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                 log.debug("Principal cache is NOT activated");
             }
 
-            if (cachableUserIdent != null && cachableUserIdent.getUserInfo() != null 
+            if (cachableUserIdent != null && cachableUserIdent.getUserInfo() != null
                     && service.needResetLogin(request)) {
                 HttpSession session = httpRequest.getSession(false);
                 if (session != null) {
@@ -361,7 +357,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                     && cachableUserIdent.getUserInfo() != null)
             {
                 log.debug("userIdent found in cache, get the Principal from it without reloggin");
-                
+
                 principal = cachableUserIdent.getPrincipal();
                 log.debug("Principal = " + principal.getName());
                 propagateUserIdentificationInformation(cachableUserIdent);
@@ -486,7 +482,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
         return null;
     }
-    
+
     protected static CachableUserIdentificationInfo retrieveIdentityFromCache(
             HttpServletRequest httpRequest) {
 
@@ -512,7 +508,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         if (val != null) {
             securityDomain = val;
         }
-        
+
         service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
                 PluggableAuthenticationService.NAME);
         if (service == null) {
