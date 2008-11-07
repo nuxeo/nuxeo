@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ui.web.rest;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,12 +50,13 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
  *
  * @author tiry
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
+ * @author Florent Guillaume
  */
+
 @Name("restHelper")
 @Scope(EVENT)
 @NuxeoJavaBeanErrorHandler
-public class RestHelper {
+public class RestHelper implements Serializable {
 
     private static final Log log = LogFactory.getLog(RestHelper.class);
 
@@ -138,11 +140,12 @@ public class RestHelper {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(conversationManager.getConversationIdParameter(),
                 conversationId);
+        /*      Not needed anymore ????
         if (conversationManager.isLongRunningConversation()) {
             params.put(
                     conversationManager.getConversationIsLongRunningParameter(),
                     "true");
-        }
+        }*/
         return conversationManager.encodeParameters(url, params);
     }
 
@@ -157,7 +160,8 @@ public class RestHelper {
         if (conversationManager == null) {
             return url;
         }
-        return conversationManager.appendConversationIdFromRedirectFilter(url);
+        // XXX : deprecated
+        return conversationManager.encodeConversationId(url);
     }
 
     /**

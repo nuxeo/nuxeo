@@ -1,6 +1,8 @@
 package org.nuxeo.ecm.platform.ui.web.util;
 
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,6 +11,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
+import org.jboss.seam.web.MultipartRequest;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.restlet.data.Request;
@@ -42,8 +45,7 @@ public class FileUploadHelper {
             HttpRequest httpRequest = (HttpRequest) request;
             HttpCall httpCall = httpRequest.getHttpCall();
             if (httpCall instanceof ServletCall) {
-                HttpServletRequest httpServletRequest = ((ServletCall) httpCall)
-                        .getRequest();
+                HttpServletRequest httpServletRequest = ((ServletCall) httpCall).getRequest();
                 return parseRequest(httpServletRequest);
             }
         }
@@ -61,22 +63,20 @@ public class FileUploadHelper {
             throws Exception {
         List<Blob> blobs = new ArrayList<Blob>();
 
-// to be enabled only on the 5.2 branch
-//        if (request instanceof MultipartRequest) {
-//            MultipartRequest seamMPRequest = (MultipartRequest) request;
-//
-//            Enumeration<String> names = seamMPRequest.getParameterNames();
-//            while (names.hasMoreElements()) {
-//                String name = names.nextElement();
-//                InputStream in = seamMPRequest.getFileInputStream(name);
-//                if (in != null) {
-//                    Blob blob = new InputStreamBlob(in);
-//                    blob.setFilename(seamMPRequest.getFileName(name));
-//                    blobs.add(blob);
-//                }
-//            }
-//        } else {
-        if (true) {
+        if (request instanceof MultipartRequest) {
+            MultipartRequest seamMPRequest = (MultipartRequest) request;
+
+            Enumeration<String> names = seamMPRequest.getParameterNames();
+            while (names.hasMoreElements()) {
+                String name = names.nextElement();
+                InputStream in = seamMPRequest.getFileInputStream(name);
+                if (in != null) {
+                    Blob blob = StreamingBlob.createFromStream(in);
+                    blob.setFilename(seamMPRequest.getFileName(name));
+                    blobs.add(blob);
+                }
+            }
+        } else {
             // fallback method for non-seam servlet request
             FileUpload fu = new FileUpload(new DiskFileItemFactory());
             String fileNameCharset = request.getHeader("FileNameCharset");
@@ -87,7 +87,8 @@ public class FileUploadHelper {
                     request);
             List<FileItem> fileItems = fu.parseRequest(requestContext);
             for (FileItem item : fileItems) {
-                Blob blob = StreamingBlob.createFromStream(item.getInputStream()).persist();
+                Blob blob = StreamingBlob.createFromStream(
+                        item.getInputStream()).persist();
                 blob.setFilename(item.getName());
                 blobs.add(blob);
             }

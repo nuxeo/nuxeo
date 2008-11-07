@@ -834,17 +834,26 @@
   <tag>
     <name>inputDate</name>
     <tag-class>None</tag-class>
-    <description>Standard tomahawk tag</description>
+    <description>
+      DISABLED TAG for nuxeo > 5.2m2, otherwise deprecated standard tomahawk
+      tag.
+    </description>
   </tag>
   <tag>
     <name>inputCalendar</name>
     <tag-class>None</tag-class>
-    <description>Standard tomahawk tag</description>
+    <description>
+      DISABLED TAG for nuxeo > 5.2m2, otherwise deprecated standard tomahawk
+      tag.
+    </description>
   </tag>
   <tag>
     <name>schedule</name>
     <tag-class>None</tag-class>
-    <description>Standard tomahawk tag</description>
+    <description>
+      DISABLED TAG for nuxeo > 5.2m2, otherwise deprecated standard tomahawk
+      tag.
+    </description>
   </tag>
   <tag>
     <name>graphicImage</name>
@@ -854,7 +863,11 @@
   <tag>
     <name>inputFileUpload</name>
     <tag-class>None</tag-class>
-    <description>Standard trinidad inputFile tag</description>
+    <description>
+      DISABLED TAG for nuxeo > 5.2m2, otherwise deprecated standard trinidad
+      inputFile tag. Use s:fileUpload instead (available only for versions >
+      5.2m2).
+    </description>
   </tag>
   <tag>
     <name>selectOneRadio</name>

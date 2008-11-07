@@ -106,7 +106,7 @@ public class XmlDataInjector {
         final Source xslSource;
         // FIXME empty map in createXslSource is not equivalent to identify
         // transformation and thus do not return the expecting result.
-        if (fieldValues == null || fieldValues.keySet().size() == 0) {
+        if (fieldValues == null || fieldValues.keySet().isEmpty()) {
             log.info("<createTransformer> null options, use identity Xsl transformation");
             xslSource = getXslSource();
         } else {
@@ -116,7 +116,7 @@ public class XmlDataInjector {
         return tFactory.newTransformer(xslSource);
     }
 
-    private Source getXslSource() {
+    private static Source getXslSource() {
         final String xslFilePath = "test-data/wordml/identity-trans.xsl";
 
         final URL xslURL = Thread.currentThread().getContextClassLoader().getResource(

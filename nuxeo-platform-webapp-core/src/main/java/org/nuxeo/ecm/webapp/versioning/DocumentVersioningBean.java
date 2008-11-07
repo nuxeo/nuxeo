@@ -44,6 +44,7 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -145,6 +146,14 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return getIncRulesResult();
     }
 
+
+    @Factory(autoCreate=true, value="currentDocumentVersionInfo", scope=org.jboss.seam.ScopeType.EVENT)
+    public VersionInfo getCurrentDocumentVersionInfo() throws ClientException{
+            DocumentModel docModel = navigationContext.getCurrentDocument();
+            VersionInfo vInfo = new VersionInfo(getVersionLabel(docModel),getUidInfoAvailable());
+            return vInfo;
+    }
+
     /**
      * Get incrementation rules text info. If this is null, inc options for user
      * selection could be rendered. Otherwise this info could be shown to the
@@ -209,7 +218,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
                     VersioningDocument docVer = tempDoc.getAdapter(VersioningDocument.class);
                     String minorVer = docVer.getMinorVersion().toString();
                     String majorVer = docVer.getMajorVersion().toString();
-                    model.setDescription(majorVer.concat(".").concat(minorVer));
+                    model.setDescription(majorVer + '.' + minorVer);
                 }
             }
 
@@ -221,10 +230,8 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return versions;
     }
 
-    /**
-     * @return Map with available versioning options for the current document
-     */
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)
+    @BypassInterceptors
     public void resetVersioningOption() {
         availableVersioningOptionsMap = null;
         selectedOption = null;
@@ -255,6 +262,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
      * For documents about to be created there should be no versioning options.
      */
     @Observer(value = { EventNames.NEW_DOCUMENT_CREATED }, create = false, inject = false)
+    @BypassInterceptors
     public void resetRenderingStatus() {
         rendered = false;
     }
@@ -411,8 +419,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     }
 
     public static void setVersioningOptionInstanceId(DocumentModel docModel,
-            VersioningActions option, boolean evaluateCreateSnapshot)
-            throws ClientException {
+            VersioningActions option, boolean evaluateCreateSnapshot) {
 
         // add version inc option to document context so it will be
         // taken into consideration on the server side
