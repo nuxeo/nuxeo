@@ -161,7 +161,7 @@
     <echo>Jboss 4.0.4 is not supported anymore, user Jboss >= 4.2.2</echo>
   </target>
 
-  <target name="patch" depends="setproperties,patch-unix,patch-windows" />
+  <target name="patch" depends="setproperties,patch-unix,patch-windows" description="Patch a JBoss 4.2.x for use by Nuxeo-EP" />
   <target name="patch-unix" if="osfamily-unix">
     <echo message="Running maven script ${pom.file}" />
     <exec executable="mvn" failonerror="true">

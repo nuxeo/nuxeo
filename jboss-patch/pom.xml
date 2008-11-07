@@ -140,13 +140,11 @@
                         </parameter>
                       </parameters>
                     </transformationSet>
-
                   </transformationSets>
                 </configuration>
               </execution>
             </executions>
           </plugin>
-
           <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
             <executions>
@@ -181,7 +179,6 @@
               </execution>
             </executions>
           </plugin>
-
         </plugins>
       </build>
     </profile>
@@ -286,6 +283,22 @@
               <goal>run</goal>
             </goals>
           </execution>
+          <execution>
+            <id>patch-interceptors</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <tasks>
+                <echo
+                  message="Patch ejb3-interceptors-aop.xml replacing SessionSynchronizationInterceptor with NXSessionSynchronizationInterceptor..." />
+                <replace file="${jboss.deploy}/ejb3-interceptors-aop.xml"
+                  token="org.jboss.ejb3.stateful.SessionSynchronizationInterceptor"
+                  value="org.nuxeo.jboss.interceptors.NXSessionSynchronizationInterceptor" />
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
         </executions>
       </plugin>
 
@@ -324,6 +337,23 @@
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${jboss.lib}</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>patch-jboss-interceptors</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.nuxeo</groupId>
+                  <artifactId>nuxeo-jboss-interceptors</artifactId>
+                  <version>4.2.3.GA.1</version>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${jboss.deploy}</outputDirectory>
             </configuration>
           </execution>
         </executions>
