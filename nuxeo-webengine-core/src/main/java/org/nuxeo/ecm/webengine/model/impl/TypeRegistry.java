@@ -301,7 +301,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void installTypeContribution(String key, TypeDescriptor object) {
-        AbstractResourceType type = new ResourceTypeImpl(module, null, object.type, object.clazz);
+        AbstractResourceType type = null;
         if (object.isModule()) {
             type = new ModuleTypeImpl(module, null, object.type, object.clazz);
         } else {

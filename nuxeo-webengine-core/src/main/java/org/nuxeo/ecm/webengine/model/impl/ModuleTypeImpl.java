@@ -38,7 +38,7 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
 public class ModuleTypeImpl extends AbstractResourceType implements ModuleType {
 
     public ModuleTypeImpl(ModuleImpl module, AbstractResourceType superType, String name, ClassProxy clazz) {
-        super(module, superType, ROOT_TYPE_NAME, clazz);
+        super(module, superType, name, clazz);
     }
 
     @Override
