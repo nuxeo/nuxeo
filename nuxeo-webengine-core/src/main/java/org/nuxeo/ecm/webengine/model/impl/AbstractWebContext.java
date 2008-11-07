@@ -77,7 +77,7 @@ public abstract class AbstractWebContext implements WebContext {
     protected String basePath;
 
     protected AbstractWebContext(HttpServletRequest request) {
-        us = UserSession.getCurrentSession(request.getSession(true));
+        us = UserSession.getCurrentSession(request);
         engine = Framework.getLocalService(WebEngine.class);
         scriptExecutionStack = new LinkedList<File>();
         this.request = request;
@@ -138,16 +138,16 @@ public abstract class AbstractWebContext implements WebContext {
     public String getModulePath() {
         return head.getPath();
     }
-    
+
     public String getMessage(String key) {
         Messages messages = module.getMessages();
         try {
             return messages.getString(key);
         } catch (MissingResourceException e) {
             return '!' + key + '!';
-        }        
+        }
     }
-    
+
     public String getMessage(String key, String ... args) {
         Messages messages = module.getMessages();
         try {

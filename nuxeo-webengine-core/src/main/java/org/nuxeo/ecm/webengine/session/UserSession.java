@@ -26,17 +26,14 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.security.auth.Subject;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionBindingEvent;
-import javax.servlet.http.HttpSessionBindingListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -46,61 +43,43 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 // TODO: should be synchronized? concurrent access may happen for the same session
-public class UserSession extends HashMap<String, Object> implements HttpSessionBindingListener {
+public abstract class UserSession extends HashMap<String, Object>  {
 
     private static final long serialVersionUID = 260562970988817064L;
 
-    private static final Log log = LogFactory.getLog(UserSession.class);
+    protected final static String WE_SESSION_KEY="nuxeo.webengine.user_session";
 
-    protected static UserSession anonymous;
+    private static final Log log = LogFactory.getLog(UserSession.class);
 
     protected Map<Class<?>, ComponentMap<?>> comps = new HashMap<Class<?>, ComponentMap<?>>();
 
-
-    public static UserSession getCurrentSession(HttpSession session) {
-        if (session == null) {
-            return null;
-        }
-        return (UserSession) session.getAttribute("nuxeo.webengine.user_session");
-    }
-
-    public static void setCurrentSession(HttpSession session, UserSession us) {
-//        UserSession currentUs = (UserSession)session.getAttribute("nuxeo.webengine.user_session");
-//        if (currentUs != null) {
-//
-//        }
-        if (session != null) {
-            session.setAttribute("nuxeo.webengine.user_session", us);
-        }
-    }
-
-    public static UserSession getAnonymousSession(UserManager mgr) throws ClientException {
-        if (anonymous == null) {
-            anonymous = createAnonymousSession(mgr);
-        }
-        return anonymous;
-    }
-
-    public static UserSession createAnonymousSession(UserManager mgr) throws ClientException {
-        String userId = mgr.getAnonymousUserId();
-        if (userId == null) {
-            throw new IllegalStateException("User anonymous cannot be created");
-        }
-        return new UserSession(mgr.getPrincipal(userId), userId);
-    }
-
-    public static void destroyAnonynousSession() {
-        if (anonymous != null && anonymous.coreSession != null) {
-            anonymous.coreSession.destroy();
-        }
-        anonymous.coreSession = null;
-    }
-
     protected final Subject subject;
+
     protected final Principal principal;
+
     protected final Object credentials;
 
     protected transient CoreSession coreSession;
+
+    public static UserSession getCurrentSession(HttpServletRequest request) {
+
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return (UserSession) request.getAttribute(WE_SESSION_KEY);
+        }
+        return (UserSession) session.getAttribute(WE_SESSION_KEY);
+    }
+
+    public static void register(HttpServletRequest request, UserSession us) {
+
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            request.setAttribute(WE_SESSION_KEY, us);
+        }
+        else {
+            session.setAttribute(WE_SESSION_KEY, us);
+        }
+    }
 
     public UserSession(Principal principal) {
         this(principal, null);
@@ -161,13 +140,6 @@ public class UserSession extends HashMap<String, Object> implements HttpSessionB
         return getCoreSession(null);
     }
 
-    /**
-     * Whether or not this is the shared anonymous session.
-     */
-    public boolean isAnonymous() {
-        return this == anonymous;
-    }
-
     public Principal getPrincipal() {
         return principal;
     }
@@ -195,32 +167,14 @@ public class UserSession extends HashMap<String, Object> implements HttpSessionB
         return repo.open();
     }
 
-    public void valueBound(HttpSessionBindingEvent event) {
-        // the user session was bound to the HTTP session
-        install(event.getSession());
-    }
 
-    public void valueUnbound(HttpSessionBindingEvent event) {
-        // the user session was removed from the HTTP session
-        uninstall(event.getSession());
-       // System.out.println("unbound: "+event.getName() + " = " +event.getValue());
-        //HttpSess
-//        CoreSession cs = (CoreSession)session.getAttribute(DefaultWebContext.CORESESSION_KEY);
-//        if (cs != null) {
-//            if (!DefaultWebContext.isAnonymousSession(cs)) {
-//                propagate(currentIdentity);
-//                cs.destroy();
-//            }
-//        }
-    }
-
-    protected void install(HttpSession session) {
+    protected void install() {
         if (log.isDebugEnabled()) {
             log.debug("Installing user session");
         }
     }
 
-    protected synchronized void uninstall(HttpSession session) {
+    protected synchronized void uninstall() {
         if (log.isDebugEnabled()) {
             log.debug("Uninstalling user session");
         }
@@ -344,5 +298,9 @@ public class UserSession extends HashMap<String, Object> implements HttpSessionB
             return (T) getComponent(id, null);
         }
     }
+
+
+    public abstract void terminateRequest(HttpServletRequest request);
+
 
 }

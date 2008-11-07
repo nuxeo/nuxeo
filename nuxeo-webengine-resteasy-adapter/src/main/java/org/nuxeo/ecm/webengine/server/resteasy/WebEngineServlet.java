@@ -48,6 +48,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -132,9 +133,10 @@ public class WebEngineServlet extends HttpServlet {
         HttpResponse theResponse = new HttpServletResponseWrapper(response,
                 dispatcher.getProviderFactory());
 //        double d = System.currentTimeMillis();
+        WebContext ctx =null;
         try {
             // bs: initialize webengine context
-            WebContext ctx = new WebEngineContext(in, request);
+            ctx = new WebEngineContext(in, request);
             WebEngine.setActiveContext(ctx);
 
             ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
@@ -143,6 +145,12 @@ public class WebEngineServlet extends HttpServlet {
                     request));
             dispatcher.invoke(in, theResponse);
         } finally {
+            if (ctx!=null)
+            {
+                UserSession us = ctx.getUserSession();
+                if (us!=null)
+                    us.terminateRequest(request);
+            }
             ResteasyProviderFactory.clearContextData();
             // bs: cleanup webengine context
             WebEngine.setActiveContext(null);
