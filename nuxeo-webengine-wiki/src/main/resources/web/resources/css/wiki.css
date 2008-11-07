@@ -62,4 +62,8 @@ h2 {
 
 .commentsList #comments {
   color:#0066ff;
-}  
+} 
+
+.dontExistsYet {
+  color:#0000ff;
+}

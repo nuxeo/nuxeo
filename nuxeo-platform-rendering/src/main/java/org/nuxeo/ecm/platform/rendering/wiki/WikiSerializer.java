@@ -46,7 +46,6 @@ public class WikiSerializer {
     protected final Map<String, WikiExpression> expressions = new HashMap<String, WikiExpression>();
     protected final List<WikiFilter> filters = new ArrayList<WikiFilter>();
 
-
     public WikiSerializer() {
         parser = new CommonWikiParser();
         registerMacro(new TocMacro());

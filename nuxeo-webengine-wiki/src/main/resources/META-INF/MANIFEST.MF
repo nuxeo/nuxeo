@@ -12,4 +12,6 @@ Nuxeo-Require: org.nuxeo.runtime,
 Nuxeo-Component: OSGI-INF/core-types-contrib.xml, 
  OSGI-INF/document-types-contrib.xml,
  OSGI-INF/lifecycle-contrib.xml, 
- OSGI-INF/wiki-deployment-contrib.xml
+ OSGI-INF/wiki-deployment-contrib.xml,
+ OSGI-INF/listener-contrib.xml,
+ OSGI-INF/relation-contrib.xml

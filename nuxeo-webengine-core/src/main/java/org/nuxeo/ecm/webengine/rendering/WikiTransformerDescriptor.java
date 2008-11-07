@@ -25,6 +25,7 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.rendering.wiki.WikiFilter;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiTransformer;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.PatternFilter;
@@ -63,7 +64,13 @@ public class WikiTransformerDescriptor extends RenderingExtensionDescriptor {
         }
         WikiSerializer serializer = tr.getSerializer();
         for (WikiFilterDescriptor wfd : filters) {
-            serializer.addFilter(new PatternFilter(wfd.pattern, wfd.replacement));
+            if ( wfd.clazz != null ){
+                Class<?> clazz = Class.forName(wfd.clazz);
+                WikiFilter filter = (WikiFilter) clazz.newInstance();
+                serializer.addFilter(filter);
+            } else {
+                serializer.addFilter(new PatternFilter(wfd.pattern, wfd.replacement));
+            }
         }
         return tr;
     }
