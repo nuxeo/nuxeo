@@ -38,7 +38,7 @@ public class View extends Template {
         mediaType = ctx.getHttpHeaders().getMediaType();
         this.name = name;
     }
-    
+
     public View(WebContext ctx, String name) {
         this (ctx, null, name);
     }
@@ -64,25 +64,25 @@ public class View extends Template {
 
     public MediaType mediaType() {
         return mediaType;
-    }    
+    }
 
     public View fileName(String fileName) {
         resolve(fileName);
         return this;
     }
-    
+
     public View script(ScriptFile script) {
         this.script = script;
         return this;
     }
-        
+
     @Override
     public ScriptFile script() {
         if (script == null) {
             StringBuilder fileName = new StringBuilder();
             fileName.append(name);
             if (mediaType != null) {
-                String mediaId = ctx.getModule().getMediaTypeId(mediaType);                
+                String mediaId = ctx.getModule().getMediaTypeId(mediaType);
                 if (mediaId != null) {
                     fileName.append('-').append(mediaId);
                 }
@@ -95,7 +95,7 @@ public class View extends Template {
         }
         return script;
     }
-    
+
     public View resolve() {
         script(); // resolve script
         return this;

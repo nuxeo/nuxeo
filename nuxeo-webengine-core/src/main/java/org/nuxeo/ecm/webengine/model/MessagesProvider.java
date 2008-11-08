@@ -27,6 +27,6 @@ import java.util.Map;
  */
 public interface MessagesProvider {
 
-    public Map<String, String> getMessages(String language);
-    
+    Map<String, String> getMessages(String language);
+
 }

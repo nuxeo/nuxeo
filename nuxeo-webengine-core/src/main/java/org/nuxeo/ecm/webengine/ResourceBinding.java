@@ -96,7 +96,7 @@ public class ResourceBinding {
     public String getPath() {
         return path;
     }
-    
+
     /**
      * @return the clazz.
      */
@@ -110,5 +110,5 @@ public class ResourceBinding {
     public boolean isSingleton() {
         return singleton;
     }
-    
+
 }

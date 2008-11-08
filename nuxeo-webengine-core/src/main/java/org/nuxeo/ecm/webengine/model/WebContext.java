@@ -62,17 +62,17 @@ public interface WebContext extends Adaptable {
     Resource getRoot();
 
     /**
-     * Get the i18n message for the given key. 
-     * The current module i18n messages are queried first then if no message is found 
+     * Get the i18n message for the given key.
+     * The current module i18n messages are queried first then if no message is found
      * the global message pool is queried (the one living in WEB-INF/i18n)
-     * If no message is found  the key surrounded by exclamation marks is returned  
+     * If no message is found  the key surrounded by exclamation marks is returned
      * @param key the message key
-     * @return the message 
+     * @return the message
      */
     String getMessage(String key);
-    
+
     String getMessage(String key, String ... args);
-    
+
     /**
      * Same as {@link #getMessage(String)} but use the given locale
      * @param key the message key
@@ -80,9 +80,9 @@ public interface WebContext extends Adaptable {
      * @return the message
      */
     String getMessageL(String key, String locale);
-    
+
     String getMessageL(String key, String locale, String ... args);
-    
+
     /**
      * Gets the web engine instance.
      *

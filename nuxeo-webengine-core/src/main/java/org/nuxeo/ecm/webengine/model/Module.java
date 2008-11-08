@@ -45,11 +45,11 @@ public interface Module extends MessagesProvider {
     WebEngine getEngine();
 
     String getModuleTitle();
-    
+
     File getModuleIcon();
-    
+
     void flushCache();
-    
+
     Module getSuperModule();
 
     String getTemplateFileExt();
@@ -57,9 +57,9 @@ public interface Module extends MessagesProvider {
     String getMediaTypeId(MediaType mt);
 
     Map<String,String> getMessages(String language);
-    
+
     Messages getMessages();
-    
+
     /**
      * The root resource type.
      *

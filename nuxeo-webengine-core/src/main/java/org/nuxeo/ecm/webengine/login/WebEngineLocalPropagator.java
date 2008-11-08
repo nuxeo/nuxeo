@@ -31,8 +31,8 @@ public class WebEngineLocalPropagator implements NuxeoAuthenticationPropagator {
 
     public void propagateUserIdentificationInformation(
             CachableUserIdentificationInfo cachableUserIdent) {
-        ClientLoginModule.getThreadLocalLogin().push(cachableUserIdent.getPrincipal(), 
-                cachableUserIdent.getUserInfo().getPassword().toCharArray(), 
+        ClientLoginModule.getThreadLocalLogin().push(cachableUserIdent.getPrincipal(),
+                cachableUserIdent.getUserInfo().getPassword().toCharArray(),
                 cachableUserIdent.getLoginContext().getSubject());
     }
 

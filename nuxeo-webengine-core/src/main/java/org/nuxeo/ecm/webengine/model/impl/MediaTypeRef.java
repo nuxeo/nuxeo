@@ -34,11 +34,11 @@ public class MediaTypeRef {
 
     @XNode("@id")
     public String id;
-        
+
     public String type;
-    
+
     public String subtype;
-    
+
     @XContent
     public void setMimeType(String mimeType) {
         mimeType = mimeType.trim().toLowerCase();
@@ -57,7 +57,7 @@ public class MediaTypeRef {
             type = "*";
         }
     }
-    
+
     public String match(MediaType mt) {
         if (type != "*" && !type.equals(mt.getType())) {
             return null;

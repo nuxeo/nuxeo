@@ -81,7 +81,7 @@ public class ModuleDescriptor implements Cloneable {
 
     @XNodeList(value="media-types/media-type", type=MediaTypeRef[].class, componentType=MediaTypeRef.class, nullByDefault=true)
     public MediaTypeRef[] mediatTypeRefs;
-    
+
     public ResourceBinding binding;
 
     private Guard guard;

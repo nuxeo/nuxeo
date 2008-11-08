@@ -31,22 +31,22 @@ import java.util.ResourceBundle;
  *
  */
 public class MessagesBundle extends ResourceBundle {
-    
-    protected Map<String,String> messages; 
+
+    protected Map<String,String> messages;
 
     public MessagesBundle(ResourceBundle parent, Map<String,String> messages) {
         this.parent = parent;
         this.messages = messages == null ? new HashMap<String, String>() : messages;
     }
-    
-    
+
+
     public Object handleGetObject(String key) {
         if (key == null) {
             throw new NullPointerException();
         }
         return messages.get(key);
     }
-        
+
     /**
      * Implementation of ResourceBundle.getKeys.
      */
@@ -68,12 +68,12 @@ public class MessagesBundle extends ResourceBundle {
                 return true;
             }
             return parent.hasMoreElements();
-        }        
+        }
         public String nextElement() {
             if (it.hasNext()) {
                 return it.next();
             }
             return parent.nextElement();
-        }        
+        }
     }
 }

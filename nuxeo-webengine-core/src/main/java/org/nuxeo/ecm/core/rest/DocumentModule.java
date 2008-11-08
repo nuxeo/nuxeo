@@ -30,34 +30,34 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultModule;
 /**
  * Base class for modules that needs to bind to a document model
  * TODO: this class is not working yet.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class DocumentModule extends DefaultModule {
-    
+
     protected DocumentModel doc;
-    
+
     public DocumentModule(String path) {
         this (new PathRef(path));
     }
 
-    public DocumentModule(DocumentRef ref) {        
-        try { 
+    public DocumentModule(DocumentRef ref) {
+        try {
             doc = ctx.getCoreSession().getDocument(ref);
         } catch (ClientException e) {
-            throw WebException.wrap(e);            
+            throw WebException.wrap(e);
         }
     }
 
     public DocumentModel getDocument() {
         return doc;
     }
-    
+
     public CoreSession getSession() {
         return ctx.getCoreSession();
     }
-    
+
     @Override
     @SuppressWarnings("unchecked")
     public <A> A getAdapter(Class<A> adapter) {

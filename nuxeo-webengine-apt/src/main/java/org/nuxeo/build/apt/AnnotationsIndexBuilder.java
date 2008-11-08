@@ -59,14 +59,14 @@ public class AnnotationsIndexBuilder implements AnnotationProcessorFactory {
     // Process any set of annotations
     private static final Set<String> supportedAnnotations = new HashSet<String>(
             Arrays.asList(
-                    "org.nuxeo.ecm.webengine.model.WebObject", 
-                    "org.nuxeo.ecm.webengine.model.WebAdapter", 
+                    "org.nuxeo.ecm.webengine.model.WebObject",
+                    "org.nuxeo.ecm.webengine.model.WebAdapter",
                     "org.nuxeo.ecm.webengine.model.WebModule",
                     "org.nuxeo.ecm.webengine.model.WebView",
                     "javax.ws.rs.Path"));
 
     private static final String EOL = System.getProperty("line.separator");
-    
+
     // No supported options
     private static final Collection<String> supportedOptions = emptySet();
 
@@ -79,7 +79,7 @@ public class AnnotationsIndexBuilder implements AnnotationProcessorFactory {
 //            return result;
 //        } else {
 //            System.out.println("@@@>>>>>>>>>>>>> EMPTY");
-//          return emptySet();  
+//          return emptySet();
 //        }
         return supportedAnnotations;
     }
@@ -87,10 +87,10 @@ public class AnnotationsIndexBuilder implements AnnotationProcessorFactory {
     public Collection<String> supportedOptions() {
         return supportedOptions;
     }
-    
 
-    protected AnnotationProcessorEnvironment env; 
-    
+
+    protected AnnotationProcessorEnvironment env;
+
     public AnnotationProcessor getProcessorFor(
             Set<AnnotationTypeDeclaration> atds,
             AnnotationProcessorEnvironment env) {
@@ -113,7 +113,7 @@ public class AnnotationsIndexBuilder implements AnnotationProcessorFactory {
         }
 
         class Visitor extends SimpleDeclarationVisitor {
-            public void visitClassDeclaration(ClassDeclaration d) {                
+            public void visitClassDeclaration(ClassDeclaration d) {
                 String className = ((ClassDeclaration)d).getQualifiedName();
                 for (AnnotationMirror anno : d.getAnnotationMirrors()) {
                     AnnotationTypeDeclaration adecl = anno.getAnnotationType().getDeclaration();
@@ -123,7 +123,7 @@ public class AnnotationsIndexBuilder implements AnnotationProcessorFactory {
                     buf.append(className).append('|').append(adecl.getQualifiedName());
                     List<String> indexes = null;
                     for (AnnotationMirror aa : adecl.getAnnotationMirrors()) {
-                        if (aa.getAnnotationType().getDeclaration().getQualifiedName().equals("org.nuxeo.runtime.annotations.loader.Indexable")) {                            
+                        if (aa.getAnnotationType().getDeclaration().getQualifiedName().equals("org.nuxeo.runtime.annotations.loader.Indexable")) {
                             List<AnnotationValue> values = (List<AnnotationValue>)aa.getElementValues().values().iterator().next().getValue();
                             indexes = new ArrayList<String>(values.size());
                             for (AnnotationValue v : values) {
@@ -131,7 +131,7 @@ public class AnnotationsIndexBuilder implements AnnotationProcessorFactory {
                             }
                             break;
                         }
-                    }                    
+                    }
                     if (indexes != null) {
                         buf.append('|');
                         for (Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry : anno.getElementValues().entrySet()) {
@@ -148,21 +148,21 @@ public class AnnotationsIndexBuilder implements AnnotationProcessorFactory {
                             Object value = aval.getValue();
                             buf.append(key).append('|').append(encode(type, value)).append('|');
                         }
-                        buf.setLength(buf.length()-1); // remove trailing &                        
+                        buf.setLength(buf.length()-1); // remove trailing &
                     }
                     buf.append(EOL);
                 }
             }
         }
-        
+
         //TODO: encode value
         public final static String encode(TypeMirror type, Object value) {
             return value.toString();
         }
-        
+
         public void process() {
             try {
-                buf = new StringBuilder(); 
+                buf = new StringBuilder();
                 Messager log = env.getMessager();
 
                 DeclarationVisitor scanner = DeclarationVisitors.getDeclarationScanner(

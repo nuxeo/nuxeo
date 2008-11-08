@@ -80,10 +80,10 @@ public class ModuleImpl implements Module {
 
     protected ModuleTypeImpl type;
     protected ModuleImpl superModule;
-    
+
     protected Messages messages;
-    
-    
+
+
     public ModuleImpl(WebEngine engine, File root, ModuleDescriptor descriptor) {
         fileCache = new ConcurrentHashMap<String, ScriptFile>();
         this.root = root;
@@ -112,7 +112,7 @@ public class ModuleImpl implements Module {
     public WebEngine getEngine() {
         return engine;
     }
-    
+
     public String getModuleTitle() {
         String title = null;
         try {
@@ -125,7 +125,7 @@ public class ModuleImpl implements Module {
         }
         return title;
     }
-    
+
     public File getModuleIcon() {
         String icon = null;
         try {
@@ -352,14 +352,14 @@ public class ModuleImpl implements Module {
     }
 
     public void reloadMessages() {
-        messages = new Messages(superModule != null 
+        messages = new Messages(superModule != null
                 ? superModule.getMessages() : engine.getMessages(), this);
     }
 
     public Messages getMessages() {
         return messages;
     }
-    
+
     @SuppressWarnings("unchecked")
     public Map<String,String> getMessages(String language) {
         log.info("Loading i18n files");
@@ -376,9 +376,9 @@ public class ModuleImpl implements Module {
         } catch (IOException e) {
             return null;
         } finally {
-            if (in != null) { 
-                try { 
-                    in.close(); 
+            if (in != null) {
+                try {
+                    in.close();
                 } catch (IOException ee) {
                     ee.printStackTrace();
                 }
@@ -386,7 +386,7 @@ public class ModuleImpl implements Module {
         }
     }
 
-    
+
     @Override
     public String toString() {
         return getName();

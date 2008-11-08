@@ -50,16 +50,16 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 @WebAdapter(name="versions", type="VersionService", targetType="Document", targetFacets={"Versionable"})
 public class VersionService extends DefaultAdapter {
 
-    @GET 
+    @GET
     public Object doGet() {
         return getTarget().getView("versions");
     }
-    
+
     @Path("last")
     public DocumentObject getLastVersion() {
         try {
             DocumentObject dobj = (DocumentObject)getTarget();
-            DocumentModel doc =  dobj.getDocument();            
+            DocumentModel doc =  dobj.getDocument();
             DocumentModel v  = dobj.getCoreSession().getLastDocumentVersion(doc.getRef());
             if (v != null) {
                 return dobj.newDocument(v);

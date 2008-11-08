@@ -112,7 +112,7 @@ public class Template {
             WebException.wrap("Failed to write response", e);
         }
     }
-    
+
     public String render() {
         StringWriter w = new StringWriter();
         try {
@@ -120,7 +120,7 @@ public class Template {
             w.flush();
         } catch (Exception e) {
             WebException.wrap("Failed to write response", e);
-        }        
+        }
         return w.getBuffer().toString();
     }
 

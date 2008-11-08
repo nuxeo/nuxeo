@@ -39,33 +39,33 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
     protected String usernameKey = "username";
 
     protected String passwordKey = "password";
-    
+
     protected String loginKey = "/login";
-    
+
     protected String logoutKey = "/logout";
-    
+
 
     public Boolean handleLoginPrompt(HttpServletRequest request,
             HttpServletResponse response, String baseURL) {
-        return false; // TODO doesn't have a login page ? 
+        return false; // TODO doesn't have a login page ?
     }
 
     /**
-     * Get the path info to be used to redirect after login 
+     * Get the path info to be used to redirect after login
      * @param request
      * @return
      */
     protected String getLoginPathInfo(HttpServletRequest request) {
         String path = request.getPathInfo();
         if (path != null) {
-            int len = path.length(); 
+            int len = path.length();
             int keyLen = -1;
             if (path.startsWith(loginKey)) {
                 keyLen = loginKey.length();
             } else if (path.startsWith(logoutKey)) {
                 keyLen = loginKey.length();
             }
-            if (keyLen > -1) {                
+            if (keyLen > -1) {
                 if (len == keyLen) {
                     return "";
                 }  else if (path.charAt(keyLen) == '/') {
@@ -77,7 +77,7 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
         }
         return null;
     }
-    
+
     public UserIdentificationInfo handleRetrieveIdentity(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         String path = getLoginPathInfo(httpRequest);
@@ -121,7 +121,7 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
             String path = getLoginPathInfo(request);
             if (path == null) { // this should never happens
                 return false;
-            }            
+            }
             // ajax request
             if (request.getParameter("caller") != null) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed");
@@ -135,7 +135,7 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
         }
         return true;
     }
-    
+
 
     public boolean onSuccess(HttpServletRequest request,
             HttpServletResponse response) {
@@ -143,18 +143,18 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
             String path = getLoginPathInfo(request);
             if (path == null) { // this should never happens
                 return false;
-            }            
+            }
             // ajax request
             if (request.getParameter("caller") != null) {
                 response.sendError(HttpServletResponse.SC_OK);
-            } else { // normal request                
+            } else { // normal request
                 response.sendRedirect(path);
             }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
-        return true;        
+        return true;
     }
-    
+
 }

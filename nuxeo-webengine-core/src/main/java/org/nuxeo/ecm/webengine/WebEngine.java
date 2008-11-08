@@ -158,9 +158,9 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         rendering = new FreemarkerEngine();
         rendering.setResourceLocator(this);
         rendering.setSharedVariable("env", getEnvironment());
-        
+
         messages = new Messages(null, this);
-        
+
         // register annotation loader
         BundleAnnotationsLoader.getInstance().addLoader(Path.class.getName(), this);
 
@@ -194,7 +194,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     public Messages getMessages() {
         return messages;
     }
-    
+
     @SuppressWarnings("unchecked")
     public Map<String,String> getMessages(String language) {
         log.info("Loading i18n files");
@@ -211,9 +211,9 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         } catch (IOException e) {
             return null;
         } finally {
-            if (in != null) { 
-                try { 
-                    in.close(); 
+            if (in != null) {
+                try {
+                    in.close();
                 } catch (IOException ee) {
                     ee.printStackTrace();
                 }
@@ -242,7 +242,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
 
     /**
      * Try to load the module in the given directory
-     * If the directory dooesn't contain a WebModule nfalse is returned. 
+     * If the directory dooesn't contain a WebModule nfalse is returned.
      * @param file the module directory
      */
     public  boolean loadModule(File file) throws Exception {
@@ -268,10 +268,10 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
                 notifier.watch(file);
             }
             return true;
-        }        
+        }
         return false;
     }
-    
+
     protected  void loadModules() {
         moduleReg = new ModuleRegistry(this);
         for (File file : root.listFiles()) {
@@ -398,7 +398,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         directoryTypeProvider.flushCache();
         reloadModules();
     }
-    
+
     public synchronized void reloadModules() {
         for (Module module : moduleReg.getModules()) {
             ResourceBinding binding = module.getModuleBinding();
@@ -408,7 +408,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
             List<ResourceBinding> bindings = module.getResourceBindings();
             if (bindings != null) {
                 for (ResourceBinding b : bindings) {
-                    registry.removeBinding(b);    
+                    registry.removeBinding(b);
                 }
             }
         }
