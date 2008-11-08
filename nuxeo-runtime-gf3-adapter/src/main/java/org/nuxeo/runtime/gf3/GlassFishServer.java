@@ -130,7 +130,6 @@ public class GlassFishServer extends AppServer {
         return connRuntime.pingConnectionPool(poolName);
     }
 
-
     // remove parser.drop(DecoratorForJ2EEInstanceListener.class); from super
     protected InhabitantsParser decorateInhabitantsParser(InhabitantsParser parser) {
         // registering the server using the base class and not the current instance class

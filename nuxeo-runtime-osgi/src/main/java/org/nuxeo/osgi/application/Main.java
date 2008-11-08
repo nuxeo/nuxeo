@@ -99,8 +99,8 @@ public class Main {
 
     private static class RootClassLoader extends ClassLoader {
 
-        private Class<?> loaderClass;
-        private String loaderName;
+        private final Class<?> loaderClass;
+        private final String loaderName;
 
         RootClassLoader(ClassLoader parent, Class<?> loaderClass) {
             super(parent);

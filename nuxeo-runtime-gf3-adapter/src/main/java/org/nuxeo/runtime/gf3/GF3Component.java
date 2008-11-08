@@ -32,7 +32,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 
-// BUG:       in InjectionManager  if (!isOptional(inject)) { return always true - isOptional return always false
+// BUG:       in InjectionManager
+// if (!isOptional(inject)) { return always true - isOptional return always false
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
