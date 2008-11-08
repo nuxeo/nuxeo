@@ -114,7 +114,7 @@ public class DerbyFunctions {
      *
      * @param id the id of the document
      * @param principals the allowed identities
-     * @param permissionsn the allowed permissions
+     * @param permissions the allowed permissions
      */
     protected static boolean isAccessAllowed(Serializable id,
             Set<String> principals, Set<String> permissions)

@@ -92,7 +92,7 @@ public class TableAlias implements Table {
     }
 
     public Column addColumn(String name, PropertyType type, int sqlType,
-            String key, Model model) throws IllegalArgumentException {
+            String key, Model model) {
         throw new UnsupportedOperationException();
     }
 

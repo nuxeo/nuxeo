@@ -54,7 +54,7 @@ public class TableImpl implements Table {
      */
     public TableImpl(Database database, String name) {
         this.database = database;
-        this.dialect = database.dialect;
+        dialect = database.dialect;
         this.name = name;
         // we use a LinkedHashMap to have deterministic ordering
         columns = new LinkedHashMap<String, Column>();
@@ -87,11 +87,9 @@ public class TableImpl implements Table {
 
     /**
      * Adds a {@link Column} to the table.
-     *
-     * @param column the column
      */
     public Column addColumn(String name, PropertyType type, int sqlType,
-            String key, Model model) throws IllegalArgumentException {
+            String key, Model model) {
         String physicalName = database.getColumnPhysicalName(name);
         if (columns.containsKey(physicalName)) {
             throw new IllegalArgumentException("duplicate column " +

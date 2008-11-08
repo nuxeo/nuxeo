@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.security.AccessControlException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +27,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.security.AccessControlException;
 
 import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionMetaData;
@@ -333,13 +333,13 @@ public class SessionImpl implements Session {
         hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY,
                 Boolean.valueOf(complexProp));
 
-        SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
+        SimpleFragment mainRow = context.createSimpleFragment(
                 model.mainTableName, id, mainMap);
 
         SimpleFragment hierRow;
         if (model.separateMainTable) {
             // TODO put it in a collection context instead
-            hierRow = (SimpleFragment) context.createSimpleFragment(
+            hierRow = context.createSimpleFragment(
                     model.hierTableName, id, hierMap);
         } else {
             hierRow = null;
@@ -542,7 +542,7 @@ public class SessionImpl implements Session {
         return context.getContextOrNull(tableName);
     }
 
-    private void checkLive() throws IllegalStateException {
+    private void checkLive() {
         if (!live) {
             throw new IllegalStateException("Session is not live");
         }
@@ -583,12 +583,12 @@ public class SessionImpl implements Session {
         hierMap.put(model.HIER_CHILD_NAME_KEY, "");
         hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.FALSE);
 
-        SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
+        SimpleFragment mainRow = context.createSimpleFragment(
                 model.mainTableName, id, mainMap);
 
         SimpleFragment hierRow;
         if (model.separateMainTable) {
-            hierRow = (SimpleFragment) context.createSimpleFragment(
+            hierRow = context.createSimpleFragment(
                     model.hierTableName, id, hierMap);
         } else {
             hierRow = null;

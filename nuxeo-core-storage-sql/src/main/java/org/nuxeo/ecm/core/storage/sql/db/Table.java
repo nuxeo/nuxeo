@@ -47,7 +47,7 @@ public interface Table extends Serializable {
      * Adds a {@link Column} to the table.
      */
     Column addColumn(String name, PropertyType type, int sqlType, String key,
-            Model model) throws IllegalArgumentException;
+            Model model);
 
     /**
      * Adds an index on one or several columns.

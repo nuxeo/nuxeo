@@ -163,6 +163,7 @@ public class Context {
      * @return the created row
      * @throws StorageException if the row is already in the context
      */
+    // FIXME: do we want to throw StorageException or IllegalStateException ?
     public SimpleFragment create(Serializable id, Map<String, Serializable> map)
             throws StorageException {
         if (pristine.containsKey(id) || modified.containsKey(id)) {
