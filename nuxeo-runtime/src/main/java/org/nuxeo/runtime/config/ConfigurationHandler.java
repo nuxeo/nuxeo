@@ -60,11 +60,11 @@ public abstract class ConfigurationHandler {
 
     public static ServerConfiguration loadConfig(InvokerLocator locator, Server server, Version version)
             throws ConfigurationException {
-        return ConfigurationHandler.getHandler(version).loadConfig(locator, server);
+        return getHandler(version).loadConfig(locator, server);
     }
 
     public static ServerConfiguration buildConfig(Version version) throws ConfigurationException {
-        return ConfigurationHandler.getHandler(version).buildConfig();
+        return getHandler(version).buildConfig();
     }
 
     public boolean accept(Version v) {

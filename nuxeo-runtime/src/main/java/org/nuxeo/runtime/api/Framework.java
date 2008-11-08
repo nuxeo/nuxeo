@@ -91,7 +91,7 @@ public final class Framework {
     }
 
     private static void initServiceManager() {
-        String sm = Framework.getProperty("org.nuxeo.runtime.ServiceManager");
+        String sm = getProperty("org.nuxeo.runtime.ServiceManager");
         if (sm == null) { // compatibility mode
             serviceMgr = org.nuxeo.runtime.api.ServiceManager.getInstance();
         } else {

@@ -102,7 +102,7 @@ public class Main {
         private Class<?> loaderClass;
         private String loaderName;
 
-        RootClassLoader(ClassLoader parent, Class<?> loaderClass) throws ClassNotFoundException {
+        RootClassLoader(ClassLoader parent, Class<?> loaderClass) {
             super(parent);
             this.loaderClass = loaderClass;
             loaderName = loaderClass.getName();

@@ -62,18 +62,18 @@ public class StandaloneApplication extends OSGiAdapter {
     }
 
     public static StandaloneApplication createInstance(SharedClassLoader cl) throws IOException {
-        if (StandaloneApplication.instance != null) {
+        if (instance != null) {
             throw new IllegalStateException("Application already instantiated");
         }
         // create application environment
         Environment env = createEnvironment();
         Environment.setDefault(env);
-        StandaloneApplication.instance = new StandaloneApplication(cl, env);
+        instance = new StandaloneApplication(cl, env);
         String val = options.getOption("scanForNestedJARs");
         if (val != null) {
             StandaloneApplication.instance.scanForNestedJARs = Boolean.parseBoolean(val);
         }
-        return StandaloneApplication.instance;
+        return instance;
     }
 
     private StandaloneApplication(SharedClassLoader cl, Environment env) {
@@ -274,7 +274,7 @@ public class StandaloneApplication extends OSGiAdapter {
         // start framework
         StandaloneApplication app = null;
         try {
-            app = StandaloneApplication.createInstance(classLoader);
+            app = createInstance(classLoader);
             // start level 0
             app.setClassPath(classPath);
             app.setSystemBundle(new SystemBundle(app, createSystemBundle(systemBundle), classLoader));

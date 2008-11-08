@@ -54,7 +54,7 @@ public class NodeConfiguration implements Serializable, Cloneable {
     public static final String IS_STREAMING_SERVER = "org.nuxeo.runtime.streaming.isServer";
     public static final String STREAMING_LOCATOR = "org.nuxeo.runtime.streaming.serverLocator";
 
-    private static NodeConfiguration configuration = null;
+    private static NodeConfiguration configuration;
 
     private static final long serialVersionUID = 1227680972931266947L;
 
@@ -66,8 +66,8 @@ public class NodeConfiguration implements Serializable, Cloneable {
     //private ServerInstance[] peers;
     private Properties env;
 
-    private String productName;
-    private String productVersion;
+    private final String productName;
+    private final String productVersion;
 
     private String streamingLocator;
     private boolean isStreamingServer;
@@ -89,7 +89,7 @@ public class NodeConfiguration implements Serializable, Cloneable {
     }
 
     /**
-     * Give the possibility to override the current configuration.
+     * Gives the possibility to override the current configuration.
      * This is useful for clients using auto configuration like Apogee.
      * @param cfg the configuration to use as the current node configuration
      */

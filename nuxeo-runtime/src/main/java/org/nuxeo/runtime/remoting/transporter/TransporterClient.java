@@ -58,17 +58,17 @@ public class TransporterClient implements InvocationHandler, Serializable {
     private static final Log log = LogFactory.getLog(TransporterClient.class);
 
     // detector variables (only needed when clustering)
-    private static MBeanServer server = null;
+    private static MBeanServer server;
 
-    private static Detector detector = null;
+    private static Detector detector;
 
-    private static NetworkRegistry registry = null;
+    private static NetworkRegistry registry;
 
-    private Client remotingClient = null;
+    private Client remotingClient;
 
 //    private boolean isClustered = false;
 
-    private String subSystem = null;
+    private String subSystem;
 
     /**
      * Creates the remoting client to server POJO. Is clustered.
