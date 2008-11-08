@@ -40,7 +40,7 @@ public class LifeCycleStateImpl implements LifeCycleState {
     /** Collection of allowed state transitions. */
     private final Collection<String> allowedStateTransitions;
 
-    private boolean initial;
+    private final boolean initial;
 
     public LifeCycleStateImpl(String name, String description,
             Collection<String> allowedStateTransitions, boolean initial) {

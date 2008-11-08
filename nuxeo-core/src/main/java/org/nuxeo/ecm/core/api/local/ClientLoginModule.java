@@ -23,6 +23,7 @@ import java.lang.reflect.Constructor;
 import java.security.Principal;
 import java.util.Map;
 import java.util.Set;
+import java.io.IOException;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
@@ -83,7 +84,7 @@ public class ClientLoginModule implements LoginModule {
         this.sharedState = sharedState;
         // Check for multi-threaded option
         String mt = (String) options.get("multi-threaded");
-        if (mt != null && Boolean.valueOf(mt).booleanValue() == true) {
+        if (mt != null && Boolean.valueOf(mt)) {
             // Turn on the server mode which uses thread local storage for the
             // principal information.
             stack = threadInstance.get();
@@ -135,7 +136,7 @@ public class ClientLoginModule implements LoginModule {
                 System.arraycopy(tmpPassword, 0, password, 0, tmpPassword.length);
                 pc.clearPassword();
             }
-        } catch (java.io.IOException ioe) {
+        } catch (IOException ioe) {
             throw new LoginException(ioe.toString());
         } catch (UnsupportedCallbackException uce) {
             throw new LoginException("Error: " + uce.getCallback().toString()
@@ -145,7 +146,7 @@ public class ClientLoginModule implements LoginModule {
         return true;
     }
 
-   /**
+    /**
      * Commits the authentication process (phase 2).
      * <p>
      * This is where the SecurityAssociation information is set. The principal
@@ -155,11 +156,10 @@ public class ClientLoginModule implements LoginModule {
      * is used. If useFirstPass the username obtained from the callback handler
      * is used to build the SimplePrincipal. Both may be overridden if the
      * resulting authenticated Subject principals set it not empty.
-     *
      */
-   public boolean commit() throws LoginException {
-        Set principals = subject.getPrincipals();
-        Principal p = null;
+    public boolean commit() throws LoginException {
+        Set<Principal> principals = subject.getPrincipals();
+        Principal p;
         Object credential = password;
         if (useFirstPass) {
             Object user = sharedState.get("javax.security.auth.login.name");
@@ -175,7 +175,7 @@ public class ClientLoginModule implements LoginModule {
         }
 
         if (!principals.isEmpty()) {
-            p = (Principal) principals.iterator().next();
+            p = principals.iterator().next();
         }
         stack.push(p, credential, subject);
         return true;

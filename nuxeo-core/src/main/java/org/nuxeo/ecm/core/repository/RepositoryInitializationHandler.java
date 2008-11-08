@@ -100,11 +100,11 @@ public abstract class RepositoryInitializationHandler {
 
     public void install() {
         synchronized (RepositoryInitializationHandler.class) {
-            previous = RepositoryInitializationHandler.instance;
+            previous = instance;
             if (previous != null) {
                 previous.next = this;
             }
-            RepositoryInitializationHandler.instance = this;
+            instance = this;
         }
     }
 
@@ -116,8 +116,8 @@ public abstract class RepositoryInitializationHandler {
                     next.previous = previous;
                 }
             }
-            if (RepositoryInitializationHandler.instance == this) {
-                RepositoryInitializationHandler.instance = previous;
+            if (instance == this) {
+                instance = previous;
             }
         }
     }
