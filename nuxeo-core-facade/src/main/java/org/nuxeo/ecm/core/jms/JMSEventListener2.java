@@ -219,9 +219,9 @@ public class JMSEventListener2 extends AbstractEventListener implements
             }
         }
     }
-    
-    /** Post Commit notification */ 
-    
+
+    /** Post Commit notification */
+
     public void onCommit(CoreEvent[] events) {
         CoreEventPublisher publisher = CoreEventPublisher.getInstance();
         try {
@@ -232,7 +232,7 @@ public class JMSEventListener2 extends AbstractEventListener implements
             e.printStackTrace(); //TODO
         }
     }
-    
+
     public void onCommit(Operation<?>[] events) {
         try {
             for (Operation<?> cmd : events) {
@@ -242,14 +242,14 @@ public class JMSEventListener2 extends AbstractEventListener implements
             e.printStackTrace(); //TODO
         }
     }
-    
+
     public static List<OperationEvent> filterEvents(CoreEvent[] events) {
         // Must be declared as Serializable
         ArrayList<OperationEvent> cmdEvents = new ArrayList<OperationEvent>();
         Set<DocumentRef> checkedDocs = new HashSet<DocumentRef>();
 
         for (CoreEvent coreEvent : events) {
-            // remove non document events 
+            // remove non document events
             if (!(coreEvent.getSource() instanceof DocumentModel)) {
                 continue;
             }
@@ -270,7 +270,7 @@ public class JMSEventListener2 extends AbstractEventListener implements
                 continue;
             }
 
-            
+
             // remove duplicates TODO improve this
             String id = coreEvent.getEventId();
             if (DocumentEventTypes.DOCUMENT_CREATED.equals(id)

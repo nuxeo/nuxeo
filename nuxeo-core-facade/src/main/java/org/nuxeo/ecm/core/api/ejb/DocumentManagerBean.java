@@ -90,8 +90,8 @@ public class DocumentManagerBean extends AbstractSession implements SessionSynch
 
     @Resource
     transient EJBContext context;
-    
-    
+
+
     @Override
     @Remove
     @PermitAll
@@ -315,7 +315,7 @@ public class DocumentManagerBean extends AbstractSession implements SessionSynch
         }
     }
 
-    
+
     public void afterBegin() throws EJBException, RemoteException {
 //        System.out.println("# "+Thread.currentThread().getId()+ " #### TRANSACTION STARTED: ");
 //        if (log.isDebugEnabled()) {
@@ -335,9 +335,9 @@ public class DocumentManagerBean extends AbstractSession implements SessionSynch
 //        CoreEventListenerService service = NXCore.getCoreEventListenerService();
 //        if (service != null) {
 //            service.transactionAboutToCommit();
-//        }       
+//        }
     }
-    
+
     public void afterCompletion(boolean committed) throws EJBException,
             RemoteException {
 //        System.out.println("# "+Thread.currentThread().getId()+ " #### TRANSACTION COMMITTED: "+committed);
@@ -351,7 +351,7 @@ public class DocumentManagerBean extends AbstractSession implements SessionSynch
 //            } else {
 //                service.transactionRollbacked();
 //            }
-//        }        
+//        }
     }
-    
+
 }

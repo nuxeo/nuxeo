@@ -201,18 +201,18 @@ public class DefaultEventService extends DefaultComponent implements
             txEventMgr.transactionStarted();
         }
     }
-    
+
     public void transactionAboutToCommit() {
         if (txEventMgr != null) {
             txEventMgr.transactionAboutToCommit();
-        }        
+        }
     }
 
     public boolean isPostCommitEnabled() {
         return txEventMgr != null;
     }
 
-    
+
 //    private void logEvent(CoreEvent event) {
 //      if (log.isInfoEnabled()) {
 //          String path = null;

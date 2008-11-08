@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.listener.PreCommitListener;
 
 /**
  * This is a test listener that prints out transacted notifications
- *  
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */

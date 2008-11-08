@@ -20,8 +20,8 @@
 package org.nuxeo.ecm.core.listener;
 
 /**
- * Marker interface for all listener interested in post event handling. 
- * 
+ * Marker interface for all listener interested in post event handling.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */

@@ -91,7 +91,7 @@ public interface CoreEventListenerService {
      */
     EventListener getEventListenerByName(String name);
 
-    
+
     /**
      * Notify post commit listeners about all events raised in the current transaction.
      *  Called by the core session after the current transaction was committed
@@ -109,9 +109,9 @@ public interface CoreEventListenerService {
      * This will start a new post commit session
      */
     void transactionStarted();
-    
+
     /**
-     * Transaction is about to be commited 
+     * Transaction is about to be commited
      */
     void transactionAboutToCommit();
 

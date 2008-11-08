@@ -182,7 +182,7 @@ public class CoreEventListenerServiceImpl extends DefaultComponent implements
     }
 
     public void transactionAboutToCommit() {
-        throw new UnsupportedOperationException("operation not supported");        
+        throw new UnsupportedOperationException("operation not supported");
     }
-    
+
 }
