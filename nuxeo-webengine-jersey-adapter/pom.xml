@@ -56,11 +56,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-scripting</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey</artifactId>
       <version>0.8-ea</version>

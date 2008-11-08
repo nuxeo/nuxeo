@@ -76,7 +76,6 @@
 
   <artifactSet id="third-party-libs">
     <artifacts>
-      <artifact group="javax.servlet" name="servlet-api" version="2.4"/>
       <artifact group="commons-beanutils" name="commons-beanutils" />
       <artifact group="commons-io" name="commons-io" />
       <artifact group="commons-fileupload" name="commons-fileupload" />

@@ -16,8 +16,6 @@
 
       <artifact group="org.nuxeo.runtime" name="nuxeo-runtime" />
       <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-osgi" />
-      <!-- this is deprecated : should be refactored -->
-      <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-scripting" />
       
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-api" />
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-schema" />
@@ -33,6 +31,8 @@
   <artifactSet id="third-party-libs">
     <import>*</import>
     <includes>
+      <artifact group="javax.script" name="script-api" />
+      <artifact group="org.codehaus.groovy" name="groovy-all" />
       <artifact group="concurrent" />
       <artifact group="jline" />
       <artifact group="dom4j" />

@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine.model;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -32,8 +33,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.ecm.webengine.security.Guard;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

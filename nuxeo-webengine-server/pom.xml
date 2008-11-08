@@ -119,10 +119,6 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-osgi</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-scripting</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -351,6 +347,15 @@
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.script</groupId>
+      <artifactId>script-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>

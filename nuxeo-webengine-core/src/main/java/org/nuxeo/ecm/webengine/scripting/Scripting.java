@@ -24,8 +24,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -41,10 +39,6 @@ import javax.script.SimpleScriptContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.python.core.PyDictionary;
-import org.python.core.PyList;
-import org.python.core.PyObject;
-import org.python.core.PyTuple;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -164,17 +158,18 @@ public class Scripting {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    public static Map convertPythonMap(PyDictionary dict) {
-        PyList list = dict.items();
-        Map<String, PyObject> table = new HashMap();
-        for(int i = list.__len__(); i-- >  0; ) {
-            PyTuple tup = (PyTuple) list.__getitem__(i);
-            String key = tup.__getitem__(0).toString();
-            table.put(key, tup.__getitem__(1));
-        }
-        return table;
-    }
+//TODO move this in a python scripting adapter
+//    @SuppressWarnings("unchecked")
+//    public static Map convertPythonMap(PyDictionary dict) {
+//        PyList list = dict.items();
+//        Map<String, PyObject> table = new HashMap();
+//        for(int i = list.__len__(); i-- >  0; ) {
+//            PyTuple tup = (PyTuple) list.__getitem__(i);
+//            String key = tup.__getitem__(0).toString();
+//            table.put(key, tup.__getitem__(1));
+//        }
+//        return table;
+//    }
 
     public CompiledScript getCompiledScript(ScriptEngine engine, File file) throws ScriptException {
         Entry entry = cache.get(file);

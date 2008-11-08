@@ -52,6 +52,17 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>javax.script</groupId>
+        <artifactId>script-api</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-all</artifactId>
+        <version>1.5.7</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-rendering</artifactId>
         <version>${nuxeo.platform.version}</version>
@@ -87,12 +98,6 @@
         <version>${nuxeo.webengine.version}</version>
       </dependency>
 
-      <!-- was missing in nuxeo-platform-parent:pom -->
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-scripting</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-jetty-adapter</artifactId>

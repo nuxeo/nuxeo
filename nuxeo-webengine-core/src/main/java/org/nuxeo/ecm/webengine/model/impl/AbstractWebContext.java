@@ -51,10 +51,8 @@ import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
-import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
-import org.python.core.PyDictionary;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -451,12 +449,8 @@ public abstract class AbstractWebContext implements WebContext {
     @SuppressWarnings("unchecked")
     public void render(ScriptFile script, Object ctx, Writer writer) {
         Map map = null;
-        if (ctx != null) {
-            if (ctx instanceof Map) {
-                map = (Map) ctx;
-            } else if (ctx instanceof PyDictionary) {
-                map = Scripting.convertPythonMap((PyDictionary) ctx);
-            }
+        if (ctx instanceof Map) {
+            map = (Map) ctx;
         }
         try {
             String template = script.getURL();

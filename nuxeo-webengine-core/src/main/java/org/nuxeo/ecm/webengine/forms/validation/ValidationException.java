@@ -20,8 +20,7 @@
 package org.nuxeo.ecm.webengine.forms.validation;
 
 import java.util.Collection;
-
-import edu.emory.mathcs.backport.java.util.Collections;
+import java.util.Collections;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

@@ -27,6 +27,8 @@
   <artifactSet id="third-party-libs">
     <import>**</import>
     <includes>
+      <artifact group="javax.script" name="script-api" />
+      <artifact group="org.codehaus.groovy" name="groovy-all" />
       <artifact name="osgi-core" />
       <artifact name="commons-collections" />
       <artifact name="commons-io" />
