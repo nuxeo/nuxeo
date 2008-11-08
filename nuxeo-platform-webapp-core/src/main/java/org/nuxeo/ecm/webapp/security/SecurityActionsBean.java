@@ -85,17 +85,17 @@ import org.nuxeo.runtime.api.Framework;
 public class SecurityActionsBean extends InputController implements
         SecurityActions, Serializable {
 
-    private static final long serialVersionUID = -7190826911734958662L;
-
     protected static final String[] SEED_PERMISSIONS_TO_CHECK = {
             SecurityConstants.WRITE_SECURITY, SecurityConstants.READ_SECURITY };
 
-    protected String[] CACHED_PERMISSION_TO_CHECK = null;
+    private static final long serialVersionUID = -7190826911734958662L;
 
     private static final Log log = LogFactory.getLog(SecurityActionsBean.class);
 
     private static final Labeler labeler = new Labeler(
             "label.security.permission");
+
+    protected String[] CACHED_PERMISSION_TO_CHECK;
 
     protected SecurityData securityData;
 
@@ -142,7 +142,7 @@ public class SecurityActionsBean extends InputController implements
     }
 
     public void rebuildSecurityData() throws ClientException {
-        DocumentModel currentDocument= navigationContext.getCurrentDocument();
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
         try {
             if (null != currentDocument) {
                 if (null == securityData) {
@@ -315,8 +315,7 @@ public class SecurityActionsBean extends InputController implements
         }
     }
 
-    public String addPermission(String principalName, String permissionName,
-            boolean grant) {
+    public String addPermission(String principalName, String permissionName, boolean grant) {
         if (securityData == null) {
             try {
                 securityData = getSecurityData();
@@ -328,55 +327,48 @@ public class SecurityActionsBean extends InputController implements
 
         String grantPerm = permissionName;
         String denyPerm = permissionName;
-        if (visibleUserPermissions!=null)
-        {
-            List<UserVisiblePermission> uvps = visibleUserPermissions.get(securityData.getDocumentType());
-            if (uvps!=null)
-            {
-                for (UserVisiblePermission uvp : uvps)
-                {
-                    if (uvp.getId().equals(permissionName))
-                    {
-                        grantPerm=uvp.getPermission();
-                        denyPerm= uvp.getDenyPermission();
+        if (visibleUserPermissions != null) {
+            List<UserVisiblePermission> uvps = visibleUserPermissions.get(
+                    securityData.getDocumentType());
+            if (uvps != null) {
+                for (UserVisiblePermission uvp : uvps) {
+                    if (uvp.getId().equals(permissionName)) {
+                        grantPerm = uvp.getPermission();
+                        denyPerm = uvp.getDenyPermission();
                         break;
                     }
                 }
+            } else {
+                log.debug(
+                        "no entry for documentType in visibleUserPermissions this should never happend, using default mapping ...");
             }
-            else
-            {
-                log.debug("no entry for documentType in visibleUserPermissions this should never happend, using default mapping ...");
-            }
+        } else {
+            log.debug(
+                    "visibleUserPermissions is null this should never happend, using default mapping ...");
         }
-        else
-            log.debug("visibleUserPermissions is null this should never happend, using default mapping ...");
 
-
-        if (grant)
-        {
+        if (grant) {
             // remove the opposite rule if any
             boolean removed = securityData.removeModifiablePrivilege(principalName, denyPerm,
                     !grant);
-            if (!removed)
-                removed = securityData.removeModifiablePrivilege(principalName, grantPerm,
-                    !grant);
+            if (!removed) {
+                removed = securityData.removeModifiablePrivilege(principalName, grantPerm, !grant);
+            }
             // add rule only if none was removed
-            if (!removed)
-                securityData.addModifiablePrivilege(principalName, grantPerm,
-                    grant);
-        }
-        else
-        {
+            if (!removed) {
+                securityData.addModifiablePrivilege(principalName, grantPerm, grant);
+            }
+        } else {
             // remove the opposite rule if any
             boolean removed = securityData.removeModifiablePrivilege(principalName, grantPerm,
                     !grant);
-            if (!removed)
-                removed = securityData.removeModifiablePrivilege(principalName, denyPerm,
-                        !grant);
+            if (!removed) {
+                removed = securityData.removeModifiablePrivilege(principalName, denyPerm, !grant);
+            }
             // add rule only if none was removed
-            if (!removed)
-                securityData.addModifiablePrivilege(principalName, denyPerm,
-                       grant);
+            if (!removed) {
+                securityData.addModifiablePrivilege(principalName, denyPerm, grant);
+            }
         }
 
         try {
