@@ -26,19 +26,42 @@ import java.util.logging.Logger;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.MessagePart;
-import org.glassfish.embed.GlassFish;
+import org.glassfish.api.deployment.archive.ArchiveHandler;
+import org.glassfish.deployment.autodeploy.AutoDeployService;
+import org.glassfish.embed.AppServer;
+import org.glassfish.embed.impl.EmbeddedAPIClassLoaderServiceImpl;
+import org.glassfish.embed.impl.EmbeddedApplicationLifecycle;
+import org.glassfish.embed.impl.EmbeddedDomainXml;
+import org.glassfish.embed.impl.EmbeddedServerEnvironment;
+import org.glassfish.embed.impl.EmbeddedWebDeployer;
+import org.glassfish.embed.impl.EntityResolverImpl;
+import org.glassfish.embed.impl.ScatteredWarHandler;
+import org.glassfish.server.ServerEnvironmentImpl;
+import org.glassfish.web.WebEntityResolver;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.Inhabitants;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import com.sun.enterprise.security.SecuritySniffer;
 import com.sun.enterprise.v3.admin.CommandRunner;
+import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
+import com.sun.enterprise.v3.server.APIClassLoaderServiceImpl;
+import com.sun.enterprise.v3.server.ApplicationLifecycle;
+import com.sun.enterprise.v3.server.DomainXml;
+import com.sun.enterprise.v3.server.DomainXmlPersistence;
+import com.sun.enterprise.v3.services.impl.LogManagerService;
+import com.sun.enterprise.web.WebDeployer;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
+import com.sun.hk2.component.InhabitantsParser;
+import com.sun.web.security.RealmAdapter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class GlassFishServer extends GlassFish {
+public class GlassFishServer extends AppServer {
 
     final static Logger log = Logger.getLogger("GlassFishServer");
 
@@ -105,6 +128,72 @@ public class GlassFishServer extends GlassFish {
     public boolean pingJdbcConnectionPool(String poolName) throws Exception {
         ConnectorRuntime connRuntime = habitat.getComponent(ConnectorRuntime.class);
         return connRuntime.pingConnectionPool(poolName);
+    }
+    
+    
+    // remove parser.drop(DecoratorForJ2EEInstanceListener.class); from super
+    protected InhabitantsParser decorateInhabitantsParser(InhabitantsParser parser) {
+        // registering the server using the base class and not the current instance class
+        // (GlassFish server may be extended by the user)
+        parser.habitat.add(new ExistingSingletonInhabitant<AppServer>(AppServer.class, this));
+        // register scattered web handler before normal WarHandler kicks in.
+        Inhabitant<ScatteredWarHandler> swh = Inhabitants.create(new ScatteredWarHandler());
+        parser.habitat.add(swh);
+        parser.habitat.addIndex(swh, ArchiveHandler.class.getName(), null);
+
+        // we don't want GFv3 to reconfigure all the loggers
+        parser.drop(LogManagerService.class);
+
+        // we don't need admin CLI support.
+        // TODO: admin CLI should be really moved to a separate class
+        parser.drop(AdminConsoleAdapter.class);
+
+        // don't care about auto-deploy either
+        try {
+            Class.forName("org.glassfish.deployment.autodeploy.AutoDeployService");
+            parser.drop(AutoDeployService.class);
+        }
+        catch (Exception e) {
+            // ignore.  It may not be available
+        }
+
+        //TODO: workaround for a bug
+        parser.replace(ApplicationLifecycle.class, EmbeddedApplicationLifecycle.class);
+
+        parser.replace(APIClassLoaderServiceImpl.class, EmbeddedAPIClassLoaderServiceImpl.class);
+        // we don't really parse domain.xml from disk
+        parser.replace(DomainXml.class, EmbeddedDomainXml.class);
+
+        // ... and we don't persist it either. 
+        parser.replace(DomainXmlPersistence.class, EmbeddedDomainXml.class);
+
+        // we provide our own ServerEnvironment
+        parser.replace(ServerEnvironmentImpl.class, EmbeddedServerEnvironment.class);
+
+        {// adjustment for webtier only bundle
+            //parser.drop(DecoratorForJ2EEInstanceListener.class);
+
+            // in the webtier-only bundle, these components don't exist to begin with.
+
+            try {
+                // security code needs a whole lot more work to work in the modular environment.
+                // disabling it for now.
+                parser.drop(SecuritySniffer.class);
+
+                // WebContainer has a bug in how it looks up Realm, but this should work around that.
+                parser.drop(RealmAdapter.class);
+            } catch (LinkageError e) {
+                // maybe we are running in the webtier only bundle
+            }
+        }
+
+        // override the location of default-web.xml
+        parser.replace(WebDeployer.class, EmbeddedWebDeployer.class);
+
+        // override the location of cached DTDs and schemas
+        parser.replace(WebEntityResolver.class, EntityResolverImpl.class);
+
+        return parser;
     }
 
 }

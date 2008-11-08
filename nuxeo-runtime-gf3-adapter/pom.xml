@@ -14,19 +14,6 @@
 
   <dependencies>
 
-    <!--dependency>
-      <groupId>org.glassfish.embedded</groupId>
-      <artifactId>gf-embedded-api</artifactId>
-      <version>1.0-alpha-5-SNAPSHOT</version>
-    </dependency-->
-    
-    <dependency>
-      <groupId>org.glassfish.distributions</groupId>
-      <artifactId>web-all</artifactId>
-      <version>10.0-build-20080724</version>
-      <scope>provided</scope>
-    </dependency>
-    
     <dependency>
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
@@ -51,11 +38,30 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.glassfish.embedded</groupId>
+      <artifactId>glassfish-embedded-all</artifactId>
+      <version>3.0-SNAPSHOT</version>
+      <type>jar</type>
+    </dependency>
+
+    <!-- 3.0-SNAPSHOT version 03-Nov-2008 is not containing stax api + impl -->
+    <dependency>
+      <groupId>javax.xml.stream</groupId>
+      <artifactId>stax-api</artifactId>
+      <version>1.0-2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.woodstox</groupId>
+      <artifactId>wstx-asl</artifactId>
+      <version>3.2.7</version>
+    </dependency>
+
   </dependencies>
 
   <build>
     <plugins>
-      <!-- TODO: do we need all these dependencies in the jar? -->
+    <!-- TODO: use gf3 maven distribution plugin? -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -68,16 +74,21 @@
             </goals>
             <configuration>
               <artifactItems>
-                <!--artifactItem>
-                  <groupId>org.glassfish.embedded</groupId>
-                  <artifactId>gf-embedded-api</artifactId>
-                  <version>1.0-alpha-5-SNAPSHOT</version>
-                </artifactItem-->
                 <artifactItem>
-                  <groupId>org.glassfish.distributions</groupId>
-                  <artifactId>web-all</artifactId>
-                  <version>10.0-build-20080724</version>
+		  <groupId>org.glassfish.embedded</groupId>
+                  <artifactId>glassfish-embedded-all</artifactId>
+                  <version>3.0-SNAPSHOT</version>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>javax.xml.stream</groupId>
+                  <artifactId>stax-api</artifactId>
+                  <version>1.0-2</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.codehaus.woodstox</groupId>
+    		  <artifactId>wstx-asl</artifactId>
+	          <version>3.2.7</version>
+                </artifactItem>		
               </artifactItems>
               <outputDirectory>${project.build.outputDirectory}</outputDirectory>
             </configuration>
