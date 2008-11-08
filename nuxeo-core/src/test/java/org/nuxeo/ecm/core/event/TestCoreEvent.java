@@ -101,8 +101,8 @@ public class TestCoreEvent extends MockObjectTestCase {
         CoreEvent coreEvent = new CoreEventImpl(eventId, null, info, null, null, null);
         assertEquals(eventId, coreEvent.getEventId());
         Map<String, ?> infoBack = coreEvent.getInfo();
-        ((Map)info).put(COMMENT, null);
-        ((Map)info).put(CATEGORY, null);
+        info.put(COMMENT, null);
+        info.put(CATEGORY, null);
         assertEquals(info, infoBack);
         assertEquals("xxx", infoBack.get("destination"));
         assertNull(coreEvent.getSource());
