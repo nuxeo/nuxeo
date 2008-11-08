@@ -51,21 +51,21 @@ import org.nuxeo.runtime.api.Framework;
  * Deals with sending DocumentMessage objects as JMS ObjectMessage.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
-public final class JMSDocumentMessageProducer {
 //XXX: in the process of being refactored
+public final class JMSDocumentMessageProducer {
     private static boolean transacted;
     private static boolean isDeliveryPersistent;
     private static boolean isDisableMessageID;
     private static boolean isDisableMessageTimestamp;
     private static final Log log = LogFactory.getLog(JMSDocumentMessageProducer.class);
+
     static {
         Properties runtime = Framework.getRuntime().getProperties();
-        transacted = new Boolean(runtime.getProperty("jms.useTransactedConnection"));
-        isDeliveryPersistent = new Boolean(runtime.getProperty("jms.isDeliveryPersistent"));
-        isDisableMessageID = new Boolean(runtime.getProperty("jms.isDisableMessageID"));
-        isDisableMessageTimestamp = new Boolean(runtime.getProperty("jms.isDisableMessageTimestamp"));
+        transacted = Boolean.valueOf(runtime.getProperty("jms.useTransactedConnection"));
+        isDeliveryPersistent = Boolean.valueOf(runtime.getProperty("jms.isDeliveryPersistent"));
+        isDisableMessageID = Boolean.valueOf(runtime.getProperty("jms.isDisableMessageID"));
+        isDisableMessageTimestamp = Boolean.valueOf(runtime.getProperty("jms.isDisableMessageTimestamp"));
     }
 
     // Utility class.
@@ -105,6 +105,7 @@ public final class JMSDocumentMessageProducer {
 
         return jmsDestination;
     }
+
     public static void sendNXCoreEventMessages(List<NXCoreEvent> messages,
             String connection, String destination)
             throws DocumentMessageProducerException {
@@ -133,6 +134,7 @@ public final class JMSDocumentMessageProducer {
             throw exception;
         }
     }
+
     public static void sendDocumentMessages(List<DocumentMessage> messages,
             String connectionFactoryJndiName, String destinationJndiName)
             throws DocumentMessageProducerException {
@@ -148,6 +150,7 @@ public final class JMSDocumentMessageProducer {
             throw exception;
         }
     }
+
     public static void sendMessages(List<Serializable> messages,
             String connectionFactoryJndiName, String destinationJndiName)
             throws DocumentMessageProducerException {
@@ -168,7 +171,8 @@ public final class JMSDocumentMessageProducer {
             throws DocumentMessageProducerException {
         DocumentMessageProducerException exception = null;
         try {
-            sendMessage(message, connectionFactory, destination, new InitialContext(), message.getEventId(), JMSConstant.DOCUMENT_MESSAGE);
+            sendMessage(message, connectionFactory, destination, new InitialContext(),
+                    message.getEventId(), JMSConstant.DOCUMENT_MESSAGE);
         } catch (NamingException ne) {
             exception = new DocumentMessageProducerException(ne);
         }
@@ -177,6 +181,7 @@ public final class JMSDocumentMessageProducer {
             throw exception;
         }
     }
+
     public static void sendMessage(Serializable message,
             String connectionFactoryJndiName, String destinationJndiName)
             throws DocumentMessageProducerException {
@@ -236,6 +241,7 @@ public final class JMSDocumentMessageProducer {
             }
         }
     }
+
     private static void sendEventMessages(List<EventMessage> messages,
             String connectionFactoryJndiName, String destinationJndiName,
             Context ctx) throws DocumentMessageProducerException {
@@ -281,6 +287,7 @@ public final class JMSDocumentMessageProducer {
             }
         }
     }
+
     private static void sendDocumentMessages(List<DocumentMessage> messages,
             String connectionFactoryJndiName, String destinationJndiName,
             Context ctx) throws DocumentMessageProducerException {
@@ -326,6 +333,7 @@ public final class JMSDocumentMessageProducer {
             }
         }
     }
+
     private static void sendMessages(List<Serializable> messages,
             String connectionFactoryJndiName, String destinationJndiName,
             Context ctx) throws DocumentMessageProducerException {
@@ -373,8 +381,6 @@ public final class JMSDocumentMessageProducer {
     private static void sendMessage(Serializable message,
             String connectionFactoryJndiName, String destinationJndiName,
             Context ctx, String eventId, String messageType) throws DocumentMessageProducerException {
-
-
         try {
             TopicConnectionFactory connectionFactory = getJmsConnectionFactory(
                     connectionFactoryJndiName, ctx);
