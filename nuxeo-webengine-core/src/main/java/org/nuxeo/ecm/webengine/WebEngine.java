@@ -107,7 +107,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     }
 
 
-    protected File root;
+    protected final File root;
     protected ModuleRegistry moduleReg;
     protected FileChangeNotifier notifier;
     protected volatile long lastMessagesUpdate = 0;
@@ -121,7 +121,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
 
     protected AnnotationManager annoMgr;
 
-    protected ResourceRegistry registry;
+    protected final ResourceRegistry registry;
     protected Messages messages;
 
     public WebEngine(ResourceRegistry registry, File root) throws IOException {
@@ -453,7 +453,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         } else if (name.equals("i18n") && parentName.equals("WEB-INF")) {
             log.info("File changed: "+entry.file);
             messages = new Messages(null, this);
-        } else if (type == FileChangeListener.DELETED || type ==FileChangeListener.CREATED) {
+        } else if (type == DELETED || type == CREATED) {
             if (entry.file.getParentFile().equals(root)) {
                 log.info("File changed: "+entry.file);
                 reload();
@@ -502,7 +502,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     }
 
     public File getResourceFile(String key) {
-        WebContext ctx = WebEngine.getActiveContext();
+        WebContext ctx = getActiveContext();
         if (key.startsWith("@")) {
             Resource rs = ctx.getTargetObject();
             if (rs != null) {

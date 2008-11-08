@@ -35,8 +35,8 @@ import org.wikimodel.wem.common.CommonWikiParser;
 public class WikiHelper {
 
     // TODO make this configurable
-    static String PATTERN = "([A-Z]+[a-z]+[A-Z][A-Za-z]*.)?([A-Z]+[a-z]+[A-Z][A-Za-z]*)";
-    static Pattern WORD_LINKS_PATTERN = Pattern.compile(PATTERN);
+    static final String PATTERN = "([A-Z]+[a-z]+[A-Z][A-Za-z]*.)?([A-Z]+[a-z]+[A-Z][A-Za-z]*)";
+    static final Pattern WORD_LINKS_PATTERN = Pattern.compile(PATTERN);
 
     public static List<String> getWordLinks(DocumentModel doc){
         try {

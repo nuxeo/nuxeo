@@ -34,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.api.Framework;
+import static org.nuxeo.ecm.webengine.notifier.FileChangeListener.*;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -168,7 +169,7 @@ public class FileChangeNotifier implements FileChangeListener {
                         if (entry == null) { // a new file
                             entry = new FileEntry(f);
                             children.put(f, entry);
-                            fileChanged(entry, FileChangeListener.CREATED, tm);
+                            fileChanged(entry, CREATED, tm);
                         } else {
                             entry.scanForChanges(listener);
                         }
@@ -178,10 +179,10 @@ public class FileChangeNotifier implements FileChangeListener {
                     clone.removeAll(checkedFiles);
                     for (File f : clone) {
                         FileEntry entry = children.remove(f);
-                        fileChanged(entry, FileChangeListener.DELETED, tm);
+                        fileChanged(entry, DELETED, tm);
                     }
                 } else {
-                    fileChanged(this, FileChangeListener.MODIFIED, tm);
+                    fileChanged(this, MODIFIED, tm);
                 }
                 lastModified = tm;
             }

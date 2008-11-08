@@ -31,10 +31,10 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 public class WikiPageLinkResolver implements WikiFilter{
 
     // TODO get this from config files
-    static String PATTERN = "([A-Z]+[a-z]+[A-Z][A-Za-z]*.)?([A-Z]+[a-z]+[A-Z][A-Za-z]*)";
-    static Pattern PAGE_LINKS_PATTERN = Pattern.compile(PATTERN);
+    static final String PATTERN = "([A-Z]+[a-z]+[A-Z][A-Za-z]*.)?([A-Z]+[a-z]+[A-Z][A-Za-z]*)";
+    static final Pattern PAGE_LINKS_PATTERN = Pattern.compile(PATTERN);
 
-    static String LINK_TEMPLATE = "<a  href=\"%s\" class=\"%s\">%s</a>";
+    static final String LINK_TEMPLATE = "<a  href=\"%s\" class=\"%s\">%s</a>";
 
     public String apply(String content) {
         Matcher m = PAGE_LINKS_PATTERN.matcher(content);

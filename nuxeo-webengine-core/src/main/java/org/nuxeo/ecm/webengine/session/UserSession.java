@@ -47,7 +47,7 @@ public abstract class UserSession extends HashMap<String, Object>  {
 
     private static final long serialVersionUID = 260562970988817064L;
 
-    protected final static String WE_SESSION_KEY="nuxeo.webengine.user_session";
+    protected static final String WE_SESSION_KEY="nuxeo.webengine.user_session";
 
     private static final Log log = LogFactory.getLog(UserSession.class);
 
@@ -62,7 +62,6 @@ public abstract class UserSession extends HashMap<String, Object>  {
     protected transient CoreSession coreSession;
 
     public static UserSession getCurrentSession(HttpServletRequest request) {
-
         HttpSession session = request.getSession(false);
         if (session == null) {
             return (UserSession) request.getAttribute(WE_SESSION_KEY);
@@ -71,7 +70,6 @@ public abstract class UserSession extends HashMap<String, Object>  {
     }
 
     public static void register(HttpServletRequest request, UserSession us) {
-
         HttpSession session = request.getSession(false);
         if (session == null) {
             request.setAttribute(WE_SESSION_KEY, us);
@@ -299,8 +297,6 @@ public abstract class UserSession extends HashMap<String, Object>  {
         }
     }
 
-
     public abstract void terminateRequest(HttpServletRequest request);
-
 
 }

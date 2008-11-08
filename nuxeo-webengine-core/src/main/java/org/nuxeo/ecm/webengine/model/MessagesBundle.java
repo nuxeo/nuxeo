@@ -32,7 +32,7 @@ import java.util.ResourceBundle;
  */
 public class MessagesBundle extends ResourceBundle {
 
-    protected Map<String,String> messages;
+    protected final Map<String,String> messages;
 
     public MessagesBundle(ResourceBundle parent, Map<String,String> messages) {
         this.parent = parent;
@@ -57,18 +57,21 @@ public class MessagesBundle extends ResourceBundle {
     }
 
     static class Keys implements Enumeration<String> {
-        protected Iterator<String> it;
-        protected Enumeration<String> parent;
+        protected final Iterator<String> it;
+        protected final Enumeration<String> parent;
+
         public Keys(Iterator<String> it, Enumeration<String> parent) {
             this.it = it;
             this.parent = parent;
         }
+
         public boolean hasMoreElements() {
             if (it.hasNext()) {
                 return true;
             }
             return parent.hasMoreElements();
         }
+
         public String nextElement() {
             if (it.hasNext()) {
                 return it.next();
@@ -76,4 +79,5 @@ public class MessagesBundle extends ResourceBundle {
             return parent.nextElement();
         }
     }
+
 }

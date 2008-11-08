@@ -25,10 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
-import org.nuxeo.ecm.webengine.session.UserSession;
-
 public class StatefulUserSession extends UserSession implements HttpSessionBindingListener {
-
 
     public StatefulUserSession(Principal principal) {
         super(principal);
@@ -42,9 +39,6 @@ public class StatefulUserSession extends UserSession implements HttpSessionBindi
         super(principal, credentials);
     }
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     public void valueBound(HttpSessionBindingEvent event) {

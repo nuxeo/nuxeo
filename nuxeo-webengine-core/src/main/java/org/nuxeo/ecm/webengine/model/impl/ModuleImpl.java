@@ -206,8 +206,8 @@ public class ModuleImpl implements Module {
             return null;
         }
         MediaTypeRef[] refs = descriptor.mediatTypeRefs;
-        for (int i=0; i<refs.length; i++) {
-            String id = refs[i].match(mt);
+        for (MediaTypeRef ref : refs) {
+            String id = ref.match(mt);
             if (id != null) {
                 return id;
             }

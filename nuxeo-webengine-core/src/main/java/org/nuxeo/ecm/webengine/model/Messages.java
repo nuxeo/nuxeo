@@ -26,26 +26,25 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Messages {
 
-    protected Messages parent;
-    protected MessagesProvider provider;
-    protected Map<String, MessagesBundle> messages;
+    protected final Messages parent;
+    protected final MessagesProvider provider;
+    protected final Map<String, MessagesBundle> messages;
     protected MessagesBundle defaultMessages;
 
-    protected final static String BUILT_IN_DEFAULT_LANG="en";
+    protected static final String BUILT_IN_DEFAULT_LANG = "en";
 
     public Messages(Messages parent, MessagesProvider provider) {
         this.parent = parent;
         this.provider = provider;
-        this.messages = new ConcurrentHashMap<String, MessagesBundle>();
+        messages = new ConcurrentHashMap<String, MessagesBundle>();
         String serverDefaultLang = Locale.getDefault().getLanguage();
-        this.defaultMessages = getMessagesBundle(serverDefaultLang);
-        if ((defaultMessages.messages.size()==0) && (!BUILT_IN_DEFAULT_LANG.equals(serverDefaultLang)))
-        {
-            this.defaultMessages = getMessagesBundle(BUILT_IN_DEFAULT_LANG);
+        defaultMessages = getMessagesBundle(serverDefaultLang);
+        if (defaultMessages.messages.size() == 0
+                && !BUILT_IN_DEFAULT_LANG.equals(serverDefaultLang)) {
+            defaultMessages = getMessagesBundle(BUILT_IN_DEFAULT_LANG);
         }
     }
 
@@ -59,7 +58,7 @@ public class Messages {
         }
         MessagesBundle bundle = messages.get(language);
         if (bundle == null) {
-            Map<String,String> map = provider.getMessages(language);
+            Map<String, String> map = provider.getMessages(language);
             MessagesBundle parentBundle = parent != null ? parent.getMessagesBundle(language) : null;
             bundle = new MessagesBundle(parentBundle, map);
             messages.put(language, bundle);
@@ -73,8 +72,8 @@ public class Messages {
             return bundle.getObject(key);
         }
         throw new MissingResourceException("Can't find resource for bundle "
-                +this.getClass().getName()
-                +", key "+key,
+                + this.getClass().getName()
+                + ", key " + key,
                 Messages.class.getName(),
                 key);
     }
@@ -88,7 +87,7 @@ public class Messages {
     }
 
     public String getString(String key, String language) throws MissingResourceException {
-        return (String)getObject(key, language);
+        return (String) getObject(key, language);
     }
 
     public String[] getStringArray(String key) throws MissingResourceException {
@@ -96,7 +95,7 @@ public class Messages {
     }
 
     public String[] getStringArray(String key, String language) throws MissingResourceException {
-        return (String[])getObject(key, language);
+        return (String[]) getObject(key, language);
     }
 
 }

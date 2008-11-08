@@ -96,7 +96,7 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
         return sb.toString();
     }
 
-    public static interface Visitor {
+    public interface Visitor {
         Object createParameter(Token token);
         Object createOperation(Token token, Object lparam, Object rparam);
     }

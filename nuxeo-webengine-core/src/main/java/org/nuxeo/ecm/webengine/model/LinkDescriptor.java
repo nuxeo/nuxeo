@@ -31,6 +31,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.security.PermissionService;
+import org.nuxeo.ecm.webengine.security.Guard;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
 
@@ -70,11 +71,9 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     @XNodeList(value="facet", type=String[].class, componentType=String.class, nullByDefault=true)
     protected String[] facets;
 
-    protected org.nuxeo.ecm.webengine.security.Guard guard = org.nuxeo.ecm.webengine.security.Guard.DEFAULT;
+    protected Guard guard = Guard.DEFAULT;
 
-    /**
-     *
-     */
+
     public LinkDescriptor() {
     }
 
@@ -87,30 +86,19 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
         this.fragment = fragment;
     }
 
-
     @XNode("guard")
     public void setGuard(String expr) throws ParseException {
         guard = PermissionService.parse(expr);
     }
 
-
-    /**
-     * @return the id.
-     */
     public String getId() {
         return id;
     }
 
-    /**
-     * @return the path.
-     */
     public String getPath() {
         return path;
     }
 
-    /**
-     * @param handler the handler to set.
-     */
     public void setHandler(LinkHandler handler) {
         this.handler = handler;
     }
@@ -135,37 +123,22 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
         }
     }
 
-    /**
-     * @return the handler.
-     */
     public LinkHandler getHandler() {
         return handler;
     }
 
-    /**
-     * @return the adapter.
-     */
     public String getAdapter() {
         return adapter;
     }
 
-    /**
-     * @return the type.
-     */
     public String getType() {
         return type;
     }
 
-    /**
-     * @return the facets.
-     */
     public String[] getFacets() {
         return facets;
     }
 
-    /**
-     * @param categories the categories to set.
-     */
     public void setCategories(List<String> categories) {
         this.categories = categories;
     }
@@ -178,9 +151,6 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
         categories.add(category);
     }
 
-    /**
-     * @return the categories.
-     */
     public List<String> getCategories() {
         return categories;
     }
@@ -302,4 +272,5 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     public String toString() {
         return id;
     }
+
 }

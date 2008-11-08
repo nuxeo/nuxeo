@@ -26,7 +26,7 @@ public class WordExtractor extends PrintListener{
 
     protected final StringBuilder words = new StringBuilder();
 
-    StringBuffer collector;
+    final StringBuffer collector;
 
     public WordExtractor(StringBuffer collector) {
         super(new WikiPrinter());
