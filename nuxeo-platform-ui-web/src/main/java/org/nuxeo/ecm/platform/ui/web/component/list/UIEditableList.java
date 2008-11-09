@@ -42,7 +42,6 @@ import javax.faces.event.PhaseId;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jetbrains.annotations.NotNull;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.platform.ui.web.model.EditableModel;
@@ -796,8 +795,7 @@ public class UIEditableList extends UIInput implements NamingContainer {
     }
 
     @Override
-    public void processDecodes(@NotNull
-    FacesContext context) {
+    public void processDecodes(FacesContext context) {
         if (!isRendered()) {
             return;
         }
@@ -822,8 +820,7 @@ public class UIEditableList extends UIInput implements NamingContainer {
     }
 
     @Override
-    public void processValidators(@NotNull
-    FacesContext context) {
+    public void processValidators(FacesContext context) {
         if (!isRendered()) {
             return;
         }
@@ -839,8 +836,7 @@ public class UIEditableList extends UIInput implements NamingContainer {
     }
 
     @Override
-    public void processUpdates(@NotNull
-    FacesContext context) {
+    public void processUpdates(FacesContext context) {
         if (!isRendered()) {
             return;
         }
