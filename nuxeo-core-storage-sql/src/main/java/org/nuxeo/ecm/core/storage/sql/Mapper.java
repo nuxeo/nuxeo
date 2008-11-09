@@ -1431,6 +1431,12 @@ public class Mapper {
         QueryMaker queryMaker = new QueryMaker(sqlInfo, model, session, query,
                 queryFilter);
         queryMaker.makeQuery();
+
+        if (queryMaker.selectInfo == null) {
+            logDebug("Query cannot return anything due to conflicting clauses");
+            return Collections.emptyList();
+        }
+
         if (log.isDebugEnabled()) {
             logSQL(queryMaker.selectInfo.sql, queryMaker.selectParams);
         }

@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -579,9 +580,9 @@ public class Model {
         return documentSubTypes.get(typeName);
     }
 
-    public boolean documentTypeHasFacet(String typeName, String facet) {
+    public Set<String> getDocumentTypeFacets(String typeName) {
         Set<String> facets = documentTypesFacets.get(typeName);
-        return facets == null ? false : facets.contains(facet);
+        return facets == null ? Collections.<String> emptySet() : facets;
     }
 
     /**

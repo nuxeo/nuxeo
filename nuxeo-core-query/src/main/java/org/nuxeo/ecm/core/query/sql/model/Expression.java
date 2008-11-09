@@ -36,8 +36,6 @@ public class Expression implements Operand {
 
 
     public Expression(Operand lvalue, Operator operator, Operand rvalue) {
-        assert lvalue != null && operator != null;
-
         this.lvalue = lvalue;
         this.rvalue = rvalue;
         this.operator = operator;

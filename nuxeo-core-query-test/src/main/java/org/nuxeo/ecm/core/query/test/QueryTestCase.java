@@ -127,7 +127,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
      *  |- testfolder1
      *  |  |- testfile1
      *  |  |- testfile2
-     *  |  \- testfile3
+     *  |  \- testfile3 (Note)
      *  \- tesfolder2
      *     \- testfolder3
      *        \- testfile4
@@ -164,7 +164,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         file2 = session.createDocument(file2);
 
         DocumentModel file3 = new DocumentModelImpl("/testfolder1",
-                "testfile3", "File");
+                "testfile3", "Note");
         file3.setPropertyValue("dc:title", "testfile3_Title");
         file3.setPropertyValue("dc:description",
                 "testfile3_desc1 testfile3_desc2,  testfile3_desc3");
@@ -209,9 +209,15 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         createDocs();
 
         dml = session.query("SELECT * FROM File");
-        assertEquals(4, dml.size());
+        assertEquals(3, dml.size());
         for (DocumentModel dm : dml) {
             assertEquals("File", dm.getType());
+        }
+
+        dml = session.query("SELECT * FROM Note");
+        assertEquals(1, dml.size());
+        for (DocumentModel dm : dml) {
+            assertEquals("Note", dm.getType());
         }
 
         dml = session.query("SELECT * FROM Folder");
@@ -229,7 +235,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile1_Title'");
         assertEquals(1, dml.size());
 
-        dml = session.query("SELECT * FROM File WHERE dc:title = 'testfile1_Title' OR dc:title = 'testfile3_Title'");
+        dml = session.query("SELECT * FROM File WHERE dc:title = 'testfile1_Title' OR dc:title = 'testfile2_Title'");
         assertEquals(2, dml.size());
 
         dml = session.query("SELECT * FROM File WHERE dc:title = 'testfolder1_Title'");
@@ -238,24 +244,27 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         dml = session.query("SELECT * FROM File WHERE filename = 'testfile.txt'");
         assertEquals(1, dml.size());
 
-        dml = session.query("SELECT * FROM File WHERE dc:title = 'testfile3_Title'");
+        dml = session.query("SELECT * FROM Note WHERE dc:title = 'testfile3_Title'");
         assertEquals(1, dml.size());
 
         // this needs an actual LEFT OUTER JOIN
-        dml = session.query("SELECT * FROM File WHERE filename = 'testfile.txt' OR dc:title = 'testfile3_Title'");
+        dml = session.query("SELECT * FROM Document WHERE filename = 'testfile.txt' OR dc:title = 'testfile3_Title'");
         assertEquals(2, dml.size());
 
         dml = session.query("SELECT * FROM File WHERE dc:contributors = 'pete'");
         assertEquals(1, dml.size());
 
         dml = session.query("SELECT * FROM File WHERE dc:contributors = 'bob'");
+        assertEquals(1, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors = 'bob'");
         assertEquals(2, dml.size());
 
-        // the semantics of this is dubious anyway
+        // the semantics of this is dubious XXX
         dml = session.query("SELECT * FROM File WHERE dc:contributors <> 'nothere'");
-        assertEquals(2, dml.size());
+        assertEquals(1, dml.size());
 
-        dml = session.query("SELECT * FROM File WHERE filename = 'testfile.txt' OR dc:contributors = 'bob'");
+        dml = session.query("SELECT * FROM Document WHERE filename = 'testfile.txt' OR dc:contributors = 'bob'");
         assertEquals(3, dml.size());
     }
 
@@ -264,7 +273,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         DocumentModelList dml;
         createDocs();
 
-        dml = session.query("SELECT * FROM File WHERE dc:contributors IN ('bob', 'pete')");
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors IN ('bob', 'pete')");
         assertEquals(2, dml.size());
     }
 
@@ -487,6 +496,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(expected, actual);
     }
 
+    // this is disabled for JCR
     public void testQueryWithProxies() throws Exception {
         createDocs();
         DocumentModel proxy = publishDoc();
@@ -523,6 +533,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         // assertIdSet(dml, proxyId, versionId);
     }
 
+    // this is disabled for JCR
     public void testQuerySpecialFields() throws Exception {
         // ecm:isProxy and ecm:isCheckedInVersion are already tested in
         // testQueryWithProxies
@@ -579,18 +590,31 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
          */
         dml = session.query("SELECT * FROM Document WHERE ecm:primaryType = 'Folder'");
         assertEquals(3, dml.size());
+        dml = session.query("SELECT * FROM Document WHERE ecm:primaryType = 'Note'");
+        assertEquals(1, dml.size());
         dml = session.query("SELECT * FROM Document WHERE ecm:primaryType = 'File'");
-        // 4 files, 1 proxy, 1 version
-        assertEquals(6, dml.size());
+        assertEquals(5, dml.size()); // 3 files, 1 proxy, 1 version
 
-        // ecm:mixinType
+        /*
+         * ecm:mixinType
+         */
+
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Folderish'");
+        assertEquals(3, dml.size());
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Folderish' AND ecm:mixinType <> 'blah'");
+        assertEquals(3, dml.size());
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Downloadable'");
+        assertEquals(5, dml.size()); // 3 files, 1 proxy, 1 version
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Versionable'");
+        assertEquals(6, dml.size()); // 1 note, 3 files, 1 proxy, 1 version
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Versionable' AND ecm:mixinType <> 'Downloadable'");
+        assertEquals(1, dml.size()); // 1 note
 
         /*
          * ecm:currentLifeCycleState
          */
         dml = session.query("SELECT * FROM Document WHERE ecm:currentLifeCycleState = 'project'");
-        // 3 folders, 4 files, 1 proxy, 1 version
-        assertEquals(9, dml.size());
+        assertEquals(9, dml.size()); // 3 folders, 1 note, 3 files, 1 proxy, 1 version
 
         /*
          * ecm:versionLabel

@@ -42,13 +42,17 @@ import org.nuxeo.ecm.core.query.sql.model.Function;
 import org.nuxeo.ecm.core.query.sql.model.IntegerLiteral;
 import org.nuxeo.ecm.core.query.sql.model.Literal;
 import org.nuxeo.ecm.core.query.sql.model.LiteralList;
+import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
+import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.OrderByList;
+import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
+import org.nuxeo.ecm.core.query.sql.model.WhereClause;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
 import org.nuxeo.ecm.core.storage.sql.SQLInfo.SQLInfoSelect;
@@ -162,7 +166,7 @@ public class QueryMaker {
 
     public SQLInfoSelect selectInfo;
 
-    public List<Serializable> selectParams;
+    public List<Serializable> selectParams = new LinkedList<Serializable>();;
 
     /**
      * The hierarchy table, which may be an alias table.
@@ -200,7 +204,8 @@ public class QueryMaker {
             query = transformer.transform(query);
         }
         this.query = query;
-        this.facetFilter = queryFilter.getFacetFilter();
+        FacetFilter filter = queryFilter.getFacetFilter();
+        this.facetFilter = filter == null ? FacetFilter.ALLOW : filter;
         this.queryFilter = queryFilter;
     }
 
@@ -208,7 +213,8 @@ public class QueryMaker {
         /*
          * Find all relevant types and keys for the criteria.
          */
-        InfoCollector info = new InfoCollector();
+
+        QueryAnalyzer info = new QueryAnalyzer();
         try {
             info.visitQuery(query);
         } catch (QueryMakerException e) {
@@ -217,11 +223,12 @@ public class QueryMaker {
 
         /*
          * Find all the types to take into account (all concrete types being a
-         * subtype of the passed types).
+         * subtype of the passed types) based on the FROM list.
          */
+
         Set<String> types = new HashSet<String>();
-        for (String typeName : info.types) {
-            if (typeName.equals("document")) {
+        for (String typeName : info.fromTypes) {
+            if ("document".equals(typeName)) {
                 typeName = "Document";
             }
             Set<String> subTypes = model.getDocumentSubTypes(typeName);
@@ -230,10 +237,32 @@ public class QueryMaker {
             }
             types.addAll(subTypes);
         }
+        types.remove(model.ROOT_TYPE);
 
         /*
-         * Find the relevant tables.
+         * Restrict types based on toplevel ecm:primaryType and ecm:mixinType
+         * predicates.
          */
+
+        types.removeAll(info.typesExcluded);
+        if (info.typesRequired.size() > 1) {
+            // conflicting types requirement
+            selectInfo = null;
+            return;
+        }
+        if (!info.typesRequired.isEmpty()) {
+            types.retainAll(info.typesRequired); // 1 element at most
+        }
+        if (types.isEmpty()) {
+            // conflicting types requirement
+            selectInfo = null;
+            return;
+        }
+
+        /*
+         * Find the relevant tables to join with.
+         */
+
         Set<String> fragmentNames = new HashSet<String>();
         for (String prop : info.props) {
             PropertyInfo propertyInfo = model.getPropertyInfo(prop);
@@ -245,6 +274,7 @@ public class QueryMaker {
         fragmentNames.remove(model.hierTableName);
 
         // TODO find when we can avoid joining with proxies
+        // (Immutable facet)
         boolean usesJoinWithProxies = true;
 
         if (info.needsProxies) {
@@ -295,7 +325,7 @@ public class QueryMaker {
         for (String fragmentName : fragmentNames) {
             Table table = database.getTable(fragmentName);
             // the versions table joins on the real hier table
-            boolean useHier = fragmentName.equals(model.VERSION_TABLE_NAME);
+            boolean useHier = model.VERSION_TABLE_NAME.equals(fragmentName);
             joins.add(String.format("%s ON %s = %s", table.getQuotedName(),
                     useHier ? hierId : joinedHierId, table.getColumn(
                             model.MAIN_KEY).getFullQuotedName()));
@@ -303,18 +333,26 @@ public class QueryMaker {
         String from = StringUtils.join(joins, " LEFT JOIN ");
 
         /*
-         * Create the structural WHERE clauses for the type.
+         * Filter on facets and mixin types, and create the structural WHERE
+         * clauses for the type.
          */
-        selectParams = new LinkedList<Serializable>();
+
         List<String> typeStrings = new ArrayList<String>(types.size());
-        for (String type : types) {
-            if (type.equals(model.ROOT_TYPE)) {
-                // skip root in types
-                continue;
+        NEXT_TYPE: for (String type : types) {
+            Set<String> facets = model.getDocumentTypeFacets(type);
+            info.mixinsExcluded.addAll(facetFilter.excluded);
+            for (String facet : info.mixinsExcluded) {
+                if (facets.contains(facet)) {
+                    continue NEXT_TYPE;
+                }
             }
-            if (!facetFilterAllows(type)) {
-                continue;
+            info.mixinsRequired.addAll(facetFilter.required);
+            for (String facet : info.mixinsRequired) {
+                if (!facets.contains(facet)) {
+                    continue NEXT_TYPE;
+                }
             }
+            // this type is good
             typeStrings.add("?");
             selectParams.add(type);
         }
@@ -333,14 +371,15 @@ public class QueryMaker {
          * Create the part of the WHERE clause that comes from the original
          * query.
          */
+
         WhereBuilder whereBuilder;
         try {
             whereBuilder = new WhereBuilder();
         } catch (QueryMakerException e) {
             throw new StorageException(e.getMessage(), e);
         }
-        if (query.where != null) {
-            query.where.accept(whereBuilder);
+        if (info.wherePredicate != null) {
+            info.wherePredicate.accept(whereBuilder);
             String w = whereBuilder.buf.toString();
             if (w.length() != 0) {
                 whereClause = whereClause + " AND (" + w + ')';
@@ -351,6 +390,7 @@ public class QueryMaker {
         /*
          * Security check.
          */
+
         if (queryFilter.getPrincipals() != null) {
             whereClause = whereClause +
                     String.format(" AND NX_ACCESS_ALLOWED(%s, ?, ?) = %s",
@@ -378,6 +418,7 @@ public class QueryMaker {
         /*
          * Check if we need a DISTINCT.
          */
+
         String what = hierId;
         if (whereBuilder.needsDistinct || usesJoinWithProxies) {
             // We do LEFT JOINs with collection tables, so we could get
@@ -420,47 +461,15 @@ public class QueryMaker {
                 Collections.<Column> emptyList());
     }
 
-    public boolean facetFilterAllows(String typeName) {
-        if (facetFilter == null) {
-            return true;
-        }
-        if (facetFilter.excluded != null) {
-            for (String facet : facetFilter.excluded) {
-                if (FACET_IMMUTABLE.equals(facet)) {
-                    continue;
-                }
-                if (model.documentTypeHasFacet(typeName, facet)) {
-                    return false;
-                }
-            }
-        }
-        if (facetFilter.required != null) {
-            for (String facet : facetFilter.required) {
-                if (FACET_IMMUTABLE.equals(facet)) {
-                    continue;
-                }
-                if (!model.documentTypeHasFacet(typeName, facet)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     /**
      * Checks if the Immutable facet is excluded ({@code FALSE}), required (
      * {@code TRUE}) or not filtered on ({@code null}).
      */
     public Boolean facetFilterImmutable() {
-        if (facetFilter == null) {
-            return null;
-        }
-        if (facetFilter.excluded != null &&
-                facetFilter.excluded.contains(FACET_IMMUTABLE)) {
+        if (facetFilter.excluded.contains(FACET_IMMUTABLE)) {
             return Boolean.FALSE;
         }
-        if (facetFilter.required != null &&
-                facetFilter.required.contains(FACET_IMMUTABLE)) {
+        if (facetFilter.required.contains(FACET_IMMUTABLE)) {
             return Boolean.TRUE;
         }
         return null;
@@ -478,11 +487,16 @@ public class QueryMaker {
         }
     }
 
-    public class InfoCollector extends DefaultQueryVisitor {
+    /**
+     * Collects various info about the query AST, and rewrites the toplevel AND
+     * {@link Predicates} of the WHERE clause into a single
+     * {@link MultiExpression} for easier analysis.
+     */
+    public class QueryAnalyzer extends DefaultQueryVisitor {
 
         private static final long serialVersionUID = 1L;
 
-        public final Set<String> types = new HashSet<String>();
+        public final Set<String> fromTypes = new HashSet<String>();
 
         public final Set<String> props = new HashSet<String>();
 
@@ -494,47 +508,117 @@ public class QueryMaker {
 
         protected boolean inOrderBy;
 
+        protected final List<Operand> toplevelOperands = new LinkedList<Operand>();
+
+        protected final Set<String> typesRequired = new HashSet<String>();
+
+        protected final Set<String> typesExcluded = new HashSet<String>();
+
+        protected final Set<String> mixinsRequired = new HashSet<String>();
+
+        protected final Set<String> mixinsExcluded = new HashSet<String>();
+
+        protected Predicate wherePredicate;
+
         @Override
         public void visitFromClause(FromClause node) {
             FromList elements = node.elements;
             for (int i = 0; i < elements.size(); i++) {
                 String type = elements.get(i);
-                types.add(type);
+                fromTypes.add(type);
             }
+        }
+
+        @Override
+        public void visitWhereClause(WhereClause node) {
+            super.visitWhereClause(node);
+            analyzeToplevelOperands(node.predicate);
+            wherePredicate = new MultiExpression(Operator.AND, toplevelOperands);
+        }
+
+        /**
+         * Checks tolevel ANDed operands, and extracts those that directly
+         * impact the types restictions:
+         * <ul>
+         * <li>ecm:primaryType OP literal</li>
+         * <li>ecm:mixinType OP literal (except for Immutable)</li>
+         * </ul>
+         * where OP is {@code =} or {@code <>}.
+         * <p>
+         * Immutable is left in the clause as it is a per-document facet, not a
+         * per-type one.
+         */
+        protected void analyzeToplevelOperands(Operand node) {
+            if (node instanceof Expression) {
+                Expression expr = (Expression) node;
+                Operator op = expr.operator;
+                if (op == Operator.AND) {
+                    analyzeToplevelOperands(expr.lvalue);
+                    analyzeToplevelOperands(expr.rvalue);
+                    return;
+                }
+                if (op == Operator.EQ || op == Operator.NOTEQ) {
+                    if (expr.rvalue instanceof Reference) {
+                        // put reference to left
+                        expr = new Expression(expr.rvalue, op, expr.lvalue);
+                    }
+                    if (expr.lvalue instanceof Reference &&
+                            expr.rvalue instanceof StringLiteral) {
+                        String name = ((Reference) expr.lvalue).name;
+                        String value = ((StringLiteral) expr.rvalue).value;
+                        if (ECM_PRIMARYTYPE.equals(name)) {
+                            (op == Operator.EQ ? typesRequired : typesExcluded).add(value);
+                            return;
+                        }
+                        if (ECM_MIXINTYPE.equals(name)) {
+                            if (!FACET_IMMUTABLE.equals(value)) {
+                                (op == Operator.EQ ? mixinsRequired
+                                        : mixinsExcluded).add(value);
+                                return;
+                            }
+                            // XXX else should record that Immutable is present
+                        }
+                    }
+                }
+            }
+            toplevelOperands.add(node);
         }
 
         @Override
         public void visitReference(Reference node) {
             String name = node.name;
-            if (name.equals(ECM_PATH)) {
+            if (ECM_PATH.equals(name)) {
                 if (inOrderBy) {
                     throw new QueryMakerException("Cannot order by: " + name);
                 }
                 return;
             }
-            if (name.equals(ECM_ISPROXY)) {
+            if (ECM_ISPROXY.equals(name)) {
                 if (inOrderBy) {
                     throw new QueryMakerException("Cannot order by: " + name);
                 }
                 needsProxies = true;
                 return;
             }
-            if (name.equals(ECM_ISVERSION)) {
+            if (ECM_ISVERSION.equals(name)) {
                 if (inOrderBy) {
                     throw new QueryMakerException("Cannot order by: " + name);
                 }
                 needsVersions = true;
                 return;
             }
-            if (name.equals(ECM_PRIMARYTYPE) || name.equals(ECM_UUID) ||
-                    name.equals(ECM_NAME) || name.equals(ECM_PARENTID)) {
+            if (ECM_PRIMARYTYPE.equals(name) || //
+                    ECM_MIXINTYPE.equals(name) || //
+                    ECM_UUID.equals(name) || //
+                    ECM_NAME.equals(name) || //
+                    ECM_PARENTID.equals(name)) {
                 return;
             }
-            if (name.equals(ECM_LIFECYCLESTATE)) {
+            if (ECM_LIFECYCLESTATE.equals(name)) {
                 props.add(model.MISC_LIFECYCLE_STATE_PROP);
                 return;
             }
-            if (name.equals(ECM_VERSIONLABEL)) {
+            if (ECM_VERSIONLABEL.equals(name)) {
                 props.add(model.VERSION_LABEL_PROP);
                 return;
             }
@@ -562,6 +646,9 @@ public class QueryMaker {
 
     }
 
+    /**
+     * Builds the database-level WHERE query from the AST.
+     */
     public class WhereBuilder extends DefaultQueryVisitor {
 
         private static final long serialVersionUID = 1L;
@@ -575,6 +662,19 @@ public class QueryMaker {
         public WhereBuilder() {
             buf = new StringBuilder();
             params = new LinkedList<Serializable>();
+        }
+
+        @Override
+        public void visitMultiExpression(MultiExpression node) {
+            // Don't add parentheses as for now this is always toplevel.
+            // This expression is implicitely ANDed with other toplevel clauses
+            // for types and security.
+            for (Iterator<Operand> it = node.values.iterator(); it.hasNext();) {
+                it.next().accept(this);
+                if (it.hasNext()) {
+                    node.operator.accept(this);
+                }
+            }
         }
 
         @Override
@@ -707,23 +807,28 @@ public class QueryMaker {
         }
 
         protected Column getSpecialColumn(String name) {
-            if (name.equals(ECM_PRIMARYTYPE)) {
+            if (ECM_PRIMARYTYPE.equals(name)) {
                 return joinedHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
             }
-            if (name.equals(ECM_UUID)) {
+            if (ECM_MIXINTYPE.equals(name)) {
+                // toplevel ones have been extracted by the analyzer
+                throw new QueryMakerException("Cannot use non-toplevel " +
+                        name + " in query");
+            }
+            if (ECM_UUID.equals(name)) {
                 return hierTable.getColumn(model.MAIN_KEY);
             }
-            if (name.equals(ECM_NAME)) {
+            if (ECM_NAME.equals(name)) {
                 return hierTable.getColumn(model.HIER_CHILD_NAME_KEY);
             }
-            if (name.equals(ECM_PARENTID)) {
+            if (ECM_PARENTID.equals(name)) {
                 return hierTable.getColumn(model.HIER_PARENT_KEY);
             }
-            if (name.equals(ECM_LIFECYCLESTATE)) {
+            if (ECM_LIFECYCLESTATE.equals(name)) {
                 return database.getTable(model.MISC_TABLE_NAME).getColumn(
                         model.MISC_LIFECYCLE_STATE_KEY);
             }
-            if (name.equals(ECM_VERSIONLABEL)) {
+            if (ECM_VERSIONLABEL.equals(name)) {
                 return database.getTable(model.VERSION_TABLE_NAME).getColumn(
                         model.VERSION_LABEL_KEY);
             }

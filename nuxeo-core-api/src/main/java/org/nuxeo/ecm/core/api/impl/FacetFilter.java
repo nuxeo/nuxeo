@@ -19,7 +19,9 @@
 package org.nuxeo.ecm.core.api.impl;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
@@ -32,11 +34,18 @@ import org.nuxeo.ecm.core.api.Filter;
  */
 public class FacetFilter implements Filter {
 
-    private static final long serialVersionUID = 666516084564501480L;
+    private static final long serialVersionUID = 1L;
 
-    public final List<String> required;
+    public static FacetFilter ALLOW = new FacetFilter((List<String>) null,
+            (List<String>) null);
 
-    public final List<String> excluded;
+    /** Set of required facets. Never {@code null}. */
+    public final Set<String> required;
+
+    /** Set of excluded facets. Never {@code null}. */
+    public final Set<String> excluded;
+
+    public final Boolean shortcut;
 
     /**
      * Generic constructor.
@@ -46,8 +55,17 @@ public class FacetFilter implements Filter {
      *            filter
      */
     public FacetFilter(List<String> required, List<String> excluded) {
-        this.required = required;
-        this.excluded = excluded;
+        if (required == null) {
+            this.required = Collections.emptySet();
+        } else {
+            this.required = new HashSet<String>(required);
+        }
+        if (excluded == null) {
+            this.excluded = Collections.emptySet();
+        } else {
+            this.excluded = new HashSet<String>(excluded);
+        }
+        shortcut = findShortcut();
     }
 
     /**
@@ -59,27 +77,63 @@ public class FacetFilter implements Filter {
      */
     public FacetFilter(String facet, boolean isRequired) {
         if (isRequired) {
-            required = Collections.singletonList(facet);
-            excluded = null;
+            required = Collections.singleton(facet);
+            excluded = Collections.emptySet();
         } else {
-            required = null;
-            excluded = Collections.singletonList(facet);
+            required = Collections.emptySet();
+            excluded = Collections.singleton(facet);
         }
+        shortcut = null;
+    }
+
+    /**
+     * Constructor that ANDs two filters.
+     *
+     * @param filter1 the first filter
+     * @param filter2 the second filter
+     */
+    public FacetFilter(FacetFilter filter1, FacetFilter filter2) {
+        if (filter1.required.isEmpty() && filter2.required.isEmpty()) {
+            required = Collections.emptySet();
+        } else {
+            required = new HashSet<String>(filter1.required);
+            required.addAll(filter2.required);
+        }
+        if (filter1.excluded.isEmpty() && filter2.excluded.isEmpty()) {
+            excluded = Collections.emptySet();
+        } else {
+            excluded = new HashSet<String>(filter1.excluded);
+            excluded.addAll(filter2.excluded);
+        }
+        shortcut = findShortcut();
+    }
+
+    protected Boolean findShortcut() {
+        if (required.isEmpty() && excluded.isEmpty()) {
+            // no condition, always matches
+            return Boolean.TRUE;
+        }
+        HashSet<String> intersection = new HashSet<String>(required);
+        intersection.retainAll(excluded);
+        if (!intersection.isEmpty()) {
+            // non-empty intersection, filter can never match
+            return Boolean.FALSE;
+        }
+        return null;
     }
 
     public boolean accept(DocumentModel docModel) {
-        if (excluded != null) { // assume that excluded will be shorter
-            for (String exc : excluded) {
-                if (docModel.hasFacet(exc)) {
-                    return false;
-                }
+        if (shortcut != null) {
+            return shortcut.booleanValue();
+        }
+        for (String exc : excluded) {
+            if (docModel.hasFacet(exc)) {
+                return false;
             }
         }
-        if (required != null) {
-            for (String req : required) {
-                if (!docModel.hasFacet(req)) {
-                    return false;
-                }
+        for (String req : required) {
+            if (!docModel.hasFacet(req)) {
+                return false;
             }
         }
         return true;
