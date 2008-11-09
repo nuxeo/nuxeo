@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.Collections;
 
 import org.glassfish.embed.ScatteredWar;
+import org.jboss.util.property.jmx.SystemPropertyClassValue;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.server.WebApplication;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -31,6 +32,7 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 
 // BUG:       in InjectionManager  if (!isOptional(inject)) { return always true - isOptional return always false
 
@@ -54,9 +56,11 @@ public class GF3Component extends DefaultComponent {
     @Override
     public void activate(ComponentContext context) throws Exception {
         Environment env = Environment.getDefault();
-        System.setProperty(ConnectorConstants.INSTALL_ROOT, env.getHome().getAbsolutePath());
-        System.setProperty("com.sun.aas.instanceRoot", env.getHome().getAbsolutePath());
-//        // in //lib/install/applications we must put the __ds_jdbc_ra
+//this is handled in GlassFishServer.createTempDir()        
+//        String gf3Root = env.getHome().getAbsolutePath()+"/glassfish";
+//        System.out.println("Using GlassFish home: "+gf3Root); 
+//        System.setProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY, gf3Root);
+//        System.setProperty(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY, gf3Root);
         File file = new File(env.getConfig(), "domain.xml");
         if (file.exists()) {
             server = new GlassFishServer(file.toURI().toURL());

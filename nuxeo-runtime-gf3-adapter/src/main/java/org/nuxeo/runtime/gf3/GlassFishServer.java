@@ -19,6 +19,8 @@
 
 package org.nuxeo.runtime.gf3;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -41,6 +43,7 @@ import org.glassfish.web.WebEntityResolver;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.Inhabitants;
+import org.nuxeo.common.Environment;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.security.SecuritySniffer;
@@ -196,4 +199,15 @@ public class GlassFishServer extends AppServer {
         return parser;
     }
 
+    /**
+     * In fact this is returning the instance directory ..
+     * See org.glassfish.server.ServerEnvironmentImpl and com.sun.enterprise.module.bootstrap.StartupContext
+     * Should override this otherwise jdbc.ra dirs will not be correctly set
+     */
+    @Override
+    protected File createTempDir() throws IOException {
+        // must simulate as if we are in glassfish/bin dir so that ${home}/glassfish is selected as the glassfish root 
+        return new File(Environment.getDefault().getHome().getAbsolutePath()+"/glassfish/bin");
+    }
+    
 }
