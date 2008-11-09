@@ -115,7 +115,7 @@ public class ClassPathScanner {
         return bundles;
     }
 
-    public static interface Callback {
+    public interface Callback {
 
         /**
          * A nested JAR was found on the class path. Usually a callback should

@@ -61,6 +61,7 @@ import java.util.Iterator;
  *
  * @author <a href="mailto:tom.elrod@jboss.com">Tom Elrod</a>
  */
+@SuppressWarnings({"ALL"})
 public class ServletServerInvoker extends WebServerInvoker implements ServletServerInvokerMBean
 {
    private static final Logger log = Logger.getLogger(ServletServerInvoker.class);

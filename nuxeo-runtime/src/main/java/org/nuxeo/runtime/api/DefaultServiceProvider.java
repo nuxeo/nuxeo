@@ -20,6 +20,7 @@
 package org.nuxeo.runtime.api;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * A service provider.
@@ -44,7 +45,7 @@ public class DefaultServiceProvider implements ServiceProvider {
         return provider;
     }
 
-    protected final Hashtable<Class<?>, ServiceRef> registry = new Hashtable<Class<?>, ServiceRef>();
+    protected final Map<Class<?>, ServiceRef> registry = new Hashtable<Class<?>, ServiceRef>();
 
     @SuppressWarnings("unchecked")
     public <T> T getService(Class<T> serviceClass) {

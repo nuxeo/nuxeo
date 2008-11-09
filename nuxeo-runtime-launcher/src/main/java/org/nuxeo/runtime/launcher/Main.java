@@ -60,7 +60,7 @@ public class Main {
         try {
             File file = new File(path).getCanonicalFile();
             if (file.exists()) {
-                urls[0] = (file.toURI().toURL());
+                urls[0] = file.toURI().toURL();
             } else {
                 System.err.println("Could not find main class: "
                         + args[0]

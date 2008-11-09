@@ -38,9 +38,9 @@ public final class DeploymentHelper {
 
     public static final Log log = LogFactory.getLog(DeploymentHelper.class);
 
-    private static ObjectName DEPLOYER_NAME;
+    private static final ObjectName DEPLOYER_NAME;
 
-    private static MBeanServer jboss;
+    private static final MBeanServer jboss;
 
     // Utility class
     private DeploymentHelper() {

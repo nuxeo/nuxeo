@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class SimpleServiceProvider extends AbstractServiceProvider {
 
-    protected Map<String, Entry> registry;
+    protected final Map<String, Entry> registry;
 
     /**
      * The default constructor is using a {@link HashMap} as the registry

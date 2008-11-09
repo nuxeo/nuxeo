@@ -196,7 +196,7 @@ public class BundleImpl implements Bundle {
     }
 
     public void stop() throws BundleException {
-        state = Bundle.STOPPING;
+        state = STOPPING;
         try {
             setStopping();
             getActivator().stop(context);
@@ -224,72 +224,72 @@ public class BundleImpl implements Bundle {
     }
 
     void setInstalled() {
-        if (state == Bundle.INSTALLED) {
+        if (state == INSTALLED) {
             return;
         }
         lastModified = System.currentTimeMillis();
-        state = Bundle.INSTALLED;
+        state = INSTALLED;
         BundleEvent event = new BundleEvent(BundleEvent.INSTALLED, this);
         osgi.fireBundleEvent(event);
     }
 
     void setUninstalled() {
-        if (state == Bundle.UNINSTALLED) {
+        if (state == UNINSTALLED) {
             return;
         }
         lastModified = System.currentTimeMillis();
-        state = Bundle.UNINSTALLED;
+        state = UNINSTALLED;
         BundleEvent event = new BundleEvent(BundleEvent.UNINSTALLED, this);
         osgi.fireBundleEvent(event);
     }
 
     void setResolved() {
-        if (state == Bundle.RESOLVED) {
+        if (state == RESOLVED) {
             return;
         }
-        state = Bundle.RESOLVED;
+        state = RESOLVED;
         BundleEvent event = new BundleEvent(BundleEvent.RESOLVED, this);
         osgi.fireBundleEvent(event);
     }
 
     void setUnResolved() {
-        state = Bundle.INSTALLED;
+        state = INSTALLED;
         BundleEvent event = new BundleEvent(BundleEvent.UNRESOLVED, this);
         osgi.fireBundleEvent(event);
     }
 
     void setStarting() {
-        if (state != Bundle.RESOLVED) {
+        if (state != RESOLVED) {
             return;
         }
-        state = Bundle.STARTING;
+        state = STARTING;
         BundleEvent event = new BundleEvent(BundleEvent.STARTING, this);
         osgi.fireBundleEvent(event);
     }
 
     void setStarted() {
-        if (state != Bundle.STARTING) {
+        if (state != STARTING) {
             return;
         }
-        state = Bundle.ACTIVE;
+        state = ACTIVE;
         BundleEvent event = new BundleEvent(BundleEvent.STARTED, this);
         osgi.fireBundleEvent(event);
     }
 
     void setStopping() {
-        if (state != Bundle.ACTIVE) {
+        if (state != ACTIVE) {
             return;
         }
-        state = Bundle.STOPPING;
+        state = STOPPING;
         BundleEvent event = new BundleEvent(BundleEvent.STOPPING, this);
         osgi.fireBundleEvent(event);
     }
 
     void setStopped() {
-        if (state != Bundle.STOPPING) {
+        if (state != STOPPING) {
             return;
         }
-        state = Bundle.RESOLVED;
+        state = RESOLVED;
         BundleEvent event = new BundleEvent(BundleEvent.STOPPED, this);
         osgi.fireBundleEvent(event);
     }

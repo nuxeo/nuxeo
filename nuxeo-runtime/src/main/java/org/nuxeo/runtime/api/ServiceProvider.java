@@ -19,7 +19,6 @@
 
 package org.nuxeo.runtime.api;
 
-
 /**
  * A service provider.
  *

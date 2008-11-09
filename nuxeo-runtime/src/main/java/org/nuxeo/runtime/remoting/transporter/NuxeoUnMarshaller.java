@@ -34,14 +34,14 @@ public class NuxeoUnMarshaller extends SerializableUnMarshaller {
     public NuxeoUnMarshaller() {
         super ();
         // The only method I found to set nuxeo specific class loader
-        customClassLoader = getClass().getClassLoader(); 
+        customClassLoader = getClass().getClassLoader();
     }
-    
+
     @Override
     public void setClassLoader(ClassLoader classloader) {
         // ignore - we are always using nuxeo class loader
     }
-    
+
 
     @Override
     public UnMarshaller cloneUnMarshaller() throws CloneNotSupportedException {

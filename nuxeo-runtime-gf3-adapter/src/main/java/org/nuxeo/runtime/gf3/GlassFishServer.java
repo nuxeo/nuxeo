@@ -66,7 +66,7 @@ import com.sun.web.security.RealmAdapter;
  */
 public class GlassFishServer extends AppServer {
 
-    final static Logger log = Logger.getLogger("GlassFishServer");
+    private static final Logger log = Logger.getLogger("GlassFishServer");
 
     public GlassFishServer(URL domainXmlUrl) {
         super(domainXmlUrl);
@@ -132,8 +132,7 @@ public class GlassFishServer extends AppServer {
         ConnectorRuntime connRuntime = habitat.getComponent(ConnectorRuntime.class);
         return connRuntime.pingConnectionPool(poolName);
     }
-    
-    
+
     // remove parser.drop(DecoratorForJ2EEInstanceListener.class); from super
     protected InhabitantsParser decorateInhabitantsParser(InhabitantsParser parser) {
         // registering the server using the base class and not the current instance class
@@ -167,7 +166,7 @@ public class GlassFishServer extends AppServer {
         // we don't really parse domain.xml from disk
         parser.replace(DomainXml.class, EmbeddedDomainXml.class);
 
-        // ... and we don't persist it either. 
+        // ... and we don't persist it either.
         parser.replace(DomainXmlPersistence.class, EmbeddedDomainXml.class);
 
         // we provide our own ServerEnvironment

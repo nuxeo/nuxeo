@@ -41,11 +41,12 @@ import org.jboss.remoting.transport.Connector;
  * @author <a href="mailto:tom.elrod@jboss.com">Tom Elrod</a>
  */
 public class TransporterServer {
-    private Connector connector = null;
 
-    private static MBeanServer server = null;
+    private Connector connector;
 
-    private static Detector detector = null;
+    private static MBeanServer server;
+
+    private static Detector detector;
 
     /**
      * Creates a remoting server using the provided locator and subsytem and

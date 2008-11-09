@@ -271,7 +271,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     public void loadProperties(InputStream in) throws IOException {
         Properties props = new Properties();
         props.load(in);
-        for (Map.Entry<Object, Object> prop : props.entrySet()) {
+        for (Entry<Object, Object> prop : props.entrySet()) {
             properties.put(prop.getKey().toString(), prop.getValue().toString());
         }
     }
@@ -312,13 +312,14 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
         Map<ComponentName, Set<ComponentName>> pendingRegistrations = manager.getPendingRegistrations();
         Collection<ComponentName> activatingRegistrations = manager.getActivatingRegistrations();
-        msg.append(hr).append("\n= Component Loading Status: Pending: ").append(pendingRegistrations.size())
+        msg.append(hr)
+                .append("\n= Component Loading Status: Pending: ").append(pendingRegistrations.size())
                 .append(" / Unstarted: ").append(activatingRegistrations.size())
                 .append(" / Total: ").append(manager.getRegistrations().size())
                 .append('\n');
         for (Entry<ComponentName, Set<ComponentName>> e : pendingRegistrations.entrySet()) {
-            msg.append("  * ").append(e.getKey()).append(" requires ")
-                    .append(e.getValue()).append('\n');
+            msg.append("  * ").append(e.getKey())
+                    .append(" requires ").append(e.getValue()).append('\n');
         }
         for (ComponentName componentName : activatingRegistrations) {
             msg.append("  - ").append(componentName).append('\n');
@@ -350,7 +351,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     @Override
     public File getBundleFile(Bundle bundle) {
-        File file = null;
+        File file;
         String location = bundle.getLocation();
         String vendor = Framework.getProperty(Constants.FRAMEWORK_VENDOR);
         if ("Eclipse".equals(vendor)) { // equinox framework

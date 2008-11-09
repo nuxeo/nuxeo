@@ -39,7 +39,7 @@ import org.nuxeo.runtime.remoting.transporter.TransporterClient;
  */
 public class ScriptingClient {
 
-    private ScriptingServer server;
+    private final ScriptingServer server;
     private ScriptContext ctx = new SimpleScriptContext();
 
     public ScriptingClient(String host, int port) throws Exception {
