@@ -2,7 +2,7 @@
   <head>
     <title>
        <@block name="title">
-       <#if Root??>${Root.document['dc:title']}<#else>NXThemes WebEngine</#if>
+         <#if Document??>${Document['dc:title']}<#else>NXThemes WebEngine</#if>
        </@block>
     </title>
     <@nxthemes_head />

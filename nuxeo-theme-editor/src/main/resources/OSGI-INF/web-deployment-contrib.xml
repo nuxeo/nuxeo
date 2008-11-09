@@ -6,20 +6,10 @@
 		target="org.nuxeo.ecm.webengine.WebEngineComponent"
 		point="install">
 
-	    <install guard="/WEB-INF/nxthemes-editor-webapp.xml">
-	      <copy path="OSGI-INF/nxthemes-editor-webapp.xml" target="/WEB-INF/nxthemes-editor-webapp.xml" />
+	    <install module="nxthemesEditor">
 	      <copy path="web/nxthemes-editor" target="/" />
-	      <append path="OSGI-INF/l10n/messages.properties" target="/i18n/messages.properties"/>
 	    </install>
 
 	</extension>
-
-  <extension
-            target="org.nuxeo.ecm.webengine.WebEngineComponent"
-            point="configuration">
-
-    <configuration path="/WEB-INF/nxthemes-editor-webapp.xml" />
-
-  </extension>
 
 </component>

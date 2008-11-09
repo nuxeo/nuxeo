@@ -59,18 +59,15 @@ public class NXThemesHeadDirective implements TemplateDirectiveModel {
         }
 
         Writer writer = env.getOut();
-        
+
         WebContext context = (WebContext) Utils.getWrappedObject("Context", env);
         final URL themeUrl = Utils.getThemeUrlAndSetupRequest(context);
 
         Map<String, String> attributes = new HashMap<String, String>();
         attributes.put("themeName", ThemeManager.getThemeNameByUrl(themeUrl));
-        attributes.put("basePath", context.getBasePath());
-        attributes.put(
-                "baseUrl",
-                context.getBasePath());
+        attributes.put("basePath", context.getModulePath());
+        attributes.put("baseUrl", context.getModulePath());
         writer.write(Head.render(attributes));
-        
-        
+
     }
 }

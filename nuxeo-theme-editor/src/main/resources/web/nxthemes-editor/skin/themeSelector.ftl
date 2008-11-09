@@ -1,7 +1,3 @@
-<#assign themes = script("getThemes.groovy") />
-<#assign pages = script("getPages.groovy") />
-<#assign current_theme_name = script("getCurrentThemeName.groovy") />
-
 <div id="nxthemesThemeSelectorArea" style="width: 100%">
 
 <table class="nxthemesThemeTabs" cellpadding="0" cellspacing="0"
@@ -33,6 +29,5 @@
 
 <div style="clear: both"></div>
 </div>
-
 
 </div>

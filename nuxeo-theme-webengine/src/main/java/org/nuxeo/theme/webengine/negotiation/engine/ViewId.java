@@ -29,7 +29,7 @@ public final class ViewId implements Scheme {
         final String viewId = webContext.getMethod();
 
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        final String applicationPath = webContext.getBasePath();
+        final String applicationPath = webContext.getModulePath();
         final ApplicationType application = (ApplicationType) typeRegistry.lookup(
                 TypeFamily.APPLICATION, applicationPath);
         if (application == null) {
