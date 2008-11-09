@@ -57,7 +57,7 @@ import org.nuxeo.ecm.core.versioning.DocumentVersion;
  *
  * @author DM
  */
-final public class VerServUtils {
+public final class VerServUtils {
 
     public static final String START_VERSION_NODE = "root";
 

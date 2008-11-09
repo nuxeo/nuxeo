@@ -629,7 +629,7 @@ public class TestLocalAPI extends TestAPI {
                 vm);
         acp = session.getACP(version.getRef());
         ACL[] acls = acp.getACLs();
-        if (this.getClass().getName().equals(TestLocalAPI.class.getName())) {
+        if (getClass().getName().equals(TestLocalAPI.class.getName())) {
             // JCR versioning (unused) does something incorrect here
             return;
         }

@@ -54,7 +54,7 @@ public class CachingDocumentIterator implements DocumentModelIterator {
     }
 
     public Iterator<DocumentModel> iterator() {
-        return CachingDocumentIterator.this;
+        return this;
     }
 
     public long size() {

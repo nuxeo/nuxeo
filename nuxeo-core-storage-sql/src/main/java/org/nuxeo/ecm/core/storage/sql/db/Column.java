@@ -156,7 +156,7 @@ public class Column implements Serializable {
     }
 
     public void setPrecision(int scale) {
-        this.precision = scale;
+        precision = scale;
     }
 
     public int getScale() {

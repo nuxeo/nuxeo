@@ -53,9 +53,9 @@ public abstract class UnrestrictedSessionRunner {
         this.session = session;
         sessionIsAlreadyUnrestricted = isUnrestricted(session);
         if (sessionIsAlreadyUnrestricted) {
-            this.repositoryName = null;
+            repositoryName = null;
         } else {
-            this.repositoryName = session.getRepositoryName();
+            repositoryName = session.getRepositoryName();
         }
     }
 
@@ -65,7 +65,7 @@ public abstract class UnrestrictedSessionRunner {
      * @param repositoryName the repository name
      */
     public UnrestrictedSessionRunner(String repositoryName) {
-        this.session = null;
+        session = null;
         sessionIsAlreadyUnrestricted = false;
         this.repositoryName = repositoryName;
     }

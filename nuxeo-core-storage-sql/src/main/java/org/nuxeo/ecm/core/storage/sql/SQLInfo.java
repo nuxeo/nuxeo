@@ -127,11 +127,11 @@ public class SQLInfo {
 
     private final Map<String, Column> copyIdColumnMap;
 
-    private String selectVersionIdByLabelSql;
+    private final String selectVersionIdByLabelSql;
 
     private final List<Column> selectVersionIdByLabelWhereColumns;
 
-    private Column selectVersionIdByLabelWhatColumn;
+    private final Column selectVersionIdByLabelWhatColumn;
 
     protected final Map<String, SQLInfoSelect> selectFragmentById;
 

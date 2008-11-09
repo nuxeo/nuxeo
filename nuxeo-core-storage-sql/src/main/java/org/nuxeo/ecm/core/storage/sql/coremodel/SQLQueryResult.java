@@ -52,8 +52,8 @@ public class SQLQueryResult implements QueryResult {
 
     public SQLQueryResult(SQLSession session, List<Serializable> ids) {
         this.session = session;
-        this.it = ids.iterator();
-        this.size = ids.size();
+        it = ids.iterator();
+        size = ids.size();
     }
 
     public long count() {

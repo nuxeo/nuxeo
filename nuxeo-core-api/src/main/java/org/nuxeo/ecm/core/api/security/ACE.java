@@ -33,16 +33,14 @@ public final class ACE implements Serializable, Cloneable {
     private final String permission;
     private final boolean isGranted;
 
-    public ACE() {
-        this.username = null;
-        this.permission = null;
-        this.isGranted = false;
-    }
-
     public ACE(String username, String permission, boolean isGranted) {
         this.username = username;
         this.permission = permission;
         this.isGranted = isGranted;
+    }
+
+    public ACE() {
+        this(null, null, false);
     }
 
     public String getUsername() {

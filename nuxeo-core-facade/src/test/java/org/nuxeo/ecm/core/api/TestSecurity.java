@@ -44,7 +44,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestSecurity extends NXRuntimeTestCase {
 
-    private final static String REPO_NAME = "default";
+    private static final String REPO_NAME = "default";
 
     private CoreSession remote;
 

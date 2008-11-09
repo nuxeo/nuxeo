@@ -173,7 +173,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
             return;
         }
         Map<String, Serializable> map = (Map<String, Serializable>) value;
-        for (Map.Entry<String, Serializable> entry : map.entrySet()) {
+        for (Entry<String, Serializable> entry : map.entrySet()) {
             Property property = get(entry.getKey());
             property.init(entry.getValue());
         }
@@ -203,7 +203,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
             throw new InvalidPropertyValueException(getPath());
         }
         Map<String, Object> map = (Map<String, Object>) value;
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
+        for (Entry<String, Object> entry : map.entrySet()) {
             Property property = get(entry.getKey());
             property.setValue(entry.getValue());
         }
@@ -308,7 +308,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
         throw new UnsupportedOperationException();
     }
 
-    public Set<java.util.Map.Entry<String, Property>> entrySet() {
+    public Set<Entry<String, Property>> entrySet() {
         return children.entrySet();
     }
 

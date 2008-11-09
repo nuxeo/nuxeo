@@ -38,7 +38,7 @@ public class SimpleDocumentModelIterator implements DocumentModelIterator {
 
 
     public SimpleDocumentModelIterator(List<DocumentModel> list) {
-        this.iterator = list.iterator();
+        iterator = list.iterator();
         this.list = list;
     }
 

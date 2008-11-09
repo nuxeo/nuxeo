@@ -441,7 +441,7 @@ public class JCRSession implements Session {
 
     public static String generateDocumentName(String title) {
         if (title == null) {
-            return "doc-" + String.valueOf(System.currentTimeMillis());
+            return "doc-" + System.currentTimeMillis();
         }
 
         // generate the ID from the title
@@ -469,8 +469,7 @@ public class JCRSession implements Session {
             }
         }
 
-        return String.valueOf(chars) + '.'
-                + String.valueOf(System.currentTimeMillis());
+        return String.valueOf(chars) + '.' + System.currentTimeMillis();
     }
 
     @Override

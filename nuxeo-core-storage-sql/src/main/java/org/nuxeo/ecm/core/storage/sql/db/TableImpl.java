@@ -47,7 +47,7 @@ public class TableImpl implements Table {
     private final LinkedHashMap<String, Column> columns;
 
     /** Logical names of indexed columns. */
-    private List<String[]> indexedColumns;
+    private final List<String[]> indexedColumns;
 
     /**
      * Creates a new empty table.

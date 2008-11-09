@@ -210,12 +210,8 @@ public class Dialect {
     }
 
     public boolean needsOrderByKeysAfterDistinct() {
-        if (dialect instanceof PostgreSQLDialect) {
-            return true;
-        }
-        return false;
+        return dialect instanceof PostgreSQLDialect;
     }
-
 
     /**
      * When doing a comparison between a text field and something else, is some
@@ -242,10 +238,7 @@ public class Dialect {
      * @return
      */
     public boolean supportsArrays() {
-        if (dialect instanceof PostgreSQLDialect) {
-            return true;
-        }
-        return false;
+        return dialect instanceof PostgreSQLDialect;
     }
 
     /**
@@ -291,7 +284,7 @@ public class Dialect {
             this.elements = elements;
             StringBuilder b = new StringBuilder();
             appendArray(b, elements);
-            this.string = b.toString();
+            string = b.toString();
         }
 
         protected static void appendArray(StringBuilder b, Object[] elements) {

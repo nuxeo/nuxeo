@@ -303,7 +303,7 @@ public class Node {
         protected final String posKey;
 
         public PositionComparator(Model model) {
-            this.posKey = model.HIER_CHILD_POS_KEY;
+            posKey = model.HIER_CHILD_POS_KEY;
         }
 
         public int compare(Node n1, Node n2) {

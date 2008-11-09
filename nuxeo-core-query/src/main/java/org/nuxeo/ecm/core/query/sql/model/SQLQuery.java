@@ -74,14 +74,14 @@ public class SQLQuery implements ASTNode {
      * Copying constructor. Does not deep-copy the clauses though.
      */
     public SQLQuery(SQLQuery other) {
-        this.select = other.select;
-        this.from = other.from;
-        this.where = other.where;
-        this.orderBy = other.orderBy;
-        this.groupBy = other.groupBy;
-        this.having = other.having;
-        this.limit = other.limit;
-        this.offset = other.offset;
+        select = other.select;
+        from = other.from;
+        where = other.where;
+        orderBy = other.orderBy;
+        groupBy = other.groupBy;
+        having = other.having;
+        limit = other.limit;
+        offset = other.offset;
     }
 
     public SelectClause getSelectClause() {
@@ -133,47 +133,64 @@ public class SQLQuery implements ASTNode {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         SQLQuery other = (SQLQuery) obj;
         if (select == null) {
-            if (other.select != null)
+            if (other.select != null) {
                 return false;
-        } else if (!select.equals(other.select))
+            }
+        } else if (!select.equals(other.select)) {
             return false;
+        }
         if (from == null) {
-            if (other.from != null)
+            if (other.from != null) {
                 return false;
-        } else if (!from.equals(other.from))
+            }
+        } else if (!from.equals(other.from)) {
             return false;
+        }
         if (where == null) {
-            if (other.where != null)
+            if (other.where != null) {
                 return false;
-        } else if (!where.equals(other.where))
+            }
+        } else if (!where.equals(other.where)) {
             return false;
+        }
         if (orderBy == null) {
-            if (other.orderBy != null)
+            if (other.orderBy != null) {
                 return false;
-        } else if (!orderBy.equals(other.orderBy))
+            }
+        } else if (!orderBy.equals(other.orderBy)) {
             return false;
+        }
         if (groupBy == null) {
-            if (other.groupBy != null)
+            if (other.groupBy != null) {
                 return false;
-        } else if (!groupBy.equals(other.groupBy))
+            }
+        } else if (!groupBy.equals(other.groupBy)) {
             return false;
+        }
         if (having == null) {
-            if (other.having != null)
+            if (other.having != null) {
                 return false;
-        } else if (!having.equals(other.having))
+            }
+        } else if (!having.equals(other.having)) {
             return false;
-        if (limit != other.limit)
+        }
+        if (limit != other.limit) {
             return false;
-        if (offset != other.offset)
+        }
+        if (offset != other.offset) {
             return false;
+        }
         return true;
     }
 
@@ -181,12 +198,12 @@ public class SQLQuery implements ASTNode {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((select == null) ? 0 : select.hashCode());
-        result = prime * result + ((from == null) ? 0 : from.hashCode());
-        result = prime * result + ((where == null) ? 0 : where.hashCode());
-        result = prime * result + ((orderBy == null) ? 0 : orderBy.hashCode());
-        result = prime * result + ((groupBy == null) ? 0 : groupBy.hashCode());
-        result = prime * result + ((having == null) ? 0 : having.hashCode());
+        result = prime * result + (select == null ? 0 : select.hashCode());
+        result = prime * result + (from == null ? 0 : from.hashCode());
+        result = prime * result + (where == null ? 0 : where.hashCode());
+        result = prime * result + (orderBy == null ? 0 : orderBy.hashCode());
+        result = prime * result + (groupBy == null ? 0 : groupBy.hashCode());
+        result = prime * result + (having == null ? 0 : having.hashCode());
         result = prime * result + (int) (limit ^ (limit >>> 32));
         result = prime * result + (int) (offset ^ (offset >>> 32));
         return result;
@@ -196,7 +213,7 @@ public class SQLQuery implements ASTNode {
      * Interface for a class that can transform a {@link SQLQuery} into another.
      */
     public interface Transformer {
-        public static Transformer IDENTITY = new Transformer() {
+        Transformer IDENTITY = new Transformer() {
             public SQLQuery transform(SQLQuery query) {
                 return query;
             }
@@ -204,4 +221,5 @@ public class SQLQuery implements ASTNode {
 
         SQLQuery transform(SQLQuery query);
     }
+
 }

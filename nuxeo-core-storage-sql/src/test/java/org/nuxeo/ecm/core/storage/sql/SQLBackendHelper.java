@@ -41,8 +41,8 @@ public class SQLBackendHelper {
 
     protected static enum Database {
         DERBY, //
-        POSTGRESQL;
-    };
+        POSTGRESQL
+    }
 
     /**
      * Change this to use another SQL database for tests.
