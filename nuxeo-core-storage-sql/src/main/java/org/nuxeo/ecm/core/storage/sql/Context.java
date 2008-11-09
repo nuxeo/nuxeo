@@ -235,8 +235,7 @@ public class Context {
      * hierarchy fragments in lists of children.
      */
     protected Fragment getIfPresent(Serializable id) {
-        Fragment fragment;
-        fragment = pristine.get(id);
+        Fragment fragment = pristine.get(id);
         if (fragment != null) {
             return fragment;
         }

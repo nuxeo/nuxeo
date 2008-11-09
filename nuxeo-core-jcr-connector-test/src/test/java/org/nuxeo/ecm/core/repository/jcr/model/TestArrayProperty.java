@@ -55,7 +55,7 @@ public class TestArrayProperty extends RepositoryTestCase {
     public void testDateArrayProperty() throws Exception {
         Calendar date = Calendar.getInstance();
         date.set(2008, 6, 5);
-        Calendar[] calendarArray = new Calendar[] { date };
+        Calendar[] calendarArray = { date };
         dateDoc.setPropertyValue("dateArray", calendarArray);
 
         assertTrue(Arrays.equals(calendarArray,

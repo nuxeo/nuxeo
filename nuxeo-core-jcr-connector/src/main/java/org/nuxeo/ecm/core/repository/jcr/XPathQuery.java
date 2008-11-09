@@ -26,14 +26,17 @@ package org.nuxeo.ecm.core.repository.jcr;
 public class XPathQuery {
     // predicate part [...]
     final StringBuilder predicate = new StringBuilder(1024);
+
     // element(name, type)
     String name = "*";
     String type = "*";
+
     // path expression: //doc1/doc2/ should contain a trailing /
-    String path = null;
+    String path;
     final StringBuilder orderBy = new StringBuilder();
     boolean isProxyQuery = false;
 
+    @Override
     public String toString() {
         if (name == null) {
             name = "*";

@@ -482,11 +482,11 @@ public class QueryMaker {
 
         private static final long serialVersionUID = 1L;
 
-        public Set<String> types = new HashSet<String>();
+        public final Set<String> types = new HashSet<String>();
 
-        public Set<String> props = new HashSet<String>();
+        public final Set<String> props = new HashSet<String>();
 
-        public Set<String> orderKeys = new HashSet<String>();
+        public final Set<String> orderKeys = new HashSet<String>();
 
         public boolean needsProxies;
 

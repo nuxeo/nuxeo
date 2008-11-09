@@ -43,7 +43,7 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
 
     private static final long serialVersionUID = 4257192861843860742L;
 
-    private static final String[] EMPTY_FACETS = new String[] {};
+    private static final String[] EMPTY_FACETS = {};
 
     protected int unstructured;
 

@@ -70,7 +70,7 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
 
     public void testStringArray() throws Exception {
         assertNull(doc.getPropertyValue("tp:stringArray"));
-        String[] values = new String[] { "foo", "bar" };
+        String[] values = { "foo", "bar" };
         doc.setPropertyValue("tp:stringArray", values);
         doc = coreSession.saveDocument(doc);
         assertTrue(Arrays.equals(values,
@@ -82,7 +82,7 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
         assertNull(doc.getPropertyValue("tp:dateArray"));
         Calendar cal = Calendar.getInstance();
         cal.set(2008, 6, 10);
-        Calendar[] values = new Calendar[] { cal };
+        Calendar[] values = { cal };
         doc.setPropertyValue("tp:dateArray", values);
         doc = coreSession.saveDocument(doc);
         // currently returning long[] instead of Calendar[]
@@ -93,7 +93,7 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
     // NXP-2454
     public void testIntArray() throws Exception {
         assertNull(doc.getPropertyValue("tp:intArray"));
-        Long[] values = new Long[] { 1L, 2L, 3L };
+        Long[] values = { 1L, 2L, 3L };
         doc.setPropertyValue("tp:intArray", values);
         doc = coreSession.saveDocument(doc);
         // currently returning long[], maybe this is the wanted behaviour (?)

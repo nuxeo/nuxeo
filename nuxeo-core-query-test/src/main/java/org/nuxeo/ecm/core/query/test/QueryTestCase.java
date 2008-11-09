@@ -51,7 +51,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public abstract class QueryTestCase extends NXRuntimeTestCase {
 
-    public String REPOSITORY_NAME = "test";
+    public static final String REPOSITORY_NAME = "test";
 
     public CoreSession session;
 

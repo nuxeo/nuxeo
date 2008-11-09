@@ -104,14 +104,17 @@ public class LoginStack {
 
     public static class Sync extends LoginStack {
 
+        @Override
         public synchronized void clear() {
             stack.clear();
         }
 
+        @Override
         public synchronized void push(Principal principal, Object credential, Subject subject) {
             stack.add(new Entry(principal, credential, subject));
         }
 
+        @Override
         public synchronized Entry pop() {
             if (stack.isEmpty()) {
                 return null;
@@ -119,6 +122,7 @@ public class LoginStack {
             return stack.removeLast();
         }
 
+        @Override
         public synchronized Entry peek() {
             if (stack.isEmpty()) {
                 return null;
@@ -126,22 +130,27 @@ public class LoginStack {
             return stack.getLast();
         }
 
+        @Override
         public synchronized boolean isEmpty() {
             return stack.isEmpty();
         }
 
+        @Override
         public synchronized int size() {
             return stack.size();
         }
 
+        @Override
         public synchronized Entry get(int index) {
             return stack.get(index);
         }
 
+        @Override
         public synchronized Entry remove(int index) {
             return stack.remove(index);
         }
 
+        @Override
         public synchronized Entry[] toArray() {
             return stack.toArray(new Entry[stack.size()]);
         }

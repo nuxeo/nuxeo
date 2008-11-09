@@ -70,7 +70,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
     public void testPolicies() throws Exception {
         String permission = SecurityConstants.WRITE;
-        String[] permissions = new String[] { SecurityConstants.WRITE };
+        String[] permissions = { SecurityConstants.WRITE };
 
         // without lock
         assertEquals(Access.UNKNOWN, service.checkPermission(doc, null,

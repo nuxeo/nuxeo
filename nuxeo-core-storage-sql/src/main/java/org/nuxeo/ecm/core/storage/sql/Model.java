@@ -773,11 +773,11 @@ public class Model {
             return schemaFragment.get(typeName); // may be null
         }
 
-        /** Initialized if this type has a table associated. */
-        String thisFragmentName = null;
 
         log.debug("Making model for type " + typeName);
 
+        /** Initialized if this type has a table associated. */
+        String thisFragmentName = null;
         for (Field field : complexType.getFields()) {
             Type fieldType = field.getType();
             if (fieldType.isComplexType()) {

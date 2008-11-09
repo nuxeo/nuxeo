@@ -43,17 +43,15 @@ public class DocumentModelTreeNodeComparator implements
      * @param titles
      */
     public DocumentModelTreeNodeComparator(Map<String, String> titles) {
-        super();
         this.titles = titles;
     }
 
     protected String getTitlePath(DocumentModelTreeNodeImpl node) {
         Path path = node.getDocument().getPath();
-        String parentPath;
         String titlePath = "/";
 
         for (int i = 1; i <= path.segmentCount(); i++) {
-            parentPath = path.uptoSegment(i).toString();
+            String parentPath = path.uptoSegment(i).toString();
             if (titles.containsKey(parentPath)) {
                 titlePath += titles.get(parentPath) + "/";
             } else {

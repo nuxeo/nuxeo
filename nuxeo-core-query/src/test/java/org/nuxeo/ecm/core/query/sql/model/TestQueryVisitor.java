@@ -87,7 +87,7 @@ class PrintVisitor extends DefaultQueryVisitor {
 
     private static final long serialVersionUID = 1L;
 
-    public StringBuilder buf = new StringBuilder();
+    public final StringBuilder buf = new StringBuilder();
 
     @Override
     public String toString() {

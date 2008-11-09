@@ -126,11 +126,9 @@ public class ClientLoginModule implements LoginModule {
         NameCallback nc = new NameCallback("User name: ", "guest");
         Callback[] callbacks = { nc, pc };
         try {
-            char[] tmpPassword;
-
             callbackHandler.handle(callbacks);
             username = nc.getName();
-            tmpPassword = pc.getPassword();
+            char[] tmpPassword = pc.getPassword();
             if (tmpPassword != null) {
                 password = new char[tmpPassword.length];
                 System.arraycopy(tmpPassword, 0, password, 0, tmpPassword.length);

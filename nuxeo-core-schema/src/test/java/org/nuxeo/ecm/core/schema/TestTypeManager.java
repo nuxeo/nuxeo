@@ -72,7 +72,7 @@ public class TestTypeManager extends NXRuntimeTestCase {
     }
 
     public void testFacetsCache() {
-        String[] facets = new String[] { "parent1", "parent2" };
+        String[] facets = { "parent1", "parent2" };
         SchemaDescriptor[] schemas = new SchemaDescriptor[0];
         DocumentTypeDescriptor dtd = new DocumentTypeDescriptor("Document",
                 "Parent", schemas, facets);

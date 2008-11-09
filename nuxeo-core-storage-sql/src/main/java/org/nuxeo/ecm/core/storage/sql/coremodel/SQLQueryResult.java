@@ -65,7 +65,7 @@ public class SQLQueryResult implements QueryResult {
     }
 
     public DocumentModelList getDocumentModels() throws QueryException {
-        String[] schemas = new String[] { "common" };
+        String[] schemas = { "common" };
         List<DocumentModel> list = new ArrayList<DocumentModel>((int) size);
         while (it.hasNext()) {
             currentId = it.next();

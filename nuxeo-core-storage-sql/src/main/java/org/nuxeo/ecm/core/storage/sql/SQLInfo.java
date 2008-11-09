@@ -595,6 +595,7 @@ public class SQLInfo {
                     // these are columns that need to be searchable, as some
                     // databases (Derby) don't allow matches on CLOB columns
                     sqlType = Types.VARCHAR;
+                // FIXME: duplicate confitions in if statement below
                 } else if (tableName.equals(model.mainTableName) ||
                         tableName.equals(model.mainTableName)) {
                     // or VARCHAR for system tables // TODO size?

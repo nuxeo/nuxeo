@@ -1227,7 +1227,6 @@ public abstract class AbstractSession implements CoreSession,
             throws ClientException {
         SecurityService securityService = getSecurityService();
         Principal principal = getPrincipal();
-        String permission = BROWSE;
         try {
             Query compiledQuery = getSession().createQuery(query,
                     Query.Type.NXQL);
@@ -1235,6 +1234,7 @@ public abstract class AbstractSession implements CoreSession,
             boolean postFilterPermission;
             boolean postFilterFilter;
             boolean postFilterPolicies;
+            String permission = BROWSE;
             if (compiledQuery instanceof FilterableQuery) {
                 postFilterPermission = false;
                 postFilterPolicies = !securityService.arePoliciesExpressibleInQuery();

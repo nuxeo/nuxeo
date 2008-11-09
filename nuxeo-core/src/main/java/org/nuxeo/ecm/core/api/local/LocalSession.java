@@ -46,8 +46,8 @@ public class LocalSession extends AbstractSession {
 
     // Locally we don't yet support NXCore.getRepository()
     protected Session createSession(String repoName) throws ClientException {
-        NuxeoPrincipal principal = null;
         try {
+            NuxeoPrincipal principal = null;
             if (sessionContext != null) {
                 principal = (NuxeoPrincipal) sessionContext.get("principal");
                 if (principal == null) {

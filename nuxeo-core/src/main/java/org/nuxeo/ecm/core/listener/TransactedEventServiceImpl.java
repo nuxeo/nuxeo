@@ -47,16 +47,16 @@ public class TransactedEventServiceImpl implements TransactedEventService {
 
     private static final Log log = LogFactory.getLog(TransactedEventServiceImpl.class);
 
-    protected static ThreadLocal<EventList> events = new ThreadLocal<EventList>() {
+    protected static final ThreadLocal<EventList> events = new ThreadLocal<EventList>() {
         @Override
         protected EventList initialValue() {
             return new EventList(false);
         }
     };
 
-    protected ListenerList postListeners = new ListenerList();
-    protected ListenerList preListeners = new ListenerList();
-    protected ListenerList saveListeners = new ListenerList();
+    protected final ListenerList postListeners = new ListenerList();
+    protected final ListenerList preListeners = new ListenerList();
+    protected final ListenerList saveListeners = new ListenerList();
 
 
     public void addListener(TransactedListener listener) {

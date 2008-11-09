@@ -157,9 +157,9 @@ public class DerbyFunctions {
                 /*
                  * Nothing conclusive found, repeat on the parent.
                  */
-                Serializable newId;
                 ps2.setObject(1, id);
                 rs = ps2.executeQuery();
+                Serializable newId;
                 if (rs.next()) {
                     newId = (Serializable) rs.getObject(1);
                     if (rs.wasNull()) {

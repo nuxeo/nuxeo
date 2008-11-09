@@ -38,6 +38,6 @@ public interface QueryConstants {
      *  only for compatibility
      *  @deprecated use {@link #ECM_VERSION}
      */
-    static final String ECM_IS_CHECKED_IN_VERSION = "ecm:isCheckedInVersion";
+    @Deprecated static final String ECM_IS_CHECKED_IN_VERSION = "ecm:isCheckedInVersion";
 
 }

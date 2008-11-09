@@ -1996,7 +1996,7 @@ public abstract class TestAPI extends TestConnection {
                 name2, "File");
         childFile = createChildDocument(childFile);
 
-        String[] str = new String[] { "a", "b", "c" };
+        String[] str = { "a", "b", "c" };
         childFile.setProperty("dublincore", "participants", str);
         remote.saveDocument(childFile);
 

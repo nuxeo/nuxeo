@@ -28,8 +28,9 @@ public abstract class Literal implements Operand {
     private static final long serialVersionUID = 7459498561660866191L;
 
     /**
-     * Get a string representation of the value
-     * @return
+     * Gets a string representation of the value.
+     *
+     * @return a string representation of the value
      */
     public abstract String asString();
 

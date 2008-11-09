@@ -37,13 +37,13 @@ public class QueryFilter {
     public static final QueryFilter EMPTY = new QueryFilter(new String[0],
             new String[0], null, Collections.<SQLQuery.Transformer> emptyList());
 
-    protected String[] principals;
+    protected final String[] principals;
 
-    protected String[] permissions;
+    protected final String[] permissions;
 
-    protected FacetFilter facetFilter;
+    protected final FacetFilter facetFilter;
 
-    protected Collection<SQLQuery.Transformer> queryTransformers;
+    protected final Collection<SQLQuery.Transformer> queryTransformers;
 
     public QueryFilter(String[] principals, String[] permissions,
             FacetFilter facetFilter,

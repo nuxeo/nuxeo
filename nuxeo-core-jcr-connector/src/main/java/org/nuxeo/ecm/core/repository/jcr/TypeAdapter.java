@@ -46,7 +46,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
  */
 public final class TypeAdapter {
 
-    private static final Type[] TYPE_MAP = new Type[] {
+    private static final Type[] TYPE_MAP = {
         AnyType.INSTANCE, // undefined
         StringType.INSTANCE, // string
         BinaryType.INSTANCE, // binary

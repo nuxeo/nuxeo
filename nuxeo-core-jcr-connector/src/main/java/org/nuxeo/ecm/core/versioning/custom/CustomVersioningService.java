@@ -181,8 +181,7 @@ public class CustomVersioningService implements VersioningService {
             if (!node.hasProperty(NodeConstants.ECM_VERSION_HISTORY.rawname)) {
                 return Collections.emptyList();
             }
-            Node versionHistory;
-            versionHistory = node.getProperty(
+            Node versionHistory = node.getProperty(
                     NodeConstants.ECM_VERSION_HISTORY.rawname).getNode();
             NodeIterator it = versionHistory.getNodes();
             List<String> ids = new ArrayList<String>((int) it.getSize() - 1);

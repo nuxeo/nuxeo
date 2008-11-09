@@ -205,8 +205,7 @@ public class Mapper {
     // for debug
     protected void logSQL(String sql, List<Serializable> values) {
         for (Serializable v : values) {
-            String value;
-            value = loggedValue(v);
+            String value = loggedValue(v);
             sql = sql.replaceFirst("\\?", value);
         }
         logDebug(sql);
@@ -795,10 +794,10 @@ public class Mapper {
                     return null;
                 }
                 // construct the row from the results
-                Serializable id = null;
                 Map<String, Serializable> map = new HashMap<String, Serializable>();
                 i = 0;
                 List<Column> columns = sqlInfo.getSelectByChildNameWhatColumns(complexProp);
+                Serializable id = null;
                 for (Column column : columns) {
                     i++;
                     String key = column.getKey();
