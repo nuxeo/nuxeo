@@ -203,14 +203,14 @@ public final class DOMHelper {
         return el;
     }
 
-    public static interface NodeVisitor {
+    public interface NodeVisitor {
 
         void visitNode(Context ctx, XAnnotatedMember xam,
                 Node node, Collection<Object> result);
 
     }
 
-    public static interface NodeMapVisitor {
+    public interface NodeMapVisitor {
 
         void visitNode(Context ctx, XAnnotatedMember xam,
                 Node node, String key, Map<String, Object> result);

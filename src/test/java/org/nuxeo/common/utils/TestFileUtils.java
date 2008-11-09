@@ -30,7 +30,7 @@ import junit.framework.TestCase;
 public class TestFileUtils extends TestCase {
 
     public void testReadFromStreamWithPredefinedData() throws IOException {
-        final byte[] data = new byte[] {
+        final byte[] data = {
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 123, 3,
                 3, 4, 5, 2, 13, 34, 5, 56, 31, 34, 5, 65, 3, 4, 34, 3, 4, 34,
                 34, 24, 3, 1, 65, 67, 68, 7, 58, 7, 8, 75, 98, 7, 9, 5, 7, 45,

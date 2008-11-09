@@ -356,8 +356,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         }
     }
 
-
-    static interface EventHandler<T> {
+    interface EventHandler<T> {
 
         void registered(T object);
 

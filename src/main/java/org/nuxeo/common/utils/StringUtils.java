@@ -22,7 +22,6 @@ package org.nuxeo.common.utils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Utils for String manipulations.

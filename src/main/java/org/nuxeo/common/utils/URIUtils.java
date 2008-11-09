@@ -146,10 +146,10 @@ public final class URIUtils {
     }
 
     public static String quoteURIPathComponent(String s, boolean quoteSlash) {
-        URI uri;
         if ("".equals(s)) {
             return s;
         }
+        URI uri;
         try {
             // fake scheme so that a colon is not mistaken as a scheme
             uri = new URI("x", s, null);
