@@ -828,12 +828,12 @@ public class QueryMaker {
             }
             boolean bool = node.operator == Operator.EQ ^ v == 0;
             if (considerProxies) {
-                // toplevel clauses excludes proxies
-                buf.append(bool ? "0 = 1" : " 1 = 1");
-            } else {
                 buf.append(database.getTable(model.PROXY_TABLE_NAME).getColumn(
                         model.MAIN_KEY).getFullQuotedName());
                 buf.append(bool ? " IS NOT NULL" : " IS NULL");
+            } else {
+                // toplevel clauses excludes proxies
+                buf.append(bool ? "0 = 1" : " 1 = 1");
             }
         }
 

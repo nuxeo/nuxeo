@@ -607,6 +607,11 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
                 filter, 99);
         assertEquals(0, dml.size()); // contradictory clauses
 
+        // "deep" isProxy
+        dml = session.query("SELECT * FROM Document WHERE (dc:title = 'blah' OR ecm:isProxy = 1)");
+        assertIdSet(dml, proxyId);
+        dml = session.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND (dc:title = 'testfile1_Title' OR ecm:isProxy = 1)");
+        assertEquals(1, dml.size());
     }
 
     // this is disabled for JCR
