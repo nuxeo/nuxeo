@@ -102,6 +102,11 @@ public class WikiListener extends AbstractEventListener implements AsynchronousE
 
 
     public void handleEvent(CoreEvent coreEvent) throws Exception  {
+        /* TODO: work in progress
+         * this is not working yet  
+         */
+        if (true) return;
+        
         Object source = coreEvent.getSource();
 
         if (source instanceof DocumentModel) {
