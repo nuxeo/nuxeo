@@ -164,6 +164,9 @@ public class QueryMaker {
 
     protected final QueryFilter queryFilter;
 
+    /** true if the proxies table is used (not excluded by toplevel clause). */
+    protected boolean considerProxies;
+
     public SQLInfoSelect selectInfo;
 
     public List<Serializable> selectParams = new LinkedList<Serializable>();;
@@ -209,7 +212,26 @@ public class QueryMaker {
         this.queryFilter = queryFilter;
     }
 
+    private static class QueryMakerException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+
+        public QueryMakerException(String message) {
+            super(message);
+        }
+
+        public QueryMakerException(Throwable cause) {
+            super(cause);
+        }
+    }
+
+    private static class QueryCannotMatchException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+    }
+
     public void makeQuery() throws StorageException {
+        // clauses ANDed together
+        List<String> whereClauses = new LinkedList<String>();
+
         /*
          * Find all relevant types and keys for the criteria.
          */
@@ -217,6 +239,9 @@ public class QueryMaker {
         QueryAnalyzer info = new QueryAnalyzer();
         try {
             info.visitQuery(query);
+        } catch (QueryCannotMatchException e) {
+            // query cannot match
+            return;
         } catch (QueryMakerException e) {
             throw new StorageException(e.getMessage(), e);
         }
@@ -246,17 +271,36 @@ public class QueryMaker {
 
         types.removeAll(info.typesExcluded);
         if (info.typesRequired.size() > 1) {
-            // conflicting types requirement
-            selectInfo = null;
+            // conflicting types requirement, query cannot match
             return;
         }
         if (!info.typesRequired.isEmpty()) {
             types.retainAll(info.typesRequired); // 1 element at most
         }
         if (types.isEmpty()) {
-            // conflicting types requirement
-            selectInfo = null;
+            // conflicting types requirement, query cannot match
             return;
+        }
+
+        /*
+         * Merge facet filter into mixin clauses and immutable flag.
+         */
+
+        info.mixinsExcluded.addAll(facetFilter.excluded);
+        if (info.mixinsExcluded.remove(FACET_IMMUTABLE)) {
+            if (info.immutableClause == Boolean.TRUE) {
+                // conflict on immutable condition, query cannot match
+                return;
+            }
+            info.immutableClause = Boolean.FALSE;
+        }
+        info.mixinsRequired.addAll(facetFilter.required);
+        if (info.mixinsRequired.remove(FACET_IMMUTABLE)) {
+            if (info.immutableClause == Boolean.FALSE) {
+                // conflict on immutable condition, query cannot match
+                return;
+            }
+            info.immutableClause = Boolean.TRUE;
         }
 
         /*
@@ -273,14 +317,24 @@ public class QueryMaker {
         }
         fragmentNames.remove(model.hierTableName);
 
-        // TODO find when we can avoid joining with proxies
-        // (Immutable facet)
-        boolean usesJoinWithProxies = true;
+        /*
+         * Deal with proxies / immutable conditions.
+         */
 
-        if (info.needsProxies) {
-            usesJoinWithProxies = true;
+        if (info.proxyClause == Boolean.TRUE) {
+            if (info.immutableClause == Boolean.FALSE) {
+                // conflicting proxy requirements, query cannot match
+                return;
+            }
+            info.immutableClause = null; // shortcut
         }
-        if (info.needsVersions) {
+
+        // Do we have to join with the proxies table?
+        considerProxies = info.proxyClause != Boolean.FALSE &&
+                info.immutableClause != Boolean.FALSE;
+
+        // Do we need to add the versions table too?
+        if (info.needsVersionsTable || info.immutableClause != null) {
             fragmentNames.add(model.VERSION_TABLE_NAME);
         }
 
@@ -290,7 +344,7 @@ public class QueryMaker {
 
         List<String> joins = new ArrayList<String>(fragmentNames.size() + 1);
         Table hier = database.getTable(model.hierTableName);
-        if (usesJoinWithProxies) {
+        if (considerProxies) {
             // complex case where we have to add a left joins to link to the
             // proxies table and another join to select both proxies targets and
             // direct documents
@@ -340,13 +394,11 @@ public class QueryMaker {
         List<String> typeStrings = new ArrayList<String>(types.size());
         NEXT_TYPE: for (String type : types) {
             Set<String> facets = model.getDocumentTypeFacets(type);
-            info.mixinsExcluded.addAll(facetFilter.excluded);
             for (String facet : info.mixinsExcluded) {
                 if (facets.contains(facet)) {
                     continue NEXT_TYPE;
                 }
             }
-            info.mixinsRequired.addAll(facetFilter.required);
             for (String facet : info.mixinsRequired) {
                 if (!facets.contains(facet)) {
                     continue NEXT_TYPE;
@@ -356,15 +408,42 @@ public class QueryMaker {
             typeStrings.add("?");
             selectParams.add(type);
         }
-        String whereClause = String.format(
-                "%s IN (%s)",
-                joinedHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(),
-                StringUtils.join(typeStrings, ", "));
+        whereClauses.add(String.format("%s IN (%s)", joinedHierTable.getColumn(
+                model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(),
+                StringUtils.join(typeStrings, ", ")));
 
-        Boolean immutable = facetFilterImmutable();
-        if (immutable != null) {
-            // TODO filter on proxies + versions
-            log.warn("Cannot filter on Immutable facet");
+        /*
+         * Add clauses for proxy / version matches.
+         */
+
+        if (info.proxyClause == Boolean.TRUE &&
+                info.immutableClause != Boolean.FALSE) {
+            whereClauses.add(String.format("%s IS NOT NULL",
+                    database.getTable(model.PROXY_TABLE_NAME).getColumn(
+                            model.MAIN_KEY).getFullQuotedName()));
+        }
+
+        if (info.immutableClause != null) {
+            boolean immutable = info.immutableClause.booleanValue();
+            String version = String.format("%s IS %s",
+                    database.getTable(model.VERSION_TABLE_NAME).getColumn(
+                            model.MAIN_KEY).getFullQuotedName(),
+                    immutable ? "NOT NULL" : "NULL");
+            if (info.proxyClause == null) {
+                if (immutable) {
+                    // OR with the proxy check
+                    String proxy = String.format(
+                            "%s IS NOT NULL",
+                            database.getTable(model.PROXY_TABLE_NAME).getColumn(
+                                    model.MAIN_KEY).getFullQuotedName());
+                    whereClauses.add(String.format("(%s OR %s)", version, proxy));
+                } else {
+                    whereClauses.add(version);
+                    // proxy is null because no join was done
+                }
+            } else {
+                whereClauses.add(version);
+            }
         }
 
         /*
@@ -380,9 +459,9 @@ public class QueryMaker {
         }
         if (info.wherePredicate != null) {
             info.wherePredicate.accept(whereBuilder);
-            String w = whereBuilder.buf.toString();
-            if (w.length() != 0) {
-                whereClause = whereClause + " AND (" + w + ')';
+            String where = whereBuilder.buf.toString();
+            if (where.length() != 0) {
+                whereClauses.add(where);
                 selectParams.addAll(whereBuilder.params);
             }
         }
@@ -392,9 +471,8 @@ public class QueryMaker {
          */
 
         if (queryFilter.getPrincipals() != null) {
-            whereClause = whereClause +
-                    String.format(" AND NX_ACCESS_ALLOWED(%s, ?, ?) = %s",
-                            hierId, dialect.toBooleanValueString(true));
+            whereClauses.add(String.format("NX_ACCESS_ALLOWED(%s, ?, ?) = %s",
+                    hierId, dialect.toBooleanValueString(true)));
             Serializable principals;
             Serializable permissions;
             if (dialect.supportsArrays()) {
@@ -409,10 +487,17 @@ public class QueryMaker {
             selectParams.add(permissions);
         }
 
-        if (query.orderBy != null) {
+        /*
+         * Order by.
+         */
+
+        String orderBy;
+        if (query.orderBy == null) {
+            orderBy = null;
+        } else {
             whereBuilder.buf.setLength(0);
             query.orderBy.accept(whereBuilder);
-            whereClause = whereClause + whereBuilder.buf.toString();
+            orderBy = whereBuilder.buf.toString();
         }
 
         /*
@@ -420,7 +505,7 @@ public class QueryMaker {
          */
 
         String what = hierId;
-        if (whereBuilder.needsDistinct || usesJoinWithProxies) {
+        if (whereBuilder.needsDistinct || considerProxies) {
             // We do LEFT JOINs with collection tables, so we could get
             // identical results.
             // For proxies, there's also a LEFT JOIN with a non equi-join
@@ -436,13 +521,13 @@ public class QueryMaker {
                         throw new StorageException("Unknown ORDER BY field: " +
                                 key);
                     }
-                    Table table = database.getTable(propertyInfo.fragmentName);
                     if (propertyInfo.propertyType.isArray()) {
-                        throw new StorageException("Cannot use collection" +
+                        throw new StorageException("Cannot use collection " +
                                 key + " in ORDER BY");
                     }
                     what += ", " +
-                            table.getColumn(propertyInfo.fragmentKey).getFullQuotedName();
+                            database.getTable(propertyInfo.fragmentName).getColumn(
+                                    propertyInfo.fragmentKey).getFullQuotedName();
                 }
             }
         }
@@ -454,37 +539,12 @@ public class QueryMaker {
         Select select = new Select(null);
         select.setWhat(what);
         select.setFrom(from);
-        select.setWhere(whereClause);
+        select.setWhere(StringUtils.join(whereClauses, " AND "));
+        select.setOrderBy(orderBy);
 
         List<Column> whatColumns = Collections.singletonList(hierTable.getColumn(model.MAIN_KEY));
         selectInfo = new SQLInfoSelect(select.getStatement(), whatColumns,
                 Collections.<Column> emptyList());
-    }
-
-    /**
-     * Checks if the Immutable facet is excluded ({@code FALSE}), required (
-     * {@code TRUE}) or not filtered on ({@code null}).
-     */
-    public Boolean facetFilterImmutable() {
-        if (facetFilter.excluded.contains(FACET_IMMUTABLE)) {
-            return Boolean.FALSE;
-        }
-        if (facetFilter.required.contains(FACET_IMMUTABLE)) {
-            return Boolean.TRUE;
-        }
-        return null;
-    }
-
-    protected static class QueryMakerException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
-
-        public QueryMakerException(String message) {
-            super(message);
-        }
-
-        public QueryMakerException(Throwable cause) {
-            super(cause);
-        }
     }
 
     /**
@@ -502,9 +562,7 @@ public class QueryMaker {
 
         public final Set<String> orderKeys = new HashSet<String>();
 
-        public boolean needsProxies;
-
-        public boolean needsVersions;
+        public boolean needsVersionsTable;
 
         protected boolean inOrderBy;
 
@@ -518,7 +576,11 @@ public class QueryMaker {
 
         protected final Set<String> mixinsExcluded = new HashSet<String>();
 
-        protected Predicate wherePredicate;
+        protected Boolean immutableClause;
+
+        protected Boolean proxyClause;
+
+        protected MultiExpression wherePredicate;
 
         @Override
         public void visitFromClause(FromClause node) {
@@ -531,9 +593,9 @@ public class QueryMaker {
 
         @Override
         public void visitWhereClause(WhereClause node) {
-            super.visitWhereClause(node);
             analyzeToplevelOperands(node.predicate);
             wherePredicate = new MultiExpression(Operator.AND, toplevelOperands);
+            super.visitMultiExpression(wherePredicate);
         }
 
         /**
@@ -558,8 +620,9 @@ public class QueryMaker {
                     return;
                 }
                 if (op == Operator.EQ || op == Operator.NOTEQ) {
+                    boolean isEq = op == Operator.EQ;
+                    // put reference on the left side
                     if (expr.rvalue instanceof Reference) {
-                        // put reference to left
                         expr = new Expression(expr.rvalue, op, expr.lvalue);
                     }
                     if (expr.lvalue instanceof Reference &&
@@ -567,16 +630,39 @@ public class QueryMaker {
                         String name = ((Reference) expr.lvalue).name;
                         String value = ((StringLiteral) expr.rvalue).value;
                         if (ECM_PRIMARYTYPE.equals(name)) {
-                            (op == Operator.EQ ? typesRequired : typesExcluded).add(value);
+                            (isEq ? typesRequired : typesExcluded).add(value);
                             return;
                         }
                         if (ECM_MIXINTYPE.equals(name)) {
-                            if (!FACET_IMMUTABLE.equals(value)) {
-                                (op == Operator.EQ ? mixinsRequired
-                                        : mixinsExcluded).add(value);
-                                return;
+                            if (FACET_IMMUTABLE.equals(value)) {
+                                Boolean im = Boolean.valueOf(isEq);
+                                if (immutableClause != null &&
+                                        immutableClause != im) {
+                                    throw new QueryCannotMatchException();
+                                }
+                                immutableClause = im;
+                                needsVersionsTable = true;
+                            } else {
+                                (isEq ? mixinsRequired : mixinsExcluded).add(value);
                             }
-                            // XXX else should record that Immutable is present
+                            return;
+                        }
+                    }
+                    if (expr.lvalue instanceof Reference &&
+                            expr.rvalue instanceof IntegerLiteral) {
+                        String name = ((Reference) expr.lvalue).name;
+                        long v = ((IntegerLiteral) expr.rvalue).value;
+                        if (ECM_ISPROXY.equals(name)) {
+                            if (v != 0 && v != 1) {
+                                throw new QueryMakerException(ECM_ISPROXY +
+                                        " requires literal 0 or 1 as right argument");
+                            }
+                            Boolean pr = Boolean.valueOf(v == 1);
+                            if (proxyClause != null && proxyClause != pr) {
+                                throw new QueryCannotMatchException();
+                            }
+                            proxyClause = pr;
+                            return;
                         }
                     }
                 }
@@ -597,14 +683,13 @@ public class QueryMaker {
                 if (inOrderBy) {
                     throw new QueryMakerException("Cannot order by: " + name);
                 }
-                needsProxies = true;
                 return;
             }
             if (ECM_ISVERSION.equals(name)) {
                 if (inOrderBy) {
                     throw new QueryMakerException("Cannot order by: " + name);
                 }
-                needsVersions = true;
+                needsVersionsTable = true;
                 return;
             }
             if (ECM_PRIMARYTYPE.equals(name) || //
@@ -687,18 +772,18 @@ public class QueryMaker {
                     throw new QueryMakerException("STARTSWITH requires " +
                             ECM_PATH + "as left argument");
                 }
-                visitExpressionSpecialStartsWith(node);
+                visitExpressionStartsWith(node);
             } else if (ECM_ISPROXY.equals(lname)) {
-                visitExpressionSpecialProxy(node);
+                visitExpressionIsProxy(node);
             } else if (ECM_ISVERSION.equals(lname)) {
-                visitExpressionSpecialVersion(node);
+                visitExpressionIsVersion(node);
             } else {
                 super.visitExpression(node);
             }
             buf.append(')');
         }
 
-        protected void visitExpressionSpecialStartsWith(Expression node) {
+        protected void visitExpressionStartsWith(Expression node) {
             if (!(node.rvalue instanceof StringLiteral)) {
                 throw new QueryMakerException(
                         "STARTSWITH requires literal path as right argument");
@@ -727,7 +812,7 @@ public class QueryMaker {
             }
         }
 
-        protected void visitExpressionSpecialProxy(Expression node) {
+        protected void visitExpressionIsProxy(Expression node) {
             if (node.operator != Operator.EQ && node.operator != Operator.NOTEQ) {
                 throw new QueryMakerException(ECM_ISPROXY +
                         " requires = or <> operator");
@@ -742,12 +827,17 @@ public class QueryMaker {
                         " requires literal 0 or 1 as right argument");
             }
             boolean bool = node.operator == Operator.EQ ^ v == 0;
-            buf.append(database.getTable(model.PROXY_TABLE_NAME).getColumn(
-                    model.MAIN_KEY).getFullQuotedName());
-            buf.append(bool ? " IS NOT NULL" : " IS NULL");
+            if (considerProxies) {
+                // toplevel clauses excludes proxies
+                buf.append(bool ? "0 = 1" : " 1 = 1");
+            } else {
+                buf.append(database.getTable(model.PROXY_TABLE_NAME).getColumn(
+                        model.MAIN_KEY).getFullQuotedName());
+                buf.append(bool ? " IS NOT NULL" : " IS NULL");
+            }
         }
 
-        protected void visitExpressionSpecialVersion(Expression node) {
+        protected void visitExpressionIsVersion(Expression node) {
             if (node.operator != Operator.EQ && node.operator != Operator.NOTEQ) {
                 throw new QueryMakerException(ECM_ISVERSION +
                         " requires = or <> operator");
@@ -869,14 +959,6 @@ public class QueryMaker {
         public void visitIntegerLiteral(IntegerLiteral node) {
             buf.append('?');
             params.add(Long.valueOf(node.value));
-        }
-
-        @Override
-        public void visitOrderByClause(OrderByClause node) {
-            if (!node.elements.isEmpty()) {
-                buf.append(" ORDER BY ");
-            }
-            super.visitOrderByClause(node);
         }
 
         @Override
