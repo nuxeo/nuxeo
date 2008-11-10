@@ -33,9 +33,11 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -123,14 +125,14 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
      * Creates the following structure of documents:
      *
      * <pre>
-     *  root
-     *  |- testfolder1
-     *  |  |- testfile1
-     *  |  |- testfile2
-     *  |  \- testfile3 (Note)
-     *  \- tesfolder2
-     *     \- testfolder3
-     *        \- testfile4
+     *  root (UUID_1)
+     *  |- testfolder1 (UUID_2)
+     *  |  |- testfile1 (UUID_3) (content UUID_4)
+     *  |  |- testfile2 (UUID_5) (content UUID_6)
+     *  |  \- testfile3 (Note) (UUID_7) (trans UUID_8 stylesheet UUID_9)
+     *  \- tesfolder2 (UUID_10)
+     *     \- testfolder3 (UUID_11)
+     *        \- testfile4 (UUID_12) (content UUID_13)
      * </pre>
      */
     protected void createDocs() throws Exception {
@@ -191,7 +193,11 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
     }
 
     /**
-     * Publishes testfile4 to testfolder1
+     * Publishes testfile4 to testfolder1:
+     * <p>
+     * version (UUID_14, content UUID_15)
+     * <p>
+     * proxy (UUID_16)
      */
     protected DocumentModel publishDoc() throws Exception {
         DocumentModel doc = session.getDocument(new PathRef(
@@ -511,9 +517,41 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertNotSame(docId, versionId);
         assertNotSame(proxyId, versionId);
 
+        DocumentModelList dml;
+        Filter filter;
+
         // queries must return proxies *and versions*
-        DocumentModelList dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4_Title'");
+        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4_Title'");
         assertIdSet(dml, docId, proxyId, versionId);
+
+        // facet filter: immutable
+        filter = new FacetFilter("Immutable", true);
+        dml = session.query(
+                "SELECT * FROM Document WHERE dc:title = 'testfile4_Title'",
+                filter, 99);
+        assertIdSet(dml, proxyId, versionId);
+
+        // facet filter: not immutable
+        filter = new FacetFilter("Immutable", false);
+        dml = session.query(
+                "SELECT * FROM Document WHERE dc:title = 'testfile4_Title'",
+                filter, 99);
+        assertIdSet(dml, docId);
+
+        dml = session.query("SELECT * FROM Document WHERE ecm:isProxy = 1");
+        assertIdSet(dml, proxyId);
+
+        dml = session.query("SELECT * FROM Document WHERE ecm:isProxy = 0");
+        assertEquals(8, dml.size()); // 7 folder/docs, 1 version
+
+        dml = session.query("SELECT * FROM Document WHERE ecm:isCheckedInVersion = 1");
+        assertIdSet(dml, versionId);
+
+        dml = session.query("SELECT * FROM Document WHERE ecm:isCheckedInVersion = 0");
+        assertEquals(8, dml.size()); // 7 folder/docs, 1 proxy
+
+        dml = session.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0");
+        assertEquals(7, dml.size()); // 7 folder/docs
 
         // filter out proxies explicitely, keeps live and version
         dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4_Title' AND ecm:isProxy = 0");
@@ -527,10 +565,53 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4_Title' AND ecm:isCheckedInVersion = 1");
         assertIdSet(dml, versionId);
 
-        // only keep immutable
-        // dml = session.query(
-        // "SELECT * FROM Document WHERE ecm:mixinType = 'Immutable'");
-        // assertIdSet(dml, proxyId, versionId);
+        // only keep immutable (proxy + version)
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Immutable'");
+        assertIdSet(dml, proxyId, versionId);
+
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Immutable' AND ecm:isProxy = 0");
+        assertIdSet(dml, versionId);
+
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Immutable' AND ecm:isProxy = 1");
+        assertIdSet(dml, proxyId);
+
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Immutable' AND ecm:isCheckedInVersion = 0");
+        assertIdSet(dml, proxyId);
+
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Immutable' AND ecm:isCheckedInVersion = 1");
+        assertIdSet(dml, versionId);
+
+        // conflict between where and filter
+        filter = new FacetFilter("Immutable", false);
+        dml = session.query(
+                "SELECT * FROM Document WHERE ecm:mixinType = 'Immutable'",
+                filter, 99);
+        assertEquals(0, dml.size()); // contradictory clauses
+
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'Immutable' AND ecm:isProxy = 0");
+        assertEquals(7, dml.size()); // 7 folder/docs
+
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'Immutable' AND ecm:isProxy = 1");
+        assertEquals(0, dml.size()); // contradictory clauses
+
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'Immutable' AND ecm:isCheckedInVersion = 0");
+        assertEquals(7, dml.size()); // 7 folder/docs
+
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'Immutable' AND ecm:isCheckedInVersion = 1");
+        assertEquals(0, dml.size()); // contradictory clauses
+
+        // conflict between where and filter
+        filter = new FacetFilter("Immutable", true);
+        dml = session.query(
+                "SELECT * FROM Document WHERE ecm:mixinType <> 'Immutable'",
+                filter, 99);
+        assertEquals(0, dml.size()); // contradictory clauses
+
+        // "deep" isProxy
+        dml = session.query("SELECT * FROM Document WHERE (dc:title = 'blah' OR ecm:isProxy = 1)");
+        assertIdSet(dml, proxyId);
+        dml = session.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND (dc:title = 'testfile1_Title' OR ecm:isProxy = 1)");
+        assertEquals(1, dml.size());
     }
 
     // this is disabled for JCR
@@ -614,7 +695,8 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
          * ecm:currentLifeCycleState
          */
         dml = session.query("SELECT * FROM Document WHERE ecm:currentLifeCycleState = 'project'");
-        assertEquals(9, dml.size()); // 3 folders, 1 note, 3 files, 1 proxy, 1 version
+        // 3 folders, 1 note, 3 files, 1 proxy, 1 version
+        assertEquals(9, dml.size());
 
         /*
          * ecm:versionLabel

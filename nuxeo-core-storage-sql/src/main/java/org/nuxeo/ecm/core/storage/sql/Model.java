@@ -330,7 +330,7 @@ public class Model {
         switch (idGenPolicy) {
         case APP_UUID:
             return UUID.randomUUID().toString();
-            // return "U_" + temporaryIdCounter.incrementAndGet();
+            // return "UUID_" + temporaryIdCounter.incrementAndGet();
         case DB_IDENTITY:
             return "T" + temporaryIdCounter.incrementAndGet();
         default:
