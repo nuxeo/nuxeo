@@ -39,7 +39,7 @@
 
 <div id="wrap">
     <div id="header">
-      <div class="webEngineRoot"><a href="${appPath}"><img src="/nuxeo/site/files/resources/image/dots.png" width="16" height="16" alt=""/></a></div>
+      <div class="webEngineRoot"><a href="${appPath}"><img src="${skinPath}/image/dots.png" width="16" height="16" alt=""/></a></div>
        <@block name="header">
        <#if Document??>
         <div class="searchBox">

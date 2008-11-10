@@ -1,5 +1,5 @@
 body {
-  background:#fff url(/nuxeo/site/files/resources/image/wiki/background_page.gif) top left repeat-x;
+  background:#fff url(../image/wiki/background_page.gif) top left repeat-x;
 }
 
 h1 {
@@ -18,7 +18,7 @@ h2 {
 
 #entry-actions .ui-tabs-nav a,
 #entry-actions .ui-tabs-nav a span {
-  background-image:url(/nuxeo/site/files/resources/image/wiki/background_tabs.gif);
+  background-image:url(../image/wiki/background_tabs.gif);
 }
 
 #entry-actions .ui-tabs-nav a:link,
@@ -40,11 +40,11 @@ h2 {
 }
 
 #sidebar .contextual h3 {
-  background:url(/nuxeo/site/files/resources/image/wiki/background_box_title.gif) top left no-repeat;
+  background:url(../image/wiki/background_box_title.gif) top left no-repeat;
 }
 
 #sidebar .sideblock-content {
-  background:url(/nuxeo/site/files/resources/image/wiki/background_box_content.gif) top left no-repeat;
+  background:url(../image/wiki/background_box_content.gif) top left no-repeat;
 }
 
 .summary-entry{

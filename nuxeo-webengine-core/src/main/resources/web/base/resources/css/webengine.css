@@ -31,7 +31,7 @@ body {
     color:#333;
     font:normal 12px Verdana, sans-serif;
     text-align:center;
-    background:#fff url(/nuxeo/site/files/resources/image/background_page.gif) top left repeat-x;
+    background:#fff url(../image/background_page.gif) top left repeat-x;
 }
 
 td {
@@ -101,7 +101,7 @@ th {
 #header h1 a {
     color: white;
     text-decoration: none;
-    background:url(/nuxeo/site/files/resources/image/nuxeo_web_engine.gif) top right no-repeat;
+    background:url(../image/nuxeo_web_engine.gif) top right no-repeat;
     padding-right:80px;
 }
 
@@ -110,12 +110,12 @@ th {
 #main-wrapper {
   width:100%;
   height:100%;
-  background:#fff url(/nuxeo/site/files/resources/image/background_main-wrapper.gif) top right repeat-y; 
+  background:#fff url(../image/background_main-wrapper.gif) top right repeat-y;
   border-top:1px solid #fff;
 }
 
 #main {
-    background:#fff url(/nuxeo/site/files/resources/image/background-main.gif) top left repeat-x;
+    background:#fff url(../image/background-main.gif) top left repeat-x;
     float:left;
     width:760px;
 }
@@ -123,7 +123,7 @@ th {
 /* SideBar */
 
 #sidebar {
-    background:url(/nuxeo/site/files/resources/image/background_sidebar.gif) top left repeat-x;
+    background:url(../image/background_sidebar.gif) top left repeat-x;
     float:right;
     width:240px;
     color:#f1f2f3;
@@ -162,7 +162,7 @@ th {
 
 #sidebar .contextual {
   width:226px;
-  background:url(/nuxeo/site/files/resources/image/background_box_box.gif) top left repeat-y;
+  background:url(../image/background_box_box.gif) top left repeat-y;
   padding:0;
   margin-bottom:10px;
   color:#333;
@@ -173,7 +173,7 @@ th {
 }  
 
 #sidebar .contextual h3 {
-  background:url(/nuxeo/site/files/resources/image/background_box_title.gif) top left no-repeat;
+  background:url(../image/background_box_title.gif) top left no-repeat;
   height:25px;
   padding:0;
   padding-left:25px;
@@ -183,7 +183,7 @@ th {
 }
 
 #sidebar ul {
-  list-style-image: url(/nuxeo/site/files/resources/image/bullet_light.gif);
+  list-style-image: url(../image/bullet_light.gif);
   padding:0;
   margin:5px 0 0 25px;
 }
@@ -197,12 +197,12 @@ th {
 }
 
 #sidebar .contextual ul {
-  list-style-image: url(/nuxeo/site/files/resources/image/bullet.gif);
+  list-style-image: url(../image/bullet.gif);
   margin-top:0;
 }
 
 #sidebar .sideblock-content {
-  background:url(/nuxeo/site/files/resources/image/background_box_content.gif) top left no-repeat;
+  background:url(../image/background_box_content.gif) top left no-repeat;
  padding:10px 25px;
 }
 
@@ -212,7 +212,7 @@ th {
 
 
 #sidebar .sideblock-content-bottom {
-  background:url(/nuxeo/site/files/resources/image/background_box_bottom.gif) top left no-repeat;
+  background:url(../image/background_box_bottom.gif) top left no-repeat;
   height:5px;
   margin-bottom:10px;
 }
@@ -230,7 +230,7 @@ th {
  
  #sidebar .createButton a {
  color:#fff;
- background:url(/nuxeo/site/files/resources/image/create_button.gif) top left no-repeat;
+ background:url(../image/create_button.gif) top left no-repeat;
  display:block; 
  width:192px;
  height:40px;
@@ -252,7 +252,7 @@ th {
 }
  
 #sidebar #logstate {
-  background: url(/nuxeo/site/files/resources/image/login_bubble.gif) top left no-repeat;
+  background: url(../image/login_bubble.gif) top left no-repeat;
   padding:2px;
   padding-left: 4px;
   color:#000;
@@ -300,7 +300,7 @@ th {
     text-align: center;
 }
 
-/* Message. Todo: when message will be fading away, add url(/nuxeo/site/files/resources/image/info.gif) 3px 3px no-repeat as background and 4px padding tops and bottoms */
+/* Message. Todo: when message will be fading away, add url(../image/info.gif) 3px 3px no-repeat as background and 4px padding tops and bottoms */
 
 #message {
   float:left;
@@ -352,7 +352,7 @@ th {
 }
 
 .main-content ul {
-  list-style-image: url(/nuxeo/site/files/resources/image/bullet.gif);
+  list-style-image: url(../image/bullet.gif);
   margin-top: 1px;
 }
 
@@ -452,7 +452,7 @@ blockquote {
 }
 
 .tip {
-  background: #ddeeff url(/nuxeo/site/files/resources/image/tip.gif) 10px 10px no-repeat;
+  background: #ddeeff url(../image/tip.gif) 10px 10px no-repeat;
   padding:10px 10px 10px 40px;
   margin-top:10px;
 }
@@ -631,7 +631,7 @@ padding-left: 5px;
 }
 
 #entry-actions .ui-tabs-nav a,#entry-actions .ui-tabs-nav a span {
-  background-image:url(/nuxeo/site/files/resources/image/background_tabs.gif);
+  background-image:url(../image/background_tabs.gif);
 }
 
 

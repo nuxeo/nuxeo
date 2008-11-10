@@ -1,5 +1,5 @@
 body {
-      background:#000 url(/nuxeo/site/files/resources/image/blog/background_page.gif) top left repeat-x;
+      background:#000 url(../image/blog/background_page.gif) top left repeat-x;
 }
 
 #header h1 {
@@ -15,7 +15,7 @@ body {
 
 #header h1 a {
     color: #000;
-    background-image:url(/nuxeo/site/files/resources/image/blog/nuxeo_web_engine.gif);
+    background-image:url(../image/blog/nuxeo_web_engine.gif);
 }
 
 h1 {
@@ -33,7 +33,7 @@ h2 {
 }
 
 #entry-actions .ui-tabs-nav a,#entry-actions .ui-tabs-nav a span {
-  background-image:url(/nuxeo/site/files/resources/image/blog/background_tabs.gif);
+  background-image:url(../image/blog/background_tabs.gif);
 }
 
 #entry-actions .ui-tabs-panel {
@@ -49,7 +49,7 @@ color:#fff;
 }
 
 #sidebar .contextual h3 {
-  background:url(/nuxeo/site/files/resources/image/blog/background_box_title.gif) top left no-repeat;
+  background:url(../image/blog/background_box_title.gif) top left no-repeat;
   color:#333;}
 
 .summary-entry{

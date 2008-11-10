@@ -24,7 +24,7 @@ div#fancy_loading div {
 	left: 0;
 	width: 40px;
 	height: 480px;
-	background: transparent url(/nuxeo/site/files/resources/image/fancy_box/fancy_progress.png) no-repeat;
+	background: transparent url(../image/fancy_box/fancy_progress.png) no-repeat;
 }
 
 div#fancy_close {
@@ -33,7 +33,7 @@ div#fancy_close {
 	right: -12px;
 	height: 30px;
 	width: 30px;
-	background: transparent url(/nuxeo/site/files/resources/image/fancy_box/fancy_closebox.png) ;
+	background: transparent url(../image/fancy_box/fancy_closebox.png) ;
 	cursor: pointer;
 	z-index: 100;
 	display: none;
@@ -91,18 +91,18 @@ div#fancy_title div {
 td#fancy_title_left {
 	height: 32px;
 	width: 15px;
-	background: transparent url(/nuxeo/site/files/resources/image/fancy_box/fancy_title_left.png) repeat-x;
+	background: transparent url(../image/fancy_box/fancy_title_left.png) repeat-x;
 }
 
 td#fancy_title_main {
 	height: 32px;
-	background: transparent url(/nuxeo/site/files/resources/image/fancy_box/fancy_title_main.png) repeat-x;
+	background: transparent url(../image/fancy_box/fancy_title_main.png) repeat-x;
 }
 
 td#fancy_title_right {
 	height: 32px;
 	width: 15px;
-	background: transparent url(/nuxeo/site/files/resources/image/fancy_box/fancy_title_right.png) repeat-x;
+	background: transparent url(../image/fancy_box/fancy_title_right.png) repeat-x;
 }
 
 div#fancy_outer {
@@ -144,11 +144,11 @@ a#fancy_right {
 }
 
 a#fancy_left:hover {
-	background: transparent url(/nuxeo/site/files/resources/image/fancy_box/fancy_left.gif) no-repeat 0% 100%;
+	background: transparent url(../image/fancy_box/fancy_left.gif) no-repeat 0% 100%;
 }
 
 a#fancy_right:hover {
-	background: transparent url(/nuxeo/site/files/resources/image/fancy_box/fancy_right.gif) no-repeat 100% 100%;
+	background: transparent url(../image/fancy_box/fancy_right.gif) no-repeat 100% 100%;
 }
 
 #fancy_bigIframe, #fancy_freeIframe {
@@ -174,7 +174,7 @@ div.fancy_bg_n {
 	top: -18px;
 	width: 100%;
 	height: 18px;
-	background: transparent url(/nuxeo/site/files/resources/image/fancy_box/fancy_shadow_n.png) repeat-x;
+	background: transparent url(../image/fancy_box/fancy_shadow_n.png) repeat-x;
 }
 
 div.fancy_bg_ne {
@@ -182,14 +182,14 @@ div.fancy_bg_ne {
 	right: -13px;
 	width: 13px;
 	height: 18px;
-	background: transparent url(/nuxeo/site/files/resources/image/fancy_box/fancy_shadow_ne.png) no-repeat;
+	background: transparent url(../image/fancy_box/fancy_shadow_ne.png) no-repeat;
 }
 
 div.fancy_bg_e {
 	right: -13px;
 	height: 100%;
 	width: 13px;
-	background: transparent url(/nuxeo/site/files/resources/image/fancy_box/fancy_shadow_e.png) repeat-y;
+	background: transparent url(../image/fancy_box/fancy_shadow_e.png) repeat-y;
 }
 
 div.fancy_bg_se {
@@ -197,14 +197,14 @@ div.fancy_bg_se {
 	right: -13px;
 	width: 13px;
 	height: 18px;
-	background: transparent url(/nuxeo/site/files/resources/image/fancy_box/fancy_shadow_se.png) no-repeat;
+	background: transparent url(../image/fancy_box/fancy_shadow_se.png) no-repeat;
 }
 
 div.fancy_bg_s {
 	bottom: -18px;
 	width: 100%;
 	height: 18px;
-	background: transparent url(/nuxeo/site/files/resources/image/fancy_box/fancy_shadow_s.png) repeat-x;
+	background: transparent url(../image/fancy_box/fancy_shadow_s.png) repeat-x;
 }
 
 div.fancy_bg_sw {
@@ -212,14 +212,14 @@ div.fancy_bg_sw {
 	left: -13px;
 	width: 13px;
 	height: 18px;
-	background: transparent url(/nuxeo/site/files/resources/image/fancy_box/fancy_shadow_sw.png) no-repeat;
+	background: transparent url(../image/fancy_box/fancy_shadow_sw.png) no-repeat;
 }
 
 div.fancy_bg_w {
 	left: -13px;
 	height: 100%;
 	width: 13px;
-	background: transparent url(/nuxeo/site/files/resources/image/fancy_box/fancy_shadow_w.png) repeat-y;
+	background: transparent url(../image/fancy_box/fancy_shadow_w.png) repeat-y;
 }
 
 div.fancy_bg_nw {
@@ -227,5 +227,5 @@ div.fancy_bg_nw {
 	left: -13px;
 	width: 13px;
 	height: 18px;
-	background: transparent url(/nuxeo/site/files/resources/image/fancy_box/fancy_shadow_nw.png) no-repeat;
+	background: transparent url(../image/fancy_box/fancy_shadow_nw.png) no-repeat;
 }
