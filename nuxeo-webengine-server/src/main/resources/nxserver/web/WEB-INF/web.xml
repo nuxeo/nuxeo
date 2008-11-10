@@ -43,7 +43,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>Nuxeo Resource Servlet</servlet-name>
-    <url-pattern>/nuxeo/site/files/*</url-pattern>
+    <url-pattern>/skin/*</url-pattern>
   </servlet-mapping>
 
 </web-app>
