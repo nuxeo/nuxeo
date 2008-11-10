@@ -19,7 +19,7 @@ import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentFactory;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 
-public class TestFragments extends NXRuntimeTestCase {
+public class TestDummyFragment extends NXRuntimeTestCase {
 
     @Override
     public void setUp() throws Exception {
