@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.OrderByList;
-import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
@@ -115,7 +114,7 @@ public class QueryMaker {
     private static final Log log = LogFactory.getLog(QueryMaker.class);
 
     /**
-     * Name of the Immutable facet, added by {@link DocumentModelFactory} when
+     * Name of the Immutable facet, added by {@code DocumentModelFactory} when
      * instantiating a proxy or a version.
      */
     public static final String FACET_IMMUTABLE = "Immutable";
@@ -512,7 +511,7 @@ public class QueryMaker {
          */
 
         String what = hierId;
-        if (whereBuilder.needsDistinct || considerProxies) {
+        if (considerProxies) {
             // We do LEFT JOINs with collection tables, so we could get
             // identical results.
             // For proxies, there's also a LEFT JOIN with a non equi-join
@@ -565,6 +564,7 @@ public class QueryMaker {
 
         public final Set<String> fromTypes = new HashSet<String>();
 
+        /** Single valued properties for which a join is needed. */
         public final Set<String> props = new HashSet<String>();
 
         public final Set<String> orderKeys = new HashSet<String>();
@@ -795,7 +795,15 @@ public class QueryMaker {
             if (name.startsWith(ECM_PREFIX)) {
                 throw new QueryMakerException("Unknown field: " + name);
             }
-            props.add(name);
+
+            PropertyInfo propertyInfo = model.getPropertyInfo(name);
+            if (propertyInfo == null) {
+                throw new QueryMakerException("Unknown field: " + name);
+            }
+            if (!propertyInfo.propertyType.isArray()) {
+                // join with table if it is a single valued property
+                props.add(name);
+            }
             if (inOrderBy) {
                 orderKeys.add(name);
             }
@@ -823,16 +831,11 @@ public class QueryMaker {
 
         private static final long serialVersionUID = 1L;
 
-        public final StringBuilder buf;
+        public final StringBuilder buf = new StringBuilder();
 
-        public final List<Serializable> params;
+        public final List<Serializable> params = new LinkedList<Serializable>();
 
-        public boolean needsDistinct;
-
-        public WhereBuilder() {
-            buf = new StringBuilder();
-            params = new LinkedList<Serializable>();
-        }
+        public boolean allowArray;
 
         @Override
         public void visitMultiExpression(MultiExpression node) {
@@ -850,18 +853,49 @@ public class QueryMaker {
         @Override
         public void visitExpression(Expression node) {
             buf.append('(');
-            String lname = node.lvalue instanceof Reference ? ((Reference) node.lvalue).name
+            String name = node.lvalue instanceof Reference ? ((Reference) node.lvalue).name
                     : null;
-            if (node.operator == Operator.STARTSWITH) {
-                if (!ECM_PATH.equals(lname)) {
+            Operator op = node.operator;
+            if (op == Operator.STARTSWITH) {
+                if (!ECM_PATH.equals(name)) {
                     throw new QueryMakerException("STARTSWITH requires " +
                             ECM_PATH + "as left argument");
                 }
                 visitExpressionStartsWith(node);
-            } else if (ECM_ISPROXY.equals(lname)) {
+            } else if (ECM_ISPROXY.equals(name)) {
                 visitExpressionIsProxy(node);
-            } else if (ECM_ISVERSION.equals(lname)) {
+            } else if (ECM_ISVERSION.equals(name)) {
                 visitExpressionIsVersion(node);
+            } else if ((op == Operator.EQ || op == Operator.NOTEQ ||
+                    op == Operator.IN || op == Operator.NOTIN) &&
+                    name != null && !name.startsWith(ECM_PREFIX)) {
+                PropertyInfo propertyInfo = model.getPropertyInfo(name);
+                if (propertyInfo == null) {
+                    throw new QueryMakerException("Unknown field: " + name);
+                }
+                if (propertyInfo.propertyType.isArray()) {
+                    // use EXISTS with subselect clause
+                    boolean direct = op == Operator.EQ || op == Operator.IN;
+                    Operator directOp = direct ? op
+                            : (op == Operator.NOTEQ ? Operator.EQ : Operator.IN);
+                    Table table = database.getTable(propertyInfo.fragmentName);
+                    if (!direct) {
+                        buf.append("NOT ");
+                    }
+                    buf.append(String.format(
+                            "EXISTS (SELECT 1 FROM %s WHERE %s = %s AND (",
+                            table.getQuotedName(), joinedHierId,
+                            table.getColumn(model.MAIN_KEY).getFullQuotedName()));
+                    allowArray = true;
+                    node.lvalue.accept(this);
+                    allowArray = false;
+                    directOp.accept(this);
+                    node.rvalue.accept(this);
+                    buf.append("))");
+                } else {
+                    // use normal processing
+                    super.visitExpression(node);
+                }
             } else {
                 super.visitExpression(node);
             }
@@ -962,10 +996,13 @@ public class QueryMaker {
                 }
                 Table table = database.getTable(propertyInfo.fragmentName);
                 if (propertyInfo.propertyType.isArray()) {
+                    if (!allowArray) {
+                        throw new QueryMakerException(
+                                "Cannot only use collection " + name +
+                                        " with =, <>, IN or NOT IN clause");
+                    }
+                    // arrays are allowed when in a EXISTS subselect
                     column = table.getColumn(model.COLL_TABLE_VALUE_KEY);
-                    needsDistinct = true; // table doesn't have unique keys
-                    // TODO if operator is <>, we must use a different algorithm
-                    // than just an outer join
                 } else {
                     column = table.getColumn(propertyInfo.fragmentKey);
                 }

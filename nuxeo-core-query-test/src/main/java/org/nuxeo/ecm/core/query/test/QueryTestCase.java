@@ -257,30 +257,35 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         dml = session.query("SELECT * FROM Document WHERE filename = 'testfile.txt' OR dc:title = 'testfile3_Title'");
         assertEquals(2, dml.size());
 
-        dml = session.query("SELECT * FROM File WHERE dc:contributors = 'pete'");
-        assertEquals(1, dml.size());
-
-        dml = session.query("SELECT * FROM File WHERE dc:contributors = 'bob'");
-        assertEquals(1, dml.size());
-
-        dml = session.query("SELECT * FROM Document WHERE dc:contributors = 'bob'");
-        assertEquals(2, dml.size());
-
-        // the semantics of this is dubious XXX
-        dml = session.query("SELECT * FROM File WHERE dc:contributors <> 'nothere'");
-        assertEquals(1, dml.size());
-
         dml = session.query("SELECT * FROM Document WHERE filename = 'testfile.txt' OR dc:contributors = 'bob'");
         assertEquals(3, dml.size());
     }
 
     // this is disabled for JCR
-    public void testQueryWithIn() throws Exception {
+    public void testQueryMultiple() throws Exception {
         DocumentModelList dml;
         createDocs();
 
+        dml = session.query("SELECT * FROM File WHERE dc:contributors = 'pete'");
+        assertEquals(1, dml.size());
+        dml = session.query("SELECT * FROM File WHERE dc:contributors = 'bob'");
+        assertEquals(1, dml.size());
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors = 'bob'");
+        assertEquals(2, dml.size());
         dml = session.query("SELECT * FROM Document WHERE dc:contributors IN ('bob', 'pete')");
         assertEquals(2, dml.size());
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors IN ('bob', 'john')");
+        assertEquals(2, dml.size());
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors NOT IN ('bob', 'pete')");
+        assertEquals(5, dml.size());
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors NOT IN ('bob', 'john')");
+        assertEquals(5, dml.size());
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors <> 'pete'");
+        assertEquals(6, dml.size());
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors <> 'blah'");
+        assertEquals(7, dml.size());
+        dml = session.query("SELECT * FROM File WHERE dc:contributors <> 'blah' AND ecm:isProxy = 0");
+        assertEquals(3, dml.size());
     }
 
     public void testQueryAfterEdit() throws ClientException, IOException {

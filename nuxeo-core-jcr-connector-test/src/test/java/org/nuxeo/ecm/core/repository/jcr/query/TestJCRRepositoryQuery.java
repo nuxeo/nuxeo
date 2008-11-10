@@ -36,7 +36,7 @@ public class TestJCRRepositoryQuery extends QueryTestCase {
     }
 
     @Override
-    public void testQueryWithIn() {
+    public void testQueryMultiple() {
         // JCR cannot do IN queries
     }
 
