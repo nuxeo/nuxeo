@@ -537,6 +537,7 @@ public abstract class AbstractWebContext implements WebContext {
         bindings.put("Module", module);
         bindings.put("Engine", engine);
         bindings.put("basePath", getBasePath());
+        bindings.put("skinPath", module.getSkinPathPrefix());
         bindings.put("Root", getRoot());
         if (obj != null) {
             bindings.put("This", obj);

@@ -4,8 +4,8 @@
   <head>
     <title>${Root.document.title} :: ${This.document.title} :: print preview</title>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <link rel="stylesheet" href="/nuxeo/site/files/resources/css/print.css" type="text/css" media="print" charset="utf-8">
-    <link rel="stylesheet" href="/nuxeo/site/files/resources/css/print_version.css" type="text/css" media="screen" charset="utf-8">
+    <link rel="stylesheet" href="${skinPath}/css/print.css" type="text/css" media="print" charset="utf-8">
+    <link rel="stylesheet" href="${skinPath}/css/print_version.css" type="text/css" media="screen" charset="utf-8">
   </head>
   <body>
 

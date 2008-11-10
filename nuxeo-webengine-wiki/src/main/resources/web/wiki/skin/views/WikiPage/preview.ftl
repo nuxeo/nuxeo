@@ -1,13 +1,13 @@
 <html>
   <head>
     <title>Preview of ${Document.title}</title>
-    <link rel="stylesheet" href="/nuxeo/site/files/resources/css/webengine.css" type="text/css" media="screen" charset="utf-8">
-    <link rel="stylesheet" href="/nuxeo/site/files/resources/css/preview.css" type="text/css" media="screen" charset="utf-8">
+    <link rel="stylesheet" href="${skinPath}/css/webengine.css" type="text/css" media="screen" charset="utf-8">
+    <link rel="stylesheet" href="${skinPath}/css/preview.css" type="text/css" media="screen" charset="utf-8">
     <#assign type = This.document.type/>
     <#if type = "WikiPage" >
-      <link rel="stylesheet" href="/nuxeo/site/files/resources/css/wiki.css" type="text/css" media="screen" charset="utf-8">
+      <link rel="stylesheet" href="${skinPath}/css/wiki.css" type="text/css" media="screen" charset="utf-8">
     <#elseif type = "Blog">
-      <link rel="stylesheet" href="/nuxeo/site/files/resources/css/blog.css" type="text/css" media="screen" charset="utf-8">
+      <link rel="stylesheet" href="${skinPath}/css/blog.css" type="text/css" media="screen" charset="utf-8">
     </#if>
   </head>
   <body>

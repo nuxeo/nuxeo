@@ -19,12 +19,9 @@
 
 package org.nuxeo.ecm.webengine.servlet;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Writer;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -34,6 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.model.Module;
+import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -46,14 +45,17 @@ public class ResourceServlet extends HttpServlet {
 
     private static final long serialVersionUID = 6548084847887645044L;
 
-    protected File root;
+    protected WebEngine engine; 
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         try {
-            WebEngine mgr = Framework.getService(WebEngine.class);
-            root = mgr.getRootDirectory();
+            engine = Framework.getService(WebEngine.class);
+            String prefix = config.getInitParameter("prefix");
+            if (prefix != null) {
+                engine.setSkinPathPrefix(prefix);
+            }
         } catch (Exception e) {
             throw new ServletException("Failed to get WebEngine", e);
         }
@@ -65,15 +67,39 @@ public class ResourceServlet extends HttpServlet {
 
         String path = req.getPathInfo();
         if (path == null) {
-            path = "";
+            resp.sendError(404);
+            return;
+        }        
+        int p = path.indexOf('/', 1);
+        String moduleName = null;
+        if (p > -1) {
+            moduleName = path.substring(0, p);
+            path = path.substring(p);
+        } else {
+            resp.sendError(404);
+            return;            
         }
-        File file = new File(root, path);
-        if (file.isFile()) {
+        
+        Module module = engine.getModule(moduleName);
+        if (module == null) {
+            resp.sendError(404);
+            return;
+        }
+        
+        service(req, resp, module, path);
+    }
+
+    protected void service(HttpServletRequest req, HttpServletResponse resp, Module module, String path)
+            throws ServletException, IOException {
+                
+        ScriptFile file = module.getSkinResource(path);       
+        if (file != null) {
             long lastModified = file.lastModified();
             resp.setDateHeader("Last-Modified:", lastModified);
             resp.addHeader("Cache-Control", "public");
             resp.addHeader("Server", "Nuxeo/WebEngine-1.0");
-            String mimeType = getServletConfig().getServletContext().getMimeType(file.getName());
+            
+            String mimeType = engine.getMimeType(file.getExtension());
             if (mimeType == null) {
                 mimeType = "text/plain";
             }
@@ -84,22 +110,13 @@ public class ResourceServlet extends HttpServlet {
                 sendBinaryContent(file, resp);
             }
             return;
-        } else if (file.isDirectory()) {
-            //TODO
-            Writer out = resp.getWriter();
-            for (String name : file.list()) {
-                out.write("<div><a href=\""+req.getRequestURI()+"/"+name+"\">"+name+"</a></div>");
-            }
-            out.flush();
-            return;
         }
-
-        resp.sendError(404);
+        resp.sendError(404);    
     }
-
-    protected static void sendBinaryContent(File file, HttpServletResponse resp) throws IOException {
+    
+    protected static void sendBinaryContent(ScriptFile file, HttpServletResponse resp) throws IOException {
         OutputStream out = resp.getOutputStream();
-        InputStream in = new FileInputStream(file);
+        InputStream in = file.getInputStream();
         try {
             FileUtils.copy(in, out);
         }
@@ -109,10 +126,10 @@ public class ResourceServlet extends HttpServlet {
         out.flush();
     }
 
-    protected static void sendTextContent(File file, HttpServletResponse resp) throws IOException {
+    protected static void sendTextContent(ScriptFile file, HttpServletResponse resp) throws IOException {
         //Writer out = resp.getWriter();
         OutputStream out = resp.getOutputStream();
-        InputStream in = new FileInputStream(file);
+        InputStream in = file.getInputStream();
         try {
             FileUtils.copy(in, out);
         }

@@ -8,19 +8,19 @@
     </title>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     
-   <link rel="stylesheet" href="/nuxeo/site/files/resources/css/webengine.css" type="text/css" media="screen" charset="utf-8"> 
-   <link rel="stylesheet" href="/nuxeo/site/files/resources/css/wiki.css" type="text/css" media="screen" charset="utf-8">
-   <link rel="stylesheet" href="/nuxeo/site/files/resources/script/jquery/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
-   <link rel="stylesheet" type="text/css" href="/nuxeo/site/files/resources/script/markitup/skins/markitup/style.css" />
-   <link rel="stylesheet" type="text/css" href="/nuxeo/site/files/resources/script/markitup/sets/wiki/style.css" />
+   <link rel="stylesheet" href="${skinPath}/css/webengine.css" type="text/css" media="screen" charset="utf-8">
+   <link rel="stylesheet" href="${skinPath}/css/wiki.css" type="text/css" media="screen" charset="utf-8">
+   <link rel="stylesheet" href="${skinPath}/script/jquery/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
+   <link rel="stylesheet" type="text/css" href="${skinPath}/script/markitup/skins/markitup/style.css" />
+   <link rel="stylesheet" type="text/css" href="${skinPath}/script/markitup/sets/wiki/style.css" />
     
     <@block name="stylesheets" />
-    <script src="/nuxeo/site/files/resources/script/jquery/jquery.js"></script>
-    <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.base.js"></script>
-    <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.tabs.js"></script>
-    <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/cookie.js"></script>
-    <script type="text/javascript" src="/nuxeo/site/files/resources/script/json.js"></script>
-    <script type="text/javascript" src="/nuxeo/site/files/resources/script/webengine.js"></script>
+    <script type="text/javascript" src="${skinPath}/script/jquery/jquery.js"></script>
+    <script type="text/javascript" src="${skinPath}/script/jquery/ui/ui.base.js"></script>
+    <script type="text/javascript" src="${skinPath}/script/jquery/ui/ui.tabs.js"></script>
+    <script type="text/javascript" src="${skinPath}/script/jquery/cookie.js"></script>
+    <script type="text/javascript" src="${skinPath}/script/json.js"></script>
+    <script type="text/javascript" src="${skinPath}/script/webengine.js"></script>
     <#if Document??> <#-- we are in a document context: search is enabled -->
           <script>
            $(document).ready(function(){

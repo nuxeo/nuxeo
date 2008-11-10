@@ -83,6 +83,7 @@ public class ModuleImpl implements Module {
 
     protected Messages messages;
 
+    protected String skinPathPrefix;
 
     public ModuleImpl(WebEngine engine, File root, ModuleDescriptor descriptor) {
         fileCache = new ConcurrentHashMap<String, ScriptFile>();
@@ -92,6 +93,8 @@ public class ModuleImpl implements Module {
         if (descriptor.base != null) {
             superModule = (ModuleImpl) engine.getModule(descriptor.base);
         }
+        skinPathPrefix = new StringBuilder()
+            .append(engine.getSkinPathPrefix()).append('/').append(descriptor.name).toString();
         loadDirectoryStack();
         loadLinks();
         reloadMessages();
@@ -105,6 +108,7 @@ public class ModuleImpl implements Module {
         return descriptor;
     }
 
+    
     public String getName() {
         return descriptor.name;
     }
@@ -248,6 +252,14 @@ public class ModuleImpl implements Module {
         }
         return file;
     }
+    
+    public ScriptFile getSkinResource(String path) throws IOException {
+        File file = dirStack.getFile(path);
+        if (file != null) {
+            return new ScriptFile(file);            
+        }
+        return null;
+    }
 
     protected void loadConfiguredTypes() {
         localTypes = new TypeConfigurationProvider();
@@ -386,6 +398,10 @@ public class ModuleImpl implements Module {
         }
     }
 
+    public String getSkinPathPrefix() {
+        return skinPathPrefix;
+    }
+    
 
     @Override
     public String toString() {

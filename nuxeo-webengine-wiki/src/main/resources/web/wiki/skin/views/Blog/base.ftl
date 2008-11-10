@@ -5,23 +5,23 @@
     
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     
-  <link rel="stylesheet" href="/nuxeo/site/files/resources/css/webengine.css" type="text/css" media="screen" charset="utf-8">
-  <link rel="stylesheet" href="/nuxeo/site/files/resources/css/blog.css" type="text/css" media="screen" charset="utf-8">
-  <script src="/nuxeo/site/files/resources/script/jquery/jquery.js"></script>
-  <link rel="stylesheet" href="/nuxeo/site/files/resources/script/jquery/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
-  <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.base.js"></script>
-  <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.tabs.js"></script>
-  <script type="text/javascript" src="/nuxeo/site/files/resources/script/base64.js"></script>
-  <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/cookie.js"></script>
+  <link rel="stylesheet" href="${skinPath}/css/webengine.css" type="text/css" media="screen" charset="utf-8">
+  <link rel="stylesheet" href="${skinPath}/css/blog.css" type="text/css" media="screen" charset="utf-8">
+  <script src="${skinPath}/script/jquery/jquery.js"></script>
+  <link rel="stylesheet" href="${skinPath}/script/jquery/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
+  <script type="text/javascript" src="${skinPath}/script/jquery/ui/ui.base.js"></script>
+  <script type="text/javascript" src="${skinPath}/script/jquery/ui/ui.tabs.js"></script>
+  <script type="text/javascript" src="${skinPath}/script/base64.js"></script>
+  <script type="text/javascript" src="${skinPath}/script/jquery/cookie.js"></script>
   
   <!-- markit up -->
-  <script type="text/javascript" src="/nuxeo/site/files/resources/script/markitup/jquery.markitup.pack.js"></script>
-  <script type="text/javascript" src="/nuxeo/site/files/resources/script/markitup/sets/default/set.js"></script>
-  <link rel="stylesheet" type="text/css" href="/nuxeo/site/files/resources/script/markitup/skins/markitup/style.css" />
-  <link rel="stylesheet" type="text/css" href="/nuxeo/site/files/resources/script/markitup/default/style.css" />
+  <script type="text/javascript" src="${skinPath}/script/markitup/jquery.markitup.pack.js"></script>
+  <script type="text/javascript" src="${skinPath}/script/markitup/sets/default/set.js"></script>
+  <link rel="stylesheet" type="text/css" href="${skinPath}/script/markitup/skins/markitup/style.css" />
+  <link rel="stylesheet" type="text/css" href="${skinPath}/script/markitup/default/style.css" />
   <!-- end markitup -->
   
-  <link rel="shortcut icon" href="/nuxeo/site/files/resources/image/favicon.gif" />
+  <link rel="shortcut icon" href="${skinPath}/image/favicon.gif" />
   
   <base href="${This.urlPath}">
 

@@ -1,7 +1,7 @@
 
 <!-- markit up -->
-<script src="/nuxeo/site/files/resources/script/markitup/jquery.markitup.pack.js"></script>
-<script src="/nuxeo/site/files/resources/script/markitup/sets/wiki/set.js"></script>
+<script src="${skinPath}/script/markitup/jquery.markitup.pack.js"></script>
+<script src="${skinPath}/script/markitup/sets/wiki/set.js"></script>
 <!-- end markitup -->
 
 

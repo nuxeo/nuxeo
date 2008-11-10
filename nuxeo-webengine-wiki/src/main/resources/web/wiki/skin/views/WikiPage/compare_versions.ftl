@@ -10,8 +10,8 @@
 <@extends src="base.ftl">
 <@block name="content">
 
-<script language="JavaScript" src="/nuxeo/site/files/resources/script/diff_match_patch.js"></script>
-<script language="JavaScript" src="/nuxeo/site/files/resources/script/diff.js"></script>
+<script language="JavaScript" src="${skinPath}/script/diff_match_patch.js"></script>
+<script language="JavaScript" src="${skinPath}/script/diff.js"></script>
 
 <script language="JavaScript">
 $(document).ready(function(){    

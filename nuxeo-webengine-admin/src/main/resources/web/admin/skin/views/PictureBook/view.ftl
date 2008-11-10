@@ -2,14 +2,14 @@
 
 <@block name="stylesheets">
  <@superBlock/>
-<link rel="stylesheet" href="/nuxeo/site/files/resources/css/fancybox.css" type="text/css" media="screen" charset="utf-8">
+<link rel="stylesheet" href="${skinPath}/css/fancybox.css" type="text/css" media="screen" charset="utf-8">
 </@block>
 
 <@block name="header_scripts">
  <@superBlock/>
-<script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/jquery.js"></script>
-<script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/jquery.fancybox.js"></script>
-<script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/jquery.metadata.js"></script>  
+<script type="text/javascript" src="${skinPath}/script/jquery/jquery.js"></script>
+<script type="text/javascript" src="${skinPath}/script/jquery/jquery.fancybox.js"></script>
+<script type="text/javascript" src="${skinPath}/script/jquery/jquery.metadata.js"></script>
 </@block>
 
 <@block name="content">

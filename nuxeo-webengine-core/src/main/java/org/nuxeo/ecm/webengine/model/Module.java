@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import javax.ws.rs.core.MediaType;
 
@@ -89,6 +88,17 @@ public interface Module extends MessagesProvider {
      * @throws IOException if any error occurs
      */
     ScriptFile getFile(String path);
+    
+    
+    /**
+     * Get a skin resource input stream. This must not cache resources.
+     * This method is using the module stacking directory to find the resource.   
+     * @param path
+     * @return
+     * @throws IOException
+     */
+    ScriptFile getSkinResource(String path) throws IOException;
+    
 
     /**
      * Loads a class given its name.
@@ -183,4 +193,12 @@ public interface Module extends MessagesProvider {
 
     List<LinkDescriptor> getActiveLinks(Resource context, String category);
 
+    /**
+     * Get the path prefix to be used from templates to prepend to links to static resources.
+     *  
+     * This prefix is exposed to templates as ${skinPath} 
+     * @return the skin path prefix. never null.
+     */
+    public String getSkinPathPrefix();
+    
 }

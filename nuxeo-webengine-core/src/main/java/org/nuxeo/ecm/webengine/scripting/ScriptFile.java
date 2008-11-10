@@ -20,7 +20,9 @@
 package org.nuxeo.ecm.webengine.scripting;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -38,7 +40,7 @@ public final class ScriptFile {
         .getRootDirectory().getAbsolutePath();
 
     protected File file;
-    protected final String ext;
+    protected String ext = "";
 
 
     //TODO should remove the typed file name
@@ -47,8 +49,6 @@ public final class ScriptFile {
         int p = name.lastIndexOf('.');
         if (p > -1) {
             ext = name.substring(p + 1);
-        } else { // by default use ftl
-            ext = "ftl";
         }
         this.file = file.getCanonicalFile();
     }
@@ -94,4 +94,11 @@ public final class ScriptFile {
         return file.toString();
     }
 
+    public long lastModified() {
+        return file.lastModified();
+    }
+
+    public InputStream getInputStream() throws IOException {
+        return new FileInputStream(file);
+    }
 }

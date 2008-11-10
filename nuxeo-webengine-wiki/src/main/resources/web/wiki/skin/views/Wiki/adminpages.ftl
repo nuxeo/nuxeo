@@ -4,9 +4,9 @@
 <html>
 <head>
     <title>Admin Pages</title>
-    <link rel="stylesheet" type="text/css" href="/nuxeo/site/files/resources/css/flexigrid.css">
-<script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/jquery.js"></script>
-<script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/flexigrid.js"></script>
+    <link rel="stylesheet" type="text/css" href="${skinPath}/css/flexigrid.css">
+<script type="text/javascript" src="${skinPath}/script/jquery/jquery.js"></script>
+<script type="text/javascript" src="${skinPath}/script/jquery/flexigrid.js"></script>
 </head>
 
 

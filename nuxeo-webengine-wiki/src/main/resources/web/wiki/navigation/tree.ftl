@@ -2,9 +2,9 @@
 <#assign rooturl=Context.getUrlPath(rootdoc) />
 
 <!-- Navigation Tree -->
-<link rel="stylesheet" href="/nuxeo/site/files/resources/script/jquery/treeview/jquery.treeview.css" type="text/css" media="screen"/>
-<script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/treeview/jquery.treeview.js"></script>
-<script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/treeview/jquery.treeview.async.js"></script>
+<link rel="stylesheet" href="${skinPath}/script/jquery/treeview/jquery.treeview.css" type="text/css" media="screen"/>
+<script type="text/javascript" src="${skinPath}/script/jquery/treeview/jquery.treeview.js"></script>
+<script type="text/javascript" src="${skinPath}/script/jquery/treeview/jquery.treeview.async.js"></script>
 <script>
   $(document).ready(function() {
     $('#treenav').treeview({

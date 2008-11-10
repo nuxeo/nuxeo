@@ -123,7 +123,10 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
 
     protected final ResourceRegistry registry;
     protected Messages messages;
-
+    
+    protected String skinPathPrefix = "/skin";
+    
+    
     public WebEngine(ResourceRegistry registry, File root) throws IOException {
         this.registry = registry;
         isDebug = Boolean.parseBoolean(Framework.getProperty("debug", "false"));
@@ -171,6 +174,20 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         registry.addMessageBodyWriter(new BlobWriter());
     }
 
+    /**
+     * @param skinPathPrefix the skinPathPrefix to set.
+     */
+    public void setSkinPathPrefix(String skinPathPrefix) {
+        this.skinPathPrefix = skinPathPrefix;
+    }
+    
+    /**
+     * @return the skinPathPrefix.
+     */
+    public String getSkinPathPrefix() {
+        return skinPathPrefix;
+    }
+    
     public ResourceRegistry getRegistry() {
         return registry;
     }
