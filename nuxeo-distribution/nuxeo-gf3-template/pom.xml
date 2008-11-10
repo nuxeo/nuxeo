@@ -13,7 +13,7 @@
   <description>Defines the skeleton of a glassfish3 nuxeo application</description>
 
   <properties>
-    <gf3.version>3.0-SNAPSHOT</gf3.version>
+    <gf3.version>3.0-nx</gf3.version>
   </properties>
 
      <repositories>
