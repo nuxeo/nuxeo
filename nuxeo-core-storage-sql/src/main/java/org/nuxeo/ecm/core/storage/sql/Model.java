@@ -408,8 +408,9 @@ public class Model {
         if (previous == null) {
             mergedPropertyInfos.put(propertyName, propertyInfo);
         } else {
-            log.warn(String.format(
-                    "Schemas '%s' and '%s' both have a property '%s', unqualified reference will use schema '%1$s'",
+            log.info(String.format(
+                    "Schemas '%s' and '%s' both have a property '%s', "
+                            + "unqualified reference in queries will use schema '%1$s'",
                     previous.fragmentName, fragmentName, propertyName));
         }
     }
@@ -773,7 +774,6 @@ public class Model {
         if (schemaFragment.containsKey(typeName)) {
             return schemaFragment.get(typeName); // may be null
         }
-
 
         log.debug("Making model for type " + typeName);
 

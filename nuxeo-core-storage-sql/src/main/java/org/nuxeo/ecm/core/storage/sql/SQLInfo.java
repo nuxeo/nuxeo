@@ -403,12 +403,13 @@ public class SQLInfo {
          * versions
          */
         Table table = database.getTable(model.VERSION_TABLE_NAME);
-        selectVersionsByVersionable = makeSelect(table,
-                model.VERSION_VERSIONABLE_KEY);
-        table.addIndex(model.VERSION_VERSIONABLE_KEY);
         selectVersionsByLabel = makeSelect(table,
                 model.VERSION_VERSIONABLE_KEY, model.VERSION_LABEL_KEY);
+        table.addIndex(model.VERSION_VERSIONABLE_KEY);
         // don't index versionable+label, a simple label scan will suffice
+        selectVersionsByVersionable = makeSelect(table, new String[] {
+                model.VERSION_CREATED_KEY, ORDER_ASC },
+                model.VERSION_VERSIONABLE_KEY);
         selectVersionsByVersionableLastFirst = makeSelect(table, new String[] {
                 model.VERSION_CREATED_KEY, ORDER_DESC },
                 model.VERSION_VERSIONABLE_KEY);
@@ -595,9 +596,9 @@ public class SQLInfo {
                     // these are columns that need to be searchable, as some
                     // databases (Derby) don't allow matches on CLOB columns
                     sqlType = Types.VARCHAR;
-                // FIXME: duplicate confitions in if statement below
                 } else if (tableName.equals(model.mainTableName) ||
-                        tableName.equals(model.mainTableName)) {
+                        tableName.equals(model.ACL_TABLE_NAME) ||
+                        tableName.equals(model.MISC_TABLE_NAME)) {
                     // or VARCHAR for system tables // TODO size?
                     sqlType = Types.VARCHAR;
                 } else {
