@@ -8,7 +8,6 @@
 
 	    <install module="wiki">
 	      <copy path="web/wiki" target="/" />
-	      <copy path="web/resources" target="/" />
 	    </install>
 
 	</extension>

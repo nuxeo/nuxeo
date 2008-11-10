@@ -8,7 +8,6 @@
 
 	    <install module="admin">
 	      <copy path="web/admin" target="/" />
-	      <copy path="web/resources" target="/" />
 	    </install>
 
 	</extension>
