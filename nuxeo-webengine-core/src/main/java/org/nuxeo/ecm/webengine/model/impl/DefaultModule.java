@@ -93,7 +93,7 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
      * @return the link corresponding to that object
      */
     public String getLink(DocumentModel doc) {
-        return new StringBuilder().append(getPath()).append("/@nxdoc?id=").append(doc.getId()).toString();
+        return new StringBuilder().append(getPath()).append("/@nxdoc/").append(doc.getId()).toString();
     }
 
     public Object handleError(WebApplicationException e) {

@@ -210,7 +210,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     }
 
     public Template getView(String viewId) {
-        return new View(this, viewId);
+        return new View(this, viewId).resolve();
     }
 
     public Template getTemplate(String fileName) {

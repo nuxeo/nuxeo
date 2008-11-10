@@ -20,12 +20,13 @@
 package org.nuxeo.ecm.core.rest;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
@@ -44,14 +45,15 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 public class DocumentResolverService extends DefaultAdapter {
 
     @GET
-    public Object doGet(@QueryParam("id") String id, @QueryParam("view") String view) {
+    @Path("{id}")
+    public Object doGet(@PathParam("id") String id, @QueryParam("view") String view) {
         try {
             DocumentModel doc = ctx.getCoreSession().getDocument(new IdRef(id));
-            ResourceType type = ctx.getModule().getType(doc.getType());
             if (view == null) {
                 view = "index";
             }
-            return type.getView(view);
+            DocumentObject docObj = DocumentFactory.newDocument(ctx, doc);
+            return docObj.getView(view);
         } catch (Exception e) {
             throw WebException.wrap("Failed to get lock on document", e);
         }

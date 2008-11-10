@@ -101,9 +101,6 @@ public abstract class AbstractResourceType implements ResourceType {
     }
 
     public ScriptFile getView(String name) {
-        if (name == null) {
-            name = "view.ftl";
-        }
         ScriptFile file = findView(name);
         if (file == null) {
             throw new TemplateNotFoundException(this, name);
@@ -120,6 +117,12 @@ public abstract class AbstractResourceType implements ResourceType {
             file = findSkinTemplate(name);
             if (file == null) {
                 file = findTypeTemplate(name);
+            }
+            if (file == null) {
+                AbstractResourceType t =(AbstractResourceType)getSuperType();
+                if (t != null) {
+                    file = t.findView(name);
+                }
             }
         } catch (IOException e) {
             WebException.wrap("Failed to find template: "+name, e);
@@ -141,16 +144,7 @@ public abstract class AbstractResourceType implements ResourceType {
         if (f.isFile()) {
             return new ScriptFile(f);
         }
-        ScriptFile file = null;
-        AbstractResourceType t =(AbstractResourceType)getSuperType();
-        while (t != null) {
-            file = t.findView(name);
-            if (file != null) {
-                break;
-            }
-            t = (AbstractResourceType)t.getSuperType();
-        }
-        return file;
+        return null;
     }
 
     protected String resolveResourcePath(String className, String fileName) {
