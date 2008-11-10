@@ -31,22 +31,12 @@
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
-      <artifactId>jboss-serialization</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
       <artifactId>jboss-common</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>commons-jexl</groupId>
       <artifactId>commons-jexl</artifactId>
-      <version>1.1</version>
-    </dependency>
-    <dependency>
-      <groupId>concurrent</groupId>
-      <artifactId>concurrent</artifactId>
     </dependency>
   </dependencies>
 

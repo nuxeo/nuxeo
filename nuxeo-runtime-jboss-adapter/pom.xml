@@ -32,10 +32,6 @@
     </dependency>
 
     <dependency>
-      <groupId>concurrent</groupId>
-      <artifactId>concurrent</artifactId>
-    </dependency>
-    <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-common</artifactId>
     </dependency>
