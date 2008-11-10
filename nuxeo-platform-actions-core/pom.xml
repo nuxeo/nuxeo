@@ -49,11 +49,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>commons-jexl</groupId>
       <artifactId>commons-jexl</artifactId>
       <scope>test</scope>
