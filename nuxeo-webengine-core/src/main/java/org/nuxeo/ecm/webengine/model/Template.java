@@ -92,7 +92,7 @@ public class Template {
 
     protected void resolve(String fileName) {
         if (resource != null) {
-            script = resource.getType().getTemplate(fileName);
+            script = resource.getType().getView(fileName);
         } else {
             script = ctx.getModule().getFile(fileName);
         }
@@ -109,7 +109,7 @@ public class Template {
             ctx.render(script(), args, w);
             w.flush();
         } catch (Exception e) {
-            WebException.wrap("Failed to write response", e);
+            throw WebException.wrap("Failed to write response", e);
         }
     }
 
@@ -119,7 +119,7 @@ public class Template {
             ctx.render(script(), args, w);
             w.flush();
         } catch (Exception e) {
-            WebException.wrap("Failed to write response", e);
+            throw WebException.wrap("Failed to write response", e);
         }
         return w.getBuffer().toString();
     }

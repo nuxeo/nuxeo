@@ -88,5 +88,19 @@ public class Main extends DocumentModule {
       return super.handleError(e);
     } 
   }
+
+  public String getLink(DocumentModel doc) {
+    String type = doc.getType();
+    if ("Wiki".equals(type)) {
+      return getPath()+"/"+doc.getName();
+    } else if ("WikiPage".equals(type)) {
+      //TODO: this will not work with multi level wiki pages
+      def path = doc.getPath();
+      int cnt = path.segmentCount();
+      return getPath()+"/"+path.segment(cnt-2)+"/"+path.lastSegment();
+    }
+    return super.getLink(doc);
+  }
+
 }
 

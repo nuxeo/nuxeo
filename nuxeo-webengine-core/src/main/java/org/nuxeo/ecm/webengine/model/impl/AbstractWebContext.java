@@ -314,8 +314,7 @@ public abstract class AbstractWebContext implements WebContext {
 
 
     public String getUrlPath(DocumentModel document) {
-        // TODO implement URL PATH FROM DOCUMENT
-        return null;
+        return getModuleInstance().getLink(document);
     }
 
     public Log getLog() {

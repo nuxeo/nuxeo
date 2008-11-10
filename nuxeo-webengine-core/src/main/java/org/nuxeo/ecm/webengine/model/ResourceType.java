@@ -50,7 +50,7 @@ public interface ResourceType {
 
     boolean hasFacet(String facet);
 
-    ScriptFile getTemplate(String name);
+    ScriptFile getView(String name);
 
     boolean isEnabled(Resource ctx);
 

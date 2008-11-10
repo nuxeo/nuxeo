@@ -100,18 +100,18 @@ public abstract class AbstractResourceType implements ResourceType {
         return guard.check(ctx);
     }
 
-    public ScriptFile getTemplate(String name) {
+    public ScriptFile getView(String name) {
         if (name == null) {
             name = "view.ftl";
         }
-        ScriptFile file = findTemplate(name);
+        ScriptFile file = findView(name);
         if (file == null) {
             throw new TemplateNotFoundException(this, name);
         }
         return file;
     }
 
-    public ScriptFile findTemplate(String name) {
+    public ScriptFile findView(String name) {
         ScriptFile file = templateCache.get(name);
         if (file != null) {
             return file;
@@ -144,7 +144,7 @@ public abstract class AbstractResourceType implements ResourceType {
         ScriptFile file = null;
         AbstractResourceType t =(AbstractResourceType)getSuperType();
         while (t != null) {
-            file = t.findTemplate(name);
+            file = t.findView(name);
             if (file != null) {
                 break;
             }

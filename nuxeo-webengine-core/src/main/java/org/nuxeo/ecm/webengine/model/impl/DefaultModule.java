@@ -27,6 +27,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.AdapterResource;
 import org.nuxeo.ecm.webengine.model.Module;
@@ -82,6 +83,17 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
     @Override
     public String getName() {
         return module.getName();
+    }
+    
+    /**
+     * You should override this method to resolve objects to links.
+     *  This method is usually called by a search view to generate links for object that are listed
+     *   
+     * @param doc the document
+     * @return the link corresponding to that object
+     */
+    public String getLink(DocumentModel doc) {
+        return new StringBuilder().append(getPath()).append("/@nxdoc?id=").append(doc.getId()).toString();
     }
 
     public Object handleError(WebApplicationException e) {
