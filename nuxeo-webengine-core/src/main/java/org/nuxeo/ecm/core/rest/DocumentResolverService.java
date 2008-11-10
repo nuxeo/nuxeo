@@ -44,16 +44,11 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 @WebAdapter(name="nxdoc", type="DocumentResolverService")
 public class DocumentResolverService extends DefaultAdapter {
 
-    @GET
     @Path("{id}")
-    public Object doGet(@PathParam("id") String id, @QueryParam("view") String view) {
+    public DocumentObject doGet(@PathParam("id") String id) {
         try {
             DocumentModel doc = ctx.getCoreSession().getDocument(new IdRef(id));
-            if (view == null) {
-                view = "index";
-            }
-            DocumentObject docObj = DocumentFactory.newDocument(ctx, doc);
-            return docObj.getView(view);
+            return DocumentFactory.newDocument(ctx, doc);
         } catch (Exception e) {
             throw WebException.wrap("Failed to get lock on document", e);
         }
