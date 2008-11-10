@@ -35,11 +35,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>com.sun.xml</groupId>
       <artifactId>xsom</artifactId>
       <version>20060306</version>
