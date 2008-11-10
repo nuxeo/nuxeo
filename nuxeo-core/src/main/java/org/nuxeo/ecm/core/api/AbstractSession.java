@@ -2673,7 +2673,7 @@ public abstract class AbstractSession implements CoreSession,
 
     public Object[] refreshDocument(DocumentRef ref, int refreshFlags,
             String[] schemas) throws ClientException {
-        Object[] result = new Object[5];
+        Object[] result = new Object[6];
 
         try {
 
