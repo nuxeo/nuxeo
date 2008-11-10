@@ -9,7 +9,7 @@ import org.nuxeo.ecm.webengine.model.impl.*;
 import org.nuxeo.ecm.webengine.model.exceptions.*;
 import org.nuxeo.ecm.webengine.*;
 
-@WebModule(name="admin", guard="user=Administrator")
+@WebModule(name="admin", guard="user=Administrator", base="base")
 
 @Path("/admin")
 @Produces(["text/html", "*/*"])
