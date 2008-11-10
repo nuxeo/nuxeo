@@ -671,9 +671,15 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
          */
         dml = session.query("SELECT * FROM Document WHERE ecm:primaryType = 'Folder'");
         assertEquals(3, dml.size());
+        dml = session.query("SELECT * FROM Document WHERE ecm:primaryType <> 'Folder'");
+        assertEquals(6, dml.size()); // 3 files, 1 note, 1 proxy, 1 version
         dml = session.query("SELECT * FROM Document WHERE ecm:primaryType = 'Note'");
         assertEquals(1, dml.size());
         dml = session.query("SELECT * FROM Document WHERE ecm:primaryType = 'File'");
+        assertEquals(5, dml.size()); // 3 files, 1 proxy, 1 version
+        dml = session.query("SELECT * FROM Document WHERE ecm:primaryType IN ('Folder', 'Note')");
+        assertEquals(4, dml.size());
+        dml = session.query("SELECT * FROM Document WHERE ecm:primaryType NOT IN ('Folder', 'Note')");
         assertEquals(5, dml.size()); // 3 files, 1 proxy, 1 version
 
         /*
@@ -689,6 +695,10 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Versionable'");
         assertEquals(6, dml.size()); // 1 note, 3 files, 1 proxy, 1 version
         dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Versionable' AND ecm:mixinType <> 'Downloadable'");
+        assertEquals(1, dml.size()); // 1 note
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType IN ('Folderish', 'Downloadable')");
+        assertEquals(8, dml.size()); // 3 folders, 3 files, 1 proxy, 1 version
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType NOT IN ('Folderish', 'Downloadable')");
         assertEquals(1, dml.size()); // 1 note
 
         /*

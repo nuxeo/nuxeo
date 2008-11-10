@@ -270,12 +270,8 @@ public class QueryMaker {
          */
 
         types.removeAll(info.typesExcluded);
-        if (info.typesRequired.size() > 1) {
-            // conflicting types requirement, query cannot match
-            return;
-        }
-        if (!info.typesRequired.isEmpty()) {
-            types.retainAll(info.typesRequired); // 1 element at most
+        if (!info.typesAnyRequired.isEmpty()) {
+            types.retainAll(info.typesAnyRequired);
         }
         if (types.isEmpty()) {
             // conflicting types requirement, query cannot match
@@ -294,8 +290,8 @@ public class QueryMaker {
             }
             info.immutableClause = Boolean.FALSE;
         }
-        info.mixinsRequired.addAll(facetFilter.required);
-        if (info.mixinsRequired.remove(FACET_IMMUTABLE)) {
+        info.mixinsAllRequired.addAll(facetFilter.required);
+        if (info.mixinsAllRequired.remove(FACET_IMMUTABLE)) {
             if (info.immutableClause == Boolean.FALSE) {
                 // conflict on immutable condition, query cannot match
                 return;
@@ -399,14 +395,25 @@ public class QueryMaker {
                     continue NEXT_TYPE;
                 }
             }
-            for (String facet : info.mixinsRequired) {
+            for (String facet : info.mixinsAllRequired) {
                 if (!facets.contains(facet)) {
+                    continue NEXT_TYPE;
+                }
+            }
+            if (!info.mixinsAnyRequired.isEmpty()) {
+                Set<String> intersection = new HashSet<String>(
+                        info.mixinsAnyRequired);
+                intersection.retainAll(facets);
+                if (intersection.isEmpty()) {
                     continue NEXT_TYPE;
                 }
             }
             // this type is good
             typeStrings.add("?");
             selectParams.add(type);
+        }
+        if (typeStrings.isEmpty()) {
+            return; // mixins excluded all types, no match possible
         }
         whereClauses.add(String.format("%s IN (%s)", joinedHierTable.getColumn(
                 model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(),
@@ -568,12 +575,19 @@ public class QueryMaker {
 
         protected final List<Operand> toplevelOperands = new LinkedList<Operand>();
 
-        protected final Set<String> typesRequired = new HashSet<String>();
+        /** One of these types is required (if not empty). */
+        protected final Set<String> typesAnyRequired = new HashSet<String>();
 
+        /** All these types are excluded. */
         protected final Set<String> typesExcluded = new HashSet<String>();
 
-        protected final Set<String> mixinsRequired = new HashSet<String>();
+        /** One of these mixins is required (if not empty). */
+        protected final Set<String> mixinsAnyRequired = new HashSet<String>();
 
+        /** All these mixins are required. */
+        protected final Set<String> mixinsAllRequired = new HashSet<String>();
+
+        /** All these mixins are excluded. */
         protected final Set<String> mixinsExcluded = new HashSet<String>();
 
         protected Boolean immutableClause;
@@ -630,7 +644,7 @@ public class QueryMaker {
                         String name = ((Reference) expr.lvalue).name;
                         String value = ((StringLiteral) expr.rvalue).value;
                         if (ECM_PRIMARYTYPE.equals(name)) {
-                            (isEq ? typesRequired : typesExcluded).add(value);
+                            (isEq ? typesAnyRequired : typesExcluded).add(value);
                             return;
                         }
                         if (ECM_MIXINTYPE.equals(name)) {
@@ -643,7 +657,7 @@ public class QueryMaker {
                                 immutableClause = im;
                                 needsVersionsTable = true;
                             } else {
-                                (isEq ? mixinsRequired : mixinsExcluded).add(value);
+                                (isEq ? mixinsAllRequired : mixinsExcluded).add(value);
                             }
                             return;
                         }
@@ -662,6 +676,77 @@ public class QueryMaker {
                                 throw new QueryCannotMatchException();
                             }
                             proxyClause = pr;
+                            return;
+                        }
+                    }
+                }
+                if (op == Operator.IN || op == Operator.NOTIN) {
+                    boolean isIn = op == Operator.IN;
+                    // put reference on the left side
+                    if (expr.rvalue instanceof Reference) {
+                        expr = new Expression(expr.rvalue, op, expr.lvalue);
+                    }
+                    if (expr.lvalue instanceof Reference &&
+                            expr.rvalue instanceof LiteralList) {
+                        String name = ((Reference) expr.lvalue).name;
+                        if (ECM_PRIMARYTYPE.equals(name)) {
+                            Set<String> set = new HashSet<String>();
+                            for (Literal literal : (LiteralList) expr.rvalue) {
+                                if (!(literal instanceof StringLiteral)) {
+                                    throw new QueryMakerException(
+                                            ECM_PRIMARYTYPE +
+                                                    " IN requires string literals");
+                                }
+                                set.add(((StringLiteral) literal).value);
+                            }
+                            if (isIn) {
+                                if (typesAnyRequired.isEmpty()) {
+                                    // use as new set
+                                    typesAnyRequired.addAll(set);
+                                } else {
+                                    // intersect
+                                    typesAnyRequired.retainAll(set);
+                                    if (typesAnyRequired.isEmpty()) {
+                                        throw new QueryCannotMatchException();
+                                    }
+                                }
+                            } else {
+                                typesExcluded.addAll(set);
+                            }
+                            return;
+                        }
+                        if (ECM_MIXINTYPE.equals(name)) {
+                            Set<String> set = new HashSet<String>();
+                            for (Literal literal : (LiteralList) expr.rvalue) {
+                                if (!(literal instanceof StringLiteral)) {
+                                    throw new QueryMakerException(
+                                            ECM_MIXINTYPE +
+                                                    " IN requires string literals");
+                                }
+                                String value = ((StringLiteral) literal).value;
+                                if (FACET_IMMUTABLE.equals(value)) {
+                                    Boolean im = Boolean.valueOf(isIn);
+                                    if (immutableClause != null &&
+                                            immutableClause != im) {
+                                        throw new QueryCannotMatchException();
+                                    }
+                                    immutableClause = im;
+                                    needsVersionsTable = true;
+                                } else {
+                                    set.add(value);
+                                }
+                            }
+                            if (isIn) {
+                                if (mixinsAnyRequired.isEmpty()) {
+                                    mixinsAnyRequired.addAll(set);
+                                } else {
+                                    throw new QueryMakerException(
+                                            ECM_MIXINTYPE +
+                                                    " cannot have more than one IN clause");
+                                }
+                            } else {
+                                mixinsExcluded.addAll(set);
+                            }
                             return;
                         }
                     }
