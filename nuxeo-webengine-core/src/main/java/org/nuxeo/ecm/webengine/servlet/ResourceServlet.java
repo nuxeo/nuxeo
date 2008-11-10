@@ -73,7 +73,7 @@ public class ResourceServlet extends HttpServlet {
         int p = path.indexOf('/', 1);
         String moduleName = null;
         if (p > -1) {
-            moduleName = path.substring(0, p);
+            moduleName = path.substring(1, p);
             path = path.substring(p);
         } else {
             resp.sendError(404);
