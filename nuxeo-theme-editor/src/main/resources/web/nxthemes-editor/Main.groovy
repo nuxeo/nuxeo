@@ -111,8 +111,8 @@ public class Main extends DefaultModule {
   public Object getStyleProperties(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("styleProperties.ftl");
   }
-
   
+ 
   public static String getDefaultTheme(String applicationPath) {
     return ThemeManager.getDefaultTheme(applicationPath);
   }

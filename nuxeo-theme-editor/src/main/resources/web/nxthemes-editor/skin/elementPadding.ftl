@@ -5,7 +5,7 @@
 
 <div class="title">
 <img class="close" onclick="javascript:NXThemes.getControllerById('editor perspectives').switchTo('edit canvas')"
-     src="/nuxeo/sites/files/nxthemes/editor/img/close-button.png" width="14" height="14" alt="" />
+     src="/skin/nxthemes/editor/img/close-button.png" width="14" height="14" alt="" />
      Padding editor</div>
 
 <form class="nxthemesForm" action="" onsubmit="return false">

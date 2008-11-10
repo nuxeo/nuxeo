@@ -7,7 +7,7 @@
 
 <div class="title">
 <img class="close" onclick="javascript:NXThemesEditor.closeAreaStyleChooser()"
-     src="/nuxeo/site/files/nxthemes-editor/img/close-button.png" width="14" height="14" alt="" />
+     src="/skin/nxthemes-editor/img/close-button.png" width="14" height="14" alt="" />
 
 Style chooser - ${style_category}</div>
 
