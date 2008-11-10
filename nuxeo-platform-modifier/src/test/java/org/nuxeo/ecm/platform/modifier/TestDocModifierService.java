@@ -61,7 +61,7 @@ public class TestDocModifierService extends AbstractPluginTestCase {
 
     private Transformer transformer;
 
-    private static final String docPath_wordML = "src/test/resources/data/wordml/hello-simple.xml";
+    private static final String docPath_wordML = "data/wordml/hello-simple.xml";
 
     @Override
     public void setUp() throws Exception {
