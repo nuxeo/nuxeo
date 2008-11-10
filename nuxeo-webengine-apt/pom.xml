@@ -13,7 +13,7 @@
   <name>Nuxeo WebEngine APT extensions</name>
   <description>WebEngine's APT extensions for annotation indexing.</description>
   <groupId>org.nuxeo.build</groupId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.1-SNAPSHOT</version>
 
   <profiles>
     <profile>
