@@ -73,7 +73,7 @@
     <div class="sideblock-content">
       <ul>
         <#list This.getLinks("TOOLBOX") as link>
-        <#if link.id == "print">
+        <#if link.id == "link_print">
           <li><a href="${link.getCode(This)}" target="_blank">${Context.getMessage(link.id)}</a></li>
         <#else>
           <li><a href="${link.getCode(This)}">${Context.getMessage(link.id)}</a></li>

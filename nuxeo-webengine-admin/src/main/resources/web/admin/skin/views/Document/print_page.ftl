@@ -1,5 +1,5 @@
 
-<#assign tab = Context.getClientVariable("tab") />
+<#--assign tab = Context.getClientVariable("tab") /-->
 
 <#if tab>
   <#include "@${tab}"/>

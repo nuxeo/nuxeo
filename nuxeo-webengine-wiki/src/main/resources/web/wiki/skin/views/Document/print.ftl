@@ -33,7 +33,7 @@
 <h1>${Document.title}</h1>
 
 <div id="entry-content">
-    <#include "@print_page.ftl"/>
+    <#include "@print_page"/>
 </div>
 
 </@block>
