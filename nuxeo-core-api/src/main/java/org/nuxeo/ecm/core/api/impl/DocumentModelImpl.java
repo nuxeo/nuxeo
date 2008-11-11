@@ -1232,7 +1232,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      */
     public String getCacheKey() {
         // UUID - sessionId
-        String key = id + '-' + sid;
+        String key = id + '-' + sid + '-' + getPathAsString();
         // :FIXME: Assume a dublin core schema => enough for us right now.
         Calendar timeStamp = (Calendar) getProperty("dublincore", "modified");
 
