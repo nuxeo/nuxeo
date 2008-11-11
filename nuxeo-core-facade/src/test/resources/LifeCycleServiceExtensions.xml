@@ -5,15 +5,14 @@
   <require>org.nuxeo.ecm.core.lifecycle.LifeCycleService</require>
 
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
-         point="lifecyclemanager">
+    point="lifecyclemanager">
     <lifecyclemanager name="jcrlifecyclemanager"
-              class="org.nuxeo.ecm.core.repository.jcr.JCRLifeCycleManager"
-              />
+      class="org.nuxeo.ecm.core.repository.jcr.JCRLifeCycleManager" />
   </extension>
 
-   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
     point="lifecycle">
-    <lifecycle name="default" initial="project">
+    <lifecycle name="default" defaultInitial="project">
       <transitions>
         <transition name="approve" destinationState="approved">
           <description>Approve the content</description>
@@ -29,14 +28,15 @@
             <transition>obsolete</transition>
           </transitions>
         </state>
-        <state name="approved" description="Content has been validated"/>
-        <state name="obsolete" description="Content is obsolete"/>
+        <state name="approved" description="Content has been validated"
+          initial="true" />
+        <state name="obsolete" description="Content is obsolete" />
       </states>
     </lifecycle>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
-          point="types">
+    point="types">
     <types>
       <type name="File">default</type>
       <type name="Folder">default</type>

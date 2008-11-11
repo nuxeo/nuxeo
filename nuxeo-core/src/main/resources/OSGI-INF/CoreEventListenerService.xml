@@ -82,4 +82,11 @@
   </extension>
     -->
 
+  <!-- extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+    point="listener">
+    <listener name="testtxlistener"
+      class="org.nuxeo.ecm.core.listener.impl.TestTransactedListener"
+      order="1" />
+  </extension-->
+  
 </component>

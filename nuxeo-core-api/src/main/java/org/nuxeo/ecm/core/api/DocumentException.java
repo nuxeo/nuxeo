@@ -29,9 +29,7 @@ public class DocumentException extends CoreException {
 
     private static final long serialVersionUID = 6885905202244173862L;
 
-
     public DocumentException() {
-
     }
 
     public DocumentException(String message) {

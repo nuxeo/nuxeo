@@ -57,7 +57,8 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
     public void testLifeCycleManagerRegistration() {
         LifeCycleManager manager = lifeCycleService.getLifeCycleManager();
         assertNotNull(manager);
-        assertEquals("SampleLifeCycleManager", manager.getClass().getSimpleName());
+        assertEquals("SampleLifeCycleManager",
+                manager.getClass().getSimpleName());
     }
 
     /**
@@ -98,6 +99,16 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
 
         // Test the initial state
         assertEquals("work", lcd.getInitialStateName());
+
+        // Test all initial states
+        List<String> expectedInitialStates = new ArrayList<String>();
+        expectedInitialStates.add("work");
+        expectedInitialStates.add("approved");
+        Collections.sort(expectedInitialStates);
+        List<String> initialStates = new ArrayList<String>(
+                lcd.getInitialStateNames());
+        Collections.sort(initialStates);
+        assertEquals(expectedInitialStates, initialStates);
 
         // Test transitions
         Collection<String> transitions;
