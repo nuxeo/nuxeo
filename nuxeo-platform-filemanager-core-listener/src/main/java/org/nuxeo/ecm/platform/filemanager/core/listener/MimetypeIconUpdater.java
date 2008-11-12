@@ -25,8 +25,8 @@ import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.listener.AbstractEventListener;
-import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
@@ -37,13 +37,13 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Listener responsible for computing the mimetype of a new or edited blob and
  * the common:icon field if necessary.
- *
+ * 
  * The common:size is also maintained as the length of the main blob to
  * preserver backward compatibility
- *
+ * 
  * The logics of this event listener is divided into static public methods to
  * make it easy to override this event listener with a custom implementation.
- *
+ * 
  * @author ogrisel
  */
 public class MimetypeIconUpdater extends AbstractEventListener {
@@ -94,7 +94,7 @@ public class MimetypeIconUpdater extends AbstractEventListener {
     /**
      * Recursively call updateBlobProperty on every dirty blob embedded as
      * direct children or contained in one of the container children
-     *
+     * 
      * @param doc
      * @param mimetypeService
      * @param dirtyChildren
@@ -105,8 +105,7 @@ public class MimetypeIconUpdater extends AbstractEventListener {
             throws Exception {
         while (dirtyChildren.hasNext()) {
             Property dirtyProperty = dirtyChildren.next();
-            if (TypeConstants.getContentType().equals(
-                    dirtyProperty.getField().getType())) {
+            if (dirtyProperty instanceof BlobProperty) {
                 updateBlobProperty(doc, mimetypeService, dirtyProperty);
             } else if (dirtyProperty.isContainer()) {
                 recursivelyUpdateBlobs(doc, mimetypeService,
@@ -118,7 +117,7 @@ public class MimetypeIconUpdater extends AbstractEventListener {
     /**
      * Update the mimetype of a blob allong with the icon and size fields of the
      * document if the blob is the main blob of the document.
-     *
+     * 
      * @param doc
      * @param mimetypeService
      * @param dirtyProperty
@@ -159,7 +158,7 @@ public class MimetypeIconUpdater extends AbstractEventListener {
     /**
      * Backward compatibility for external filename field: if edited, it might
      * affect the main blob mimetype
-     *
+     * 
      * @param doc
      * @throws PropertyException
      */
@@ -182,7 +181,7 @@ public class MimetypeIconUpdater extends AbstractEventListener {
 
     /**
      * If the icon field is empty, initialize it to the document type icon
-     *
+     * 
      * @param doc
      * @throws Exception
      */
@@ -195,7 +194,7 @@ public class MimetypeIconUpdater extends AbstractEventListener {
     /**
      * Compute the main icon of a Nuxeo document based on the mimetype of the
      * main attached blob with of fallback on the document type generic icon.
-     *
+     * 
      * @param mimetypeEntry
      * @param doc
      * @throws Exception
