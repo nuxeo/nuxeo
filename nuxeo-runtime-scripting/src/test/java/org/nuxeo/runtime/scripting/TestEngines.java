@@ -57,11 +57,12 @@ public class TestEngines extends TestCase {
         Object sumLiteralValue = engine.eval("1 + 2");
         Object expectedValue = null;
         if (sumLiteralValue instanceof Integer) {
-        	expectedValue = Integer.valueOf(3);
+            expectedValue = Integer.valueOf(3);
         } else if (sumLiteralValue instanceof Double) {
-        	expectedValue = Double.valueOf(3);
+            expectedValue = Double.valueOf(3);
         } else {
-        	throw new RuntimeException("introduce literal of type " + sumLiteralValue.getClass().getName());
+            throw new RuntimeException("introduce literal of type "
+                    + sumLiteralValue.getClass().getName());
         }
         assertEquals(expectedValue, sumLiteralValue);
         engine.eval("var x = 1 + 2;");
