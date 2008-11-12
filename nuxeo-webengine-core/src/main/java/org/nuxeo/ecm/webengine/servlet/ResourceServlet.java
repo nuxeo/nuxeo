@@ -54,7 +54,7 @@ public class ResourceServlet extends HttpServlet {
         try {
             engine = Framework.getService(WebEngine.class);
             String prefix = config.getInitParameter("prefix");
-            if (prefix != null) {
+            if (engine!= null && prefix != null) {
                 engine.setSkinPathPrefix(prefix);
             }
         } catch (Exception e) {

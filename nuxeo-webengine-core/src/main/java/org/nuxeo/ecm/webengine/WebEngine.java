@@ -124,7 +124,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     protected final ResourceRegistry registry;
     protected Messages messages;
     
-    protected String skinPathPrefix = "/skin";
+    protected String skinPathPrefix;
     
     
     public WebEngine(ResourceRegistry registry, File root) throws IOException {
@@ -151,6 +151,8 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), bundleTypeProvider);
         BundleAnnotationsLoader.getInstance().addLoader(WebAdapter.class.getName(), bundleTypeProvider);
 
+        //TODO this should be in a config file       
+        skinPathPrefix = System.getProperty("jboss.home.dir") != null ? "/nuxeo/site/skin" : "/skin"; 
         loadModules();
 
         env = new HashMap<String, Object>();
