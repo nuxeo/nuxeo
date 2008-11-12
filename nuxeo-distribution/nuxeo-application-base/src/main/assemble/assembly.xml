@@ -40,7 +40,7 @@
       <artifact name="commons-logging" />      
       <artifact name="jboss-remoting" />
       <artifact name="jboss-common" />
-      <artifact group="log4j" name="log4j" version="1.2.13" />
+      <artifact group="log4j" name="log4j" />
     </includes>
   </artifactSet>
 
