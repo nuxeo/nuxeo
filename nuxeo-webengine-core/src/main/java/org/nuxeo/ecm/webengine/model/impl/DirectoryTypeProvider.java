@@ -86,6 +86,7 @@ public class DirectoryTypeProvider extends TypeConfigurationProvider {
                 } catch (Throwable t) {
                     w.close();
                     cache.delete();
+                    throw WebException.wrap(t);
                 }
             }
         } catch (Exception e) {
@@ -97,7 +98,7 @@ public class DirectoryTypeProvider extends TypeConfigurationProvider {
         for (File file : root.listFiles()) {
             String name = file.getName();
             if (file.isDirectory() && !"skin".equals(name)
-                    && !"WEB-INF".equals(name) && !"resources".equals(name)) {
+                    && !"WEB-INF".equals(name) && !"resources".equals(name) && !"samples".equals(name)) {
                 scan(file, path == null ? name :
                     new StringBuilder().append(path).append('.').append(name).toString(),
                     cache);
