@@ -5,11 +5,9 @@ Bundle-SymbolicName: org.nuxeo.ecm.webengine.core;singleton:=true
 Require-Bundle: freemarker,
  javax.servlet,
  net.sf.json,
- org.nuxeo.runtime.scripting,
  org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.platform.rendering
-Nuxeo-Require: org.nuxeo.runtime.scripting,
- org.nuxeo.ecm.platform.rendering,
+Nuxeo-Require: org.nuxeo.ecm.platform.rendering,
  org.nuxeo.ecm.core.api;
  org.nuxeo.ecm.platform.web.common
 Nuxeo-Component: OSGI-INF/webengine-framework.xml,

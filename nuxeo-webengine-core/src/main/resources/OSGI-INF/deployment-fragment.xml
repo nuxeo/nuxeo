@@ -48,10 +48,14 @@
       <servlet-class>
         org.nuxeo.ecm.webengine.servlet.ResourceServlet
       </servlet-class>
+      <init-param>
+        <param-name>prefix</param-name>
+        <param-value>/nuxeo/site/skin</param-value>
+      </init-param>
     </servlet>
     <servlet-mapping>
       <servlet-name>Nuxeo Resource Servlet</servlet-name>
-      <url-pattern>/site/files/*</url-pattern>
+      <url-pattern>/site/skin/*</url-pattern>
     </servlet-mapping>
   </extension>
 

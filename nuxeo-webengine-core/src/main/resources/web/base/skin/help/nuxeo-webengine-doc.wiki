@@ -175,7 +175,6 @@ Install a Nuxeo EP server.
 
 Download the webengine components from http://www.nuxeo.org/projects/webengine :
 
-* nuxeo-runtime-scripting
 * nuxeo-platform-rendering
 * nuxeo-webengine-core
 * nuxeo-webengine-resteasy-adapter
@@ -190,8 +189,13 @@ Also, make sure you have the following JARs in your `nuxeo.ear/libs`:
 * ezmorph-0.9.jar
 * resteasy-jaxrs-1.0-beta-8-nx.jar
 * jaxrs-api-1.0-beta-8.jar
+* groovy-all-1.5.7.jar
+* script-api-1.0.jar
 
 If they are not there, you can get them from the standalone version and then copy into the `libs` folder (overwriting older versions if any)
+
+To be able tu use the anonymous login you must copy the login-anonymous-config.xml file into nuxeo.ear/config.
+You can find this file in the standalone webengine version in config directory.
 
 After JBoss is started go to http://localhost:8080/nuxeo/site.
 
