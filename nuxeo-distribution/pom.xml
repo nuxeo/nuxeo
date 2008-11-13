@@ -4,13 +4,13 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-parent</artifactId>
-    <version>5.2-SNAPSHOT</version>
+    <version>5.2.m3</version>
   </parent>
 
   <!--parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-shell-parent</artifactId>
-    <version>5.2-SNAPSHOT</version>
+    <version>5.2.m3</version>
   </parent-->
 
   <artifactId>nuxeo-application-distribution</artifactId>
@@ -20,8 +20,8 @@
 
   <properties>
     <application.name>nuxeo-app</application.name>
-    <nuxeo.shell.version>5.2-SNAPSHOT</nuxeo.shell.version>
-    <nuxeo.webengine.version>5.2-SNAPSHOT</nuxeo.webengine.version>
+    <nuxeo.shell.version>5.2.m3</nuxeo.shell.version>
+    <nuxeo.webengine.version>5.2.m3</nuxeo.webengine.version>
     <!--nuxeo.core.version>1.5-SNAPSHOT</nuxeo.core.version-->
   </properties>
 
