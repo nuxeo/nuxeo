@@ -29,25 +29,29 @@ import java.io.Serializable;
 public interface ContentProvider extends Serializable {
 
     /**
-     * Get the name of the object.
+     * Gets the name of the object.
+     * <p>
      * The name must be an unique identifier relative to the parent item.
      * It will be used as node names in the tree so that they will construct the item path.
+     *
      * @param obj the object
      * @return the name
      */
     String getName(Object obj);
 
     /**
-     * Get the label to be used when displaying the given object
+     * Gets the label to be used when displaying the given object.
+     *
      * @param obj the object
      * @return the label
      */
     String getLabel(Object obj);
 
     /**
-     * Get the object facets. Facets are random strings
-     * that should describe object capabilities and can be
-     * used to decorate later the item.
+     * Gets the object facets.
+     * <p>
+     * Facets are arbitrary strings that should describe object capabilities and
+     * can be used to decorate later the item.
      * <p>
      * In a web environment they may be translated to CSS classes.
      *
@@ -56,14 +60,17 @@ public interface ContentProvider extends Serializable {
     String[] getFacets(Object object);
 
     /**
-     * Whether the given object may have children (e.g it's a container)
+     * Whether the given object may have children (e.g it's a container).
+     *
      * @param obj the object to test
-     * @return true if it may have childrne false otherwise
+     * @return true if it may have children, false otherwise
      */
     boolean isContainer(Object obj);
 
     /**
-     * Get the top level items. The items will be shown on the top level of the tree.
+     * Gets the top level items.
+     * <p>
+     * The items will be shown on the top level of the tree.
      * These items are computed from the tree input that will be considered the tree root.
      * The tree root is not visible.
      *
@@ -73,7 +80,8 @@ public interface ContentProvider extends Serializable {
     Object[] getElements(Object input);
 
     /**
-     * Get the children for the given object.
+     * Gets the children for the given object.
+     * <p>
      * This method is used to populate the nested branches of the tree.
      *
      * @param obj the object

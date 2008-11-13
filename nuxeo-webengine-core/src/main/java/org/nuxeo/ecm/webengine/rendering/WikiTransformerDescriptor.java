@@ -20,10 +20,12 @@
 package org.nuxeo.ecm.webengine.rendering;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.rendering.wiki.WikiFilter;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiTransformer;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.PatternFilter;
@@ -49,12 +51,12 @@ public class WikiTransformerDescriptor extends RenderingExtensionDescriptor {
     protected Class<?> serializerClass;
 
     @XNodeList(value="filter", type=ArrayList.class, componentType=WikiFilterDescriptor.class)
-    protected ArrayList<WikiFilterDescriptor> filters;
+    protected List<WikiFilterDescriptor> filters;
 
 
     @Override
     public WikiTransformer newInstance() throws Exception {
-        WikiTransformer tr = null;
+        WikiTransformer tr;
         if (serializerClass == null) {
             tr = new WikiTransformer();
         } else {
@@ -62,7 +64,13 @@ public class WikiTransformerDescriptor extends RenderingExtensionDescriptor {
         }
         WikiSerializer serializer = tr.getSerializer();
         for (WikiFilterDescriptor wfd : filters) {
-            serializer.addFilter(new PatternFilter(wfd.pattern, wfd.replacement));
+            if ( wfd.clazz != null ){
+                Class<?> clazz = Class.forName(wfd.clazz);
+                WikiFilter filter = (WikiFilter) clazz.newInstance();
+                serializer.addFilter(filter);
+            } else {
+                serializer.addFilter(new PatternFilter(wfd.pattern, wfd.replacement));
+            }
         }
         return tr;
     }

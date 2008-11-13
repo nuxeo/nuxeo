@@ -1,0 +1,303 @@
+﻿= Nuxeo WebEngine
+
+{toc}{/toc}
+
+== Overview
+
+Nuxeo WebEngine is a framework to build RESTful web applications on top of the Nuxeo EP platform.
+
+The main goal for the WebEngine is to propose a framework to quickly build web applications on top of Nuxeo ECM.
+
+You don't need to have any advanced knowledge about JSF or other Java related web technologies.
+
+The only thing you need to know is how *JAX-RS* works. So, before reading this documentation it is *recommended* to familiarize yourself with JAX-RS.
+
+=== JAX-RS
+
+You can find some useful information about JAX-RS here:
+
+* http://jcp.org/aboutJava/communityprocess/final/jsr311/index.html 
+* http://wikis.sun.com/display/Jersey/Main
+
+Before starting to look at WebEngine, I will remember to you some aspects about JAX-RS.
+
+*JAX-RS* is a Java API to build *RESTful* Web Services. What the hell means that?
+
+I will not talk now about what REST is - you can find here more on this topic here:
+
+* http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm 
+* http://en.wikipedia.org/wiki/Representational_State_Transfer
+
+But let's forget for now the REST word. Generally speaking, JAX-RS defines an API that let you access Java objects through HTTP requests.
+
+Building a JAX-RS application is like creating an API to access and manage your Java objects through HTTP requests.
+
+An object is exposed as a JAX-RS __resource__ and can be manipulated via common HTTP methods like GET, POST, PUT, HEAD etc.
+
+JAX-RS uses Java annotations to define how the request will be dispatched. There are two type of resources:
+
+* Root Resources - These resources are explicitely bound to a fixed URL path. They are invoked when the request path match their own declared path. The binding is done using the __@Path__ annotation on the resource class.\
+These resource may directly serve the request or may forward it to sub resources depending on the current request path.
+* Sub Resources - As we've seen resources may forward the request handling to other resources that we can refer to as sub-resources. 
+Sub Resources are not explictely bound to a path. The binding is done by the resource that forwarded the request handling. 
+This binding is done using the __@Path__ annotation on a resource method.
+
+This way, request paths will be resolved to a chain of resources until the entire path is consumed.
+The last resource in the chain will be invoked to handle the current the HTTP method.
+
+JAX-RS makes a clean separation between the logical part (e.g. the request handling) and the rendering part (e.g. the response rendering) of your application. All the logic is done in the resource methods, that returns an object as a response. The returned object will be then write back to the client.
+You can return any object you want as a response as long you provide a writer that knows how to write down your object.
+
+JAX-RS is provides a built-in set of writers that will handle commons objects like String, File etc.
+
+It is important to correctly understand this mechanism. This means you *cannot* modify the response headers when writing down the response object (at writer level). You can do this only from the resource method by returning a special response object derived from
+{{{javax.ws.rs.core.Response}}}
+
+Another important aspect of JAX-RS is the automatic media type management. When dispatching the request JAX-RS will try to find the method on the resource that is best suitable to return an acceptable response to the client. This detection is based on the HTTP __Accept__ headers sent by the client.
+
+By correctly using JAX-RS concepts, you can build very flexible web applications that may serve several type of clients like web browsers, ATOM clients etc.
+
+=== Nuxeo WebEngine
+
+Now, lets talk about how WebEngine is integrating over JAX-RS.
+
+One of the goal of WebEngine is to provide an object model that enforce building modular applications with JAX-RS.
+
+Apart its own object model based on JAX-RS, WebEngine also provides important features like:
+
+* Creating JAX-RS as Groovy classes.
+* Defining root resources dynamically (without needing the @Path annotation on classes)
+* Hot Redeploy of application classes and resources
+* Flexible template engine - based on Freemarker
+* Content Management using Nuxeo Platform
+
+==== Modules
+
+An WebEngine application is known as a Web Module. You can deploy how many modules you want in WebEngine. Each of these modules defining an entry point bound to a fixed path. Web Modules are isolated one of each other, but you also have the option to extend an existing WebModule.
+
+==== Object Model
+
+The WebEngine model is defining three type of JAX-RS resources:
+* WebModule Resource - this is the Root Resource that is used as an entry point into an WebEngine Module
+* WebObject Resource - this is a regular sub-resource that usually is used to expose an object or some logical entity.
+* WebAdapter Resource - this is a special sub-resource that can be used to extend Object Resources with new functionalities.
+To extend existing resources using adapters you don't need to modify these resources. You can imagine a scenario where you want to add new functionalities
+to an existing module. Instead of modifying this module, you can create a new one that extends the existing one and declare the new adapters you want.
+Adapters 
+
+All WebEngine Resources have a Resource Type. Resource Types are used to create hierarchies of resources - in the same manner as a __Class__ in Java, so that you may define Resources that extends another Resources.
+
+Also, all WebEngine Resources may define:
+* An optional set of facets. Facets are primarily used to tag Resources. These facets can then be used to apply rules or behavior on resources depending on their facets. Facets are similar to Document Facets used by Nuxeo Platform Documents
+* An optional guard. The guard is used to check if the resource is accessible in a given context. When requesting a not accessible resource
+a WebSecurityException is thrown.
+
+Note that resources are by default instantiated at each request.\
+WebEngine also provides a mechanism to define stateful resources (that are instantiated only once) - see Tutorial 1.
+
+==== Exposing Nuxeo Platform Documents
+
+Nuxeo Documents are transparently mapped to WebObjects so that you can easily access your documents through WebEngine. Document types and facets are automatically imported as Resource Types and Resource Facets. The base type of all documents __Document__ is mapped to a built-in resource class:
+{{{ org.nuxeo.ecm.core.rest.DocumentObject }}} 
+This builtin implementation covers all the basic functionalities of Documents as creation, update, browsing, versioning, locking etc.\
+You can always write you custom Document Resource by extending the existing __DocumentObject__ class.
+
+Also, you can add new functionalities on your DOcument Resources by writing new Adapter Resources.
+
+Adapter Resources are explained in Tutorial 4.
+
+A Resource Adapter is conceptually very similar to Nuxeo Document Adapters. They are primarly used to add new __interfaces__ to resources without modifying the resource itself.
+
+==== Template Model
+
+WebEngine defines also a template model that is used to build responses. The template engine is based on FreeMarker, plus some custom extensions like template *blocks*. Using blocks you can build your web site in a modular fashion. Blocks are dynamic template parts that can be extended or replaced using derived blocks. Using blocks, you can write a base template that may define the site layout (using blocks containing empty or generic content) and then write final __skins__ for your layout by extending the base template and redefining blocks you are interested in.
+
+Templates are stored as files in the module bundle under the skin directory. Templates are resolved in the context of the current module. This way, if a module is extending another module, a template will be first looked up into the derived module, then in its super modules until a template it's found or no more parent modules exists.
+
+There is a special type of templates that we call *views*. The difference between views and regular templates is that views are always attached to an Web Object Resource. This means, views are inherited from super types. Because of this the view file resolution is a bit different from templates.
+Views are first searched in the current module, by iterating over all resource super types. If not found then the super module is searched (if any) and so on until a view file is found or no more parent modules exists.
+
+== Getting Started
+
+WebEngine is shipped in two flavors:
+* a standalone server
+* a Nuxeo EP module, that runs in a JBoss application server
+
+Both of these versions provides the same functionalities and the same JARs are used on both platforms.
+
+This is possible since WebEngine is build over the Nuxeo Runtime layer that works over any OSGi platform.
+
+In both standalone and JBoss versions the OSGi framework is emulated by a Nuxeo component: `nuxeo-runtime-osgi`.
+
+WebEngine is working on any platform supported by Nuxeo EP (UNIX-like systems, MAC OS X, Windows). Anyway in the case of MAC OS X there is a known problem and to be able to start WebEngine you need to remove the file `System/Library/Java/Extensions/AppleScriptEngine.jar` file.
+
+=== Standalone server
+
+The standalone server is the *light* version of WebEngine and doesn't requires an application server to work.
+
+This means that Nuxeo services required by WebEngine are not exposed as session beans. Anyway, all of the functionalities present in the JBoss version are available in the standalone server.
+
+The light version is embedding a Glassfish v3 server or a Jetty HTTP server and by default binds the WebEngine instance to the root web context: `/`.
+
+The light version is very useful for developing since the startup time is very fast (e.g. 2-3 seconds on my laptop using Java 6) - but can be also used in production.
+
+==== Installation
+
+To install the light version, download it from http://nuxeo.org/projects/webengine, unzip the content into a folder of your choice, and run `nxserver.sh` to launch the application. Then go to http://localhost:8080.
+
+==== Launcher
+
+To start WebEngine, simply run `./nxserver.sh` on linux or `nxserver.cmd` on windows.
+
+The common options are:
+
+* `-debug` - to start in debug mode. This will WebEngine hot deploy and also it will enable remote debugging your java process.
+* `-clear` - to cleanup cache before starting. This is needed if you add a JAR into `bundles` or `lib` directories - since the launcher is caching the classpath at the first start of the server.
+* `-console` - to activate the server administration console
+
+For more information on the launcher look into `nxserver.sh`
+
+==== Requirements
+
+* Java 5 or later - WebEngine is working fine on both Java 5 and 6.
+
+=== Nuxeo EP module
+
+WebEngine can be deployed as a Nuxeo EP module on a running Nuxeo server (that currently supports JBoss as application server).
+
+In this version, WebEngine is bound by default to the `/nuxeo/site` context path.
+
+When deployed as a Nuxeo EP module, WebEngine will run in an application server so all required Nuxeo services will be exposed as session beans.
+
+==== Installation
+
+Install a Nuxeo EP server.
+
+Download the webengine components from http://www.nuxeo.org/projects/webengine :
+
+* nuxeo-platform-rendering
+* nuxeo-webengine-core
+* nuxeo-webengine-resteasy-adapter
+* nuxeo-webengine-admin (optional)
+* nuxeo-webengine-wiki (optional)
+
+Copy these JARs inside `nuxeo.ear/plugins`.
+
+Also, make sure you have the following JARs in your `nuxeo.ear/libs`:
+* freemarker-2.3.11.jar
+* json-lib-2.2.1-jdk15.jar
+* ezmorph-0.9.jar
+* resteasy-jaxrs-1.0-beta-8-nx.jar
+* jaxrs-api-1.0-beta-8.jar
+* groovy-all-1.5.7.jar
+* script-api-1.0.jar
+
+If they are not there, you can get them from the standalone version and then copy into the `libs` folder (overwriting older versions if any)
+
+To be able tu use the anonymous login you must copy the login-anonymous-config.xml file into nuxeo.ear/config.
+You can find this file in the standalone webengine version in config directory.
+
+After JBoss is started go to http://localhost:8080/nuxeo/site.
+
+==== Requirements
+
+* JBoss 4.2.x GA 
+* Nuxeo EP 5.2 - WebEngine is not working with older versions
+* Java 5 - WebEngine is also working with Java 6.
+
+==== Developing a new module
+
+You can start making your module by creating a new module directory in the `nxserver/web` directory. You can use as the base of your module one of the tutorials above.
+
+If you want to create a deployable WebEngine JAR module, you can use existing WebEngine modules as a starting base.
+
+You can for example start by looking at {{{ nuxeo-webengine-admin }}}
+If you do this, then remove any unwanted resources from `src/main/resources/web` directory. You can put then you own Web Module files.
+
+Then make sure you modify the `src/main/resources/META-INF/MANIFEST.MF` and replace 'admin' string with your module name.
+
+Then go into `src/main/resources/OSGI-INF` and rename the file `admin-deployment-contrib.xml` by replacing admin string with your own module name.
+
+*Note* that this file is referenced by the `MANIFEST.MF` file. make sure the same name is used there. Then open the `admin-deployment-contrib.xml` file and replace 'admin' string with your own module name. At this point your module is ready to be deployed.
+
+Build the module {{{ mvn package }}} then copy the genrated JAR into `nxserver/bundles`.
+
+Restart webengine by using the command:
+
+{{{ ./nxserver.sh -clear }}}
+
+To obtain the WebEngine sources, you can checkout a WebEngine copy using mercurial as follows:
+
+{{{
+hg clone https://hg.nuxeo.org/nuxeo-webengine
+hg up -C 5.2-jax-rs
+}}}
+
+If you want to build webengine, you need to run the following commands:
+{{{
+cd nuxeo-webengine
+cd nuxeo-webengine-apt
+mvn install
+cd ..
+mvn install
+}}}
+
+Then in `nuxeo-webengine-server/target` you will find a zip named `nxserver.zip`. You can unzip it, and start your webengine build.
+
+=== Tutorials
+
+In this chapter we will go deeper into WebEngine model by proposing 7 samples on how to use common WebEngine concepts.
+
+You can find here *{freemarker}${Engine.getRootDirectory()}/base/samples{/freemarker}* the sample modules presented in the following tutorials.
+
+To access these samples through your browser you need to copy them in WebEngine root directory: *{freemarker}${Engine.getRootDirectory()}{/freemarker}* and restart WebEngine. Then follow the instruction in each tutorial.
+
+To correctly understand the tutorials you need to look into all `.groovy` and `.ftl` files you find in sample modules and look at the comments.
+
+Each sample is well documented in the corresponding Main.groovy class using java docs.
+
+So in the sections below, I will explain only what the sample is doing and how you can test it.
+
+==== Tutorial 1 - JAX-RS: Hello World
+
+This tutorial provides two samples: the first one is demonstrating how to create a JAX-RS root resource, and the second one how to use WebEngine extensions to define a singleton root resource by using a configuration file (without using @Path annotation).
+
+You can access these samples at: http://localhost:8080/sample1 and http://localhost:8080/sample1/singleton
+
+==== Tutorial 2 - Web Module: Hello World.
+
+This tutorial demonstrates how to create a Hello World module. This is the simplest module. It requires only one Groovy class which represents the Resource Module (the module entry point).
+
+You can access the sample at: http://localhost:8080/sample2
+
+==== Tutorial 3 - Using Templates
+
+This tutorial demonstrates how to use templates to render dynamic content.
+
+You can access the sample at: http://localhost:8080/sample3
+
+==== Tutorial 4 - Web Object Model
+
+This tutorial demonstrates the basics of the WebEngine Object Model.
+You can see how to create new Module Resources, Object Resources, Adapter Resources and views.
+
+You can access the sample at: http://localhost:8080/sample4
+
+==== Tutorial 5 - Working with Nuxeo Platform Documents
+
+This tutorial demonstrates how to access Nuxeo Platform Documents through WebEngine.
+
+You can access the sample at: http://localhost:8080/sample5
+
+==== Tutorial 6 - Module Extensibility
+
+This tutorial demonstrates how modules can be extended. The module defined here will extend the one in Tutorial 5.
+
+You can access the sample at: http://localhost:8080/sample6
+
+==== Tutorial 7 - Managing Links
+
+This tutorial demonstrates the way links you are using in your templates can be managed to create easy to maintain and modular applications.
+
+You can access the sample at: http://localhost:8080/sample7
+

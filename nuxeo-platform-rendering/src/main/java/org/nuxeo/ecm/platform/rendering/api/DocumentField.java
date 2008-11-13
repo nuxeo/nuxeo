@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+// TODO: never implemented. Remove?
 public interface DocumentField {
 
     String getName();

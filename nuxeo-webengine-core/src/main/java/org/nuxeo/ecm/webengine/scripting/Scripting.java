@@ -20,12 +20,10 @@
 package org.nuxeo.ecm.webengine.scripting;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.Map;
+import java.net.URL;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -41,12 +39,6 @@ import javax.script.SimpleScriptContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.webengine.WebContext;
-import org.python.core.PyDictionary;
-import org.python.core.PyList;
-import org.python.core.PyObject;
-import org.python.core.PyTuple;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -60,8 +52,24 @@ public class Scripting {
 
     protected final ScriptEngineManager scriptMgr = new ScriptEngineManager();
 
+    protected final GroovyScripting groovy;
+
     public Scripting() {
+        this (false);
     }
+
+    public Scripting(boolean isDebug) {
+        groovy = new GroovyScripting(isDebug);
+    }
+
+    public void addClassPath(String path) {
+        groovy.addClasspath(path);
+    }
+
+    public void addClassPathUrl(URL url) {
+        groovy.addClasspathUrl(url);
+    }
+
 
     public static CompiledScript compileScript(ScriptEngine engine, File file) throws ScriptException {
         if (engine instanceof Compilable) {
@@ -81,22 +89,48 @@ public class Scripting {
         }
     }
 
-    public Object runScript(WebContext context, ScriptFile script) throws Exception {
-        return runScript(context, script, null);
+    public void flushCache() {
+        log.info("Flushing Groovy class cache");
+        groovy.clearCache();
     }
 
-    public Object runScript(WebContext context, ScriptFile script, Bindings args) throws Exception {
+    public ScriptEngineManager getEngineManager() {
+        return scriptMgr;
+    }
+
+    public boolean isScript(String ext) {
+        return scriptMgr.getEngineByExtension(ext) != null;
+    }
+
+    public GroovyScripting getGroovyScripting() {
+        return groovy;
+    }
+
+    public Class<?> loadClass(String className) throws ClassNotFoundException {
+        return groovy.loadClass(className);
+    }
+
+    public Object runScript(ScriptFile script) throws Exception {
+        return runScript(script, null);
+    }
+
+    public Object runScript(ScriptFile script, Bindings args) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("## Running Script: "+script.getFile());
         }
+        if ("groovy".equals(script.getExtension())) {
+            return groovy.eval(script.file, args);
+        } else {
+            return _runScript(script, args);
+        }
+    }
+
+    //TODO: add an output stream to use as arg?
+    protected Object _runScript(ScriptFile script, Bindings args) throws Exception {
         if (args == null) {
             args = new SimpleBindings();
         }
         String ext = script.getExtension();
-// TODO: add debug mode
-//        if ("groovy".equals(ext)) {
-//            return new GroovyShell(new Binding(args)).evaluate(script.getFile());
-//        }
         // check for a script engine
         ScriptEngine engine = scriptMgr.getEngineByExtension(ext);
         if (engine != null) {
@@ -120,28 +154,22 @@ public class Scripting {
             } catch (IOException e) {
                 throw new ScriptException(e);
             }
-        } else { // no script engine - may be a resource file - copy the file to the output stream
-            FileInputStream in = new FileInputStream(script.getFile());
-            try {
-                FileUtils.copy(in, context.getResponse().getOutputStream());
-            } finally {
-                in.close();
-            }
         }
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    public static Map convertPythonMap(PyDictionary dict) {
-        PyList list = dict.items();
-        Map<String, PyObject> table = new HashMap();
-        for(int i = list.__len__(); i-- >  0; ) {
-            PyTuple tup = (PyTuple) list.__getitem__(i);
-            String key = tup.__getitem__(0).toString();
-            table.put(key, tup.__getitem__(1));
-        }
-        return table;
-    }
+//TODO move this in a python scripting adapter
+//    @SuppressWarnings("unchecked")
+//    public static Map convertPythonMap(PyDictionary dict) {
+//        PyList list = dict.items();
+//        Map<String, PyObject> table = new HashMap();
+//        for(int i = list.__len__(); i-- >  0; ) {
+//            PyTuple tup = (PyTuple) list.__getitem__(i);
+//            String key = tup.__getitem__(0).toString();
+//            table.put(key, tup.__getitem__(1));
+//        }
+//        return table;
+//    }
 
     public CompiledScript getCompiledScript(ScriptEngine engine, File file) throws ScriptException {
         Entry entry = cache.get(file);

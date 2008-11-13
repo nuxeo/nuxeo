@@ -21,12 +21,11 @@ package org.nuxeo.ecm.webengine.security;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -96,7 +95,7 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
         return sb.toString();
     }
 
-    public static interface Visitor {
+    public interface Visitor {
         Object createParameter(Token token);
         Object createOperation(Token token, Object lparam, Object rparam);
     }
@@ -160,11 +159,11 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
                 stack.pop(); // remove LPARA from stack
                 break;
             default:
-                if (token.equals("OR")) {
+                if ("OR".equals(token)) {
                     pushOp(new Token(OR, "OR"), stack, result);
-                } else if (token.equals("AND") ){
+                } else if ("AND".equals(token)){
                     pushOp(new Token(AND, "AND"), stack, result);
-                } else if (token.equals("NOT")) {
+                } else if ("NOT".equals(token)) {
                     pushOp(new Token(NOT, "NOT"), stack, result);
                 } else {
                     result.add(new Token(ARG, token));

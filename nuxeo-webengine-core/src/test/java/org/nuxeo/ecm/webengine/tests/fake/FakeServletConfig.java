@@ -19,13 +19,12 @@
 
 package org.nuxeo.ecm.webengine.tests.fake;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

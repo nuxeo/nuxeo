@@ -5,7 +5,10 @@
   </zipEntrySet>
   
   <zipEntrySet id="jdbc-template">
-    <file>${basedir}/target/jdbc-ra.zip</file>
+    <file>${basedir}/target/dependency/jdbc-ra-${gf3.version}.zip</file>
+      <excludes>
+        <exclude>/META-INF/**</exclude>
+      </excludes>
   </zipEntrySet>
 
   <fileSet id="template">
@@ -33,6 +36,11 @@
     <outputFile>/</outputFile>
   </assemble>
 
+  <!-- remove the META-INF dir from the root dir: this is copied from jdbc-template -->
+  <assemble>
+    <file>/META-INF</file>
+    <delete>true</delete>
+  </assemble>
   
   <assemble>
     <set>third-party-libs</set>

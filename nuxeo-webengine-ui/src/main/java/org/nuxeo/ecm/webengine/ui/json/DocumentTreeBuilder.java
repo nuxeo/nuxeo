@@ -26,7 +26,6 @@ import net.sf.json.JSONObject;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webengine.ui.json.JQueryTreeBuilder;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -34,7 +33,7 @@ import org.nuxeo.ecm.webengine.ui.json.JQueryTreeBuilder;
  */
 public class DocumentTreeBuilder extends JQueryTreeBuilder<DocumentModel> {
 
-    protected CoreSession session;
+    protected final CoreSession session;
 
     public DocumentTreeBuilder(CoreSession session) {
         this.session = session;
@@ -68,4 +67,5 @@ public class DocumentTreeBuilder extends JQueryTreeBuilder<DocumentModel> {
         // TODO Auto-generated method stub
         return null;
     }
+
 }

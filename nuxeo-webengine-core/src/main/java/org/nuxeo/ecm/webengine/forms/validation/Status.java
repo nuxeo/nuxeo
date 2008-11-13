@@ -31,7 +31,7 @@ import org.nuxeo.ecm.webengine.forms.FormInstance;
  */
 public interface Status {
 
-    public final static Status OK = new Status() {
+    Status OK = new Status() {
         public boolean isOk() {
             return true;
         }
@@ -65,7 +65,7 @@ public interface Status {
         }
     };
 
-    public final static ErrorStatus KO = new ErrorStatus(null) {
+    ErrorStatus KO = new ErrorStatus(null) {
     };
 
     boolean isOk();

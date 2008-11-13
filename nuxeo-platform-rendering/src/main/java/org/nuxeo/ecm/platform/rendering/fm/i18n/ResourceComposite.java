@@ -22,34 +22,36 @@ package org.nuxeo.ecm.platform.rendering.fm.i18n;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
  * A resource bundle for Nuxeo Rendering that holds a map of locals, allows
  * developers to change it from its api (setLocale) and that will delegate its
- * method to the correct resourcebundle according to the local chosen.
- * 
+ * method to the correct resource bundle according to the local chosen.
+ *
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
- * 
+ *
  */
 public class ResourceComposite extends ResourceBundle {
-    HashMap<Locale, ResourceBundle> map = new HashMap<Locale, ResourceBundle>();
 
-    ResourceBundle current = null;
+    final Map<Locale, ResourceBundle> map = new HashMap<Locale, ResourceBundle>();
 
-    ClassLoader cl;
+    final ClassLoader cl;
+
+    ResourceBundle current;
 
     public ResourceComposite() {
-        this.cl = null;
+        cl = null;
     }
 
     public ResourceComposite(ClassLoader cl) {
         this.cl = cl;
     }
-    
+
     /**
-     * Set the local to be used.
-     * 
+     * Set the locale to be used.
+     *
      * @param locale
      */
     public void setLocale(Locale locale) {
@@ -81,9 +83,9 @@ public class ResourceComposite extends ResourceBundle {
     }
 
     /**
-     * Delegate getString using the resource bundle corresponding to the local
+     * Delegates getString using the resource bundle corresponding to the local
      * (create one if it doesn't exist).
-     * 
+     *
      * @param key
      * @param locale
      * @return
@@ -98,7 +100,7 @@ public class ResourceComposite extends ResourceBundle {
             }
             map.put(locale, bundle);
         }
-        return (String) bundle.getString(key);
+        return bundle.getString(key);
     }
 
 }

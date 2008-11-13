@@ -35,4 +35,7 @@ public class WikiFilterDescriptor {
     @XNode("@replacement")
     public String replacement;
 
+    @XNode("@class")
+    public String clazz;
+
 }

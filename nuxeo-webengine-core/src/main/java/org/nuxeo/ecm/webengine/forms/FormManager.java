@@ -30,7 +30,7 @@ import org.nuxeo.ecm.webengine.forms.validation.Form;
  */
 public class FormManager {
 
-    protected Map<String, Form> forms;
+    protected final Map<String, Form> forms;
 
 
     public FormManager() {

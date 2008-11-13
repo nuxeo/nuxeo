@@ -215,7 +215,7 @@
 
     <!-- ======== Nuxeo Directory Data Source ========= -->
     <New id="nxsqldirectory" class="org.mortbay.jetty.plus.naming.Resource">
-      <Arg>java:/nxsqldirectory</Arg>
+      <Arg>jdbc/nxsqldirectory</Arg>
       <Arg>
         <New class="org.apache.derby.jdbc.EmbeddedDataSource">
           <Set name="databaseName">nxsqldirectory</Set>
@@ -227,7 +227,7 @@
 
     <!-- ======== Nuxeo Relations Data Source ========= -->
     <New id="nxrelations" class="org.mortbay.jetty.plus.naming.Resource">
-      <Arg>java:/nxrelations-default-jena</Arg>
+      <Arg>jdbc/nxrelations-default-jena</Arg>
       <Arg>
         <New class="org.apache.derby.jdbc.EmbeddedDataSource">
           <Set name="databaseName">nxrelations</Set>
@@ -239,7 +239,7 @@
     
     <!-- ======== Nuxeo Comments Data Source ========= -->
     <New id="nxcomments" class="org.mortbay.jetty.plus.naming.Resource">
-      <Arg>java:/comment-relations</Arg>
+      <Arg>jdbc/comment-relations</Arg>
       <Arg>
         <New class="org.apache.derby.jdbc.EmbeddedDataSource">
           <Set name="databaseName">nxcomments</Set>

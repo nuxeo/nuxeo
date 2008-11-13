@@ -20,8 +20,7 @@
 package org.nuxeo.ecm.webengine.forms.validation;
 
 import java.util.Collection;
-
-import edu.emory.mathcs.backport.java.util.Collections;
+import java.util.Collections;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -31,7 +30,7 @@ public class ValidationException extends Exception {
 
     private static final long serialVersionUID = 531665422854150881L;
 
-    protected Collection<ErrorStatus> errors;
+    protected final Collection<ErrorStatus> errors;
 
     public ValidationException(Collection<ErrorStatus> errors) {
         this.errors = errors;
@@ -39,15 +38,11 @@ public class ValidationException extends Exception {
 
     @SuppressWarnings("unchecked")
     public ValidationException(ErrorStatus error) {
-        this.errors = Collections.singleton(error);
+        errors = Collections.singleton(error);
     }
 
-    /**
-     * @return the errors.
-     */
     public Collection<ErrorStatus> getErrors() {
         return errors;
     }
-
 
 }

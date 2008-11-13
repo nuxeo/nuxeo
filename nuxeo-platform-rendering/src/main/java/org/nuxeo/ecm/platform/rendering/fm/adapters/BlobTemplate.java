@@ -103,7 +103,7 @@ public class BlobTemplate extends PropertyWrapper implements TemplateHashModelEx
                     return new SimpleScalar(blob.getDigest());
                 }
             }
-            return TemplateModel.NOTHING;
+            return NOTHING;
         } catch (IOException e) {
             throw new TemplateModelException(e);
         }

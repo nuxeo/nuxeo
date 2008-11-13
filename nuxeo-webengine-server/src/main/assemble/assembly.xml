@@ -20,12 +20,15 @@
     </includes>
     <excludes>
       <artifact name="nuxeo-runtime-launcher"/>
+      <artifact name="nuxeo-webengine-apt"/>
     </excludes>
   </artifactSet>
 
   <artifactSet id="third-party-libs">
     <import>**</import>
     <includes>
+      <artifact group="javax.script" name="script-api" />
+      <artifact group="org.codehaus.groovy" name="groovy-all" />
       <artifact name="osgi-core" />
       <artifact name="commons-collections" />
       <artifact name="commons-io" />
@@ -51,6 +54,7 @@
       <artifact group="org.hibernate" />
       <artifact name="hibernate-annotations" />
       <artifact group="org.hibernate" name="hibernate"/>
+      <artifact group="org.resteasy" />
     </includes>
     <excludes>
       <artifact group="org.mortbay.jetty" name="servlet-api-2.5" />

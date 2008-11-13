@@ -31,7 +31,7 @@ public class Not implements Guard {
     protected final Guard perm;
 
     public Not(Guard guard) {
-        this.perm = guard;
+        perm = guard;
     }
 
     public boolean check(Adaptable context) {

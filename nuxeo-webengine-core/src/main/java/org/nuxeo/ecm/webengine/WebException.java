@@ -19,48 +19,133 @@
 
 package org.nuxeo.ecm.webengine;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
-import org.nuxeo.ecm.webengine.exceptions.WebDocumentException;
-import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
-import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
-import org.nuxeo.ecm.webengine.servlet.WebConst;
+import org.nuxeo.ecm.webengine.model.ModuleResource;
+import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.model.exceptions.WebDocumentException;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
+import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 
-public class WebException extends Exception {
-
-    public static final String ID = "generic";
+public class WebException extends WebApplicationException {
 
     private static final long serialVersionUID = 176876876786L;
+    protected String message;
+    protected boolean byPassAppResponse = false;
 
-    private int returnCode = WebConst.SC_INTERNAL_SERVER_ERROR;
+    public WebException() {
+    }
 
+    public WebException(Response response) {
+        super(response);
+    }
+
+    public WebException(int status) {
+        super(status);
+    }
+
+    public WebException(Response.Status status) {
+        super(status);
+    }
+
+    public WebException(Throwable cause, Response response) {
+        super(cause, response);
+        byPassAppResponse = true;
+    }
+
+    public WebException(Throwable cause, Response.Status status) {
+        super(cause, status);
+    }
+
+    public WebException(Throwable cause, int status) {
+        super(cause, status);
+    }
+
+    public WebException(Throwable cause) {
+        super(cause);
+    }
 
     public WebException(String message) {
-        super(message);
+        this.message = message;
     }
 
     public WebException(String message, int code) {
-        super(message);
-        returnCode = code;
+        super(code);
+        this.message = message;
     }
 
     public WebException(String message, Throwable t) {
-        super(message, t);
+        super(t);
+        this.message = message;
     }
 
     public WebException(String message, Throwable t, int code) {
-        super(message, t);
-        returnCode = code;
+        super(t, code);
+        this.message = message;
     }
 
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    /**
+     * for compatibiliy only
+     * @return
+     */
+    @Deprecated
     public int getReturnCode() {
-        return returnCode;
+        return super.getResponse().getStatus();
     }
 
-    public String getId() {
-        return ID;
+    @Override
+    public Response getResponse() {
+        Response response = super.getResponse();
+        if (!byPassAppResponse) {
+            WebContext ctx = WebEngine.getActiveContext();
+            if (ctx != null) {
+                ModuleResource rs = ctx.getModuleInstance();
+                if (rs == null) {
+                    // no context print error on screen
+                    return toResponse(this);
+                } else {
+                    Object result = rs.handleError(this);
+                    if (result instanceof Response) {
+                        response  = (Response)result;
+                    } else if (result != null) {
+                        response = Response.fromResponse(response).entity(result).build();
+                    }
+                }
+            }
+        }
+        return response;
     }
 
+    public String getStackTraceString() {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        printStackTrace(pw);
+        pw.close();
+        return sw.toString();
+    }
+
+    public static String toString(Throwable t) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        t.printStackTrace(pw);
+        pw.close();
+        return sw.toString();
+    }
+
+    public static Response toResponse(Throwable t) {
+        return Response.status(500).entity(toString(t)).build();
+    }
 
     public static WebException wrap(Throwable e) {
         return wrap(null, e);
@@ -69,7 +154,8 @@ public class WebException extends Exception {
     @SuppressWarnings({"ThrowableInstanceNeverThrown"})
     public static WebException wrap(String message, Throwable e) {
         //TODO add EJBAccessException dependency
-        if (e instanceof DocumentSecurityException || "javax.ejb.EJBAccessException".equals(e.getClass().getName())) {
+        if (e instanceof DocumentSecurityException
+                || "javax.ejb.EJBAccessException".equals(e.getClass().getName())) {
             return new WebSecurityException(message, e);
         } else if (e instanceof WebException) {
             return (WebException)e;

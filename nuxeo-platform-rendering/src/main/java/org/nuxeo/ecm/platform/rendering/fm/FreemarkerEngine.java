@@ -44,7 +44,7 @@ import freemarker.template.Template;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class FreemarkerEngine implements RenderingEngine {
 
@@ -69,7 +69,7 @@ public class FreemarkerEngine implements RenderingEngine {
     }
 
     public FreemarkerEngine(Configuration cfg, ResourceLocator locator) {
-        this.wrapper = new DocumentObjectWrapper(this);
+        wrapper = new DocumentObjectWrapper(this);
         this.cfg = cfg == null ? new Configuration() : cfg;
         this.cfg.setWhitespaceStripping(true);
         this.cfg.setLocalizedLookup(false);
@@ -98,7 +98,7 @@ public class FreemarkerEngine implements RenderingEngine {
     public void setMessageBundle(ResourceBundle messages) {
         this.messages.setBundle(messages);
         if (messages instanceof ResourceComposite) {
-            this.localeMessages.setBundle((ResourceComposite) messages);
+            localeMessages.setBundle((ResourceComposite) messages);
         }
     }
 
@@ -107,12 +107,12 @@ public class FreemarkerEngine implements RenderingEngine {
     }
 
     public void setResourceLocator(ResourceLocator locator) {
-        this.loader = new ResourceTemplateLoader(locator);
-        this.cfg.setTemplateLoader(loader);
+        loader = new ResourceTemplateLoader(locator);
+        cfg.setTemplateLoader(loader);
     }
 
     public ResourceLocator getResourceLocator() {
-        return this.loader.getLocator();
+        return loader.getLocator();
     }
 
     public ResourceTemplateLoader getLoader() {
@@ -143,7 +143,7 @@ public class FreemarkerEngine implements RenderingEngine {
              * with freemarker since freemarker removes the leading / from the
              * absolute path and the file cannot be resolved anymore In the case
              * of URI like path freemarker is not modifying the path <p>
-             * 
+             *
              * @see TemplateCache#normalizeName()
              * @see ResourceTemplateLoader#findTemplateSource()
              */

@@ -26,6 +26,8 @@ package org.nuxeo.ecm.webengine.session;
  */
 public abstract class AbstractComponent implements Component {
 
+    private static final long serialVersionUID = 3472450841328363350L;
+
     protected String name;
     private boolean isLive;
 
@@ -39,12 +41,12 @@ public abstract class AbstractComponent implements Component {
 
     public void initialize(UserSession session, String name)
             throws SessionException {
-        if (this.isLive) {
+        if (isLive) {
             throw new InvalidStateException(this, "initialize");
         }
         this.name = name;
         doInitialize(session, name);
-        this.isLive = true;
+        isLive = true;
     }
 
     public void destroy(UserSession session) throws SessionException {
@@ -52,10 +54,9 @@ public abstract class AbstractComponent implements Component {
             throw new InvalidStateException(this, "destroy");
         }
         doDestroy(session);
-        this.name = null;
-        this.isLive = false;
+        name = null;
+        isLive = false;
     }
-
 
     public void doInitialize(UserSession session, String name) throws SessionException {
         // do nothing by default

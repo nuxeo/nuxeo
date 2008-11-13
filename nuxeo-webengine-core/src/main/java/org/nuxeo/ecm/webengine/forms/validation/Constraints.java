@@ -25,6 +25,7 @@ import java.util.NoSuchElementException;
 
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.forms.validation.constraints.And;
+import org.nuxeo.ecm.webengine.forms.validation.constraints.Enumeration;
 import org.nuxeo.ecm.webengine.forms.validation.constraints.Eq;
 import org.nuxeo.ecm.webengine.forms.validation.constraints.Gt;
 import org.nuxeo.ecm.webengine.forms.validation.constraints.GtEq;
@@ -41,14 +42,16 @@ import org.nuxeo.ecm.webengine.forms.validation.constraints.Or;
 @XObject("constraints")
 public class Constraints {
 
-    protected static Map<String,Class<? extends Constraint>>factories = new HashMap<String, Class<? extends Constraint>>();
+    protected static final Map<String,Class<? extends Constraint>> factories
+            = new HashMap<String, Class<? extends Constraint>>();
+
     static {
         factories.put("eq", Eq.class);
         factories.put("lt", Lt.class);
         factories.put("gt", Gt.class);
         factories.put("lteq", LtEq.class);
         factories.put("gteq", GtEq.class);
-        factories.put("enum", org.nuxeo.ecm.webengine.forms.validation.constraints.Enumeration.class);
+        factories.put("enum", Enumeration.class);
         factories.put("like", Like.class);
         factories.put("not", Not.class);
         factories.put("or", Or.class);

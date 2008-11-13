@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.admin.deployment">
+
+	<extension
+		target="org.nuxeo.ecm.webengine.WebEngineComponent"
+		point="install">
+
+	    <install module="admin">
+	      <copy path="web/admin" target="/" />
+	    </install>
+
+	</extension>
+
+</component>

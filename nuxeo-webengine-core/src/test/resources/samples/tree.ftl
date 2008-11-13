@@ -3,9 +3,9 @@
 <@extends src="base.ftl">
 
   <#macro mod_tree>
-    <link rel="stylesheet" href="/nuxeo/site/files/resources/script/jquery//treeview/jquery.treeview.css" type="text/css" media="screen" charset="utf-8">
-    <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery//treeview/jquery.treeview.js"></script>
-    <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery//treeview/jquery.treeview.async.js"></script> 
+    <link rel="stylesheet" href="${skinPath}/script/jquery/treeview/jquery.treeview.css" type="text/css" media="screen" charset="utf-8">
+    <script type="text/javascript" src="${skinPath}/script/jquery/treeview/jquery.treeview.js"></script>
+    <script type="text/javascript" src="${skinPath}/script/jquery/treeview/jquery.treeview.async.js"></script>
   </#macro>
 
   <#macro tree id url="${appPath}/common/tree.groovy" root="/">

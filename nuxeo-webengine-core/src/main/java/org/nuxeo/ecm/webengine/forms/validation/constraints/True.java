@@ -30,7 +30,7 @@ import org.nuxeo.ecm.webengine.forms.validation.Status;
  */
 public class True extends AbstractConstraint {
 
-    public final static Constraint INSTANCE = new True();
+    public static final Constraint INSTANCE = new True();
 
     private True() {}
 

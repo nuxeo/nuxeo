@@ -86,11 +86,6 @@
       <artifactId>nuxeo-runtime-osgi</artifactId>
     </dependency>
 
-    <!-- XXX this should be removed and script support added only if needed -->
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-scripting</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
@@ -125,6 +120,10 @@
     <dependency>
       <groupId>jline</groupId>
       <artifactId>jline</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
@@ -193,11 +192,30 @@
       <groupId>concurrent</groupId>
       <artifactId>concurrent</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.script</groupId>
+      <artifactId>script-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+    </dependency>
     
   </dependencies>
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>javax.script</groupId>
+        <artifactId>script-api</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-all</artifactId>
+        <version>1.5.7</version>
+      </dependency>
+
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-shell</artifactId>
@@ -209,11 +227,6 @@
         <version>${nuxeo.shell.version}</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-scripting</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-launcher</artifactId>
@@ -274,7 +287,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-nuxeo-plugin</artifactId>
-          <version>1.0.7-SNAPSHOT</version>
+          <version>1.0.7</version>
         </plugin>
       </plugins>
     </pluginManagement>

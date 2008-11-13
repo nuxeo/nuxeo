@@ -34,10 +34,10 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Adaptable;
-import org.nuxeo.runtime.scripting.ScriptingService;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -107,14 +107,16 @@ public class ScriptGuard implements Guard {
     }
 
     private CompiledScript compile(String type, String content) throws ScriptException {
-        engine = Framework.getLocalService(ScriptingService.class)
-            .getScriptEngineManager().getEngineByName(type);
+        if (engine == null) {
+            engine = Framework.getLocalService(WebEngine.class)
+                    .getScripting().getEngineManager().getEngineByName(type);
+        }
         if (engine != null) {
-             if (engine instanceof Compilable) {
-                 return ((Compilable) engine).compile(content);
-             } else {
-                 return null; // script is not compilable
-             }
+            if (engine instanceof Compilable) {
+                return ((Compilable) engine).compile(content);
+            } else {
+                return null; // script is not compilable
+            }
         } else {
             throw new ScriptException(
                     "No suitable script engine found for the file " + type);

@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Platform Site Add On
+Bundle-SymbolicName: org.nuxeo.ecm.webengine.resteasy.adapter;singleton:=true
+Require-Bundle: org.nuxeo.ecm.webengine.core,
+ javax.servlet
+Nuxeo-Require: org.nuxeo.ecm.webengine.core
+Nuxeo-Component: OSGI-INF/resource-container.xml

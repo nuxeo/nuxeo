@@ -22,30 +22,21 @@ package org.nuxeo.ecm.webengine.forms;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webengine.WebException;
 
 /**
- * Form instanceto be used in test units
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Form instance to be used in unit tests.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TestFormInstance implements FormInstance {
 
-    protected Map<String, String[]> params;
-    protected Map<String, Blob[]> blobs;
-
-
-    public TestFormInstance() {
-        this (null, null);
-    }
-
-    public TestFormInstance(Map<String, String[]> params) {
-        this (params, null);
-    }
+    protected final Map<String, String[]> params;
+    protected final Map<String, Blob[]> blobs;
 
     public TestFormInstance(Map<String, String[]> params, Map<String, Blob[]> blobs) {
         if (params == null) {
@@ -58,6 +49,14 @@ public class TestFormInstance implements FormInstance {
         } else {
             this.blobs = blobs;
         }
+    }
+
+    public TestFormInstance() {
+        this(null, null);
+    }
+
+    public TestFormInstance(Map<String, String[]> params) {
+        this(params, null);
     }
 
     public void setField(String key, String ... values) {
@@ -81,7 +80,7 @@ public class TestFormInstance implements FormInstance {
     }
 
     public void addField(String key, Blob ... values) {
-        Blob[] ar = this.blobs.get(key);
+        Blob[] ar = blobs.get(key);
         if (blobs == null) {
             blobs.put(key, values);
         } else {
@@ -92,8 +91,8 @@ public class TestFormInstance implements FormInstance {
         }
     }
 
-    public Collection<String> getKeys() throws WebException {
-        ArrayList<String> result = new ArrayList<String>();
+    public Collection<String> getKeys() {
+        List<String> result = new ArrayList<String>();
         result.addAll(params.keySet());
         result.addAll(blobs.keySet());
         return result;
@@ -102,11 +101,11 @@ public class TestFormInstance implements FormInstance {
     /**
      * TODO XXX implement it
      */
-    public void fillDocument(DocumentModel doc) throws WebException {
+    public void fillDocument(DocumentModel doc) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public Object[] get(String key) throws WebException {
+    public Object[] get(String key) {
         Object[] val =  params.get(key);
         if (val == null) {
             val = blobs.get(key);
@@ -114,28 +113,28 @@ public class TestFormInstance implements FormInstance {
         return val;
     }
 
-    public Blob getBlob(String key) throws WebException {
+    public Blob getBlob(String key) {
         Blob[] blobs = this.blobs.get(key);
         return blobs == null ? null : blobs[0];
     }
 
-    public Blob[] getBlobs(String key) throws WebException {
+    public Blob[] getBlobs(String key) {
         return blobs.get(key);
     }
 
-    public Map<String, Blob[]> getBlobFields() throws WebException {
+    public Map<String, Blob[]> getBlobFields() {
         return blobs;
     }
 
-    public Map<String, String[]> getFormFields() throws WebException {
+    public Map<String, String[]> getFormFields() {
         return params;
     }
 
-    public String[] getList(String key) throws WebException {
+    public String[] getList(String key) {
         return params.get(key);
     }
 
-    public String getString(String key) throws WebException {
+    public String getString(String key) {
         String[] values = params.get(key);
         return values == null ? null : values[0];
     }

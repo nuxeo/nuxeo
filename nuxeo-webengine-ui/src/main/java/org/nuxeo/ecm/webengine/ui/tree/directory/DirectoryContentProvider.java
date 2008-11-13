@@ -37,7 +37,7 @@ public class DirectoryContentProvider implements ContentProvider {
 
     private static final long serialVersionUID = 1L;
 
-    protected Session session;
+    protected final Session session;
 
     public DirectoryContentProvider(Session session) {
         this.session = session;
@@ -63,9 +63,9 @@ public class DirectoryContentProvider implements ContentProvider {
 
     public Object[] getChildren(Object obj) {
         try {
-            if (obj == null || (obj instanceof DocumentModel)) {
+            if (obj == null || obj instanceof DocumentModel) {
                 DocumentModel parent = (DocumentModel)obj;
-                HashMap<String, Object> args = new HashMap<String, Object>();
+                Map<String, Object> args = new HashMap<String, Object>();
                 createQuery(parent, args);
                 DocumentModelList list = session.query(args);
                 return list.toArray(new DocumentModel[list.size()]);

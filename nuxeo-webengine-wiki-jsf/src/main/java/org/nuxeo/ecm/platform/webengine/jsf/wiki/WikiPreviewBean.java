@@ -57,7 +57,7 @@ public class WikiPreviewBean {
             WikiParserException {
         DocumentModel doc = navigationContext.getCurrentDocument();
 
-        if ((doc == null) || (!"WikiPage".equals(doc.getType()))) {
+        if (doc == null || !"WikiPage".equals(doc.getType())) {
             return "";
         } else {
             return getSimplePreview(doc);
@@ -67,7 +67,7 @@ public class WikiPreviewBean {
     public String getWikiPagePreview() throws RenderingException {
         DocumentModel doc = navigationContext.getCurrentDocument();
 
-        if ((doc == null) || (!"WikiPage".equals(doc.getType()))) {
+        if (doc == null || !"WikiPage".equals(doc.getType())) {
             return "";
         } else {
             return getRenderPreview(doc);

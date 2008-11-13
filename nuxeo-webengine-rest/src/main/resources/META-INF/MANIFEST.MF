@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo Webengine Atom
-Bundle-SymbolicName: org.nuxeo.ecm.webengine.rest;singleton:=true
-Require-Bundle: org.nuxeo.ecm.webengine,
- org.nuxeo.ecm.core.api
-Nuxeo-Require: org.nuxeo.ecm.webengine,
- org.nuxeo.ecm.core.api
-Nuxeo-Component: OSGI-INF/webengine2-framework.xml

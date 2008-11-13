@@ -41,7 +41,7 @@ public class Or implements Guard {
         if (guards == null) {
             throw new IllegalArgumentException("Argument cannot be null");
         }
-        this.perms = guards;
+        perms = guards;
     }
 
     public boolean check(Adaptable context) {
