@@ -28,7 +28,7 @@ public class ReadOnlyAccessException extends AccessException {
     private static final long serialVersionUID = 1L;
 
     public ReadOnlyAccessException(String message) {
-        super (message);
+        super(message);
     }
 
 }

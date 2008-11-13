@@ -44,7 +44,6 @@ public class ArrayFragment extends CollectionFragment {
      * Constructs an empty {@link ArrayFragment} of the given table with the
      * given id (which may be a temporary one).
      *
-     * @param tableName the table name
      * @param id the id
      * @param state the initial state for the fragment
      * @param context the persistence context to which the row is tied, or

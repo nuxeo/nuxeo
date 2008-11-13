@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 public class TestDocumentModel extends TestCase {
 
     @SuppressWarnings({"ObjectEqualsNull", "SimplifiableJUnitAssertion"})
-    public void testDocumentModelImpl() throws Exception {
+    public void testDocumentModelImpl() {
         DocumentModel model = new DocumentModelImpl("my type");
 
         assertEquals("my type", model.getType());

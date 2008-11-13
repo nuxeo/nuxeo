@@ -41,8 +41,8 @@ public class SQLBackendHelper {
 
     protected static enum Database {
         DERBY, //
-        POSTGRESQL;
-    };
+        POSTGRESQL
+    }
 
     /**
      * Change this to use another SQL database for tests.
@@ -156,8 +156,7 @@ public class SQLBackendHelper {
         Connection connection = DriverManager.getConnection(url, PG_SUPER_USER,
                 PG_SUPER_PASSWORD);
         Statement st = connection.createStatement();
-        String sql;
-        sql = String.format("DROP DATABASE IF EXISTS \"%s\"", PG_DATABASE);
+        String sql = String.format("DROP DATABASE IF EXISTS \"%s\"", PG_DATABASE);
         log.debug(sql);
         st.execute(sql);
         sql = String.format("CREATE DATABASE \"%s\" OWNER \"%s\"", PG_DATABASE,

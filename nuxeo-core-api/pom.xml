@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>1.4.4-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-core-api</artifactId>
@@ -35,11 +35,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>com.sun.xml</groupId>
       <artifactId>xsom</artifactId>
       <version>20060306</version>
@@ -51,21 +46,5 @@
       <version>1.0</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
-
-  <!--
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>**/TestPropertyModel*</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-   -->
 </project>
