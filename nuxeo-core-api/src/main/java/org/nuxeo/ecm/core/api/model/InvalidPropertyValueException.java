@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.core.api.model;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -28,11 +27,11 @@ public class InvalidPropertyValueException extends PropertyException {
     private static final long serialVersionUID = -7766425583638251741L;
 
     public InvalidPropertyValueException(String message) {
-        super (message);
+        super(message);
     }
 
     public InvalidPropertyValueException(String message, Throwable cause) {
-        super (message, cause);
+        super(message, cause);
     }
 
 }

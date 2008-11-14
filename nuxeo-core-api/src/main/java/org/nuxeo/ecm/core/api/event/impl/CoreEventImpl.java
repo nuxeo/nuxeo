@@ -93,11 +93,11 @@ public class CoreEventImpl implements CoreEvent {
     }
 
     public String getCategory() {
-        return (String) this.info.get(CATEGORY_ATTRIBUTE);
+        return (String) info.get(CATEGORY_ATTRIBUTE);
     }
 
     public String getComment() {
-        return (String) this.info.get(COMMENT_ATTRIBUTE);
+        return (String) info.get(COMMENT_ATTRIBUTE);
     }
 
     public Date getDate() {
@@ -127,9 +127,9 @@ public class CoreEventImpl implements CoreEvent {
             buf.append(principal.getName());
         }
         buf.append(", comment: ");
-        buf.append(this.info.get(COMMENT_ATTRIBUTE));
+        buf.append(info.get(COMMENT_ATTRIBUTE));
         buf.append(", category: ");
-        buf.append(this.info.get(CATEGORY_ATTRIBUTE));
+        buf.append(info.get(CATEGORY_ATTRIBUTE));
         buf.append('}');
 
         return buf.toString();

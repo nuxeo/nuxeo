@@ -130,13 +130,29 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
     }
 
     public void initialize(Document doc) throws LifeCycleException {
+        initialize(doc, null);
+    }
+
+    public void initialize(Document doc, String initialStateName)
+            throws LifeCycleException {
         LifeCycle documentLifeCycle = getLifeCycleFor(doc);
         if (documentLifeCycle == null) {
             return;
         }
 
-        // Set current life cycle state
-        String initialStateName = documentLifeCycle.getInitialStateName();
+        // set initial life cycle state
+        if (initialStateName == null) {
+            initialStateName = documentLifeCycle.getInitialStateName();
+        } else {
+            // check it's a valid initial state
+            if (!documentLifeCycle.getInitialStateNames().contains(
+                    initialStateName)) {
+                throw new LifeCycleException(
+                        String.format(
+                                "State '%s' is not a valid initial state for lifecycle %s",
+                                initialStateName, documentLifeCycle.getName()));
+            }
+        }
         try {
             getLifeCycleManagerFor(doc).setState(doc, initialStateName);
         } catch (Exception e) {
@@ -156,14 +172,15 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
             throws LifeCycleException {
         String currentStateName = getCurrentLifeCycleState(doc);
         LifeCycle lifeCycle = getLifeCycleFor(doc);
-        if (lifeCycle.getAllowedStateTransitionsFrom(currentStateName)
-                .contains(transitionName)) {
+        if (lifeCycle.getAllowedStateTransitionsFrom(currentStateName).contains(
+                transitionName)) {
             String destinationStateName = lifeCycle.getTransitionByName(
                     transitionName).getDestinationStateName();
             setCurrentLifeCycleState(doc, destinationStateName);
         } else {
             throw new LifeCycleException("Not allowed to follow transition <"
-                    + transitionName + "> from state <" + currentStateName + '>');
+                    + transitionName + "> from state <" + currentStateName
+                    + '>');
         }
     }
 
@@ -210,8 +227,8 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
             if (extension.getExtensionPoint().equals("types")) {
                 for (Object mapping : contributions) {
                     LifeCycleTypesDescriptor desc = (LifeCycleTypesDescriptor) mapping;
-                    log.info("Registering lifecycle types mapping: " +
-                            desc.getTypesMapping());
+                    log.info("Registering lifecycle types mapping: "
+                            + desc.getTypesMapping());
                     typesMapping.putAll(desc.getTypesMapping());
                 }
             }
@@ -227,8 +244,8 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
             lifeCycleManager.setState(doc, stateName);
         } else {
             throw new LifeCycleException(
-                    "Not lifecycle manager found for document type: " +
-                            doc.getType());
+                    "Not lifecycle manager found for document type: "
+                            + doc.getType());
         }
     }
 
@@ -253,8 +270,8 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
             lifeCycleManager.setPolicy(doc, policy);
         } else {
             throw new LifeCycleException(
-                    "Not lifecycle manager found for document type: " +
-                            doc.getType());
+                    "Not lifecycle manager found for document type: "
+                            + doc.getType());
         }
     }
 
@@ -270,15 +287,16 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
             if (extension.getExtensionPoint().equals("lifecycle")) {
                 for (Object lifeCycle : contributions) {
                     LifeCycleDescriptor lifeCycleDescriptor = (LifeCycleDescriptor) lifeCycle;
-                    log.debug("Unregistering lifecycle: " +
-                            lifeCycleDescriptor.getName());
+                    log.debug("Unregistering lifecycle: "
+                            + lifeCycleDescriptor.getName());
                     lifeCycles.remove(lifeCycleDescriptor.getName());
                 }
             }
             if (extension.getExtensionPoint().equals("lifecyclemanager")) {
                 for (Object contribution : contributions) {
                     LifeCycleManagerDescriptor desc = (LifeCycleManagerDescriptor) contribution;
-                    log.debug("Unregister lifecycle manager: " + desc.getClassName());
+                    log.debug("Unregister lifecycle manager: "
+                            + desc.getClassName());
                     lifeCycleManager = null;
                 }
 

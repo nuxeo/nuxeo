@@ -110,7 +110,7 @@ public abstract class Fragment implements Serializable {
          * The fragment has been invalidated by a deletion. It lives in the
          * context's pristine map.
          */
-        INVALIDATED_DELETED;
+        INVALIDATED_DELETED
     }
 
     private transient State state; // default is DETACHED

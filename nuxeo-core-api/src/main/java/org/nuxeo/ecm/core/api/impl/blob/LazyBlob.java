@@ -201,11 +201,7 @@ public class LazyBlob extends DefaultStreamBlob implements Serializable {
 
         // Close the session because it means we opened a new one.
         if (sid == null) {
-            try {
-                CoreInstance.getInstance().close(client);
-            } catch (ClientException ce) {
-                throw new IOException(ce.getMessage());
-            }
+            CoreInstance.getInstance().close(client);
         }
 
         return in;
@@ -263,8 +259,7 @@ public class LazyBlob extends DefaultStreamBlob implements Serializable {
         if (!dataKeyEquals) {
             return false;
         }
-        boolean repoEquals = equalValues(repositoryName, other.repositoryName);
-        return repoEquals;
+        return equalValues(repositoryName, other.repositoryName);
     }
 
     @Override
