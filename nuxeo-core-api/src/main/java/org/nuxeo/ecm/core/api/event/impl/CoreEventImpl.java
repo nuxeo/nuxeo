@@ -66,15 +66,10 @@ public class CoreEventImpl implements CoreEvent {
             this.info = new HashMap<String, Object>(info);
         }
         this.principal = principal;
-        
-        // CB: NXP-2253 - Values passed as parameters will be put into the info
-        // map only if the map doesn't contain the corresponding keys.
-        if (!((Map) this.info).containsKey(COMMENT_ATTRIBUTE)) {
-            ((Map) this.info).put(COMMENT_ATTRIBUTE, comment);
-        }
-        if (!((Map) this.info).containsKey(CATEGORY_ATTRIBUTE)) {
-            ((Map) this.info).put(CATEGORY_ATTRIBUTE, category);
-        }
+     
+        // info map contains at least this 2 keys  
+        ((Map)this.info).put(COMMENT_ATTRIBUTE, comment);  
+        ((Map)this.info).put(CATEGORY_ATTRIBUTE, category);  
     }
 
     public boolean isComposite() {
