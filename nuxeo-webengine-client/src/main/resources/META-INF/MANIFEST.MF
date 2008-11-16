@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo WebEngine Client
+Bundle-SymbolicName: org.nuxeo.ecm.webengine.client;singleton:=true
+Main-Class: org.nuxeo.ecm.webengine.client.Main

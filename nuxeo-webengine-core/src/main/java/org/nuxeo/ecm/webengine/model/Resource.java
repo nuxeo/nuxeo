@@ -90,4 +90,6 @@ public interface Resource extends Adaptable {
      */
     AdapterResource getActiveAdapter();
 
+//    Response getEntries();
+    
 }

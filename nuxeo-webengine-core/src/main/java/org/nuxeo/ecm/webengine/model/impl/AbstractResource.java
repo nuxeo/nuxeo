@@ -21,9 +21,12 @@ package org.nuxeo.ecm.webengine.model.impl;
 
 import java.net.URI;
 import java.security.Principal;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.webengine.WebException;
@@ -31,6 +34,7 @@ import org.nuxeo.ecm.webengine.model.AdapterResource;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
+import org.nuxeo.ecm.webengine.model.ResourceEntry;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.View;
@@ -222,4 +226,14 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return type.getName()+" ["+path+"]";
     }
 
+//    @GET
+//    @Path("@entries")
+//    public Response doGetEntries() {
+//        return getEntries();
+//    }
+//    
+//    public Iterator<ResourceEntry> getEntries() {
+//        return Response.noContent().build();
+//    }
+    
 }

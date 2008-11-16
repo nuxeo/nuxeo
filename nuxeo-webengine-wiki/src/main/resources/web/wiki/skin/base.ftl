@@ -13,6 +13,8 @@
    <link rel="stylesheet" href="${skinPath}/script/jquery/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
    <link rel="stylesheet" type="text/css" href="${skinPath}/script/markitup/skins/markitup/style.css" />
    <link rel="stylesheet" type="text/css" href="${skinPath}/script/markitup/sets/wiki/style.css" />
+   <link rel="shortcut icon" href="${skinPath}/image/favicon.gif" />
+    
     
     <@block name="stylesheets" />
     <script type="text/javascript" src="${skinPath}/script/jquery/jquery.js"></script>
@@ -39,7 +41,7 @@
 
 <div id="wrap">
     <div id="header">
-      <div class="webEngineRoot"><a href="${appPath}"><img src="${skinPath}/image/dots.png" width="16" height="16" alt=""/></a></div>
+      <div class="webEngineRoot"><a href="${Root.path}"><img src="${skinPath}/image/dots.png" width="16" height="16" alt=""/></a></div>
        <@block name="header">
        <#if Document??>
         <div class="searchBox">
@@ -48,7 +50,7 @@
            <input type="hidden" name="orderBy" value="dc:modified">
          </form>
         </div>
-        <h1><a href="${Context.modulePath}">${Root.document.title}</a></h1>
+        <h1><a href="${Root.path}">${Root.document.title}</a></h1>
        </#if>
        </@block>
     </div>
