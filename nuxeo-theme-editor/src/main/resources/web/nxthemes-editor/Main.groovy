@@ -21,98 +21,106 @@ public class Main extends DefaultModule {
 
   @GET @POST
   @Path("perspectiveSelector")
-  public Object getPerspectiveSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderPerspectiveSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("perspectiveSelector.ftl").arg("path", path);
   }
 
   @GET @POST
   @Path("themeSelector")
-  public Object getThemeSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    String currentThemeName = getCurrentThemeName(path);
-    def pages = getPages(path);
-    def themes = getThemes(path);
-    return getTemplate("themeSelector.ftl").arg("current_theme_name", currentThemeName).arg("themes", themes).arg("pages", pages);
+  public Object renderThemeSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
+    return getTemplate("themeSelector.ftl").arg("current_theme_name", getCurrentThemeName(path)).arg("themes", getThemes(path)).arg("pages", getPages(path));
   }
 
   @GET @POST
   @Path("canvasModeSelector")
-  public Object getCanvasModeSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderCanvasModeSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("canvasModeSelector.ftl");
   }
 
   @GET @POST
   @Path("backToCanvas")
-  public Object getBackToCanvas(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderBackToCanvas(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("backToCanvas.ftl");
   }
 
   @GET @POST
   @Path("themeManager")
-  public Object getThemeManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderThemeManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("themeManager.ftl");
   }
 
   @GET @POST
   @Path("fragmentFactory")
-  public Object getFragmentFactory(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderFragmentFactory(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("fragmentFactory.ftl");
   }
 
   @GET @POST
   @Path("elementEditor")
-  public Object getElementEditor(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("elementEditor.ftl");
+  public Object renderElementEditor(@QueryParam("org.nuxeo.theme.application.path") String path) {
+    return getTemplate("elementEditor.ftl").arg("selected_element_id", getSelectedElementId());
   }
 
   @GET @POST
   @Path("elementDescription")
-  public Object getElementDescription(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderElementDescription(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("elementDescription.ftl");
   }
 
   @GET @POST
   @Path("elementPadding")
-  public Object getElementPadding(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderElementPadding(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("elementPadding.ftl");
   }
 
   @GET @POST
   @Path("elementProperties")
-  public Object getElementProperties(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderElementProperties(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("elementProperties.ftl");
   }
 
   @GET @POST
   @Path("elementStyle")
-  public Object getElementStyle(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderElementStyle(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("elementStyle.ftl");
   }
 
   @GET @POST
   @Path("elementWidget")
-  public Object getElementWidget(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderElementWidget(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("elementWidget.ftl");
   }
 
   @GET @POST
   @Path("elementVisibility")
-  public Object getElementVisibility(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderElementVisibility(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("elementVisibility.ftl");
   }
 
   @GET @POST
   @Path("stylePicker")
-  public Object getStylePicker(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderStylePicker(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("stylePicker.ftl");
   }
 
   @GET @POST
   @Path("styleProperties")
-  public Object getStyleProperties(@QueryParam("org.nuxeo.theme.application.path") String path) {
+  public Object renderStyleProperties(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("styleProperties.ftl");
   }
   
- 
+  @GET @POST
+  @Path("select_element")
+  public void selectElement(@QueryParam("id") String id) {
+    def ctx = WebEngine.getActiveContext();
+    SessionManager.setSelectedElementId(ctx, id);
+  }
+   
+  public static String getSelectedElementId() {
+    def ctx = WebEngine.getActiveContext();
+    return SessionManager.getSelectedElementId(ctx);
+  }  
+  
   public static String getDefaultTheme(String applicationPath) {
     return ThemeManager.getDefaultTheme(applicationPath);
   }

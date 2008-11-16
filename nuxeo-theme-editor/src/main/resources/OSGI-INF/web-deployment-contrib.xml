@@ -6,7 +6,7 @@
 		target="org.nuxeo.ecm.webengine.WebEngineComponent"
 		point="install">
 
-	    <install module="nxthemesEditor">
+	    <install>
 	      <copy path="web/nxthemes-editor" target="/" />
 	    </install>
 

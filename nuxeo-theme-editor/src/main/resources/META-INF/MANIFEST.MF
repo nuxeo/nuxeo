@@ -1,8 +1,9 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
+Bundle-ManifestVersion: 1
 Bundle-Name: NXThemes editor
 Bundle-SymbolicName: org.nuxeo.theme.editor;singleton:=true
 Bundle-Vendor: Chalmers
+Nuxeo-Require: org.nuxeo.theme.webengine
 Nuxeo-Component: OSGI-INF/nxthemes-editor-contrib.xml,
  OSGI-INF/web-deployment-contrib.xml
 Bundle-Localization: bundle

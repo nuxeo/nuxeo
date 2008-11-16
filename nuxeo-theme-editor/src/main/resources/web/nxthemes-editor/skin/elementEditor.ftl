@@ -1,5 +1,3 @@
-<#assign selected_element_id = script("getSelectedElementId.groovy") />
-
 <div>
 
 <script type="text/javascript"><!--

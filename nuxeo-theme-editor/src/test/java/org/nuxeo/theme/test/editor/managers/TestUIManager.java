@@ -17,7 +17,6 @@ package org.nuxeo.theme.test.editor.managers;
 import java.util.List;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.nuxeo.theme.editor.managers.UiManager;
 import org.nuxeo.theme.views.ViewType;
 
 public class TestUIManager extends NXRuntimeTestCase {
