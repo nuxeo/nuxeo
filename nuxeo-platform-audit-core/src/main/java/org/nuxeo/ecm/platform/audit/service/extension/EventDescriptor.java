@@ -33,6 +33,17 @@ public class EventDescriptor {
     @XNode("@name")
     protected String name;
 
+    @XNode("@enabled")
+    protected Boolean enabled;
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
     public String getName() {
         return name;
     }

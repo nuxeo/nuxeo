@@ -56,7 +56,6 @@ public class NXAuditEventsService extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(NXAuditEventsService.class);
 
-
     public Set<String> getAuditableEventNames() {
         return eventNames;
     }
@@ -68,8 +67,18 @@ public class NXAuditEventsService extends DefaultComponent implements
             if (extension.getExtensionPoint().equals(EVENT_EXT_POINT)) {
                 for (Object contribution : contributions) {
                     EventDescriptor desc = (EventDescriptor) contribution;
-                    log.debug("Registered event: " + desc.getName());
-                    eventNames.add(desc.getName());
+                    String eventName = desc.getName();
+                    Boolean eventEnabled = desc.getEnabled();
+                    if (eventEnabled == null) {
+                        eventEnabled = true; 
+                    }
+                    if (eventEnabled){
+                        eventNames.add(eventName);   
+                        log.debug("Registered event: " + eventName);                     
+                    } else if (eventNames.contains(eventName) && !eventEnabled){                      
+                        eventNames.remove(eventName);
+                        log.debug("Unregistered event: " + eventName);
+                    }
                 }
             }
             if (extension.getExtensionPoint().equals(FACTORY_EXT_POINT)) {
