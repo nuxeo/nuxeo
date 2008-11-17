@@ -38,6 +38,8 @@ public class InputFileInfo {
 
     private static final Log log = LogFactory.getLog(InputFileInfo.class);
 
+    public static final String INVALID_FILE_MESSAGE = "error.inputFile.invalidFile";
+
     protected Object choice;
 
     protected Object blob;
@@ -58,24 +60,25 @@ public class InputFileInfo {
         this.blob = blob;
     }
 
-    public Blob getConvertedBlob() {
+    public Blob getConvertedBlob() throws ConverterException {
         Blob convertedBlob = null;
         // XXX AT: later build blob taking care of filename too
         if (blob instanceof Blob) {
             convertedBlob = (Blob) blob;
         } else if (blob instanceof UploadedFile) {
             UploadedFile upFile = (UploadedFile) blob;
+            if (upFile.getLength() == 0) {
+                throw new ConverterException(INVALID_FILE_MESSAGE);
+            }
             try {
                 convertedBlob = createSerializableBlob(upFile, null);
-            } catch (Exception e1) {
-                log.error("Error while accessing mimetype service " + e1.getMessage());
-                throw new ConverterException("error.inputFile.invalidFile");
+            } catch (Exception e) {
+                throw new ConverterException(INVALID_FILE_MESSAGE);
             }
         } else if (blob != null) {
-            throw new ConverterException("error.inputFile.invalidFile");
+            throw new ConverterException(INVALID_FILE_MESSAGE);
         }
         return convertedBlob;
-
     }
 
     public Object getChoice() {
@@ -127,7 +130,7 @@ public class InputFileInfo {
         return convertedFilename;
     }
 
-    protected String getCleanFilename(String filename) {
+    protected static String getCleanFilename(String filename) {
         // clean file name, fixes NXP-544
         String res = null;
         int lastWinSeparator = filename.lastIndexOf("\\");
@@ -176,7 +179,8 @@ public class InputFileInfo {
         }
         TrinidadUploadedFileStreamSource src = new TrinidadUploadedFileStreamSource(
                 file);
-        return new StreamingBlob(src, mimeType);
+        return new StreamingBlob(src, mimeType, null,
+                getCleanFilename(file.getFilename()), null);
     }
 
 }
