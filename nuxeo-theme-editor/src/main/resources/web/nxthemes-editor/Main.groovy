@@ -3,6 +3,8 @@ package nxthemesEditor;
 import java.io.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.nuxeo.ecm.core.rest.*;
 import org.nuxeo.ecm.webengine.model.*;
 import org.nuxeo.ecm.webengine.model.impl.*;
@@ -13,14 +15,16 @@ import org.nuxeo.theme.elements.*;
 import org.nuxeo.theme.formats.*;
 import org.nuxeo.theme.formats.widgets.*;
 import org.nuxeo.theme.formats.styles.*;
+import org.nuxeo.theme.formats.layouts.*;
 import org.nuxeo.theme.fragments.*;
+import org.nuxeo.theme.presets.*;
 import org.nuxeo.theme.templates.*;
 import org.nuxeo.theme.themes.*;
 import org.nuxeo.theme.types.*;
 import org.nuxeo.theme.perspectives.*;
+import org.nuxeo.theme.uids.*;
 import org.nuxeo.theme.views.*;
 import org.nuxeo.theme.editor.*;
-
 
 @WebModule(name="nxthemes-editor")
 
@@ -31,13 +35,16 @@ public class Main extends DefaultModule {
   @GET @POST
   @Path("perspectiveSelector")
   public Object renderPerspectiveSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("perspectiveSelector.ftl").arg("path", path);
+    return getTemplate("perspectiveSelector.ftl").arg("perspectives", getPerspectives());
   }
 
   @GET @POST
   @Path("themeSelector")
   public Object renderThemeSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("themeSelector.ftl").arg("current_theme_name", getCurrentThemeName(path)).arg("themes", getThemes(path)).arg("pages", getPages(path));
+    return getTemplate("themeSelector.ftl").arg(
+            "current_theme_name", getCurrentThemeName(path)).arg(
+            "themes", getThemes(path)).arg(
+            "pages", getPages(path));
   }
 
   @GET @POST
@@ -55,13 +62,13 @@ public class Main extends DefaultModule {
   @GET @POST
   @Path("themeManager")
   public Object renderThemeManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("themeManager.ftl");
+    return getTemplate("themeManager.ftl").args("themes", getThemeDescriptors());
   }
 
   @GET @POST
   @Path("fragmentFactory")
   public Object renderFragmentFactory(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("fragmentFactory.ftl");
+    return getTemplate("fragmentFactory.ftl").args("fragments", getFragments());
   }
 
   @GET @POST
@@ -79,31 +86,48 @@ public class Main extends DefaultModule {
   @GET @POST
   @Path("elementPadding")
   public Object renderElementPadding(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("elementPadding.ftl").arg("selected_element", getSelectedElement());
+    return getTemplate("elementPadding.ftl").arg(
+            "selected_element", getSelectedElement()).args(
+            "padding_of_selected_element", getPaddingOfSelectedElement());
   }
 
   @GET @POST
   @Path("elementProperties")
   public Object renderElementProperties(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("elementProperties.ftl").arg("selected_element", getSelectedElement()).arg("element_properties", getSelectedElementProperties());
+    return getTemplate("elementProperties.ftl").arg(
+            "selected_element", getSelectedElement()).arg(
+            "element_properties", getSelectedElementProperties());
   }
 
   @GET @POST
   @Path("elementStyle")
   public Object renderElementStyle(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("elementStyle.ftl").arg("selected_element", getSelectedElement()).arg("selected_view_name", getViewNameOfSelectedElement()).arg("style_edit_mode", getStyleEditMode()).arg("style_of_selected_element", getStyleOfSelectedElement()).arg("current_theme_name", getCurrentThemeName(path)).arg("style_layers_of_selected_element", getStyleLayersOfSelectedElement());
+    return getTemplate("elementStyle.ftl").arg("selected_element", getSelectedElement()).arg(
+            "selected_view_name", getViewNameOfSelectedElement()).arg(
+            "style_edit_mode", getStyleEditMode()).arg(
+            "style_of_selected_element", getStyleOfSelectedElement()).arg(
+            "current_theme_name", getCurrentThemeName(path)).arg(
+            "style_layers_of_selected_element", getStyleLayersOfSelectedElement()).args(
+            "inherited_style_name_of_selected_element", getInheritedStyleNameOfSelectedElement()).args(
+            "named_styles", getNamedStyles());
   }
 
   @GET @POST
   @Path("elementWidget")
   public Object renderElementWidget(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("elementWidget.ftl").arg("selected_element", getSelectedElement()).arg("selected_view_name", getViewNameOfSelectedElement()).arg("view_names_for_selected_element", getViewNamesForSelectedElement(path));
+    return getTemplate("elementWidget.ftl").arg(
+            "selected_element", getSelectedElement()).arg(
+            "selected_view_name", getViewNameOfSelectedElement()).arg(
+            "view_names_for_selected_element", getViewNamesForSelectedElement(path));
   }
 
   @GET @POST
   @Path("elementVisibility")
   public Object renderElementVisibility(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("elementVisibility.ftl").arg("selected_element", getSelectedElement()).arg("is_selected_element_always_visible", isSelectedElementAlwaysVisible()).arg("perspectives", getPerspectives());
+    return getTemplate("elementVisibility.ftl").arg(
+            "selected_element", getSelectedElement()).arg(
+            "is_selected_element_always_visible", isSelectedElementAlwaysVisible()).arg(
+            "perspectives", getPerspectives());
   }
 
   @GET @POST
@@ -115,7 +139,14 @@ public class Main extends DefaultModule {
   @GET @POST
   @Path("styleProperties")
   public Object renderStyleProperties(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("styleProperties.ftl");
+    return getTemplate("styleProperties.ftl").arg(
+            "style_layers_of_selected_element", getStyleLayersOfSelectedElement()).arg(
+            "style_selectors", getStyleSelectorsForSelectedElement()).arg(
+            "rendered_style_properties", getRenderedStylePropertiesForSelectedElement()).arg(
+            "selected_style_selector", getSelectedStyleSelector()).arg(
+            "style_properties", getStylePropertiesForSelectedElement()).arg(
+            "style_categories", getStyleCategories()).arg(
+            "element_style_properties", getElementStyleProperties());
   }
   
   @GET @POST
@@ -125,6 +156,23 @@ public class Main extends DefaultModule {
     SessionManager.setSelectedElementId(ctx, id);
   }
    
+  public static List<ThemeDescriptor> getThemesDescriptors() {
+    return ThemeManager.getThemesDescriptors()
+  }
+  
+  public static List<Identifiable> getNamedStyles() {
+      String currentThemeName = getCurrentThemeName();
+      def styles = [];
+      namedStyles = Manager.getThemeManager().getNamedObjects(currentThemeName, "style");
+      if (namedStyles) {
+          styles.add("");
+          for (namedStyle in namedStyles) {
+              styles.add(namedStyle.getName());
+           }
+      }
+      return styles;
+  }
+  
   public static List<FragmentType> getFragments(String applicationPath) {
       def fragments = []
       String templateEngine = getTemplateEngine(applicationPath);
@@ -215,6 +263,166 @@ public class Main extends DefaultModule {
       return selectors;
   }
   
+  public static getElementStyleProperties() {
+      Pattern cssCategoryPattern = Pattern.compile("<(.*?)>");
+      Style style = getStyleOfSelectedElement();
+      Style selectedStyleLayer = getSelectedStyleLayer();
+      if (selectedStyleLayer != null) {
+          style = selectedStyleLayer;
+      }
+      List<StyleFieldProperty> fieldProperties = [];
+      if (style == null) {
+          return fieldProperties;
+      }
+      String path = getSelectedStyleSelector();
+      if (path == null) {
+          return fieldProperties;
+      }
+      String viewName = getSelectedViewName();
+      if (style.getName() != null) {
+          viewName = "*";
+      }
+      Properties properties = style.getPropertiesFor(viewName, path);
+      String selectedCategory = getStylePropertyCategory();
+
+      Properties cssProperties = Utils.getCssProperties()
+      Enumeration<?> propertyNames = cssProperties.propertyNames()
+      while (propertyNames.hasMoreElements()) {
+          String name = (String) propertyNames.nextElement();
+          String value = properties == null ? "" : properties.getProperty(name, "");
+          String type = cssProperties.getProperty(name);
+          if (!selectedCategory.equals("*")) {
+              Matcher categoryMatcher = cssCategoryPattern.matcher(type);
+              if (!categoryMatcher.find()) {
+                  continue;
+              }
+              if (!categoryMatcher.group(1).equals(selectedCategory)) {
+                  continue;
+              }
+          }
+          fieldProperties.add(new StyleFieldProperty(name, value, type));
+      }
+      return fieldProperties;    
+  }
+  
+  public static List getStylePropertiesForSelectedElement() {
+      String viewName = getSelectedViewName();
+      Style style = getStyleOfSelectedElement();
+      Style selectedStyleLayer = getSelectedStyleLayer();
+      if (selectedStyleLayer != null) {
+          style = selectedStyleLayer;
+      }
+      def fieldProperties = [];
+      if (style == null) {
+          return fieldProperties;
+      }
+      String path = getSelectedStyleSelector();
+      if (path == null) {
+          return fieldProperties;
+      }
+      if (style.getName() != null) {
+          viewName = "*";
+      }
+      Properties properties = style.getPropertiesFor(viewName, path);
+      String selectedCategory = getSelectedStylePropertyCategory();
+      Pattern cssCategoryPattern = Pattern.compile("<(.*?)>");
+      Properties cssProperties = Utils.getCssProperties();
+      Enumeration<?> propertyNames = cssProperties.propertyNames();
+      while (propertyNames.hasMoreElements()) {
+          String name = (String) propertyNames.nextElement();
+          String value = properties == null ? "" : properties.getProperty(name, "");
+          String type = cssProperties.getProperty(name);
+          if (!selectedCategory.equals("")) {
+              Matcher categoryMatcher = cssCategoryPattern.matcher(type);
+              if (!categoryMatcher.find()) {
+                  continue;
+              }
+              if (!categoryMatcher.group(1).equals(selectedCategory)) {
+                  continue;
+              }
+          }
+          fieldProperties.add(new StyleFieldProperty(name, value, type));
+      }
+      return fieldProperties;
+  }
+  
+  public static String getStylePropertyCategory() {
+      def ctx = WebEngine.getActiveContext();
+      String category = SessionManager.getStylePropertyCategory(ctx);
+      if (!category) {
+          category = '*';
+      }
+      return category;
+  }
+  
+  public static List<StyleCategory> getStyleCategories() {
+      String selectedStyleCategory = getStylePropertyCategory();
+      Pattern cssCategoryPattern = Pattern.compile("<(.*?)>");
+      Map<String, StyleCategory> categories = new LinkedHashMap<String, StyleCategory>();
+      Enumeration<?> elements = Utils.getCssProperties().elements();
+      categories.put("", new StyleCategory("*", "all", selectedStyleCategory.equals("*")));
+      while (elements.hasMoreElements()) {
+          Element element = (String) elements.nextElement();
+          Matcher categoryMatcher = cssCategoryPattern.matcher(element);
+          if (categoryMatcher.find()) {
+              String value = categoryMatcher.group(1);
+              boolean selected = value.equals(selectedStyleCategory);
+              categories.put(value, new StyleCategory(value, value, selected));
+          }
+      }
+      return new ArrayList<StyleCategory>(categories.values());
+  }
+  
+  public String getInheritedStyleNameOfSelectedElement() {
+      Style style = getStyleOfSelectedElement();
+      Style ancestor = (Style) ThemeManager.getAncestorFormatOf(style);
+      if (ancestor != null) {
+          return ancestor.getName();
+      }
+      return "";
+  }
+  
+  public List<StyleFieldProperty> getElementStyleProperties() {
+      Pattern cssCategoryPattern = Pattern.compile("<(.*?)>");
+      Style style = getStyleOfSelectedElement();
+      Style selectedStyleLayer = getSelectedStyleLayer();
+      if (selectedStyleLayer != null) {
+          style = selectedStyleLayer;
+      }
+      List<StyleFieldProperty> fieldProperties = [];
+      if (style == null) {
+          return fieldProperties;
+      }
+      path = getSelectedStyleSelector();
+      if (path == null) {
+          return fieldProperties;
+      }
+      viewName = getSelectedViewName();
+      if (style.getName() != null) {
+          viewName = "*";
+      }
+      Properties properties = style.getPropertiesFor(viewName, path);
+      String selectedCategory = getStylePropertyCategory();
+      Properties cssProperties = Utils.getCssProperties();
+      Enumeration<?> propertyNames = cssProperties.propertyNames();
+      while (propertyNames.hasMoreElements()) {
+          String name = (String) propertyNames.nextElement();
+          String value = properties == null ? "" : properties.getProperty(name, "");
+          String type = cssProperties.getProperty(name);
+          if (!selectedCategory.equals("*")) {
+              Matcher categoryMatcher = cssCategoryPattern.matcher(type);
+              if (!categoryMatcher.find()) {
+                  continue;
+              }
+              if (!categoryMatcher.group(1).equals(selectedCategory)) {
+                  continue;
+              }
+          }
+          fieldProperties.add(new StyleFieldProperty(name, value, type));
+      }
+      return fieldProperties;   
+  }
+  
   public static String getSelectedStyleSelector() {
       def ctx = WebEngine.getActiveContext();
       return SessionManager.getSelectedStyleSelector(ctx);
@@ -242,6 +450,66 @@ public class Main extends DefaultModule {
       return (Style) ElementFormatter.getFormatByType(element, styleType);
   }
   
+  public static PaddingInfo getPaddingOfSelectedElement() {
+      Element element = getSelectedElement();
+      String top = "";
+      String bottom = "";
+      String left = "";
+      String right = "";
+      if (element != null) {
+          Layout layout = (Layout) ElementFormatter.getFormatFor(element, "layout");
+          top = layout.getProperty("padding-top");
+          bottom = layout.getProperty("padding-bottom");
+          left = layout.getProperty("padding-left");
+          right = layout.getProperty("padding-right");
+      }
+      return new PaddingInfo(top, bottom, left, right);
+  }
+
+  public static String getRenderedStylePropertiesForSelectedElement() {
+      Style style = getStyleOfSelectedElement();
+      Style currentStyleLayer = getSelectedStyleLayer();
+      if (currentStyleLayer != null) {
+          style = currentStyleLayer;
+      }
+      if (style == null) {
+          return "";
+      }
+      def viewNames = [];
+      String viewName = getSelectedViewName();
+      if (style.getName() != null) {
+          viewName = "*";
+      }
+      viewNames.add(viewName);
+      boolean RESOLVE_PRESETS = false;
+      boolean IGNORE_VIEW_NAME = true;
+      boolean IGNORE_CLASSNAME = true;
+      boolean INDENT = true;
+      return Utils.styleToCss(style, viewNames, RESOLVE_PRESETS, IGNORE_VIEW_NAME, IGNORE_CLASSNAME, INDENT);
+  }
+  
+  public static List<String> getPresetGroupsForSelectedCategory() {
+      def groups = [];
+      String category = getSelectedStyleCategory();
+      groups.add("");
+      if (category == null) {
+          return groups;
+      }
+      def groupNames = [];
+      for (Type type : Manager.getTypeRegistry().getTypes(TypeFamily.PRESET)) {
+          PresetType preset = (PresetType) type;
+          String group = preset.getGroup();
+          if (!preset.getCategory().equals(category)) {
+              continue;
+          }
+          if (!groupNames.contains(group)) {
+              groups.add(group);
+          }
+          groupNames.add(group);
+      }
+      return groups;
+  }
+    
   public static Widget getWidgetOfSelectedElement() {
     Element element = getSelectedElement();
     if (element == null) {

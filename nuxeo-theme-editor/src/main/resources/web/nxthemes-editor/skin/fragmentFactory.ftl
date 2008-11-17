@@ -1,4 +1,3 @@
-<#assign fragments = script("getFragments.groovy") />
 
 <div class="nxthemesCollapsible nxthemesToolbox" id="nxthemesFragmentFactory">
 

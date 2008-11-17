@@ -1,8 +1,4 @@
 
-<#assign style_layers_of_selected_element = script("getStyleLayersOfSelectedElement.groovy") />
-<#assign inherited_style_name_of_selected_element = script("getInheritedStyleNameOfSelectedElement.groovy") />
-<#assign named_styles = script("getNamedStyles.groovy") />
-
 <div>
 
   <#if !style_of_selected_element>

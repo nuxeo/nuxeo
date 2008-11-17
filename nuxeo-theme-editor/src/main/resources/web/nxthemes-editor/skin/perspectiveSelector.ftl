@@ -1,4 +1,3 @@
-<#assign perspectives = script("getPerspectives.groovy") />
 
 <div id="nxthemesPerspectiveSelector">
 

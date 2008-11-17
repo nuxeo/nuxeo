@@ -29,6 +29,8 @@ public class SessionManager extends AbstractComponent {
 
     private static String STYLE_SELECTOR = "org.nuxeo.theme.editor.style_selector";
 
+    private static String STYLE_PROPERTY_CATEGORY = "org.nuxeo.theme.editor.style_property_category";
+
     public static synchronized void setSelectedElementId(WebContext ctx,
             String id) {
         ctx.getUserSession().put(SELECTED_ELEMENT_ID, id);
@@ -64,4 +66,12 @@ public class SessionManager extends AbstractComponent {
         ctx.getUserSession().put(STYLE_SELECTOR, selector);
     }
 
+    public static synchronized String getStylePropertyCategory(WebContext ctx) {
+        return (String) ctx.getUserSession().get(STYLE_PROPERTY_CATEGORY);
+    }
+
+    public static synchronized void setStylePropertyCategory(WebContext ctx,
+            String category) {
+        ctx.getUserSession().put(STYLE_PROPERTY_CATEGORY, category);
+    }
 }

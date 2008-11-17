@@ -1,6 +1,4 @@
 
-<#assign paddingOfSelectedElement = script("getPaddingOfSelectedElement.groovy") />
-
 <div id="nxthemesPaddingEditor" class="nxthemesToolbox">
 
 <div class="title">
@@ -13,25 +11,25 @@
       <tr>
         <td></td>
         <td><input type="text" size="6" name="padding-top" tabindex="1"
-            value="${paddingOfSelectedElement.top}" />
+            value="${padding_of_selected_element.top}" />
         </td>
         <td></td>
       </tr>
       <tr>
         <td><input type="text" size="6" name="padding-left" tabindex="4"
-            value="${paddingOfSelectedElement.left}" />
+            value="${padding_of_selected_element.left}" />
         </td><td>
           <div class="nxthemesFragment" style="height: 50px;" />
         </td>
         <td style="text-align: center">
           <input type="text" size="6" name="padding-right" tabindex="2"
-            value="${paddingOfSelectedElement.right}" />
+            value="${padding_of_selected_element.right}" />
         </td>
       </tr>
       <tr>
         <td></td>
         <td><input type="text" size="6" name="padding-bottom" tabindex="3"
-            value="${paddingOfSelectedElement.bottom}" />
+            value="${padding_of_selected_element.bottom}" />
         </td>
         <td></td>
       </tr>

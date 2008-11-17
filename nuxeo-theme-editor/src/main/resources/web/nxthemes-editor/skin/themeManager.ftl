@@ -1,4 +1,4 @@
-<#assign themes=script("getThemeDescriptors.groovy") />
+
 <div>
 
 <script type="text/javascript"><!--
