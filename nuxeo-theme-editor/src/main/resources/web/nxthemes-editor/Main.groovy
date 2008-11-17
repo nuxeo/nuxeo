@@ -62,13 +62,13 @@ public class Main extends DefaultModule {
   @GET @POST
   @Path("themeManager")
   public Object renderThemeManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("themeManager.ftl").args("themes", getThemeDescriptors());
+    return getTemplate("themeManager.ftl").arg("themes", getThemeDescriptors());
   }
 
   @GET @POST
   @Path("fragmentFactory")
   public Object renderFragmentFactory(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("fragmentFactory.ftl").args("fragments", getFragments());
+    return getTemplate("fragmentFactory.ftl").arg("fragments", getFragments());
   }
 
   @GET @POST
@@ -87,7 +87,7 @@ public class Main extends DefaultModule {
   @Path("elementPadding")
   public Object renderElementPadding(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("elementPadding.ftl").arg(
-            "selected_element", getSelectedElement()).args(
+            "selected_element", getSelectedElement()).arg(
             "padding_of_selected_element", getPaddingOfSelectedElement());
   }
 
@@ -107,8 +107,8 @@ public class Main extends DefaultModule {
             "style_edit_mode", getStyleEditMode()).arg(
             "style_of_selected_element", getStyleOfSelectedElement()).arg(
             "current_theme_name", getCurrentThemeName(path)).arg(
-            "style_layers_of_selected_element", getStyleLayersOfSelectedElement()).args(
-            "inherited_style_name_of_selected_element", getInheritedStyleNameOfSelectedElement()).args(
+            "style_layers_of_selected_element", getStyleLayersOfSelectedElement()).arg(
+            "inherited_style_name_of_selected_element", getInheritedStyleNameOfSelectedElement()).arg(
             "named_styles", getNamedStyles());
   }
 
@@ -133,7 +133,20 @@ public class Main extends DefaultModule {
   @GET @POST
   @Path("stylePicker")
   public Object renderStylePicker(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("stylePicker.ftl");
+    return getTemplate("stylePicker.ftl").arg(
+            "style_category", getSelectedStyleCategory()).arg(
+            "preset_groups", getPresetGroupsForSelectedCategory()).arg(
+            "presets_for_selected_group", getPresetsForSelectedGroup());
+  }
+  
+  @GET @POST
+  @Path("areaStyleChooser")
+  public Object renderAreaStyleChooser(@QueryParam("org.nuxeo.theme.application.path") String path) {
+    return getTemplate("areaStyleChooser.ftl").arg(
+            "style_category", getSelectedStyleCategory()).arg(
+            "preset_groups", getPresetGroupsForSelectedCategory()).arg(
+            "presets_for_selected_group", getPresetsForSelectedGroup()).arg(
+            "selected_preset_group", getSelectedPresetGroup());
   }
 
   @GET @POST
@@ -156,7 +169,7 @@ public class Main extends DefaultModule {
     SessionManager.setSelectedElementId(ctx, id);
   }
    
-  public static List<ThemeDescriptor> getThemesDescriptors() {
+  public static List<ThemeDescriptor> getThemeDescriptors() {
     return ThemeManager.getThemesDescriptors()
   }
   
@@ -551,6 +564,79 @@ public class Main extends DefaultModule {
   public static List<FieldProperty> getSelectedElementProperties() {
       Element selectedElement = getSelectedElement();
       return org.nuxeo.theme.editor.Utils.getPropertiesOf(selectedElement); 
+  }
+  
+  public static List<PresetInfo> getPresetsForSelectedGroup() {
+      String category = getSelectedStyleCategory();
+      String group = getSelectedPresetGroup();
+      def presets = [];
+      for (type in Manager.getTypeRegistry().getTypes(TypeFamily.PRESET)) {
+          PresetType preset = (PresetType) type;
+          if (!preset.getCategory().equals(category)) {
+              continue;
+          }
+          if (!preset.getGroup().equals(group)) {
+              continue;
+          }
+          presets.add(new PresetInfo(preset));
+      }
+      return presets;
+  }
+  
+  public static String getSelectedPresetGroup() {
+      def ctx = WebEngine.getActiveContext();
+      String category = SessionManager.getPresetGroup(ctx);
+      return category;
+  }
+  
+  public static String getSelectedStyleCategory() {
+        def ctx = WebEngine.getActiveContext();
+        String category = SessionManager.getStyleCategory(ctx);
+        if (!category) {
+            category = "page";
+        }
+        return category;
+  }
+  
+  public static getStylePropertiesForSelectedElement () {
+      String viewName = getSelectedViewName();
+      Style style = getStyleOfSelectedElement();
+      Style selectedStyleLayer = getSelectedStyleLayer();
+      if (selectedStyleLayer != null) {
+          style = selectedStyleLayer
+      }
+      def fieldProperties = []
+      if (style == null) {
+          return fieldProperties;
+      }
+      String path = getSelectedStyleSelector();
+      if (path == null) {
+          return fieldProperties;
+      }
+      if (style.getName() != null) {
+          viewName = "*";
+      }
+      Properties properties = style.getPropertiesFor(viewName, path);
+      String selectedCategory = getSelectedStylePropertyCategory();
+      Pattern cssCategoryPattern = Pattern.compile("<(.*?)>");
+      Properties cssProperties = Utils.getCssProperties();
+      Enumeration<?> propertyNames = cssProperties.propertyNames();
+      while (propertyNames.hasMoreElements()) {
+          String name = (String) propertyNames.nextElement();
+          String value = properties == null ? "" : properties.getProperty(name, "");
+          String type = cssProperties.getProperty(name);
+          if (!selectedCategory.equals("")) {
+              Matcher categoryMatcher = cssCategoryPattern.matcher(type);
+              if (!categoryMatcher.find()) {
+                  continue;
+              }
+              if (!categoryMatcher.group(1).equals(selectedCategory)) {
+                  continue;
+              }
+          }
+          fieldProperties.add(new StyleFieldProperty(name, value, type));
+      }
+      return fieldProperties;
   }
   
   public static String getTemplateEngine(String applicationPath) {

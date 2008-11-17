@@ -1,7 +1,3 @@
-<#assign style_category = script("getSelectedStyleCategory.groovy") />
-<#assign preset_groups = script("getPresetGroupsForSelectedCategory.groovy") />
-<#assign presets_for_selected_group = script("getPresetsForSelectedGroup.groovy") />
-<#assign selected_preset_group = script("getSelectedPresetGroup.groovy") />
 
 <div class="nxthemesToolbox" id="nxthemesAreaStyleChooser">
 
@@ -13,12 +9,12 @@ Style chooser - ${style_category}</div>
 
 <div class="header">PRESETS:
   <div>
-    <select id="areaStyleGroupName" onchange="NXThemesEditor.setPresetGroup(this)">
-      <#list preset_groups as presetGroup>
-        <#if selected_preset_group == presetGroup>
-          <option value="${presetGroup}" selected="selected">${presetGroup}</option>
+    <select id="areaStyleGroupName" onchange="NXThemesEditor.setpreset_group(this)">
+      <#list preset_groups as preset_group>
+        <#if selected_preset_group == preset_group>
+          <option value="${preset_group}" selected="selected">${preset_group}</option>
         <#else>
-          <option value="${presetGroup}">${presetGroup}</option>
+          <option value="${preset_group}">${preset_group}</option>
         </#if>
       </#list>
     </select>
@@ -27,9 +23,9 @@ Style chooser - ${style_category}</div>
 
 <div class="frame">
   <#if presets_for_selected_group>
-    <#list presets_for_selected_group as presetInfo>
-      <div class="selection" onclick="NXThemesEditor.updateAreaStyle('&quot;${presetInfo.name}&quot;')">
-          ${presetInfo.preview}
+    <#list presets_for_selected_group as preset_info>
+      <div class="selection" onclick="NXThemesEditor.updateAreaStyle('&quot;${preset_info.name}&quot;')">
+          ${preset_info.preview}
       </div>
     </#list>
   <#else>
