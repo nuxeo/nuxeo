@@ -12,10 +12,12 @@ import org.nuxeo.theme.*;
 import org.nuxeo.theme.elements.*;
 import org.nuxeo.theme.formats.*;
 import org.nuxeo.theme.formats.widgets.*;
+import org.nuxeo.theme.formats.styles.*;
 import org.nuxeo.theme.fragments.*;
 import org.nuxeo.theme.templates.*;
 import org.nuxeo.theme.themes.*;
 import org.nuxeo.theme.types.*;
+import org.nuxeo.theme.perspectives.*;
 import org.nuxeo.theme.views.*;
 import org.nuxeo.theme.editor.*;
 
@@ -89,7 +91,7 @@ public class Main extends DefaultModule {
   @GET @POST
   @Path("elementStyle")
   public Object renderElementStyle(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("elementStyle.ftl").arg("selected_element", getSelectedElement());
+    return getTemplate("elementStyle.ftl").arg("selected_element", getSelectedElement()).arg("selected_view_name", getViewNameOfSelectedElement()).arg("style_edit_mode", getStyleEditMode()).arg("style_of_selected_element", getStyleOfSelectedElement()).arg("current_theme_name", getCurrentThemeName(path)).arg("style_layers_of_selected_element", getStyleLayersOfSelectedElement());
   }
 
   @GET @POST
@@ -101,7 +103,7 @@ public class Main extends DefaultModule {
   @GET @POST
   @Path("elementVisibility")
   public Object renderElementVisibility(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("elementVisibility.ftl").arg("selected_element", getSelectedElement());
+    return getTemplate("elementVisibility.ftl").arg("selected_element", getSelectedElement()).arg("is_selected_element_always_visible", isSelectedElementAlwaysVisible()).arg("perspectives", getPerspectives());
   }
 
   @GET @POST
@@ -123,6 +125,25 @@ public class Main extends DefaultModule {
     SessionManager.setSelectedElementId(ctx, id);
   }
    
+  public static List<FragmentType> getFragments(String applicationPath) {
+      def fragments = []
+      String templateEngine = getTemplateEngine(applicationPath);
+      for (f in Manager.getTypeRegistry().getTypes(TypeFamily.FRAGMENT)) {
+          FragmentType fragmentType = (FragmentType) f;
+          FragmentInfo fragmentInfo = new FragmentInfo(fragmentType);
+          for (ViewType viewType : ThemeManager.getViewTypesForFragmentType(fragmentType)) {
+              String viewTemplateEngine = viewType.getTemplateEngine();
+              if (!"*".equals(viewType.getViewName()) && templateEngine.equals(viewTemplateEngine)) {
+                  fragmentInfo.addView(viewType);
+              }
+          }
+          if (fragmentInfo.size() > 0) {
+               fragments.add(fragmentInfo);
+          }
+      }
+      return fragments;
+  }
+  
   public static Element getSelectedElement() {
     def ctx = WebEngine.getActiveContext();
     String id = SessionManager.getSelectedElementId(ctx);
@@ -131,7 +152,96 @@ public class Main extends DefaultModule {
     }
     return ThemeManager.getElementById(id);
   } 
-
+  
+  public static List<StyleLayer> getStyleLayersOfSelectedElement() {
+      Style style = getStyleOfSelectedElement();
+      if (style == null) {
+        return [];
+      }
+      Style selectedStyleLayer = getSelectedStyleLayer();
+      def layers = [];
+      layers.add(new StyleLayer("This style", style.getUid(), style == selectedStyleLayer || selectedStyleLayer == null));
+      for (Format ancestor : ThemeManager.listAncestorFormatsOf(style)) {
+          layers.add(1, new StyleLayer(ancestor.getName(), ancestor.getUid(), ancestor == selectedStyleLayer));
+      }
+      return layers;
+  }
+  
+  public static boolean isSelectedElementAlwaysVisible() {
+      Element selectedElement = getSelectedElement();
+      return Manager.getPerspectiveManager().isAlwaysVisible(selectedElement);
+  }
+  
+  public static List<PerspectiveType> getPerspectives() {
+      return PerspectiveManager.listPerspectives();
+  }
+  
+  public static List<PerspectiveType> getPerspectivesOfSelectedElement() {
+      Element selectedElement = getSelectedElement();
+      def perspectives = [];
+      for (PerspectiveType perspectiveType : Manager.getPerspectiveManager().getPerspectivesFor(selectedElement)) {
+          perspectives.add(perspectiveType.name);
+      }
+      return perspectives;
+  }
+  
+  public static String getStyleEditMode() {
+      def ctx = WebEngine.getActiveContext();
+      return SessionManager.getStyleEditMode(ctx);
+  }
+  
+  public static List<String> getStyleSelectorsForSelectedElement() {
+      Element element = getSelectedElement();
+      String viewName = getSelectedViewName();
+      Style style = getStyleOfSelectedElement();
+      Style selectedStyleLayer = getSelectedStyleLayer();
+      def selectors = [];
+      if (selectedStyleLayer != null) {
+          style = selectedStyleLayer;
+      }
+      if (style != null) {
+          if (style.getName() != null) {
+              viewName = "*";
+          }
+          Set<String> paths = style.getPathsForView(viewName);
+          String current = getSelectedStyleSelector();
+          if (current != null && !paths.contains(current)) {
+              selectors.add(current);
+          }
+          for (path in paths) {
+              selectors.add(path);
+          }
+      }
+      return selectors;
+  }
+  
+  public static String getSelectedStyleSelector() {
+      def ctx = WebEngine.getActiveContext();
+      return SessionManager.getSelectedStyleSelector(ctx);
+  }
+  
+  public static Style getSelectedStyleLayer() {
+      String selectedStyleLayerId = getSelectedStyleLayerId();
+      if (selectedStyleLayerId == null) {
+        return null;
+      }
+      return (Style) ThemeManager.getFormatById(selectedStyleLayerId);
+  }
+  
+  public static String getSelectedStyleLayerId() {
+      def ctx = WebEngine.getActiveContext();
+      return SessionManager.getSelectedStyleLayerId(ctx);
+  } 
+  
+  public static Style getStyleOfSelectedElement() {
+      Element element = getSelectedElement();
+      if (element == null) {
+        return null;
+      }
+      FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "style");
+      return (Style) ElementFormatter.getFormatByType(element, styleType);
+  }
+  
   public static Widget getWidgetOfSelectedElement() {
     Element element = getSelectedElement();
     if (element == null) {
@@ -151,7 +261,7 @@ public class Main extends DefaultModule {
 
   public static List<String> getViewNamesForSelectedElement(String applicationPath) {
       Element selectedElement = getSelectedElement();
-      TemplateEngineType templateEngine = getTemplateEngine(applicationPath);
+      String templateEngine = getTemplateEngine(applicationPath);
       def viewNames = [];
       if (selectedElement == null) {
           return viewNames;
@@ -175,8 +285,8 @@ public class Main extends DefaultModule {
       return org.nuxeo.theme.editor.Utils.getPropertiesOf(selectedElement); 
   }
   
-  public static TemplateEngineType getTemplateEngine(String applicationPath) {
-      return ThemeManager.getTemplateEngine(applicationPath);
+  public static String getTemplateEngine(String applicationPath) {
+      return ThemeManager.getTemplateEngineName(applicationPath);
   }
   
   public static String getDefaultTheme(String applicationPath) {

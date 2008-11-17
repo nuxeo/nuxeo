@@ -1,13 +1,11 @@
 
-<#assign style_of_element_element = script("getStyleOfSelectedElement.groovy") />
-<#assign current_theme_name = script("getCurrentThemeName.groovy") />
 <#assign style_layers_of_selected_element = script("getStyleLayersOfSelectedElement.groovy") />
 <#assign inherited_style_name_of_selected_element = script("getInheritedStyleNameOfSelectedElement.groovy") />
 <#assign named_styles = script("getNamedStyles.groovy") />
 
 <div>
 
-  <#if !style_of_element_element>
+  <#if !style_of_selected_element>
 
       <form action="" class="nxthemesForm" onsubmit="NXThemesStyleEditor.createStyle(); return false;">
         <div>

@@ -1,8 +1,4 @@
 
-<#assign is_selected_element_always_visible = script("isSelectedElementAlwaysVisible.groovy") />
-<#assign perspectives = script("getPerspectives.groovy") />
-<#assign perspectives_of_selected_element = script("getPerspectivesOfSelectedElement.groovy") />
-
 <div>
 
 <fieldset class="nxthemesEditor"><legend>Element visibility</legend>
