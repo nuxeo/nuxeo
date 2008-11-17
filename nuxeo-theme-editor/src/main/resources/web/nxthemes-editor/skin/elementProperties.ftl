@@ -1,5 +1,3 @@
-<#assign selected_element_id = script("getSelectedElementId.groovy") />
-<#assign element_properties = script("getSelectedElementProperties.groovy") />
 
 <div>
 
@@ -8,7 +6,7 @@
 <form id="nxthemesElementProperties" class="nxthemesForm" action="" onsubmit="return false">
 <#if element_properties>
   <div>
-    <input type="hidden" name="id" value="${selected_element_id}" />
+    <input type="hidden" name="id" value="${selected_element.id}" />
   </div>
   <#list element_properties as property>
     <p>${property.rendered}</p>

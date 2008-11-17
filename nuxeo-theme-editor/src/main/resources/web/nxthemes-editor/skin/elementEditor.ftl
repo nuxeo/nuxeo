@@ -13,7 +13,7 @@ window.scrollTo(0,0);
 
 <h1 class="nxthemesEditor">Element editor</h1>
 
-<#if selected_element_id>
+<#if selected_element>
 
 <@nxthemes_tabs identifier="element editor tabs" styleClass="nxthemesEditTabs">
   <tab switchTo="element editor perspectives/edit properties" label="Properties"  />
@@ -27,32 +27,32 @@ window.scrollTo(0,0);
 
   <@nxthemes_panel
   identifier="element properties"
-  url="/nxthemes/editor/elementProperties"
+  url="/nxthemes-editor/elementProperties"
   controlledBy="element editor perspectives,element form actions"
   visibleInPerspectives="edit properties" />
 
   <@nxthemes_panel
   identifier="element widget"
-  url="/nxthemes/editor/elementWidget"
+  url="/nxthemes-editor/elementWidget"
   controlledBy="element editor perspectives,element form actions"
   visibleInPerspectives="assign widget" />
 
   <@nxthemes_panel
   identifier="element style"
-  url="/nxthemes/editor/elementStyle"
+  url="/nxthemes-editor/elementStyle"
   controlledBy="element editor perspectives,element form actions,style editor actions"
   javascript="/nuxeo/nxthemes-lib/nxthemes-style-editor.js"
   visibleInPerspectives="edit style" />
 
   <@nxthemes_panel
   identifier="element visibility"
-  url="/nxthemes/editor/elementVisibility"
+  url="/nxthemes-editor/elementVisibility"
   controlledBy="element editor perspectives,element form actions"
   visibleInPerspectives="set visibility" />
 
   <@nxthemes_panel
   identifier="element description"
-  url="/nxthemes/editor/elementDescription"
+  url="/nxthemes-editor/elementDescription"
   controlledBy="element editor perspectives,element form actions"
   visibleInPerspectives="set description" />
 

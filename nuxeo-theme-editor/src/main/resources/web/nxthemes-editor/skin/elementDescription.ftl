@@ -1,6 +1,3 @@
-<#assign selected_element = script("getSelectedElement.groovy") />
-<#assign selected_element_id = script("getSelectedElementId.groovy") />
-
 <div>
 
 <fieldset class="nxthemesEditor"><legend>Element description</legend>
@@ -8,7 +5,7 @@
 <form id="nxthemesElementDescription" class="nxthemesForm" action="" onsubmit="return false">
 
   <div>
-    <input type="hidden" name="id" value="${selected_element_id}" />
+    <input type="hidden" name="id" value="${selected_element.id}" />
   </div>
   
   <p>

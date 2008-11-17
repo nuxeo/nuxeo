@@ -1,4 +1,4 @@
-<#assign selected_element_id = script("getSelectedElementId.groovy") />
+
 <#assign style_of_element_element = script("getStyleOfSelectedElement.groovy") />
 <#assign current_theme_name = script("getCurrentThemeName.groovy") />
 <#assign style_layers_of_selected_element = script("getStyleLayersOfSelectedElement.groovy") />
@@ -23,7 +23,7 @@
       <style id="previewCss" type="text/css"></style>
 
       <form class="nxthemesInheritedStyles" onsubmit="return false"
-        element="${selected_element_id}"
+        element="${selected_element.id}"
         currentThemeName="${current_theme_name}">
 
         <div>
@@ -38,9 +38,9 @@
 	    </#list>
 	  </select>
 
-          <button onclick="NXThemesStyleEditor.createNamedStyle('${selected_element_id}', '${current_theme_name}')">New style</button>
+          <button onclick="NXThemesStyleEditor.createNamedStyle('${selected_element.id}', '${current_theme_name}')">New style</button>
           <#if inherited_style_name_of_selected_element>
-            <button onclick="NXThemesStyleEditor.deleteNamedStyle('${selected_element_id}', '${current_theme_name}', '${inherited_style_name_of_selected_element}')">Delete '${inherited_style_name_of_selected_element}'</button>
+            <button onclick="NXThemesStyleEditor.deleteNamedStyle('${selected_element.id}', '${current_theme_name}', '${inherited_style_name_of_selected_element}')">Delete '${inherited_style_name_of_selected_element}'</button>
           </#if>
         </div>
 
@@ -63,7 +63,7 @@
               </legend>
 
               <div id="stylePreviewArea"
-                element="${selected_element_id}">
+                element="${selected_element.id}">
                 <img src="/nuxeo/site/files/nxthemes-editor/img/progressbar.gif" alt=""
                   width="220" height="19"
                   style="padding: 5px; border: 1px solid #ccc; background-color: #fff" />
@@ -77,13 +77,13 @@
 
             <!--  Style properties form -->
             <@nxthemes_panel identifier="style properties"
-              url="/nxthemes/editor/styleProperties.ftl"
+              url="/nxthemes-editor/styleProperties"
               controlledBy="style editor perspectives,style editor actions,element form actions"
               visibleInPerspectives="style properties,style picker" />
 
             <!--  Style picker -->
             <@nxthemes_panel identifier="style picker"
-              url="/nxthemes/editor/stylePicker.ftl"
+              url="/nxthemes-editor/stylePicker"
               controlledBy="style editor perspectives,toolbox mover"
               visibleInPerspectives="style picker" />
 

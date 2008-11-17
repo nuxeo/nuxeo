@@ -1,4 +1,4 @@
-<#assign selected_element_id = script("getSelectedElementId.groovy") />
+
 <#assign is_selected_element_always_visible = script("isSelectedElementAlwaysVisible.groovy") />
 <#assign perspectives = script("getPerspectives.groovy") />
 <#assign perspectives_of_selected_element = script("getPerspectivesOfSelectedElement.groovy") />
@@ -10,7 +10,7 @@
 <form id="nxthemesElementVisibility" class="nxthemesForm" action="" onsubmit="return false">
 
 <div>
-  <input type="hidden" name="id" value="${selected_element_id}" />
+  <input type="hidden" name="id" value="${selected_element.id}" />
 </div>
 
 <p>

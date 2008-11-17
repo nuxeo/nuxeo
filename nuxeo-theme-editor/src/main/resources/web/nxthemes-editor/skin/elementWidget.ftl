@@ -1,14 +1,10 @@
-<#assign selected_element_id = script("getSelectedElementId.groovy") />
-<#assign selected_view_name = script("getSelectedViewName.groovy") />
-<#assign view_names_for_selected_element = script("getViewNamesForSelectedElement.groovy") />
-
 <div>
 
 <fieldset class="nxthemesEditor"><legend>Element's widget</legend>
 
 <form id="nxthemesElementWidget" class="nxthemesForm" action="" onsubmit="return false">
 <div>
-  <input type="hidden" name="id" value="${selected_element_id}" />
+  <input type="hidden" name="id" value="${selected_element.id}" />
 </div>
 <p>
   <label>View name</label>
