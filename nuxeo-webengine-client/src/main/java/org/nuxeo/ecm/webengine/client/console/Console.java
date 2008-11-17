@@ -22,11 +22,15 @@ package org.nuxeo.ecm.webengine.client.console;
 import java.io.IOException;
 import java.net.URL;
 
+import jline.CandidateListCompletionHandler;
+import jline.CompletionHandler;
 import jline.ConsoleReader;
 
 import org.nuxeo.ecm.webengine.client.command.CommandException;
 import org.nuxeo.ecm.webengine.client.command.ExitException;
 import org.nuxeo.ecm.webengine.client.http.HttpClient;
+
+import com.sun.corba.se.spi.orbutil.fsm.Guard.Complement;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -39,6 +43,7 @@ public class Console {
     protected HttpClient client;
 
     public Console() throws IOException {
+        console = new ConsoleReader();
         initialize("http://localhost:8080");
     }
     
@@ -52,7 +57,10 @@ public class Console {
     }
     
     public void initialize(URL url) throws IOException {
-        console = new ConsoleReader();
+        CompletionHandler ch = console.getCompletionHandler();
+        if (ch instanceof CandidateListCompletionHandler) {
+            ((CandidateListCompletionHandler)ch).setAlwaysIncludeNewline(false);
+        }
         console.setDefaultPrompt("|> ");
         client = new HttpClient(url); 
         // register completors
