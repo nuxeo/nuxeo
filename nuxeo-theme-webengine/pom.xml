@@ -26,14 +26,9 @@
     </dependency>
     
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-rendering</artifactId>
-      <version>${nuxeo.webengine.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
-      <version>5.2-jax-rs</version>
+      <version>${nuxeo.webengine.version}</version>
     </dependency>
     
     <dependency>
