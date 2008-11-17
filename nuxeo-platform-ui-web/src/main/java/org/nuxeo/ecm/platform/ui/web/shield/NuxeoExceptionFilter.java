@@ -31,8 +31,9 @@ import javax.servlet.ServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.contexts.Lifecycle;
-import org.jboss.seam.util.Transactions;
+import org.jboss.seam.contexts.Contexts;
+import org.jboss.seam.contexts.FacesLifecycle;
+import org.jboss.seam.transaction.Transaction;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.WrappedException;
@@ -51,10 +52,11 @@ public class NuxeoExceptionFilter implements Filter {
             ServletResponse response, Throwable t) throws IOException,
             ServletException {
 
+        log.error("Uncaught exception",t);
 
         rollbackTransactionIfNecessary();
 
-        if (Lifecycle.getPhaseId() == PhaseId.RENDER_RESPONSE) {
+        if (FacesLifecycle.getPhaseId() == PhaseId.RENDER_RESPONSE) {
             if (response.isCommitted()) {
                 log.error("Uncaught exception, too late to redirect");
                 if (t instanceof ServletException) {
@@ -102,13 +104,14 @@ public class NuxeoExceptionFilter implements Filter {
             FilterChain chain) throws IOException, ServletException {
         try {
             chain.doFilter(request, response);
-            if (request.getAttribute("applicationException")!=null)
-            {
-                log.error("An exception was swallowed by the component stack : " +  ((Exception)request.getAttribute("applicationException")).getMessage());
-            }
-            else if (request.getAttribute("securityException")!=null)
-            {
-                log.error("An security exception was swallowed by the component stack : " +  ((Exception)request.getAttribute("securityException")).getMessage());
+            if (request.getAttribute("applicationException") != null) {
+                log.error(
+                        "An exception was swallowed by the component stack : " + ((Exception) request.getAttribute(
+                                "applicationException")).getMessage());
+            } else if (request.getAttribute("securityException") != null) {
+                log.error(
+                        "An security exception was swallowed by the component stack : " + ((Exception) request.getAttribute(
+                                "securityException")).getMessage());
             }
         } catch (ServletException se) {
             handleException(request, response, se);
@@ -140,22 +143,22 @@ public class NuxeoExceptionFilter implements Filter {
     }
 
     public static String getStackTraceElement(Throwable t) {
-        StringBuilder string = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
         if (null != t) {
-            string.append("\n\n");
-            string.append(t.getClass().getName());
-            string.append("\n\n");
-            string.append(t.getLocalizedMessage());
-            string.append("\n\n");
+            sb.append("\n\n");
+            sb.append(t.getClass().getName());
+            sb.append("\n\n");
+            sb.append(t.getLocalizedMessage());
+            sb.append("\n\n");
 
             for (StackTraceElement element : t.getStackTrace()) {
-                string.append(element.toString());
-                string.append('\n');
+                sb.append(element.toString());
+                sb.append('\n');
             }
         }
 
-        return string.toString();
+        return sb.toString();
     }
 
     public static Throwable unwrapException(Throwable t) {
@@ -235,19 +238,18 @@ public class NuxeoExceptionFilter implements Filter {
         return trace.toString();
     }
 
-    private static void rollbackTransactionIfNecessary()
-    {
-       try {
-          if ( Transactions.isTransactionActiveOrMarkedRollback() )
-          {
-             log.info("killing transaction");
-             Transactions.getUserTransaction().rollback();
-          }
-       }
-       catch (Exception te)
-       {
-          log.error("could not roll back transaction", te);
-       }
+    private static void rollbackTransactionIfNecessary() {
+        if (Contexts.isEventContextActive())
+        {
+            try {
+                if (Transaction.instance().isActiveOrMarkedRollback()) {
+                    log.info("killing transaction");
+                    Transaction.instance().rollback();
+                }
+            } catch (Exception te) {
+                log.error("could not roll back transaction", te);
+            }
+        }
     }
 
 }

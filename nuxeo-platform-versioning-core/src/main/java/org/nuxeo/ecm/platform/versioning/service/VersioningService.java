@@ -27,7 +27,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jetbrains.annotations.NotNull;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -189,9 +188,8 @@ public class VersioningService extends DefaultComponent implements
         // TODO
     }
 
-    public VersionIncEditOptions getVersionIncEditOptions(@NotNull
-    DocumentModel docModel) throws VersioningException, ClientException,
-            DocumentException {
+    public VersionIncEditOptions getVersionIncEditOptions(DocumentModel docModel)
+            throws VersioningException, ClientException, DocumentException {
         if (null == docModel.getSessionId()) {
             throw new IllegalArgumentException(
                     "document model is not bound to a core session (null sessionId)");
