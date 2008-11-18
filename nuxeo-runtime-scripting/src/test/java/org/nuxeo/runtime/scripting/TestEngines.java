@@ -54,10 +54,19 @@ public class TestEngines extends TestCase {
 
         // Evaluate JS code from string.
         assertEquals("Hello", engine.eval("'Hello'"));
-        assertEquals(Integer.valueOf(3), engine.eval("1 + 2"));
+        Object sumLiteralValue = engine.eval("1 + 2");
+        Object expectedValue = null;
+        if (sumLiteralValue instanceof Integer) {
+        	expectedValue = Integer.valueOf(3);
+        } else if (sumLiteralValue instanceof Double) {
+        	expectedValue = Double.valueOf(3);
+        } else {
+        	throw new RuntimeException("introduce literal of type " + sumLiteralValue.getClass().getName());
+        }
+        assertEquals(expectedValue, sumLiteralValue);
         engine.eval("var x = 1 + 2;");
-        assertEquals(Integer.valueOf(3), engine.eval("x"));
-        assertEquals(Integer.valueOf(3), engine.get("x"));
+        assertEquals(expectedValue, engine.eval("x"));
+        assertEquals(expectedValue, engine.get("x"));
     }
 
     public void testJython() throws ScriptException {
