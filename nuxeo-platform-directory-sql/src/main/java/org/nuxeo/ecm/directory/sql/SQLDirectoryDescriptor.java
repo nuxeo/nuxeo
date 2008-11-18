@@ -22,6 +22,8 @@ package org.nuxeo.ecm.directory.sql;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -31,9 +33,14 @@ import org.nuxeo.ecm.directory.Reference;
 
 @XObject(value = "directory")
 public class SQLDirectoryDescriptor {
+    private static final Log log = LogFactory.getLog(SQLDirectoryDescriptor.class);
 
-    private static final String[] SCRIPT_POLICIES = {
-        "never", "on_missing_columns", "always", };
+    public enum SubstringMatchType {
+        subinitial, subfinal, subany
+    }
+
+    private static final String[] SCRIPT_POLICIES = { "never",
+            "on_missing_columns", "always", };
 
     private static final String DEFAULT_POLICY = "never";
 
@@ -77,6 +84,8 @@ public class SQLDirectoryDescriptor {
     public String dataFileName;
 
     public String createTablePolicy;
+
+    private SubstringMatchType substringMatchType = SubstringMatchType.subinitial;
 
     @XNode("autoincrementIdField")
     public boolean autoincrementIdField;
@@ -202,12 +211,25 @@ public class SQLDirectoryDescriptor {
         }
         if (!validPolicy) {
             throw new DirectoryException(
-                    "invalid value for createTablePolicy: "
-                            + createTablePolicy
+                    "invalid value for createTablePolicy: " + createTablePolicy
                             + ". It should be one of 'never', "
                             + "'on_missing_columns',  or 'always'.");
         }
         this.createTablePolicy = createTablePolicy;
+    }
+
+    @XNode("substringMatchType")
+    public void setSubstringMatchType(String substringMatchType) {
+        if (substringMatchType != null) {
+            try {
+                this.substringMatchType = Enum.valueOf(
+                        SubstringMatchType.class, substringMatchType);
+            } catch (IllegalArgumentException iae) {
+                log.error("Invalid substring match type: " + substringMatchType
+                        + ". Valid options: subinitial, subfinal, subany");
+                this.substringMatchType = SubstringMatchType.subinitial;
+            }
+        }
     }
 
     public Reference[] getInverseReferences() {
@@ -288,5 +310,13 @@ public class SQLDirectoryDescriptor {
 
     public int getCacheMaxSize() {
         return cacheMaxSize;
+    }
+
+    public SubstringMatchType getSubstringMatchType() {
+        return substringMatchType;
+    }
+
+    public void setSubstringMatchType(SubstringMatchType substringMatchType) {
+        this.substringMatchType = substringMatchType;
     }
 }

@@ -85,6 +85,8 @@ public class SQLSession implements Session, EntrySource {
 
     final Table table;
 
+    private final SQLDirectoryDescriptor.SubstringMatchType substringMatchType;
+
     String dataSourceName;
 
     final String idField;
@@ -115,7 +117,7 @@ public class SQLSession implements Session, EntrySource {
 
         this.sid = String.valueOf(SIDGenerator.next());
         this.managedSQLSession = managedSQLSession;
-
+        this.substringMatchType = config.getSubstringMatchType();
         this.idGenerator = idGenerator;
     }
 
@@ -460,8 +462,19 @@ public class SQLSession implements Session, EntrySource {
                 if (value != null) {
                     if (fulltext != null && fulltext.contains(columnName)) {
                         // NB : remove double % in like query NXGED-833
-                        filterMap.put(columnName,
-                                String.valueOf(value).toLowerCase() + '%');
+                        String searchedValue = null;
+                        switch (substringMatchType) {
+                        case subany:
+                            searchedValue = '%' + String.valueOf(value).toLowerCase() + '%';
+                            break;
+                        case subinitial:
+                            searchedValue = String.valueOf(value).toLowerCase() + '%';
+                            break;
+                        case subfinal:
+                            searchedValue = '%' + String.valueOf(value).toLowerCase();
+                            break;
+                        }
+                        filterMap.put(columnName, searchedValue);
                         if (dialect instanceof PostgreSQLDialect) {
                             operator = " ILIKE "; // postgresql rules
                         } else {

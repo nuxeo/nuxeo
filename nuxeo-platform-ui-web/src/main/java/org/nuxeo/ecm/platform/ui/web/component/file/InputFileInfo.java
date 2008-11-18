@@ -38,6 +38,8 @@ public class InputFileInfo {
 
     private static final Log log = LogFactory.getLog(InputFileInfo.class);
 
+    public static final String INVALID_FILE_MESSAGE = "error.inputFile.invalidFile";
+
     protected Object choice;
 
     protected Object blob;
@@ -80,21 +82,24 @@ public class InputFileInfo {
         return null;
     }
 
-    public Blob getConvertedBlob() {
+    public Blob getConvertedBlob() throws ConverterException {
         Blob convertedBlob = null;
         if (blob instanceof Blob) {
             convertedBlob = (Blob) blob;
         } else if (blob instanceof InputStream) {
             InputStream upFile = (InputStream) blob;
             try {
+                if (upFile.available() == 0) {
+                    throw new ConverterException(INVALID_FILE_MESSAGE);
+                }
                 convertedBlob = FileUtils.createSerializableBlob(upFile,
                         getConvertedFilename(), getConvertedMimeType());
+            } catch (ConverterException e) {
             } catch (Exception e) {
-                log.error(e);
-                throw new ConverterException("error.inputFile.invalidFile");
+                throw new ConverterException(INVALID_FILE_MESSAGE);
             }
         } else if (blob != null) {
-            throw new ConverterException("error.inputFile.invalidFile");
+            throw new ConverterException(INVALID_FILE_MESSAGE);
         }
         return convertedBlob;
     }

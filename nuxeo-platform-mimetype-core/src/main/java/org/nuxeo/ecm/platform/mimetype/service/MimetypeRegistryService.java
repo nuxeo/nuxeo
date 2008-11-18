@@ -119,8 +119,8 @@ public class MimetypeRegistryService extends DefaultComponent implements
     }
 
     public void registerFileExtension(ExtensionDescriptor extensionDescriptor) {
-        log.debug("Registering file extension: " +
-                extensionDescriptor.getName());
+        log.debug("Registering file extension: "
+                + extensionDescriptor.getName());
         extensionRegistry.put(extensionDescriptor.getName(),
                 extensionDescriptor);
     }
@@ -160,8 +160,8 @@ public class MimetypeRegistryService extends DefaultComponent implements
     }
 
     public void unregisterFileExtension(ExtensionDescriptor extensionDescriptor) {
-        log.debug("Unregistering file extension: " +
-                extensionDescriptor.getName());
+        log.debug("Unregistering file extension: "
+                + extensionDescriptor.getName());
         extensionRegistry.remove(extensionDescriptor.getName());
     }
 
@@ -249,6 +249,9 @@ public class MimetypeRegistryService extends DefaultComponent implements
 
     public String getMimetypeFromFilename(String filename)
             throws MimetypeNotFoundException {
+        if (filename == null) {
+            throw new MimetypeNotFoundException("filename is null");
+        }
         String[] parts = filename.split("\\.");
         if (parts.length < 2) {
             throw new MimetypeNotFoundException(filename + "has no extension");

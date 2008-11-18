@@ -22,8 +22,10 @@ package org.nuxeo.ecm.directory.sql;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -437,6 +439,24 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertTrue(groups.contains("group_1"));
 
         } finally {
+            session.close();
+        }
+    }
+
+    public void testQuerySubAny() throws Exception {
+        Session session = getSession();
+        try {
+            Map<String, Object> filter = new HashMap<String, Object>();
+            filter.put("username", "er_");
+            Set<String> set = new HashSet<String>();
+            set.add("username");
+            DocumentModelList list = session.query(filter, set);
+            assertEquals(1, list.size());
+            DocumentModel docModel = list.get(0);
+            assertNotNull(docModel);
+            assertEquals("user_1", docModel.getProperty(SCHEMA, "username"));
+        }
+        finally {
             session.close();
         }
     }
