@@ -50,9 +50,6 @@ public class FileSource extends AbstractStreamSource {
         return true;
     }
 
-    /**
-     * @return the file.
-     */
     public File getFile() {
         return file;
     }

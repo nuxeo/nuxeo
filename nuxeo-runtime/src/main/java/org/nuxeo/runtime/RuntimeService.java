@@ -27,22 +27,23 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.osgi.framework.Bundle;
 
 /**
  * The runtime service: a singleton object that provides access to the Nuxeo
- * Runtime. A runtime service must be started before any other runtime component
+ * Runtime. The runtime service must be started before any other runtime component
  * or object that accesses the runtime.
  * <p>
  * This service is usually implemented for each target platform where Nuxeo
  * Runtime should run.
  * <p>
- * It is recommended to extend the AbstractRuntimeService class instead of
+ * It is recommended to extend the {@link AbstractRuntimeService} class instead of
  * directly implementing this interface.
  * <p>
  * After the runtime service was initialized, it may be accessed through the
- * facade class {@link NXRuntime}.
+ * facade class {@link org.nuxeo.runtime.api.Framework}.
  *
- * @see NXRuntime
+ * @see {@link org.nuxeo.runtime.api.Framework}
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -197,5 +198,17 @@ public interface RuntimeService {
      * @return the warning list
      */
     List<String> getWarnings();
+
+    /**
+     * OSGi frameworks are using a string {@link Bundle#getLocation()} to identify bundle locations.
+     * <p>
+     * This method try to convert the bundle location to real file if possible.
+     * If this bundle location cannot be converted to a file (e.g. it's may be a remote URL) null is returned.
+     * <p>
+     * This method works only for bundles that are installed as files on the host file system.
+     *
+     * @return the bundle file or null
+     */
+    File getBundleFile(Bundle bundle);
 
 }

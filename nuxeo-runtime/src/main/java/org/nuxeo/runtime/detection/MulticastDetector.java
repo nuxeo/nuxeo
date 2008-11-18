@@ -35,15 +35,15 @@ import java.util.TimerTask;
  */
 public class MulticastDetector<T> {
 
-    protected MulticastSocket socket;
-    protected long heartBeatTimeout = 5000; // 10 sec
-
     protected final InetAddress groupAddr;
     protected final int groupPort;
 
-    protected String identity;
+    protected final String identity;
 
     protected final Map<String, Peer<T>> peers;
+
+    protected MulticastSocket socket;
+    protected long heartBeatTimeout = 5000; // 10 sec
 
     private DetectionHandler handler;
 
@@ -120,16 +120,13 @@ public class MulticastDetector<T> {
         processingTimer = null;
     }
 
-    /**
-     * @return the identity.
-     */
     public String getIdentity() {
         return identity;
     }
 
     public Peer<T>[] getPeers() {
         synchronized (peers) {
-            return (Peer<T>[])peers.values().toArray(new Peer[peers.size()]);
+            return peers.values().toArray(new Peer[peers.size()]);
         }
     }
 
@@ -157,13 +154,12 @@ public class MulticastDetector<T> {
         }
     }
 
-
     class HeartBeatDetection extends Thread {
         private boolean running = false;
         private final Object runLock = new Object();
 
         HeartBeatDetection() {
-            super ("Nuxeo.HeartBeatDetection");
+            super("Nuxeo.HeartBeatDetection");
         }
 
         public void cancel() {

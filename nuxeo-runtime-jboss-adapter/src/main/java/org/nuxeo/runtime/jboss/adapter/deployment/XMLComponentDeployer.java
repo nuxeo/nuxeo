@@ -78,7 +78,6 @@ public class XMLComponentDeployer extends SubDeployerSupport implements XMLCompo
     }
 
     @Override
-    @SuppressWarnings ("unchecked")
     public void create(DeploymentInfo di) throws DeploymentException {
         super.create(di);
     }
@@ -108,8 +107,7 @@ public class XMLComponentDeployer extends SubDeployerSupport implements XMLCompo
     public void stop(DeploymentInfo di) throws DeploymentException {
         log.info("stop deployment" + di.url);
         try {
-            RuntimeContext context = (RuntimeContext) di
-                .context.remove("RUNTIME_CONTEXT");
+            RuntimeContext context = (RuntimeContext) di.context.remove("RUNTIME_CONTEXT");
             if (context != null) {
                 context.destroy();
             }

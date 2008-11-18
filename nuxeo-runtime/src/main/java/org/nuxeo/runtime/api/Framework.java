@@ -25,8 +25,10 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.nuxeo.runtime.NXRuntime;
+import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.RuntimeService;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.login.LoginService;
 
 /**
@@ -38,11 +40,11 @@ import org.nuxeo.runtime.api.login.LoginService;
  * There are two type of services:
  * <ul>
  * <li> Global Services - these services are uniquely defined by a service
- * class. and there is an unique instance of the service in the system per
+ * class, and there is an unique instance of the service in the system per
  * class.
- * <li> Localized Services - these services are defined by a class and an URI.
- * This type of services allows multiple service instances for the same class of
- * services Each instance is uniquely defined in the system by an URI
+ * <li> Local Services - these services are defined by a class and an URI.
+ * This type of service allows multiple service instances for the same class of
+ * services. Each instance is uniquely defined in the system by an URI.
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -54,6 +56,11 @@ public final class Framework {
      */
     private static RuntimeService runtime;
 
+    private static org.nuxeo.runtime.ServiceManager serviceMgr;
+
+    private static final ListenerList listeners = new ListenerList();
+
+    // Utility class.
     private Framework() { }
 
 
@@ -62,21 +69,43 @@ public final class Framework {
         if (runtime != null) {
             throw new Exception("Nuxeo Framework was already initialized");
         }
-        Framework.runtime = runtimeService;
-        NXRuntime.setRuntime(runtime); // for compatibility with older API
+        runtime = runtimeService;
+        initServiceManager();
         runtime.start();
     }
 
     public static void shutdown() throws Exception {
         if (runtime != null) {
             runtime.stop();
-            NXRuntime.setRuntime(null); // for compatibility with older API
             runtime = null;
         }
     }
 
     /**
-     * Gets the runtime instance.
+     * Tests whether or not the runtime was initialized.
+     *
+     * @return true if the runtime was initialized, false otherwise
+     */
+    public static synchronized boolean isInitialized() {
+        return runtime != null;
+    }
+
+    private static void initServiceManager() {
+        String sm = getProperty("org.nuxeo.runtime.ServiceManager");
+        if (sm == null) { // compatibility mode
+            serviceMgr = org.nuxeo.runtime.api.ServiceManager.getInstance();
+        } else {
+            try {
+                serviceMgr = (org.nuxeo.runtime.ServiceManager) Class.forName(sm).newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new Error("Failed to initialize service manager");
+            }
+        }
+    }
+
+    /**
+     * Gets the runtime service instance.
      *
      * @return
      */
@@ -92,11 +121,11 @@ public final class Framework {
      * @return
      */
     public static <T> T getService(Class<T> serviceClass) throws Exception {
-        return ServiceManager.getInstance().getService(serviceClass);
+        return serviceMgr.getService(serviceClass);
     }
 
     /**
-     * Gets a service given its class and a identifier.
+     * Gets a service given its class and an identifier.
      *
      * @param <T>
      * @param serviceClass
@@ -105,17 +134,18 @@ public final class Framework {
      */
     public static <T> T getService(Class<T> serviceClass, String name)
             throws Exception {
-        return ServiceManager.getInstance().getService(serviceClass, name);
+        return serviceMgr.getService(serviceClass, name);
     }
 
     /**
-     * Get a nuxeo-runtime local service.
+     * Gets a nuxeo-runtime local service.
+     *
      * @param <T>
      * @param serviceClass
      * @return
-     * @throws Exception
      */
     public static <T> T getLocalService(Class<T> serviceClass) {
+        //TODO: obsolete code remove it
         ServiceProvider provider = DefaultServiceProvider.getProvider();
         if (provider != null) {
             return provider.getService(serviceClass);
@@ -125,17 +155,14 @@ public final class Framework {
     }
 
     /**
-     * Get a (possibly remote) object that is bound to the given key.
-     * This method is using the regietred service providers to find the object
-     * @param key the object key
-     * @return the object or null if none (or if an error occured)
+     * Lookup a registered object given its key.
      *
-     * This method exists on the branch 1.4 only for compatibility with Apogee.
+     * @param key
+     * @return
      */
     public static Object lookup(String key) {
-        return null;
+        return null; //TODO
     }
-
 
     /**
      * Login in the system as the system user (a pseudo-user having all
@@ -208,6 +235,34 @@ public final class Framework {
         return null;
     }
 
+    public static void sendEvent(RuntimeServiceEvent event) {
+        Object[] listenersArray = listeners.getListeners();
+        for (Object listener : listenersArray) {
+            ((RuntimeServiceListener) listener).handleEvent(event);
+        }
+    }
+
+    /**
+     * Registers a listener to be notified about runtime events.
+     * <p>
+     * If the listener is already registered, do nothing.
+     *
+     * @param listener the listener to register
+     */
+    public static void addListener(RuntimeServiceListener listener) {
+        listeners.add(listener);
+    }
+
+    /**
+     * Removes the given listener.
+     * <p>
+     * If the listener is not registered, do nothing.
+     *
+     * @param listener
+     */
+    public static void removeListener(RuntimeServiceListener listener) {
+        listeners.remove(listener);
+    }
 
     /**
      * Gets the given property value if any, otherwise null.

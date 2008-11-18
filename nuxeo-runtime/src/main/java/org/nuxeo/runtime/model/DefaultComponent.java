@@ -23,7 +23,6 @@ package org.nuxeo.runtime.model;
  * Empty implementation for a component.
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DefaultComponent implements Component, Adaptable {
 

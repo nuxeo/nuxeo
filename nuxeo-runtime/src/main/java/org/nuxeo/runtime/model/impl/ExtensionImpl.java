@@ -132,6 +132,8 @@ public class ExtensionImpl implements Extension {
         buf.append(target);
         buf.append(", point:");
         buf.append(extensionPoint);
+        buf.append(", contributor:");
+        buf.append(component);
         buf.append('}');
         return buf.toString();
     }

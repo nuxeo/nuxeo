@@ -23,10 +23,9 @@ package org.nuxeo.runtime.model;
  * A component instance is a proxy to the component implementation object.
  * <p>
  * Component instance objects are created each time a component is
- * activated and destroy at component deactivation.
+ * activated, and destroyed at component deactivation.
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface ComponentInstance extends ComponentContext, Extensible, Adaptable {
 
@@ -54,21 +53,29 @@ public interface ComponentInstance extends ComponentContext, Extensible, Adaptab
     /**
      * Activates the implementation instance.
      *
-     * @throws Exception if any error occurs durring activation
+     * @throws Exception if any error occurs during activation
      */
     void activate() throws Exception;
 
     /**
      * Deactivates the implementation instance.
      *
-     * @throws Exception if any error occurs durring deactivation
+     * @throws Exception if any error occurs during deactivation
      */
     void deactivate() throws Exception;
 
     /**
      * Destroys this instance.
+     *
      * @throws Exception if any error occurs
      */
     void destroy() throws Exception;
+
+    /**
+     * Gets the list of provided services, or null if no service is provided.
+     *
+     * @return an array containing the service class names or null if no service is provided
+     */
+    String[] getProvidedServiceNames();
 
 }

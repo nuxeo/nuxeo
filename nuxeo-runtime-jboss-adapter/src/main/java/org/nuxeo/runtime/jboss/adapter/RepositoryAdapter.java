@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.deployment.DeploymentInfo;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.TextTemplate;
-import org.nuxeo.runtime.jboss.osgi.JBossOSGiAdapter;
+import org.nuxeo.osgi.jboss.JBossOSGiAdapter;
 import org.nuxeo.runtime.jboss.util.DeploymentHelper;
 import org.nuxeo.runtime.jboss.util.ServiceLocator;
 import org.nuxeo.runtime.services.event.Event;

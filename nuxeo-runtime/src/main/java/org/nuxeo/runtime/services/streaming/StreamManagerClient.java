@@ -125,9 +125,6 @@ public class StreamManagerClient implements StreamManager {
         this.minBufSize = minBufSize;
     }
 
-    /**
-     * @return the server.
-     */
     public StreamingServer getServer() {
         return server;
     }

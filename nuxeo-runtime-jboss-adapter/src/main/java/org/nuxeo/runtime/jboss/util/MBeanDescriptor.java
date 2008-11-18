@@ -148,7 +148,6 @@ public class MBeanDescriptor {
         return list.toArray(new MBeanOperationInfo[list.size()]);
     }
 
-
     public Class findManagementInterface(Class klass) {
         return _findManagementInterface(klass, klass.getName() + "MBean");
     }

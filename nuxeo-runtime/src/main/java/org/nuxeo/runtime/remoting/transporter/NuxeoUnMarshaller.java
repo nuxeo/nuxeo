@@ -19,10 +19,6 @@
 
 package org.nuxeo.runtime.remoting.transporter;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
-
 import org.jboss.remoting.marshal.UnMarshaller;
 import org.jboss.remoting.marshal.serializable.SerializableUnMarshaller;
 
@@ -35,14 +31,17 @@ public class NuxeoUnMarshaller extends SerializableUnMarshaller {
 
     private static final long serialVersionUID = -4715053329441344482L;
 
-    @Override
-    public Object read(InputStream inputStream, Map metadata)
-            throws IOException, ClassNotFoundException {
-        if (customClassLoader == null) {
-            customClassLoader = getClass().getClassLoader();
-        }
-        return super.read(inputStream, metadata);
+    public NuxeoUnMarshaller() {
+        super ();
+        // The only method I found to set nuxeo specific class loader
+        customClassLoader = getClass().getClassLoader();
     }
+
+    @Override
+    public void setClassLoader(ClassLoader classloader) {
+        // ignore - we are always using nuxeo class loader
+    }
+
 
     @Override
     public UnMarshaller cloneUnMarshaller() throws CloneNotSupportedException {

@@ -20,8 +20,7 @@
 package org.nuxeo.runtime.api;
 
 import java.util.Hashtable;
-
-import org.jetbrains.annotations.NotNull;
+import java.util.Map;
 
 /**
  * A service provider.
@@ -46,7 +45,7 @@ public class DefaultServiceProvider implements ServiceProvider {
         return provider;
     }
 
-    protected final Hashtable<Class<?>, ServiceRef> registry = new Hashtable<Class<?>, ServiceRef>();
+    protected final Map<Class<?>, ServiceRef> registry = new Hashtable<Class<?>, ServiceRef>();
 
     @SuppressWarnings("unchecked")
     public <T> T getService(Class<T> serviceClass) {
@@ -69,26 +68,20 @@ public class DefaultServiceProvider implements ServiceProvider {
         final Class<?> type;
         Object service;
 
-        public ServiceRef(@NotNull Object service) {
+        public ServiceRef(Object service) {
             this.service = service;
             type = service.getClass();
         }
 
-        public ServiceRef(@NotNull Class<?> type) {
+        public ServiceRef(Class<?> type) {
             service = null;
             this.type = type;
         }
 
-        /**
-         * @return the type.
-         */
         public Class<?> getType() {
             return type;
         }
 
-        /**
-         * @return the service.
-         */
         public Object getService() {
             if (service == null) {
                 try {

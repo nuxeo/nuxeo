@@ -42,7 +42,7 @@ public class RemoteComponent {
         extensions = new HashSet<Extension>();
     }
 
-    public RemoteContext getContext() throws Exception {
+    public RemoteContext getContext() {
         if (context == null) {
             context = new RemoteContext(sd, name, null);
         }

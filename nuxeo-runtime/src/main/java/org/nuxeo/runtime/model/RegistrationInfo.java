@@ -25,7 +25,6 @@ import java.util.Set;
 
 import org.nuxeo.runtime.Version;
 
-
 /**
  * The component registration info.
  * <p>
@@ -37,7 +36,6 @@ import org.nuxeo.runtime.Version;
  * instance using the current runtime context.
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface RegistrationInfo extends Serializable {
 
@@ -86,7 +84,7 @@ public interface RegistrationInfo extends Serializable {
     /**
      * Gets the defined extension points.
      *
-     * @return the defined extension poitns
+     * @return the defined extension points
      */
     ExtensionPoint[] getExtensionPoints();
 
@@ -139,5 +137,12 @@ public interface RegistrationInfo extends Serializable {
      * @return true if the component is resolved, false otherwise
      */
     boolean isResolved();
+
+    /**
+     * Gets the list of provided services or null if no service is provided.
+     *
+     * @return an array containing the service class names or null if no service are provided
+     */
+    String[] getProvidedServiceNames();
 
 }

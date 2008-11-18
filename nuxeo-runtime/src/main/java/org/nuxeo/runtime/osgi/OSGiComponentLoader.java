@@ -33,8 +33,9 @@ import org.osgi.framework.SynchronousBundleListener;
  */
 public class OSGiComponentLoader implements SynchronousBundleListener {
 
-    private final OSGiRuntimeService runtime;
     private static final Log log = LogFactory.getLog(OSGiComponentLoader.class);
+
+    private final OSGiRuntimeService runtime;
 
     public OSGiComponentLoader(OSGiRuntimeService runtime) {
         this.runtime = runtime;

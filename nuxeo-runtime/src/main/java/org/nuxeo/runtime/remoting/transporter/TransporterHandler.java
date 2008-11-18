@@ -119,7 +119,7 @@ public class TransporterHandler implements ServerInvocationHandler {
         //NOOP
     }
 
-    private Class getPrimitiveType(String name) {
+    private static Class getPrimitiveType(String name) {
         if (name.equals("byte")) {
             return Byte.TYPE;
         }

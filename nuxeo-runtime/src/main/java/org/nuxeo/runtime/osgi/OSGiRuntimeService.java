@@ -23,24 +23,27 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.Version;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
 
@@ -75,12 +78,13 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     private final BundleContext bundleContext;
 
-    private final Map<Bundle, RuntimeContext> contexts;
+    private final Map<String, RuntimeContext> contexts;
+
 
     public OSGiRuntimeService(BundleContext context) {
         super(new OSGiRuntimeContext(context.getBundle()));
         bundleContext = context;
-        contexts = new HashMap<Bundle, RuntimeContext>();
+        contexts = new ConcurrentHashMap<String, RuntimeContext>();
         String bindAddress = context.getProperty(PROP_NUXEO_BIND_ADDRESS);
         if (bindAddress != null) {
             properties.put(PROP_NUXEO_BIND_ADDRESS, bindAddress);
@@ -112,7 +116,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         if (ctx == null) {
             // hack to handle fragment bundles
             ctx = new OSGiRuntimeContext(bundle);
-            contexts.put(bundle, ctx);
+            contexts.put(bundle.getSymbolicName(), ctx);
             loadComponents(bundle, ctx);
         }
         return ctx;
@@ -267,7 +271,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     public void loadProperties(InputStream in) throws IOException {
         Properties props = new Properties();
         props.load(in);
-        for (Map.Entry<Object, Object> prop : props.entrySet()) {
+        for (Entry<Object, Object> prop : props.entrySet()) {
             properties.put(prop.getKey().toString(), prop.getValue().toString());
         }
     }
@@ -308,13 +312,14 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
         Map<ComponentName, Set<ComponentName>> pendingRegistrations = manager.getPendingRegistrations();
         Collection<ComponentName> activatingRegistrations = manager.getActivatingRegistrations();
-        msg.append(hr).append("\n= Component Loading Status: Pending: ").append(
-                pendingRegistrations.size()).append(" / Unstarted: ").append(
-                activatingRegistrations.size()).append(" / Total: ").append(
-                manager.getRegistrations().size()).append('\n');
+        msg.append(hr)
+                .append("\n= Component Loading Status: Pending: ").append(pendingRegistrations.size())
+                .append(" / Unstarted: ").append(activatingRegistrations.size())
+                .append(" / Total: ").append(manager.getRegistrations().size())
+                .append('\n');
         for (Entry<ComponentName, Set<ComponentName>> e : pendingRegistrations.entrySet()) {
-            msg.append("  * ").append(e.getKey()).append(" requires ").append(
-                    e.getValue()).append('\n');
+            msg.append("  * ").append(e.getKey())
+                    .append(" requires ").append(e.getValue()).append('\n');
         }
         for (ComponentName componentName : activatingRegistrations) {
             msg.append("  - ").append(componentName).append('\n');
@@ -327,6 +332,55 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         } else {
             log.error(msg);
         }
+    }
+
+    public Bundle findHostBundle(Bundle bundle) {
+        String hostId = (String)bundle.getHeaders().get(Constants.FRAGMENT_HOST);
+        if (hostId != null) {
+            int p = hostId.indexOf(';');
+            if (p > -1) { // remove version or other extra information if any
+                hostId = hostId.substring(0, p);
+            }
+            RuntimeContext ctx = contexts.get(hostId);
+            if (ctx != null) {
+                return ctx.getBundle();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public File getBundleFile(Bundle bundle) {
+        File file;
+        String location = bundle.getLocation();
+        String vendor = Framework.getProperty(Constants.FRAMEWORK_VENDOR);
+        if ("Eclipse".equals(vendor)) { // equinox framework
+            //update@plugins/org.eclipse.equinox.launcher_1.0.0.v20070606.jar
+            //initial@reference:file:plugins/org.eclipse.update.configurator_3.2.100.v20070615.jar/
+            if (location.endsWith("/")) {
+                location = location.substring(0, location.length()-1);
+            }
+            if (location.startsWith("update@")) {
+                location = location.substring("update@".length());
+            } else if (location.startsWith("initial@reference:file:")) {
+                location = location.substring("initial@reference:file:".length());
+            }
+            file = new File(location);
+        } else if (location.startsWith("file:")) { // nuxeo osgi adapter
+            try {
+                file = new File(new URI(location));
+            } catch (Exception e) {
+                return null;
+            }
+        } else { // may be a file path - this happens when using JarFileBundle
+                 // (for ex. in nxshell)
+            try {
+                file = new File(location);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return file != null && file.exists() ?  file : null;
     }
 
 }

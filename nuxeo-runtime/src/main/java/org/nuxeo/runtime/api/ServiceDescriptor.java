@@ -108,9 +108,6 @@ public class ServiceDescriptor implements Serializable {
         this.group = ServiceManager.getInstance().getOrCreateGroup(group);
     }
 
-    /**
-     * @return the group.
-     */
     public ServiceGroup getGroup() {
         return group;
     }
@@ -119,23 +116,14 @@ public class ServiceDescriptor implements Serializable {
         return group.getServer();
     }
 
-    /**
-     * @return the name.
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name the name to set.
-     */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return the className.
-     */
     public String getServiceClassName() {
         return serviceClassName;
     }
@@ -162,9 +150,6 @@ public class ServiceDescriptor implements Serializable {
         return name != null ? serviceClassName + '#' + name : serviceClassName;
     }
 
-    /**
-     * @return the locator.
-     */
     public String getLocator() {
         return locator == null ? locatorPattern : locator;
     }
@@ -213,12 +198,19 @@ public class ServiceDescriptor implements Serializable {
     }
 
     @Override
+    public int hashCode() {
+        int result;
+        result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (serviceClassName != null ? serviceClassName.hashCode() : 0);
+        result = 31 * result + (group != null ? group.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("[name=" + getName() + ", group=" + getGroup()
+        return "[name=" + getName() + ", group=" + getGroup()
                 + ", instanceName=" + getInstanceName() + " locator: "
-                + getLocator() + "]");
-        return stringBuffer.toString();
+                + getLocator() + "]";
     }
 
 }

@@ -25,6 +25,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -50,7 +51,6 @@ import org.osgi.framework.Bundle;
  * <code>runtime</code> instance variable in derived classes.
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class NXRuntimeTestCase extends MockObjectTestCase {
 
@@ -73,9 +73,9 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
 
     private StandaloneBundleLoader bundleLoader;
 
-    private Set<URL> readUrls;
+    private Set<URI> readUris;
 
-    private HashMap<String, BundleFile> bundles;
+    private Map<String, BundleFile> bundles;
 
     @Override
     protected void setUp() throws Exception {
@@ -95,12 +95,12 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
         if (workingDir != null) {
             FileUtils.deleteTree(workingDir);
         }
-        readUrls = null;
+        readUris = null;
         bundles = null;
         super.tearDown();
     }
 
-    private synchronized String generateId() {
+    private static synchronized String generateId() {
         long stamp = System.currentTimeMillis();
         counter ++;
         return Long.toHexString(stamp) + '-'
@@ -187,14 +187,15 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
             sb.append('\n');
         }
         log.debug(sb.toString());
-        readUrls = new HashSet<URL>();
+        readUris = new HashSet<URI>();
         bundles = new HashMap<String, BundleFile>();
     }
 
     /**
      * Makes sure there is no previous runtime hanging around.
-     * <p>This happens for instance if a previous test had errors in its
-     * <code>setUp()</code>, because tearDown has not been called</p>
+     * <p>
+     * This happens for instance if a previous test had errors in its
+     * <code>setUp()</code>, because <code>tearDown()</code> has not been called.
      *
      * @throws Exception
      */
@@ -209,8 +210,7 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
     }
 
     public static URL getResource(String resource) {
-        return Thread.currentThread().getContextClassLoader()
-                .getResource(resource);
+        return Thread.currentThread().getContextClassLoader().getResource(resource);
     }
 
     /**
@@ -234,8 +234,9 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
 
     /**
      * Deploys a contribution file by looking for it in the class loader.
-     * <p>The first contribution file found by the class loader will be used.
-     * You have no guarantee in case of name collisions</p>
+     * <p>
+     * The first contribution file found by the class loader will be used.
+     * You have no guarantee in case of name collisions.
      *
      * @deprecated use the less ambiguous {@method deployContrib(bundleName, contrib)}
      * @param contrib the relative path to the contribution file
@@ -268,8 +269,8 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
      * For compatibility reasons the name of the bundle may be a jar name, but
      * this use is discouraged and deprecated.
      *
-     * @param bundle The name of the bundle to peek the contrib in
-     * @param contrib The path to contrib in the bundle.
+     * @param bundle the name of the bundle to peek the contrib in
+     * @param contrib the path to contrib in the bundle.
      * @throws Exception
      */
     public void deployContrib(String bundle, String contrib) throws Exception {
@@ -317,7 +318,9 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
         runtime.getContext().undeploy(url);
     }
 
-    protected void undeployContrib(URL url, String contrib) throws Exception {
+    // TODO: Never used. Remove?
+    @Deprecated
+    protected void undeployContrib(URL url, String contrib) {
         assertEquals(runtime, Framework.getRuntime());
         log.info("Undeploying contribution from " + url.toString());
         try {
@@ -326,7 +329,6 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
             e.printStackTrace();
             fail("Failed to undeploy contrib " + url.toString());
         }
-
     }
 
     protected static boolean isVersionSuffix(String s) {
@@ -338,7 +340,8 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
 
     /**
      * Resolves an URL for bundle deployment code.
-     * <p>TODO: Implementation could be finer...</p>
+     * <p>
+     * TODO: Implementation could be finer...
      *
      * @return the resolved url
      */
@@ -368,8 +371,9 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
     }
 
     /**
-     * Deploy a whole OSGI bundle.
-     * <p>The lookup is first done on symbolic name, as set in <code>MANIFEST.MF</code>
+     * Deploys a whole OSGI bundle.
+     * <p>
+     * The lookup is first done on symbolic name, as set in <code>MANIFEST.MF</code>
      * and then falls back to the bundle url (e.g., <code>nuxeo-platform-search-api</code>)
      * for backwards compatibility.
      *
@@ -388,7 +392,7 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
             return null;
         }
         Attributes attrs = manifest.getMainAttributes();
-        String name = (String) attrs.getValue("Bundle-SymbolicName");
+        String name = attrs.getValue("Bundle-SymbolicName");
         if (name == null) {
             return null;
         }
@@ -402,11 +406,12 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
             return bundleFile;
         }
         for (URL url: urls) {
-            if (readUrls.contains(url)) {
+            URI uri = url.toURI();
+            if (readUris.contains(uri)) {
                 continue;
             }
-            File file = new File(url.toURI());
-            readUrls.add(url);
+            File file = new File(uri);
+            readUris.add(uri);
             try {
                 if (file.isDirectory()) {
                     bundleFile = new DirectoryBundleFile(file);
@@ -426,7 +431,8 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
                 return bundleFile;
             }
         }
-        log.warn(String.format("No bundle with symbolic name '%s'; Falling back to deprecated url lookup scheme", bundleName));
+        log.warn(String.format(
+                "No bundle with symbolic name '%s'; Falling back to deprecated url lookup scheme", bundleName));
         return oldLookupBundle(bundleName);
     }
 
@@ -442,8 +448,7 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
         }
         log.warn(String.format(
                 "URL-based bundle lookup is deprecated. Please use the symbolic name from MANIFEST (%s) instead",
-                readSymbolicName(bundleFile))
-                );
+                readSymbolicName(bundleFile)));
         return bundleFile;
     }
 

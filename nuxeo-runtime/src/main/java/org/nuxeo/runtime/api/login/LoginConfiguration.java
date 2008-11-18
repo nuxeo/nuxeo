@@ -36,7 +36,7 @@ public class LoginConfiguration extends Configuration {
     private final Configuration parent;
 
     LoginConfiguration(LoginComponent login) {
-        this (login, null);
+        this(login, null);
     }
 
     LoginConfiguration(LoginComponent login, Configuration parent) {
@@ -44,9 +44,6 @@ public class LoginConfiguration extends Configuration {
         this.parent = parent;
     }
 
-    /**
-     * @return the parent.
-     */
     public Configuration getParent() {
         return parent;
     }

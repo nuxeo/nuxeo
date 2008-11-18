@@ -77,16 +77,10 @@ public class ServiceHost implements Serializable {
         return serviceLocator;
     }
 
-    /**
-     * @return the host.
-     */
     public String getHost() {
         return host;
     }
 
-    /**
-     * @return the port.
-     */
     public int getPort() {
         return port;
     }
@@ -96,9 +90,6 @@ public class ServiceHost implements Serializable {
         this.port = port;
     }
 
-    /**
-     * @param properties the properties to set.
-     */
     @XNodeMap(value = "property", key = "@name", componentType = String.class, type = Properties.class, trim = true)
     public void setProperties(Properties properties) {
         this.properties = new Properties();
@@ -113,9 +104,6 @@ public class ServiceHost implements Serializable {
         }
     }
 
-    /**
-     * @return the properties.
-     */
     public Properties getProperties() {
         return properties;
     }
@@ -139,9 +127,6 @@ public class ServiceHost implements Serializable {
         }
     }
 
-    /**
-     * @return the groups.
-     */
     public ServiceGroup[] getGroups() {
         if (groups == null) {
             groups = new ServiceGroup[] {ServiceManager.getInstance().getRootGroup()};
@@ -200,7 +185,6 @@ public class ServiceHost implements Serializable {
     public int hashCode() {
         return serviceLocatorClass != null ? serviceLocatorClass.hashCode() : 0;
     }
-
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();

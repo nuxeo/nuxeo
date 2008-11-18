@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.jboss.system.ListenerServiceMBeanSupport;
-import org.nuxeo.runtime.NXRuntime;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
@@ -52,7 +51,7 @@ public class RuntimeAdapter extends ListenerServiceMBeanSupport implements Runti
     }
 
     public String getHomeLocation() {
-        if (!NXRuntime.isInitialized()) {
+        if (!Framework.isInitialized()) {
             return "";
         }
         File home = Framework.getRuntime().getHome();
@@ -88,14 +87,14 @@ public class RuntimeAdapter extends ListenerServiceMBeanSupport implements Runti
     }
 
     public String getDescription() {
-        if (!NXRuntime.isInitialized()) {
+        if (!Framework.isInitialized()) {
             return "";
         }
         return Framework.getRuntime().getDescription();
     }
 
     public Version getVersion() {
-        if (!NXRuntime.isInitialized()) {
+        if (!Framework.isInitialized()) {
             return new Version(0, 0, 0);
         }
         return Framework.getRuntime().getVersion();
@@ -111,9 +110,6 @@ public class RuntimeAdapter extends ListenerServiceMBeanSupport implements Runti
         return null;
     }
 
-    /**
-     * @return the tempDeployDir
-     */
     public File getTempDeployDir() {
         return tempDeployDir;
     }
