@@ -74,14 +74,14 @@ public class FakeIndexableDocResourceConf implements IndexableResourceConf {
         return null;
     }
 
-    public IndexableResource getIndexableResourceInstance()
+    public static IndexableResource getIndexableResourceInstance()
             throws IndexingException {
-        IndexableResource resource = null;
+        IndexableResource resource;
 
         try {
-            resource = (IndexableResource) getKlass().newInstance();
+            resource = (IndexableResource) klass.newInstance();
         } catch (InstantiationException e) {
-           throw new IndexingException(e.getMessage());
+            throw new IndexingException(e.getMessage());
         } catch (IllegalAccessException e) {
             throw new IndexingException(e.getMessage());
         }

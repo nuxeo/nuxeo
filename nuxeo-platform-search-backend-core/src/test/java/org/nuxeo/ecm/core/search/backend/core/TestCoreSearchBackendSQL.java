@@ -21,46 +21,57 @@ import java.io.File;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import org.nuxeo.common.utils.FileUtils;
+
 /*
  * @author Florent Guillaume
  */
 public class TestCoreSearchBackendSQL extends CoreSearchBackendTestCase {
 
+    /*
+     * ----- Derby configuration -----
+     */
+
+    /** This directory will be deleted and recreated. */
+    protected static final String DERBY_DIRECTORY = "target/test/derby";
+
+    protected static final String DERBY_LOG = "target/test/derby.log";
+
     @Override
     protected void deployRepository() throws Exception {
         deployBundle("org.nuxeo.ecm.core.storage.sql");
-        clearRepositoryDir();
+        setUpRepositoryDerby();
         deployContrib("org.nuxeo.ecm.platform.search.backend.core.tests",
                 "OSGI-INF/repository-sql-contrib.xml");
     }
 
     @Override
     protected void undeployRepository() throws Exception {
+        tearDownRepositoryDerby();
+    }
+
+    /*
+     * ----- Derby -----
+     */
+
+    protected static void setUpRepositoryDerby() {
+        File dbdir = new File(DERBY_DIRECTORY);
+        File parent = dbdir.getParentFile();
+        FileUtils.deleteTree(dbdir);
+        parent.mkdirs();
+        System.setProperty("derby.stream.error.file",
+                new File(DERBY_LOG).getAbsolutePath());
+    }
+
+    protected static void tearDownRepositoryDerby() throws Exception {
         try {
             DriverManager.getConnection("jdbc:derby:;shutdown=true");
-            fail("Expected Derby shutdown exception");
         } catch (SQLException e) {
-            assertEquals("Derby system shutdown.", e.getMessage());
-        }
-    }
-
-    protected void clearRepositoryDir() throws Exception {
-        File testdir = new File("target/test");
-        testdir.mkdirs();
-        File dbdir = new File(testdir, "repository");
-        deleteRecursive(dbdir);
-        System.setProperty("derby.stream.error.file", new File(testdir,
-                "derby.log").getAbsolutePath());
-
-    }
-
-    protected static void deleteRecursive(File file) {
-        if (file.isDirectory()) {
-            for (String child : file.list()) {
-                deleteRecursive(new File(file, child));
+            if ("Derby system shutdown.".equals(e.getMessage())) {
+                return;
             }
         }
-        file.delete();
+        throw new RuntimeException("Expected Derby shutdown exception");
     }
 
 }

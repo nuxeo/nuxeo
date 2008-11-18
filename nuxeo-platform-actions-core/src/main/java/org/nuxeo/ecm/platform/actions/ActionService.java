@@ -89,12 +89,10 @@ public class ActionService extends DefaultComponent implements ActionManager {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public List<Action> getActions(String category, ActionContext context) {
         return getActions(category, context, true);
     }
 
-    @SuppressWarnings("unchecked")
     public List<Action> getActions(String category, ActionContext context,
             boolean hideUnavailableActions) {
         List<Action> actions = actionReg.getActions(category);

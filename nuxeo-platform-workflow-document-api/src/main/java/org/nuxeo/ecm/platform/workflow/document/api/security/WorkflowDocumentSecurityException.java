@@ -32,7 +32,6 @@ public class WorkflowDocumentSecurityException extends WMWorkflowException {
     private static final long serialVersionUID = -7998239443364067564L;
 
     public WorkflowDocumentSecurityException() {
-
     }
 
     public WorkflowDocumentSecurityException(String message) {
