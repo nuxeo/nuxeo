@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.modifier;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -94,7 +96,16 @@ public abstract class AbstractPluginTestCase extends RepositoryTestCase {
      * create a ByteArrayBlob with the content of the given file.
      */
     protected ByteArrayBlob getFileContent(String filePath, String mimeType) {
-        File file = new File(filePath);
+        File file;
+		try {
+			URL fileURL = getClass().getClassLoader().getResource(filePath);
+			if (fileURL == null) {
+				throw new RuntimeException("cannot find " + filePath + ", check resources and your classpath");
+			}
+			file = new File(fileURL.toURI());
+		} catch (URISyntaxException e1) {
+			throw new RuntimeException("cannot find " + filePath + ", check resources and your classpath");
+		}
         try {
             final byte[] fileContent = FileUtils.readBytes(file);
             return new ByteArrayBlob(fileContent, "application/msword");
