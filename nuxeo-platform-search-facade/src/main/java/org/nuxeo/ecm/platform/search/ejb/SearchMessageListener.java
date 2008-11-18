@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.search.ejb;
 
+import java.io.Serializable;
+
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJBException;
 import javax.ejb.MessageDriven;
@@ -62,14 +64,17 @@ import org.nuxeo.runtime.api.Framework;
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "topic/NXPMessages"),
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
         @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
-        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " IN ('"
-                + JMSConstant.DOCUMENT_MESSAGE + "','" + JMSConstant.EVENT_MESSAGE + "')") })
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE
+                + " IN ('"
+                + JMSConstant.DOCUMENT_MESSAGE
+                + "','"
+                + JMSConstant.EVENT_MESSAGE + "')") })
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class SearchMessageListener implements MessageListener {
 
     private static final Log log = LogFactory.getLog(SearchMessageListener.class);
 
-    private transient SearchService service;
+    private SearchService service;
 
     private LoginContext loginCtx;
 
@@ -97,14 +102,6 @@ public class SearchMessageListener implements MessageListener {
 
         try {
             login();
-        } catch (Exception e) {
-            throw new EJBException(e);
-        }
-
-        // :XXX: deal with other events such as audit, relations, etc...
-
-        try {
-
             SearchService service = getSearchService();
 
             // Check if the search service is active
@@ -112,9 +109,10 @@ public class SearchMessageListener implements MessageListener {
                 return;
             }
 
-            Object obj = ((ObjectMessage)message).getObject();
-            if(!(obj instanceof DocumentMessage))
+            Object obj = ((ObjectMessage) message).getObject();
+            if (!(obj instanceof DocumentMessage)) {
                 return;
+            }
             DocumentMessage doc = (DocumentMessage) obj;
             String eventId = doc.getEventId();
 
@@ -141,9 +139,14 @@ public class SearchMessageListener implements MessageListener {
                         + " is desactivated for indexing");
                 return;
             }
-
             boolean recursive = eventConf.isRecursive();
             String action = eventConf.getAction();
+
+            Serializable blockIndexing = doc.getEventInfo().get(
+                    EventMessage.BLOCK_ASYNC_INDEXING);
+            if (blockIndexing != null && (Boolean) blockIndexing) {
+                return;
+            }
 
             // get the wrapper if available
             DocumentModel dm = doc.getAdapter(DocumentModelIndexingWrapper.class);

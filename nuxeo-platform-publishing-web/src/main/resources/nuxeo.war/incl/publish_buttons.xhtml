@@ -2,8 +2,8 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core"
   class="clipboard">
 
@@ -27,14 +27,14 @@ function confirmDeleteDocuments() {
   </f:subview>
 
   <div id="selection_buttons">
-    <t:dataList var="sel_action" value="#{publishActions.actionsForPublishDocument}">
+    <nxu:dataList var="sel_action" value="#{publishActions.actionsForPublishDocument}">
       <nxh:commandButton
         styleClass="button" type="submit"
         action="#{sel_action.getLink()}"
         value="#{messages[sel_action.label]}"
         onclick="#{sel_action.confirm}"
         />
-    </t:dataList>
+    </nxu:dataList>
   </div>
   <div style="clear:both"></div>
 

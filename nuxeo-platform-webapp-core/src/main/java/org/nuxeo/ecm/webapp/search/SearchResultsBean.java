@@ -38,10 +38,11 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -74,7 +75,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 @Transactional
 public class SearchResultsBean extends InputController implements SearchResults, Serializable {
 
-    private static final long serialVersionUID = -8961300556253836623L;
+    private static final long serialVersionUID = 7823660685121811606L;
 
     private static final Log log = LogFactory.getLog(SearchResultsBean.class);
 
@@ -103,10 +104,10 @@ public class SearchResultsBean extends InputController implements SearchResults,
     // Should never be access for read directly
     private transient PagedDocumentsProvider provider;
 
-    public void reset()
-    {
-        provider=null;
+    public void reset() {
+        provider = null;
     }
+
     public void init() throws ClientException {
         log.debug("Initializing...");
     }
@@ -114,7 +115,6 @@ public class SearchResultsBean extends InputController implements SearchResults,
     public void destroy() {
         log.debug("Destroy...");
     }
-
 
     public String repeatSearch() throws ClientException {
         if (newProviderName == null) {
@@ -194,6 +194,7 @@ public class SearchResultsBean extends InputController implements SearchResults,
 
     // GR TODO use a provider invalidation event
     @Observer(value = { org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHILDREN_CHANGED }, create = false)
+    @BypassInterceptors
     public void refreshSelectModels() {
         Context context = Contexts.getEventContext();
         context.remove("searchSelectModel_simple");
@@ -205,7 +206,8 @@ public class SearchResultsBean extends InputController implements SearchResults,
         if (providerName == null) {
             throw new ClientException("providerName has not been set yet");
         }
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(SEARCH_DOCUMENT_LIST,
                 getResultDocuments(providerName), selectedDocuments);
         model.addSelectModelListener(this);
@@ -355,4 +357,5 @@ public class SearchResultsBean extends InputController implements SearchResults,
         }
         return null;
     }
+
 }

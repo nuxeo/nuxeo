@@ -41,7 +41,6 @@ import org.nuxeo.ecm.platform.workflow.api.client.wfmc.impl.WMWorkItemIteratorIm
 public class TestWAPISerialization extends TestCase {
 
     public void testWMWorkItemIterator() throws Exception {
-
         // Empty
         WMWorkItemIterator it = new WMWorkItemIteratorImpl();
         assertTrue(SerializableHelper.isSerializable(it));
@@ -50,11 +49,9 @@ public class TestWAPISerialization extends TestCase {
         List<WMWorkItemInstance> items = new ArrayList<WMWorkItemInstance>();
         it = new WMWorkItemIteratorImpl(items);
         assertTrue(SerializableHelper.isSerializable(it));
-
     }
 
     public void testWMProcessInstanceIterator() throws Exception {
-
         // Empty
         WMProcessInstanceIterator it = new WMProcessInstanceIteratorImpl();
         assertTrue(SerializableHelper.isSerializable(it));
@@ -63,7 +60,6 @@ public class TestWAPISerialization extends TestCase {
         List<WMProcessInstance> items = new ArrayList<WMProcessInstance>();
         it = new WMProcessInstanceIteratorImpl(items);
         assertTrue(SerializableHelper.isSerializable(it));
-
     }
 
 }

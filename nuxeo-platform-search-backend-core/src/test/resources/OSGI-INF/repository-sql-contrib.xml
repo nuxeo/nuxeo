@@ -11,8 +11,8 @@
       <repository>
         <xa-datasource>org.apache.derby.jdbc.EmbeddedXADataSource</xa-datasource>
         <property name="createDatabase">create</property>
-        <!-- Directory name mentioned in TestCoreSearchBackend -->
-        <property name="databaseName">target/test/repository</property>
+        <!-- Directory name mentioned in TestCoreSearchBackendSQL -->
+        <property name="databaseName">target/test/derby</property>
         <property name="user">sa</property>
         <property name="password"></property>
       </repository>
