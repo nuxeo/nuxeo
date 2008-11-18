@@ -54,9 +54,6 @@ public final class XML {
     // Utility class.
     private XML() {}
 
-    /**
-     * @return the builderFactory
-     */
     public static DocumentBuilderFactory getBuilderFactory() {
         return builderFactory;
     }

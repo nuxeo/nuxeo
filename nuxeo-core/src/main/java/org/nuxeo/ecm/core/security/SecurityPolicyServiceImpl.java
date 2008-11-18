@@ -21,8 +21,10 @@ package org.nuxeo.ecm.core.security;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 
 /**
  * Security policy service implementation.
@@ -84,7 +87,7 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
                 }
             }
         }
-        log.debug("Ordered security policies: "+ policyNames.toString());
+        log.debug("Ordered security policies: " + policyNames.toString());
     }
 
     private List<SecurityPolicy> getPolicies() {
@@ -96,6 +99,34 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
 
     private void resetPolicies() {
         policies = null;
+    }
+
+    public boolean arePoliciesRestrictingPermission(String permission) {
+        for (SecurityPolicy policy : getPolicies()) {
+            if (policy.isRestrictingPermission(permission)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean arePoliciesExpressibleInQuery() {
+        for (SecurityPolicy policy : getPolicies()) {
+            if (!policy.isExpressibleInQuery()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public Collection<SQLQuery.Transformer> getPoliciesQueryTransformers() {
+        List<SQLQuery.Transformer> transformers = new LinkedList<SQLQuery.Transformer>();
+        for (SecurityPolicy policy : getPolicies()) {
+            if (policy.isExpressibleInQuery()) {
+                transformers.add(policy.getQueryTransformer());
+            }
+        }
+        return transformers;
     }
 
     public void registerDescriptor(SecurityPolicyDescriptor descriptor)

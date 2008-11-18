@@ -74,7 +74,7 @@ public class Update implements Serializable {
         buf.append(newValues);
         if (from != null) {
             buf.append(" FROM ");
-            if (table.dialect.doesUpdateFromRepeatSelf()) {
+            if (table.getDialect().doesUpdateFromRepeatSelf()) {
                 buf.append(table.getQuotedName());
                 buf.append(", ");
             }

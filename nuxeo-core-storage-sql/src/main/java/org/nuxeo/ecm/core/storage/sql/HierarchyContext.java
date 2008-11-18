@@ -203,10 +203,9 @@ public class HierarchyContext extends Context {
      */
     public List<SimpleFragment> getChildren(Serializable parentId, String name,
             boolean complexProp) throws StorageException {
-        List<SimpleFragment> fragments;
 
         Children children = getChildrenCache(parentId, complexProp);
-        fragments = children.getFragmentsByValue(name);
+        List<SimpleFragment> fragments = children.getFragmentsByValue(name);
         if (fragments != null) {
             // we know all the children
             return fragments;

@@ -51,4 +51,8 @@ public interface LifeCycleState {
      */
     Collection<String> getAllowedStateTransitions();
 
+    /**
+     * Returns true if state is a valid initial state
+     */
+    boolean isInitial();
 }

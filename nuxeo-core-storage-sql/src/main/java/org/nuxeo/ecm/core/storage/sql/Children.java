@@ -81,13 +81,12 @@ public class Children {
      *
      * @param context the context from which to fetch fragments
      * @param filterKey the key to use to filter on names
-     * @param allowDuplicateValue whether same-name siblings are allowed
      * @param empty if the new instance is created empty
      */
     public Children(Context context, String filterKey, boolean empty) {
         this.context = context;
         this.filterKey = filterKey;
-        this.complete = empty;
+        complete = empty;
     }
 
     protected Serializable fragmentValue(SimpleFragment fragment) {

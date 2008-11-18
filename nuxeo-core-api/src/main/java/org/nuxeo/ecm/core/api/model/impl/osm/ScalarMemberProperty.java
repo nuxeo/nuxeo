@@ -35,13 +35,12 @@ public class ScalarMemberProperty extends ScalarProperty {
     private static final long serialVersionUID = 1537310098432620929L;
 
     public ScalarMemberProperty(Property parent, Field field) {
-        super (parent, field);
+        super(parent, field);
     }
 
     public ScalarMemberProperty(Property parent, Field field, int flags) {
-        super (parent, field, flags);
+        super(parent, field, flags);
     }
-
 
     @Override
     public void internalSetValue(Serializable value) throws PropertyException {

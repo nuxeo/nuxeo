@@ -38,8 +38,7 @@ public class AccessLevelSecurityPolicy extends AbstractSecurityPolicy {
 
     public Access checkPermission(Document doc, ACP mergedAcp,
             Principal principal, String permission,
-            String[] resolvedPermissions, String[] additionalPrincipals)
-            throws SecurityException {
+            String[] resolvedPermissions, String[] additionalPrincipals) {
         Access access = Access.UNKNOWN;
         try {
             if ("Folder".equals(doc.getType().getName())

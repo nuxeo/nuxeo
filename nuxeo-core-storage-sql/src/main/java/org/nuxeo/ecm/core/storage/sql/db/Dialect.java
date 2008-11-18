@@ -17,10 +17,14 @@
 
 package org.nuxeo.ecm.core.storage.sql.db;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Map;
 
 import org.hibernate.HibernateException;
 import org.hibernate.dialect.DerbyDialect;
@@ -205,6 +209,10 @@ public class Dialect {
         return true;
     }
 
+    public boolean needsOrderByKeysAfterDistinct() {
+        return dialect instanceof PostgreSQLDialect;
+    }
+
     /**
      * When doing a comparison between a text field and something else, is some
      * casting required and with what pattern?
@@ -216,9 +224,150 @@ public class Dialect {
      */
     public String textComparisonCasting() {
         if (dialect instanceof DerbyDialect) {
-            return "CAST(%1$s AS VARCHAR(%2$d))";
+            return "CAST(%s AS VARCHAR(%d))";
         }
         return null;
+    }
+
+    /**
+     * Does the dialect support passing ARRAY values (to stored procedures
+     * mostly).
+     * <p>
+     * If not, we'll simulate them using a string and a separator.
+     *
+     * @return
+     */
+    public boolean supportsArrays() {
+        return dialect instanceof PostgreSQLDialect;
+    }
+
+    /**
+     * Factory method for creating Array objects, suitable for passing to
+     * {@link PreparedStatement#setArray}.
+     * <p>
+     * (An equivalent method is defined by JDBC4 on the {@link Connection}
+     * class.)
+     *
+     * @param type the SQL type of the elements
+     * @param elements the elements of the array
+     * @return an Array holding the elements
+     */
+    public Array createArrayOf(int type, Object[] elements) throws SQLException {
+        if (dialect instanceof PostgreSQLDialect) {
+            if (elements == null || elements.length == 0) {
+                return null;
+            }
+            String typeName = getTypeName(type, 0, 0, 0);
+            return new PostgreSQLArray(type, typeName, elements);
+        }
+        throw new SQLException("Not supported");
+    }
+
+    public static class PostgreSQLArray implements Array {
+
+        private static final String NOT_SUPPORTED = "Not supported";
+
+        protected final int type;
+
+        protected final String typeName;
+
+        protected final Object[] elements;
+
+        protected final String string;
+
+        public PostgreSQLArray(int type, String typeName, Object[] elements) {
+            this.type = type;
+            if (type == Types.VARCHAR) {
+                typeName = "varchar";
+            }
+            this.typeName = typeName;
+            this.elements = elements;
+            StringBuilder b = new StringBuilder();
+            appendArray(b, elements);
+            string = b.toString();
+        }
+
+        protected static void appendArray(StringBuilder b, Object[] elements) {
+            b.append('{');
+            for (int i = 0; i < elements.length; i++) {
+                Object e = elements[i];
+                if (i > 0) {
+                    b.append(',');
+                }
+                if (e == null) {
+                    b.append("NULL");
+                } else if (e.getClass().isArray()) {
+                    appendArray(b, (Object[]) e);
+                } else {
+                    // we always transform to a string, the postgres
+                    // array parsing methods will then reparse this as needed
+                    String s = e.toString();
+                    b.append('"');
+                    for (int j = 0; j < s.length(); j++) {
+                        char c = s.charAt(j);
+                        if (c == '"' || c == '\\') {
+                            b.append('\\');
+                        }
+                        b.append(c);
+                    }
+                    b.append('"');
+                }
+            }
+            b.append('}');
+        }
+
+        @Override
+        public String toString() {
+            return string;
+        }
+
+        public int getBaseType() {
+            return type;
+        }
+
+        public String getBaseTypeName() {
+            return typeName;
+        }
+
+        public Object getArray() {
+            return elements;
+        }
+
+        public Object getArray(Map<String, Class<?>> map) throws SQLException {
+            throw new SQLException(NOT_SUPPORTED);
+        }
+
+        public Object getArray(long index, int count) throws SQLException {
+            throw new SQLException(NOT_SUPPORTED);
+        }
+
+        public Object getArray(long index, int count, Map<String, Class<?>> map)
+                throws SQLException {
+            throw new SQLException(NOT_SUPPORTED);
+        }
+
+        public ResultSet getResultSet() throws SQLException {
+            throw new SQLException(NOT_SUPPORTED);
+        }
+
+        public ResultSet getResultSet(Map<String, Class<?>> map)
+                throws SQLException {
+            throw new SQLException(NOT_SUPPORTED);
+        }
+
+        public ResultSet getResultSet(long index, int count)
+                throws SQLException {
+            throw new SQLException(NOT_SUPPORTED);
+        }
+
+        public ResultSet getResultSet(long index, int count,
+                Map<String, Class<?>> map) throws SQLException {
+            throw new SQLException(NOT_SUPPORTED);
+        }
+
+        // this is needed by Java 6
+        public void free() {
+        }
     }
 
 }

@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.security;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,6 +41,7 @@ import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
 import org.nuxeo.ecm.core.api.security.impl.SecuritySummaryEntryImpl;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -124,8 +126,21 @@ public class SecurityService extends DefaultComponent {
         return permissionProvider;
     }
 
-    public void invalidateCache(Session session, String username) {
+    // Never used. Remove ?
+    public static void invalidateCache(Session session, String username) {
         session.getRepository().getSecurityManager().invalidateCache(session);
+    }
+
+    public boolean arePoliciesRestrictingPermission(String permission) {
+        return securityPolicyService.arePoliciesRestrictingPermission(permission);
+    }
+
+    public boolean arePoliciesExpressibleInQuery() {
+        return securityPolicyService.arePoliciesExpressibleInQuery();
+    }
+
+    public Collection<SQLQuery.Transformer> getPoliciesQueryTransformers() {
+        return securityPolicyService.getPoliciesQueryTransformers();
     }
 
     public boolean checkPermission(Document doc, Principal principal,
@@ -197,7 +212,7 @@ public class SecurityService extends DefaultComponent {
         }
     }
 
-    protected String[] getPrincipalsToCheck(Principal principal) {
+    public static String[] getPrincipalsToCheck(Principal principal) {
         List<String> userGroups = null;
         if (principal instanceof NuxeoPrincipal) {
             userGroups = ((NuxeoPrincipal) principal).getAllGroups();
@@ -296,7 +311,7 @@ public class SecurityService extends DefaultComponent {
         return Access.UNKNOWN;
     }
 
-    public List<SecuritySummaryEntry> getSecuritySummary(Document doc,
+    public static List<SecuritySummaryEntry> getSecuritySummary(Document doc,
             Boolean includeParents) {
         List<SecuritySummaryEntry> result = new ArrayList<SecuritySummaryEntry>();
 
@@ -306,20 +321,20 @@ public class SecurityService extends DefaultComponent {
 
         addChildrenToSecuritySummary(doc, result);
         // TODO: change API to use boolean instead
-        if (includeParents.booleanValue()) {
+        if (includeParents) {
             addParentsToSecurirySummary(doc, result);
         }
         return result;
     }
 
-    private SecuritySummaryEntry createSecuritySummaryEntry(Document doc)
+    private static SecuritySummaryEntry createSecuritySummaryEntry(Document doc)
             throws DocumentException {
         return new SecuritySummaryEntryImpl(new IdRef(doc.getUUID()),
                 new PathRef(doc.getPath()),
                 doc.getSession().getSecurityManager().getACP(doc));
     }
 
-    private void addParentsToSecurirySummary(Document doc,
+    private static void addParentsToSecurirySummary(Document doc,
             List<SecuritySummaryEntry> summary) {
 
         Document parent;
@@ -349,7 +364,7 @@ public class SecurityService extends DefaultComponent {
         addParentsToSecurirySummary(parent, summary);
     }
 
-    private void addChildrenToSecuritySummary(Document doc,
+    private static void addChildrenToSecuritySummary(Document doc,
             List<SecuritySummaryEntry> summary) {
         try {
             SecuritySummaryEntry entry = createSecuritySummaryEntry(doc);

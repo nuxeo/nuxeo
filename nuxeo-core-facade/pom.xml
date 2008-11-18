@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>1.4.4-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-core-facade</artifactId>
@@ -76,16 +76,6 @@
     </dependency>
 
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency><!-- TO BE REMOVED; if not present, tests are running in spite of exclude tags -->
       <groupId>jboss</groupId>
       <artifactId>jbosssx</artifactId>
       <scope>test</scope>
@@ -94,12 +84,10 @@
       <scope>test</scope>
       <groupId>jboss</groupId>
       <artifactId>jboss-j2ee</artifactId>
-      <version>4.0.4.GA</version>
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jnp-client</artifactId>
-      <version>4.0.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -111,7 +99,6 @@
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-aop-jdk50</artifactId>
-      <version>1.4.0.SP1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -129,7 +116,6 @@
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>ejb3</artifactId>
-      <version>3.0-RC8</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -141,12 +127,6 @@
         <configuration>
           <excludes>
             <exclude>**/TestApiHeavyLoad_remote.java</exclude>
-            <!-- XXX The following provokes OutOfMemoryError: Java heap space -->
-            <!-- AT: re-activated, these tests are important -->
-            <!--
-              <exclude>**/TestLocalAPI.java</exclude>
-              <exclude>**/TestSecurity.java</exclude>
-            -->
           </excludes>
         </configuration>
       </plugin>
