@@ -18,8 +18,12 @@
 package org.nuxeo.ecm.core.query.sql.model;
 
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
+
+import sun.misc.Regexp;
 
 import junit.framework.TestCase;
 
@@ -35,6 +39,12 @@ public class TestQueryVisitor extends TestCase {
         v.visitQuery(SQLQueryParser.parse(sql));
         assertEquals(expected, v.toString());
     }
+
+    public void testRemoveTZSuffixes() {
+    	assertEquals("000", removeTzSuffix("000+00:00')"));
+    	assertEquals("000", removeTzSuffix("000Z')"));
+    }
+ 
 
     public void testVisitor() throws Exception {
         String sql;
@@ -73,12 +83,18 @@ public class TestQueryVisitor extends TestCase {
         // hack around timezone variations for this test
         sql = "select * from d where foo = TIMESTAMP '2008-08-08 12:34:56'";
         expected = "SELECT * FROM d WHERE (foo = TIMESTAMP '2008-08-08T12:34:56.000+00:00')";
-        expected = expected.substring(0, expected.length() - 8); // truncate tz
+        
         PrintVisitor v = new PrintVisitor();
         v.visitQuery(SQLQueryParser.parse(sql));
         String got = v.toString();
-        got = got.substring(0, got.length() - 8); // truncate timezone
-        assertEquals(expected, got);
+        assertEquals(removeTzSuffix(expected), removeTzSuffix(got));
+    }
+    
+    private static final Pattern REMOVE_TZ_PATTERN = Pattern.compile("(.*)(\\+.*|Z)'\\)$");
+    private String removeTzSuffix(String value) {
+    	Matcher matcher = REMOVE_TZ_PATTERN.matcher(value);
+    	if (matcher.matches() == false) throw new RuntimeException(REMOVE_TZ_PATTERN + " pattern does not match " + value);
+    	return matcher.group(1);
     }
 
 }
