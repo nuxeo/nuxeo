@@ -66,6 +66,11 @@
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>
     </dependency>
+    <dependency>
+       <groupId>org.openoffice</groupId>
+       <artifactId>ridl</artifactId>
+     </dependency>
+
 
     <!-- test scope -->
     <dependency>
