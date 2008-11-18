@@ -85,7 +85,7 @@ public class SQLDirectoryDescriptor {
 
     public String createTablePolicy;
 
-    private SubstringMatchType substringMatchType;
+    private SubstringMatchType substringMatchType = SubstringMatchType.subinitial;
 
     @XNode("autoincrementIdField")
     public boolean autoincrementIdField;
@@ -220,9 +220,7 @@ public class SQLDirectoryDescriptor {
 
     @XNode("substringMatchType")
     public void setSubstringMatchType(String substringMatchType) {
-        if (substringMatchType == null) {
-            this.substringMatchType = SubstringMatchType.subinitial;
-        } else {
+        if (substringMatchType != null) {
             try {
                 this.substringMatchType = Enum.valueOf(
                         SubstringMatchType.class, substringMatchType);
