@@ -14,7 +14,6 @@
 
 package org.nuxeo.theme.jsf.facelets;
 
-import java.io.IOException;
 import java.net.URL;
 
 import org.nuxeo.theme.jsf.facelets.vendor.DefaultFacelet;
@@ -26,8 +25,7 @@ import com.sun.facelets.impl.ResourceResolver;
 
 public final class NXThemesFaceletFactory extends DefaultFaceletFactory {
 
-    public NXThemesFaceletFactory(Compiler compiler, ResourceResolver resolver)
-            throws IOException {
+    public NXThemesFaceletFactory(Compiler compiler, ResourceResolver resolver) {
         this(compiler, resolver, -1);
     }
 

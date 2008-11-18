@@ -14,7 +14,6 @@
 
 package org.nuxeo.theme.test.presets;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
@@ -24,7 +23,7 @@ import org.nuxeo.theme.presets.PropertiesPaletteParser;
 
 public class TestPropertiesPaletteParser extends TestCase {
 
-    public void testParser() throws MalformedURLException {
+    public void testParser() {
         URL url = getClass().getClassLoader().getResource("properties-palette.properties");
         Map<String, String> entries = PropertiesPaletteParser.parse(url);
         Object[] keys = entries.keySet().toArray();

@@ -27,7 +27,7 @@ public final class RelationStorage implements Registrable {
 
     private static final Map<Long, Relation> relationsMap = new HashMap<Long, Relation>();
 
-    private static final Map<List, List<Long>> relatesMap = new HashMap<List, List<Long>>();
+    private static final Map<List<String>, List<Long>> relatesMap = new HashMap<List<String>, List<Long>>();
 
     private static final String[][] WILDCARDS_MONADIC = { { "" } };
 
@@ -124,6 +124,7 @@ public final class RelationStorage implements Registrable {
         } else if (arity == 3) {
             wildcards = WILDCARDS_TRIADIC;
         }
+        assert wildcards != null;
 
         for (String[] wildcard : wildcards) {
             List<String> indexString = new ArrayList<String>();

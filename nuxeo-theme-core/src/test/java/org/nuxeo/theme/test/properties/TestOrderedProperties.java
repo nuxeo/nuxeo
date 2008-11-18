@@ -32,7 +32,7 @@ public class TestOrderedProperties extends TestCase {
         properties.put("3", "3");
         properties.put("4", "4");
 
-        Enumeration keys = properties.propertyNames();
+        Enumeration<?> keys = properties.propertyNames();
         assertEquals("1", keys.nextElement());
         assertEquals("2", keys.nextElement());
         assertEquals("3", keys.nextElement());
@@ -46,7 +46,7 @@ public class TestOrderedProperties extends TestCase {
         properties.setProperty("3", "3");
         properties.setProperty("4", "4");
 
-        Enumeration keys = properties.propertyNames();
+        Enumeration<?> keys = properties.propertyNames();
         assertEquals("1", keys.nextElement());
         assertEquals("2", keys.nextElement());
         assertEquals("3", keys.nextElement());
@@ -59,7 +59,7 @@ public class TestOrderedProperties extends TestCase {
         InputStream in = getClass().getClassLoader().getResourceAsStream("ordered.properties");
         properties.load(in);
 
-        Enumeration keys = properties.propertyNames();
+        Enumeration<?> keys = properties.propertyNames();
         assertEquals("1", keys.nextElement());
         assertEquals("2", keys.nextElement());
         assertEquals("3", keys.nextElement());

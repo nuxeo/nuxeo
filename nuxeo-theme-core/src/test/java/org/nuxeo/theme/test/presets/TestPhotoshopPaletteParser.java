@@ -14,7 +14,6 @@
 
 package org.nuxeo.theme.test.presets;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
@@ -24,7 +23,7 @@ import org.nuxeo.theme.presets.PhotoshopPaletteParser;
 
 public class TestPhotoshopPaletteParser extends TestCase {
 
-    public void testAcoV1() throws MalformedURLException {
+    public void testAcoV1() {
         URL url = getClass().getClassLoader().getResource("photoshop-v1-palette.aco");
         Map<String, String> entries = PhotoshopPaletteParser.parse(url);
         Object[] keys = entries.keySet().toArray();
@@ -46,7 +45,7 @@ public class TestPhotoshopPaletteParser extends TestCase {
         assertEquals("rgb(255,153,0)", entries.get(keys[7]));
     }
 
-    public void testAcoV2() throws MalformedURLException {
+    public void testAcoV2() {
         URL url = getClass().getClassLoader().getResource("photoshop-v2-palette.aco");
         Map<String, String> entries = PhotoshopPaletteParser.parse(url);
         Object[] keys = entries.keySet().toArray();

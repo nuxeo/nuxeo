@@ -1,0 +1,152 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>
+       <@block name="title">
+       <#if Root??>${Root.document['dc:title']}<#else>NXThemes WebEngine</#if>
+       </@block>
+    </title>
+
+    <@nxthemes_head />
+    
+    <@nxthemes_resources />
+
+  </head>
+
+<body style="padding: 0; margin: 0">
+
+    <@nxthemes_accesskeys />
+
+    <@nxthemes_view resource="style-css.json"/>
+
+    <div id="nxthemesHeader">
+
+      <div id="nxthemesTopButtons">
+        <@nxthemes_button identifier="add fragments"
+          controlledBy="editor buttons"
+          classNames="dropList"
+          switchTo="editor perspectives/add fragments" label="Add fragments" />
+
+        <@nxthemes_button identifier="edit canvas"
+          controlledBy="editor buttons"
+          switchTo="editor perspectives/edit canvas" label="Edit canvas" />
+
+        <@nxthemes_button identifier="refresh"
+          link="javascript:NXThemesEditor.refresh()"
+          label="Refresh" />
+
+        <@nxthemes_button identifier="manage themes"
+          controlledBy="editor buttons"
+          switchTo="editor perspectives/manage themes" label="Manage themes" />
+
+        <@nxthemes_button identifier="exit"
+          link="javascript:NXThemesEditor.exit()"
+          label="Exit" />
+      </div>
+
+      <@nxthemes_panel identifier="perspective selector"
+        url="/nxthemes/editor/perspectiveSelector.ftl"
+        controlledBy="editor perspectives,perspective selector"
+        visibleInPerspectives="add fragments,edit canvas,edit padding" />
+
+      <div id="nxthemesWaitAnimation" style="display:none">
+        <img src="/nuxeo/site/files/nxthemes-editor/img/loader.gif" alt="" width="16" height="16" /> loading ...
+      </div>
+
+      <!--  theme selector -->
+      <@nxthemes_panel identifier="theme selector"
+        url="/nxthemes/editor/themeSelector.ftl"
+        controlledBy="editor perspectives,theme switcher"
+        visibleInPerspectives="add fragments,edit canvas,edit padding" />
+
+      <!-- canvas mode selector -->
+      <@nxthemes_panel identifier="canvas mode selector"
+        url="/nxthemes/editor/canvasModeSelector.ftl"
+        controlledBy="editor perspectives,canvas mode selector"
+        visibleInPerspectives="add fragments,edit canvas,edit padding" />
+
+      <!--  Status message -->
+      <div id="nxthemesStatusMessage" style="display:none"></div>
+
+      <@nxthemes_panel identifier="back to canvas"
+        url="/nxthemes/editor/backToCanvas.ftl"
+        controlledBy="editor perspectives"
+        visibleInPerspectives="edit element,manage themes" />
+
+    </div>
+
+    <div id="nxthemesEditorArea">
+
+      <@nxthemes_model resource="theme-editor.json" />
+
+      <!--  canvas area -->
+      <div id="nxthemesCanvasArea">
+
+        <@nxthemes_panel identifier="canvas area"
+          url="%{here}?engine=page-editor"
+          loading="nxthemesWaitAnimation"
+          filter="clean up canvas"
+          controlledBy="editor perspectives,link disabler,element mover,layout editor actions,fragment inserter,area style actions"
+          visibleInPerspectives="add fragments,edit canvas,edit padding" />
+      </div>
+
+      <!-- element drag-and-drop -->
+      <@nxthemes_controller resource="element-mover.json" />
+
+      <!-- contextual menu -->
+      <@nxthemes_controller resource="context-menu-actions.json" />
+      <@nxthemes_controller resource="toggle-context-menu.json" />
+      <@nxthemes_view resource="context-menu.json" />
+
+    </div>
+
+    <@nxthemes_controller resource="perspective-selector.json" />
+    
+    <@nxthemes_controller resource="editor-perspectives.json" />
+    <@nxthemes_controller resource="editor-buttons.json" />
+    <@nxthemes_controller resource="canvas-mode-selector.json" />
+    <@nxthemes_controller resource="layout-editor-actions.json" />
+    <@nxthemes_controller resource="area-style-perspectives.json" />
+    <@nxthemes_controller resource="area-style-actions.json" />
+
+    <@nxthemes_controller resource="fragment-factory-expander.json" />
+    <@nxthemes_controller resource="toolbox-mover.json" />
+    <@nxthemes_controller resource="fragment-inserter.json" />
+
+    <@nxthemes_controller resource="theme-switcher.json" />
+
+    <@nxthemes_controller resource="link-disabler.json" />
+
+    <!-- element editor -->
+    <@nxthemes_panel identifier="element editor"
+      url="/nxthemes/editor/elementEditor.ftl"
+      controlledBy="editor perspectives"
+      visibleInPerspectives="edit element" />
+
+    <!-- element padding editor -->
+    <@nxthemes_panel identifier="element padding"
+      url="/nxthemes/editor/elementPadding.ftl"
+      controlledBy="editor perspectives,layout editor actions,toolbox mover"
+      visibleInPerspectives="edit padding" />
+
+    <!-- theme manager -->
+    <@nxthemes_panel identifier="theme manager"
+      url="/nxthemes/editor/themeManager.ftl"
+      controlledBy="editor perspectives"
+      visibleInPerspectives="manage themes" />
+
+    <!--  fragment factory -->
+    <@nxthemes_panel identifier="fragment factory"
+      url="/nxthemes/editor/fragmentFactory.ftl"
+      controlledBy="editor perspectives,fragment factory expander,toolbox mover,fragment inserter"
+      visibleInPerspectives="add fragments" />
+
+    <!--  Area style chooser -->
+    <@nxthemes_panel
+      identifier="area style chooser"
+      url="/nxthemes/editor/areaStyleChooser.ftl"
+      controlledBy="area style perspectives,toolbox mover"
+      visibleInPerspectives="style chooser" />
+
+</body>
+
+</html>

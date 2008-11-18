@@ -26,7 +26,7 @@ public final class CookieManager {
         if (context == null) {
             return null;
         }
-        final Map cookies = context.getRequestCookieMap();
+        final Map<String, Object> cookies = context.getRequestCookieMap();
         final Cookie cookie = (Cookie) cookies.get(name);
         if (cookie == null) {
             return null;

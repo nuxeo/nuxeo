@@ -16,12 +16,12 @@ package org.nuxeo.theme.test.jsf.filters;
 
 import java.net.URL;
 
-import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.engines.EngineType;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.models.Model;
 import org.nuxeo.theme.rendering.RenderingInfo;
+import org.nuxeo.theme.themes.ThemeManager;
 
 public class DummyRenderingInfo extends RenderingInfo {
 
@@ -33,7 +33,7 @@ public class DummyRenderingInfo extends RenderingInfo {
 
     private Model model;
 
-    private Format format = null;
+    private Format format;
 
     private boolean dirty = false;
 
@@ -69,11 +69,11 @@ public class DummyRenderingInfo extends RenderingInfo {
 
     @Override
     public EngineType getEngine() {
-        return Manager.getThemeManager().getEngineByUrl(themeUrl);
+        return ThemeManager.getEngineByUrl(themeUrl);
     }
 
     public String getViewMode() {
-        return Manager.getThemeManager().getViewModeByUrl(themeUrl);
+        return ThemeManager.getViewModeByUrl(themeUrl);
     }
 
     @Override

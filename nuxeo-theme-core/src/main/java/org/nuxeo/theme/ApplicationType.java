@@ -30,6 +30,9 @@ public final class ApplicationType implements Type {
     @XNode("@root")
     private String root;
 
+    @XNode("@template-engine")
+    private String templateEngine;
+    
     @XNode("negotiation")
     private NegotiationDef negotiation;
 
@@ -96,6 +99,14 @@ public final class ApplicationType implements Type {
 
     public void setStyleCaching(final CachingDef styleCaching) {
         this.styleCaching = styleCaching;
+    }
+
+    public String getTemplateEngine() {
+        return templateEngine;
+    }
+
+    public void setTemplateEngine(String templateEngine) {
+        this.templateEngine = templateEngine;
     }
 
 }

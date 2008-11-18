@@ -20,7 +20,9 @@
       <h:outputText escape="false" value="#{property.rendered}" />
     </p>
   </ui:repeat>
-  <button type="submit">Update</button>
+  <div>
+    <button type="submit">Update</button>
+  </div>
 </c:when>
   <c:otherwise>
     <h:outputText>This element has no configurable properties.</h:outputText>

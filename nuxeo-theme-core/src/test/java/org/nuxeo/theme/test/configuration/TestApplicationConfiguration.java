@@ -31,8 +31,8 @@ public class TestApplicationConfiguration extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "application-config.xml");
         ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
                 ThemeService.ID);
@@ -43,6 +43,7 @@ public class TestApplicationConfiguration extends NXRuntimeTestCase {
         ApplicationType app1a = (ApplicationType) typeRegistry.lookup(TypeFamily.APPLICATION,
                 "/my-app");
         assertEquals("/my-app", app1a.getTypeName());
+        assertEquals("html", app1a.getTemplateEngine());
 
         NegotiationDef negotiation = app1a.getNegotiation();
         assertEquals("default-strategy", negotiation.getStrategy());
@@ -70,6 +71,7 @@ public class TestApplicationConfiguration extends NXRuntimeTestCase {
     public void testRegisterApplication2() {
         ApplicationType app2a = (ApplicationType) typeRegistry.lookup(TypeFamily.APPLICATION,
         "/my-app2");
+        assertEquals("freemarker", app2a.getTemplateEngine());
         assertNull(app2a.getNegotiation());
         assertNull(app2a.getResourceCaching());
         assertNull(app2a.getStyleCaching());
@@ -95,6 +97,7 @@ public class TestApplicationConfiguration extends NXRuntimeTestCase {
         assertEquals("printable", view3.getEngine());
 
         // Overridden properties
+        assertEquals("jsf-facelets", app1b.getTemplateEngine());
         NegotiationDef negotiation = app1b.getNegotiation();
         assertEquals("my-strategy", negotiation.getStrategy());
         assertEquals("my-theme", negotiation.getDefaultTheme());
@@ -117,6 +120,9 @@ public class TestApplicationConfiguration extends NXRuntimeTestCase {
                 "application-config-override.xml");
         ApplicationType app2b = (ApplicationType) typeRegistry.lookup(TypeFamily.APPLICATION,
                 "/my-app2");
+        
+        // Existing properties are left unchanged
+        assertEquals("freemarker", app2b.getTemplateEngine());
 
         // Overridden properties
         NegotiationDef negotiation = app2b.getNegotiation();

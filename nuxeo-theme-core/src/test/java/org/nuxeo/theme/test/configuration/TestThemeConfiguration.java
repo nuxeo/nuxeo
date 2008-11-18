@@ -14,8 +14,6 @@
 
 package org.nuxeo.theme.test.configuration;
 
-import java.io.IOException;
-
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestThemeConfiguration extends NXRuntimeTestCase {
@@ -23,11 +21,11 @@ public class TestThemeConfiguration extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "theme-config.xml");
     }
 
-    public void testRegisterTheme() throws IOException {
+    public void testRegisterTheme() {
         // TODO
     }
 
