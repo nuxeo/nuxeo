@@ -30,11 +30,13 @@ public class SessionManager extends AbstractComponent {
     private static String STYLE_SELECTOR = "org.nuxeo.theme.editor.style_selector";
 
     private static String STYLE_PROPERTY_CATEGORY = "org.nuxeo.theme.editor.style_property_category";
-    
+
     private static String STYLE_CATEGORY = "org.nuxeo.theme.editor.style_category";
-    
+
     private static String PRESET_GROUP = "org.nuxeo.theme.editor.preset_group";
-    
+
+    private static String CLIPBOARD_ELEMENT_ID = "org.nuxeo.theme.editor.clipboard";
+
     public static synchronized void setSelectedElementId(WebContext ctx,
             String id) {
         ctx.getUserSession().put(SELECTED_ELEMENT_ID, id);
@@ -78,7 +80,7 @@ public class SessionManager extends AbstractComponent {
             String category) {
         ctx.getUserSession().put(STYLE_PROPERTY_CATEGORY, category);
     }
-    
+
     public static synchronized String getStyleCategory(WebContext ctx) {
         return (String) ctx.getUserSession().get(STYLE_CATEGORY);
     }
@@ -87,13 +89,21 @@ public class SessionManager extends AbstractComponent {
             String category) {
         ctx.getUserSession().put(STYLE_CATEGORY, category);
     }
-    
+
     public static synchronized String getPresetGroup(WebContext ctx) {
         return (String) ctx.getUserSession().get(PRESET_GROUP);
     }
 
-    public static synchronized void setPresetGroup(WebContext ctx,
-            String group) {
+    public static synchronized void setPresetGroup(WebContext ctx, String group) {
         ctx.getUserSession().put(PRESET_GROUP, group);
     }
+
+    public static synchronized String getClipboardElementId(WebContext ctx) {
+        return (String) ctx.getUserSession().get(CLIPBOARD_ELEMENT_ID);
+    }
+
+    public static synchronized void setClipboardElementId(WebContext ctx, String id) {
+        ctx.getUserSession().put(CLIPBOARD_ELEMENT_ID, id);
+    }
+    
 }
