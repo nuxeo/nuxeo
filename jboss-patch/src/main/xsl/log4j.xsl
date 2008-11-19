@@ -49,6 +49,12 @@
   </xsl:template>
   <xsl:template match="category[@name='org.apache.myfaces.renderkit.html.util.DefaultAddResource']">
   </xsl:template>
+  <xsl:template match="category[@name='javax.enterprise.resource.webcontainer.jsf.renderkit']">
+  </xsl:template>
+  <xsl:template match="category[@name='javax.enterprise.resource.webcontainer.jsf.application']">
+  </xsl:template>
+  <xsl:template match="category[@name='javax.enterprise.resource.webcontainer.jsf.lifecycle']">
+  </xsl:template>
 
   <!-- reinsert after org.apache category -->
   <xsl:template match="category[@name='org.apache']">
@@ -139,6 +145,21 @@
    </xsl:text>
     <category name="org.apache.myfaces.renderkit.html.util.DefaultAddResource">
       <priority value="ERROR"/>
+    </category>
+    <xsl:text>
+   </xsl:text>
+    <category name="javax.enterprise.resource.webcontainer.jsf.renderkit">
+      <priority value="INFO"/>
+    </category>
+    <xsl:text>
+   </xsl:text>
+    <category name="javax.enterprise.resource.webcontainer.jsf.application">
+      <priority value="INFO"/>
+    </category>
+    <xsl:text>
+   </xsl:text>
+    <category name="javax.enterprise.resource.webcontainer.jsf.lifecycle">
+      <priority value="INFO"/>
     </category>
   </xsl:template>
 
