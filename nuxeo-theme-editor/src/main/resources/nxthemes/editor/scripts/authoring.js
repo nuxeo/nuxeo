@@ -145,7 +145,7 @@ NXThemesEditor.updateElementProperties = function(info) {
     });
     var url = webEngineContextPath + "/nxthemes-editor/update_element_properties"; 
     new Ajax.Request(url, {
-         method: 'post',
+         method: 'get',
          parameters: {
              id: id,
              property_map: propertyMap.toJSON()
@@ -230,7 +230,7 @@ NXThemesEditor.updateElementStyle = function() {
     
     var url = webEngineContextPath + "/nxthemes-editor/update_element_style"; 
     new Ajax.Request(url, {
-         method: 'post',
+         method: 'get',
          parameters: {
              id: id,
              view_name: viewName,
@@ -260,7 +260,7 @@ NXThemesEditor.updateElementStyleCss = function() {
     });
     var url = webEngineContextPath + "/nxthemes-editor/update_element_style_css"; 
     new Ajax.Request(url, {
-         method: 'post',
+         method: 'get',
          parameters: {
              id: id,
              view_name: viewName,
@@ -289,12 +289,13 @@ NXThemesEditor.setElementVisibility = function(info) {
           perspectives = $F("perspectives");
         }
     });
-    var url = webEngineContextPath + "/nxthemes-editor/update_element_visibility?id=" + encodeURIComponent(id); 
+    var url = webEngineContextPath + "/nxthemes-editor/update_element_visibility"; 
     new Ajax.Request(url, {
-         method: 'post',
+         method: 'get',
          parameters: {
+             'id': id,
              'always_visible': alwaysVisible,
-             'perspectives': perspectives.toJSON()
+             'perspectives': perspectives
          },
          onComplete: function(r) {
              NXThemes.getViewById("element visibility").refresh();
@@ -323,9 +324,9 @@ NXThemesEditor.setElementWidget = function(info) {
 
 NXThemesEditor.copyElement = function(info) {
     var id =  info.target.getAttribute('id');
-    var url = webEngineContextPath + "/nxthemes-editor/copy_element"; 
+    var url = webEngineContextPath + "/nxthemes-editor/copy_element?id=" + encodeURIComponent(id); 
     new Ajax.Request(url, {
-         method: 'post',
+         method: 'get',
          parameters: {
              id: id
          },
@@ -368,7 +369,7 @@ NXThemesEditor.updateElementPadding = function(info) {
     });
     var url = webEngineContextPath + "/nxthemes-editor/update_element_layout"; 
     new Ajax.Request(url, {
-         method: 'post',
+         method: 'get',
          parameters: {
              property_map: propertyMap
          },

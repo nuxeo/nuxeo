@@ -20,6 +20,7 @@ import org.nuxeo.theme.formats.layouts.*
 import org.nuxeo.theme.events.*
 import org.nuxeo.theme.fragments.*
 import org.nuxeo.theme.presets.*
+import org.nuxeo.theme.properties.*
 import org.nuxeo.theme.templates.*
 import org.nuxeo.theme.themes.*
 import org.nuxeo.theme.types.*
@@ -34,13 +35,13 @@ import org.nuxeo.theme.editor.*
 @Produces(["text/html", "*/*"])
 public class Main extends DefaultModule {
     
-    @GET @POST
+    @GET
     @Path("perspectiveSelector")
     public Object renderPerspectiveSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
       return getTemplate("perspectiveSelector.ftl").arg("perspectives", getPerspectives())
     }
 
-    @GET @POST
+    @GET
     @Path("themeSelector")
     public Object renderThemeSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
       return getTemplate("themeSelector.ftl").arg(
@@ -49,43 +50,43 @@ public class Main extends DefaultModule {
               "pages", getPages(path))
     }
 
-  @GET @POST
+  @GET
   @Path("canvasModeSelector")
   public Object renderCanvasModeSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("canvasModeSelector.ftl")
   }
 
-  @GET @POST
+  @GET
   @Path("backToCanvas")
   public Object renderBackToCanvas(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("backToCanvas.ftl")
   }
 
-  @GET @POST
+  @GET
   @Path("themeManager")
   public Object renderThemeManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("themeManager.ftl").arg("themes", getThemesDescriptors())
   }
 
-  @GET @POST
+  @GET
   @Path("fragmentFactory")
   public Object renderFragmentFactory(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("fragmentFactory.ftl").arg("fragments", getFragments())
   }
 
-  @GET @POST
+  @GET
   @Path("elementEditor")
   public Object renderElementEditor(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("elementEditor.ftl").arg("selected_element", getSelectedElement())
   }
 
-  @GET @POST
+  @GET
   @Path("elementDescription")
   public Object renderElementDescription(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("elementDescription.ftl").arg("selected_element", getSelectedElement())
   }
 
-  @GET @POST
+  @GET
   @Path("elementPadding")
   public Object renderElementPadding(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("elementPadding.ftl").arg(
@@ -93,7 +94,7 @@ public class Main extends DefaultModule {
             "padding_of_selected_element", getPaddingOfSelectedElement())
   }
 
-  @GET @POST
+  @GET
   @Path("elementProperties")
   public Object renderElementProperties(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("elementProperties.ftl").arg(
@@ -101,7 +102,7 @@ public class Main extends DefaultModule {
             "element_properties", getSelectedElementProperties())
   }
 
-  @GET @POST
+  @GET
   @Path("elementStyle")
   public Object renderElementStyle(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("elementStyle.ftl").arg("selected_element", getSelectedElement()).arg(
@@ -114,7 +115,7 @@ public class Main extends DefaultModule {
             "named_styles", getNamedStyles())
   }
 
-  @GET @POST
+  @GET
   @Path("elementWidget")
   public Object renderElementWidget(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("elementWidget.ftl").arg(
@@ -123,7 +124,7 @@ public class Main extends DefaultModule {
             "view_names_for_selected_element", getViewNamesForSelectedElement(path))
   }
 
-  @GET @POST
+  @GET
   @Path("elementVisibility")
   public Object renderElementVisibility(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("elementVisibility.ftl").arg(
@@ -133,7 +134,7 @@ public class Main extends DefaultModule {
             "perspectives", getPerspectives())
   }
 
-  @GET @POST
+  @GET
   @Path("stylePicker")
   public Object renderStylePicker(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("stylePicker.ftl").arg(
@@ -142,7 +143,7 @@ public class Main extends DefaultModule {
             "presets_for_selected_group", getPresetsForSelectedGroup())
   }
   
-  @GET @POST
+  @GET
   @Path("areaStyleChooser")
   public Object renderAreaStyleChooser(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("areaStyleChooser.ftl").arg(
@@ -152,10 +153,11 @@ public class Main extends DefaultModule {
             "selected_preset_group", getSelectedPresetGroup())
   }
 
-  @GET @POST
+  @GET
   @Path("styleProperties")
   public Object renderStyleProperties(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("styleProperties.ftl").arg(
+            "selected_element", getSelectedElement()).arg(
             "style_layers_of_selected_element", getStyleLayersOfSelectedElement()).arg(
             "style_selectors", getStyleSelectorsForSelectedElement()).arg(
             "rendered_style_properties", getRenderedStylePropertiesForSelectedElement()).arg(
@@ -267,7 +269,6 @@ public class Main extends DefaultModule {
       eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element, null))
   }
   
-  
   @GET @POST
   @Path("assign_style_property")
   public void assignStyleProperty(@QueryParam("element_id") String id, @QueryParam("property") String property_name, @QueryParam("value") String value) {
@@ -346,7 +347,7 @@ public class Main extends DefaultModule {
                       Format layout2 = ElementFormatter.getFormatByType(sibling, layoutType)
                       if (layout2 != null) {
                           width2 = layout2.getProperty("width")
-                          newWidth = Utils.addWebLengths(width1, width2)
+                          newWidth = org.nuxeo.theme.html.Utils.addWebLengths(width1, width2)
                           if (newWidth != null) {
                               layout2.setProperty("width", newWidth)
                           }
@@ -537,7 +538,7 @@ public class Main extends DefaultModule {
       String selectedLayerId = getSelectedStyleLayerId()
       String selectedStyleLayer = getSelectedStyleLayer()
       String selectedViewName = getViewNameOfSelectedElement()
-      String selectedElement = getSelectedElement()
+      Element selectedElement = getSelectedElement()
       FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "style")
       Style style = (Style) ElementFormatter.getFormatByType(selectedElement, styleType)
       if (selectedStyleLayer != null) {
@@ -561,7 +562,7 @@ public class Main extends DefaultModule {
               css.append("#stylePreviewArea")
               css.append(' ').append(path).append(" {")
               Properties styleProperties = s.getPropertiesFor(viewName, path)
-              Enumeration<?> propertyNames = Utils.getCssProperties().propertyNames()
+              Enumeration<?> propertyNames = org.nuxeo.theme.html.Utils.getCssProperties().propertyNames()
               while (propertyNames.hasMoreElements()) {
                   propertyName = (String) propertyNames.nextElement()
                   value = styleProperties.getProperty(propertyName)
@@ -698,7 +699,7 @@ public class Main extends DefaultModule {
      if (style.getName() != null || "".equals(viewName)) {
          viewName = "*"
      }
-     Utils.loadCss(style, cssSource, viewName)
+     org.nuxeo.theme.html.Utils.loadCss(style, cssSource, viewName)
      EventManager eventManager = Manager.getEventManager()
      eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(element, null))
   }
@@ -762,8 +763,7 @@ public class Main extends DefaultModule {
 
   @GET @POST
   @Path("update_element_visibility")
-  public String updateElementVisibility(@QueryParam("id") String id, @QueryParam("perspectives") String perspectivesList, @QueryParam("always_visible") boolean alwaysVisible) {
-      List<String> perspectives = JSONObject.fromObject(perspectivesList)
+  public String updateElementVisibility(@QueryParam("id") String id, @QueryParam("perspectives") List<String> perspectives, @QueryParam("always_visible") boolean alwaysVisible) {
       Element element = ThemeManager.getElementById(id)
       PerspectiveManager perspectiveManager = Manager.getPerspectiveManager()
       if (alwaysVisible) {
@@ -937,7 +937,7 @@ public class Main extends DefaultModule {
       Properties properties = style.getPropertiesFor(viewName, path)
       String selectedCategory = getStylePropertyCategory()
 
-      Properties cssProperties = Utils.getCssProperties()
+      Properties cssProperties = org.nuxeo.theme.html.Utils.getCssProperties()
       Enumeration<?> propertyNames = cssProperties.propertyNames()
       while (propertyNames.hasMoreElements()) {
           String name = (String) propertyNames.nextElement()
@@ -978,7 +978,7 @@ public class Main extends DefaultModule {
       Properties properties = style.getPropertiesFor(viewName, path)
       String selectedCategory = getSelectedStylePropertyCategory()
       Pattern cssCategoryPattern = Pattern.compile("<(.*?)>")
-      Properties cssProperties = Utils.getCssProperties()
+      Properties cssProperties = org.nuxeo.theme.html.Utils.getCssProperties()
       Enumeration<?> propertyNames = cssProperties.propertyNames()
       while (propertyNames.hasMoreElements()) {
           String name = (String) propertyNames.nextElement()
@@ -1011,10 +1011,10 @@ public class Main extends DefaultModule {
       String selectedStyleCategory = getStylePropertyCategory()
       Pattern cssCategoryPattern = Pattern.compile("<(.*?)>")
       Map<String, StyleCategory> categories = new LinkedHashMap<String, StyleCategory>()
-      Enumeration<?> elements = Utils.getCssProperties().elements()
+      Enumeration<?> elements = org.nuxeo.theme.html.Utils.getCssProperties().elements()
       categories.put("", new StyleCategory("*", "all", selectedStyleCategory.equals("*")))
       while (elements.hasMoreElements()) {
-          Element element = (String) elements.nextElement()
+          String element = (String) elements.nextElement()
           Matcher categoryMatcher = cssCategoryPattern.matcher(element)
           if (categoryMatcher.find()) {
               String value = categoryMatcher.group(1)
@@ -1217,7 +1217,7 @@ public class Main extends DefaultModule {
       Properties properties = style.getPropertiesFor(viewName, path)
       String selectedCategory = getSelectedStylePropertyCategory()
       Pattern cssCategoryPattern = Pattern.compile("<(.*?)>")
-      Properties cssProperties = Utils.getCssProperties()
+      Properties cssProperties = org.nuxeo.theme.html.Utils.getCssProperties()
       Enumeration<?> propertyNames = cssProperties.propertyNames()
       while (propertyNames.hasMoreElements()) {
           String name = (String) propertyNames.nextElement()
