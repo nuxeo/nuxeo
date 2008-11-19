@@ -728,6 +728,11 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jboss-packaging-maven-plugin</artifactId>
+	<extensions>true</extensions>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
