@@ -80,7 +80,6 @@ public class DefaultDocumentView implements DocumentView {
 
         addField(SCHEMAS);
         addField(FACETS);
-        addField(SCHEMAS);
         addField(LOCKED);
         addField(LIFE_CYCLE_STATE);
         addField(LIFE_CYCLE_POLICY);
