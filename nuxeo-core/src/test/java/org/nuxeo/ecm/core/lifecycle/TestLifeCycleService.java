@@ -52,16 +52,6 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
     }
 
     /**
-     * Tests the life cycle manager registration.
-     */
-    public void testLifeCycleManagerRegistration() {
-        LifeCycleManager manager = lifeCycleService.getLifeCycleManager();
-        assertNotNull(manager);
-        assertEquals("SampleLifeCycleManager",
-                manager.getClass().getSimpleName());
-    }
-
-    /**
      * Tests the life cycles registration.
      *
      * @throws LifeCycleException

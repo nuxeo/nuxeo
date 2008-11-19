@@ -87,7 +87,6 @@ Export-Package: org.apache.jackrabbit.core.persistence.bundle,
  org.apache.jackrabbit.util.name,
  org.apache.jackrabbit.uuid,
  org.apache.jackrabbit.value
-Nuxeo-Component: OSGI-INF/JCRLifeCycleManager.xml
 Require-Bundle: org.apache.commons.collections,
  org.apache.lucene,
  org.apache.lucene.analysis

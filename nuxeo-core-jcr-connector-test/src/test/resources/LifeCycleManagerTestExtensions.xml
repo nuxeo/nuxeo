@@ -3,12 +3,6 @@
 <component name="org.nuxeo.ecm.core.lifecycle.TestLifeCycleManagerExtensions">
 
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
-    point="lifecyclemanager">
-    <lifecyclemanager name="jcrlifecyclemanager"
-      class="org.nuxeo.ecm.core.repository.jcr.JCRLifeCycleManager" />
-  </extension>
-
-  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
     point="lifecycle">
     <lifecycle name="default" defaultInitial="work">
       <transitions>

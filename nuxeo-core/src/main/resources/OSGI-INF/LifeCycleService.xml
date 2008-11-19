@@ -34,46 +34,6 @@
 
   </extension-point>
 
-  <extension-point name="lifecyclemanager">
-
-    <documentation>
-      Extension point for registering life cycle manager.
-
-      <p />
-
-      Life cycle manager are responsible of the life cycle properties storage
-      and are bound to a life cycle.
-
-      <p />
-
-      Nuxeo core default life cycle manager is a JCR life cycle manager. It
-      means the life cycle properties for a given document will be stored in the
-      JCR along with the other document properties. You may define another type
-      of life cycle manager such as an SQL life cycle manager that would store
-      the life cycle properties in a SQL DB aside the JCR.
-
-      <p />
-
-      The life cycle properties are :
-
-      <ul>
-        <li>
-          <i>currentLifeCycleState</i>
-          : the current life cycle state
-        </li>
-        <li>
-          <i>lifeCyclePolicy</i>
-          : the life cycle policy applied
-        </li>
-      </ul>
-
-    </documentation>
-
-    <object
-      class="org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleManagerDescriptor" />
-
-  </extension-point>
-
   <extension-point name="types">
 
     <documentation>
