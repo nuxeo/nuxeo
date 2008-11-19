@@ -91,11 +91,11 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Nuxeo core search service implementation.
- * 
+ *
  * @see org.nuxeo.ecm.core.search.api.client.SearchService
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- * 
+ *
  */
 public class SearchServiceImpl extends DefaultComponent implements
         SearchServiceInternals {
@@ -218,7 +218,7 @@ public class SearchServiceImpl extends DefaultComponent implements
 
     /**
      * Adds a computed indexable resource conf in cache.
-     * 
+     *
      * @param conf an indexable resource configuration instance.
      */
     private void setToCache(IndexableResourceConf conf) {
@@ -228,7 +228,7 @@ public class SearchServiceImpl extends DefaultComponent implements
 
     /**
      * Removes a computed indexable resource conf from cache.
-     * 
+     *
      * @param conf an indexable resource configuration instance.
      */
     private void removeFromCache(IndexableResourceConf conf) {
@@ -238,7 +238,7 @@ public class SearchServiceImpl extends DefaultComponent implements
 
     /**
      * Initializes the type manager service.
-     * 
+     *
      * @return the type manager service
      */
     private SchemaManager getTypeManagerService() {
@@ -271,7 +271,7 @@ public class SearchServiceImpl extends DefaultComponent implements
 
     /**
      * Returns the default backend registered for this search service instance.
-     * 
+     *
      * @return a <code>SearchEngineBackend</code> instance
      */
     protected SearchEngineBackend getDefaultBackend() {
@@ -838,7 +838,7 @@ public class SearchServiceImpl extends DefaultComponent implements
 
     /**
      * Computes resource conf given its name.
-     * 
+     *
      * @param name resource name.
      * @return an <code>IndexableResourceConf</code> instance.
      */
@@ -921,7 +921,7 @@ public class SearchServiceImpl extends DefaultComponent implements
 
     /**
      * Computes resource conf given its prefix.
-     * 
+     *
      * @param prefix the resource prefix.
      * @return an <code>IndexableResourceConf</code> instance.
      */
