@@ -155,15 +155,12 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
     private Blob checkMimeType(Blob blob, String fullname)
             throws ClientException {
-        String mime = blob.getMimeType();
-        if (mime == null) {
             String filename = FileManagerUtils.fetchFileName(fullname);
             try {
                 blob = getMimeService().updateMimetype(blob, filename);
             } catch (MimetypeDetectionException e) {
                 throw new ClientException(e);
             }
-        }
         return blob;
     }
 
