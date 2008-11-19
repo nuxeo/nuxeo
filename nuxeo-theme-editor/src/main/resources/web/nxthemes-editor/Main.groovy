@@ -105,7 +105,8 @@ public class Main extends DefaultModule {
   @GET
   @Path("elementStyle")
   public Object renderElementStyle(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("elementStyle.ftl").arg("selected_element", getSelectedElement()).arg(
+    return getTemplate("elementStyle.ftl").arg(
+            "selected_element", getSelectedElement()).arg(
             "selected_view_name", getViewNameOfSelectedElement()).arg(
             "style_edit_mode", getStyleEditMode()).arg(
             "style_of_selected_element", getStyleOfSelectedElement()).arg(
@@ -171,7 +172,7 @@ public class Main extends DefaultModule {
   @Path("select_element")
   public void selectElement(@QueryParam("id") String id) {
     def ctx = WebEngine.getActiveContext()
-    SessionManager.setSelectedElementId(ctx, id)
+    SessionManager.setElementId(ctx, id)
   }
   
   @GET @POST
@@ -321,8 +322,8 @@ public class Main extends DefaultModule {
       }
       themeManager.makeElementUseNamedStyle(id, styleName, themeName);
       EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element, null));
-      eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(element, null));
+      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(style, null));
+      eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(style, null));
   }
   
   @GET @POST
@@ -803,7 +804,7 @@ public class Main extends DefaultModule {
       return ThemeManager.getThemesDescriptors()
   }
   
-  public static List<Identifiable> getNamedStyles() {
+  public static List<String> getNamedStyles() {
       String currentThemeName = getCurrentThemeName()
       def styles = []
       List<Identifiable> namedStyles = Manager.getThemeManager().getNamedObjects(currentThemeName, "style")
@@ -837,7 +838,7 @@ public class Main extends DefaultModule {
   
   public static String getSelectedElementId() {
       def ctx = WebEngine.getActiveContext()
-      return SessionManager.getSelectedElementId(ctx)
+      return SessionManager.getElementId(ctx)
   }
   
   public static Element getSelectedElement() {
@@ -935,7 +936,7 @@ public class Main extends DefaultModule {
           viewName = "*"
       }
       Properties properties = style.getPropertiesFor(viewName, path)
-      String selectedCategory = getStylePropertyCategory()
+      String selectedCategory = getSelectedStylePropertyCategory()
 
       Properties cssProperties = org.nuxeo.theme.html.Utils.getCssProperties()
       Enumeration<?> propertyNames = cssProperties.propertyNames()
@@ -998,7 +999,7 @@ public class Main extends DefaultModule {
       return fieldProperties
   }
   
-  public static String getStylePropertyCategory() {
+  public static String getSelectedStylePropertyCategory() {
       def ctx = WebEngine.getActiveContext()
       String category = SessionManager.getStylePropertyCategory(ctx)
       if (!category) {
@@ -1008,7 +1009,7 @@ public class Main extends DefaultModule {
   }
   
   public static List<StyleCategory> getStyleCategories() {
-      String selectedStyleCategory = getStylePropertyCategory()
+      String selectedStyleCategory = getSelectedStylePropertyCategory()
       Pattern cssCategoryPattern = Pattern.compile("<(.*?)>")
       Map<String, StyleCategory> categories = new LinkedHashMap<String, StyleCategory>()
       Enumeration<?> elements = org.nuxeo.theme.html.Utils.getCssProperties().elements()
@@ -1036,7 +1037,7 @@ public class Main extends DefaultModule {
 
   public static String getSelectedStyleSelector() {
       def ctx = WebEngine.getActiveContext()
-      return SessionManager.getSelectedStyleSelector(ctx)
+      return SessionManager.getStyleSelector(ctx)
   }
   
   public static Style getSelectedStyleLayer() {
@@ -1049,7 +1050,7 @@ public class Main extends DefaultModule {
   
   public static String getSelectedStyleLayerId() {
       def ctx = WebEngine.getActiveContext()
-      return SessionManager.getSelectedStyleLayerId(ctx)
+      return SessionManager.getStyleLayerId(ctx)
   } 
   
   public static Style getStyleOfSelectedElement() {
@@ -1194,47 +1195,6 @@ public class Main extends DefaultModule {
             category = "page"
         }
         return category
-  }
-  
-  public static String getStylePropertiesForSelectedElement () {
-      String viewName = getViewNameOfSelectedElement()
-      Style style = getStyleOfSelectedElement()
-      Style selectedStyleLayer = getSelectedStyleLayer()
-      if (selectedStyleLayer != null) {
-          style = selectedStyleLayer
-      }
-      def fieldProperties = []
-      if (style == null) {
-          return fieldProperties
-      }
-      String path = getSelectedStyleSelector()
-      if (path == null) {
-          return fieldProperties
-      }
-      if (style.getName() != null) {
-          viewName = "*"
-      }
-      Properties properties = style.getPropertiesFor(viewName, path)
-      String selectedCategory = getSelectedStylePropertyCategory()
-      Pattern cssCategoryPattern = Pattern.compile("<(.*?)>")
-      Properties cssProperties = org.nuxeo.theme.html.Utils.getCssProperties()
-      Enumeration<?> propertyNames = cssProperties.propertyNames()
-      while (propertyNames.hasMoreElements()) {
-          String name = (String) propertyNames.nextElement()
-          String value = properties == null ? "" : properties.getProperty(name, "")
-          String type = cssProperties.getProperty(name)
-          if (!selectedCategory.equals("")) {
-              Matcher categoryMatcher = cssCategoryPattern.matcher(type)
-              if (!categoryMatcher.find()) {
-                  continue
-              }
-              if (!categoryMatcher.group(1).equals(selectedCategory)) {
-                  continue
-              }
-          }
-          fieldProperties.add(new StyleFieldProperty(name, value, type))
-      }
-      return fieldProperties
   }
   
   public static String getTemplateEngine(applicationPath) {

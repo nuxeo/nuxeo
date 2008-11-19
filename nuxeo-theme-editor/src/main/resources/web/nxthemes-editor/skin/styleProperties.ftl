@@ -43,9 +43,9 @@
 	        <select id="viewName" onchange="NXThemesStyleEditor.chooseStyleSelector(this)">
 	          <#list style_selectors as selector>
 	            <#if selector == selected_style_selector>
-	              <option value="${selector}" selected="selected" />${selector}
+	              <option value="${selector}" selected="selected">${selector}</option>
 	            <#else>
-	              <option value="${selector}" />${selector}
+	              <option value="${selector}">${selector}</option>
 		        </#if>
               </#list>
 	        </select>

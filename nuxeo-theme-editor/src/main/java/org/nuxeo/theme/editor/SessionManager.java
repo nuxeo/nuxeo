@@ -35,14 +35,14 @@ public class SessionManager extends AbstractComponent {
 
     private static String PRESET_GROUP = "org.nuxeo.theme.editor.preset_group";
 
-    private static String CLIPBOARD_ELEMENT_ID = "org.nuxeo.theme.editor.clipboard";
+    private static String CLIPBOARD_ELEMENT_ID = "org.nuxeo.theme.editor.clipboard_element";
 
-    public static synchronized void setSelectedElementId(WebContext ctx,
+    public static synchronized void setElementId(WebContext ctx,
             String id) {
         ctx.getUserSession().put(SELECTED_ELEMENT_ID, id);
     }
 
-    public static synchronized String getSelectedElementId(WebContext ctx) {
+    public static synchronized String getElementId(WebContext ctx) {
         return (String) ctx.getUserSession().get(SELECTED_ELEMENT_ID);
     }
 
@@ -54,20 +54,20 @@ public class SessionManager extends AbstractComponent {
         ctx.getUserSession().put(STYLE_EDIT_MODE, mode);
     }
 
-    public static synchronized String getSelectedStyleLayerId(WebContext ctx) {
+    public static synchronized String getStyleLayerId(WebContext ctx) {
         return (String) ctx.getUserSession().get(STYLE_LAYER_ID);
     }
 
-    public static synchronized void setSelectedStyleLayerId(WebContext ctx,
+    public static synchronized void setStyleLayerId(WebContext ctx,
             String id) {
         ctx.getUserSession().put(STYLE_LAYER_ID, id);
     }
 
-    public static synchronized String getSelectedStyleSelector(WebContext ctx) {
+    public static synchronized String getStyleSelector(WebContext ctx) {
         return (String) ctx.getUserSession().get(STYLE_SELECTOR);
     }
 
-    public static synchronized void setSelectedStyleSelector(WebContext ctx,
+    public static synchronized void setStyleSelector(WebContext ctx,
             String selector) {
         ctx.getUserSession().put(STYLE_SELECTOR, selector);
     }
