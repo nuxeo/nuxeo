@@ -40,67 +40,72 @@ public class Application {
     public static final String APPLICATION_WINDOW_XP = "APPLICATION_WINDOW";
     public static final String APPLICATION_SESSION_XP = "APPLICATION_SESSION";
     
-    protected static List<SessionListener> sessionListeners = new ArrayList<SessionListener>();
-    protected static Map<String, Extensible> extensionPoints = new HashMap<String, Extensible>(); 
-    protected static ApplicationWindow perspective;
+    protected static List<ContextListener> sessionListeners = new ArrayList<ContextListener>();
+    protected static Map<String, Extensible> extensionPoints = new HashMap<String, Extensible>();
+    protected static Map<String, List<Object>> waitingExtensions = new HashMap<String, List<Object>>();
+    protected static ApplicationWindow window;
     protected static Session session;
-
-    public static ApplicationWindow getPerspective() {
-        return perspective;
+    protected static Context ctx = new Context();
+    
+    public static ApplicationWindow getWindow() {
+        return window;
     }
     
-    public static void addSessionListener(SessionListener listener) {
+    public static void addContextListener(ContextListener listener) {
         sessionListeners.add(listener);
     }
     
-    public static SessionListener[] getSessionListeners() {
-        return sessionListeners.toArray(new SessionListener[sessionListeners.size()]);
+    public static ContextListener[] getContextListeners() {
+        return sessionListeners.toArray(new ContextListener[sessionListeners.size()]);
     }
     
     
     public static void login(String username, String password) {
-        if (session.login(username, password)) {            
-            for (SessionListener listener : sessionListeners) {
-                listener.onSessionEvent(SessionListener.LOGIN);
-            }
+        if (session.login(username, password)) {  
+            ctx.setUsername(username);
         }
     }
     
     public static void logout() {
         if (session.logout()) {
-            for (SessionListener listener : sessionListeners) {
-                listener.onSessionEvent(SessionListener.LOGOUT);
-            }            
+            ctx.setUsername(null);
         }
     }
     
-    public static void setInput(String url) {
-        if (session.setInput(url)) {
-            for (SessionListener listener : sessionListeners) {
-                listener.onSessionEvent(SessionListener.INPUT);
-            }  
+    public static Object load(String url) {
+        Object input = session.load(url);
+        if (input != null) {
+            ctx.setInputObject(input);
         }
+        return ctx.getInputObject();
     }
     
+    protected static void fireEvent(int event) {
+        for (ContextListener listener : Application.sessionListeners) {
+            listener.onSessionEvent(event);
+        }  
+    }
+
     public static Session getSession() {
         return session;
     }
     
-    public static String getUsername() {
-        return session.getUsername();
-    }
-    
-    public static Object getInput() {
-        return session.getInput();
-    }
-    
     public static boolean isAuthenticated() {
-        return session.isAuthenticated();
-    }
+        return ctx.username != null;
+    }    
     
+    public static Context getContext() {
+        return ctx;
+    }
     
     public static void registerExtensionPoint(String name, Extensible extensible) {
         extensionPoints.put(name, extensible);
+        List<Object> list = waitingExtensions.remove(name);
+        if (list != null) {
+            for (Object extension : list) {
+                extensible.registerExtension(name, extension);
+            }
+        }
     }
     
     public static void registerExtension(String extensionPoint, Object extension) {
@@ -108,24 +113,33 @@ public class Application {
         if (xp != null) {
             xp.registerExtension(extensionPoint, extension);
         } else if (APPLICATION_WINDOW_XP.equals(extensionPoint)) {
-            perspective =  (ApplicationWindow)extension;
+            window =  (ApplicationWindow)extension;
         } else if (APPLICATION_SESSION_XP.equals(extensionPoint)) {
             session = (Session)extension;
         } else {
-            GWT.log("Unknown Extension Point: "+extensionPoint, null);
+            List<Object> list = waitingExtensions.get(extensionPoint);
+            if (list == null) {
+                list = new ArrayList<Object>();
+                waitingExtensions.put(extensionPoint, list);
+            }
+            list.add(extension);
+            GWT.log("Postpone extension registration for: "+extensionPoint, null);
         }
     }
-    
+
     
     public static void start() {
         if (session != null) {
             return; // already started
         }
         session = new SessionImpl(); //TODO use extension points
-        if (perspective == null) {
-            perspective = new ApplicationWindowImpl();
+        if (window == null) {
+            window = new ApplicationWindowImpl().register();
         }
-        perspective.install();
+        window.install();
+        if (!waitingExtensions.isEmpty()) {//TODO
+            GWT.log("There are extensions waiting to be deployed - "+waitingExtensions, null);
+        }
     }    
     
 

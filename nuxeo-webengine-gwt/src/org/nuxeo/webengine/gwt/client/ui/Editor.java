@@ -17,28 +17,26 @@
  * $Id$
  */
 
-package org.nuxeo.webengine.gwt.client.impl;
+package org.nuxeo.webengine.gwt.client.ui;
 
-import org.nuxeo.webengine.gwt.client.Session;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class SessionImpl implements Session {
+public class Editor extends Item {
 
+    public Editor(String name) {
+        super(name);
+    }
     
-    public Object load(String url) {
-        // TODO Auto-generated method stub
-        return null;
+    public Editor(String name, Widget widget) {
+        super(name, widget); 
     }
-
-    public boolean login(String username, String password) {
-        return true;
+   
+    public boolean acceptInput(Object input) {
+        return false;
     }
-
-    public boolean logout() {
-        return true;
-    }
-
+    
 }
