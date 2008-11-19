@@ -5,7 +5,7 @@
 <form id="nxthemesElementDescription" class="nxthemesForm" action="" onsubmit="return false">
 
   <div>
-    <input type="hidden" name="id" value="${selected_element.id}" />
+    <input type="hidden" name="id" value="#{selected_element.uid}" />
   </div>
   
   <p>

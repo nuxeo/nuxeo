@@ -5,6 +5,7 @@ import javax.ws.rs.*
 import javax.ws.rs.core.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import net.sf.json.JSONObject
 import org.nuxeo.ecm.core.rest.*
 import org.nuxeo.ecm.webengine.model.*
 import org.nuxeo.ecm.webengine.model.impl.*
@@ -63,7 +64,7 @@ public class Main extends DefaultModule {
   @GET @POST
   @Path("themeManager")
   public Object renderThemeManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("themeManager.ftl").arg("themes", getThemeDescriptors())
+    return getTemplate("themeManager.ftl").arg("themes", getThemesDescriptors())
   }
 
   @GET @POST
@@ -127,6 +128,7 @@ public class Main extends DefaultModule {
   public Object renderElementVisibility(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("elementVisibility.ftl").arg(
             "selected_element", getSelectedElement()).arg(
+            "perspectives_of_selected_element", getPerspectivesOfSelectedElement()).arg(        
             "is_selected_element_always_visible", isSelectedElementAlwaysVisible()).arg(
             "perspectives", getPerspectives())
   }
@@ -172,7 +174,7 @@ public class Main extends DefaultModule {
   
   @GET @POST
   @Path("add_page")
-  public void addPage(@QueryParam("path") String path) {
+  public String addPage(@QueryParam("path") String path) {
     ThemeManager themeManager = Manager.getThemeManager()
     if (!path.contains("/")) {
         return
@@ -196,14 +198,14 @@ public class Main extends DefaultModule {
     ElementFormatter.setFormat(page, pageStyle)
     ElementFormatter.setFormat(page, pageLayout)
     themeManager.registerPage(theme, page)
-    Response.writer(path)
+    return path
   }
   
   @GET @POST
   @Path("add_theme")
-  public void addTheme(@QueryParam("name") String name) {
+  public String addTheme(@QueryParam("name") String name) {
       ThemeManager themeManager = Manager.getThemeManager()
-      res = ""
+      String res = ""
       if (themeManager.getThemeByName(name) == null) {
           ThemeElement theme = (ThemeElement) ElementFactory.create("theme")
           theme.setName(name)
@@ -228,7 +230,7 @@ public class Main extends DefaultModule {
           themeManager.registerTheme(theme)
           res = String.format("%s/%s", name, "default")
       }
-      Response.writer(res)
+      return res
   }
   
   @GET @POST
@@ -283,7 +285,7 @@ public class Main extends DefaultModule {
       if (widget == null) {
           return
       }
-      viewName = widget.getName()
+      String viewName = widget.getName()
       Properties properties = style.getPropertiesFor(viewName, "")
       if (properties == null) {
           properties = new Properties()
@@ -362,7 +364,7 @@ public class Main extends DefaultModule {
       }
       EventManager eventManager = Manager.getEventManager()
       eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null, null))
-      Response.writer(id)
+      return id
   }
   
   @GET @POST
@@ -386,7 +388,7 @@ public class Main extends DefaultModule {
       EventManager eventManager = Manager.getEventManager()
       eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(null, null))
       eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null, element))
-      Response.writer(duplicate.getUid())
+      return duplicate.getUid()
   }
   
   @GET @POST
@@ -460,7 +462,7 @@ public class Main extends DefaultModule {
   
   @GET @POST
   @Path("load_theme")
-  public void loadTheme(@QueryParam("src") String src) {
+  public String loadTheme(@QueryParam("src") String src) {
       int res = 1
       try {
           Manager.getThemeManager().loadTheme(src)
@@ -472,7 +474,7 @@ public class Main extends DefaultModule {
           eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null, null))
           eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(null, null))
       }
-      Response.writer(res)
+      return res
   }
   
   @GET @POST
@@ -542,8 +544,7 @@ public class Main extends DefaultModule {
           style = selectedStyleLayer
       }
       if (style == null) {
-          Response.writer("")
-          return
+          return ""
       }
       StringBuilder css = new StringBuilder()
       List<Style> styles = new ArrayList<Style>()
@@ -579,36 +580,33 @@ public class Main extends DefaultModule {
              css.append('}')
           }
       }
-      Response.writer(css.toString())
+      return css.toString()
   }
   
   @GET @POST
   @Path("repair_theme")
-  public void repairTheme(@QueryParam("theme_name") String themeName) {
+  public String repairTheme(@QueryParam("name") String themeName) {
       ThemeElement theme = Manager.getThemeManager().getThemeByName(themeName)
-      res = 1
       if (theme == null) {
-          res = 0
+          return 0
       }
-      if (res) {
-          ThemeManager.repairTheme(theme)
-          EventManager eventManager = Manager.getEventManager()
-          eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(theme, null))
-          eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(theme, null))
-      }
-      Response.writer(res)
+      ThemeManager.repairTheme(theme)
+      EventManager eventManager = Manager.getEventManager()
+      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(theme, null))
+      eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(theme, null))
+      return 1
   }
   
   @GET @POST
   @Path("save_theme")
-  public void saveTheme(@QueryParam("src") String src, @QueryParam("indent") String inden ) {
-      int res = 1
+  public String saveTheme(@QueryParam("src") String src, @QueryParam("indent") String inden ) {
+      String res = "1"
       try {
           ThemeManager.saveTheme(src, new Integer(indent))
       } catch (ThemeIOException e) {
           res = 0
       }
-      Response.writer(res)
+      return res
   }
   
   @GET @POST
@@ -764,23 +762,18 @@ public class Main extends DefaultModule {
 
   @GET @POST
   @Path("update_element_visibility")
-  public void updateElementVisibility(@QueryParam("id") String id, @QueryParam("perspectives") List<String> perspectives, @QueryParam("always_visible") boolean always_visible) {
-      List<String> perspectivesList = new ArrayList<String>()
-      if (perspectives != null) {
-          for (p in perspectives) {
-              perspectivesList.add(p)
-          }
-      }
+  public String updateElementVisibility(@QueryParam("id") String id, @QueryParam("perspectives") String perspectivesList, @QueryParam("always_visible") boolean alwaysVisible) {
+      List<String> perspectives = JSONObject.fromObject(perspectivesList)
       Element element = ThemeManager.getElementById(id)
       PerspectiveManager perspectiveManager = Manager.getPerspectiveManager()
       if (alwaysVisible) {
           perspectiveManager.setAlwaysVisible(element)
       } else {
           // initially make the element visible in all perspectives
-          if (perspectivesList.isEmpty()) {
+          if (perspectives.isEmpty()) {
               perspectiveManager.setVisibleInAllPerspectives(element)
           } else {
-              perspectiveManager.setVisibleInPerspectives(element, perspectivesList)
+              perspectiveManager.setVisibleInPerspectives(element, perspectives)
           }
       }
       EventManager eventManager = Manager.getEventManager()
@@ -807,7 +800,7 @@ public class Main extends DefaultModule {
   /* API */
    
   public static List<ThemeDescriptor> getThemesDescriptors() {
-    return ThemeManager.getThemesDescriptors()
+      return ThemeManager.getThemesDescriptors()
   }
   
   public static List<Identifiable> getNamedStyles() {

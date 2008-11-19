@@ -6,7 +6,7 @@
 <form id="nxthemesElementProperties" class="nxthemesForm" action="" onsubmit="return false">
 <#if element_properties>
   <div>
-    <input type="hidden" name="id" value="${selected_element.id}" />
+    <input type="hidden" name="id" value="#{selected_element.uid}" />
   </div>
   <#list element_properties as property>
     <p>${property.rendered}</p>

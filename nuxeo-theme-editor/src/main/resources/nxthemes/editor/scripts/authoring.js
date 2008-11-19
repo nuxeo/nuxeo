@@ -294,7 +294,7 @@ NXThemesEditor.setElementVisibility = function(info) {
          method: 'post',
          parameters: {
              'always_visible': alwaysVisible,
-             'perspectives': perspectives
+             'perspectives': perspectives.toJSON()
          },
          onComplete: function(r) {
              NXThemes.getViewById("element visibility").refresh();
@@ -630,7 +630,7 @@ NXThemesEditor.exit = function() {
 };
 
 NXThemesEditor.repairTheme = function(themeName) {
-    var url = webEngineContextPath + "/nxthemes-editor/repair_theme?themeName=" + encodeURIComponent(themeName); 
+    var url = webEngineContextPath + "/nxthemes-editor/repair_theme?name=" + encodeURIComponent(themeName); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {

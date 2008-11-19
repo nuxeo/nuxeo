@@ -9,7 +9,7 @@ Style chooser - ${style_category}</div>
 
 <div class="header">PRESETS:
   <div>
-    <select id="areaStyleGroupName" onchange="NXThemesEditor.setpreset_group(this)">
+    <select id="areaStyleGroupName" onchange="NXThemesEditor.setPresetGroup(this)">
       <#list preset_groups as preset_group>
         <#if selected_preset_group == preset_group>
           <option value="${preset_group}" selected="selected">${preset_group}</option>
