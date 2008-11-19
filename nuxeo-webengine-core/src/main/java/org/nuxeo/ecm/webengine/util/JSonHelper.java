@@ -19,9 +19,14 @@
 
 package org.nuxeo.ecm.webengine.util;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.webengine.WebException;
 
@@ -38,6 +43,37 @@ public class JSonHelper {
     public static String toJSon(DocumentModel doc) {
         return doc2JSon(doc).toString();
     }
+
+    public static String toChildrenList(DocumentModel doc) {
+        return getChildrenList(doc).toString();
+    }
+
+    public static JSONArray getChildrenList(DocumentModel doc) {
+        JSONArray list  = new JSONArray();
+        if( doc == null ){
+            return list;
+        }
+        CoreSession session = CoreInstance.getInstance().getSession(doc.getSessionId());
+        try {
+            DocumentModelList docs = session.getChildren(doc.getRef());
+            for ( DocumentModel d : docs) {
+                JSONObject o = new JSONObject();
+                o.put("id", d.getId());
+                o.put("name", d.getName());
+                o.put("path", d.getPathAsString());
+                o.put("type", d.getType());
+                o.put("title", d.getTitle());
+                o.put("isFolderish", d.hasFacet("Folderish"));
+                list.add(o);
+
+            }
+        } catch (ClientException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
 
     public static String toJSon(DocumentModel doc, String ... schemas) {
         return doc2JSon(doc).toString();
@@ -78,6 +114,10 @@ public class JSonHelper {
                     + doc.getPath(), e);
         }
     }
+
+
+
+
 
 //    public static DocumentModel fromJSon(JSONObject obj) {
 //        String id = obj.getString("id");
