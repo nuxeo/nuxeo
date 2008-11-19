@@ -111,8 +111,6 @@ public abstract class VersioningBaseTestCase extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.versioning.tests",
                 "LifeCycleService.xml");
         deployContrib("org.nuxeo.ecm.platform.versioning.tests",
-                "JCRLifeCycleManager.xml");
-        deployContrib("org.nuxeo.ecm.platform.versioning.tests",
                 "LifeCycleCoreExtensions-versioningtest.xml");
 
         // Versioning specific extensions

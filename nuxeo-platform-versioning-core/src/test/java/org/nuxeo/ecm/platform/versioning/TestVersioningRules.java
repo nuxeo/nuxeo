@@ -21,14 +21,12 @@ package org.nuxeo.ecm.platform.versioning;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.utils.DocumentModelUtils;
 import org.nuxeo.ecm.platform.versioning.VersionChangeRequest.RequestSource;
@@ -203,10 +201,8 @@ public class TestVersioningRules extends VersioningBaseTestCase {
     public void testDefinedRuleAuto() throws DocumentException,
             LifeCycleException, ClientException {
         Document verfile = root.addChild("testfile", "VerFile");
-        // init the doc lifecycle state
-        final LifeCycleService lifecycleService = NXCore.getLifeCycleService();
         String stateName = "project";
-        lifecycleService.setCurrentLifeCycleState(verfile, stateName);
+        verfile.setCurrentLifeCycleState(stateName);
         session.save();
 
         DocumentRef docRef = new IdRef(verfile.getUUID());
@@ -283,9 +279,8 @@ public class TestVersioningRules extends VersioningBaseTestCase {
             ClientException, LifeCycleException {
         Document verfile = root.addChild("testfile", "VerFile");
         // init the doc lifecycle state
-        final LifeCycleService lifecycleService = NXCore.getLifeCycleService();
         String stateName = "project";
-        lifecycleService.setCurrentLifeCycleState(verfile, stateName);
+        verfile.setCurrentLifeCycleState(stateName);
         session.save();
 
         DocumentRef docRef = new IdRef(verfile.getUUID());
