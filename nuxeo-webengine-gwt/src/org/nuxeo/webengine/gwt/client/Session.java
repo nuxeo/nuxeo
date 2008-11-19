@@ -19,6 +19,7 @@
 
 package org.nuxeo.webengine.gwt.client;
 
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -29,11 +30,6 @@ public interface Session {
 
     public boolean logout();
     
-    public boolean setInput(String url);
+    public Object load(String url);
     
-    public Object getInput();
-    
-    public String getUsername();
-
-    public boolean isAuthenticated();
 }

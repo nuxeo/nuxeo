@@ -20,17 +20,19 @@
 package org.nuxeo.webengine.gwt.client.ui.impl;
 
 import org.nuxeo.webengine.gwt.client.Application;
+import org.nuxeo.webengine.gwt.client.ContextListener;
 import org.nuxeo.webengine.gwt.client.Extensible;
-import org.nuxeo.webengine.gwt.client.SessionListener;
 import org.nuxeo.webengine.gwt.client.ui.ExtensionPoints;
+import org.nuxeo.webengine.gwt.client.ui.Item;
 import org.nuxeo.webengine.gwt.client.ui.ViewContainer;
-import org.nuxeo.webengine.gwt.client.ui.login.LoginContainer;
 
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.StackPanel;
-import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -38,45 +40,34 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class ViewContainerImpl extends ViewContainer implements Extensible,
-        SessionListener {
+        ContextListener {
 
-    protected StackPanel stackPanel; 
     
     
     public ViewContainerImpl() {
-        Button button1 = new Button("Show Tabs");
-        Button button2 = new Button("Manage");
         
-        stackPanel = new StackPanel();
-        stackPanel.add(button1, "Navigator");
-        stackPanel.add(button2, "Tools");
-        LoginContainer login = new LoginContainer();
-        Application.addSessionListener(login);
-        stackPanel.add(login, "Login");
+        StackPanel stackPanel = new StackPanel();
         stackPanel.ensureDebugId("mainStackPanel");
         stackPanel.setSize("100%", "100%");
         
-        button1.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
-                TabPanel w = new TabPanel();
-                Application.getPerspective().openInEditor(w);
-            }
-        });
-
-        button2.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
-                HTML w = new HTML("<h1>My Content</h1>Some html text!");
-                Application.getPerspective().openInEditor(w);
-            }
-        });
-
         initWidget(stackPanel);
-  
+    }
+
+    public StackPanel getStackPanel() {
+        return (StackPanel)getWidget();        
     }
     
     public void registerExtension(String target, Object extension) {
-        // TODO Auto-generated method stub
-
+        if (ExtensionPoints.VIEWS_XP.equals(target)) {
+            if (extension instanceof Widget) {
+                Widget w = (Widget)extension;
+                getStackPanel().add(w, getHeaderString(w.getTitle(), new Image("dummy.gif")), true); //TODO image
+            } else {
+                GWT.log("Extension is not a widget. Ignoring", null);
+            }
+        } else {
+            GWT.log("Unknown extension point: "+target, null);
+        }
     }
 
     public void onSessionEvent(int event) {
@@ -84,15 +75,52 @@ public class ViewContainerImpl extends ViewContainer implements Extensible,
 
     }
 
-    public void register() {
+    public ViewContainerImpl register() {
         Application.registerExtension(ExtensionPoints.VIEW_CONTAINER_XP, this);
-        Application.registerExtensionPoint("VIEWS", this);
+        Application.registerExtensionPoint(ExtensionPoints.VIEWS_XP, this);
+        return this;
     }
 
 
     @Override
     public void showView(String name) {
-        // TODO Auto-generated method stub
-        
+        StackPanel panel = getStackPanel();
+        int cnt = panel.getWidgetCount();
+        for (int i=0; i<cnt; i++) {
+            Item item = (Item)panel.getWidget(i);
+            if (name.equals(item.getName())) {
+                System.out.println("wwwwwwwww");
+                panel.showStack(i);
+            }
+        }
     }
+    
+    
+    
+    
+    /**
+     * Get a string representation of the header that includes an image and some
+     * text.
+     * 
+     * @param text the header text
+     * @param image the {@link AbstractImagePrototype} to add next to the header
+     * @return the header as a string
+     */
+    protected String getHeaderString(String text, AbstractImagePrototype image) {
+        return getHeaderString(text, image.createImage());
+    }
+    protected String getHeaderString(String text, Image image) {
+        // Add the image and text to a horizontal panel
+        HorizontalPanel hPanel = new HorizontalPanel();
+        hPanel.setSpacing(0);
+        hPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+        hPanel.add(image);
+        HTML headerText = new HTML(text);
+        headerText.setStyleName("cw-StackPanelHeader");
+        hPanel.add(headerText);
+
+        // Return the HTML string for the panel
+        return hPanel.getElement().getString();        
+    }
+
 }

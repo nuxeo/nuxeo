@@ -17,28 +17,18 @@
  * $Id$
  */
 
-package org.nuxeo.webengine.gwt.client.impl;
-
-import org.nuxeo.webengine.gwt.client.Session;
+package org.nuxeo.webengine.gwt.client;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class SessionImpl implements Session {
+public interface ContextListener {
 
+    public final static int LOGIN = 1;
+    public final static int LOGOUT = 2;
+    public final static int INPUT = 3;
     
-    public Object load(String url) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public boolean login(String username, String password) {
-        return true;
-    }
-
-    public boolean logout() {
-        return true;
-    }
-
+    void onSessionEvent(int event);
+    
 }

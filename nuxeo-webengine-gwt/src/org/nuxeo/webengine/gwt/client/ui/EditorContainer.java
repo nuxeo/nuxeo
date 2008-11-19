@@ -27,7 +27,12 @@ import com.google.gwt.user.client.ui.Composite;
  */
 public abstract class EditorContainer extends Composite {
 
-    public abstract void setInput(Object input);
+    public abstract Editor getDefaultEditor();
+    
+    public abstract void showEditor();
+    
+    public abstract void showEditor(String name);
+    
     
 }
 

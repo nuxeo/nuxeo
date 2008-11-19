@@ -20,7 +20,7 @@
 package org.nuxeo.webengine.gwt.client.ui.login;
 
 import org.nuxeo.webengine.gwt.client.Application;
-import org.nuxeo.webengine.gwt.client.SessionListener;
+import org.nuxeo.webengine.gwt.client.ContextListener;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DeckPanel;
@@ -29,7 +29,7 @@ import com.google.gwt.user.client.ui.DeckPanel;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class LoginContainer extends Composite implements SessionListener {
+public class LoginContainer extends Composite implements ContextListener {
     
     protected DeckPanel deck;
     

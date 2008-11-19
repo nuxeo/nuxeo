@@ -53,7 +53,7 @@ public class LogoutWidget extends Composite implements ClickListener {
     }
     
     public void refresh() {
-        username.setText("You are logged in as "+Application.getUsername());
+        username.setText("You are logged in as "+Application.getContext().getUsername());
     }
     
 }

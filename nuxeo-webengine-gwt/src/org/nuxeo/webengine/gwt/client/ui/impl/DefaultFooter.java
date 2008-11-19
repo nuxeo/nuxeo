@@ -17,28 +17,22 @@
  * $Id$
  */
 
-package org.nuxeo.webengine.gwt.client.impl;
+package org.nuxeo.webengine.gwt.client.ui.impl;
 
-import org.nuxeo.webengine.gwt.client.Session;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class SessionImpl implements Session {
+public class DefaultFooter extends Composite {
 
+    public DefaultFooter() {
+        HTML html = new HTML("Copyright Nuxeo...");
+        html.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);        
+        initWidget(html);
+    }
     
-    public Object load(String url) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public boolean login(String username, String password) {
-        return true;
-    }
-
-    public boolean logout() {
-        return true;
-    }
-
 }

@@ -19,6 +19,8 @@
 
 package org.nuxeo.webengine.gwt.client.ui;
 
+import org.nuxeo.webengine.gwt.client.Application;
+
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -33,7 +35,14 @@ public abstract class ApplicationWindow extends Composite {
         RootPanel.get().add(this);
     }
 
-    public abstract void openInEditor(Object input);
+    public void openInEditor(Object input) {
+        Application.getContext().setInputObject(input);
+        openEditor();
+    }
+    
+    public abstract void showView(String name);
+    
+    public abstract void openEditor();
     
     //TODO add getView , showView etc
 }

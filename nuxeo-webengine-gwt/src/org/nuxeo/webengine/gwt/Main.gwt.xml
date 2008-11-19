@@ -7,6 +7,7 @@
       <!-- the theme of your GWT application by uncommenting          -->
       <!-- any one of the following lines.                            -->
       <inherits name='com.google.gwt.user.theme.standard.Standard'/>
+      <inherits name="com.google.gwt.http.HTTP" />
       <!-- <inherits name="com.google.gwt.user.theme.chrome.Chrome"/> -->
       <!-- <inherits name="com.google.gwt.user.theme.dark.Dark"/>     -->
 

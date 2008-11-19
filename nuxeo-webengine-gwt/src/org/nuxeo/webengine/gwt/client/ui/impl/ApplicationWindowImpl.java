@@ -28,11 +28,7 @@ import org.nuxeo.webengine.gwt.client.ui.ViewContainer;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockPanel;
-import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -43,6 +39,8 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class ApplicationWindowImpl extends ApplicationWindow implements Extensible, ExtensionPoints  {
 
+    protected SimplePanel headerPanel;
+    protected SimplePanel footerPanel;
     protected SimplePanel editorContainer;
     protected SimplePanel viewContainer;
     
@@ -50,16 +48,16 @@ public class ApplicationWindowImpl extends ApplicationWindow implements Extensib
     public ApplicationWindowImpl() {
         DockPanel panel = new DockPanel();
         panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
-        panel.setSpacing(4);
+        panel.setSpacing(2);
         panel.setSize("100%", "100%");
         
-        Widget header = createHeader();
-        panel.add(header, DockPanel.NORTH);
-        Widget footer = createFooter();
-        panel.add(footer, DockPanel.SOUTH);
+        headerPanel = new SimplePanel();
+        panel.add(headerPanel, DockPanel.NORTH);
+        footerPanel = new SimplePanel();
+        panel.add(footerPanel, DockPanel.SOUTH);
         
-        panel.setCellHeight(header, "4%");
-        panel.setCellHeight(footer, "4%");
+        panel.setCellHeight(headerPanel, "4%");
+        panel.setCellHeight(footerPanel, "4%");
 
         viewContainer = new SimplePanel();
         viewContainer.setSize("100%", "100%");
@@ -72,10 +70,30 @@ public class ApplicationWindowImpl extends ApplicationWindow implements Extensib
         panel.add(editorContainer, DockPanel.EAST);
         panel.setCellWidth(editorContainer, "75%");
 
-        panel.setBorderWidth(3);
+        //panel.setBorderWidth(3);
         panel.setPixelSize(Window.getClientWidth(), Window.getClientHeight());
         initWidget(panel);
     }
+    
+
+    @Override
+    protected void onAttach() {        
+        super.onAttach();
+        // if no contributions were made initialize with default values
+        if (editorContainer.getWidget() == null) {
+            new EditorContainerImpl().register();
+        }
+        if (viewContainer.getWidget() == null) {
+            new ViewContainerImpl().register();
+        }
+        if (headerPanel.getWidget() == null) {
+            headerPanel.setWidget(new DefaultHeader());
+        }
+        if (footerPanel.getWidget() == null) {
+            footerPanel.setWidget(new DefaultFooter());
+        }
+    }
+    
     
     protected void setViewContainer(ViewContainer container) {        
         this.viewContainer.setWidget(container);
@@ -85,46 +103,33 @@ public class ApplicationWindowImpl extends ApplicationWindow implements Extensib
         this.editorContainer.setWidget(container);
     }
 
-    public void install() {
-        if (editorContainer.getWidget() == null) {
-            setEditorContainer(new EditorContainerImpl());
-        }
-        if (viewContainer.getWidget() == null) {
-            setViewContainer(new ViewContainerImpl());
-        }
-        RootPanel.get().add(this);
+    protected void setHeader(Widget header) {
+        this.headerPanel.setWidget(header);
     }
 
-    public Widget createHeader() {
-        Grid grid = new Grid(1, 3);
-        grid.setCellPadding(2);
-        grid.setBorderWidth(1);
-        grid.setSize("100%", "100%");
-        grid.getCellFormatter().setAlignment(0, 0,
-                HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE);
-        grid.getCellFormatter().setHorizontalAlignment(0, 1,
-                HasHorizontalAlignment.ALIGN_RIGHT);
-        grid.getCellFormatter().setHorizontalAlignment(0, 2,
-                HasHorizontalAlignment.ALIGN_RIGHT);
-        grid.setWidget(0, 0, new Image("http://google-web-toolkit-doc-1-5.googlecode.com/svn/wiki/gwt-logo.png"));
-        grid.setWidget(0, 1, new HTML("&nbsp;"));
-        grid.setWidget(0, 2, new HTML("LOGIN"));
-        return grid;
-    }
-
-    public Widget createFooter() {
-        HTML html = new HTML("Nuxeo ...");
-        html.setSize("100%", "100%");
-        return html;
+    protected void setFooter(Widget footer) {
+        this.footerPanel.setWidget(footer);
     }
     
+    public void install() {
+        RootPanel.get().add(this);
+    }
 
     public EditorContainer getEditorContainer() {
         return (EditorContainer)editorContainer.getWidget();
     }
+
+    public ViewContainer getViewContainer() {
+        return (ViewContainer)viewContainer.getWidget();
+    }
     
-    public void openInEditor(Object input) {
-        getEditorContainer().setInput(input);
+    public void openEditor() {
+        getEditorContainer().showEditor();
+    }
+    
+    @Override
+    public void showView(String name) {
+        getViewContainer().showView(name);
     }
     
     public void registerExtension(String target, Object extension) {
@@ -133,18 +138,19 @@ public class ApplicationWindowImpl extends ApplicationWindow implements Extensib
         } else if (EDITOR_CONTAINER_XP.equals(target)) {
             setEditorContainer((EditorContainer)extension); 
         } else if (HEADER_CONTAINER_XP.equals(target)) {
-        
+            
         } else if (FOOTER_CONTAINER_XP.equals(target)) {
             
         }
     }
     
-    public void register() {
+    public ApplicationWindowImpl register() {
         Application.registerExtension(Application.APPLICATION_WINDOW_XP, this);
         Application.registerExtensionPoint(VIEW_CONTAINER_XP, this);
         Application.registerExtensionPoint(EDITOR_CONTAINER_XP, this);
         Application.registerExtensionPoint(HEADER_CONTAINER_XP, this);
         Application.registerExtensionPoint(FOOTER_CONTAINER_XP, this);
+        return this;
     }
 
     
