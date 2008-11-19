@@ -1108,8 +1108,8 @@ public class SearchServiceImpl extends DefaultComponent implements
                 }
             }
         } catch (Exception e) {
-            throw new IndexingException("Recursive indexing failed, path="
-                    + dm.getPathAsString(), e);
+            throw new IndexingException("Recursive indexing failed, path=" +
+                    path, e);
         }
     }
 
