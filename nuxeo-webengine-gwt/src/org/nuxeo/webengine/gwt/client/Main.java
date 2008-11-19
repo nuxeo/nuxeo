@@ -82,7 +82,7 @@ public class Main implements EntryPoint {
 //        };
 //        Application.registerExtension(ExtensionPoints.EDITORS_XP, editor);
         
-        Application.start();
+        Application.debugStart("http://localhost:8888/redirect/skin/wiki/css/wiki.css");
         
         GWT.log("Application started", null);
     }

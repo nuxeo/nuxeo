@@ -19,6 +19,7 @@
 
 package org.nuxeo.webengine.gwt.client;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,12 @@ import org.nuxeo.webengine.gwt.client.ui.ApplicationWindow;
 import org.nuxeo.webengine.gwt.client.ui.impl.ApplicationWindowImpl;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.HTTPRequest;
 
 
 /**
@@ -128,6 +135,22 @@ public class Application {
     }
 
     
+    
+    
+    public static void debugStart(String url) {
+        if (GWT.isScript()) {
+            throw new IllegalStateException("Debug mode is available only in hosted mode");
+        }
+        
+        try {
+            get(url);
+        } catch (Exception e) {
+            e.printStackTrace();
+            GWT.log("Failed to start in debug mode", e);
+        }
+        start();  
+    }
+    
     public static void start() {
         if (session != null) {
             return; // already started
@@ -142,5 +165,30 @@ public class Application {
         }
     }    
     
+
+    public static void get(String url) {        
+        try {
+            RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+            Request request = builder.sendRequest(null, new RequestCallback() {
+                public void onError(Request request, Throwable exception) {
+                   // Couldn't connect to server (could be timeout, SOP violation, etc.)
+                    System.out.println("ERROR");
+                }
+
+                public void onResponseReceived(Request request, Response response) {
+                  if (200 == response.getStatusCode()) {
+                      // Process the response in response.getText()
+                      System.out.println(">>> "+response.getText());
+                  } else {
+                    // Handle the error.  Can get the status text from response.getStatusText()
+                      System.out.println(">>> error");
+                  }
+                }       
+              });
+        } catch (Exception e) {
+            e.printStackTrace();
+            GWT.log("Failed to start in debug mode", e);
+        }
+    }
 
 }
