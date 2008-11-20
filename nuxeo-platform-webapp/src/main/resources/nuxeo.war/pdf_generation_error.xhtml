@@ -23,11 +23,11 @@
     <br />
 
     <p>Linux</p>
-    <textarea readonly="readonly" cols="80" rows="3">xvfb-run -a /path/to/openoffice/program/soffice.bin -headless "-accept=socket,host=localhost,port=8100;urp;StarOffice.Service"
+    <textarea readonly="readonly" cols="80" rows="3">/path/to/openoffice/program/soffice.bin -headless -nofirststartwizard -accept="socket,host=localhost,port=8100;urp;StarOffice.Service"
     </textarea>
 
     <p>Windows</p>
-    <textarea readonly="readonly" cols="80" rows="3">soffice.exe -headless "-accept=socket,host=localhost,port=8100;urp;StarOffice.Service"
+    <textarea readonly="readonly" cols="80" rows="3">soffice.exe -headless -nofirststartwizard -accept="socket,host=localhost,port=8100;urp;StarOffice.Service"
     </textarea>
 
     </div>
