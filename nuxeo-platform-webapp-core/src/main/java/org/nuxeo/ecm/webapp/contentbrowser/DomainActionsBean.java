@@ -36,12 +36,12 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
@@ -101,7 +101,7 @@ public class DomainActionsBean extends InputController implements DomainActions,
                 domains = queryModelActions.get(QM_USER_DOMAINS).getDocuments(
                         new Object[0]);
             } catch (Throwable t) {
-                throw EJBExceptionHandler.wrapException(t);
+                throw ClientException.wrap(t);
             }
         }
         return domains;
@@ -109,6 +109,7 @@ public class DomainActionsBean extends InputController implements DomainActions,
 
     @Observer( value= { EventNames.LOCATION_SELECTION_CHANGED,
             EventNames.NEW_DOCUMENT_CREATED, EventNames.DOCUMENT_CHANGED }, create=false, inject=false)
+    @BypassInterceptors
     public void invalidateDomainList() {
         domains = null;
     }

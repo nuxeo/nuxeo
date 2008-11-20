@@ -47,16 +47,17 @@ import org.nuxeo.ecm.platform.audit.ejb.LogEntryImpl;
 /**
  * Audit log entry importer/exporter.
  * <p>
- * Could be overriden to externalize additional information of a redefined
+ * Could be overridden to externalize additional information of a redefined
  * LogEntry.
  *
  * @author DM
  */
+// FIXME: design issue - this is a util class (only static methods) with no subclasses (misleading name).
 public class IOLogEntryBase {
 
-    public final static String DOCUMENT_TAG = "documentLogs";
+    public static final String DOCUMENT_TAG = "documentLogs";
 
-    public final static String LOGENTRY_TAG = "logEntry";
+    public static final String LOGENTRY_TAG = "logEntry";
 
 
     public static void write(List<LogEntry> logEntries, OutputStream out)
@@ -79,7 +80,7 @@ public class IOLogEntryBase {
     }
 
     /**
-     * Could be overriden to put other (additional) data.
+     * Could be overridden to put other (additional) data.
      *
      * @param logEntryElement
      * @param logEntry
@@ -126,7 +127,7 @@ public class IOLogEntryBase {
     }
 
     /**
-     * Could be overriden to get other (additional) data.
+     * Could be overridden to get other (additional) data.
      *
      * @param logEntryElement
      */
@@ -220,4 +221,5 @@ public class IOLogEntryBase {
 
         return newLogEntry;
     }
+
 }

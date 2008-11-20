@@ -49,14 +49,12 @@ public class UserSessionBean implements Serializable, UserSession {
     @Factory(value = "currentUser", scope = SESSION)
     public Principal getCurrentUser() throws Exception {
         if (currentUser == null) {
-            FacesContext fContext=FacesContext.getCurrentInstance();
-            if (fContext==null)
-            {
+            FacesContext fContext = FacesContext.getCurrentInstance();
+            if (fContext == null) {
                 currentUser = null;
-                log.error("Can not fetch user principal from FacesContext : there is no FacesContext attached to the current request");
-            }
-            else
-            {
+                log.error(
+                        "Can not fetch user principal from FacesContext : there is no FacesContext attached to the current request");
+            } else {
                 currentUser = fContext.getExternalContext().getUserPrincipal();
             }
         }
@@ -70,10 +68,11 @@ public class UserSessionBean implements Serializable, UserSession {
 
     public boolean isAdministrator() throws Exception {
         NuxeoPrincipal user = getCurrentNuxeoPrincipal();
-        if (user==null)
+        if (user == null) {
             return false;
-        else
+        } else {
             return user.isAdministrator();
+        }
     }
 
     @Destroy
