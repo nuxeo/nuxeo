@@ -2,8 +2,8 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:s="http://jboss.com/products/seam/taglib"
   class="clipboard">
@@ -21,7 +21,7 @@ function confirmDeleteDocumentsForever() {
 </script>
 
   <div id="selection_buttons">
-    <t:dataList var="sel_action" value="#{publishActions.actionsForSectionSelection}">
+    <nxu:dataList var="sel_action" value="#{publishActions.actionsForSectionSelection}">
     <span id="#{sel_action.id}">
       <nxh:commandButton
         styleClass="button" type="submit"
@@ -31,7 +31,7 @@ function confirmDeleteDocumentsForever() {
         disabled="#{!sel_action.available}"
         />
      </span>
-    </t:dataList>
+    </nxu:dataList>
   </div>
   <div style="clear:both"></div>
 </div>

@@ -44,8 +44,8 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -63,7 +63,6 @@ import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.core.search.api.client.search.results.document.SearchPageProvider;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducerException;
@@ -74,6 +73,7 @@ import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
+import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.Subject;
 import org.nuxeo.ecm.platform.relations.api.event.RelationEvents;
@@ -89,9 +89,9 @@ import org.nuxeo.ecm.platform.relations.web.StatementInfo;
 import org.nuxeo.ecm.platform.relations.web.StatementInfoComparator;
 import org.nuxeo.ecm.platform.relations.web.StatementInfoImpl;
 import org.nuxeo.ecm.platform.relations.web.listener.RelationActions;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.webapp.base.InputController;
-import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
+import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * Seam component that manages statements involving current document as well as
@@ -107,7 +107,8 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  */
 @Name("relationActions")
 @Scope(CONVERSATION)
-public class RelationActionsBean extends InputController implements
+@AutomaticDocumentBasedInvalidation
+public class RelationActionsBean  extends DocumentContextBoundActionBean implements
         RelationActions, Serializable {
 
     private static final long serialVersionUID = 2336539966097558178L;
@@ -121,13 +122,15 @@ public class RelationActionsBean extends InputController implements
     protected RelationManager relationManager;
 
     @In(create = true)
-    protected transient NavigationContext navigationContext;
+    protected ResourcesAccessor resourcesAccessor;
+
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
 
     @In(required = false)
     protected transient Principal currentUser;
 
     // statements lists
-
     protected List<Statement> incomingStatements;
 
     protected List<StatementInfo> incomingStatementsInfo;
@@ -160,11 +163,15 @@ public class RelationActionsBean extends InputController implements
 
     protected String searchKeywords;
 
+
     public DocumentModel getDocumentModel(Node node) throws ClientException {
         if (node.isQNameResource()) {
             QNameResource resource = (QNameResource) node;
+            Map<String, Serializable> context = new HashMap<String, Serializable>();
+            context.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY,
+                    documentManager.getSessionId());
             Object o = relationManager.getResourceRepresentation(
-                    resource.getNamespace(), resource);
+                    resource.getNamespace(), resource, context);
             if (o instanceof DocumentModel) {
                 return (DocumentModel) o;
             }
@@ -188,7 +195,7 @@ public class RelationActionsBean extends InputController implements
         QNameResource documentResource = null;
         if (document != null) {
             documentResource = (QNameResource) relationManager.getResource(
-                    RelationConstants.DOCUMENT_NAMESPACE, document);
+                    RelationConstants.DOCUMENT_NAMESPACE, document, null);
         }
         return documentResource;
     }
@@ -220,7 +227,7 @@ public class RelationActionsBean extends InputController implements
         if (incomingStatementsInfo != null) {
             return incomingStatementsInfo;
         }
-        DocumentModel currentDoc = navigationContext.getCurrentDocument();
+        DocumentModel currentDoc = getCurrentDocument();
         Resource docResource = getDocumentResource(currentDoc);
         if (docResource == null) {
             incomingStatements = Collections.emptyList();
@@ -247,7 +254,7 @@ public class RelationActionsBean extends InputController implements
         if (outgoingStatementsInfo != null) {
             return outgoingStatementsInfo;
         }
-        DocumentModel currentDoc = navigationContext.getCurrentDocument();
+        DocumentModel currentDoc = getCurrentDocument();
         Resource docResource = getDocumentResource(currentDoc);
         if (docResource == null) {
             outgoingStatements = Collections.emptyList();
@@ -269,9 +276,6 @@ public class RelationActionsBean extends InputController implements
         return outgoingStatementsInfo;
     }
 
-    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.CONTENT_ROOT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_CHANGED }, create = false, inject = false)
     public void resetStatements() {
         incomingStatements = null;
         incomingStatementsInfo = null;
@@ -352,7 +356,7 @@ public class RelationActionsBean extends InputController implements
     }
 
     public String addStatement() throws ClientException {
-        DocumentModel currentDoc = navigationContext.getCurrentDocument();
+        DocumentModel currentDoc = getCurrentDocument();
         Resource documentResource = getDocumentResource(currentDoc);
         if (documentResource == null) {
             throw new ClientException(
@@ -369,7 +373,7 @@ public class RelationActionsBean extends InputController implements
             object = new ResourceImpl(objectUri);
         } else if (objectType.equals("document")) {
             objectDocumentUid = objectDocumentUid.trim();
-            String repositoryName = navigationContext.getCurrentServerLocation().getName();
+            String repositoryName = getNavigationContext().getCurrentServerLocation().getName();
             String localName = repositoryName + "/" + objectDocumentUid;
             object = new QNameResourceImpl(
                     RelationConstants.DOCUMENT_NAMESPACE, localName);
@@ -474,7 +478,7 @@ public class RelationActionsBean extends InputController implements
             Statement stmt = stmtInfo.getStatement();
             // notifications
             Map<String, Object> options = new HashMap<String, Object>();
-            DocumentModel source = navigationContext.getCurrentDocument();
+            DocumentModel source = getCurrentDocument();
             String currentLifeCycleState = source.getCurrentLifeCycleState();
             options.put(CoreEventConstants.DOC_LIFE_CYCLE,
                     currentLifeCycleState);
@@ -536,7 +540,7 @@ public class RelationActionsBean extends InputController implements
             // no archived revisions
             constraints.add("ecm:isCheckedInVersion = 0");
             // filter current document
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
+            DocumentModel currentDocument = getCurrentDocument();
             if (currentDocument != null) {
                 constraints.add(String.format("ecm:id != '%s'",
                         currentDocument.getId()));
@@ -561,7 +565,7 @@ public class RelationActionsBean extends InputController implements
             facesMessages.add(FacesMessage.SEVERITY_WARN,
                     resourcesAccessor.getMessages().get(
                             "label.search.service.wrong.query"));
-            // throw EJBExceptionHandler.wrapException(e);
+            // throw ClientException.wrap(e);
             log.error("QueryException in search popup : " + e.getMessage());
         } catch (QueryParseException e) {
             facesMessages.add(FacesMessage.SEVERITY_WARN,
@@ -569,7 +573,7 @@ public class RelationActionsBean extends InputController implements
                             "label.search.service.wrong.query"));
             log.error("QueryParseException in search popup : " + e.getMessage());
         } catch (SearchException e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
         return "create_relation_search_document";
     }
@@ -604,6 +608,11 @@ public class RelationActionsBean extends InputController implements
     @PostActivate
     public void readState() {
         log.debug("PostActivate");
+    }
+
+    @Override
+    protected void resetBeanCache(DocumentModel newCurrentDocumentModel) {
+        resetStatements();
     }
 
 }

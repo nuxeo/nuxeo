@@ -26,9 +26,9 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 import org.nuxeo.ecm.core.search.api.backend.SearchEngineBackend;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory.BuiltinDocumentFields;
-import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.indexing.blobs.BlobExtractor;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.document.impl.DocumentIndexableResourceImpl;
@@ -43,14 +43,13 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.I
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.ResourceType;
 import org.nuxeo.ecm.core.search.api.internals.SearchServiceInternals;
 import org.nuxeo.ecm.core.search.blobs.NXTransformBlobExtractor;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * Test search engine plugins registration.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class TestSearchEngine extends NXRuntimeTestCase {
+public class TestSearchEngine extends RepositoryTestCase {
 
     private static final String BACKEND_NAME = "fake";
 
@@ -66,11 +65,6 @@ public class TestSearchEngine extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("org.nuxeo.ecm.platform.search.tests", "CoreService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests", "TypeService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests", "SecurityService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests", "RepositoryService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests", "test-CoreExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests", "CoreTestExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests", "DemoRepository.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests", "LifeCycleService.xml");
@@ -97,7 +91,7 @@ public class TestSearchEngine extends NXRuntimeTestCase {
         assertEquals(CONF_NAME, backend.getConfigurationFileName());
     }
 
-    public void testBackendRegistration() throws Exception {
+    public void testBackendRegistration() {
         assertEquals(1,
                 getSearchServiceInternals().getSearchEngineBackends().size());
         assertNotNull(getSearchServiceInternals().getSearchEngineBackendByName(
@@ -108,7 +102,7 @@ public class TestSearchEngine extends NXRuntimeTestCase {
                 getSearchServiceInternals().getPreferedBackendNameFor(null));
     }
 
-    public void testIndexableSchemaRegistration() throws Exception {
+    public void testIndexableSchemaRegistration() {
         assertEquals(3,
                 getSearchServiceInternals().getIndexableResourceConfs().size());
         assertNotNull(getSearchServiceInternals().getIndexableResourceConfByName(
@@ -117,7 +111,7 @@ public class TestSearchEngine extends NXRuntimeTestCase {
                 BuiltinDocumentFields.DOC_BUILTINS_RESOURCE_NAME, false));
     }
 
-    public void testDocType2IndexableResourcesRegistration() throws Exception {
+    public void testDocType2IndexableResourcesRegistration() {
         Map<String, IndexableDocType> mapping = getSearchServiceInternals().getIndexableDocTypes();
         assertEquals(3, mapping.size());
 
@@ -149,7 +143,7 @@ public class TestSearchEngine extends NXRuntimeTestCase {
         assertEquals(0, excluded.size());
     }
 
-    public void testIndexableSchemaXMAPGeneration() throws Exception {
+    public void testIndexableSchemaXMAPGeneration() {
         IndexableResourceConf dcResourceConf = getSearchServiceInternals().getIndexableResourceConfByName(
                 DOC_SCHEMA_CONF_NAME, false);
 
@@ -233,7 +227,7 @@ public class TestSearchEngine extends NXRuntimeTestCase {
         assertEquals(BACKEND_NAME, names[0]);
     }
 
-    public void testReverseTranslation() throws Exception {
+    public void testReverseTranslation() {
         IndexableResourceDataConf conf = getSearchServiceInternals().getIndexableDataConfFor(
             "dc:title");
         assertEquals("title", conf.getIndexingName());
@@ -244,7 +238,7 @@ public class TestSearchEngine extends NXRuntimeTestCase {
         assertEquals("content:encoding", conf.getIndexingName());
     }
 
-    public void testgetIndexableDataConfByName() throws Exception {
+    public void testgetIndexableDataConfByName() {
         IndexableResourceDataConf conf = getSearchServiceInternals().getIndexableDataConfByName(
                 "title");
         assertEquals("title", conf.getIndexingName());
@@ -307,7 +301,6 @@ public class TestSearchEngine extends NXRuntimeTestCase {
 
         transformer = desc.lookupTransformer("application/x-test-app");
         assertEquals("any2text", transformer);
-
     }
 
     public void testIndexingEventDescriptor() {
@@ -395,8 +388,7 @@ public class TestSearchEngine extends NXRuntimeTestCase {
         assertFalse(fconf.isBinary());
     }
 
-    public void testReversedResolutionWithUnRegisteredResourceConfiguration()
-            throws IndexingException {
+    public void testReversedResolutionWithUnRegisteredResourceConfiguration() {
 
         // Indexable resource registered as a contribution.
 
@@ -437,7 +429,6 @@ public class TestSearchEngine extends NXRuntimeTestCase {
     }
 
     public void testBlobFullTextExtractor() {
-
         BlobExtractor extractor = service.getBlobExtractorByName("nuxeoTransform");
         assertNotNull(extractor);
         assertTrue(extractor instanceof NXTransformBlobExtractor);
@@ -445,7 +436,6 @@ public class TestSearchEngine extends NXRuntimeTestCase {
         // Check if doesn't exist.
         extractor = service.getBlobExtractorByName("fake");
         assertNull(extractor);
-
     }
 
     /*
@@ -477,10 +467,10 @@ public class TestSearchEngine extends NXRuntimeTestCase {
 
         rtype = service.getResourceTypeDescriptorByName("doesnotexist");
         assertNull(rtype);
-
     }
 
     public void testIndexingThreadPoolPT() {
         assertEquals(16, service.getNumberOfIndexingThreads());
     }
+
 }
