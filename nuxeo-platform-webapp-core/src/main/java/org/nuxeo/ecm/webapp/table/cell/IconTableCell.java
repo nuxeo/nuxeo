@@ -52,13 +52,13 @@ public class IconTableCell extends TableCell {
     /**
      * The icon and a string will be displayed.
      *
-     * @param iconText
+     * @param iconPath
      * @param displayedStringValue
      */
     public IconTableCell(String iconPath, String displayedStringValue) {
         super(iconPath);
 
-        setIconText(displayedStringValue);
+        iconText = displayedStringValue;
 
         log.debug("Constructed with icon path: " + iconPath
                 + ", and string value: " + displayedStringValue);
@@ -67,14 +67,14 @@ public class IconTableCell extends TableCell {
     /**
      * The icon and a string will be displayed.
      *
-     * @param iconText
+     * @param iconPath
      * @param displayedStringValue
      * @param cellId
      */
     public IconTableCell(String iconPath, String displayedStringValue, String draggableId, boolean dropable) {
         super(iconPath);
 
-        setIconText(displayedStringValue);
+        iconText = displayedStringValue;
         setCellId(draggableId);
         setDropable(dropable);
 
@@ -93,10 +93,10 @@ public class IconTableCell extends TableCell {
     public IconTableCell(String iconPath, String displayedStringValue, String alt, String draggableId, boolean dropable) {
         super(iconPath);
 
-        setIconText(displayedStringValue);
+        iconText = displayedStringValue;
         setCellId(draggableId);
         setDropable(dropable);
-        setIconAlt(alt);
+        iconAlt = alt;
 
         log.debug("Constructed with icon path: " + iconPath
                 + ", and string value: " + displayedStringValue

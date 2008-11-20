@@ -23,7 +23,7 @@ import javax.annotation.security.PermitAll;
 import javax.ejb.Remove;
 
 import org.jboss.seam.annotations.Destroy;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.types.Type;
@@ -141,9 +141,8 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
     /**
      * This method is used to test wheter the looged user has enough rights for
      * the unpublish support.
-     *
-     * @return - true if the user can unpublish
-     *         <p> - false otherwise
+     * @return - true if the user can unpublish<p>
+     *            - false otherwise
      * @throws ClientException
      */
     boolean getCanUnpublish() throws ClientException;

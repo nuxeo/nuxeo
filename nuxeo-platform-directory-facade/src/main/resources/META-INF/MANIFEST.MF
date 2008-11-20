@@ -7,5 +7,6 @@ Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateful
 Require-Bundle: org.nuxeo.ecm.directory.api, org.nuxeo.ecm.directory
 Export-Package: org.nuxeo.ecm.platform.directory.ejb
-Nuxeo-Component: OSGI-INF/DirectoryManager-platform-contrib.xml
+Nuxeo-Component: OSGI-INF/DirectoryManager-platform-contrib.xml,
+ OSGI-INF/directory-ui-facade-contrib.xml
 Eclipse-LazyStart: false

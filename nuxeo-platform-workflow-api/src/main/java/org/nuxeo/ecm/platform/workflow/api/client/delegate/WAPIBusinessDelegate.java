@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.workflow.api.client.delegate;
 
-import java.io.Serializable;
-
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WAPI;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkflowException;
 import org.nuxeo.runtime.api.Framework;
@@ -30,9 +28,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public final class WAPIBusinessDelegate implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public final class WAPIBusinessDelegate {
 
     private WAPIBusinessDelegate() {
     }
