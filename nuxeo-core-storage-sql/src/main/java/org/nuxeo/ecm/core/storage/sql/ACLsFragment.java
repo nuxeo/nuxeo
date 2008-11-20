@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionMaker;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 
 /**
@@ -40,12 +39,10 @@ public class ACLsFragment extends ArrayFragment {
      * Constructs an empty {@link ACLsFragment} of the given table with the
      * given id (which may be a temporary one).
      *
-     * @param tableName the table name
      * @param id the id
      * @param state the initial state for the fragment
      * @param context the persistence context to which the row is tied, or
      *            {@code null}
-     * @param array the initial acls to use
      */
     public ACLsFragment(Serializable id, State state, Context context,
             Serializable[] acls) {

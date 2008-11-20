@@ -36,7 +36,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
 
     protected CoreSession session;
 
-    public SQLRepositoryTestCase(String name) {
+    protected SQLRepositoryTestCase(String name) {
         super(name);
     }
 
@@ -67,11 +67,11 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         return CoreInstance.getInstance().open(REPOSITORY_NAME, context);
     }
 
-    public void closeSession() throws ClientException {
+    public void closeSession() {
         closeSession(session);
     }
 
-    public void closeSession(CoreSession session) throws ClientException {
+    public void closeSession(CoreSession session) {
         CoreInstance.getInstance().close(session);
     }
 

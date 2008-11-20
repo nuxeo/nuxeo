@@ -12,24 +12,26 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
- * $Id$
+ *     Anahide Tchertchian
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.security;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.Collection;
 
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 
 /**
  * Service checking permissions for pluggable policies.
  *
  * @author Anahide Tchertchian
+ * @author Florent Guillaume
  */
 public interface SecurityPolicyService extends Serializable {
 
@@ -70,5 +72,31 @@ public interface SecurityPolicyService extends Serializable {
      */
     void unregisterDescriptor(SecurityPolicyDescriptor descriptor)
             throws Exception;
+
+    /**
+     * Checks if any policy restricts the given permission.
+     * <p>
+     * If not, then no post-filtering on policies will be needed for query
+     * results.
+     *
+     * @return {@code true} if a policy restricts the permission
+     */
+    boolean arePoliciesRestrictingPermission(String permission);
+
+    /**
+     * Checks if the policies can be expressed in a query.
+     * <p>
+     * If not, then any query made will have to be post-filtered.
+     *
+     * @return {@code true} if all policies can be expressed in a query
+     */
+    boolean arePoliciesExpressibleInQuery();
+
+    /**
+     * Get the transformers to apply the policies to a query.
+     *
+     * @return the transformers.
+     */
+    Collection<SQLQuery.Transformer> getPoliciesQueryTransformers();
 
 }

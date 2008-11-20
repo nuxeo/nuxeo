@@ -62,16 +62,18 @@ public interface CoreEventListenerService {
     void notifyEventListeners(CoreEvent coreEvent);
 
     /**
-     * Fire a command starting event
+     * Fires a command starting event.
+     *
      * @param command the command
      */
-    public void fireOperationStarted(Operation<?> command);
+    void fireOperationStarted(Operation<?> command);
 
     /**
-     * Fire a command termination event
+     * Fires a command termination event.
+     *
      * @param command the command that terminated
      */
-    public void fireOperationTerminated(Operation<?> command);
+    void fireOperationTerminated(Operation<?> command);
 
     /**
      * Returns the collection of event listeners.
@@ -85,8 +87,32 @@ public interface CoreEventListenerService {
      *
      * @param name
      *            the name of the event listener used a registration time
-     * @return the EventListener instance.
+     * @return the EventListener instance, or null if none found.
      */
     EventListener getEventListenerByName(String name);
+
+
+    /**
+     * Notify post commit listeners about all events raised in the current transaction.
+     *  Called by the core session after the current transaction was committed
+     */
+    void transactionCommited();
+
+    /**
+     *  Called by the core session after the current transaction was rollbacked.
+     *  Post commit events will be removed
+     */
+    void transactionRollbacked();
+
+    /**
+     * A new transaction started.
+     * This will start a new post commit session
+     */
+    void transactionStarted();
+
+    /**
+     * Transaction is about to be commited
+     */
+    void transactionAboutToCommit();
 
 }

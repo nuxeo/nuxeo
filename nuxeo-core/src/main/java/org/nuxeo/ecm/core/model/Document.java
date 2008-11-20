@@ -152,12 +152,28 @@ public interface Document extends DocumentContainer, PropertyContainer,
     String getCurrentLifeCycleState() throws LifeCycleException;
 
     /**
+     * Sets the lifecycle state of the document.
+     *
+     * @param state the state
+     * @throws LifeCycleException
+     */
+    void setCurrentLifeCycleState(String state) throws LifeCycleException;
+
+    /**
      * Returns the life cycle policy of this document.
      *
      * @return the life cycle policy name of this document as a string
      * @throws LifeCycleException
      */
     String getLifeCyclePolicy() throws LifeCycleException;
+
+    /**
+     * Sets the life cycle policy of this document.
+     *
+     * @param policy the policy
+     * @throws LifeCycleException
+     */
+    void setLifeCyclePolicy(String policy) throws LifeCycleException;
 
     /**
      * Follows a given life cycle transition.

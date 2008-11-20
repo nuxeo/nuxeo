@@ -38,22 +38,6 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
  */
 public abstract class AbstractDocument implements Document {
 
-    public String getCurrentLifeCycleState() throws LifeCycleException {
-        LifeCycleService service = NXCore.getLifeCycleService();
-        if (null == service) {
-            throw new LifeCycleException("LifeCycleService not available");
-        }
-        return service.getCurrentLifeCycleState(this);
-    }
-
-    public String getLifeCyclePolicy() throws LifeCycleException {
-        LifeCycleService service = NXCore.getLifeCycleService();
-        if (null == service) {
-            throw new LifeCycleException("LifeCycleService not available");
-        }
-        return service.getLifeCyclePolicy(this);
-    }
-
     public boolean followTransition(String transition)
             throws LifeCycleException {
         LifeCycleService service = NXCore.getLifeCycleService();

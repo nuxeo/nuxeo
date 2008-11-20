@@ -91,12 +91,20 @@ public class Column implements Serializable {
     public Column(Table table, String physicalName, PropertyType type,
             int sqlType, String key, Model model) {
         this.table = table;
-        this.dialect = table.dialect;
+        dialect = table.getDialect();
         this.physicalName = physicalName;
         this.type = type;
         this.sqlType = sqlType;
         this.key = key;
         this.model = model;
+    }
+
+    /**
+     * Creates a column from an existing column and an aliased table.
+     */
+    public Column(Column column, Table table) {
+        this(table, column.physicalName, column.type, column.sqlType,
+                column.key, column.model);
     }
 
     public String getPhysicalName() {
@@ -148,7 +156,7 @@ public class Column implements Serializable {
     }
 
     public void setPrecision(int scale) {
-        this.precision = scale;
+        precision = scale;
     }
 
     public int getScale() {

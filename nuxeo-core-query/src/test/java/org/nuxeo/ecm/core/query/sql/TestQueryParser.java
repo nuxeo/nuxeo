@@ -47,11 +47,11 @@ import org.nuxeo.ecm.core.query.sql.model.WhereClause;
  */
 public class TestQueryParser extends TestCase {
 
-    static final String[] GOOD_QUERIES = new String[] {
+    static final String[] GOOD_QUERIES = {
             "SELECT name, title, description FROM folder WHERE state = 2 AND created > \"20060523\""
     };
 
-    static final String[] BAD_QUERIES = new String[] {
+    static final String[] BAD_QUERIES = {
             "SELECT name WHERE title, description FROM folder WHERE state = 2 AND created > \"20060523\"",
             "name, ",
             "SELECT FROM WHERE",

@@ -41,6 +41,7 @@ import org.nuxeo.common.utils.Constants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
+import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.AbstractDocument;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
@@ -515,6 +516,7 @@ public class JCRDocument extends AbstractDocument implements JCRNodeProxy {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends Serializable> T getSystemProp(String name, Class<T> type)
             throws DocumentException {
         try {
@@ -768,6 +770,47 @@ public class JCRDocument extends AbstractDocument implements JCRNodeProxy {
         versionIterator.nextDocumentVersion();
 
         return versionIterator.hasNext();
+    }
+
+    public String getLifeCyclePolicy() throws LifeCycleException {
+        try {
+            return getNode().getProperty(
+                    NodeConstants.ECM_LIFECYCLE_POLICY.rawname).getString();
+        } catch (PathNotFoundException e) {
+            return null;
+        } catch (Exception e) {
+            throw new LifeCycleException("Failed to get life cycle policy", e);
+        }
+    }
+
+    public void setLifeCyclePolicy(String policy) throws LifeCycleException {
+        try {
+            getNode().setProperty(NodeConstants.ECM_LIFECYCLE_POLICY.rawname,
+                    policy);
+        } catch (RepositoryException e) {
+            throw new LifeCycleException("Failed to write life cycle policy", e);
+        }
+    }
+
+    public String getCurrentLifeCycleState() throws LifeCycleException {
+        try {
+            return getNode().getProperty(
+                    NodeConstants.ECM_LIFECYCLE_STATE.rawname).getString();
+        } catch (PathNotFoundException e) {
+            return null;
+        } catch (Exception e) {
+            throw new LifeCycleException("Failed to get life cycle state", e);
+        }
+    }
+
+    public void setCurrentLifeCycleState(String state)
+            throws LifeCycleException {
+        try {
+            getNode().setProperty(NodeConstants.ECM_LIFECYCLE_STATE.rawname,
+                    state);
+        } catch (RepositoryException e) {
+            throw new LifeCycleException("Failed to write life cycle", e);
+        }
     }
 
     // TODO: optimize this since it is used in permission checks
