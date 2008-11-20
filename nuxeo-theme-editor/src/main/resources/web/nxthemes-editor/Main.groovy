@@ -107,8 +107,6 @@ public class Main extends DefaultModule {
   public Object renderElementStyle(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("elementStyle.ftl").arg(
             "selected_element", getSelectedElement()).arg(
-            "selected_view_name", getViewNameOfSelectedElement()).arg(
-            "style_edit_mode", getStyleEditMode()).arg(
             "style_of_selected_element", getStyleOfSelectedElement()).arg(
             "current_theme_name", getCurrentThemeName(path)).arg(
             "style_layers_of_selected_element", getStyleLayersOfSelectedElement()).arg(
@@ -159,12 +157,14 @@ public class Main extends DefaultModule {
   public Object renderStyleProperties(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("styleProperties.ftl").arg(
             "selected_element", getSelectedElement()).arg(
+            "style_edit_mode", getStyleEditMode()).arg(                    
             "style_layers_of_selected_element", getStyleLayersOfSelectedElement()).arg(
             "style_selectors", getStyleSelectorsForSelectedElement()).arg(
             "rendered_style_properties", getRenderedStylePropertiesForSelectedElement()).arg(
             "selected_style_selector", getSelectedStyleSelector()).arg(
             "style_properties", getStylePropertiesForSelectedElement()).arg(
             "style_categories", getStyleCategories()).arg(
+            "selected_view_name", getViewNameOfSelectedElement()).arg(                    
             "element_style_properties", getElementStyleProperties())
   }
   
@@ -504,7 +504,7 @@ public class Main extends DefaultModule {
   
   @GET @POST
   @Path("move_element")
-  public void moveElement(@QueryParam("src_id") String srcId, @QueryParam("dest_id") String destId, @QueryParam("order") String order) {
+  public void moveElement(@QueryParam("src_id") String srcId, @QueryParam("dest_id") String destId, @QueryParam("order") Integer order) {
       Element srcElement = ThemeManager.getElementById(srcId)
       Element destElement = ThemeManager.getElementById(destId)
       // move the element
@@ -771,7 +771,7 @@ public class Main extends DefaultModule {
           perspectiveManager.setAlwaysVisible(element)
       } else {
           // initially make the element visible in all perspectives
-          if (perspectives.isEmpty()) {
+          if (perspectives == null || perspectives.isEmpty()) {
               perspectiveManager.setVisibleInAllPerspectives(element)
           } else {
               perspectiveManager.setVisibleInPerspectives(element, perspectives)
