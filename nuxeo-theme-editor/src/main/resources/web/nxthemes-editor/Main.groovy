@@ -29,7 +29,7 @@ import org.nuxeo.theme.uids.*
 import org.nuxeo.theme.views.*
 import org.nuxeo.theme.editor.*
 
-@WebModule(name="nxthemes-editor")
+@WebModule(name="nxthemes-editor", guard="user=Administrator")
 
 @Path("/nxthemes-editor")
 @Produces(["text/html", "*/*"])
@@ -779,6 +779,26 @@ public class Main extends DefaultModule {
       }
       EventManager eventManager = Manager.getEventManager()
       eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element, null))
+  }
+  
+  @GET @POST
+  @Path("update_element_layout")
+  public void updateElementPadding(@QueryParam("property_map") String property_map) {
+      Map propertyMap = JSONObject.fromObject(property_map)
+      Element element = getSelectedElement()
+      if (element != null) {
+            Layout layout = (Layout) ElementFormatter.getFormatFor(element, "layout")
+            if (layout == null) {
+                layout = (Layout) FormatFactory.create("layout")
+                Manager.getThemeManager().registerFormat(layout)
+                ElementFormatter.setFormat(element, layout)
+            }
+            for (Object key : propertyMap.keySet()) {
+                layout.setProperty((String) key, (String) propertyMap.get(key))
+            }
+            EventManager eventManager = Manager.getEventManager()
+            eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element, null))
+        }
   }
   
   @GET @POST

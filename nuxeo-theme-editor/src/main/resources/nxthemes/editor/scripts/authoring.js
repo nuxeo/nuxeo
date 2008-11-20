@@ -365,13 +365,13 @@ NXThemesEditor.updateElementPadding = function(info) {
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
         var value = Form.Element.getValue(i);
-        propertyMap[i.name] = value;
-    });
+        propertyMap.set(i.name, value);
+    });    
     var url = webEngineContextPath + "/nxthemes-editor/update_element_layout"; 
     new Ajax.Request(url, {
          method: 'get',
          parameters: {
-             property_map: propertyMap
+             property_map: propertyMap.toJSON()
          },
          onComplete: function(r) {
              NXThemesEditor.refreshCanvas();

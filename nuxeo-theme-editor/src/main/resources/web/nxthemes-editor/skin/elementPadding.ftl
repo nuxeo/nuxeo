@@ -3,8 +3,10 @@
 
 <div class="title">
 <img class="close" onclick="javascript:NXThemes.getControllerById('editor perspectives').switchTo('edit canvas')"
-     src="/skin/nxthemes/editor/img/close-button.png" width="14" height="14" alt="" />
+     src="/skin/nxthemes-editor/img/close-button.png" width="14" height="14" alt="" />
      Padding editor</div>
+
+<#if selected_element>
 
 <form class="nxthemesForm" action="" onsubmit="return false">
   <table cellpadding="0" cellspacing="0" style="width: 100%">
@@ -42,6 +44,10 @@
     </table>
 
 </form>
+
+<#else>
+   <p style="text-align: center"><em>No element is selected.</em></p>
+</#if>
 
 </div>
 
