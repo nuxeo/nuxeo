@@ -43,8 +43,7 @@ public final class NXSearch {
      * @return the search service
      */
     public static SearchService getSearchService() {
-        return (SearchService) Framework.getRuntime().getComponent(
-                SearchServiceImpl.NAME);
+        return (SearchService) Framework.getLocalService(SearchService.class);
     }
 
 }
