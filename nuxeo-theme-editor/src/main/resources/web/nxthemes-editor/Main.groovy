@@ -113,7 +113,7 @@ public class Main extends DefaultModule {
             "current_theme_name", getCurrentThemeName(path)).arg(
             "style_layers_of_selected_element", getStyleLayersOfSelectedElement()).arg(
             "inherited_style_name_of_selected_element", getInheritedStyleNameOfSelectedElement()).arg(
-            "named_styles", getNamedStyles())
+            "named_styles", getNamedStyles(path))
   }
 
   @GET
@@ -314,8 +314,9 @@ public class Main extends DefaultModule {
   @Path("create_named_style")
   public void createNamedStyle(@QueryParam("id") String id, @QueryParam("theme_name") String themeName, @QueryParam("style_name") String styleName) {
       ThemeManager themeManager = Manager.getThemeManager()
-      if (themeManager.getNamedObject(themeName, "style", styleName) == null) {
-          Style style = (Style) FormatFactory.create("style");
+      Style style = themeManager.getNamedObject(themeName, "style", styleName)
+      if (style == null) {
+          style = (Style) FormatFactory.create("style");
           style.setName(styleName);
           themeManager.setNamedObject(themeName, "style", style);
           themeManager.registerFormat(style);
@@ -487,11 +488,11 @@ public class Main extends DefaultModule {
       Style style = (Style) ElementFormatter.getFormatByType(element, styleType)
       ThemeManager themeManager = Manager.getThemeManager()
       // Make the style no longer inherits from other another style if 'inheritedName' is null
-      if (inheritedName == null) {
+      if (styleName == null) {
           ThemeManager.removeInheritanceTowards(style)
       } else {
           String themeId = themeName.split("/")[0];
-          Style inheritedStyle = (Style) themeManager.getNamedObject(themeId, "style", inheritedName)
+          Style inheritedStyle = (Style) themeManager.getNamedObject(themeId, "style", styleName)
           if (inheritedStyle != null) {
               themeManager.makeFormatInherit(style, inheritedStyle)
           }
@@ -536,8 +537,7 @@ public class Main extends DefaultModule {
   @Path("render_css_preview")
   public String renderCssPreview() {
       String selectedElementId = getSelectedElementId()
-      String selectedLayerId = getSelectedStyleLayerId()
-      String selectedStyleLayer = getSelectedStyleLayer()
+      Style selectedStyleLayer = getSelectedStyleLayer()
       String selectedViewName = getViewNameOfSelectedElement()
       Element selectedElement = getSelectedElement()
       FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "style")
@@ -565,8 +565,8 @@ public class Main extends DefaultModule {
               Properties styleProperties = s.getPropertiesFor(viewName, path)
               Enumeration<?> propertyNames = org.nuxeo.theme.html.Utils.getCssProperties().propertyNames()
               while (propertyNames.hasMoreElements()) {
-                  propertyName = (String) propertyNames.nextElement()
-                  value = styleProperties.getProperty(propertyName)
+                  String propertyName = (String) propertyNames.nextElement()
+                  String value = styleProperties.getProperty(propertyName)
                   if (value == null) {
                       continue
                   }
@@ -804,8 +804,8 @@ public class Main extends DefaultModule {
       return ThemeManager.getThemesDescriptors()
   }
   
-  public static List<String> getNamedStyles() {
-      String currentThemeName = getCurrentThemeName()
+  public static List<String> getNamedStyles(String applicationPath) {
+      String currentThemeName = getCurrentThemeName(applicationPath)
       def styles = []
       List<Identifiable> namedStyles = Manager.getThemeManager().getNamedObjects(currentThemeName, "style")
       if (namedStyles) {
