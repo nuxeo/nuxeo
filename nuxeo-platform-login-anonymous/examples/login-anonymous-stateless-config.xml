@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.login.anonymous.config">
+
+  <!-- Make sure these components are read first -->
+  <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+  <require>org.nuxeo.ecm.platform.login.anonymous</require>
+ 
+  <!-- Override the default authentication chain present in
+    nuxeo-platform-ui-web to add ANONYMOUS_AUTH. -->
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="chain">
+    <authenticationChain>
+      <plugins>
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>ANONYMOUS_AUTH</plugin>
+        <plugin>FORM_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+  </extension>
+
+</component>
+
+
