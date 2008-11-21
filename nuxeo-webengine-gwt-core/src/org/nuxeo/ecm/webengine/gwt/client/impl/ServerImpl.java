@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.impl;
 
-import org.nuxeo.ecm.webengine.gwt.client.Session;
+import org.nuxeo.ecm.webengine.gwt.client.Server;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.Request;
@@ -32,7 +32,7 @@ import com.google.gwt.http.client.URL;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class SessionImpl implements Session {
+public class ServerImpl implements Server {
 
     
     public Object get(String url) {

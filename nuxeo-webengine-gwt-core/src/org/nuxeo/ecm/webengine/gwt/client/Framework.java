@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.webengine.gwt.client.impl.SessionImpl;
+import org.nuxeo.ecm.webengine.gwt.client.impl.ServerImpl;
 
 import com.google.gwt.core.client.GWT;
 
@@ -37,13 +37,13 @@ import com.google.gwt.core.client.GWT;
 public class Framework {
 
     public static final String APPLICATION_XP = "APPLICATION_WINDOW";
-    public static final String APPLICATION_SESSION_XP = "APPLICATION_SESSION";
+    public static final String SERVER_XP = "APPLICATION_SESSION";
     
     protected static List<ContextListener> sessionListeners = new ArrayList<ContextListener>();
     protected static Map<String, Extensible> extensionPoints = new HashMap<String, Extensible>();
     protected static Map<String, List<Object[]>> waitingExtensions = new HashMap<String, List<Object[]>>();
     protected static Application application;
-    protected static Session session;
+    protected static Server server;
     protected static Context ctx = new Context();    
     
     public static Application getApplication() {
@@ -60,20 +60,20 @@ public class Framework {
     
     
     public static void login(String username, String password) {
-        if (session.login(username, password)) {  
+        if (server.login(username, password)) {  
             ctx.setUsername(username);
         }
     }
     
     public static void logout() {
-        if (session.logout()) {
+        if (server.logout()) {
             ctx.setUsername(null);
         }
     }
     
     
     public static Object load(String url) {
-        Object input = session.get(url);
+        Object input = server.get(url);
         if (input != null) {
             ctx.setInputObject(input);
         }
@@ -86,8 +86,8 @@ public class Framework {
         }  
     }
 
-    public static Session getSession() {
-        return session;
+    public static Server getServer() {
+        return server;
     }
     
     public static boolean isAuthenticated() {
@@ -121,11 +121,11 @@ public class Framework {
                 return;
             }
             application =  (Application)extension;
-        } else if (APPLICATION_SESSION_XP.equals(extensionPoint)) {
-            if (mode == Extension.ADD_IF_NOT_EXISTS && session != null) {
+        } else if (SERVER_XP.equals(extensionPoint)) {
+            if (mode == Extension.ADD_IF_NOT_EXISTS && server != null) {
                 return;
             }
-            session = (Session)extension;
+            server = (Server)extension;
         } else {
             List<Object[]> list = waitingExtensions.get(extensionPoint);
             if (list == null) {
@@ -151,10 +151,10 @@ public class Framework {
     }
     
     public static void start() {
-        if (session != null) {
+        if (server != null) {
             return; // already started
         }
-        session = new SessionImpl(); //TODO use extension points
+        server = new ServerImpl(); //TODO use extension points
         if (application == null) {
             GWT.log("You must define an application!", null);
             throw new IllegalStateException("There is no application to start!");

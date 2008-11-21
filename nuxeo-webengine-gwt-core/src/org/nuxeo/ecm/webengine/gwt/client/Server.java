@@ -24,7 +24,7 @@ package org.nuxeo.ecm.webengine.gwt.client;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Session {
+public interface Server {
     
     public boolean login(String username, String password);
 
