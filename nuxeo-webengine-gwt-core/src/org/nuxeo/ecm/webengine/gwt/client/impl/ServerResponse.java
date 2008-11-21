@@ -17,31 +17,43 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.gwt.client;
-
-import com.google.gwt.http.client.RequestBuilder;
-
+package org.nuxeo.ecm.webengine.gwt.client.impl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Server {
-    
-    public boolean login(String username, String password);
+public class ServerResponse {
 
-    public boolean logout();
+    protected int code;
+    protected String status;
+    protected String content;
     
-    public void load(String url);
+    public ServerResponse(int code, String status, String content) {
+        this.code = code;
+        this.status = status;
+        this.content = content;
+    }
     
-    public RequestBuilder get(String url);
+    /**
+     * @return the status.
+     */
+    public String getStatus() {
+        return status;
+    }
     
-    public RequestBuilder post(String url);
+    /**
+     * @return the code.
+     */
+    public int getCode() {
+        return code;
+    }
     
-    public RequestBuilder put(String url);
-    
-    public RequestBuilder delete(String url);
-    
-    public RequestBuilder head(String url);
+    /**
+     * @return the content.
+     */
+    public String getContent() {
+        return content;
+    }
     
 }

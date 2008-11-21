@@ -24,8 +24,8 @@ import org.nuxeo.ecm.webengine.gwt.client.ui.Item;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -38,6 +38,8 @@ public class TestNavigator extends Item {
         super("navigator");
         setTitle("Navigator");
         setPreferredIndex(10);
+        setSize("100%", "100%");
+        System.out.println("-------------------"+(toString())+"-----------------");
     }
 
     @Override
@@ -45,11 +47,28 @@ public class TestNavigator extends Item {
         Button button1 = new Button("Show Tabs");        
         button1.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
-                TabPanel w = new TabPanel();
-                UI.openInEditor(w);
+                //TabPanel w = new TabPanel();
+                //UI.openInEditor(w);
+                UI.load("/skin/wiki/css/wiki.css");
             }
         });
-        return button1;
+        Button button2 = new Button("Button 2");
+        Button button3 = new Button("Button 3");
+        button3.addClickListener(new ClickListener() {
+            public void onClick(Widget sender) {
+                System.out.println(TestNavigator.this.toString());
+            }
+        });
+        
+        FlowPanel panel = new FlowPanel();
+        panel.setWidth("100%");
+        panel.add(button1);
+        panel.add(button2);
+        panel.add(button3);
+        
+        System.out.println(panel.toString());
+        
+        return panel;
     }
     
     @Override

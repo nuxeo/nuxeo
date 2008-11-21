@@ -38,6 +38,12 @@ public interface ApplicationBundle {
     public void start();
     
     /**
+     * Start this bundle using a prefix for server URL. This is especially needed when debuging in hosted mode 
+     * to redirect remote calls to another server than the one in embedded Tomcat
+     */
+    public void start(String name);
+    
+    /**
      * Deploy all bundled extension and extension points without starting the application 
      */
     public void deploy();

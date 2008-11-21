@@ -72,13 +72,6 @@ public class Framework {
     }
     
     
-    public static Object load(String url) {
-        Object input = server.get(url);
-        if (input != null) {
-            ctx.setInputObject(input);
-        }
-        return ctx.getInputObject();
-    }
     
     protected static void fireEvent(int event) {
         for (ContextListener listener : Framework.sessionListeners) {
@@ -137,24 +130,12 @@ public class Framework {
         }
     }
     
-    public static void debugStart(String url) {
-        if (GWT.isScript()) {
-            throw new IllegalStateException("Debug mode is available only in hosted mode");
-        }        
-        start();  
-        try {
-            load(url);
-        } catch (Exception e) {
-            e.printStackTrace();
-            GWT.log("Failed to start in debug mode", e);
-        }
-    }
-    
-    public static void start() {
+
+    public static void start(String url) {
         if (server != null) {
             return; // already started
         }
-        server = new ServerImpl(); //TODO use extension points
+        server = new ServerImpl(url); //TODO use extension points
         if (application == null) {
             GWT.log("You must define an application!", null);
             throw new IllegalStateException("There is no application to start!");
@@ -163,6 +144,10 @@ public class Framework {
         if (!waitingExtensions.isEmpty()) {//TODO use onAtach in application to clear the map? 
             GWT.log("There are extensions waiting to be deployed - "+waitingExtensions, null);
         }
+    }
+    
+    public static void start() {
+        start(null);
     }    
     
 }

@@ -48,6 +48,10 @@ public class UI implements EntryPoint {
         ((UIApplication)Framework.getApplication()).showView(name);
     }
     
+    public static void load(String url) {
+        Framework.getServer().load(url);
+    }
+    
   /**
    * This is the entry point method.
    */

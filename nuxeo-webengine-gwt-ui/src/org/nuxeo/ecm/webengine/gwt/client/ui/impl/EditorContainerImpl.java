@@ -60,7 +60,7 @@ public class EditorContainerImpl extends EditorContainer implements Extensible {
                     Object input = Framework.getContext().getInputObject();
                     if (input instanceof Widget) {
                         ((SimplePanel)getWidget()).setWidget((Widget)input);
-                    } else {
+                    } else if (input != null) {
                         ((SimplePanel)getWidget()).setWidget(new HTML(input.toString()));
                     }
                 }

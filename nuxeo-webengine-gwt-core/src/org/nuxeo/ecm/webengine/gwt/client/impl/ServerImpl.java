@@ -22,10 +22,7 @@ package org.nuxeo.ecm.webengine.gwt.client.impl;
 import org.nuxeo.ecm.webengine.gwt.client.Server;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 
 /**
@@ -33,51 +30,65 @@ import com.google.gwt.http.client.URL;
  *
  */
 public class ServerImpl implements Server {
-
     
-    public Object get(String url) {
-        try {
-            RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
-            Request request = builder.sendRequest(null, new RequestCallback() {
-                public void onError(Request request, Throwable exception) {
-                   // Couldn't connect to server (could be timeout, SOP violation, etc.)
-                    System.out.println("ERROR");
-                }
 
-                public void onResponseReceived(Request request, Response response) {
-                  if (200 == response.getStatusCode()) {
-                      // Process the response in response.getText()
-                  } else {
-                    // Handle the error.  Can get the status text from response.getStatusText()
-                  }
-                }       
-              });
+    protected String basePath; // base path used to prefix paths
+    
+    public ServerImpl() {
+        this (null);
+    }
+    
+    public ServerImpl(String basePath) {
+        if (basePath != null && basePath.endsWith("/")) {            
+            this.basePath = basePath.substring(0, basePath.length()-1); 
+        } else {
+            this.basePath = basePath;
+        }
+    }
+
+    public String normalize(String uri) {
+        if (basePath != null) {
+            if (!uri.contains("://")) { // relative URL
+                if (uri.startsWith("/")) {
+                    uri = basePath+uri;
+                } else {
+                    uri = "/"+basePath+uri;  
+                }
+            }
+        }
+        return URL.encode(uri); 
+    }
+    
+    public RequestBuilder get(String uri) {
+        return new RequestBuilder(RequestBuilder.GET, normalize(uri));
+    }
+
+    public RequestBuilder post(String uri) {
+        return new RequestBuilder(RequestBuilder.POST, normalize(uri));
+    }
+    
+    public RequestBuilder put(String uri) {
+        return new RequestBuilder(RequestBuilder.GET, normalize(uri));
+    }
+    
+    public RequestBuilder delete(String uri) {
+        return new RequestBuilder(RequestBuilder.GET, normalize(uri));
+    }
+    
+    public RequestBuilder head(String uri) {
+        return new RequestBuilder(RequestBuilder.GET, normalize(uri));
+    }
+    
+    public void load(String url) {
+        try {
+            Callback cb = new Callback();        
+            get(url).sendRequest(null, cb);
         } catch (Exception e) {
             e.printStackTrace();
             GWT.log("Failed to start in debug mode", e);
         }
-        return null;
     }
 
-    public Object post(String url) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    public Object put(String url) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    public Object delete(String url) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    public Object head(String url) {
-        // TODO Auto-generated method stub
-        return null;
-    }
     
     public boolean login(String username, String password) {
         return true;

@@ -65,6 +65,8 @@ public class BundleGenerationTask extends GenerationTask {
         writer.indent();
         writer.println();
         writeStartMethod();
+        writer.println();
+        writeStartMethod2();
         writer.println();        
         writeDeployMethod(bundles);
         writer.outdent();
@@ -93,6 +95,15 @@ public class BundleGenerationTask extends GenerationTask {
         writer.indent();
         writer.println("deploy();");
         writer.println("Framework.start();");
+        writer.outdent();
+        writer.println("}");
+    }
+
+    private void writeStartMethod2() {
+        writer.println("public void start(String url) {");
+        writer.indent();
+        writer.println("deploy();");
+        writer.println("Framework.start(url);");
         writer.outdent();
         writer.println("}");
     }
