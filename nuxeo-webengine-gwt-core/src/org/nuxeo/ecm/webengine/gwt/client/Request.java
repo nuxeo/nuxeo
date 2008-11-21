@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.webengine.gwt.client;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Map;
 
 /**
@@ -52,23 +50,15 @@ public class Request {
         return method("GET");
     }
     
-    public Request get(String url) throws MalformedURLException {
-        return get(new URL(url));
-    }
-
-    public Request get(URL url) {
+    public Request get(String url) {
         return get().url(url);
     }
 
     public Request post() { 
         return method("POST");
     }
-    
-    public Request post(String url) throws MalformedURLException {
-        return post(new URL(url));
-    }
 
-    public Request post(URL url) {
+    public Request post(String url) {
         return post().url(url);
     }
     
@@ -76,11 +66,7 @@ public class Request {
         return method("PUT");
     }
     
-    public Request put(String url) throws MalformedURLException {
-        return put(new URL(url));
-    }
-
-    public Request put(URL url) {
+    public Request put(String url) {
         return put().url(url);
     }
     
@@ -88,11 +74,7 @@ public class Request {
         return method("DELETE");
     }
     
-    public Request delete(String url) throws MalformedURLException {
-        return delete(new URL(url));
-    }
-
-    public Request delete(URL url) {
+    public Request delete(String url) {
         return delete().url(url);
     }
     
@@ -100,56 +82,48 @@ public class Request {
         return method("HEAD");
     }
     
-    public Request head(URL url) {
+    public Request head(String url) {
         return head().url(url);
     }
 
-    public Request head(String url) throws MalformedURLException {
-        return head(new URL(url));
-    }
-
-    
-    public Request url(String url) throws MalformedURLException {
-        return url(new URL(url));
-    }
-
-    public Request url(URL url) {
-        this.schema = url.getProtocol();
-        this.host = url.getHost();
-        this.port = url.getPort();
-        if (port == -1) {
-            port = url.getDefaultPort();
-        }
-        this.path = url.getPath();
-        this.fragment = url.getRef();
-        String q = url.getQuery();
-        if (q != null) {
-            this.query = new StringBuilder(q);
-        }
-        String auth = url.getUserInfo();
-        if (auth != null) {
-            int k = auth.indexOf(':');
-            if (k > -1) {
-                this.username = auth.substring(0, k);
-                this.password = auth.substring(k+1);
-            } else {
-                this.username = auth;
-            }
-        }
+    public Request url(String url) {
+//        URL url = new URL();
+//        this.schema = url.getProtocol();
+//        this.host = url.getHost();
+//        this.port = url.getPort();
+//        if (port == -1) {
+//            port = url.getDefaultPort();
+//        }
+//        this.path = url.getPath();
+//        this.fragment = url.getRef();
+//        String q = url.getQuery();
+//        if (q != null) {
+//            this.query = new StringBuilder(q);
+//        }
+//        String auth = url.getUserInfo();
+//        if (auth != null) {
+//            int k = auth.indexOf(':');
+//            if (k > -1) {
+//                this.username = auth.substring(0, k);
+//                this.password = auth.substring(k+1);
+//            } else {
+//                this.username = auth;
+//            }
+//        }
         return this;
     }
 
     
     
     
-    public static void main(String[] args) throws Exception {
-        //URL url = new URL("http://u:p@localhost:8080/the/path?k1=v1&k2=v2#anchor");
-        URL url = new URL("http://u:p@localhost/the/path?k1=v1&k2=v2#anchor");
-        System.out.println("> schema: "+url.getProtocol());
-        System.out.println("> host: "+url.getHost());
-        System.out.println("> port: "+url.getPort()+" - "+url.getDefaultPort());
-        System.out.println("> query: "+url.getQuery());      
-        System.out.println("> fragment: "+url.getRef());
-        System.out.println("> user: "+url.getUserInfo());
-    }
+//    public static void main(String[] args) throws Exception {
+//        //URL url = new URL("http://u:p@localhost:8080/the/path?k1=v1&k2=v2#anchor");
+//        URL url = new URL("http://u:p@localhost/the/path?k1=v1&k2=v2#anchor");
+//        System.out.println("> schema: "+url.getProtocol());
+//        System.out.println("> host: "+url.getHost());
+//        System.out.println("> port: "+url.getPort()+" - "+url.getDefaultPort());
+//        System.out.println("> query: "+url.getQuery());      
+//        System.out.println("> fragment: "+url.getRef());
+//        System.out.println("> user: "+url.getUserInfo());
+//    }
 }
