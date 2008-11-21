@@ -20,9 +20,9 @@
 package org.nuxeo.ecm.webengine.gwt.client.ui;
 
 import org.nuxeo.ecm.webengine.gwt.client.Application;
+import org.nuxeo.ecm.webengine.gwt.client.Framework;
 
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
 
 
@@ -30,29 +30,28 @@ import com.google.gwt.user.client.ui.RootPanel;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class ApplicationWindow extends Composite {
+public abstract class UIApplication extends Composite implements Application {
 
-    private static Image EMPTY_IMAGE = null;  
-    
-    public void install() {
+      
+    public void start() {
         RootPanel.get().add(this);
-    }
-
-    public static Image getEmptyImage() {
-        if (EMPTY_IMAGE == null) {
-            EMPTY_IMAGE = Application.getImages(Images.class).noimage().createImage();
-        }
-        return EMPTY_IMAGE;
-    }
+    }  
 
     public void openInEditor(Object input) {
-        Application.getContext().setInputObject(input);
+        Framework.getContext().setInputObject(input);
         openEditor();
+    }
+    
+    public void openInEditor(String name, Object input) {
+        Framework.getContext().setInputObject(input);
+        openEditor(name);
     }
     
     public abstract void showView(String name);
     
     public abstract void openEditor();
+    
+    public abstract void openEditor(String name);
     
     //TODO add getView , showView etc
 }

@@ -25,11 +25,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.nuxeo.ecm.webengine.gwt.client.Application;
 import org.nuxeo.ecm.webengine.gwt.client.ApplicationBundle;
 import org.nuxeo.ecm.webengine.gwt.client.Bundle;
 import org.nuxeo.ecm.webengine.gwt.client.Extension;
 import org.nuxeo.ecm.webengine.gwt.client.ExtensionPoint;
+import org.nuxeo.ecm.webengine.gwt.client.Framework;
 
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
@@ -47,7 +47,7 @@ public class BundleGenerationTask extends GenerationTask {
     
     @Override
     public void run() throws UnableToCompleteException {
-        composer.addImport(Application.class.getName());
+        composer.addImport(Framework.class.getName());
         composer.addImport(ApplicationBundle.class.getName());
         composer.addImplementedInterface(ApplicationBundle.class.getName());
         
@@ -92,7 +92,7 @@ public class BundleGenerationTask extends GenerationTask {
         writer.println("public void start() {");
         writer.indent();
         writer.println("deploy();");
-        writer.println("Application.start();");
+        writer.println("Framework.start();");
         writer.outdent();
         writer.println("}");
     }
@@ -152,14 +152,14 @@ public class BundleGenerationTask extends GenerationTask {
     private void writeExtensionPoint(JMethod method) {
         ExtensionPoint point = method.getAnnotation(ExtensionPoint.class);
         for (String xp : point.value()) {
-            writer.println("Application.registerExtensionPoint(\""+xp+"\", "+method.getName()+");");
+            writer.println("Framework.registerExtensionPoint(\""+xp+"\", "+method.getName()+");");
         }
     }
 
     private void writeExtension(JMethod method) {
         Extension ext = method.getAnnotation(Extension.class);
         for (String point : ext.targets()) {            
-            writer.println("Application.registerExtension(\""+point+"\", "+ method.getName()+", "+ext.mode()+");");
+            writer.println("Framework.registerExtension(\""+point+"\", "+ method.getName()+", "+ext.mode()+");");
         }
     }
 

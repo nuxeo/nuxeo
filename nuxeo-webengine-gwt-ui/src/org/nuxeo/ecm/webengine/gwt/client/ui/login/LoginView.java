@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui.login;
 
-import org.nuxeo.ecm.webengine.gwt.client.Application;
+import org.nuxeo.ecm.webengine.gwt.client.Framework;
 import org.nuxeo.ecm.webengine.gwt.client.ContextListener;
 import org.nuxeo.ecm.webengine.gwt.client.ui.Item;
 
@@ -43,7 +43,7 @@ public class LoginView extends Item implements ContextListener {
     @Override
     protected void onAttach() {
         super.onAttach();        
-        Application.addContextListener(this);
+        Framework.addContextListener(this);
         deck.showWidget(0);
     }
     
@@ -58,7 +58,7 @@ public class LoginView extends Item implements ContextListener {
     
     public void refresh() {    
         int index = deck.getVisibleWidget();
-        if (Application.isAuthenticated()) {
+        if (Framework.isAuthenticated()) {
             if (index == 0) { // login widget is visible
                 ((LogoutWidget)deck.getWidget(1)).refresh();
                 deck.showWidget(1);                

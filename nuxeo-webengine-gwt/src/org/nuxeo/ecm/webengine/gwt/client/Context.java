@@ -42,7 +42,7 @@ public class Context extends HashMap<String,String> {
     public void setUsername(String username) {
         if (this.username != username) {
             this.username = username;
-            Application.fireEvent(username == null ? ContextListener.LOGOUT : ContextListener.LOGIN);
+            Framework.fireEvent(username == null ? ContextListener.LOGOUT : ContextListener.LOGIN);
         }
     }
     
@@ -56,7 +56,7 @@ public class Context extends HashMap<String,String> {
     public void setInputObject(Object object) {
         if (this.input != object) {
             this.input = object;
-            Application.fireEvent(ContextListener.INPUT);
+            Framework.fireEvent(ContextListener.INPUT);
         }
     }
         

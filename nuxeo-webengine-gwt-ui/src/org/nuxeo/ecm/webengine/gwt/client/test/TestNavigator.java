@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.test;
 
-import org.nuxeo.ecm.webengine.gwt.client.Application;
+import org.nuxeo.ecm.webengine.gwt.client.UI;
 import org.nuxeo.ecm.webengine.gwt.client.ui.Item;
 
 import com.google.gwt.user.client.ui.Button;
@@ -46,7 +46,7 @@ public class TestNavigator extends Item {
         button1.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
                 TabPanel w = new TabPanel();
-                Application.getWindow().openInEditor(w);
+                UI.openInEditor(w);
             }
         });
         return button1;
@@ -54,6 +54,6 @@ public class TestNavigator extends Item {
     
     @Override
     public Image getIcon() {
-        return Application.getImages(Images.class).filtersgroup().createImage();
+        return UI.getImages(Images.class).filtersgroup().createImage();
     }
 }

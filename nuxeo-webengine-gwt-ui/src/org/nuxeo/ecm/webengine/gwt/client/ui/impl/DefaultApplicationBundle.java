@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui.impl;
 
-import org.nuxeo.ecm.webengine.gwt.client.Application;
+import org.nuxeo.ecm.webengine.gwt.client.Framework;
 import org.nuxeo.ecm.webengine.gwt.client.ApplicationBundle;
 import org.nuxeo.ecm.webengine.gwt.client.Bundle;
 import org.nuxeo.ecm.webengine.gwt.client.Extension;
@@ -34,13 +34,13 @@ import org.nuxeo.ecm.webengine.gwt.client.ui.login.LoginView;
 @Bundle
 public interface DefaultApplicationBundle extends ApplicationBundle {
   
-    @Extension(targets=Application.APPLICATION_WINDOW_XP)
+    @Extension(targets=Framework.APPLICATION_XP)
     @ExtensionPoint({ 
         ExtensionPoints.VIEW_CONTAINER_XP, 
         ExtensionPoints.EDITOR_CONTAINER_XP,
         ExtensionPoints.HEADER_CONTAINER_XP,
         ExtensionPoints.FOOTER_CONTAINER_XP})
-     ApplicationWindowImpl applicationWindow();
+     ApplicationImpl applicationWindow();
   
     @Extension(targets=ExtensionPoints.EDITOR_CONTAINER_XP)
     @ExtensionPoint(ExtensionPoints.EDITORS_XP)

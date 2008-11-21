@@ -19,10 +19,10 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui.impl;
 
-import org.nuxeo.ecm.webengine.gwt.client.Application;
 import org.nuxeo.ecm.webengine.gwt.client.ContextListener;
 import org.nuxeo.ecm.webengine.gwt.client.Extensible;
-import org.nuxeo.ecm.webengine.gwt.client.ui.ApplicationWindow;
+import org.nuxeo.ecm.webengine.gwt.client.Framework;
+import org.nuxeo.ecm.webengine.gwt.client.UI;
 import org.nuxeo.ecm.webengine.gwt.client.ui.ExtensionPoints;
 import org.nuxeo.ecm.webengine.gwt.client.ui.Item;
 import org.nuxeo.ecm.webengine.gwt.client.ui.ViewContainer;
@@ -65,7 +65,7 @@ public class ViewContainerImpl extends ViewContainer implements Extensible,
                 getStackPanel().add(item, item.getHeader(), true); //TODO image
             } else if (extension instanceof Widget) {
                 Widget w = (Widget)extension;
-                getStackPanel().add(w, getHeaderString(w.getTitle(), ApplicationWindow.getEmptyImage()), true); 
+                getStackPanel().add(w, getHeaderString(w.getTitle(), UI.getEmptyImage()), true); 
             } else {
                 GWT.log("Extension is not a widget. Ignoring", null);
             }
@@ -80,8 +80,8 @@ public class ViewContainerImpl extends ViewContainer implements Extensible,
     }
 
     public ViewContainerImpl register() {
-        Application.registerExtension(ExtensionPoints.VIEW_CONTAINER_XP, this);
-        Application.registerExtensionPoint(ExtensionPoints.VIEWS_XP, this);
+        Framework.registerExtension(ExtensionPoints.VIEW_CONTAINER_XP, this);
+        Framework.registerExtensionPoint(ExtensionPoints.VIEWS_XP, this);
         return this;
     }
 

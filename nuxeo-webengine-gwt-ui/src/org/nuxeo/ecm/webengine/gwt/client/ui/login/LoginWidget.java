@@ -19,12 +19,14 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui.login;
 
-import org.nuxeo.ecm.webengine.gwt.client.Application;
+import org.nuxeo.ecm.webengine.gwt.client.Framework;
 
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PasswordTextBox;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -32,28 +34,28 @@ import com.google.gwt.user.client.ui.Widget;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class LogoutWidget extends Composite implements ClickListener {
+public class LoginWidget extends Composite implements ClickListener {
 
-    protected Label username;
-    
-    public LogoutWidget() {
-        Hyperlink submit = new Hyperlink();
-        submit.setText("Logout");
+    protected TextBox  userBox;
+    protected PasswordTextBox  passBox;
+
+    public LoginWidget() {
+        userBox = new TextBox();
+        passBox = new PasswordTextBox();
+        Button submit = new Button("Login");
         submit.addClickListener(this);
-        VerticalPanel panel =  new VerticalPanel();
-        panel.setSpacing(2);
-        username = new Label("You are logged in as ...");
-        panel.add(username);
+        VerticalPanel panel = new VerticalPanel();
+        panel.add(new Label("Username:"));
+        panel.add(userBox);
+        panel.add(new Label("Password:"));
+        panel.add(passBox);
         panel.add(submit);
+        panel.setSpacing(2);
         initWidget(panel);
     }
-    
+
     public void onClick(Widget sender) {
-        Application.logout();
+        Framework.login(userBox.getText().trim(), passBox.getText());
     }
-    
-    public void refresh() {
-        username.setText("You are logged in as "+Application.getContext().getUsername());
-    }
-    
+
 }

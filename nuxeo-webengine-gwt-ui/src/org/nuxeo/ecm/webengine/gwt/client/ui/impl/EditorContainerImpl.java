@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui.impl;
 
-import org.nuxeo.ecm.webengine.gwt.client.Application;
+import org.nuxeo.ecm.webengine.gwt.client.Framework;
 import org.nuxeo.ecm.webengine.gwt.client.Extensible;
 import org.nuxeo.ecm.webengine.gwt.client.ui.Editor;
 import org.nuxeo.ecm.webengine.gwt.client.ui.EditorContainer;
@@ -57,7 +57,7 @@ public class EditorContainerImpl extends EditorContainer implements Extensible {
             editor = new Editor("default", new SimplePanel()) {
                 @Override
                 public void refresh() {
-                    Object input = Application.getContext().getInputObject();
+                    Object input = Framework.getContext().getInputObject();
                     if (input instanceof Widget) {
                         ((SimplePanel)getWidget()).setWidget((Widget)input);
                     } else {
@@ -86,7 +86,7 @@ public class EditorContainerImpl extends EditorContainer implements Extensible {
     
     public void showEditor() {
         DeckPanel panel = getDeckPanel();
-        Object input = Application.getContext().getInputObject();
+        Object input = Framework.getContext().getInputObject();
         int cnt = panel.getWidgetCount();
         for (int i=1; i<cnt; i++) {
             Editor editor = (Editor)panel.getWidget(i);
@@ -145,8 +145,8 @@ public class EditorContainerImpl extends EditorContainer implements Extensible {
     }
     
     public EditorContainerImpl register() {
-        Application.registerExtension(ExtensionPoints.EDITOR_CONTAINER_XP, this);
-        Application.registerExtensionPoint(ExtensionPoints.EDITORS_XP, this);
+        Framework.registerExtension(ExtensionPoints.EDITOR_CONTAINER_XP, this);
+        Framework.registerExtensionPoint(ExtensionPoints.EDITORS_XP, this);
         return this;
     }
 

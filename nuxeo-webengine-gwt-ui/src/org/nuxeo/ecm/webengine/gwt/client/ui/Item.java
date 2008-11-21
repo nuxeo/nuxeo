@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui;
 
+import org.nuxeo.ecm.webengine.gwt.client.UI;
+
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -68,7 +70,7 @@ public class Item extends Composite {
      * @return the icon.
      */
     public Image getIcon() {
-        return ApplicationWindow.getEmptyImage();
+        return UI.getEmptyImage();
     }
     
     public int getPreferredIndex() {

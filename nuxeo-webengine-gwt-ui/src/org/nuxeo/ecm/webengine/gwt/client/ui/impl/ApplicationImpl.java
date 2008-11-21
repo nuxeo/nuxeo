@@ -19,17 +19,16 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui.impl;
 
-import org.nuxeo.ecm.webengine.gwt.client.Application;
 import org.nuxeo.ecm.webengine.gwt.client.Extensible;
-import org.nuxeo.ecm.webengine.gwt.client.ui.ApplicationWindow;
+import org.nuxeo.ecm.webengine.gwt.client.Framework;
 import org.nuxeo.ecm.webengine.gwt.client.ui.EditorContainer;
 import org.nuxeo.ecm.webengine.gwt.client.ui.ExtensionPoints;
+import org.nuxeo.ecm.webengine.gwt.client.ui.UIApplication;
 import org.nuxeo.ecm.webengine.gwt.client.ui.ViewContainer;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -37,7 +36,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ApplicationWindowImpl extends ApplicationWindow implements Extensible, ExtensionPoints  {
+public class ApplicationImpl extends UIApplication implements Extensible, ExtensionPoints  {
 
     protected SimplePanel headerPanel;
     protected SimplePanel footerPanel;
@@ -45,7 +44,7 @@ public class ApplicationWindowImpl extends ApplicationWindow implements Extensib
     protected SimplePanel viewContainer;
     
     
-    public ApplicationWindowImpl() {
+    public ApplicationImpl() {
         DockPanel panel = new DockPanel();
         panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
         panel.setSpacing(2);
@@ -110,10 +109,6 @@ public class ApplicationWindowImpl extends ApplicationWindow implements Extensib
     protected void setFooter(Widget footer) {
         this.footerPanel.setWidget(footer);
     }
-    
-    public void install() {
-        RootPanel.get().add(this);
-    }
 
     public EditorContainer getEditorContainer() {
         return (EditorContainer)editorContainer.getWidget();
@@ -125,6 +120,10 @@ public class ApplicationWindowImpl extends ApplicationWindow implements Extensib
     
     public void openEditor() {
         getEditorContainer().showEditor();
+    }
+    
+    public void openEditor(String name) {
+        getEditorContainer().showEditor(name);
     }
     
     @Override
@@ -144,12 +143,12 @@ public class ApplicationWindowImpl extends ApplicationWindow implements Extensib
         }
     }
     
-    public ApplicationWindowImpl register() {
-        Application.registerExtension(Application.APPLICATION_WINDOW_XP, this);
-        Application.registerExtensionPoint(VIEW_CONTAINER_XP, this);
-        Application.registerExtensionPoint(EDITOR_CONTAINER_XP, this);
-        Application.registerExtensionPoint(HEADER_CONTAINER_XP, this);
-        Application.registerExtensionPoint(FOOTER_CONTAINER_XP, this);
+    public ApplicationImpl register() {
+        Framework.registerExtension(Framework.APPLICATION_XP, this);
+        Framework.registerExtensionPoint(VIEW_CONTAINER_XP, this);
+        Framework.registerExtensionPoint(EDITOR_CONTAINER_XP, this);
+        Framework.registerExtensionPoint(HEADER_CONTAINER_XP, this);
+        Framework.registerExtensionPoint(FOOTER_CONTAINER_XP, this);
         return this;
     }
 

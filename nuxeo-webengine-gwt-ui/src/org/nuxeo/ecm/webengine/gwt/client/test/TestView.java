@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.test;
 
-import org.nuxeo.ecm.webengine.gwt.client.Application;
+import org.nuxeo.ecm.webengine.gwt.client.UI;
 import org.nuxeo.ecm.webengine.gwt.client.ui.Item;
 
 import com.google.gwt.user.client.ui.Button;
@@ -46,9 +46,9 @@ public class TestView extends Item {
         button2.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
                 HTML w = new HTML("<h1>My Content</h1>Some html text!");                
-                Application.getWindow().openInEditor(w);
+                UI.openInEditor(w);
                 // switch to "login" view
-                Application.getWindow().showView("login");                
+                UI.showView("login");                
             }
         });        
         return button2;
@@ -56,7 +56,7 @@ public class TestView extends Item {
     
     @Override
     public Image getIcon() {
-        return Application.getImages(Images.class).mailgroup().createImage();
+        return UI.getImages(Images.class).mailgroup().createImage();
     }
 
     
