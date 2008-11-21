@@ -1,3 +1,3 @@
 #!/bin/sh
 APPDIR=`dirname $0`;
-java  -Xmx256M -cp "$APPDIR/src:$APPDIR/bin:/opt/gwt-linux-1.5.0/gwt-user.jar:/opt/gwt-linux-1.5.0/gwt-dev-linux.jar" com.google.gwt.dev.GWTShell -out "$APPDIR/www" "$@" org.nuxeo.webengine.gwt.Main/Main.html;
+java  -Xmx256M -cp "$APPDIR/src:$APPDIR/bin:/opt/gwt-linux-1.5.0/gwt-user.jar:/opt/gwt-linux-1.5.0/gwt-dev-linux.jar" com.google.gwt.dev.GWTShell -out "$APPDIR/www" "$@" org.nuxeo.ecm.webengine.gwt.Core/Core.html;

@@ -13,7 +13,7 @@
 
 	<servlet>
 		<servlet-name>redirect</servlet-name>
-		<servlet-class>org.nuxeo.webengine.gwt.debug.RedirectServlet</servlet-class>
+		<servlet-class>org.nuxeo.ecm.webengine.gwt.debug.RedirectServlet</servlet-class>
 	</servlet>
 	
 	<servlet-mapping>
