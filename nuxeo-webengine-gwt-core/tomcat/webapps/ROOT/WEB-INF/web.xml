@@ -11,14 +11,4 @@
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 
-	<servlet>
-		<servlet-name>redirect</servlet-name>
-		<servlet-class>org.nuxeo.ecm.webengine.gwt.debug.RedirectServlet</servlet-class>
-	</servlet>
-	
-	<servlet-mapping>
-		<servlet-name>redirect</servlet-name>
-		<url-pattern>/redirect/*</url-pattern>
-	</servlet-mapping>
-
 </web-app>
