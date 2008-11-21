@@ -54,6 +54,6 @@ public class TestNavigator extends Item {
     
     @Override
     public Image getIcon() {
-        return UI.getImages(Images.class).filtersgroup().createImage();
+        return Main.getImages().filtersgroup().createImage();
     }
 }

@@ -10,6 +10,12 @@ import com.google.gwt.core.client.GWT;
  */
 public class Main implements EntryPoint {
 
+    protected static Images images = GWT.create(Images.class); 
+    
+    public static Images getImages() {
+        return images;
+    }
+    
   /**
    * This is the entry point method.
    */

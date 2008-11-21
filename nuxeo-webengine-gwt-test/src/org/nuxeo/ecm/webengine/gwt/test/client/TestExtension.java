@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webengine.gwt.test.client;
 
 
-import org.nuxeo.ecm.webengine.gwt.client.UI;
 import org.nuxeo.ecm.webengine.gwt.client.ui.Item;
 
 import com.google.gwt.user.client.ui.Image;
@@ -40,7 +39,7 @@ public class TestExtension extends Item {
     
     @Override
     public Image getIcon() {
-        return UI.getImages(Images.class).contactsgroup().createImage();
+        return Main.getImages().contactsgroup().createImage();
     }
 
 }

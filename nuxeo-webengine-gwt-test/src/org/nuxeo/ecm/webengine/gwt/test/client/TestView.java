@@ -56,7 +56,7 @@ public class TestView extends Item {
     
     @Override
     public Image getIcon() {
-        return UI.getImages(Images.class).mailgroup().createImage();
+        return Main.getImages().mailgroup().createImage();
     }
 
     

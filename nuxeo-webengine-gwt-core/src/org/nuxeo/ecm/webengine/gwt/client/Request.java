@@ -21,73 +21,80 @@ package org.nuxeo.ecm.webengine.gwt.client;
 
 import java.util.Map;
 
+import com.google.gwt.http.client.URL;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class Request {
 
-    protected String method;
-    protected String schema;    
-    protected String username;
-    protected String password;
-    protected String host;
-    protected int port = 80;
-    protected String path;
-    protected StringBuilder query;
-    protected String fragment;    
-    protected Map<String,String> headers;
-    
-    protected String enctype;
-    protected Map<String,Object> data;
-    
-    public Request method(String method) {
-        this.method = method;
-        return this;
-    }
-    
-    public Request get() { 
-        return method("GET");
-    }
-    
-    public Request get(String url) {
-        return get().url(url);
-    }
-
-    public Request post() { 
-        return method("POST");
-    }
-
-    public Request post(String url) {
-        return post().url(url);
-    }
-    
-    public Request put() { 
-        return method("PUT");
-    }
-    
-    public Request put(String url) {
-        return put().url(url);
-    }
-    
-    public Request delete() { 
-        return method("DELETE");
-    }
-    
-    public Request delete(String url) {
-        return delete().url(url);
-    }
-    
-    public Request head() {
-        return method("HEAD");
-    }
-    
-    public Request head(String url) {
-        return head().url(url);
-    }
-
-    public Request url(String url) {
-//        URL url = new URL();
+//    protected String method;
+//    protected String schema;    
+//    protected String username;
+//    protected String password;
+//    protected String host;
+//    protected int port = 80;
+//    protected String path;
+//    protected StringBuilder query;
+//    protected String fragment;    
+//    protected Map<String,String> headers;
+//    
+//    protected String url; // url without path
+//    protected String basePath; // the basePath if any
+//    protected String path; // the path if any 
+//    
+//    protected String enctype;
+//    protected Map<String,Object> data;
+//    
+//    public Request method(String method) {
+//        this.method = method;
+//        return this;
+//    }
+//    
+//    public Request get() { 
+//        return method("GET");
+//    }
+//    
+//    public Request get(String url) {
+//        return get().url(url);
+//    }
+//
+//    public Request post() { 
+//        return method("POST");
+//    }
+//
+//    public Request post(String url) {
+//        return post().url(url);
+//    }
+//    
+//    public Request put() { 
+//        return method("PUT");
+//    }
+//    
+//    public Request put(String url) {
+//        return put().url(url);
+//    }
+//    
+//    public Request delete() { 
+//        return method("DELETE");
+//    }
+//    
+//    public Request delete(String url) {
+//        return delete().url(url);
+//    }
+//    
+//    public Request head() {
+//        return method("HEAD");
+//    }
+//    
+//    public Request head(String url) {
+//        return head().url(url);
+//    }
+//
+//    public Request url(String url) {        
+//        this.url = URL.encode(url);
+//        
 //        this.schema = url.getProtocol();
 //        this.host = url.getHost();
 //        this.port = url.getPort();
@@ -110,8 +117,8 @@ public class Request {
 //                this.username = auth;
 //            }
 //        }
-        return this;
-    }
+//        return this;
+//    }
 
     
     
