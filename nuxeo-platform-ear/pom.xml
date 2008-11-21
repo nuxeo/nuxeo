@@ -576,7 +576,7 @@
         <executions>
           <execution>
             <id>make-resources</id>
-            <phase>package</phase>
+            <phase>process-resources</phase>
             <goals>
               <goal>attached</goal>
             </goals>
