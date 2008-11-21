@@ -17,18 +17,19 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.gwt.client.test;
+package org.nuxeo.ecm.webengine.gwt.test.client;
 
 import org.nuxeo.ecm.webengine.gwt.client.ApplicationBundle;
 import org.nuxeo.ecm.webengine.gwt.client.Bundle;
 import org.nuxeo.ecm.webengine.gwt.client.Extension;
 import org.nuxeo.ecm.webengine.gwt.client.ui.ExtensionPoints;
+import org.nuxeo.ecm.webengine.gwt.client.ui.impl.DefaultApplicationBundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Bundle
+@Bundle(DefaultApplicationBundle.class)
 public interface TestBundle extends ApplicationBundle {
 
 

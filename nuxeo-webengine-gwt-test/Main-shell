@@ -1,0 +1,5 @@
+#!/bin/sh
+COREDIR=../nuxeo-webengine-gwt
+UIDIR=../nuxeo-webengine-gwt-ui
+APPDIR=`dirname $0`;
+java  -Xmx256M -cp "$APPDIR/src:$APPDIR/bin:$COREDIR/src:$COREDIR/bin:$UIDIR/src:$UIDIR/bin:/opt/gwt-linux-1.5.0/gwt-user.jar:/opt/gwt-linux-1.5.0/gwt-dev-linux.jar" com.google.gwt.dev.GWTShell -out "$APPDIR/www" "$@" org.nuxeo.ecm.webengine.gwt.test.Main/Main.html;

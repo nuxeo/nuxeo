@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.gwt.client.test;
+package org.nuxeo.ecm.webengine.gwt.test.client;
 
 
 import org.nuxeo.ecm.webengine.gwt.client.UI;

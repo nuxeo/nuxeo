@@ -17,47 +17,43 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.gwt.client.test;
+package org.nuxeo.ecm.webengine.gwt.test.client;
 
 import org.nuxeo.ecm.webengine.gwt.client.UI;
 import org.nuxeo.ecm.webengine.gwt.client.ui.Item;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TestView extends Item {
+public class TestNavigator extends Item {
 
-    public TestView() {
-        super("dummy");
-        setTitle("Dummy");
-        setPreferredIndex(20);
+    public TestNavigator() {
+        super("navigator");
+        setTitle("Navigator");
+        setPreferredIndex(10);
     }
 
     @Override
     protected Widget createContent() {
-        Button button2 = new Button("Open some text");        
-        button2.addClickListener(new ClickListener() {
+        Button button1 = new Button("Show Tabs");        
+        button1.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
-                HTML w = new HTML("<h1>My Content</h1>Some html text!");                
+                TabPanel w = new TabPanel();
                 UI.openInEditor(w);
-                // switch to "login" view
-                UI.showView("login");                
             }
-        });        
-        return button2;
+        });
+        return button1;
     }
     
     @Override
     public Image getIcon() {
-        return UI.getImages(Images.class).mailgroup().createImage();
+        return UI.getImages(Images.class).filtersgroup().createImage();
     }
-
-    
 }

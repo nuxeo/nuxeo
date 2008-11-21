@@ -55,7 +55,7 @@ public class UI implements EntryPoint {
     }
 
     public static void showView(String name) {
-        ((UIApplication)Framework.getApplication()).openEditor();
+        ((UIApplication)Framework.getApplication()).showView(name);
     }
     
   /**
