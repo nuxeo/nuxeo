@@ -20,11 +20,26 @@
 package org.nuxeo.webengine.gwt.client;
 
 /**
+ * Marker interface to define application bundles (or layouts)
+ * This is used the deferred binding to generate bundled application   
+ * 
+ * To create new application bundles we should extends this interface and add 
+ * describe which extension and extension points must be included in the bundle.  
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Extensible {
+public interface ApplicationBundle {
 
-    public void registerExtension(String target, Object extension, int mode);
+    /**
+     * Start this bundle. This will deploy all bundled extension points and extensions
+     * and then it is starting the application. 
+     */
+    public void start();
+    
+    /**
+     * Deploy all bundled extension and extension points without starting the application 
+     */
+    public void deploy();
     
 }

@@ -30,12 +30,7 @@ import org.nuxeo.webengine.gwt.client.ui.ApplicationWindow;
 import org.nuxeo.webengine.gwt.client.ui.impl.ApplicationWindowImpl;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.Response;
-import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.HTTPRequest;
+import com.google.gwt.user.client.ui.ImageBundle;
 
 
 /**
@@ -49,10 +44,11 @@ public class Application {
     
     protected static List<ContextListener> sessionListeners = new ArrayList<ContextListener>();
     protected static Map<String, Extensible> extensionPoints = new HashMap<String, Extensible>();
-    protected static Map<String, List<Object>> waitingExtensions = new HashMap<String, List<Object>>();
+    protected static Map<String, List<Object[]>> waitingExtensions = new HashMap<String, List<Object[]>>();
     protected static ApplicationWindow window;
     protected static Session session;
     protected static Context ctx = new Context();
+    protected static Map<String, ImageBundle> images = new HashMap<String, ImageBundle>();
     
     public static ApplicationWindow getWindow() {
         return window;
@@ -79,8 +75,19 @@ public class Application {
         }
     }
     
+    @SuppressWarnings("unchecked")
+    public static <T> T getImages(Class<T> bundleClass) {
+         ImageBundle bundle = images.get(bundleClass.getName());
+         if (bundle == null) {
+             bundle = GWT.create(bundleClass);
+             images.put(bundleClass.getName(), bundle);
+         }
+         return (T)bundle;
+    }
+        
+    
     public static Object load(String url) {
-        Object input = session.load(url);
+        Object input = session.get(url);
         if (input != null) {
             ctx.setInputObject(input);
         }
@@ -107,48 +114,54 @@ public class Application {
     
     public static void registerExtensionPoint(String name, Extensible extensible) {
         extensionPoints.put(name, extensible);
-        List<Object> list = waitingExtensions.remove(name);
+        List<Object[]> list = waitingExtensions.remove(name);
         if (list != null) {
-            for (Object extension : list) {
-                extensible.registerExtension(name, extension);
+            for (Object[] entry : list) {
+                extensible.registerExtension(name.toString(), entry[0], ((Integer)entry[1]).intValue());
             }
         }
     }
     
     public static void registerExtension(String extensionPoint, Object extension) {
+        registerExtension(extensionPoint, extension, Extension.APPEND);
+    }
+
+    public static void registerExtension(String extensionPoint, Object extension, int mode) {
         Extensible xp = extensionPoints.get(extensionPoint);
         if (xp != null) {
-            xp.registerExtension(extensionPoint, extension);
+            xp.registerExtension(extensionPoint, extension, mode);
         } else if (APPLICATION_WINDOW_XP.equals(extensionPoint)) {
+            if (mode == Extension.ADD_IF_NOT_EXISTS && window != null) {
+                return;
+            }
             window =  (ApplicationWindow)extension;
         } else if (APPLICATION_SESSION_XP.equals(extensionPoint)) {
+            if (mode == Extension.ADD_IF_NOT_EXISTS && session != null) {
+                return;
+            }
             session = (Session)extension;
         } else {
-            List<Object> list = waitingExtensions.get(extensionPoint);
+            List<Object[]> list = waitingExtensions.get(extensionPoint);
             if (list == null) {
-                list = new ArrayList<Object>();
+                list = new ArrayList<Object[]>();
                 waitingExtensions.put(extensionPoint, list);
             }
-            list.add(extension);
+            list.add(new Object[] {extension, new Integer(mode)});
             GWT.log("Postpone extension registration for: "+extensionPoint, null);
         }
     }
-
-    
-    
     
     public static void debugStart(String url) {
         if (GWT.isScript()) {
             throw new IllegalStateException("Debug mode is available only in hosted mode");
-        }
-        
+        }        
+        start();  
         try {
-            get(url);
+            load(url);
         } catch (Exception e) {
             e.printStackTrace();
             GWT.log("Failed to start in debug mode", e);
         }
-        start();  
     }
     
     public static void start() {
@@ -165,30 +178,4 @@ public class Application {
         }
     }    
     
-
-    public static void get(String url) {        
-        try {
-            RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
-            Request request = builder.sendRequest(null, new RequestCallback() {
-                public void onError(Request request, Throwable exception) {
-                   // Couldn't connect to server (could be timeout, SOP violation, etc.)
-                    System.out.println("ERROR");
-                }
-
-                public void onResponseReceived(Request request, Response response) {
-                  if (200 == response.getStatusCode()) {
-                      // Process the response in response.getText()
-                      System.out.println(">>> "+response.getText());
-                  } else {
-                    // Handle the error.  Can get the status text from response.getStatusText()
-                      System.out.println(">>> error");
-                  }
-                }       
-              });
-        } catch (Exception e) {
-            e.printStackTrace();
-            GWT.log("Failed to start in debug mode", e);
-        }
-    }
-
 }

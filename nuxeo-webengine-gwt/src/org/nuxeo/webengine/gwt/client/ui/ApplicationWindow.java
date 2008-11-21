@@ -22,6 +22,7 @@ package org.nuxeo.webengine.gwt.client.ui;
 import org.nuxeo.webengine.gwt.client.Application;
 
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
 
 
@@ -31,8 +32,17 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public abstract class ApplicationWindow extends Composite {
 
+    private static Image EMPTY_IMAGE = null;  
+    
     public void install() {
         RootPanel.get().add(this);
+    }
+
+    public static Image getEmptyImage() {
+        if (EMPTY_IMAGE == null) {
+            EMPTY_IMAGE = Application.getImages(Images.class).noimage().createImage();
+        }
+        return EMPTY_IMAGE;
     }
 
     public void openInEditor(Object input) {

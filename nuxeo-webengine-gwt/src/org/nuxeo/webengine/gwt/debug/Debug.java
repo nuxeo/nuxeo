@@ -28,9 +28,9 @@ public interface Debug {
     public final static String REDIRECT_HOST = "localhost";
     public final static int REDIRECT_PORT = 8080;
     public final static String REDIRECT_PREFIX = "/redirect";
-    public final static String PATH_PATTERN = REDIRECT_PREFIX+"/(.*)";
-    public final static String PATH_REPLACEMENT = "/$1";
-
+    public final static String REDIRECT_PATTERN = REDIRECT_PREFIX+"/(.*)";
+    public final static String REDIRECT_REPLACEMENT = "/$1";
+    public final static boolean REDIRECT_TRACE = true;
     
     /* 
      * Add this code in tomcat/webapps/ROOT/WEB-INF/web.xml

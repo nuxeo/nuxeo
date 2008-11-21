@@ -30,6 +30,14 @@ public interface Session {
 
     public boolean logout();
     
-    public Object load(String url);
+    public Object get(String url);
+    
+    public Object post(String url);
+    
+    public Object put(String url);
+    
+    public Object delete(String url);
+    
+    public Object head(String url);
     
 }

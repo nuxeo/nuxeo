@@ -19,12 +19,33 @@
 
 package org.nuxeo.webengine.gwt.client;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Extensible {
-
-    public void registerExtension(String target, Object extension, int mode);
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Bundle {
+    
+    /**
+     * A list of bundles to extend. The order is important.
+     * Bundles will be processed in the order they appear in this array after processing first the current bundle.
+     * This means for a bundle declaration:
+     * <pre>
+     * @Bundle(B1.class, B2.class)
+     * public interface B0 {
+     * ...
+     * </pre>
+     * the processing order is B0, B1, B2.
+     * 
+     * The default value is an empty list when no bundles are extended.
+     * @return
+     */
+    Class<?>[] value() default {};
     
 }

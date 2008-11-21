@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Enumeration;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -40,17 +41,62 @@ public class RedirectServlet extends HttpServlet implements Debug {
 
     private static final long serialVersionUID = 1L;
 
+    protected String  redirectPrefix = REDIRECT_PREFIX;
+    protected String  redirectHost = REDIRECT_HOST;
+    protected int  redirectPort = REDIRECT_PORT;
+    protected String redirectPattern = REDIRECT_PATTERN;
+    protected String redirectReplacement = REDIRECT_REPLACEMENT;
+    protected boolean trace = REDIRECT_TRACE;
+    
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        String val = null;
+        val = System.getProperty("redirect.prefix");
+        if (val != null) {
+            redirectPrefix = val;
+        }
+        val = System.getProperty("redirect.host");
+        if (val != null) {
+            redirectHost = val;
+        }        
+        val = System.getProperty("redirect.port");
+        if (val != null) {
+            redirectPort = Integer.parseInt(val);
+        }        
+        val = System.getProperty("redirect.pattern");
+        if (val != null) {
+            redirectPattern = val;
+        }        
+        val = System.getProperty("redirect.replacement");
+        if (val != null) {
+            redirectReplacement = val;
+        }
+        val = System.getProperty("redirect.trace");
+        if (val != null) {
+            trace = Boolean.parseBoolean(val);
+        }
+        System.out.println("----------------------------------------------------------");
+        System.out.println("Redirect Servlet Enabled: ");
+        System.out.println("redirect.prefix: "+redirectPrefix);
+        System.out.println("redirect.host: "+redirectHost);
+        System.out.println("redirect.port: "+redirectPort);
+        System.out.println("redirect.pattern: "+redirectPattern);
+        System.out.println("redirect.replacement: "+redirectReplacement);
+        System.out.println("redirect.trace: "+trace);
+        System.out.println("----------------------------------------------------------");
+    }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp)
-    throws ServletException, IOException {
-
+    throws ServletException, IOException {        
+        
         StringBuilder buf = new StringBuilder(); // getRequestURL(req);        
         String urlPath = req.getRequestURI();
-        if (REDIRECT_PREFIX.equals(urlPath)) {
+        if (redirectPrefix.equals(urlPath)) {
             urlPath = "/";
         } else {
-            urlPath = urlPath.replaceAll(Debug.PATH_PATTERN, Debug.PATH_REPLACEMENT);
+            urlPath = urlPath.replaceAll(redirectPattern, redirectReplacement);
         }
         buf.append(req.getMethod()).append(" ").append(urlPath).append(" HTTP/1.0\r\n");
 
@@ -64,20 +110,24 @@ public class RedirectServlet extends HttpServlet implements Debug {
         }
         buf.append("\r\n");
 
-        //System.out.println("==============================");
-        //System.out.println(buf.toString());
-
         InputStream rin = null;
         OutputStream rout =null;
         InputStream in = null;
         OutputStream out = null;
 
         try {
-            Socket socket = new Socket(Debug.REDIRECT_HOST, Debug.REDIRECT_PORT);
+            Socket socket = new Socket(redirectHost, redirectPort);
             rout = socket.getOutputStream();
             rout.write(buf.toString().getBytes());
-            in =  req.getInputStream();        
-            copy(in, rout);
+            in =  req.getInputStream();
+            if (trace) {
+                System.out.println("========== HTTP REQUEST ===========");
+                System.out.println(buf.toString());
+                copyDebug(in, rout);
+                System.out.println("===============================");
+            } else {
+                copy(in, rout);
+            }
 
             rin = socket.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
@@ -93,7 +143,13 @@ public class RedirectServlet extends HttpServlet implements Debug {
                 }
             }
             out = resp.getOutputStream();
-            copy(rin, out);
+            if (trace) {
+                System.out.println("========= HTTP RESPONSE ===========");
+                copyDebug(rin, out);
+                System.out.println("===============================");                
+            } else {
+                copy(rin, out);
+            }
         } finally {
             if (rout != null) rout.close();
             if (rin != null) rin.close();
@@ -108,6 +164,15 @@ public class RedirectServlet extends HttpServlet implements Debug {
         int read;
         while ((read = in.read(buffer)) != -1) {
             out.write(buffer, 0, read);
+        }
+    }
+
+    public static void copyDebug(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024*64];
+        int read;
+        while ((read = in.read(buffer)) != -1) {
+            out.write(buffer, 0, read);
+            System.out.println(new String(buffer, 0, read));
         }
     }
 

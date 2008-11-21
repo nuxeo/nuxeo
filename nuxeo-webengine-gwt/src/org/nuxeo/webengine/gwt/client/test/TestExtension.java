@@ -17,14 +17,30 @@
  * $Id$
  */
 
-package org.nuxeo.webengine.gwt.client;
+package org.nuxeo.webengine.gwt.client.test;
+
+
+import org.nuxeo.webengine.gwt.client.Application;
+import org.nuxeo.webengine.gwt.client.ui.Item;
+
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Extensible {
+public class TestExtension extends Item {
 
-    public void registerExtension(String target, Object extension, int mode);
+    public TestExtension() {
+        super("testExt", new Label("Test Extension!"));
+        setTitle("Test Extension");
+        setPreferredIndex(30);
+    }
     
+    @Override
+    public Image getIcon() {
+        return Application.getImages(Images.class).contactsgroup().createImage();
+    }
+
 }

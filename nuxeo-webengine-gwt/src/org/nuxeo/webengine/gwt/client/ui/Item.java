@@ -24,7 +24,6 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -32,18 +31,28 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class Item extends Composite {
-
-    protected String name;
-    protected Image icon;
-    protected boolean isDefault;
     
-    public Item(String name) {
-        this (name, new SimplePanel());
+    protected String name;
+    protected boolean isDefault;
+    protected int preferredIndex = -1;
+    
+    protected Item(String name) {
+        this.name = name;
+        initWidget(createContent());
     }
     
     public Item(String name, Widget widget) {
         this.name = name;
         initWidget(widget);
+    }
+    
+    /**
+     * Must override to create the content widget
+     * This method is not used if the item is not subclassed  
+     * @return
+     */
+    protected Widget createContent() {
+        throw new IllegalStateException("This method must be overrided when Item class is subclassed");
     }
     
     public Widget getWidget() {
@@ -54,27 +63,30 @@ public class Item extends Composite {
         return name;
     }
     
-    /**
-     * @param icon the icon to set.
-     */
-    public void setIcon(Image icon) {
-        this.icon = icon;
-    }
     
     /**
      * @return the icon.
      */
     public Image getIcon() {
-        return icon;
+        return new Image("aaa.gif"); //ApplicationWindow.getEmptyImage();
+    }
+    
+    public int getPreferredIndex() {
+        return preferredIndex;
+    }
+    
+    /**
+     * @param preferredIndex the preferredIndex to set.
+     */
+    public void setPreferredIndex(int preferredIndex) {
+        this.preferredIndex = preferredIndex;
     }
         
     public String getHeader() {
         HorizontalPanel hPanel = new HorizontalPanel();
         hPanel.setSpacing(0);
         hPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-        if (icon != null) {
-            hPanel.add(icon);
-        }
+        hPanel.add(getIcon());
         HTML headerText = new HTML(getTitle());
         headerText.setStyleName("cw-StackPanelHeader");
         hPanel.add(headerText);
@@ -83,6 +95,10 @@ public class Item extends Composite {
         return hPanel.getElement().getString();        
     }
     
+    /**
+     * Called by the container (if container supports refresh)
+     * when application context change
+     */
     public void refresh() {
         
     }

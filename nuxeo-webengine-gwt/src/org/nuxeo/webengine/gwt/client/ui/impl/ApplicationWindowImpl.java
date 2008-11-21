@@ -102,7 +102,7 @@ public class ApplicationWindowImpl extends ApplicationWindow implements Extensib
     protected void setEditorContainer(EditorContainer container) {
         this.editorContainer.setWidget(container);
     }
-
+    
     protected void setHeader(Widget header) {
         this.headerPanel.setWidget(header);
     }
@@ -132,15 +132,15 @@ public class ApplicationWindowImpl extends ApplicationWindow implements Extensib
         getViewContainer().showView(name);
     }
     
-    public void registerExtension(String target, Object extension) {
+    public void registerExtension(String target, Object extension, int mode) {
         if (VIEW_CONTAINER_XP.equals(target) ) {
             setViewContainer((ViewContainer)extension);
         } else if (EDITOR_CONTAINER_XP.equals(target)) {
             setEditorContainer((EditorContainer)extension); 
         } else if (HEADER_CONTAINER_XP.equals(target)) {
-            
+            setHeader((Widget)extension);
         } else if (FOOTER_CONTAINER_XP.equals(target)) {
-            
+            setFooter((Widget)extension);
         }
     }
     

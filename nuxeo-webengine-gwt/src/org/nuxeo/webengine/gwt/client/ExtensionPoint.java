@@ -19,12 +19,23 @@
 
 package org.nuxeo.webengine.gwt.client;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Extensible {
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ExtensionPoint {
 
-    public void registerExtension(String target, Object extension, int mode);
+    /**
+     * The name of the exposed extension points
+     * @return
+     */
+    String[] value() default {};
     
 }

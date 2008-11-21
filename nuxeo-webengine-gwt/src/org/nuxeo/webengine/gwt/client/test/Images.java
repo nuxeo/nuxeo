@@ -17,14 +17,21 @@
  * $Id$
  */
 
-package org.nuxeo.webengine.gwt.client;
+package org.nuxeo.webengine.gwt.client.test;
+
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.user.client.ui.ImageBundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Extensible {
+public interface Images extends ImageBundle {
 
-    public void registerExtension(String target, Object extension, int mode);
     
+    AbstractImagePrototype contactsgroup();
+
+    AbstractImagePrototype mailgroup();
+    
+    AbstractImagePrototype filtersgroup();
 }

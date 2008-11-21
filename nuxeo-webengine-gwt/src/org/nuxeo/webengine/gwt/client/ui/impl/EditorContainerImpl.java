@@ -130,7 +130,7 @@ public class EditorContainerImpl extends EditorContainer implements Extensible {
         }
     }
 
-    public void registerExtension(String target, Object extension) {
+    public void registerExtension(String target, Object extension, int type) {
         if (ExtensionPoints.EDITORS_XP.equals(target)) {
             DeckPanel panel = getDeckPanel();
             Editor editor = (Editor)extension;

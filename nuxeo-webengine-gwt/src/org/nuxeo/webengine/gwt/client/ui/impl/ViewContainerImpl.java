@@ -22,6 +22,7 @@ package org.nuxeo.webengine.gwt.client.ui.impl;
 import org.nuxeo.webengine.gwt.client.Application;
 import org.nuxeo.webengine.gwt.client.ContextListener;
 import org.nuxeo.webengine.gwt.client.Extensible;
+import org.nuxeo.webengine.gwt.client.ui.ApplicationWindow;
 import org.nuxeo.webengine.gwt.client.ui.ExtensionPoints;
 import org.nuxeo.webengine.gwt.client.ui.Item;
 import org.nuxeo.webengine.gwt.client.ui.ViewContainer;
@@ -57,11 +58,14 @@ public class ViewContainerImpl extends ViewContainer implements Extensible,
         return (StackPanel)getWidget();        
     }
     
-    public void registerExtension(String target, Object extension) {
+    public void registerExtension(String target, Object extension, int type) {
         if (ExtensionPoints.VIEWS_XP.equals(target)) {
-            if (extension instanceof Widget) {
+            if (extension instanceof Item) {
+                Item item = (Item)extension;
+                getStackPanel().add(item, item.getHeader(), true); //TODO image
+            } else if (extension instanceof Widget) {
                 Widget w = (Widget)extension;
-                getStackPanel().add(w, getHeaderString(w.getTitle(), new Image("dummy.gif")), true); //TODO image
+                getStackPanel().add(w, getHeaderString(w.getTitle(), ApplicationWindow.getEmptyImage()), true); 
             } else {
                 GWT.log("Extension is not a widget. Ignoring", null);
             }
@@ -89,7 +93,6 @@ public class ViewContainerImpl extends ViewContainer implements Extensible,
         for (int i=0; i<cnt; i++) {
             Item item = (Item)panel.getWidget(i);
             if (name.equals(item.getName())) {
-                System.out.println("wwwwwwwww");
                 panel.showStack(i);
             }
         }

@@ -21,24 +21,38 @@ package org.nuxeo.webengine.gwt.client.ui.login;
 
 import org.nuxeo.webengine.gwt.client.Application;
 import org.nuxeo.webengine.gwt.client.ContextListener;
+import org.nuxeo.webengine.gwt.client.ui.Item;
 
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DeckPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class LoginContainer extends Composite implements ContextListener {
+public class LoginView extends Item implements ContextListener {
     
     protected DeckPanel deck;
     
-    public LoginContainer() {
+    public LoginView() {
+        super("login");
+        setTitle("Login");
+        setPreferredIndex(100);
+    }
+    
+    @Override
+    protected void onAttach() {
+        super.onAttach();        
+        Application.addContextListener(this);
+        deck.showWidget(0);
+    }
+    
+    @Override
+    protected Widget createContent() {
         deck = new DeckPanel();
         deck.add(new LoginWidget());
         deck.add(new LogoutWidget());
-        deck.showWidget(0);
-        initWidget(deck);
+        return deck;
     }
     
     

@@ -17,14 +17,28 @@
  * $Id$
  */
 
-package org.nuxeo.webengine.gwt.client;
+package org.nuxeo.webengine.gwt.client.test;
+
+import org.nuxeo.webengine.gwt.client.ApplicationBundle;
+import org.nuxeo.webengine.gwt.client.Bundle;
+import org.nuxeo.webengine.gwt.client.Extension;
+import org.nuxeo.webengine.gwt.client.ui.ExtensionPoints;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Extensible {
+@Bundle
+public interface TestBundle extends ApplicationBundle {
 
-    public void registerExtension(String target, Object extension, int mode);
-    
+
+    @Extension(targets=ExtensionPoints.VIEWS_XP)
+    public TestView testView();
+
+    @Extension(targets=ExtensionPoints.VIEWS_XP)
+    public TestExtension testExtension();
+
+    @Extension(targets=ExtensionPoints.VIEWS_XP)
+    public TestNavigator testNavigator();
+
 }

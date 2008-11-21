@@ -20,4 +20,8 @@
       <!-- Specify the application specific style sheet.              -->
       <stylesheet src='Main.css' />
 	
+      <generate-with class="org.nuxeo.webengine.gwt.rebind.ApplicationBundleGenerator">
+        <when-type-assignable class="org.nuxeo.webengine.gwt.client.ApplicationBundle" />
+      </generate-with>     
+
 </module>

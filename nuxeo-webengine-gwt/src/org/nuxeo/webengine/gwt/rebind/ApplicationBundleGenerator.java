@@ -17,14 +17,25 @@
  * $Id$
  */
 
-package org.nuxeo.webengine.gwt.client;
+package org.nuxeo.webengine.gwt.rebind;
+
+
+import com.google.gwt.core.ext.Generator;
+import com.google.gwt.core.ext.GeneratorContext;
+import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.UnableToCompleteException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Extensible {
+public class ApplicationBundleGenerator extends Generator {
 
-    public void registerExtension(String target, Object extension, int mode);
     
+    @Override
+    public String generate(TreeLogger logger, GeneratorContext context,
+            String typeName) throws UnableToCompleteException {
+        return new BundleGenerationTask().generate(logger, context, typeName);
+    }
+
 }
