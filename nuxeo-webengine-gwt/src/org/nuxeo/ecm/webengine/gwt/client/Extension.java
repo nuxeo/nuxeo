@@ -32,9 +32,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Extension {
 
-    public final static int APPEND = 0;
-    public final static int REPLACE = 1;
-    public final static int ADD_IF_NOT_EXISTS = 2;
+    public final static int APPEND = -1;
+    public final static int REPLACE = -2;
+    public final static int ADD_IF_NOT_EXISTS = -3;
     
     /**
      * A list of target extension points

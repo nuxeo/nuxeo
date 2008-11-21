@@ -15,7 +15,7 @@
 
 
       <!-- Specify the app entry point class.                         -->
-      <entry-point class='org.nuxeo.ecm.webengine.gwt.client.Main'/>
+      <!-- <entry-point class='org.nuxeo.ecm.webengine.gwt.client.Main'/> -->
     
       <!-- Specify the application specific style sheet.              -->
       <stylesheet src='Core.css' />

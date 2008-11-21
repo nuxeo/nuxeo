@@ -68,7 +68,7 @@ public class Item extends Composite {
      * @return the icon.
      */
     public Image getIcon() {
-        return new Image("aaa.gif"); //ApplicationWindow.getEmptyImage();
+        return ApplicationWindow.getEmptyImage();
     }
     
     public int getPreferredIndex() {

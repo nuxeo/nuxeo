@@ -62,12 +62,12 @@ public class BundleGenerationTask extends GenerationTask {
         
         writer.indent();
         writer.println();
-        
-        // start processing bundles
-        for (JClassType type : bundles) {
-            processBundle(type);
-        }
-        
+        writer.indent();
+        writer.println();
+        writeStartMethod();
+        writer.println();        
+        writeDeployMethod(bundles);
+        writer.outdent();
         writer.outdent();
         writer.println();
         writer.commit(logger);
@@ -88,24 +88,6 @@ public class BundleGenerationTask extends GenerationTask {
         }
     }    
     
-    private void processBundle(JClassType type) throws UnableToCompleteException {
-        HashSet<JMethod> extensions = new HashSet<JMethod>();
-        HashSet<JMethod> lastExtensions = new HashSet<JMethod>();
-        HashSet<JMethod> extPoints = new HashSet<JMethod>();
-        HashSet<JMethod> instances = new HashSet<JMethod>();
-        
-        collectAnnotatedMethods(type, extensions, lastExtensions, extPoints, instances);
-
-        // begin writing
-        writer.indent();
-        writer.println();
-        writeStartMethod();
-        writer.println();
-        writeDeployMethod(extensions, lastExtensions, extPoints, instances);
-        writer.outdent();
-
-    }
-    
     private void writeStartMethod() {
         writer.println("public void start() {");
         writer.indent();
@@ -115,10 +97,19 @@ public class BundleGenerationTask extends GenerationTask {
         writer.println("}");
     }
 
-    private void writeDeployMethod(Set<JMethod> extensions, 
-            Set<JMethod> lastExtensions,
-            Set<JMethod> extPoints, 
-            Set<JMethod> instances) {       
+    private void writeDeployMethod(List<JClassType> bundles) throws UnableToCompleteException { 
+
+        HashSet<JMethod> extensions = new HashSet<JMethod>();
+        HashSet<JMethod> lastExtensions = new HashSet<JMethod>();
+        HashSet<JMethod> extPoints = new HashSet<JMethod>();
+        HashSet<JMethod> instances = new HashSet<JMethod>();
+        
+
+        // start processing bundles
+        for (JClassType type : bundles) {
+            collectAnnotatedMethods(type, extensions, lastExtensions, extPoints, instances);
+        }
+
         // write method start
         writer.println("public void deploy() {");
         writer.indent();
