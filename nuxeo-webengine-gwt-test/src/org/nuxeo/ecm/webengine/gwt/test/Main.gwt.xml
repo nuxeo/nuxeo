@@ -10,7 +10,8 @@
       <!-- <inherits name="com.google.gwt.user.theme.chrome.Chrome"/> -->
       <!-- <inherits name="com.google.gwt.user.theme.dark.Dark"/>     -->
 
-      <!-- Other module inherits                                      -->
+      <!-- Other module inherits                  
+                          -->
       <inherits name='org.nuxeo.ecm.webengine.gwt.Core'/>
       <inherits name='org.nuxeo.ecm.webengine.gwt.UI_lib'/>
       
