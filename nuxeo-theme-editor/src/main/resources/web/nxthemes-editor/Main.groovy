@@ -178,129 +178,27 @@ public class Main extends DefaultModule {
   @GET @POST
   @Path("add_page")
   public String addPage(@QueryParam("path") String path) {
-    ThemeManager themeManager = Manager.getThemeManager()
-    if (!path.contains("/")) {
-        return
-    }
-    if (themeManager.getPageByPath(path) != null) {
-        return
-    }
-    String themeName = path.split("/")[0]
-    ThemeElement theme = themeManager.getThemeByName(themeName)
-    PageElement page = (PageElement) ElementFactory.create("page")
-    String pageName = path.split("/")[1]
-    page.setName(pageName)
-    Format pageWidget = FormatFactory.create("widget")
-    pageWidget.setName("page frame")
-    themeManager.registerFormat(pageWidget)
-    Format pageLayout = FormatFactory.create("layout")
-    themeManager.registerFormat(pageLayout)
-    Format pageStyle = FormatFactory.create("style")
-    themeManager.registerFormat(pageStyle)
-    ElementFormatter.setFormat(page, pageWidget)
-    ElementFormatter.setFormat(page, pageStyle)
-    ElementFormatter.setFormat(page, pageLayout)
-    themeManager.registerPage(theme, page)
-    return path
+      return Editor.addPage(path)
   }
   
   @GET @POST
   @Path("add_theme")
   public String addTheme(@QueryParam("name") String name) {
-      ThemeManager themeManager = Manager.getThemeManager()
-      String res = ""
-      if (themeManager.getThemeByName(name) == null) {
-          ThemeElement theme = (ThemeElement) ElementFactory.create("theme")
-          theme.setName(name)
-          Format themeWidget = FormatFactory.create("widget")
-          themeWidget.setName("theme view")
-          themeManager.registerFormat(themeWidget)
-          ElementFormatter.setFormat(theme, themeWidget)
-          // default page
-          PageElement page = (PageElement) ElementFactory.create("page")
-          page.setName("default")
-          Format pageWidget = FormatFactory.create("widget")
-          themeManager.registerFormat(pageWidget)
-          pageWidget.setName("page frame")
-          Format pageLayout = FormatFactory.create("layout")
-          themeManager.registerFormat(pageLayout)
-          Format pageStyle = FormatFactory.create("style")
-          themeManager.registerFormat(pageStyle)
-          ElementFormatter.setFormat(page, pageWidget)
-          ElementFormatter.setFormat(page, pageStyle)
-          ElementFormatter.setFormat(page, pageLayout)
-          theme.addChild(page)
-          themeManager.registerTheme(theme)
-          res = String.format("%s/%s", name, "default")
-      }
-      return res
+      return Editor.addTheme(name)
   }
   
   @GET @POST
   @Path("align_element")
   public void alignElement(@QueryParam("id") String id, @QueryParam("position") String position) {
       Element element = ThemeManager.getElementById(id)
-      Layout layout = (Layout) ElementFormatter.getFormatFor(element, "layout")
-      if (layout == null) {
-          layout = (Layout) FormatFactory.create("layout")
-          themeManager.registerFormat(layout)
-          ElementFormatter.setFormat(element, layout)
-      }
-      if (element instanceof SectionElement) {
-          if (position.equals("left")) {
-              layout.setProperty("margin-left", "0")
-              layout.setProperty("margin-right", "auto")
-          } else if (position.equals("center")) {
-              layout.setProperty("margin-left", "auto")
-              layout.setProperty("margin-right", "auto")
-          } else if (position.equals("right")) {
-              layout.setProperty("margin-left", "auto")
-              layout.setProperty("margin-right", "0")
-          }
-      } else {
-          if (position.equals("left")) {
-              layout.setProperty("text-align", "left")
-          } else if (position.equals("center")) {
-              layout.setProperty("text-align", "center")
-          } else if (position.equals("right")) {
-              layout.setProperty("text-align", "right")
-          }
-      }
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element, null))
+      Editor.alignElement(element, position)
   }
   
   @GET @POST
   @Path("assign_style_property")
-  public void assignStyleProperty(@QueryParam("element_id") String id, @QueryParam("property") String property_name, @QueryParam("value") String value) {
+  public void assignStyleProperty(@QueryParam("element_id") String id, @QueryParam("property") String propertyName, @QueryParam("value") String value) {
       Element element = ThemeManager.getElementById(id)
-      if (element == null) {
-          return
-      }
-      Style style = (Style) ElementFormatter.getFormatFor(element, "style")
-      if (style == null) {
-          style = (Style) FormatFactory.create("style")
-          Manager.getThemeManager().registerFormat(style)
-          ElementFormatter.setFormat(element, style)
-      }
-      Widget widget = (Widget) ElementFormatter.getFormatFor(element, "widget")
-      if (widget == null) {
-          return
-      }
-      String viewName = widget.getName()
-      Properties properties = style.getPropertiesFor(viewName, "")
-      if (properties == null) {
-          properties = new Properties()
-      }
-      if (value) {
-          properties.setProperty(property_name, value)
-      } else {
-          properties.remove(property_name)
-      }
-      style.setPropertiesFor(viewName, "", properties)
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element, null))
-      eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(style, null))
+      Editor.assignStyleProperty(element, propertyName, value)
   }
   
   @GET @POST
@@ -313,193 +211,61 @@ public class Main extends DefaultModule {
   @GET @POST
   @Path("create_named_style")
   public void createNamedStyle(@QueryParam("id") String id, @QueryParam("theme_name") String themeName, @QueryParam("style_name") String styleName) {
-      ThemeManager themeManager = Manager.getThemeManager()
-      Style style = themeManager.getNamedObject(themeName, "style", styleName)
-      if (style == null) {
-          style = (Style) FormatFactory.create("style");
-          style.setName(styleName);
-          themeManager.setNamedObject(themeName, "style", style);
-          themeManager.registerFormat(style);
-      }
-      themeManager.makeElementUseNamedStyle(id, styleName, themeName);
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(style, null));
-      eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(style, null));
+      Editor.createNamedStyle(element, styleName, themeName)
   }
   
   @GET @POST
   @Path("delete_element")
-  public String deleteElement(@QueryParam("id") String id) {
+  public void deleteElement(@QueryParam("id") String id) {
       Element element = ThemeManager.getElementById(id)
-      Element parent = (Element) element.getParent()
-      ThemeManager themeManager = Manager.getThemeManager()
-      if (element instanceof ThemeElement || element instanceof PageElement) {
-          themeManager.destroyElement(element)
-      } else if (element instanceof CellElement) {
-          if (element.hasSiblings()) {
-              Element sibling = (Element) element.getNextNode()
-              if (sibling == null) {
-                  sibling = (Element) element.getPreviousNode()
-              }
-              FormatType layoutType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "layout")
-              Format layout1 = ElementFormatter.getFormatByType(element, layoutType)
-              if (layout1 != null) {
-                  width1 = layout1.getProperty("width")
-                  if (width1 != null) {
-                      Format layout2 = ElementFormatter.getFormatByType(sibling, layoutType)
-                      if (layout2 != null) {
-                          width2 = layout2.getProperty("width")
-                          newWidth = org.nuxeo.theme.html.Utils.addWebLengths(width1, width2)
-                          if (newWidth != null) {
-                              layout2.setProperty("width", newWidth)
-                          }
-                      }
-                  }
-              }
-              // remove cell
-              themeManager.destroyElement(element)
-          } else {
-              // remove parent section
-              themeManager.destroyElement(parent)
-          }
-      } else if (element instanceof Fragment) {
-          themeManager.destroyElement(element)
-      }
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null, null))
-      return id
+      Editor.deleteElement(element)
   }
   
   @GET @POST
   @Path("delete_named_style")
   public void deleteNamedStyle(@QueryParam("id") String id, @QueryParam("theme_name") String themeName, @QueryParam("style_name") String styleName) {
-      ThemeManager themeManager = Manager.getThemeManager()
-      Style inheritedStyle = (Style) themeManager.getNamedObject(themeName, "style", styleName);
-      themeManager.deleteFormat(inheritedStyle);
-      themeManager.makeElementUseNamedStyle(id, null, themeName);
-      themeManager.removeNamedObject(themeName, "style", styleName);
+      Element element = ThemeManager.getElementById(id)
+      Editor.deleteNamedStyle(element, styleName, themeName)
   }
   
   @GET @POST
   @Path("duplicate_element")
   public String duplicateElement(@QueryParam("id") String id) {
       Element element = ThemeManager.getElementById(id)
-      Element duplicate = Manager.getThemeManager().duplicateElement(element, true)
-      // insert the duplicated element
-      element.getParent().addChild(duplicate)
-      duplicate.moveTo(element.getParent(), element.getOrder() + 1)
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(null, null))
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null, element))
-      return duplicate.getUid()
+      return Editor.duplicateElement(element)
   }
   
   @GET @POST
   @Path("expire_themes")
   public void expireThemes() {
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null, null))
+      Editor.expireThemes()
   }
   
   @GET @POST
   @Path("insert_fragment")
   public void insertFragment(@QueryParam("dest_id") String destId, @QueryParam("type_name") String typeName) {
-      ThemeManager themeManager = Manager.getThemeManager()
       Element destElement = ThemeManager.getElementById(destId)
-      // create the new fragment
-      String fragmentTypeName = typeName.split("/")[0]
-      Fragment fragment = FragmentFactory.create(fragmentTypeName)
-      // add a temporary view to the fragment
-      Format widget = FormatFactory.create("widget")
-      String viewTypeName = typeName.split("/")[1]
-      widget.setName(viewTypeName)
-      themeManager.registerFormat(widget)
-      ElementFormatter.setFormat(fragment, widget)
-      // insert the fragment
-      destElement.addChild(fragment)
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(fragment, destElement))
+      Editor.insertFragment(destElement, typeName)
   }
   
   @GET @POST
   @Path("insert_section_after")
   public void insertSectionAfter(@QueryParam("id") String id) {
-      ThemeManager themeManager = Manager.getThemeManager()
       Element element = ThemeManager.getElementById(id)
-      Element newSection = ElementFactory.create("section")
-      Element newCell = ElementFactory.create("cell")
-      // section
-      Format sectionWidget = FormatFactory.create("widget")
-      sectionWidget.setName("section frame")
-      themeManager.registerFormat(sectionWidget)
-      Format sectionLayout = FormatFactory.create("layout")
-      sectionLayout.setProperty("width", "100%")
-      themeManager.registerFormat(sectionLayout)
-      Format sectionStyle = FormatFactory.create("style")
-      themeManager.registerFormat(sectionStyle)
-      ElementFormatter.setFormat(newSection, sectionWidget)
-      ElementFormatter.setFormat(newSection, sectionLayout)
-      ElementFormatter.setFormat(newSection, sectionStyle)
-      // cell
-      Format cellWidget = FormatFactory.create("widget")
-      cellWidget.setName("cell frame")
-      themeManager.registerFormat(cellWidget)
-      Format cellLayout = FormatFactory.create("layout")
-      themeManager.registerFormat(cellLayout)
-      cellLayout.setProperty("width", "100%")
-      Format cellStyle = FormatFactory.create("style")
-      themeManager.registerFormat(cellStyle)
-      ElementFormatter.setFormat(newCell, cellWidget)
-      ElementFormatter.setFormat(newCell, cellLayout)
-      ElementFormatter.setFormat(newCell, cellStyle)
-      newSection.addChild(newCell)
-      String elementTypeName = element.getElementType().getTypeName()
-      if (elementTypeName.equals("section")) {
-          newSection.insertAfter(element)
-      } else if (elementTypeName.equals("page")) {
-          element.addChild(newSection)
-      }
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(newSection, null))      
+      Editor.insertSectionAfter(element)    
   }
   
   @GET @POST
   @Path("load_theme")
   public String loadTheme(@QueryParam("src") String src) {
-      int res = 1
-      try {
-          Manager.getThemeManager().loadTheme(src)
-      } catch (ThemeIOException e) {
-          res = 0
-      }
-      if (res) {
-          EventManager eventManager = Manager.getEventManager()
-          eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null, null))
-          eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(null, null))
-      }
-      return res
+      return Editor.loadTheme(src)
   }
   
   @GET @POST
   @Path("make_element_use_named_style")
   public void makeElementUseNamedStyle(@QueryParam("id") String id, @QueryParam("style_name") String styleName, @QueryParam("theme_name") String themeName) {
       Element element = ThemeManager.getElementById(id)
-      FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "style")
-      Style style = (Style) ElementFormatter.getFormatByType(element, styleType)
-      ThemeManager themeManager = Manager.getThemeManager()
-      // Make the style no longer inherits from other another style if 'inheritedName' is null
-      if (styleName == null) {
-          ThemeManager.removeInheritanceTowards(style)
-      } else {
-          String themeId = themeName.split("/")[0];
-          Style inheritedStyle = (Style) themeManager.getNamedObject(themeId, "style", styleName)
-          if (inheritedStyle != null) {
-              themeManager.makeFormatInherit(style, inheritedStyle)
-          }
-      }
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element, null))
-      eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(element, null))
+      Editor.makeElementUseNamedStyle(element, styleName, themeName)
   }
   
   @GET @POST
@@ -507,10 +273,7 @@ public class Main extends DefaultModule {
   public void moveElement(@QueryParam("src_id") String srcId, @QueryParam("dest_id") String destId, @QueryParam("order") Integer order) {
       Element srcElement = ThemeManager.getElementById(srcId)
       Element destElement = ThemeManager.getElementById(destId)
-      // move the element
-      srcElement.moveTo(destElement, order)
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(srcElement, destElement))
+      Editor.moveElement(srcElement, destElement, order)
   }
   
   @GET @POST
@@ -520,17 +283,8 @@ public class Main extends DefaultModule {
       if (id == null) {
           return
       }
-      Element destElement = ThemeManager.getElementById(destId)
-      if (destElement.isLeaf()) {
-          destElement = (Element) destElement.getParent()
-      }
       Element element = ThemeManager.getElementById(id)
-      if (element != null) {
-          destElement.addChild(Manager.getThemeManager().duplicateElement(element, true))
-      }
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(null, null))
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null, destElement))
+      Editor.pasteElement(element, destId)
   }
   
   @GET @POST
@@ -540,75 +294,19 @@ public class Main extends DefaultModule {
       Style selectedStyleLayer = getSelectedStyleLayer()
       String selectedViewName = getViewNameOfSelectedElement()
       Element selectedElement = getSelectedElement()
-      FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "style")
-      Style style = (Style) ElementFormatter.getFormatByType(selectedElement, styleType)
-      if (selectedStyleLayer != null) {
-          style = selectedStyleLayer
-      }
-      if (style == null) {
-          return ""
-      }
-      StringBuilder css = new StringBuilder()
-      List<Style> styles = new ArrayList<Style>()
-      for (Format ancestor : ThemeManager.listAncestorFormatsOf(style)) {
-          styles.add(0, (Style) ancestor)
-      }
-      styles.add(style)
-      for (Style s : styles) {
-          String viewName = selectedViewName
-          if (s.getName() != null) {
-              viewName = "*"
-          }
-          for (path in s.getPathsForView(viewName)) {
-              css.append("#stylePreviewArea")
-              css.append(' ').append(path).append(" {")
-              Properties styleProperties = s.getPropertiesFor(viewName, path)
-              Enumeration<?> propertyNames = org.nuxeo.theme.html.Utils.getCssProperties().propertyNames()
-              while (propertyNames.hasMoreElements()) {
-                  String propertyName = (String) propertyNames.nextElement()
-                  String value = styleProperties.getProperty(propertyName)
-                  if (value == null) {
-                      continue
-                  }
-                  css.append(propertyName)
-                  css.append(':')
-                  PresetType preset = ThemeManager.resolvePreset(value)
-                  if (preset != null) {
-                      value = preset.getValue()
-                  }
-                  css.append(value)
-                  css.append(';')
-             }
-             css.append('}')
-          }
-      }
-      return css.toString()
+      return Editor.renderCssPreview(selectedElement, selectedStyleLayer, selectedViewName)
   }
   
   @GET @POST
   @Path("repair_theme")
   public String repairTheme(@QueryParam("name") String themeName) {
-      ThemeElement theme = Manager.getThemeManager().getThemeByName(themeName)
-      if (theme == null) {
-          return 0
-      }
-      ThemeManager.repairTheme(theme)
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(theme, null))
-      eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(theme, null))
-      return 1
+      return Editor.repairTheme(themeName)
   }
   
   @GET @POST
   @Path("save_theme")
-  public String saveTheme(@QueryParam("src") String src, @QueryParam("indent") String inden ) {
-      String res = "1"
-      try {
-          ThemeManager.saveTheme(src, new Integer(indent))
-      } catch (ThemeIOException e) {
-          res = 0
-      }
-      return res
+  public String saveTheme(@QueryParam("src") String src, @QueryParam("indent") String indent ) {
+      return Editor.saveTheme(src, indent)
   }
   
   @GET @POST
@@ -659,9 +357,7 @@ public class Main extends DefaultModule {
   @Path("update_element_description")
   public void updateElementDescription(@QueryParam("id") String id, @QueryParam("description") String description) {
       Element element = ThemeManager.getElementById(id)
-      element.setDescription(description)
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element, null))
+      Editor.updateElementDescription(element, description)
   }
   
   @GET @POST
@@ -669,116 +365,45 @@ public class Main extends DefaultModule {
   public void updateElementProperties(@QueryParam("id") String id, @QueryParam("property_map") String property_map) {
       Map propertyMap = JSONObject.fromObject(property_map)
       Element element = ThemeManager.getElementById(id)
-      Properties properties = new Properties()
-      for (Object key : propertyMap.keySet()) {
-          properties.put(key, propertyMap.get(key))
-      }
-      FieldIO.updateFieldsFromProperties(element, properties)
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element, null))    
+      Editor.updateElementProperties(element, propertyMap)
   }
 
   @GET @POST
-  @Path("update_element_size")
-  public void updateElementSize(@QueryParam("id") String id, @QueryParam("width") String width) {
+  @Path("update_element_width")
+  public void updateElementWidth(@QueryParam("id") String id, @QueryParam("width") String width) {
       Format layout = ThemeManager.getFormatById(id)
-      layout.setProperty("width", width)
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(layout, null))
+      Editor.updateElementWidth(layout, width)
   }
 
   @GET @POST
   @Path("update_element_style_css")
   public void updateElementStyleCss(@QueryParam("id") String id, @QueryParam("view_name") String viewName, @QueryParam("css_source") String cssSource) {
-      Style selectedStyleLayer = getSelectedStyleLayer()
       Element element = ThemeManager.getElementById(id)
-      FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "style")
-      Style style = (Style) ElementFormatter.getFormatByType(element, styleType)
-      if (selectedStyleLayer != null) {
-          style = selectedStyleLayer
-      }
-     if (style.getName() != null || "".equals(viewName)) {
-         viewName = "*"
-     }
-     org.nuxeo.theme.html.Utils.loadCss(style, cssSource, viewName)
-     EventManager eventManager = Manager.getEventManager()
-     eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(element, null))
+      Style selectedStyleLayer = getSelectedStyleLayer()
+      Editor.updateElementStyleCss(element, selectedStyleLayer, viewName, cssSource) 
   }
 
   @GET @POST
   @Path("split_element")
   public void splitElement(@QueryParam("id") String id) {
       Element element = ThemeManager.getElementById(id)
-      if (!element.getElementType().getTypeName().equals("cell")) {
-          return
-      }
-      ThemeManager themeManager = Manager.getThemeManager()
-      Element newCell = ElementFactory.create("cell")
-      Format cellWidget = FormatFactory.create("widget")
-      cellWidget.setName("cell frame")
-      themeManager.registerFormat(cellWidget)
-      Format cellLayout = FormatFactory.create("layout")
-      themeManager.registerFormat(cellLayout)
-      FormatType layoutType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "layout")
-      Format layout = ElementFormatter.getFormatByType(element, layoutType)
-      String width = layout.getProperty("width")
-      if (width != null) {
-          String halfWidth = org.nuxeo.theme.html.Utils.divideWebLength(width, 2)
-          if (halfWidth != null) {
-              cellLayout.setProperty("width", halfWidth)
-              layout.setProperty("width", org.nuxeo.theme.html.Utils.substractWebLengths(width, halfWidth))
-          }
-      }
-      Format cellStyle = FormatFactory.create("style")
-      themeManager.registerFormat(cellStyle)
-      ElementFormatter.setFormat(newCell, cellWidget)
-      ElementFormatter.setFormat(newCell, cellLayout)
-      ElementFormatter.setFormat(newCell, cellStyle)
-      newCell.insertAfter(element)
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element, null))
-  }
+      Editor.splitElement(element)
+   }
 
   @GET @POST
   @Path("update_element_style")
   public void updateElementStyle(@QueryParam("id") String id, @QueryParam("view_name") String viewName, @QueryParam("path") String path, @QueryParam("property_map") String property_map) {
       Map propertyMap = JSONObject.fromObject(property_map)
       Element element = ThemeManager.getElementById(id)
-      Properties properties = new Properties()
-      for (Object key : propertyMap.keySet()) {
-          properties.put(key, propertyMap.get(key))
-      }
-      FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "style")
-      Style style = (Style) ElementFormatter.getFormatByType(element, styleType)
       Style currentStyleLayer = getSelectedStyleLayer()
-      if (currentStyleLayer != null) {
-          style = currentStyleLayer
-      }
-      if (style.getName() != null || "".equals(viewName)) {
-          viewName = "*"
-      }
-      style.setPropertiesFor(viewName, path, properties)
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(element, null))
+      Editor.updateElementStyle(element, currentStyleLayer, path, viewName, propertyMap)
   }
 
   @GET @POST
   @Path("update_element_visibility")
   public String updateElementVisibility(@QueryParam("id") String id, @QueryParam("perspectives") List<String> perspectives, @QueryParam("always_visible") boolean alwaysVisible) {
       Element element = ThemeManager.getElementById(id)
-      PerspectiveManager perspectiveManager = Manager.getPerspectiveManager()
-      if (alwaysVisible) {
-          perspectiveManager.setAlwaysVisible(element)
-      } else {
-          // initially make the element visible in all perspectives
-          if (perspectives == null || perspectives.isEmpty()) {
-              perspectiveManager.setVisibleInAllPerspectives(element)
-          } else {
-              perspectiveManager.setVisibleInPerspectives(element, perspectives)
-          }
-      }
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element, null))
+      Editor.updateElementVisibility(element, perspectives, alwaysVisible)
   }
   
   @GET @POST
@@ -786,36 +411,14 @@ public class Main extends DefaultModule {
   public void updateElementPadding(@QueryParam("property_map") String property_map) {
       Map propertyMap = JSONObject.fromObject(property_map)
       Element element = getSelectedElement()
-      if (element != null) {
-            Layout layout = (Layout) ElementFormatter.getFormatFor(element, "layout")
-            if (layout == null) {
-                layout = (Layout) FormatFactory.create("layout")
-                Manager.getThemeManager().registerFormat(layout)
-                ElementFormatter.setFormat(element, layout)
-            }
-            for (Object key : propertyMap.keySet()) {
-                layout.setProperty((String) key, (String) propertyMap.get(key))
-            }
-            EventManager eventManager = Manager.getEventManager()
-            eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element, null))
-        }
+      Editor.updateElementPadding(element, propertyMap)
   }
   
   @GET @POST
   @Path("update_element_widget")
   public void updateElementWidget(@QueryParam("id") String id, @QueryParam("view_name") String viewName) {
       Element element = ThemeManager.getElementById(id)
-      FormatType widgetType = (FormatType) Manager.getTypeRegistry().lookup(TypeFamily.FORMAT, "widget")
-      Format widget = ElementFormatter.getFormatByType(element, widgetType)
-      ThemeManager themeManager = Manager.getThemeManager()      
-      if (widget == null) {
-          widget = FormatFactory.create("widget")
-          themeManager.registerFormat(widget)
-      }
-      widget.setName(viewName)
-      ElementFormatter.setFormat(element, widget)
-      EventManager eventManager = Manager.getEventManager()
-      eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(element, null))
+      Editor.updateElementWidget(element, viewName)
   }
   
   /* API */

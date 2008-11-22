@@ -121,7 +121,7 @@ NXThemesEditor.setSize = function(info) {
           width = value;
         }
       });
-    var url = webEngineContextPath + "/nxthemes-editor/update_element_size?id=" + encodeURIComponent(id) + "&width=" + encodeURIComponent(width); 
+    var url = webEngineContextPath + "/nxthemes-editor/update_element_width?id=" + encodeURIComponent(id) + "&width=" + encodeURIComponent(width); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
