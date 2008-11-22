@@ -14,29 +14,15 @@
 
 package org.nuxeo.theme.webwidgets;
 
-import static org.jboss.seam.ScopeType.SESSION;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
-import javax.interceptor.Interceptors;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.annotations.Destroy;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.ejb.SeamInterceptor;
 
-@Stateful
-@Name("org.nuxeo.theme.webwidgets.DefaultProvider")
-@Scope(SESSION)
-@Interceptors(SeamInterceptor.class)
-public class DefaultProvider implements DefaultProviderLocal {
+public class DefaultProvider {
 
     private static final Log log = LogFactory.getLog(DefaultProvider.class);
 
@@ -165,12 +151,6 @@ public class DefaultProvider implements DefaultProviderLocal {
 
     public boolean canWrite() {
         return true;
-    }
-
-    @Remove
-    @Destroy
-    public void destroy() {
-        log.debug("Removed SEAM component: org.nuxeo.theme.webwidgets.DefaultProvider");
     }
 
 }

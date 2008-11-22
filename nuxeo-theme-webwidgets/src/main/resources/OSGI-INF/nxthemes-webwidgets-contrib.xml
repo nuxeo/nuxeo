@@ -173,7 +173,7 @@
 
     <provider name="default">
       <description>non-persistent provider that stores information in the user session.</description>
-      <component-name>org.nuxeo.theme.webwidgets.DefaultProvider</component-name>
+      <class>org.nuxeo.theme.webwidgets.DefaultProvider</class>
     </provider>
 
   </extension>

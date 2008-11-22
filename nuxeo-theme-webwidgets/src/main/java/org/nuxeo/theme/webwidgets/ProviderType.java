@@ -26,15 +26,15 @@ public final class ProviderType {
     @XNode("description")
     private String description;
 
-    @XNode("component-name")
-    private String componentName;
+    @XNode("class")
+    private String className;
 
     public String getName() {
         return name;
     }
 
-    public String getComponentName() {
-        return componentName;
+    public String getClassName() {
+        return className;
     }
 
     public String getDescription() {

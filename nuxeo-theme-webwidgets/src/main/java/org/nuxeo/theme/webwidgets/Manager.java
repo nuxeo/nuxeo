@@ -13,8 +13,6 @@
 
 package org.nuxeo.theme.webwidgets;
 
-import static org.jboss.seam.ScopeType.SESSION;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,29 +20,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
-import javax.faces.model.SelectItem;
-import javax.interceptor.Interceptors;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.Component;
-import org.jboss.seam.annotations.Destroy;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.ejb.SeamInterceptor;
 import org.nuxeo.runtime.api.Framework;
 
-@Stateful
-@Name("nxthemesWebWidgetManager")
-@Scope(SESSION)
-@Interceptors(SeamInterceptor.class)
-public class Manager implements ManagerLocal {
+public class Manager {
 
     private static final Log log = LogFactory.getLog(Manager.class);
-
-    public String widgetCategory = "";
 
     private static Service getService() {
         return (Service) Framework.getRuntime().getComponent(Service.ID);
@@ -60,8 +42,13 @@ public class Manager implements ManagerLocal {
             log.error("Provider unknown: " + name);
             return null;
         }
-        String componentName = providerType.getComponentName();
-        return (Provider) Component.getInstance(componentName, true);
+        String className = providerType.getClassName();
+        try {
+            return (Provider) Class.forName(className, true,
+                    Thread.currentThread().getContextClassLoader()).newInstance();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public static ProviderType getProviderType(String name) {
@@ -80,32 +67,12 @@ public class Manager implements ManagerLocal {
         return getService().getWidgetType(widgetTypeName);
     }
 
-    public List<WidgetType> getAvailableWidgetTypes() {
-        return getService().getWidgetTypes(widgetCategory);
-    }
-
-    public List<SelectItem> getAvailableWidgetCategories() {
-        final List<SelectItem> selectItemList = new ArrayList<SelectItem>();
-        for (String category : getService().getWidgetCategories()) {
-            selectItemList.add(new SelectItem(category));
-        }
-        return selectItemList;
-    }
-
-    public String getWidgetCategory() {
-        return widgetCategory;
-    }
-
     public static String addPanelDecoration(String decorationName, String mode,
             String regionName, String content) {
         String html = getService().getPanelDecoration(decorationName, mode);
         html = html.replaceAll("%REGION_NAME%", regionName);
         html = html.replaceAll("%REGION_BODY%", content);
         return html.trim();
-    }
-
-    public void setWidgetCategory(String widgetCategory) {
-        this.widgetCategory = widgetCategory;
     }
 
     public void addWidget(String providerName, String widgetTypeName,
@@ -258,21 +225,21 @@ public class Manager implements ManagerLocal {
      * Widget data
      */
 
-    public void setWidgetData(String providerName, String uid, String dataName,
+    public static void setWidgetData(String providerName, String uid, String dataName,
             WidgetData data) {
         final Provider provider = getProvider(providerName);
         final Widget widget = provider.getWidgetByUid(uid);
         provider.setWidgetData(widget, dataName, data);
     }
 
-    public void setWidgetData(Provider provider, Widget widget,
+    public static void setWidgetData(Provider provider, Widget widget,
             String dataName, WidgetData data) {
         if (provider.canWrite()) {
             provider.setWidgetData(widget, dataName, data);
         }
     }
 
-    public WidgetData getWidgetData(String providerName, String uid,
+    public static WidgetData getWidgetData(String providerName, String uid,
             String dataName) {
         final Provider provider = getProvider(providerName);
         if (!provider.canRead()) {
@@ -282,7 +249,7 @@ public class Manager implements ManagerLocal {
         return getWidgetData(provider, widget, dataName);
     }
 
-    public WidgetData getWidgetData(Provider provider, Widget widget,
+    public static WidgetData getWidgetData(Provider provider, Widget widget,
             String dataName) {
         if (provider.canRead()) {
             final WidgetData data = provider.getWidgetData(widget, dataName);
@@ -355,11 +322,6 @@ public class Manager implements ManagerLocal {
         data.put("widget_types", types);
         data.put("widget_items", items);
         return org.nuxeo.theme.html.Utils.toJson(data);
-    }
-
-    @Remove
-    @Destroy
-    public void destroy() {
     }
 
 }

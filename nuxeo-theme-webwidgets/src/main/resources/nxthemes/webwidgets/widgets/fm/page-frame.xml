@@ -9,7 +9,7 @@
 
     <td valign="top" id="nxthemesWebWidgetFactoryPanel" style="display: none">
       <@nxthemes_panel identifier="web widget factory"
-        url="${basePath}/nxthemes/webwidgets/webWidgetFactory.ftl"
+        url="${basePath}/nxthemes-webwidgets/webWidgetFactory"
         controlledBy="web widget perspectives,web widget inserter"
         visibleInPerspectives="default" />
     </td>

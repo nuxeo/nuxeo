@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.Component;
 
 public final class DataServlet extends HttpServlet implements Serializable {
 
@@ -44,9 +43,7 @@ public final class DataServlet extends HttpServlet implements Serializable {
         final String providerName = request.getParameter("provider");
         final String widgetUid = request.getParameter("widget");
         final String dataName = request.getParameter("data");
-        ManagerLocal manager = (ManagerLocal) Component.getInstance(
-                "nxthemesWebWidgetManager", true);
-        WidgetData data = manager.getWidgetData(providerName, widgetUid,
+        WidgetData data = Manager.getWidgetData(providerName, widgetUid,
                 dataName);
         if (data == null) {
             log.error("Could not get widget data for " + providerName + ", "

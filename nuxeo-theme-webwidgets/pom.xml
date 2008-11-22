@@ -24,33 +24,23 @@
       <artifactId>nuxeo-theme-jsf</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-core</artifactId>
+      <version>${nuxeo.webengine.version}</version>
+    </dependency>    
+    <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
       <version>1.1.1</version>
-    </dependency>
+    </dependency>    
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.jboss.seam</groupId>
-      <artifactId>jboss-seam</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.ejb</groupId>
-      <artifactId>ejb-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-annotations-ejb3</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

@@ -5,7 +5,7 @@
     Service providing an extension mechanism for Web widgets.
     @author Jean-Marc Orliaguet (jmo@chalmers.se)
   </documentation>
-
+  
   <implementation class="org.nuxeo.theme.webwidgets.Service" />
 
   <extension-point name="widgets">

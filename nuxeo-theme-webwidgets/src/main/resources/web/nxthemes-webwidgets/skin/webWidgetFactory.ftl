@@ -1,6 +1,3 @@
-<#assign widget_categories=script("getWidgetCategories.groovy") />
-<#assign widget_types=script("getWidgetTypes.groovy") />
-<#assign selected_category=script("getSelectedWidgetCategory.groovy") />
  
 <div class="nxthemesWebWidgetFactoryBox">
 

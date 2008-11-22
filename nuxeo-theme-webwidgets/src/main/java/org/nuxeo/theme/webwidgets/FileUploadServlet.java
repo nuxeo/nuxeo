@@ -30,7 +30,6 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.Component;
 
 public final class FileUploadServlet extends HttpServlet implements
         Serializable {
@@ -62,9 +61,6 @@ public final class FileUploadServlet extends HttpServlet implements
             log.error("Could not upload file", e);
         }
 
-        ManagerLocal manager = (ManagerLocal) Component.getInstance(
-                "nxthemesWebWidgetManager", true);
-
         if (fileItems == null) {
             log.error("No file upload found.");
             return;
@@ -83,7 +79,7 @@ public final class FileUploadServlet extends HttpServlet implements
             }
         }
 
-        manager.setWidgetData(providerName, widgetUid, dataName, data);
+        Manager.setWidgetData(providerName, widgetUid, dataName, data);
         PrintWriter writer = response.getWriter();
         response.addHeader("content-type", "text/html");
         writer.write(String.format(
