@@ -6,20 +6,10 @@
 		target="org.nuxeo.ecm.webengine.WebEngineComponent"
 		point="install">
 
-	    <install guard="/WEB-INF/nxthemes-webwidgets-webapp.xml">
-	      <copy path="OSGI-INF/nxthemes-webwidgets-webapp.xml" target="/WEB-INF/nxthemes-webwidgets-webapp.xml" />
+	    <install>
 	      <copy path="web/nxthemes-webwidgets" target="/" />
-	      <append path="OSGI-INF/l10n/messages.properties" target="/i18n/messages.properties"/>
 	    </install>
 
 	</extension>
-
-  <extension
-            target="org.nuxeo.ecm.webengine.WebEngineComponent"
-            point="configuration">
-
-    <configuration path="/WEB-INF/nxthemes-webwidgets-webapp.xml" />
-
-  </extension>
 
 </component>

@@ -908,7 +908,7 @@ public final class ThemeManager implements Registrable {
         return types;
     }
 
-    public static String getTemplateEngine(String applicationPath) {
+    public static String getTemplateEngineName(String applicationPath) {
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         if (applicationPath == null) {
             return ThemeManager.getDefaultTemplateEngineName();

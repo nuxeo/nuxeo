@@ -3,10 +3,10 @@ Bundle-ManifestVersion: 1
 Bundle-Name: NXThemes editor
 Bundle-SymbolicName: org.nuxeo.theme.editor;singleton:=true
 Bundle-Vendor: Chalmers
-Nuxeo-Require: org.nuxeo.theme.webengine
-Nuxeo-Component: OSGI-INF/nxthemes-editor-contrib.xml,
- OSGI-INF/web-deployment-contrib.xml
+Provide-Package: org.nuxeo.theme.editor
 Bundle-Localization: bundle
 Bundle-Version: ${eclipseVersion}-r${buildNumber}
 Require-Bundle: org.nuxeo.theme.webengine
-
+Nuxeo-Require: org.nuxeo.theme.webengine
+Nuxeo-Component: OSGI-INF/nxthemes-editor-contrib.xml,
+ OSGI-INF/web-deployment-contrib.xml
