@@ -19,126 +19,44 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui.impl;
 
-import org.nuxeo.ecm.webengine.gwt.client.Framework;
+import org.nuxeo.ecm.webengine.gwt.client.ContextListener;
 import org.nuxeo.ecm.webengine.gwt.client.Extensible;
-import org.nuxeo.ecm.webengine.gwt.client.ui.Editor;
-import org.nuxeo.ecm.webengine.gwt.client.ui.EditorContainer;
+import org.nuxeo.ecm.webengine.gwt.client.Framework;
 import org.nuxeo.ecm.webengine.gwt.client.ui.ExtensionPoints;
+import org.nuxeo.ecm.webengine.gwt.client.ui.ItemDeck;
+import org.nuxeo.ecm.webengine.gwt.client.ui.View;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.DeckPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class EditorContainerImpl extends EditorContainer implements Extensible {
+public class EditorContainerImpl extends ItemDeck implements Extensible, ContextListener {
     
     
     public EditorContainerImpl() {
-        DeckPanel panel = new DeckPanel();
-        panel.setSize("100%", "100%");
-        SimplePanel defaultPanel = new SimplePanel();
-        defaultPanel.setSize("100%", "100%");
-        panel.add(defaultPanel);
-        panel.showWidget(0);
-        initWidget(panel);
-    }    
-    
+        super("editor_container");
+    }        
+
     @Override
-    protected void onAttach() {        
+    protected void onAttach() {
         super.onAttach();
-        // if no contributions were made initialize with default values
-        Editor editor = (Editor)((SimplePanel)(getDeckPanel().getWidget(0))).getWidget();
-        if (editor == null) { // a default editor if no one was contributed
-            editor = new Editor("default", new SimplePanel()) {
-                @Override
-                public void refresh() {
-                    Object input = Framework.getContext().getInputObject();
-                    if (input instanceof Widget) {
-                        ((SimplePanel)getWidget()).setWidget((Widget)input);
-                    } else if (input != null) {
-                        ((SimplePanel)getWidget()).setWidget(new HTML(input.toString()));
-                    }
-                }
-            };  
-            ((SimplePanel)(getDeckPanel().getWidget(0))).setWidget(editor);
-        }
-    }
-    
-    
-    protected void setDefaultEditor(Editor editor) {
-        if (editor == null) return;
-        ((SimplePanel)(getDeckPanel().getWidget(0))).setWidget(editor);
+        Framework.addContextListener(this);
     }
     
     @Override
-    public Editor getDefaultEditor() {
-        return (Editor)((SimplePanel)(getDeckPanel().getWidget(0))).getWidget(); 
+    protected void onDetach() {
+        super.onDetach();
+        Framework.removeContextListener(this);
     }
     
-    public DeckPanel getDeckPanel() {
-        return (DeckPanel)getWidget();        
-    }
-    
-    public void showEditor() {
-        DeckPanel panel = getDeckPanel();
-        Object input = Framework.getContext().getInputObject();
-        int cnt = panel.getWidgetCount();
-        for (int i=1; i<cnt; i++) {
-            Editor editor = (Editor)panel.getWidget(i);
-            if (editor.acceptInput(input)) {
-                editor.refresh();
-                panel.showWidget(i);                
-                return;
-            }
-        }
-        // show default editor
-        Editor editor = getDefaultEditor();
-        if (editor != null) {
-            editor.refresh();
-        }
-        panel.showWidget(0);
-    }
-
-    @Override
-    public void showEditor(String name) {
-        if (name == null) {
-            showEditor();
-            return;
-        }
-        DeckPanel panel = getDeckPanel();
-        if ("default".equals(name)) {
-            Editor editor = getDefaultEditor();
-            if (editor != null) {
-                editor.refresh();
-            }
-            panel.showWidget(0);
-            return;
-        }         
-        int cnt = panel.getWidgetCount();
-        for (int i=1; i<cnt; i++) {
-            Editor editor = (Editor)panel.getWidget(i);
-            if (name.equals(editor.getName())) {
-                editor.refresh();
-                panel.showWidget(i);                
-                return;
-            }
-        }
-    }
-
     public void registerExtension(String target, Object extension, int type) {
         if (ExtensionPoints.EDITORS_XP.equals(target)) {
             DeckPanel panel = getDeckPanel();
-            Editor editor = (Editor)extension;
-            if ("default".equals(editor.getName())) {
-                setDefaultEditor(editor);
-            } else {
-                panel.add(editor);    
-            }            
+            View editor = (View)extension;
+            panel.add(editor);    
         } else if (ExtensionPoints.EDITORS_XP.equals(target)) {
             GWT.log("Unknown extension point: "+target, null);            
         }
@@ -150,5 +68,8 @@ public class EditorContainerImpl extends EditorContainer implements Extensible {
         return this;
     }
 
+    public void onContextEvent(int event) {
+        refresh();
+    }
     
 }

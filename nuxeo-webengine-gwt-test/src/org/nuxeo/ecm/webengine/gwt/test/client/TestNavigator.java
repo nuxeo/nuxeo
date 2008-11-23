@@ -19,14 +19,18 @@
 
 package org.nuxeo.ecm.webengine.gwt.test.client;
 
-import org.nuxeo.ecm.webengine.gwt.client.UI;
+import org.nuxeo.ecm.webengine.gwt.client.Framework;
+import org.nuxeo.ecm.webengine.gwt.client.http.HttpCallback;
+import org.nuxeo.ecm.webengine.gwt.client.http.HttpResponse;
+import org.nuxeo.ecm.webengine.gwt.client.http.Server;
 import org.nuxeo.ecm.webengine.gwt.client.ui.Item;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -47,9 +51,24 @@ public class TestNavigator extends Item {
         Button button1 = new Button("Show Tabs");        
         button1.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
+                System.out.println("cliccccccccccccck");
                 //TabPanel w = new TabPanel();
                 //UI.openInEditor(w);
-                UI.load("/skin/wiki/css/wiki.css");
+                try {
+                Server.post("/skin/wiki/css/wiki11.css").setCallback(new HttpCallback() {
+                    @Override
+                    public void onSuccess(HttpResponse response) {
+                        System.out.println("333333333333333333333");
+                    }
+                    public void onFailure(Throwable cause) {
+                        System.out.println("errrrrrrror");
+                        cause.printStackTrace();
+                    }
+                    
+                }).send();
+                } catch (Exception e) {
+                    Framework.handleError(e);
+                }
             }
         });
         Button button2 = new Button("Button 2");
@@ -60,8 +79,8 @@ public class TestNavigator extends Item {
             }
         });
         
-        FlowPanel panel = new FlowPanel();
-        panel.setWidth("100%");
+        HorizontalPanel panel = new HorizontalPanel();
+        //panel.setWidth("100%");
         panel.add(button1);
         panel.add(button2);
         panel.add(button3);

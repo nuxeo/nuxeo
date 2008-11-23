@@ -20,9 +20,11 @@
 package org.nuxeo.ecm.webengine.gwt.client.ui.login;
 
 import org.nuxeo.ecm.webengine.gwt.client.Framework;
-import org.nuxeo.ecm.webengine.gwt.client.ContextListener;
-import org.nuxeo.ecm.webengine.gwt.client.ui.Item;
+import org.nuxeo.ecm.webengine.gwt.client.http.HttpRequest;
+import org.nuxeo.ecm.webengine.gwt.client.http.HttpResponse;
+import org.nuxeo.ecm.webengine.gwt.client.ui.View;
 
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -30,7 +32,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class LoginView extends Item implements ContextListener {
+public class LoginView extends View {
     
     protected DeckPanel deck;
     
@@ -40,18 +42,14 @@ public class LoginView extends Item implements ContextListener {
         setPreferredIndex(100);
     }
     
-    @Override
-    protected void onAttach() {
-        super.onAttach();        
-        Framework.addContextListener(this);
-        deck.showWidget(0);
-    }
     
     @Override
     protected Widget createContent() {
         deck = new DeckPanel();
-        deck.add(new LoginWidget());
-        deck.add(new LogoutWidget());
+        deck.add(new LoginWidget(this));
+        deck.add(new LogoutWidget(this));
+        deck.showWidget(0);
+        System.out.println("login view created");
         return deck;
     }
     
@@ -70,10 +68,54 @@ public class LoginView extends Item implements ContextListener {
         }
     }
 
-    public void onSessionEvent(int event) {
-        if (isVisible() && event == LOGIN || event == LOGOUT) {
-            refresh();
+    
+    public void login(final String username, final String password) {
+        try {
+            get("/skin/wiki/wiki.css").setUser(username).setPassword(password).send();
+        } catch (RequestException e) {
+            e.printStackTrace();
         }
+//        HttpCallback cb = new HttpCallback() {
+//            @Override
+//            public void onSuccess(HttpResponse response) {                
+//                hideBusy();
+//                Framework.getContext().setUsername(username);
+//            }            
+//            @Override
+//            public void onFailure(Throwable cause) {
+//                GWT.log("Failed to complete async request on server: "+cause.getMessage(), cause);
+//                hideBusy(); 
+//                if (cause instanceof ServerException) {
+//                    int status = ((ServerException)cause).getStatusCode(); 
+//                    if (status == 401) {
+//                        System.out.println("login error");
+//                        return;
+//                    }
+//                }
+//                super.onFailure(cause);
+//            }            
+//        };
+//        try {
+//            showBusy();
+//            //for (int i=0; i<1000;i++) { System.out.println("wwwwwwwwwwwwwww");}
+//            Server.post("/skin/wiki/wiki.css").setUser(username).setPassword(password).setCallback(cb).send();
+//        } catch (Exception e) {
+//            hideBusy();
+//            Framework.handleError(e);
+//        }
+    }
+    
+    public void logout() {
+        try {
+            get("/skin/wiki/wiki.css").send();
+        } catch (Throwable t) {
+            Framework.handleError(t);
+        }        
+    }
+    
+    @Override
+    public void onRequestCompleted(HttpRequest request, HttpResponse response) {        
+        Framework.getContext().setUsername(request.getUser());
     }
     
 }

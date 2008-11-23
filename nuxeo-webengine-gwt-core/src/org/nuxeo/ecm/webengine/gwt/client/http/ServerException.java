@@ -17,19 +17,39 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.gwt.client;
+package org.nuxeo.ecm.webengine.gwt.client.http;
+
+import com.google.gwt.http.client.Response;
 
 /**
+ * When a remote call returns an error HTTP code 
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ContextListener {
+public class ServerException extends Exception {
 
-    public final static int ERROR = 0;
-    public final static int LOGIN = 1;
-    public final static int LOGOUT = 2;
-    public final static int INPUT = 3;
+    private static final long serialVersionUID = 1L;
+
+    protected Response response;
     
-    void onContextEvent(int event);
+    public ServerException(Response response) {
+        super(response.getStatusCode()+" "+response.getStatusText());
+        this.response = response;
+    }
     
+    /**
+     * Get the status code of the server response 
+     */
+    public int getStatusCode() {
+        return response.getStatusCode(); 
+    }
+
+    /**
+     * Get the server response
+     * @return the response.
+     */
+    public Response getResponse() {
+        return response;
+    }
 }

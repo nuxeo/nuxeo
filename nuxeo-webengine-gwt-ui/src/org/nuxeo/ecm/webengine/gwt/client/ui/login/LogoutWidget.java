@@ -34,9 +34,11 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class LogoutWidget extends Composite implements ClickListener {
 
+    protected LoginView view;
     protected Label username;
     
-    public LogoutWidget() {
+    public LogoutWidget(LoginView view) {
+        this.view = view;
         Hyperlink submit = new Hyperlink();
         submit.setText("Logout");
         submit.addClickListener(this);
@@ -49,7 +51,7 @@ public class LogoutWidget extends Composite implements ClickListener {
     }
     
     public void onClick(Widget sender) {
-        Framework.logout();
+        view.logout();
     }
     
     public void refresh() {

@@ -23,13 +23,8 @@ package org.nuxeo.ecm.webengine.gwt.client;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ContextListener {
+public interface ErrorHandler {
 
-    public final static int ERROR = 0;
-    public final static int LOGIN = 1;
-    public final static int LOGOUT = 2;
-    public final static int INPUT = 3;
-    
-    void onContextEvent(int event);
+    void handleError(Throwable t);
     
 }

@@ -25,11 +25,9 @@ public class Main implements EntryPoint {
   public void onModuleLoad() {
       ApplicationBundle bundle = GWT.create(TestBundle.class);
       Framework.addContextListener(new ContextListener() {
-          public void onSessionEvent(int event) {
+          public void onContextEvent(int event) {
               if (event == ContextListener.INPUT) {
-                  System.out.println("@@@@@@@@@@@@@@@@@@@");
                   System.out.println(Framework.getContext().getInputObject());
-                  System.out.println("@@@@@@@@@@@@@@@@@@@");
                   UI.openEditor();
               }
           }

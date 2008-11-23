@@ -19,12 +19,13 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui.impl;
 
+import org.nuxeo.ecm.webengine.gwt.client.ErrorHandler;
 import org.nuxeo.ecm.webengine.gwt.client.Extensible;
 import org.nuxeo.ecm.webengine.gwt.client.Framework;
-import org.nuxeo.ecm.webengine.gwt.client.ui.EditorContainer;
+import org.nuxeo.ecm.webengine.gwt.client.UI;
 import org.nuxeo.ecm.webengine.gwt.client.ui.ExtensionPoints;
+import org.nuxeo.ecm.webengine.gwt.client.ui.StackedItemContainer;
 import org.nuxeo.ecm.webengine.gwt.client.ui.UIApplication;
-import org.nuxeo.ecm.webengine.gwt.client.ui.ViewContainer;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockPanel;
@@ -36,7 +37,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ApplicationImpl extends UIApplication implements Extensible, ExtensionPoints  {
+public class ApplicationImpl extends UIApplication implements Extensible, ExtensionPoints, ErrorHandler  {
 
     protected SimplePanel headerPanel;
     protected SimplePanel footerPanel;
@@ -91,14 +92,15 @@ public class ApplicationImpl extends UIApplication implements Extensible, Extens
         if (footerPanel.getWidget() == null) {
             footerPanel.setWidget(new DefaultFooter());
         }
+        Framework.setErrorHandler(this);
     }
     
     
-    protected void setViewContainer(ViewContainer container) {        
+    protected void setViewContainer(StackedItemContainer container) {        
         this.viewContainer.setWidget(container);
     }
 
-    protected void setEditorContainer(EditorContainer container) {
+    protected void setEditorContainer(StackedItemContainer container) {
         this.editorContainer.setWidget(container);
     }
     
@@ -110,32 +112,32 @@ public class ApplicationImpl extends UIApplication implements Extensible, Extens
         this.footerPanel.setWidget(footer);
     }
 
-    public EditorContainer getEditorContainer() {
-        return (EditorContainer)editorContainer.getWidget();
+    public StackedItemContainer getEditorContainer() {
+        return (StackedItemContainer)editorContainer.getWidget();
     }
 
-    public ViewContainer getViewContainer() {
-        return (ViewContainer)viewContainer.getWidget();
+    public StackedItemContainer getViewContainer() {
+        return (StackedItemContainer)viewContainer.getWidget();
     }
     
     public void openEditor() {
-        getEditorContainer().showEditor();
+        getEditorContainer().refresh();
     }
     
     public void openEditor(String name) {
-        getEditorContainer().showEditor(name);
+        getEditorContainer().selectItem(name);
     }
     
     @Override
     public void showView(String name) {
-        getViewContainer().showView(name);
+        getViewContainer().selectItem(name);
     }
     
     public void registerExtension(String target, Object extension, int mode) {
         if (VIEW_CONTAINER_XP.equals(target) ) {
-            setViewContainer((ViewContainer)extension);
+            setViewContainer((StackedItemContainer)extension);
         } else if (EDITOR_CONTAINER_XP.equals(target)) {
-            setEditorContainer((EditorContainer)extension); 
+            setEditorContainer((StackedItemContainer)extension); 
         } else if (HEADER_CONTAINER_XP.equals(target)) {
             setHeader((Widget)extension);
         } else if (FOOTER_CONTAINER_XP.equals(target)) {
@@ -152,5 +154,9 @@ public class ApplicationImpl extends UIApplication implements Extensible, Extens
         return this;
     }
 
+
+    public void handleError(Throwable t) {
+        UI.showError(t);
+    }
     
 }

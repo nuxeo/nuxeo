@@ -21,6 +21,8 @@ package org.nuxeo.ecm.webengine.gwt.client;
 
 import java.util.HashMap;
 
+import org.nuxeo.ecm.webengine.gwt.client.http.ServerException;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -31,6 +33,22 @@ public class Context extends HashMap<String,String> {
 
     protected String username;
     protected Object input;
+    protected ServerException exception;
+    
+    public ServerException getServerException() {
+        return this.exception;
+    }
+    
+    /**
+     * @param exception the exception to set.
+     */
+    public void setServerException(ServerException exception) {
+        this.exception = exception;
+        if (exception != null) {
+            Framework.fireEvent(ContextListener.ERROR);
+        }
+    }
+    
     
     public String getUsername() {
         return username;

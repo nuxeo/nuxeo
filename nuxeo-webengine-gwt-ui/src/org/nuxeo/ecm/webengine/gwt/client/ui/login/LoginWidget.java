@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui.login;
 
-import org.nuxeo.ecm.webengine.gwt.client.Framework;
-
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -36,10 +34,12 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class LoginWidget extends Composite implements ClickListener {
 
+    protected LoginView view;
     protected TextBox  userBox;
     protected PasswordTextBox  passBox;
 
-    public LoginWidget() {
+    public LoginWidget(LoginView view) {
+        this.view = view;
         userBox = new TextBox();
         passBox = new PasswordTextBox();
         Button submit = new Button("Login");
@@ -55,7 +55,7 @@ public class LoginWidget extends Composite implements ClickListener {
     }
 
     public void onClick(Widget sender) {
-        Framework.login(userBox.getText().trim(), passBox.getText());
+        view.login(userBox.getText().trim(), passBox.getText());
     }
 
 }

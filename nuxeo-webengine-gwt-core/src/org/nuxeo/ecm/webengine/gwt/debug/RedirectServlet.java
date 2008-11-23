@@ -19,13 +19,14 @@
 
 package org.nuxeo.ecm.webengine.gwt.debug;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Enumeration;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -41,6 +42,8 @@ public class RedirectServlet extends HttpServlet implements Debug {
 
     private static final long serialVersionUID = 1L;
 
+    protected static Pattern HTTP_RESP = Pattern.compile("HTTP/1\\..\\s+([0-9]+)\\s+(.*)");
+    
     protected String  redirectPrefix = REDIRECT_PREFIX;
     protected String  redirectHost = REDIRECT_HOST;
     protected int  redirectPort = REDIRECT_PORT;
@@ -87,9 +90,14 @@ public class RedirectServlet extends HttpServlet implements Debug {
         System.out.println("----------------------------------------------------------");
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException {        
+
+        if (true) {//TODO
+            try {Thread.sleep(3000);} catch (Exception e) {}
+        }
         
         StringBuilder buf = new StringBuilder(); // getRequestURL(req);        
         String urlPath = req.getRequestURI();
@@ -113,7 +121,6 @@ public class RedirectServlet extends HttpServlet implements Debug {
         InputStream rin = null;
         OutputStream rout =null;
         InputStream in = null;
-        OutputStream out = null;
 
         try {
             Socket socket = new Socket(redirectHost, redirectPort);
@@ -129,32 +136,18 @@ public class RedirectServlet extends HttpServlet implements Debug {
                 copy(in, rout);
             }
 
-            rin = socket.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            String line = reader.readLine();
-            while (line != null) {
-                line = line.trim();
-                if (line.length() == 0) {
-                    break;
-                }
-                int p = line.indexOf(':');
-                if (p > -1) {
-                    resp.setHeader(line.substring(0, p), line.substring(p+1).trim());
-                }
-            }
-            out = resp.getOutputStream();
+            rin = new BufferedInputStream(socket.getInputStream());
             if (trace) {
-                System.out.println("========= HTTP RESPONSE ===========");
-                copyDebug(rin, out);
-                System.out.println("===============================");                
-            } else {
-                copy(rin, out);
+                trace("========= HTTP RESPONSE ===========");
+            }
+            transferResponse(rin, resp);
+            if (trace) {
+                trace("================================");
             }
         } finally {
             if (rout != null) rout.close();
             if (rin != null) rin.close();
             if (in != null) in.close();
-            if (out != null) out.close();
         }
     }
 
@@ -172,9 +165,89 @@ public class RedirectServlet extends HttpServlet implements Debug {
         int read;
         while ((read = in.read(buffer)) != -1) {
             out.write(buffer, 0, read);
-            System.out.println(new String(buffer, 0, read));
+            trace(new String(buffer, 0, read));
         }
     }
 
+
+    public int getStatusCode(String line) {
+        Matcher matcher = HTTP_RESP.matcher(line.trim());
+        if (matcher.matches()) {
+            return Integer.parseInt(matcher.group(1));
+        }
+        return -1;
+    }
+        
+
+    public void transferResponse(InputStream in, HttpServletResponse resp) throws IOException {
+        int cnt = 0;
+        StringBuilder buf = new StringBuilder(); 
+        while (true) {
+            int c = in.read();
+            if (c == -1) {
+                break;
+            }
+            if (c == '\r') {
+                continue;
+            }
+            if (c == '\n') {
+                if (buf.length() > 0) {
+                    if (cnt == 0) { // the first header
+                        int status = getStatusCode(buf.toString().trim());
+                        if (status == -1) {
+                            throw new IOException("Bug in RedirectServlet?");
+                        }          
+                        if (status >= 400) {
+                            resp.sendError(status);
+                            return;
+                        } 
+                        resp.setStatus(status);                        
+                    }
+                    cnt++;
+                    setHeader(buf.toString().trim(), resp);
+                    buf.setLength(0);
+                } else {
+                    break;
+                }
+            } else {
+                buf.append((char)c);
+            }
+        }
+                
+        OutputStream out = resp.getOutputStream();
+        try {
+            if (trace) {
+                trace("");
+                copyDebug(in, out);
+            } else {
+                copy(in, out);
+            }
+        } finally {
+            out.close();
+        }
+    }
+    
+    protected void setHeader(String header, HttpServletResponse resp) {
+        if (trace) {
+            trace(header);
+        }
+        int p = header.indexOf(':');
+        if (p > -1) {
+            resp.setHeader(header.substring(0, p), header.substring(p+1).trim());
+        }
+    }
+
+    public static void trace(String str) {
+        System.out.println(str);
+    }
+    
+    public static void main(String[] args) {
+        Matcher m = HTTP_RESP.matcher("HTTP/1.1 404 Not Found");
+        if (m.matches()) {
+            System.out.println(m.group(1));
+            System.out.println(m.group(2));
+        }
+    }
+    
 
 }

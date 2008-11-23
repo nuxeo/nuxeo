@@ -25,9 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.webengine.gwt.client.impl.ServerImpl;
-
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.http.client.URL;
 
 
 /**
@@ -36,15 +35,17 @@ import com.google.gwt.core.client.GWT;
  */
 public class Framework {
 
-    public static final String APPLICATION_XP = "APPLICATION_WINDOW";
-    public static final String SERVER_XP = "APPLICATION_SESSION";
+    public static final String APPLICATION_XP = "APPLICATION";
     
     protected static List<ContextListener> sessionListeners = new ArrayList<ContextListener>();
     protected static Map<String, Extensible> extensionPoints = new HashMap<String, Extensible>();
     protected static Map<String, List<Object[]>> waitingExtensions = new HashMap<String, List<Object[]>>();
     protected static Application application;
-    protected static Server server;
+    protected static ErrorHandler errorHandler;
     protected static Context ctx = new Context();    
+    protected static String basePath = null;
+    protected static boolean isStarted = false;
+
     
     public static Application getApplication() {
         return application;
@@ -54,34 +55,28 @@ public class Framework {
         sessionListeners.add(listener);
     }
     
+    public static void removeContextListener(ContextListener listener) {
+        sessionListeners.remove(listener);
+    }    
+    
     public static ContextListener[] getContextListeners() {
         return sessionListeners.toArray(new ContextListener[sessionListeners.size()]);
     }
     
-    
-    public static void login(String username, String password) {
-        if (server.login(username, password)) {  
-            ctx.setUsername(username);
-        }
+    public static void setErrorHandler(ErrorHandler errorHandler) {
+        Framework.errorHandler = errorHandler;
     }
     
-    public static void logout() {
-        if (server.logout()) {
-            ctx.setUsername(null);
-        }
+    public static ErrorHandler getErrorHandler() {
+        return errorHandler;
     }
-    
-    
     
     protected static void fireEvent(int event) {
         for (ContextListener listener : Framework.sessionListeners) {
-            listener.onSessionEvent(event);
+            listener.onContextEvent(event);
         }  
     }
 
-    public static Server getServer() {
-        return server;
-    }
     
     public static boolean isAuthenticated() {
         return ctx.username != null;
@@ -89,6 +84,18 @@ public class Framework {
     
     public static Context getContext() {
         return ctx;
+    }
+    
+    public static String getBasePath() {
+        return basePath;
+    }
+
+    public static void handleError(Throwable t) {
+        if (errorHandler == null) {
+            GWT.log(t.getMessage(), t);
+        } else {
+            errorHandler.handleError(t);
+        }
     }
     
     public static void registerExtensionPoint(String name, Extensible extensible) {
@@ -114,11 +121,6 @@ public class Framework {
                 return;
             }
             application =  (Application)extension;
-        } else if (SERVER_XP.equals(extensionPoint)) {
-            if (mode == Extension.ADD_IF_NOT_EXISTS && server != null) {
-                return;
-            }
-            server = (Server)extension;
         } else {
             List<Object[]> list = waitingExtensions.get(extensionPoint);
             if (list == null) {
@@ -130,12 +132,28 @@ public class Framework {
         }
     }
     
+    public static String normalize(String uri) {
+        if (basePath != null) {
+            if (!uri.contains("://")) { // relative URL
+                if (uri.startsWith("/")) {
+                    uri = basePath+uri;
+                } else {
+                    uri = "/"+basePath+uri;  
+                }
+            }
+        }
+        return URL.encode(uri); 
+    }
 
     public static void start(String url) {
-        if (server != null) {
-            return; // already started
+        if (isStarted) {
+            throw new IllegalStateException("Application already started!");
         }
-        server = new ServerImpl(url); //TODO use extension points
+        if (url != null && url.endsWith("/")) {            
+            basePath = url.substring(0, url.length()-1); 
+        } else {
+            basePath = url;
+        }
         if (application == null) {
             GWT.log("You must define an application!", null);
             throw new IllegalStateException("There is no application to start!");
@@ -149,5 +167,7 @@ public class Framework {
     public static void start() {
         start(null);
     }    
+
+    
     
 }

@@ -17,19 +17,37 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.gwt.client;
+package org.nuxeo.ecm.webengine.gwt.client.http;
+
+import com.google.gwt.http.client.RequestBuilder;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ContextListener {
+public class Server {
 
-    public final static int ERROR = 0;
-    public final static int LOGIN = 1;
-    public final static int LOGOUT = 2;
-    public final static int INPUT = 3;
+    public static HttpRequest get(String uri) {
+        return new HttpRequest(RequestBuilder.GET, uri);
+    }
+
+    public static HttpRequest post(String uri) {
+        return new HttpRequest(RequestBuilder.POST, uri);
+    }
     
-    void onContextEvent(int event);
+    
+    
+//  public static Request put(String uri) {
+//  return new Request(RequestBuilder.GET, uri);
+//}
+//
+//public static Request delete(String uri) {
+//  return new Request(RequestBuilder.GET, uri);
+//}
+//
+//public static Request head(String uri) {
+//  return new Request(RequestBuilder.GET, uri);
+//}
+
     
 }

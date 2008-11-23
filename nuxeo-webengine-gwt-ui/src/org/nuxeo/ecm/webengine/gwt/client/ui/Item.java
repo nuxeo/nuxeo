@@ -19,8 +19,10 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui;
 
+import org.nuxeo.ecm.webengine.gwt.client.Context;
 import org.nuxeo.ecm.webengine.gwt.client.UI;
 
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -35,7 +37,6 @@ import com.google.gwt.user.client.ui.Widget;
 public class Item extends Composite {
     
     protected String name;
-    protected boolean isDefault;
     protected int preferredIndex = -1;
     
     protected Item(String name) {
@@ -55,10 +56,6 @@ public class Item extends Composite {
      */
     protected Widget createContent() {
         throw new IllegalStateException("This method must be overrided when Item class is subclassed");
-    }
-    
-    public Widget getWidget() {
-        return super.getWidget();
     }
     
     public String getName() {
@@ -85,16 +82,7 @@ public class Item extends Composite {
     }
         
     public String getHeader() {
-        HorizontalPanel hPanel = new HorizontalPanel();
-        hPanel.setSpacing(0);
-        hPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-        hPanel.add(getIcon());
-        HTML headerText = new HTML(getTitle());
-        headerText.setStyleName("cw-StackPanelHeader");
-        hPanel.add(headerText);
-
-        // Return the HTML string for the panel
-        return hPanel.getElement().getString();        
+        return getHeaderString(getTitle(), getIcon());
     }
     
     /**
@@ -104,16 +92,31 @@ public class Item extends Composite {
     public void refresh() {
         
     }
-    
-    protected boolean isDefault() {
-        return isDefault;
+
+    public boolean isEnabled(Context context) {
+        return true;
     }
-    
+
     /**
-     * @param isDefault the isDefault to set.
+     * Get a string representation of the header that includes an image and some
+     * text.
+     * 
+     * @param text the header text
+     * @param image the {@link AbstractImagePrototype} to add next to the header
+     * @return the header as a string
      */
-    public void setDefault(boolean isDefault) {
-        this.isDefault = isDefault;
+    public static String getHeaderString(String text, Image image) {
+        // Add the image and text to a horizontal panel
+        HorizontalPanel hPanel = new HorizontalPanel();
+        hPanel.setSpacing(0);
+        hPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+        hPanel.add(image);
+        HTML headerText = new HTML(text);
+        headerText.setStyleName("cw-StackPanelHeader");
+        hPanel.add(headerText);
+
+        // Return the HTML string for the panel
+        return hPanel.getElement().getString();        
     }
-    
+
 }
