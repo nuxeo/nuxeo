@@ -14,8 +14,10 @@
 
 package org.nuxeo.theme.editor;
 
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.session.AbstractComponent;
+import org.nuxeo.ecm.webengine.session.UserSession;
 
 public class SessionManager extends AbstractComponent {
 
@@ -37,73 +39,72 @@ public class SessionManager extends AbstractComponent {
 
     private static String CLIPBOARD_ELEMENT_ID = "org.nuxeo.theme.editor.clipboard_element";
 
-    public static synchronized void setElementId(WebContext ctx,
-            String id) {
-        ctx.getUserSession().put(SELECTED_ELEMENT_ID, id);
+    private static UserSession getUserSession() {
+        return WebEngine.getActiveContext().getUserSession();
+    }
+
+    public static synchronized void setElementId(String id) {
+        getUserSession().put(SELECTED_ELEMENT_ID, id);
     }
 
     public static synchronized String getElementId(WebContext ctx) {
-        return (String) ctx.getUserSession().get(SELECTED_ELEMENT_ID);
+        return (String) getUserSession().get(SELECTED_ELEMENT_ID);
     }
 
     public static synchronized String getStyleEditMode(WebContext ctx) {
-        return (String) ctx.getUserSession().get(STYLE_EDIT_MODE);
+        return (String) getUserSession().get(STYLE_EDIT_MODE);
     }
 
-    public static synchronized void setStyleEditMode(WebContext ctx, String mode) {
-        ctx.getUserSession().put(STYLE_EDIT_MODE, mode);
+    public static synchronized void setStyleEditMode(String mode) {
+        getUserSession().put(STYLE_EDIT_MODE, mode);
     }
 
     public static synchronized String getStyleLayerId(WebContext ctx) {
-        return (String) ctx.getUserSession().get(STYLE_LAYER_ID);
+        return (String) getUserSession().get(STYLE_LAYER_ID);
     }
 
-    public static synchronized void setStyleLayerId(WebContext ctx,
-            String id) {
-        ctx.getUserSession().put(STYLE_LAYER_ID, id);
+    public static synchronized void setStyleLayerId(String id) {
+        getUserSession().put(STYLE_LAYER_ID, id);
     }
 
     public static synchronized String getStyleSelector(WebContext ctx) {
-        return (String) ctx.getUserSession().get(STYLE_SELECTOR);
+        return (String) getUserSession().get(STYLE_SELECTOR);
     }
 
-    public static synchronized void setStyleSelector(WebContext ctx,
-            String selector) {
-        ctx.getUserSession().put(STYLE_SELECTOR, selector);
+    public static synchronized void setStyleSelector(String selector) {
+        getUserSession().put(STYLE_SELECTOR, selector);
     }
 
     public static synchronized String getStylePropertyCategory(WebContext ctx) {
-        return (String) ctx.getUserSession().get(STYLE_PROPERTY_CATEGORY);
+        return (String) getUserSession().get(STYLE_PROPERTY_CATEGORY);
     }
 
-    public static synchronized void setStylePropertyCategory(WebContext ctx,
-            String category) {
-        ctx.getUserSession().put(STYLE_PROPERTY_CATEGORY, category);
+    public static synchronized void setStylePropertyCategory(String category) {
+        getUserSession().put(STYLE_PROPERTY_CATEGORY, category);
     }
 
     public static synchronized String getStyleCategory(WebContext ctx) {
-        return (String) ctx.getUserSession().get(STYLE_CATEGORY);
+        return (String) getUserSession().get(STYLE_CATEGORY);
     }
 
-    public static synchronized void setStyleCategory(WebContext ctx,
-            String category) {
-        ctx.getUserSession().put(STYLE_CATEGORY, category);
+    public static synchronized void setStyleCategory(String category) {
+        getUserSession().put(STYLE_CATEGORY, category);
     }
 
     public static synchronized String getPresetGroup(WebContext ctx) {
-        return (String) ctx.getUserSession().get(PRESET_GROUP);
+        return (String) getUserSession().get(PRESET_GROUP);
     }
 
-    public static synchronized void setPresetGroup(WebContext ctx, String group) {
-        ctx.getUserSession().put(PRESET_GROUP, group);
+    public static synchronized void setPresetGroup(String group) {
+        getUserSession().put(PRESET_GROUP, group);
     }
 
     public static synchronized String getClipboardElementId(WebContext ctx) {
-        return (String) ctx.getUserSession().get(CLIPBOARD_ELEMENT_ID);
+        return (String) getUserSession().get(CLIPBOARD_ELEMENT_ID);
     }
 
-    public static synchronized void setClipboardElementId(WebContext ctx, String id) {
-        ctx.getUserSession().put(CLIPBOARD_ELEMENT_ID, id);
+    public static synchronized void setClipboardElementId(String id) {
+        getUserSession().put(CLIPBOARD_ELEMENT_ID, id);
     }
-    
+
 }

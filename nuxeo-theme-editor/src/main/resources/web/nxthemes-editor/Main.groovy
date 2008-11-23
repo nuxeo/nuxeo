@@ -171,8 +171,7 @@ public class Main extends DefaultModule {
   @GET @POST
   @Path("select_element")
   public void selectElement(@QueryParam("id") String id) {
-    def ctx = WebEngine.getActiveContext()
-    SessionManager.setElementId(ctx, id)
+    SessionManager.setElementId(id)
   }
   
   @GET @POST
@@ -204,8 +203,7 @@ public class Main extends DefaultModule {
   @GET @POST
   @Path("copy_element")
   public void copyElement(@QueryParam("id") String id) {
-      def ctx = WebEngine.getActiveContext()
-      SessionManager.setClipboardElementId(ctx, id)
+      SessionManager.setClipboardElementId(id)
   }
   
   @GET @POST
@@ -312,22 +310,19 @@ public class Main extends DefaultModule {
   @GET @POST
   @Path("select_preset_group")
   public void selectPresetGroup(@QueryParam("group") String group) {
-      def ctx = WebEngine.getActiveContext()
-      SessionManager.setPresetGroup(ctx, group)
+      SessionManager.setPresetGroup(group)
   }
   
   @GET @POST
   @Path("select_style_category")
   public void selectStyleCategory(@QueryParam("category") String category) {
-      def ctx = WebEngine.getActiveContext()
-      SessionManager.setStyleCategory(ctx, category)
+      SessionManager.setStyleCategory(category)
   }
   
   @GET @POST
   @Path("select_style_edit_mode")
   public void selectStyleEditMode(@QueryParam("mode") String mode) {
-      def ctx = WebEngine.getActiveContext()
-      SessionManager.setStyleEditMode(ctx, mode)
+      SessionManager.setStyleEditMode(mode)
   }
   
   @GET @POST
@@ -335,22 +330,20 @@ public class Main extends DefaultModule {
   public void selectStyleLayer(@QueryParam("uid") String uid) {
       Style layer = (Style) ThemeManager.getFormatById(uid)
       if (layer != null) {
-          SessionManager.setStyleLayerId(ctx, uid)
+          SessionManager.setStyleLayerId(uid)
       }
   }
   
   @GET @POST
   @Path("select_style_property_category")
   public void selectStylePropertyCategory(@QueryParam("category") String category) {
-      def ctx = WebEngine.getActiveContext()
-      SessionManager.setStylePropertyCategory(ctx, category)
+      SessionManager.setStylePropertyCategory(category)
   }
   
   @GET @POST
   @Path("select_style_selector")
   public void selectStyleSelector(@QueryParam("selector") String selector) {
-      def ctx = WebEngine.getActiveContext()
-      SessionManager.setStyleSelector(ctx, selector)      
+      SessionManager.setStyleSelector(selector)      
   }
   
   @GET @POST
@@ -460,8 +453,7 @@ public class Main extends DefaultModule {
   }
   
   public static String getSelectedElementId() {
-      def ctx = WebEngine.getActiveContext()
-      return SessionManager.getElementId(ctx)
+      return SessionManager.getElementId()
   }
   
   public static Element getSelectedElement() {
@@ -473,8 +465,7 @@ public class Main extends DefaultModule {
   } 
   
   public static String getClipboardElement() {
-      def ctx = WebEngine.getActiveContext()
-      return SessionManager.getClipboardElementId(ctx)
+      return SessionManager.getClipboardElementId()
   }
   
   public static List<StyleLayer> getStyleLayersOfSelectedElement() {
@@ -510,8 +501,7 @@ public class Main extends DefaultModule {
   }
   
   public static String getStyleEditMode() {
-      def ctx = WebEngine.getActiveContext()
-      return SessionManager.getStyleEditMode(ctx)
+      return SessionManager.getStyleEditMode()
   }
   
   public static List<String> getStyleSelectorsForSelectedElement() {
@@ -623,8 +613,7 @@ public class Main extends DefaultModule {
   }
   
   public static String getSelectedStylePropertyCategory() {
-      def ctx = WebEngine.getActiveContext()
-      String category = SessionManager.getStylePropertyCategory(ctx)
+      String category = SessionManager.getStylePropertyCategory()
       if (!category) {
           category = '*'
       }
@@ -659,8 +648,7 @@ public class Main extends DefaultModule {
   }
 
   public static String getSelectedStyleSelector() {
-      def ctx = WebEngine.getActiveContext()
-      return SessionManager.getStyleSelector(ctx)
+      return SessionManager.getStyleSelector()
   }
   
   public static Style getSelectedStyleLayer() {
@@ -672,8 +660,7 @@ public class Main extends DefaultModule {
   }
   
   public static String getSelectedStyleLayerId() {
-      def ctx = WebEngine.getActiveContext()
-      return SessionManager.getStyleLayerId(ctx)
+      return SessionManager.getStyleLayerId()
   } 
   
   public static Style getStyleOfSelectedElement() {
@@ -806,14 +793,12 @@ public class Main extends DefaultModule {
   }
   
   public static String getSelectedPresetGroup() {
-      def ctx = WebEngine.getActiveContext()
-      String category = SessionManager.getPresetGroup(ctx)
+      String category = SessionManager.getPresetGroup()
       return category
   }
   
   public static String getSelectedStyleCategory() {
-        def ctx = WebEngine.getActiveContext()
-        String category = SessionManager.getStyleCategory(ctx)
+        String category = SessionManager.getStyleCategory()
         if (!category) {
             category = "page"
         }
