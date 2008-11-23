@@ -21,69 +21,83 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.session.UserSession;
 
-public class DefaultProvider {
+public class DefaultProvider implements Provider {
 
     private static final Log log = LogFactory.getLog(DefaultProvider.class);
 
-    private final Map<String, List<Widget>> widgetsByRegion = new HashMap<String, List<Widget>>();
+    private static final String PROVIDER_SESSION_ID = "org.nuxeo.theme.webwidgets.default_provider_session";
 
-    private final Map<String, Widget> widgetsByUid = new HashMap<String, Widget>();
+    public DefaultProvider() {
+    }
 
-    private final Map<String, String> regionsByUid = new HashMap<String, String>();
-
-    private final Map<Widget, Map<String, String>> preferencesByWidget = new HashMap<Widget, Map<String, String>>();
-
-    private final Map<Widget, Map<String, WidgetData>> dataByWidget = new HashMap<Widget, Map<String, WidgetData>>();
-
-    private final Map<Widget, WidgetState> statesByWidget = new HashMap<Widget, WidgetState>();
-
-    private int counter = 0;
+    public DefaultProviderSession getDefaultProviderSession() {
+        UserSession userSession = WebEngine.getActiveContext().getUserSession();
+        DefaultProviderSession session = (DefaultProviderSession) userSession.get(PROVIDER_SESSION_ID);
+        if (session == null) {
+            session = new DefaultProviderSession();
+            userSession.put(PROVIDER_SESSION_ID, session);
+        }
+        return session;
+    }
 
     public Widget createWidget(String widgetTypeName) {
+        DefaultProviderSession session = getDefaultProviderSession();
+        int counter = session.getCounter();
         final String uid = Integer.toString(counter);
         counter++;
+        session.setCounter(counter);
         final Widget widget = new DefaultWidget(widgetTypeName, uid);
-        widgetsByUid.put(uid, widget);
+        session.getWidgetsByUid().put(uid, widget);
         log.debug("Created web widget '" + widgetTypeName + "' (uid " + uid
                 + ")");
         return widget;
     }
 
     public Widget getWidgetByUid(String uid) {
-        return widgetsByUid.get(uid);
+        DefaultProviderSession session = getDefaultProviderSession();
+        return session.getWidgetsByUid().get(uid);
     }
 
     public List<Widget> getWidgets(String regionName) {
-        return widgetsByRegion.get(regionName);
+        DefaultProviderSession session = getDefaultProviderSession();
+        return session.getWidgetsByRegion().get(regionName);
     }
 
     public void addWidget(Widget widget, String regionName, int order) {
+        DefaultProviderSession session = getDefaultProviderSession();
+        Map<String, List<Widget>> widgetsByRegion = session.getWidgetsByRegion();
         if (!widgetsByRegion.containsKey(regionName)) {
             widgetsByRegion.put(regionName, new ArrayList<Widget>());
         }
         widgetsByRegion.get(regionName).add(order, widget);
-        regionsByUid.put(widget.getUid(), regionName);
+        session.getRegionsByUid().put(widget.getUid(), regionName);
         log.debug("Added web widget '" + widget.getName() + "' (uid "
                 + widget.getUid() + ") into region '" + regionName
                 + "' at position " + order);
     }
 
     public void moveWidget(Widget widget, String destRegionName, int order) {
+        DefaultProviderSession session = getDefaultProviderSession();
         final String srcRegionName = getRegionOfWidget(widget);
+        Map<String, List<Widget>> widgetsByRegion = session.getWidgetsByRegion();
         widgetsByRegion.get(srcRegionName).remove(widget);
         if (!widgetsByRegion.containsKey(destRegionName)) {
             widgetsByRegion.put(destRegionName, new ArrayList<Widget>());
         }
         widgetsByRegion.get(destRegionName).add(order, widget);
-        regionsByUid.put(widget.getUid(), destRegionName);
+        session.getRegionsByUid().put(widget.getUid(), destRegionName);
         log.debug("Moved web widget '" + widget.getName() + "' (uid "
                 + widget.getUid() + ") from region '" + srcRegionName
                 + "' to '" + destRegionName + "' at position " + order);
     }
 
     public void reorderWidget(Widget widget, int order) {
+        DefaultProviderSession session = getDefaultProviderSession();
         final String regionName = getRegionOfWidget(widget);
+        Map<String, List<Widget>> widgetsByRegion = session.getWidgetsByRegion();
         final List<Widget> widgets = widgetsByRegion.get(regionName);
         final int oldOrder = widgets.indexOf(widget);
         widgets.remove(oldOrder);
@@ -94,35 +108,45 @@ public class DefaultProvider {
     }
 
     public void removeWidget(Widget widget) {
+        DefaultProviderSession session = getDefaultProviderSession();
         final String uid = widget.getUid();
         final String regionName = getRegionOfWidget(widget);
+        Map<String, List<Widget>> widgetsByRegion = session.getWidgetsByRegion();
         widgetsByRegion.get(regionName).remove(widget);
-        widgetsByUid.remove(uid);
+        session.getWidgetsByUid().remove(uid);
         log.debug("Removed web widget '" + widget.getName() + "' (uid " + uid
                 + ") from region '" + regionName + "'");
     }
 
     public String getRegionOfWidget(Widget widget) {
-        return regionsByUid.get(widget.getUid());
+        DefaultProviderSession session = getDefaultProviderSession();
+        return session.getRegionsByUid().get(widget.getUid());
     }
 
     public Map<String, String> getWidgetPreferences(Widget widget) {
-        return preferencesByWidget.get(widget);
+        DefaultProviderSession session = getDefaultProviderSession();
+        return session.getPreferencesByWidget().get(widget);
     }
 
-    public void setWidgetPreferences(Widget widget, Map<String, String> preferences) {
-        preferencesByWidget.put(widget, preferences);
+    public void setWidgetPreferences(Widget widget,
+            Map<String, String> preferences) {
+        DefaultProviderSession session = getDefaultProviderSession();
+        session.getPreferencesByWidget().put(widget, preferences);
     }
 
     public void setWidgetState(Widget widget, WidgetState state) {
-        statesByWidget.put(widget, state);
+        DefaultProviderSession session = getDefaultProviderSession();
+        session.getStatesByWidget().put(widget, state);
     }
 
     public WidgetState getWidgetState(Widget widget) {
-        return statesByWidget.get(widget);
+        DefaultProviderSession session = getDefaultProviderSession();
+        return session.getStatesByWidget().get(widget);
     }
 
     public WidgetData getWidgetData(Widget widget, String dataName) {
+        DefaultProviderSession session = getDefaultProviderSession();
+        Map<Widget, Map<String, WidgetData>> dataByWidget = session.getDataByWidget();
         if (dataByWidget.containsKey(widget)) {
             return dataByWidget.get(widget).get(dataName);
         }
@@ -130,6 +154,8 @@ public class DefaultProvider {
     }
 
     public void setWidgetData(Widget widget, String dataName, WidgetData data) {
+        DefaultProviderSession session = getDefaultProviderSession();
+        Map<Widget, Map<String, WidgetData>> dataByWidget = session.getDataByWidget();
         if (!dataByWidget.containsKey(widget)) {
             dataByWidget.put(widget, new HashMap<String, WidgetData>());
         }
@@ -137,6 +163,8 @@ public class DefaultProvider {
     }
 
     public void deleteWidgetData(Widget widget) {
+        DefaultProviderSession session = getDefaultProviderSession();
+        Map<Widget, Map<String, WidgetData>> dataByWidget = session.getDataByWidget();
         if (dataByWidget.containsKey(widget)) {
             dataByWidget.remove(widget);
         }
@@ -151,6 +179,11 @@ public class DefaultProvider {
 
     public boolean canWrite() {
         return true;
+    }
+
+    public void destroy() {
+        // TODO Auto-generated method stub
+
     }
 
 }

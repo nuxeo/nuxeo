@@ -6,10 +6,19 @@ NXThemesWebWidgets.addWidget = function(info) {
     var provider = info.target.getAttribute('provider');
     var region = info.target.getAttribute('region');
     var order = info.order;
-    Seam.Component.getInstance("nxthemesWebWidgetManager").addWidget(
-        provider, widgetName, region, order, function() {
-          info.controller.refreshViews();
-        });
+    var url = webEngineContextPath + "/nxthemes-webwidgets/add_widget";
+    new Ajax.Request(url, {
+         method: 'get',
+         parameters: {
+             'provider': provider,
+             'widget_name': widgetName,
+             'region': region,
+             'order': order
+         },
+         onComplete: function(r) {
+             info.controller.refreshViews();
+         }
+    });
 };
 
 NXThemesWebWidgets.moveWidget = function(info) {
@@ -20,43 +29,69 @@ NXThemesWebWidgets.moveWidget = function(info) {
     var destProvider = info.target.getAttribute('provider');
     var destRegionName = info.target.getAttribute('region');
     var destOrder = info.order;
-    Seam.Component.getInstance("nxthemesWebWidgetManager").moveWidget(
-      srcProvider, destProvider, srcUid, srcRegionName, destRegionName, destOrder, function(newUid) {
-        if (srcRegionName != destRegionName) {
-          NXThemesWebWidgets.changeWidgetId(srcUid, newUid);
-          var widget = NXThemesWebWidgets.getWidgetById(newUid);
-          widget.setHtml();
-        }
-      });
+    
+    var url = webEngineContextPath + "/nxthemes-webwidgets/move_widget";
+    new Ajax.Request(url, {
+         method: 'get',
+         parameters: {
+             'src_provider': srcProvider,
+             'dest_provider': destProvider,
+             'src_uid': srcUid,
+             'src_region_': srcRegionName,
+             'dest_region': destRegionName,
+             'dest_order': destOrder
+         },
+         onComplete: function(r) {
+           if (srcRegionName != destRegionName) {
+             NXThemesWebWidgets.changeWidgetId(srcUid, newUid);
+             var widget = NXThemesWebWidgets.getWidgetById(newUid);
+             widget.setHtml();
+           }
+         }
+    });
 };
 
 NXThemesWebWidgets.deleteWidget = function(widgetUid) {
-  var answer = confirm("Deleting, are you sure?")
-  if (!answer) {
-    return;
-  }
-  var widgetEl = $('webwidget_' + widgetUid);
-  var provider = widgetEl.up('.nxthemesWebWidgetContainer').getAttribute('provider');
-  Seam.Component.getInstance("nxthemesWebWidgetManager").removeWidget(provider, widgetUid,
-    function() {
-      widgetEl.remove();
-    });
+      var answer = confirm("Deleting, are you sure?")
+      if (!answer) {
+          return;
+      }
+      var widgetEl = $('webwidget_' + widgetUid);
+      var provider = widgetEl.up('.nxthemesWebWidgetContainer').getAttribute('provider');
+      var url = webEngineContextPath + "/nxthemes-webwidgets/remove_widget";
+      new Ajax.Request(url, {
+         method: 'get',
+         parameters: {
+             'provider': provider,
+             'widget_uid': widgetUid
+         },
+         onComplete: function(r) {
+           widgetEl.remove();
+         }
+      });
 };
 
 NXThemesWebWidgets.setWidgetState = function(widgetUid, mode, state) {
-  var widgetEl = $('webwidget_' + widgetUid);
-  var container = widgetEl.up('.nxthemesWebWidgetContainer');
-  var provider = container.getAttribute('provider');
-  var widget = NXThemesWebWidgets.getWidgetById(widgetUid);
-  Seam.Component.getInstance("nxthemesWebWidgetManager").setWidgetState(provider, widgetUid,
-    state,
-    function(r) {
-      var widget_mode = mode;
-      if (state) {
-        widget_mode = widget_mode + '/' + state;
-      }
-      widget.switchMode(widget_mode);
-    });
+    var widgetEl = $('webwidget_' + widgetUid);
+    var container = widgetEl.up('.nxthemesWebWidgetContainer');
+    var provider = container.getAttribute('provider');
+    var widget = NXThemesWebWidgets.getWidgetById(widgetUid);
+    var url = webEngineContextPath + "/nxthemes-webwidgets/set_widget_state";
+    new Ajax.Request(url, {
+         method: 'get',
+         parameters: {
+             'provider': provider,
+             'widget_uid': widgetUid,
+             'state': state
+         },
+         onComplete: function(r) {
+           var widget_mode = mode;
+           if (state) {
+               widget_mode = widget_mode + '/' + state;
+           }
+           widget.switchMode(widget_mode);
+         }
+      });
 };
 
 
@@ -65,10 +100,16 @@ NXThemesWebWidgets.setWidgetCategory = function(select) {
     if (category === null) {
       return;
     }
-    Seam.Component.getInstance("nxthemesWebWidgetManager").setWidgetCategory(
-        category, function() {
-          NXThemes.getViewById("web widget factory").refresh();
-        });
+    var url = webEngineContextPath + "/nxthemes-webwidgets/set_widget_category";
+    new Ajax.Request(url, {
+         method: 'get',
+         parameters: {
+             'category': category
+         },
+         onComplete: function(r) {
+           NXThemes.getViewById("web widget factory").refresh();
+         }
+    });
 };
 
 NXThemesWebWidgets.editPreferences = function(widgetUid) {
@@ -363,9 +404,17 @@ NXThemesWebWidgets.changePreferences = function(info) {
      }
   });
 
-  Seam.Component.getInstance("nxthemesWebWidgetManager").updateWidgetPreferences(
-    providerName, widgetUid, preferences, function(r) {
-      widget.draw();
+  var url = webEngineContextPath + "/nxthemes-webwidgets/update_widget_preferences";
+  new Ajax.Request(url, {
+         method: 'get',
+         parameters: {
+             'provider': providerName,
+             'widget_uid': widgetUid,
+             'preferences': preferences.toJSON()
+         },
+         onComplete: function(r) {
+           widget.draw();
+         }
   });
   return false;
 };
@@ -395,11 +444,20 @@ NXThemesWebWidgets.WebWidgetPanel.prototype = Object.extend(new NXThemes.View(),
     panel.setAttribute('provider', provider);
     panel.setAttribute('region', region);
 
-    Seam.Component.getInstance("nxthemesWebWidgetManager").getPanelData(
-      provider, region, mode, function(r) {
-        var panel_data = r.evalJSON(true);
-        panel.innerHTML = "";
-        NXThemesWebWidgets.renderPanel(provider, decoration, panel, panel_data);
+    var url = webEngineContextPath + "/nxthemes-webwidgets/get_panel_data";
+    new Ajax.Request(url, {
+         method: 'get',
+         parameters: {
+             'provider': provider,
+             'region': region,
+             'mode': mode
+         },
+         onComplete: function(r) {
+             var text = r.responseText;
+             var panel_data = text.evalJSON(true);
+             panel.innerHTML = "";
+             NXThemesWebWidgets.renderPanel(provider, decoration, panel, panel_data);
+         }
     });
 
   },
@@ -429,9 +487,7 @@ NXThemesWebWidgets.closeFactoryPanel = function() {
   });
 };
 
-
-
-// Seam actions
+// Actions
 NXThemes.addActions({
     'insert web widget': NXThemesWebWidgets.addWidget,
     'move web widget': NXThemesWebWidgets.moveWidget
@@ -447,11 +503,4 @@ NXThemes.registerWidgets({
     return new NXThemesWebWidgets.WebWidgetPanel(widget, def);
   }
 });
-
-
-// Initialization
-NXThemes.setContextPath('/nuxeo');
-
-Seam.Remoting.displayLoadingMessage = function() {};
-Seam.Remoting.hideLoadingMessage = function() {};
 

@@ -44,9 +44,9 @@ public class Manager {
         }
         String className = providerType.getClassName();
         try {
-            return (Provider) Class.forName(className, true,
-                    Thread.currentThread().getContextClassLoader()).newInstance();
+            return (Provider) Class.forName(className).newInstance();
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -75,7 +75,7 @@ public class Manager {
         return html.trim();
     }
 
-    public void addWidget(String providerName, String widgetTypeName,
+    public static void addWidget(String providerName, String widgetTypeName,
             String region, int order) {
         Provider provider = getProvider(providerName);
         if (!provider.canWrite()) {
@@ -85,9 +85,9 @@ public class Manager {
         provider.addWidget(widget, region, order);
     }
 
-    public String moveWidget(String srcProviderName, String destProviderName,
-            String srcUid, String srcRegionName, String destRegionName,
-            int destOrder) {
+    public static String moveWidget(String srcProviderName,
+            String destProviderName, String srcUid, String srcRegionName,
+            String destRegionName, int destOrder) {
         Provider srcProvider = getProvider(srcProviderName);
         Provider destProvider = getProvider(destProviderName);
         if (!srcProvider.canWrite() || !destProvider.canWrite()) {
@@ -120,7 +120,7 @@ public class Manager {
         return newId;
     }
 
-    public void removeWidget(String providerName, String uid) {
+    public static void removeWidget(String providerName, String uid) {
         Provider provider = getProvider(providerName);
         if (!provider.canWrite()) {
             return;
@@ -166,7 +166,7 @@ public class Manager {
         provider.setWidgetPreferences(widget, preferences);
     }
 
-    public void updateWidgetPreferences(String providerName, String uid,
+    public static void updateWidgetPreferences(String providerName, String uid,
             Map<String, String> preferences) {
         Provider provider = getProvider(providerName);
         if (!provider.canWrite()) {
@@ -185,7 +185,7 @@ public class Manager {
     /*
      * Widget state
      */
-    public void setWidgetState(Provider provider, Widget widget,
+    public static void setWidgetState(Provider provider, Widget widget,
             WidgetState state) {
         if (!provider.canWrite()) {
             return;
@@ -196,7 +196,8 @@ public class Manager {
         provider.setWidgetState(widget, state);
     }
 
-    public void setWidgetState(String providerName, String uid, String stateName) {
+    public static void setWidgetState(String providerName, String uid,
+            String stateName) {
         Provider provider = getProvider(providerName);
         if (!provider.canWrite()) {
             return;
@@ -225,8 +226,8 @@ public class Manager {
      * Widget data
      */
 
-    public static void setWidgetData(String providerName, String uid, String dataName,
-            WidgetData data) {
+    public static void setWidgetData(String providerName, String uid,
+            String dataName, WidgetData data) {
         final Provider provider = getProvider(providerName);
         final Widget widget = provider.getWidgetByUid(uid);
         provider.setWidgetData(widget, dataName, data);
@@ -260,7 +261,7 @@ public class Manager {
         return null;
     }
 
-    public String getWidgetDataInfo(String providerName, String uid,
+    public static String getWidgetDataInfo(String providerName, String uid,
             String dataName) {
         final WidgetData data = getWidgetData(providerName, uid, dataName);
         if (data != null) {
@@ -276,7 +277,7 @@ public class Manager {
     /*
      * UI
      */
-    public String getPanelData(String providerName, String regionName,
+    public static String getPanelData(String providerName, String regionName,
             String mode) {
         final Provider provider = getProvider(providerName);
         final Map<String, Object> data = new HashMap<String, Object>();

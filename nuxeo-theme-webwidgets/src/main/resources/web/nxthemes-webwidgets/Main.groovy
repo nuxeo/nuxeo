@@ -35,13 +35,31 @@ import org.nuxeo.theme.webwidgets.*
 @Produces(["text/html", "*/*"])
 public class Main extends DefaultModule {
     
-    @GET
-    @Path("webWidgetFactory")
-    public Object renderPerspectiveSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
-      return getTemplate("webWidgetFactory.ftl").arg(
+     @GET
+     @Path("webWidgetFactory")
+     public Object renderPerspectiveSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
+        return getTemplate("webWidgetFactory.ftl").arg(
               "widget_categories", getWidgetCategories()).arg(
               "widget_types", getWidgetTypes()).arg(
               "selected_category", getSelectedWidgetCategory())
+     }
+    
+    @GET @POST
+    @Path("get_panel_data")
+    public String getPanelData(@QueryParam("provider") String providerName, @QueryParam("region") String regionName, @QueryParam("mode") String mode) {
+       return org.nuxeo.theme.webwidgets.Manager.getPanelData(providerName, regionName, mode)
+    }
+    
+    @GET @POST
+    @Path("add_widget")
+    public void addWidget(@QueryParam("provider") String providerName, @QueryParam("widget_name") String widgetName, @QueryParam("region") String regionName, @QueryParam("order") int order) {
+        org.nuxeo.theme.webwidgets.Manager.addWidget(providerName, widgetName, regionName, order)
+    }
+    
+    @GET @POST
+    @Path("move_widget")
+    public void moveWidget(@QueryParam("src_provider") String srcProviderName, @QueryParam("dest_provider") String destProviderName, @QueryParam("src_uid") String srcUid, @QueryParam("src_region") String srcRegionName, @QueryParam("dest_region") String destRegionName, @QueryParam("dest_order") int destOrder) {
+        org.nuxeo.theme.webwidgets.Manager.moveWidget(srcProviderName, destProviderName, srcUid, srcRegionName, destRegionName, destOrder)
     }
 
     public static String getSelectedWidgetCategory() {
