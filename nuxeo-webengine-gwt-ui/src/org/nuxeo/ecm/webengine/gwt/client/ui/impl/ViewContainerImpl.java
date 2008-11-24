@@ -19,10 +19,10 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui.impl;
 
-import org.nuxeo.ecm.webengine.gwt.client.ContextListener;
 import org.nuxeo.ecm.webengine.gwt.client.Extensible;
 import org.nuxeo.ecm.webengine.gwt.client.Framework;
 import org.nuxeo.ecm.webengine.gwt.client.UI;
+import org.nuxeo.ecm.webengine.gwt.client.ui.ContextListener;
 import org.nuxeo.ecm.webengine.gwt.client.ui.ExtensionPoints;
 import org.nuxeo.ecm.webengine.gwt.client.ui.View;
 import org.nuxeo.ecm.webengine.gwt.client.ui.ViewStack;
@@ -45,13 +45,13 @@ public class ViewContainerImpl extends ViewStack implements Extensible,
     @Override
     protected void onAttach() {
         super.onAttach();
-        Framework.addContextListener(this);
+        UI.addContextListener(this);
     }
     
     @Override
     protected void onDetach() {
         super.onDetach();
-        Framework.removeContextListener(this);
+        UI.removeContextListener(this);
     }
     
     public void registerExtension(String target, Object extension, int type) {

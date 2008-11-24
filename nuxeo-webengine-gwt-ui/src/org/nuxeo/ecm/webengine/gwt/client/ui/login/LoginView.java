@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.gwt.client.ui.login;
 
 import org.nuxeo.ecm.webengine.gwt.client.Framework;
+import org.nuxeo.ecm.webengine.gwt.client.UI;
 import org.nuxeo.ecm.webengine.gwt.client.http.HttpRequest;
 import org.nuxeo.ecm.webengine.gwt.client.http.HttpResponse;
 import org.nuxeo.ecm.webengine.gwt.client.ui.View;
@@ -55,7 +56,7 @@ public class LoginView extends View {
     
     public void refresh() {    
         int index = deck.getVisibleWidget();
-        if (Framework.isAuthenticated()) {
+        if (UI.isAuthenticated()) {
             if (index == 0) { // login widget is visible
                 ((LogoutWidget)deck.getWidget(1)).refresh();
                 deck.showWidget(1);                
@@ -114,7 +115,7 @@ public class LoginView extends View {
     
     @Override
     public void onRequestCompleted(HttpRequest request, HttpResponse response) {        
-        Framework.getContext().setUsername(request.getUser());
+        UI.getContext().setUsername(request.getUser());
     }
     
 }

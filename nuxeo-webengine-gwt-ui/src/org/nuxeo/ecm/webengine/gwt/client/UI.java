@@ -1,5 +1,10 @@
 package org.nuxeo.ecm.webengine.gwt.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.nuxeo.ecm.webengine.gwt.client.ui.Context;
+import org.nuxeo.ecm.webengine.gwt.client.ui.ContextListener;
 import org.nuxeo.ecm.webengine.gwt.client.ui.Images;
 import org.nuxeo.ecm.webengine.gwt.client.ui.UIApplication;
 import org.nuxeo.ecm.webengine.gwt.client.ui.impl.DefaultApplicationBundle;
@@ -20,6 +25,8 @@ public class UI implements EntryPoint {
     private static Image EMPTY_IMAGE = null;    
     protected static Images imagesBundle = GWT.create(Images.class);
     protected static PopupPanel busy;
+    protected static List<ContextListener> contextListeners = new ArrayList<ContextListener>();
+    protected static Context ctx = new Context();    
     
     public static Images getImages() {
         return imagesBundle;
@@ -32,6 +39,31 @@ public class UI implements EntryPoint {
         return EMPTY_IMAGE;
     }
    
+    public static void addContextListener(ContextListener listener) {
+        contextListeners.add(listener);
+    }
+    
+    public static void removeContextListener(ContextListener listener) {
+        contextListeners.remove(listener);
+    }    
+    
+    public static ContextListener[] getContextListeners() {
+        return contextListeners.toArray(new ContextListener[contextListeners.size()]);
+    }
+    
+    public static void fireEvent(int event) {
+        for (ContextListener listener : contextListeners) {
+            listener.onContextEvent(event);
+        }  
+    }    
+    
+    public static boolean isAuthenticated() {
+        return ctx.getUsername() != null;
+    }    
+    
+    public static Context getContext() {
+        return ctx;
+    }
 
     public static void openInEditor(Object input) {
         ((UIApplication)Framework.getApplication()).openInEditor(input);

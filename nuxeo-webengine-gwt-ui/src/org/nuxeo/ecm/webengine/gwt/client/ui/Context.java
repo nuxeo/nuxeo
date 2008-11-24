@@ -17,10 +17,11 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.gwt.client;
+package org.nuxeo.ecm.webengine.gwt.client.ui;
 
 import java.util.HashMap;
 
+import org.nuxeo.ecm.webengine.gwt.client.UI;
 import org.nuxeo.ecm.webengine.gwt.client.http.ServerException;
 
 /**
@@ -45,9 +46,10 @@ public class Context extends HashMap<String,String> {
     public void setServerException(ServerException exception) {
         this.exception = exception;
         if (exception != null) {
-            Framework.fireEvent(ContextListener.ERROR);
+            UI.fireEvent(ContextListener.ERROR);
         }
     }
+    
     
     
     public String getUsername() {
@@ -60,7 +62,7 @@ public class Context extends HashMap<String,String> {
     public void setUsername(String username) {
         if (this.username != username) {
             this.username = username;
-            Framework.fireEvent(username == null ? ContextListener.LOGOUT : ContextListener.LOGIN);
+            UI.fireEvent(username == null ? ContextListener.LOGOUT : ContextListener.LOGIN);
         }
     }
     
@@ -74,7 +76,7 @@ public class Context extends HashMap<String,String> {
     public void setInputObject(Object object) {
         if (this.input != object) {
             this.input = object;
-            Framework.fireEvent(ContextListener.INPUT);
+            UI.fireEvent(ContextListener.INPUT);
         }
     }
         

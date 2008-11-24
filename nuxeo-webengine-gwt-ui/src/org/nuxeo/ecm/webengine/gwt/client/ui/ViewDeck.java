@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui;
 
-import org.nuxeo.ecm.webengine.gwt.client.Context;
 
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.DeckPanel;

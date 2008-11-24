@@ -37,12 +37,10 @@ public class Framework {
 
     public static final String APPLICATION_XP = "APPLICATION";
     
-    protected static List<ContextListener> sessionListeners = new ArrayList<ContextListener>();
     protected static Map<String, Extensible> extensionPoints = new HashMap<String, Extensible>();
     protected static Map<String, List<Object[]>> waitingExtensions = new HashMap<String, List<Object[]>>();
     protected static Application application;
     protected static ErrorHandler errorHandler;
-    protected static Context ctx = new Context();    
     protected static String basePath = null;
     protected static boolean isStarted = false;
 
@@ -51,17 +49,6 @@ public class Framework {
         return application;
     }
     
-    public static void addContextListener(ContextListener listener) {
-        sessionListeners.add(listener);
-    }
-    
-    public static void removeContextListener(ContextListener listener) {
-        sessionListeners.remove(listener);
-    }    
-    
-    public static ContextListener[] getContextListeners() {
-        return sessionListeners.toArray(new ContextListener[sessionListeners.size()]);
-    }
     
     public static void setErrorHandler(ErrorHandler errorHandler) {
         Framework.errorHandler = errorHandler;
@@ -71,20 +58,7 @@ public class Framework {
         return errorHandler;
     }
     
-    protected static void fireEvent(int event) {
-        for (ContextListener listener : Framework.sessionListeners) {
-            listener.onContextEvent(event);
-        }  
-    }
 
-    
-    public static boolean isAuthenticated() {
-        return ctx.username != null;
-    }    
-    
-    public static Context getContext() {
-        return ctx;
-    }
     
     public static String getBasePath() {
         return basePath;

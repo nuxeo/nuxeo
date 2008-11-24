@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui.login;
 
-import org.nuxeo.ecm.webengine.gwt.client.Framework;
+import org.nuxeo.ecm.webengine.gwt.client.UI;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -55,7 +55,7 @@ public class LogoutWidget extends Composite implements ClickListener {
     }
     
     public void refresh() {
-        username.setText("You are logged in as "+Framework.getContext().getUsername());
+        username.setText("You are logged in as "+UI.getContext().getUsername());
     }
     
 }
