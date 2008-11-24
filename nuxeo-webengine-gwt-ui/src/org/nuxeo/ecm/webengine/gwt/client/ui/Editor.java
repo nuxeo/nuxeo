@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui;
 
+import org.nuxeo.ecm.webengine.gwt.client.Framework;
+
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -38,6 +40,11 @@ public abstract class Editor extends View {
     }
    
     public abstract boolean acceptInput(Object input);
+    
+    public void open(Object input) {
+        setInput(input);
+        Framework.getContext().setInputObject(input);
+    }
     
     public abstract void setInput(Object input);
     

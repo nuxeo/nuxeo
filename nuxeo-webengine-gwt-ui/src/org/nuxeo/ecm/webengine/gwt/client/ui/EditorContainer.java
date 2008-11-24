@@ -38,14 +38,15 @@ public class EditorContainer extends ViewDeck {
         for (int i=0; i<cnt; i++) {
             Editor view = (Editor)panel.getWidget(i); 
             if (view.acceptInput(input)) {
-                view.setInput(input);
+                view.open(input);
+                panel.showWidget(i);
                 return;
             }
         }
         // no suitable view was found. create a new view to catch all contexts
-        DefaultView v = new DefaultView();
+        DefaultEditor v = new DefaultEditor();
         panel.add(v);
-        v.setInput(input);
+        v.open(input);
         panel.showWidget(panel.getWidgetCount()-1);
     }
     
@@ -53,7 +54,7 @@ public class EditorContainer extends ViewDeck {
     public void add(View item) {
         // we need to make sure the last item is always the default one 
         DeckPanel panel = getDeckPanel();
-        if (panel.getWidget(panel.getWidgetCount()-1) instanceof DefaultView) {
+        if (panel.getWidget(panel.getWidgetCount()-1) instanceof DefaultEditor) {
             panel.insert(item, panel.getWidgetCount()-1);
         } else {
             panel.add(item);
@@ -64,15 +65,15 @@ public class EditorContainer extends ViewDeck {
     public void insert(View item, int beforeIndex) {
         DeckPanel panel = getDeckPanel();
         if (beforeIndex >= panel.getWidgetCount()) {
-            if (panel.getWidget(panel.getWidgetCount()-1) instanceof DefaultView) {
+            if (panel.getWidget(panel.getWidgetCount()-1) instanceof DefaultEditor) {
                 beforeIndex = panel.getWidgetCount()-1;
             }
         }
         panel.insert(item, beforeIndex);
     }
     
-    static class DefaultView extends Editor {
-        public DefaultView() {
+    static class DefaultEditor extends Editor {
+        public DefaultEditor() {
             super("_default_", new HTML());
         }
         @Override

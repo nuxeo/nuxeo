@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.gwt.test.client;
 
 import org.nuxeo.ecm.webengine.gwt.client.Framework;
+import org.nuxeo.ecm.webengine.gwt.client.UI;
 import org.nuxeo.ecm.webengine.gwt.client.http.HttpCallback;
 import org.nuxeo.ecm.webengine.gwt.client.http.HttpResponse;
 import org.nuxeo.ecm.webengine.gwt.client.http.Server;
@@ -72,6 +73,11 @@ public class TestNavigator extends View {
             }
         });
         Button button2 = new Button("Button 2");
+        button2.addClickListener(new ClickListener() {
+            public void onClick(Widget sender) {
+                UI.openInEditor("Testing Unknown Input");
+            }
+        });        
         Button button3 = new Button("Button 3");
         button3.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {

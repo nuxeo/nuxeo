@@ -37,18 +37,6 @@ public class UI implements EntryPoint {
         ((UIApplication)Framework.getApplication()).openInEditor(input);
     }
 
-    public static void openInEditor(String name, Object input) {
-        ((UIApplication)Framework.getApplication()).openInEditor(name, input);
-    }
-
-    public static void openEditor() {
-        ((UIApplication)Framework.getApplication()).openEditor();
-    }
-
-    public static void openEditor(String name) {
-        ((UIApplication)Framework.getApplication()).openEditor(name);
-    }
-
     public static void showView(String name) {
         ((UIApplication)Framework.getApplication()).showView(name);
     }

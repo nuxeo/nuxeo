@@ -23,6 +23,7 @@ import org.nuxeo.ecm.webengine.gwt.client.ErrorHandler;
 import org.nuxeo.ecm.webengine.gwt.client.Extensible;
 import org.nuxeo.ecm.webengine.gwt.client.Framework;
 import org.nuxeo.ecm.webengine.gwt.client.UI;
+import org.nuxeo.ecm.webengine.gwt.client.ui.EditorContainer;
 import org.nuxeo.ecm.webengine.gwt.client.ui.ExtensionPoints;
 import org.nuxeo.ecm.webengine.gwt.client.ui.StackedViewContainer;
 import org.nuxeo.ecm.webengine.gwt.client.ui.UIApplication;
@@ -112,22 +113,18 @@ public class ApplicationImpl extends UIApplication implements Extensible, Extens
         this.footerPanel.setWidget(footer);
     }
 
-    public StackedViewContainer getEditorContainer() {
-        return (StackedViewContainer)editorContainer.getWidget();
+    public EditorContainer getEditorContainer() {
+        return (EditorContainer)editorContainer.getWidget();
     }
 
     public StackedViewContainer getViewContainer() {
         return (StackedViewContainer)viewContainer.getWidget();
     }
     
-    public void openEditor() {
-        getEditorContainer().refresh();
+    public void openInEditor(Object input) {
+        getEditorContainer().open(input);
     }
-    
-    public void openEditor(String name) {
-        getEditorContainer().selectView(name);
-    }
-    
+        
     @Override
     public void showView(String name) {
         getViewContainer().selectView(name);
@@ -137,7 +134,7 @@ public class ApplicationImpl extends UIApplication implements Extensible, Extens
         if (VIEW_CONTAINER_XP.equals(target) ) {
             setViewContainer((StackedViewContainer)extension);
         } else if (EDITOR_CONTAINER_XP.equals(target)) {
-            setEditorContainer((StackedViewContainer)extension); 
+            setEditorContainer((EditorContainer)extension); 
         } else if (HEADER_CONTAINER_XP.equals(target)) {
             setHeader((Widget)extension);
         } else if (FOOTER_CONTAINER_XP.equals(target)) {
