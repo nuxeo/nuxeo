@@ -1,5 +1,6 @@
 package org.nuxeo.ecm.webengine.gwt.client.ui.navigator;
 
+import org.nuxeo.ecm.webengine.gwt.client.UI;
 import org.nuxeo.ecm.webengine.gwt.client.ui.model.DocumentRef;
 
 import com.google.gwt.http.client.Request;
@@ -23,7 +24,6 @@ import com.google.gwt.user.client.ui.TreeListener;
  */
 public class NavigatorTree extends Tree{
 
-    String path;
     String repositoryUrl;
     String navigatorRootPath;
 
@@ -69,8 +69,8 @@ public class NavigatorTree extends Tree{
     }
 
     protected String getUrl(String docPath) {
-        if( path != null && path.startsWith(navigatorRootPath)) {
-            String deltaPath = path.substring(navigatorRootPath.length());
+        if( docPath != null && docPath.startsWith(navigatorRootPath)) {
+            String deltaPath = docPath.substring(navigatorRootPath.length());
             return repositoryUrl + deltaPath;
         }
         return null;
@@ -84,50 +84,7 @@ public class NavigatorTree extends Tree{
         return null;
     }
 
-
-
-
-
-//    public String getUrl(TreeItem item) {
-//        JSONObject o = (JSONObject) item.getUserObject();
-//        if ( o != null ){
-//            JSONValue value = o.get(KEY_PATH);
-//            if ( value != null ){
-//                String path = value.isString().stringValue();
-//                if( path.startsWith(navigatorRootPath)) {
-//                    String deltaPath = path.substring(navigatorRootPath.length());
-//                    return repositoryUrl + deltaPath;
-//                }
-//            }
-//        }
-//        return null;
-//    }
-
-//    public String getSelectedPath() {
-//        JSONObject o = getSelectedObject();
-//        if ( o != null ) {
-//            JSONValue value = o.get(KEY_PATH);
-//            if ( value != null ){
-//                return value.isString().stringValue();
-//            }
-//        }
-//        return null;
-//    }
-//
-//    public String getSelectedId() {
-//        JSONObject o = getSelectedObject();
-//        if ( o != null ) {
-//            JSONValue value = o.get(KEY_ID);
-//            if ( value != null ){
-//                return value.isString().stringValue();
-//            }
-//        }
-//        return null;
-//    }
-
-
     // TODO add a method that will select a specified node
-
     protected TreeItem createNode(DocumentRef obj){
         TreeItem node = new TreeItem();
         node.setUserObject(obj);
@@ -162,12 +119,6 @@ public class NavigatorTree extends Tree{
         }
 
     }
-
-
-    public static native void alert(String msg) /*-{
-        $wnd.alert(msg);
-    }-*/;
-
 
     public JSONArray updateTree(String path, final TreeItem item){
         String p = URL.encode(path+"/@json?children=true");
@@ -236,8 +187,13 @@ public class NavigatorTree extends Tree{
         refreshItem(ti);
     };
 
-    public void refreshItem(TreeItem treeItem) {
-        updateTree(getDocumentRef(treeItem).getPath(), treeItem);
+    public void refreshItem(TreeItem item) {
+        DocumentRef docRef = getDocumentRef(item);
+        if ( docRef != null ){
+            String url = getUrl(docRef.getPath());
+            updateTree(url, item);
+        }
+
     };
 
 

@@ -22,45 +22,45 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class UI implements EntryPoint {
 
-    private static Image EMPTY_IMAGE = null;    
+    private static Image EMPTY_IMAGE = null;
     protected static Images imagesBundle = GWT.create(Images.class);
     protected static PopupPanel busy;
     protected static List<ContextListener> contextListeners = new ArrayList<ContextListener>();
-    protected static Context ctx = new Context();    
-    
+    protected static Context ctx = new Context();
+
     public static Images getImages() {
         return imagesBundle;
     }
-    
+
     public static Image getEmptyImage() {
         if (EMPTY_IMAGE == null) {
             EMPTY_IMAGE = imagesBundle.noimage().createImage();
         }
         return EMPTY_IMAGE;
     }
-   
+
     public static void addContextListener(ContextListener listener) {
         contextListeners.add(listener);
     }
-    
+
     public static void removeContextListener(ContextListener listener) {
         contextListeners.remove(listener);
-    }    
-    
+    }
+
     public static ContextListener[] getContextListeners() {
         return contextListeners.toArray(new ContextListener[contextListeners.size()]);
     }
-    
+
     public static void fireEvent(int event) {
         for (ContextListener listener : contextListeners) {
             listener.onContextEvent(event);
-        }  
-    }    
-    
+        }
+    }
+
     public static boolean isAuthenticated() {
         return ctx.getUsername() != null;
-    }    
-    
+    }
+
     public static Context getContext() {
         return ctx;
     }
@@ -72,7 +72,7 @@ public class UI implements EntryPoint {
     public static void showView(String name) {
         ((UIApplication)Framework.getApplication()).showView(name);
     }
-    
+
     public static void showError(Throwable t) {
         final PopupPanel panel = new PopupPanel(true, true);
         panel.add(new Label(t.getMessage()));
@@ -80,16 +80,16 @@ public class UI implements EntryPoint {
 //        panel.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
 //            public void setPosition(int offsetWidth, int offsetHeight) {
 //                RootPanel root = RootPanel.get();
-//                panel.setPopupPosition((root.getOffsetWidth() - offsetWidth) / 2, 
+//                panel.setPopupPosition((root.getOffsetWidth() - offsetWidth) / 2,
 //                        (root.getOffsetHeight() - offsetHeight) / 2);
 //            }
-//        });        
+//        });
     }
-    
+
     public static void showBusy() {
         if (busy == null) {
             busy = new PopupPanel(false, true);
-            //HorizontalPanel panel = new HorizontalPanel();            
+            //HorizontalPanel panel = new HorizontalPanel();
             //panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
             //panel.add(new Image("images/loading.gif"));
             //panel.add(new HTML(<img src="images/loading.gif"));
@@ -107,17 +107,17 @@ public class UI implements EntryPoint {
 //        busy.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
 //            public void setPosition(int offsetWidth, int offsetHeight) {
 //                RootPanel root = RootPanel.get();
-//                busy.setPopupPosition((root.getOffsetWidth() - offsetWidth) / 2, 
+//                busy.setPopupPosition((root.getOffsetWidth() - offsetWidth) / 2,
 //                        (root.getOffsetHeight() - offsetHeight) / 2);
 //            }
-//        });        
+//        });
     }
-    
+
     public static void hideBusy() {
         if (busy == null) return;
         busy.hide();
     }
-    
+
   /**
    * This is the entry point method.
    */
@@ -126,5 +126,10 @@ public class UI implements EntryPoint {
       bundle.start();
   }
 
-   
+  // java script navitve alert method
+  public static native void alert(String msg) /*-{
+      $wnd.alert(msg);
+  }-*/;
+
+
 }
