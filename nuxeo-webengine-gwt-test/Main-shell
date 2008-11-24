@@ -10,4 +10,4 @@ if [ "x$GWT_HOME" = "x" ] ; then
     echo GWT_HOME not defined
     exit 1;
 fi
-java  $JAVA_OPTS -Xmx256M -cp "$APPDIR/src:$APPDIR/bin:$COREDIR/src:$COREDIR/bin:$UIDIR/src:$UIDIR/bin:$GWT_HOME/gwt-user.jar:$GWT_HOME/gwt-dev-linux.jar" com.google.gwt.dev.GWTShell -out "$APPDIR/www" "$@" org.nuxeo.ecm.webengine.gwt.test.Main/Main.html;
+java  $JAVA_OPTS -Xmx256M -cp "$APPDIR/src:$APPDIR/bin:$COREDIR/src:$COREDIR/bin:$UIDIR/src:$UIDIR/bin:$GWT_HOME/gwt-user.jar:$GWT_HOME/gwt-dev-linux.jar" com.google.gwt.dev.GWTShell -out "$APPDIR/target/www" "$@" org.nuxeo.ecm.webengine.gwt.test.Main/Main.html;
