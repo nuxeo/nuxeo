@@ -22,9 +22,8 @@ package org.nuxeo.ecm.webengine.gwt.client.ui.login;
 import org.nuxeo.ecm.webengine.gwt.client.Framework;
 import org.nuxeo.ecm.webengine.gwt.client.http.HttpRequest;
 import org.nuxeo.ecm.webengine.gwt.client.http.HttpResponse;
-import org.nuxeo.ecm.webengine.gwt.client.ui.View;
+import org.nuxeo.ecm.webengine.gwt.client.ui.Item;
 
-import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -32,7 +31,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class LoginView extends View {
+public class LoginView extends Item {
     
     protected DeckPanel deck;
     
@@ -72,8 +71,8 @@ public class LoginView extends View {
     public void login(final String username, final String password) {
         try {
             get("/skin/wiki/wiki.css").setUser(username).setPassword(password).send();
-        } catch (RequestException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Framework.handleError(e);
         }
 //        HttpCallback cb = new HttpCallback() {
 //            @Override

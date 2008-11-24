@@ -31,6 +31,7 @@ public interface Debug {
     public final static String REDIRECT_PATTERN = REDIRECT_PREFIX+"/(.*)";
     public final static String REDIRECT_REPLACEMENT = "/$1";
     public final static boolean REDIRECT_TRACE = true;
+    public final static boolean REDIRECT_TRACE_CONTENT = false;
     
     /* 
      * Add this code in tomcat/webapps/ROOT/WEB-INF/web.xml

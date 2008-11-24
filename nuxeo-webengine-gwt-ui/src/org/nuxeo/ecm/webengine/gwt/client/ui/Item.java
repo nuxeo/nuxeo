@@ -19,9 +19,12 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui;
 
-import org.nuxeo.ecm.webengine.gwt.client.Context;
+import org.nuxeo.ecm.webengine.gwt.client.Framework;
 import org.nuxeo.ecm.webengine.gwt.client.UI;
+import org.nuxeo.ecm.webengine.gwt.client.http.HttpRequest;
+import org.nuxeo.ecm.webengine.gwt.client.http.HttpResponse;
 
+import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
@@ -93,9 +96,6 @@ public class Item extends Composite {
         
     }
 
-    public boolean isEnabled(Context context) {
-        return true;
-    }
 
     /**
      * Get a string representation of the header that includes an image and some
@@ -117,6 +117,41 @@ public class Item extends Composite {
 
         // Return the HTML string for the panel
         return hPanel.getElement().getString();        
+    }
+
+    
+    public void showBusy() {
+        UI.showBusy();
+    }
+
+    public void hideBusy() {
+        UI.hideBusy();
+    }
+
+    public ViewRequest get(String uri) {
+        return new ViewRequest(this, RequestBuilder.GET, uri);
+    }
+    
+    public ViewRequest post(String uri) {
+        return new ViewRequest(this, RequestBuilder.POST, uri);        
+    }
+    
+    public void onRequestSuccess(HttpRequest request, HttpResponse response) {
+        hideBusy();
+        onRequestCompleted(request, response);
+    }
+    
+    /**
+     * Override this when needed
+     * @param response
+     */
+    public void onRequestCompleted(HttpRequest request, HttpResponse response) {
+        // do nothing
+    }
+    
+    public void onRequestFailure(HttpRequest request, Throwable cause) {
+        hideBusy();
+        Framework.handleError(cause);
     }
 
 }

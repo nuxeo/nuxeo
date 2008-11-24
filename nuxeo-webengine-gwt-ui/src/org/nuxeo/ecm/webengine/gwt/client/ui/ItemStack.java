@@ -68,7 +68,10 @@ public class ItemStack extends StackedItemContainer {
 
     @Override
     public void refresh() {
-        getSelectedItem().refresh();
+        Item item = getSelectedItem();
+        if (item != null) {
+            item.refresh();
+        }
     }
 
 }

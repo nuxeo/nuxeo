@@ -50,6 +50,7 @@ public class RedirectServlet extends HttpServlet implements Debug {
     protected String redirectPattern = REDIRECT_PATTERN;
     protected String redirectReplacement = REDIRECT_REPLACEMENT;
     protected boolean trace = REDIRECT_TRACE;
+    protected boolean traceContent = REDIRECT_TRACE_CONTENT;
     
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -79,6 +80,10 @@ public class RedirectServlet extends HttpServlet implements Debug {
         if (val != null) {
             trace = Boolean.parseBoolean(val);
         }
+        val = System.getProperty("redirect.trace.content");
+        if (val != null) {
+            traceContent = Boolean.parseBoolean(val);
+        }
         System.out.println("----------------------------------------------------------");
         System.out.println("Redirect Servlet Enabled: ");
         System.out.println("redirect.prefix: "+redirectPrefix);
@@ -94,10 +99,10 @@ public class RedirectServlet extends HttpServlet implements Debug {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException {        
-
-        if (true) {//TODO
-            try {Thread.sleep(3000);} catch (Exception e) {}
-        }
+// TODO used to test loading... progress bar
+//        if (true) {
+//            try {Thread.sleep(3000);} catch (Exception e) {}
+//        }
         
         StringBuilder buf = new StringBuilder(); // getRequestURL(req);        
         String urlPath = req.getRequestURI();
@@ -128,21 +133,22 @@ public class RedirectServlet extends HttpServlet implements Debug {
             rout.write(buf.toString().getBytes());
             in =  req.getInputStream();
             if (trace) {
-                System.out.println("========== HTTP REQUEST ===========");
-                System.out.println(buf.toString());
+                traceln("========== HTTP REQUEST ===========");
+                traceln(buf.toString());
+                traceln("");
                 copyDebug(in, rout);
-                System.out.println("===============================");
+                traceln("===================================");
             } else {
                 copy(in, rout);
             }
 
             rin = new BufferedInputStream(socket.getInputStream());
             if (trace) {
-                trace("========= HTTP RESPONSE ===========");
+                traceln("========= HTTP RESPONSE ===========");
             }
             transferResponse(rin, resp);
             if (trace) {
-                trace("================================");
+                traceln("===================================");
             }
         } finally {
             if (rout != null) rout.close();
@@ -152,7 +158,7 @@ public class RedirectServlet extends HttpServlet implements Debug {
     }
 
     
-    public static void copy(InputStream in, OutputStream out) throws IOException {
+    public void copy(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = new byte[1024*64];
         int read;
         while ((read = in.read(buffer)) != -1) {
@@ -160,13 +166,16 @@ public class RedirectServlet extends HttpServlet implements Debug {
         }
     }
 
-    public static void copyDebug(InputStream in, OutputStream out) throws IOException {
+    public void copyDebug(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = new byte[1024*64];
         int read;
         while ((read = in.read(buffer)) != -1) {
             out.write(buffer, 0, read);
-            trace(new String(buffer, 0, read));
+            if (traceContent) {
+                trace(new String(buffer, 0, read));
+            }
         }
+        traceln("");
     }
 
 
@@ -197,6 +206,9 @@ public class RedirectServlet extends HttpServlet implements Debug {
                         if (status == -1) {
                             throw new IOException("Bug in RedirectServlet?");
                         }          
+                        if (trace) {
+                            traceln(buf.toString());
+                        }
                         if (status >= 400) {
                             resp.sendError(status);
                             return;
@@ -217,7 +229,7 @@ public class RedirectServlet extends HttpServlet implements Debug {
         OutputStream out = resp.getOutputStream();
         try {
             if (trace) {
-                trace("");
+                traceln("");
                 copyDebug(in, out);
             } else {
                 copy(in, out);
@@ -229,7 +241,7 @@ public class RedirectServlet extends HttpServlet implements Debug {
     
     protected void setHeader(String header, HttpServletResponse resp) {
         if (trace) {
-            trace(header);
+            traceln(header);
         }
         int p = header.indexOf(':');
         if (p > -1) {
@@ -237,8 +249,11 @@ public class RedirectServlet extends HttpServlet implements Debug {
         }
     }
 
-    public static void trace(String str) {
+    public static void traceln(String str) {
         System.out.println(str);
+    }
+    public static void trace(String str) {
+        System.out.print(str);
     }
     
     public static void main(String[] args) {

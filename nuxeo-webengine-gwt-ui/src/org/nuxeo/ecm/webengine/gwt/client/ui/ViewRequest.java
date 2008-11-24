@@ -34,20 +34,20 @@ import com.google.gwt.http.client.RequestBuilder.Method;
  */
 public class ViewRequest extends HttpRequest {
 
-    protected View view;
+    protected Item item;
     
-    public ViewRequest(View view, Method method, String url) {
+    public ViewRequest(Item item, Method method, String url) {
         super (method, url);
-        this.view = view;
+        this.item = item;
     }
     
-    public View getView() {
-        return view;
+    public Item getItem() {
+        return item;
     }
     
     @Override
     public Request send() throws RequestException {
-        view.showBusy();
+        item.showBusy();
         setCallback(new Callback());
         return super.send();
     }
@@ -55,7 +55,7 @@ public class ViewRequest extends HttpRequest {
     @Override
     public Request sendRequest(String requestData, RequestCallback callback)
             throws RequestException {
-        view.showBusy();
+        item.showBusy();
         setCallback(new Callback());
         return super.sendRequest(requestData, callback);
     }
@@ -64,10 +64,10 @@ public class ViewRequest extends HttpRequest {
     class Callback extends HttpCallback {
         @Override
         public void onSuccess(HttpResponse response) {
-            view.onRequestSuccess(getRequest(), response);
+            item.onRequestSuccess(getRequest(), response);
         }
         public void onFailure(Throwable cause) {
-            view.onRequestFailure(getRequest(), cause);
+            item.onRequestFailure(getRequest(), cause);
         }
     }
     

@@ -20,11 +20,9 @@
 package org.nuxeo.ecm.webengine.gwt.client.ui;
 
 import org.nuxeo.ecm.webengine.gwt.client.Context;
-import org.nuxeo.ecm.webengine.gwt.client.Framework;
 
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.DeckPanel;
-import com.google.gwt.user.client.ui.HTML;
 
 /**
  * Manage a collection of items. Only one item is visible at a time.
@@ -36,20 +34,6 @@ import com.google.gwt.user.client.ui.HTML;
  *
  */
 public class ItemDeck extends StackedItemContainer {
-
-    static class DefaultItem extends Item {
-        public DefaultItem() {
-            super("_default_", new HTML());
-        }
-        @Override
-        public void refresh() {
-            ((HTML)getWidget()).setText("No view was registered for the context current context:");
-        }
-        @Override
-        public boolean isEnabled(Context context) {
-            return true;
-        }
-    }
     
     public ItemDeck(String name) {
         super(name);
@@ -79,50 +63,20 @@ public class ItemDeck extends StackedItemContainer {
 
     @Override
     public void add(Item item) {
-        // we need to make sure the last item is always the default one 
-        DeckPanel panel = getDeckPanel();
-        if (panel.getWidget(panel.getWidgetCount()-1) instanceof DefaultItem) {
-            panel.insert(item, panel.getWidgetCount()-1);
-        } else {
-            panel.add(item);
-        }
+        getDeckPanel().add(item);
     }
 
     @Override
     public void insert(Item item, int beforeIndex) {
-        DeckPanel panel = getDeckPanel();
-        if (beforeIndex >= panel.getWidgetCount()) {
-            if (panel.getWidget(panel.getWidgetCount()-1) instanceof DefaultItem) {
-                beforeIndex = panel.getWidgetCount()-1;
-            }
-        }
         getDeckPanel().insert(item, beforeIndex);
     }
 
     @Override
     public void refresh() {
-        Context context = Framework.getContext();
-        DeckPanel panel = getDeckPanel();
-        int i = panel.getVisibleWidget();
-        if (i > -1) {
-            Item item = (Item)panel.getWidget(i); 
-            if (item.isEnabled(context)) {
-                item.refresh();
-                return;
-            }
-        }        
-        int cnt = panel.getWidgetCount();
-        for (i=0; i<cnt; i++) {
-            Item item = (Item)panel.getWidget(i);
-            if (item.isEnabled(context)) {
-                item.refresh();
-                panel.showWidget(i);
-                return;
-            }
+        Item item = getSelectedItem();
+        if (item != null) {
+            item.refresh();
         }
-        // no enabled item was found. create a new item to catch all contexts
-        panel.add(new DefaultItem());
-        panel.showWidget(panel.getWidgetCount()-1);
     }
 
 }
