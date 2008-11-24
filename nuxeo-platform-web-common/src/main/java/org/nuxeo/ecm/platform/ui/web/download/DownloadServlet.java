@@ -41,7 +41,8 @@ import org.nuxeo.ecm.core.utils.DocumentModelUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Simple download servlet used for big files that can not be downloaded from withing the JSF context
+ * Simple download servlet used for big files that can not be downloaded from within the JSF context
+ * (because of Buffered ResponseWrapper)
  *
  * @author tiry
  *
