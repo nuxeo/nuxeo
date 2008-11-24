@@ -43,6 +43,14 @@ public class View extends Item {
         super(name, widget); 
     }
    
+    public boolean acceptInput(Object input) {
+        return false;
+    }
+    
+    public void setInput(Object input) {
+        
+    }
+    
     public void showBusy() {
         UI.showBusy();
     }
