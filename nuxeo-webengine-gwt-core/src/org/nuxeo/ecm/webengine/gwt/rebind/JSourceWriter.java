@@ -114,6 +114,10 @@ public class JSourceWriter extends StringWriter implements SourceWriter {
             composer.addImplementedInterface(intfName);
         }        
         SourceWriter sw = composer.createSourceWriter(context, printWriter);
+        // only to debug
+//        System.out.println("----------------------------------------------");
+//        System.out.println(toString());
+//        System.out.println("----------------------------------------------");
         sw.print(toString());
         sw.commit(logger);
     }

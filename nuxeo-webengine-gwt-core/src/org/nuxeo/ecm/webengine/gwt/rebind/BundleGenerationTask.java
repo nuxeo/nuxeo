@@ -21,7 +21,8 @@ package org.nuxeo.ecm.webengine.gwt.rebind;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -109,11 +110,11 @@ public class BundleGenerationTask extends GenerationTask {
     }
 
     private void writeDeployMethod(List<JClassType> bundles) throws UnableToCompleteException { 
-
-        HashSet<JMethod> extensions = new HashSet<JMethod>();
-        HashSet<JMethod> lastExtensions = new HashSet<JMethod>();
-        HashSet<JMethod> extPoints = new HashSet<JMethod>();
-        HashSet<JMethod> instances = new HashSet<JMethod>();
+        // it's important to preserve order so lets use a LinkedHashSet
+        Set<JMethod> extensions = new LinkedHashSet<JMethod>();
+        Set<JMethod> lastExtensions = new LinkedHashSet<JMethod>();
+        Set<JMethod> extPoints = new LinkedHashSet<JMethod>();
+        Set<JMethod> instances = new LinkedHashSet<JMethod>();
         
 
         // start processing bundles
@@ -134,7 +135,8 @@ public class BundleGenerationTask extends GenerationTask {
         }
         writer.println();
         // write extension registration
-        for (JMethod method : extensions) {
+        // first order extensions given their ordering hints
+        for (JMethod method : reorderExtensions(extensions)) {
             writeExtension(method);
         }
         writer.println();
@@ -170,7 +172,7 @@ public class BundleGenerationTask extends GenerationTask {
     private void writeExtension(JMethod method) {
         Extension ext = method.getAnnotation(Extension.class);
         for (String point : ext.targets()) {            
-            writer.println("Framework.registerExtension(\""+point+"\", "+ method.getName()+", "+ext.mode()+");");
+            writer.println("Framework.registerExtension(\""+point+"\", "+ method.getName()+");");
         }
     }
 
@@ -181,7 +183,7 @@ public class BundleGenerationTask extends GenerationTask {
             boolean found = false;
             Extension ext = m.getAnnotation(Extension.class);
             if (ext != null) {
-                if (ext.mode() == Extension.ADD_IF_NOT_EXISTS) {
+                if (ext.hint() == Extension.AS_DEFAULT) { // TODO AS_DEFAULT hints are not correctly handled
                     lastExtensions.add(m);
                     found = true;
                 } else {
@@ -212,4 +214,26 @@ public class BundleGenerationTask extends GenerationTask {
 //        }
     }
 
+    protected List<JMethod>reorderExtensions(Set<JMethod> extensions) {
+        ArrayList<JMethod> result = new ArrayList<JMethod>(extensions);
+        Collections.sort(result, new ExtensionComparator());
+        return result;
+    }
+    
+    static class ExtensionComparator implements Comparator<JMethod> {
+        public int compare(JMethod o1, JMethod o2) {
+            int h1 = o1.getAnnotation(Extension.class).hint();            
+            int h2 = o2.getAnnotation(Extension.class).hint();
+            if (h1 == h2) {
+                return 0;
+            }
+            if (h1 < 0) {
+                return 1;
+            }
+            if (h2 < 0) {
+                return -1;
+            }
+            return h1 - h2;
+        }  
+    }
 }

@@ -52,7 +52,7 @@ public class EditorContainerImpl extends EditorContainer implements Extensible, 
         UI.removeContextListener(this);
     }
     
-    public void registerExtension(String target, Object extension, int type) {
+    public void registerExtension(String target, Object extension) {
         if (ExtensionPoints.EDITORS_XP.equals(target)) {
             DeckPanel panel = getDeckPanel();
             Editor editor = (Editor)extension;

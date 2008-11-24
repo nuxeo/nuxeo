@@ -50,7 +50,7 @@ public interface DefaultApplicationBundle extends ApplicationBundle {
     @ExtensionPoint(ExtensionPoints.VIEWS_XP)
     ViewContainerImpl viewContainer();  
 
-    @Extension(targets=ExtensionPoints.VIEWS_XP)
+    @Extension(targets=ExtensionPoints.VIEWS_XP, hint=300)
     LoginView loginView();
     
 }
