@@ -5,4 +5,9 @@ import com.google.gwt.json.client.JSONObject;
 public class Document {
     JSONObject json;
 
+    public Document(JSONObject json) {
+        super();
+        this.json = json;
+    }
+
 }

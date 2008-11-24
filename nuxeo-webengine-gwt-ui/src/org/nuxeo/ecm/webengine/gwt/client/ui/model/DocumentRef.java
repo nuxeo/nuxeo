@@ -3,18 +3,12 @@ package org.nuxeo.ecm.webengine.gwt.client.ui.model;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONValue;
 
-public class DocumentRef {
+public class DocumentRef implements DocumentConstants{
     JSONObject json;
 
     public DocumentRef(JSONObject object) {
         this.json = object;
     }
-
-    private static final String KEY_ID = "id";
-    private static final String KEY_IS_FOLDERISH = "isFolderish";
-    private static final String KEY_TITLE = "title";
-    private static final String KEY_PATH = "path";
-
 
     public String getId(){
         if ( json != null ){
