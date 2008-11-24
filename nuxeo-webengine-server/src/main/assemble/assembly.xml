@@ -34,6 +34,8 @@
       <artifact name="commons-io" />
       <artifact name="commons-logging" />      
       <artifact name="commons-fileupload" />
+      <artifact name="commons-lang" />
+      <artifact name="commons-beanutils" />
       <artifact group="log4j" name="log4j" version="1.2.13" />
       <artifact group="jboss" />
       <artifact group="concurrent" />
