@@ -27,7 +27,6 @@ public class NavigatorTree extends Tree{
     String repositoryUrl;
     String navigatorRootPath;
 
-
     /**
      * @param repositoryUrl - the url of the repository
      * @param navigationRootPath - the document path of the root navigator
@@ -61,21 +60,26 @@ public class NavigatorTree extends Tree{
         return (DocumentRef) item.getUserObject();
     }
 
-
-
-    public JSONObject getSelectedObject() {
-        TreeItem ti = getSelectedItem();
-        if ( ti != null) {
-            return (JSONObject) ti.getUserObject();
+    public String getSelectedUrl() {
+        DocumentRef docRef = getSelected();
+        if ( docRef  != null ){
+            return getUrl(docRef.getPath());
         }
         return null;
     }
 
-    public String getSelectedUrl() {
-        String path = getSelected().getPath();
+    protected String getUrl(String docPath) {
         if( path != null && path.startsWith(navigatorRootPath)) {
             String deltaPath = path.substring(navigatorRootPath.length());
             return repositoryUrl + deltaPath;
+        }
+        return null;
+    }
+
+    public String getUrl(TreeItem item){
+        DocumentRef docRef = (DocumentRef) item.getUserObject();
+        if ( docRef != null ) {
+            return getUrl(docRef.getPath());
         }
         return null;
     }

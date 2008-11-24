@@ -4,10 +4,10 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONValue;
 
 public class DocumentRef {
-    JSONObject object;
+    JSONObject json;
 
     public DocumentRef(JSONObject object) {
-        this.object = object;
+        this.json = object;
     }
 
     private static final String KEY_ID = "id";
@@ -17,8 +17,8 @@ public class DocumentRef {
 
 
     public String getId(){
-        if ( object != null ){
-            JSONValue value = object.get(KEY_ID);
+        if ( json != null ){
+            JSONValue value = json.get(KEY_ID);
             if ( value != null ){
                 return value.isString().stringValue();
             }
@@ -29,8 +29,8 @@ public class DocumentRef {
 
 
     public String getTitle(){
-        if ( object != null ){
-            JSONValue value = object.get(KEY_TITLE);
+        if ( json != null ){
+            JSONValue value = json.get(KEY_TITLE);
             if ( value != null ){
                 return value.isString().stringValue();
             }
@@ -41,8 +41,8 @@ public class DocumentRef {
 
 
     public String getPath(){
-        if ( object != null ){
-            JSONValue value = object.get(KEY_PATH);
+        if ( json != null ){
+            JSONValue value = json.get(KEY_PATH);
             if ( value != null ){
                 return value.isString().stringValue();
             }
@@ -51,8 +51,8 @@ public class DocumentRef {
     }
 
     public boolean isFolderish(){
-        if ( object != null ){
-            return object.get(KEY_IS_FOLDERISH).isBoolean().booleanValue();
+        if ( json != null ){
+            return json.get(KEY_IS_FOLDERISH).isBoolean().booleanValue();
         }
         return false;
     }
