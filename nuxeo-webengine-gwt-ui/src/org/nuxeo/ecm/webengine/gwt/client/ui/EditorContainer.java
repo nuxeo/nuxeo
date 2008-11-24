@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine.gwt.client.ui;
 
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -81,7 +82,11 @@ public class EditorContainer extends ViewDeck {
             return true;
         }
         public void setInput(Object input) {
-            ((HTML)getWidget()).setText("No view was registered for the object: "+input.toString());
+            if (input instanceof Widget) {
+                ((HTML)getWidget()).setHTML(input.toString());
+            } else {
+                ((HTML)getWidget()).setText("No editor was registered for the object: "+input.toString());
+            }
         }
     }
 }

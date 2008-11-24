@@ -39,7 +39,11 @@ public abstract class StackedViewContainer extends ViewContainer {
     public abstract void selectView(int index);
 
     public View getSelectedView() {
-        return (View)getPanel().getWidget(getSelectedIndex());
+        int i = getSelectedIndex();
+        if (i > -1) {
+            return (View)getPanel().getWidget(i);
+        }
+        return null;
     }
     
     public void selectView(View view) {

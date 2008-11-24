@@ -22,9 +22,9 @@ package org.nuxeo.ecm.webengine.gwt.client.ui.impl;
 import org.nuxeo.ecm.webengine.gwt.client.ContextListener;
 import org.nuxeo.ecm.webengine.gwt.client.Extensible;
 import org.nuxeo.ecm.webengine.gwt.client.Framework;
-import org.nuxeo.ecm.webengine.gwt.client.ui.ExtensionPoints;
-import org.nuxeo.ecm.webengine.gwt.client.ui.ViewDeck;
 import org.nuxeo.ecm.webengine.gwt.client.ui.Editor;
+import org.nuxeo.ecm.webengine.gwt.client.ui.EditorContainer;
+import org.nuxeo.ecm.webengine.gwt.client.ui.ExtensionPoints;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.DeckPanel;
@@ -33,11 +33,10 @@ import com.google.gwt.user.client.ui.DeckPanel;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class EditorContainerImpl extends ViewDeck implements Extensible, ContextListener {
+public class EditorContainerImpl extends EditorContainer implements Extensible, ContextListener {
     
     
     public EditorContainerImpl() {
-        super("editor_container");
     }        
 
     @Override
