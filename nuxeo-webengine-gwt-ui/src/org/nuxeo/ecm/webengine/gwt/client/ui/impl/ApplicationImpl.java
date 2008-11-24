@@ -24,7 +24,7 @@ import org.nuxeo.ecm.webengine.gwt.client.Extensible;
 import org.nuxeo.ecm.webengine.gwt.client.Framework;
 import org.nuxeo.ecm.webengine.gwt.client.UI;
 import org.nuxeo.ecm.webengine.gwt.client.ui.ExtensionPoints;
-import org.nuxeo.ecm.webengine.gwt.client.ui.StackedItemContainer;
+import org.nuxeo.ecm.webengine.gwt.client.ui.StackedViewContainer;
 import org.nuxeo.ecm.webengine.gwt.client.ui.UIApplication;
 
 import com.google.gwt.user.client.Window;
@@ -96,11 +96,11 @@ public class ApplicationImpl extends UIApplication implements Extensible, Extens
     }
     
     
-    protected void setViewContainer(StackedItemContainer container) {        
+    protected void setViewContainer(StackedViewContainer container) {        
         this.viewContainer.setWidget(container);
     }
 
-    protected void setEditorContainer(StackedItemContainer container) {
+    protected void setEditorContainer(StackedViewContainer container) {
         this.editorContainer.setWidget(container);
     }
     
@@ -112,12 +112,12 @@ public class ApplicationImpl extends UIApplication implements Extensible, Extens
         this.footerPanel.setWidget(footer);
     }
 
-    public StackedItemContainer getEditorContainer() {
-        return (StackedItemContainer)editorContainer.getWidget();
+    public StackedViewContainer getEditorContainer() {
+        return (StackedViewContainer)editorContainer.getWidget();
     }
 
-    public StackedItemContainer getViewContainer() {
-        return (StackedItemContainer)viewContainer.getWidget();
+    public StackedViewContainer getViewContainer() {
+        return (StackedViewContainer)viewContainer.getWidget();
     }
     
     public void openEditor() {
@@ -125,19 +125,19 @@ public class ApplicationImpl extends UIApplication implements Extensible, Extens
     }
     
     public void openEditor(String name) {
-        getEditorContainer().selectItem(name);
+        getEditorContainer().selectView(name);
     }
     
     @Override
     public void showView(String name) {
-        getViewContainer().selectItem(name);
+        getViewContainer().selectView(name);
     }
     
     public void registerExtension(String target, Object extension, int mode) {
         if (VIEW_CONTAINER_XP.equals(target) ) {
-            setViewContainer((StackedItemContainer)extension);
+            setViewContainer((StackedViewContainer)extension);
         } else if (EDITOR_CONTAINER_XP.equals(target)) {
-            setEditorContainer((StackedItemContainer)extension); 
+            setEditorContainer((StackedViewContainer)extension); 
         } else if (HEADER_CONTAINER_XP.equals(target)) {
             setHeader((Widget)extension);
         } else if (FOOTER_CONTAINER_XP.equals(target)) {

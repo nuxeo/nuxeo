@@ -22,7 +22,7 @@ package org.nuxeo.ecm.webengine.gwt.client.ui.login;
 import org.nuxeo.ecm.webengine.gwt.client.Framework;
 import org.nuxeo.ecm.webengine.gwt.client.http.HttpRequest;
 import org.nuxeo.ecm.webengine.gwt.client.http.HttpResponse;
-import org.nuxeo.ecm.webengine.gwt.client.ui.Item;
+import org.nuxeo.ecm.webengine.gwt.client.ui.View;
 
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -31,7 +31,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class LoginView extends Item {
+public class LoginView extends View {
     
     protected DeckPanel deck;
     

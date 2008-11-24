@@ -25,17 +25,17 @@ import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.DeckPanel;
 
 /**
- * Manage a collection of items. Only one item is visible at a time.
- * When refreshed this container will show the first item that is enabled for the current context.
- * To find out the enabled item the {@link Item#isEnabled(Context)} method is asked.
- * If no item is eanbled for the given context the default item is used.  
+ * Manage a collection of views. Only one view is visible at a time.
+ * When refreshed this container will show the first view that is enabled for the current context.
+ * To find out the enabled view the {@link View#isEnabled(Context)} method is asked.
+ * If no view is eanbled for the given context the default view is used.  
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ItemDeck extends StackedItemContainer {
+public class ViewDeck extends StackedViewContainer {
     
-    public ItemDeck(String name) {
+    public ViewDeck(String name) {
         super(name);
     }    
     
@@ -57,25 +57,25 @@ public class ItemDeck extends StackedItemContainer {
     }
 
     @Override
-    public void selectItem(int index) {
+    public void selectView(int index) {
         getDeckPanel().showWidget(index);
     }
 
     @Override
-    public void add(Item item) {
-        getDeckPanel().add(item);
+    public void add(View view) {
+        getDeckPanel().add(view);
     }
 
     @Override
-    public void insert(Item item, int beforeIndex) {
-        getDeckPanel().insert(item, beforeIndex);
+    public void insert(View view, int beforeIndex) {
+        getDeckPanel().insert(view, beforeIndex);
     }
 
     @Override
     public void refresh() {
-        Item item = getSelectedItem();
-        if (item != null) {
-            item.refresh();
+        View view = getSelectedView();
+        if (view != null) {
+            view.refresh();
         }
     }
 

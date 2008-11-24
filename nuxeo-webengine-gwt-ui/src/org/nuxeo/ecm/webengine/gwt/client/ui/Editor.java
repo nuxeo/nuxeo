@@ -19,42 +19,26 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui;
 
+import com.google.gwt.user.client.ui.Widget;
 
 /**
- * An item container which is showing only one item at a time.
+ * A view that support input objects
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class StackedItemContainer extends ItemContainer {
+public abstract class Editor extends View {
 
-
-    public StackedItemContainer(String name) {
+    public Editor(String name) {
         super(name);
     }
     
-    public abstract int getSelectedIndex();
-
+    public Editor(String name, Widget widget) {
+        super(name, widget); 
+    }
+   
+    public abstract boolean acceptInput(Object input);
     
-    public abstract void selectItem(int index);
-
-    public Item getSelectedItem() {
-        return (Item)getPanel().getWidget(getSelectedIndex());
-    }
+    public abstract void setInput(Object input);
     
-    public void selectItem(Item item) {
-        int i = indexOf(item);
-        if (i > -1) {
-            selectItem(i);
-        }
-    }
-
-    public void selectItem(String name) {
-        int i = indexOf(name);
-        if (i > -1) {
-            selectItem(i);
-        }        
-    }
-            
 }
-

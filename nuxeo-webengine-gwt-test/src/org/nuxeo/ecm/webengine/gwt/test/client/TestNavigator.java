@@ -23,7 +23,7 @@ import org.nuxeo.ecm.webengine.gwt.client.Framework;
 import org.nuxeo.ecm.webengine.gwt.client.http.HttpCallback;
 import org.nuxeo.ecm.webengine.gwt.client.http.HttpResponse;
 import org.nuxeo.ecm.webengine.gwt.client.http.Server;
-import org.nuxeo.ecm.webengine.gwt.client.ui.Item;
+import org.nuxeo.ecm.webengine.gwt.client.ui.View;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -36,7 +36,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TestNavigator extends Item {
+public class TestNavigator extends View {
 
     public TestNavigator() {
         super("navigator");

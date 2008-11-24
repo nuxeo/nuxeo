@@ -23,99 +23,95 @@ import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * An item container is a composite that wraps a complex panel.
- * It is used to manage items
+ * A view container is a composite that wraps a complex panel. It is used to
+ * manage views
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
-public abstract class ItemContainer extends Item {
+public abstract class ViewContainer extends View {
 
-
-    public ItemContainer(String name) {
+    public ViewContainer(String name) {
         super(name);
     }
-    
+
     @Override
     protected final Widget createContent() {
         return createPanel();
     }
 
     protected abstract ComplexPanel createPanel();
-        
-    public abstract void add(Item item);
-    
-    public abstract void insert(Item item, int beforeIndex);
-        
-    public boolean insertBefore(Item item, String name) {
+
+    public abstract void add(View view);
+
+    public abstract void insert(View view, int beforeIndex);
+
+    public boolean insertBefore(View view, String name) {
         int index = indexOf(name);
         if (index > -1) {
-            insert(item, index);
+            insert(view, index);
             return true;
         }
-        return false; 
+        return false;
     }
-    
-    
+
     public ComplexPanel getPanel() {
-        return (ComplexPanel)getWidget();
+        return (ComplexPanel) getWidget();
     }
-    
-    
-    public int indexOf(Item item) {
-        return getPanel().getWidgetIndex(item);
+
+    public int indexOf(View view) {
+        return getPanel().getWidgetIndex(view);
     }
-    
+
     public int indexOf(String name) {
         ComplexPanel panel = getPanel();
         int cnt = panel.getWidgetCount();
-        for (int i=0; i<cnt; i++) {
-            Item item = (Item)panel.getWidget(i);
-            if (name.equals(item.getName())) {
+        for (int i = 0; i < cnt; i++) {
+            View view = (View) panel.getWidget(i);
+            if (name.equals(view.getName())) {
                 return i;
             }
-        }        
-        return -1;        
+        }
+        return -1;
     }
-    
-    public Item findItem(String name) {
+
+    public View findView(String name) {
         ComplexPanel panel = getPanel();
         int cnt = panel.getWidgetCount();
-        for (int i=0; i<cnt; i++) {
-            Item item = (Item)panel.getWidget(i);
-            if (name.equals(item.getName())) {
-                return item;
+        for (int i = 0; i < cnt; i++) {
+            View view = (View) panel.getWidget(i);
+            if (name.equals(view.getName())) {
+                return view;
             }
-        }        
+        }
         return null;
     }
-    
-    public Item getItem(int index) {
-        return (Item)getPanel().getWidget(index);
+
+    public View getView(int index) {
+        return (View) getPanel().getWidget(index);
     }
-    
-    public int getItemsCount() {
+
+    public int getViewsCount() {
         return getPanel().getWidgetCount();
     }
-    
-    public Item[] getItems() {
+
+    public View[] getViews() {
         ComplexPanel panel = getPanel();
-        Item[] items = new Item[panel.getWidgetCount()];
-        for (int i=0; i<items.length; i++) {
-            items[i] = (Item)panel.getWidget(i);
+        View[] views = new View[panel.getWidgetCount()];
+        for (int i = 0; i < views.length; i++) {
+            views[i] = (View) panel.getWidget(i);
         }
-        return items;
+        return views;
     }
-    
+
     public void refresh() {
         ComplexPanel panel = getPanel();
-        for (int i=0, cnt=panel.getWidgetCount(); i<cnt; i++) {
+        for (int i = 0, cnt = panel.getWidgetCount(); i < cnt; i++) {
             Widget w = panel.getWidget(i);
             if (w.isVisible()) {
-                ((Item)w).refresh();
+                ((View) w).refresh();
             }
         }
     }
 
 }
-

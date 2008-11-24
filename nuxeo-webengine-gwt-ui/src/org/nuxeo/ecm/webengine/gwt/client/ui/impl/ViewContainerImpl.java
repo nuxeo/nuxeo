@@ -24,8 +24,8 @@ import org.nuxeo.ecm.webengine.gwt.client.Extensible;
 import org.nuxeo.ecm.webengine.gwt.client.Framework;
 import org.nuxeo.ecm.webengine.gwt.client.UI;
 import org.nuxeo.ecm.webengine.gwt.client.ui.ExtensionPoints;
-import org.nuxeo.ecm.webengine.gwt.client.ui.Item;
-import org.nuxeo.ecm.webengine.gwt.client.ui.ItemStack;
+import org.nuxeo.ecm.webengine.gwt.client.ui.View;
+import org.nuxeo.ecm.webengine.gwt.client.ui.ViewStack;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
@@ -34,7 +34,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ViewContainerImpl extends ItemStack implements Extensible,
+public class ViewContainerImpl extends ViewStack implements Extensible,
         ContextListener {
     
     
@@ -56,12 +56,12 @@ public class ViewContainerImpl extends ItemStack implements Extensible,
     
     public void registerExtension(String target, Object extension, int type) {
         if (ExtensionPoints.VIEWS_XP.equals(target)) {
-            if (extension instanceof Item) {
-                Item item = (Item)extension;
+            if (extension instanceof View) {
+                View item = (View)extension;
                 add(item);
             } else if (extension instanceof Widget) {
                 Widget w = (Widget)extension;
-                getStackPanel().add(w, Item.getHeaderString(w.getTitle(), UI.getEmptyImage()), true); 
+                getStackPanel().add(w, View.getHeaderString(w.getTitle(), UI.getEmptyImage()), true); 
             } else {
                 GWT.log("Extension is not a widget. Ignoring", null);
             }

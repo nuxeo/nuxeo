@@ -19,26 +19,42 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui;
 
-import com.google.gwt.user.client.ui.Widget;
 
 /**
- * A view is an item that may switch in a busy state.
+ * An item container which is showing only one item at a time.
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class View extends Item {
+public abstract class StackedViewContainer extends ViewContainer {
 
-    public View(String name) {
+
+    public StackedViewContainer(String name) {
         super(name);
     }
     
-    public View(String name, Widget widget) {
-        super(name, widget); 
+    public abstract int getSelectedIndex();
+
+    
+    public abstract void selectView(int index);
+
+    public View getSelectedView() {
+        return (View)getPanel().getWidget(getSelectedIndex());
     }
-   
-    public abstract boolean acceptInput(Object input);
     
-    public abstract void setInput(Object input);
-    
+    public void selectView(View view) {
+        int i = indexOf(view);
+        if (i > -1) {
+            selectView(i);
+        }
+    }
+
+    public void selectView(String name) {
+        int i = indexOf(name);
+        if (i > -1) {
+            selectView(i);
+        }        
+    }
+            
 }
+

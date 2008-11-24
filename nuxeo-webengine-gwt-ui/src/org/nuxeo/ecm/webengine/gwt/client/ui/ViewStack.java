@@ -26,16 +26,16 @@ import com.google.gwt.user.client.ui.StackPanel;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ItemStack extends StackedItemContainer {
+public class ViewStack extends StackedViewContainer {
 
-    public ItemStack(String name) {
+    public ViewStack(String name) {
         super(name);
     }
     
     @Override
     protected ComplexPanel createPanel() {
         StackPanel stackPanel = new StackPanel();
-        stackPanel.ensureDebugId("itemStackPanel");
+        stackPanel.ensureDebugId("viewStackPanel");
         stackPanel.setSize("100%", "100%");
         return stackPanel;
     }
@@ -50,27 +50,27 @@ public class ItemStack extends StackedItemContainer {
     }
 
     @Override
-    public void selectItem(int index) {
+    public void selectView(int index) {
         getStackPanel().showStack(index);
     }
 
     @Override
-    public void add(Item item) {
-        getStackPanel().add(item, item.getHeader(), true);
+    public void add(View view) {
+        getStackPanel().add(view, view.getHeader(), true);
     }
     
     @Override
-    public void insert(Item item, int beforeIndex) {
+    public void insert(View view, int beforeIndex) {
         StackPanel panel = getStackPanel();
-        panel.insert(item, beforeIndex);
-        panel.setStackText(beforeIndex, item.getHeader(), true);
+        panel.insert(view, beforeIndex);
+        panel.setStackText(beforeIndex, view.getHeader(), true);
     }
 
     @Override
     public void refresh() {
-        Item item = getSelectedItem();
-        if (item != null) {
-            item.refresh();
+        View view = getSelectedView();
+        if (view != null) {
+            view.refresh();
         }
     }
 

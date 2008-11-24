@@ -20,7 +20,7 @@
 package org.nuxeo.ecm.webengine.gwt.test.client;
 
 import org.nuxeo.ecm.webengine.gwt.client.UI;
-import org.nuxeo.ecm.webengine.gwt.client.ui.Item;
+import org.nuxeo.ecm.webengine.gwt.client.ui.View;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -32,7 +32,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TestView extends Item {
+public class TestView extends View {
 
     public TestView() {
         super("dummy");

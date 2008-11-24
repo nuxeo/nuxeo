@@ -20,7 +20,7 @@
 package org.nuxeo.ecm.webengine.gwt.test.client;
 
 
-import org.nuxeo.ecm.webengine.gwt.client.ui.Item;
+import org.nuxeo.ecm.webengine.gwt.client.ui.View;
 
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -29,7 +29,7 @@ import com.google.gwt.user.client.ui.Label;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TestExtension extends Item {
+public class TestExtension extends View {
 
     public TestExtension() {
         super("testExt", new Label("Test Extension!"));

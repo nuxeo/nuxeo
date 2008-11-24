@@ -23,8 +23,8 @@ import org.nuxeo.ecm.webengine.gwt.client.ContextListener;
 import org.nuxeo.ecm.webengine.gwt.client.Extensible;
 import org.nuxeo.ecm.webengine.gwt.client.Framework;
 import org.nuxeo.ecm.webengine.gwt.client.ui.ExtensionPoints;
-import org.nuxeo.ecm.webengine.gwt.client.ui.ItemDeck;
-import org.nuxeo.ecm.webengine.gwt.client.ui.View;
+import org.nuxeo.ecm.webengine.gwt.client.ui.ViewDeck;
+import org.nuxeo.ecm.webengine.gwt.client.ui.Editor;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.DeckPanel;
@@ -33,7 +33,7 @@ import com.google.gwt.user.client.ui.DeckPanel;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class EditorContainerImpl extends ItemDeck implements Extensible, ContextListener {
+public class EditorContainerImpl extends ViewDeck implements Extensible, ContextListener {
     
     
     public EditorContainerImpl() {
@@ -55,7 +55,7 @@ public class EditorContainerImpl extends ItemDeck implements Extensible, Context
     public void registerExtension(String target, Object extension, int type) {
         if (ExtensionPoints.EDITORS_XP.equals(target)) {
             DeckPanel panel = getDeckPanel();
-            View editor = (View)extension;
+            Editor editor = (Editor)extension;
             panel.add(editor);    
         } else if (ExtensionPoints.EDITORS_XP.equals(target)) {
             GWT.log("Unknown extension point: "+target, null);            

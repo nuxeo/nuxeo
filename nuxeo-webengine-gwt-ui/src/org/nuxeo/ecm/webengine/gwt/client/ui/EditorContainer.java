@@ -26,9 +26,9 @@ import com.google.gwt.user.client.ui.HTML;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ObjectViewManager extends ItemDeck {
+public class EditorContainer extends ViewDeck {
 
-    public ObjectViewManager() {
+    public EditorContainer() {
         super("editorContainer");
     }
     
@@ -36,7 +36,7 @@ public class ObjectViewManager extends ItemDeck {
         DeckPanel panel = getDeckPanel();
         int cnt = panel.getWidgetCount();
         for (int i=0; i<cnt; i++) {
-            View view = (View)panel.getWidget(i); 
+            Editor view = (Editor)panel.getWidget(i); 
             if (view.acceptInput(input)) {
                 view.setInput(input);
                 return;
@@ -50,7 +50,7 @@ public class ObjectViewManager extends ItemDeck {
     }
     
     @Override
-    public void add(Item item) {
+    public void add(View item) {
         // we need to make sure the last item is always the default one 
         DeckPanel panel = getDeckPanel();
         if (panel.getWidget(panel.getWidgetCount()-1) instanceof DefaultView) {
@@ -61,7 +61,7 @@ public class ObjectViewManager extends ItemDeck {
     }
 
     @Override
-    public void insert(Item item, int beforeIndex) {
+    public void insert(View item, int beforeIndex) {
         DeckPanel panel = getDeckPanel();
         if (beforeIndex >= panel.getWidgetCount()) {
             if (panel.getWidget(panel.getWidgetCount()-1) instanceof DefaultView) {
@@ -71,7 +71,7 @@ public class ObjectViewManager extends ItemDeck {
         panel.insert(item, beforeIndex);
     }
     
-    static class DefaultView extends View {
+    static class DefaultView extends Editor {
         public DefaultView() {
             super("_default_", new HTML());
         }
