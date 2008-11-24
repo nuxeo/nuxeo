@@ -26,6 +26,10 @@ package org.nuxeo.ecm.webengine.gwt.client;
  * To create new application bundles we should extends this interface and add 
  * describe which extension and extension points must be included in the bundle.  
  * 
+ * When deploying extensions through bundles it will automatically handle ordering hints 
+ * so the target extension point may ignore hints..  (only collection oriented hints are handled. 
+ * (REPLACE and AS_DEFAULT are not)
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */

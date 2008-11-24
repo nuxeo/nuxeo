@@ -66,6 +66,7 @@ public class UI implements EntryPoint {
     }
 
     public static void openInEditor(Object input) {
+        System.out.println("weeeeeeeeeeeeeeeeeeeeee");
         ((UIApplication)Framework.getApplication()).openInEditor(input);
     }
 

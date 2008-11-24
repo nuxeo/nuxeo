@@ -38,7 +38,7 @@ public class Framework {
     public static final String APPLICATION_XP = "APPLICATION";
     
     protected static Map<String, Extensible> extensionPoints = new HashMap<String, Extensible>();
-    protected static Map<String, List<Object[]>> waitingExtensions = new HashMap<String, List<Object[]>>();
+    protected static Map<String, List<Object>> waitingExtensions = new HashMap<String, List<Object>>();
     protected static Application application;
     protected static ErrorHandler errorHandler;
     protected static String basePath = null;
@@ -74,34 +74,27 @@ public class Framework {
     
     public static void registerExtensionPoint(String name, Extensible extensible) {
         extensionPoints.put(name, extensible);
-        List<Object[]> list = waitingExtensions.remove(name);
+        List<Object> list = waitingExtensions.remove(name);
         if (list != null) {
-            for (Object[] entry : list) {
-                extensible.registerExtension(name.toString(), entry[0], ((Integer)entry[1]).intValue());
+            for (Object entry : list) {
+                extensible.registerExtension(name.toString(), entry);
             }
         }
     }
     
     public static void registerExtension(String extensionPoint, Object extension) {
-        registerExtension(extensionPoint, extension, Extension.APPEND);
-    }
-
-    public static void registerExtension(String extensionPoint, Object extension, int mode) {
         Extensible xp = extensionPoints.get(extensionPoint);
         if (xp != null) {
-            xp.registerExtension(extensionPoint, extension, mode);
+            xp.registerExtension(extensionPoint, extension);
         } else if (APPLICATION_XP.equals(extensionPoint)) {
-            if (mode == Extension.ADD_IF_NOT_EXISTS && application != null) {
-                return;
-            }
             application =  (Application)extension;
         } else {
-            List<Object[]> list = waitingExtensions.get(extensionPoint);
+            List<Object> list = waitingExtensions.get(extensionPoint);
             if (list == null) {
-                list = new ArrayList<Object[]>();
+                list = new ArrayList<Object>();
                 waitingExtensions.put(extensionPoint, list);
             }
-            list.add(new Object[] {extension, new Integer(mode)});
+            list.add(extension);
             GWT.log("Postpone extension registration for: "+extensionPoint, null);
         }
     }
