@@ -111,7 +111,8 @@ NXThemesWebWidgets.WebWidget.prototype = {
      var uid = this.id;
      var metas = this.metas;
      var mode = widget_mode.split('/')[0];
-
+     
+     html = html.replace(/%BASE_PATH%/g, webEngineContextPath);
      html = html.replace(/%WIDGET_BODY%/g, this._body);
      html = html.replace(/%ICON_AREA%/g, 'webwidget_' + uid + '_icon');
      html = html.replace(/%TITLE_AREA%/g, 'webwidget_' + uid + '_title');

@@ -57,7 +57,7 @@ public class TestManager extends NXRuntimeTestCase {
     public void testInitializeWidget() {
         WidgetType widgetType = Manager.getWidgetType("test widget");
 
-        assertEquals("/nuxeo/nxthemes-web-widgets/samples/widget-icon.png",
+        assertEquals("/skin/nxthemes-webwidgets/samples/widget-icon.png",
                 widgetType.getIcon());
 
         assertEquals("content", widgetType.getBody());

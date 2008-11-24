@@ -50,7 +50,7 @@ public class Manager {
             return null;
         }
     }
-
+    
     public static ProviderType getProviderType(String name) {
         return getService().getProviderType(name);
     }

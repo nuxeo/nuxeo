@@ -23,12 +23,21 @@ NXThemesWebWidgets.init = function() {
     var decoration = model.decoration;
     var mode = model.mode;
 
-    Seam.Component.getInstance("nxthemesWebWidgetManager").getPanelData(
-      provider, region, mode, function(r) {
-        var panel_data = r.evalJSON(true);
-        var container = panel.parentNode;
-        NXThemesWebWidgets.renderPanel(provider, decoration, container, panel_data);
-        container.removeChild(panel);
+    var url = webEngineContextPath + "/nxthemes-webwidgets/get_panel_data";
+    new Ajax.Request(url, {
+         method: 'get',
+         parameters: {
+             'provider': provider,
+             'region': region,
+             'mode': mode
+         },
+         onComplete: function(r) {
+             var text = r.responseText;
+             var panel_data = r.evalJSON(true);
+             var container = panel.parentNode;
+             NXThemesWebWidgets.renderPanel(provider, decoration, container, panel_data);
+             container.removeChild(panel);
+         }
     });
 
   });
@@ -36,18 +45,5 @@ NXThemesWebWidgets.init = function() {
 
 
 // Initialization
-Seam.Remoting.displayLoadingMessage = function() {};
-Seam.Remoting.hideLoadingMessage = function() {};
-
-// TODO remove later by registering a /seam/remoting/interface.js?nxthemesWebWidgetManager resource.
-Seam.Remoting.type.nxthemesWebWidgetManager = function() {
-  this.__callback = new Object();
-  Seam.Remoting.type.nxthemesWebWidgetManager.prototype.getPanelData = function(p0, p1, p2, callback) {
-    return Seam.Remoting.execute(this, "getPanelData", [p0, p1, p2], callback);
-  }
-}
-Seam.Remoting.type.nxthemesWebWidgetManager.__name = "nxthemesWebWidgetManager";
-Seam.Component.register(Seam.Remoting.type.nxthemesWebWidgetManager);
-
 
 Event.observe(window, "load", NXThemesWebWidgets.init);

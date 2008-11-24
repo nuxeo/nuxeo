@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.webwidgets;
 
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.session.AbstractComponent;
 
@@ -23,11 +24,13 @@ public class SessionManager extends AbstractComponent {
 
     private static String WIDGET_CATEGORY = "org.nuxeo.theme.widget_category";
 
-    public static synchronized void setWidgetCategory(WebContext ctx, String id) {
+    public static synchronized void setWidgetCategory(String id) {
+        WebContext ctx = WebEngine.getActiveContext();
         ctx.getUserSession().put(WIDGET_CATEGORY, id);
     }
 
-    public static synchronized String getWidgetCategory(WebContext ctx) {
+    public static synchronized String getWidgetCategory() {
+        WebContext ctx = WebEngine.getActiveContext();
         return (String) ctx.getUserSession().get(WIDGET_CATEGORY);
     }
 

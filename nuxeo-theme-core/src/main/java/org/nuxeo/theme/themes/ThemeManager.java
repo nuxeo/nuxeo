@@ -345,9 +345,8 @@ public final class ThemeManager implements Registrable {
         namedObjects.remove(themeName);
     }
 
-    public void makeElementUseNamedStyle(final String id,
+    public void makeElementUseNamedStyle(final Element element,
             final String inheritedName, final String currentThemeName) {
-        final Element element = ThemeManager.getElementById(id);
         final FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(
                 TypeFamily.FORMAT, "style");
         Style style = (Style) ElementFormatter.getFormatByType(element,

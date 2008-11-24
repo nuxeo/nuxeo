@@ -16,11 +16,11 @@
 
     <td class="nxthemesWebWidgetFactoryPanelStrip">
       <div id="nxthemesWebWidgetFactoryPanelStripOpen">
-        <img src="/nuxeo/site/files/nxthemes-webwidgets/img/strip-open.png"
+        <img src="${basePath}/skin/nxthemes-webwidgets/img/strip-open.png"
                  onclick="NXThemesWebWidgets.openFactoryPanel()" />
       </div>
       <div id="nxthemesWebWidgetFactoryPanelStripClose" style="display: none">
-        <img src="/nuxeo/site/files/nxthemes-webwidgets/img/strip-close.png"
+        <img src="${basePath}/skin/nxthemes-webwidgets/img/strip-close.png"
                 onclick="NXThemesWebWidgets.closeFactoryPanel()" />
       </div>
     </td>

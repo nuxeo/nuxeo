@@ -2,7 +2,7 @@
 <div class="nxthemesWebWidgetFactoryBox">
 
   <div class="header">
-    <a style="float: right" href="javascript: NXThemesWebWidgets.exit()"><img src="/nuxeo/site/files/nxthemes-web-widgets/img/close.png" width="16" height="16" /></a>
+    <a style="float: right" href="javascript: NXThemesWebWidgets.exit()"><img src="${skinPath}/img/close.png" width="16" height="16" /></a>
      <span>Web widgets</span>
     <form action="javascript:void(0)" submit="return false" style="margin: 0; padding: 8px 0">
 

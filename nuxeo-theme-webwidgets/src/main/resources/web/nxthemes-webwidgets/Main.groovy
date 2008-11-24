@@ -5,6 +5,7 @@ import javax.ws.rs.*
 import javax.ws.rs.core.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import net.sf.json.JSONObject
 import org.nuxeo.ecm.core.rest.*
 import org.nuxeo.ecm.webengine.model.*
 import org.nuxeo.ecm.webengine.model.impl.*
@@ -62,9 +63,41 @@ public class Main extends DefaultModule {
         org.nuxeo.theme.webwidgets.Manager.moveWidget(srcProviderName, destProviderName, srcUid, srcRegionName, destRegionName, destOrder)
     }
 
+    @GET @POST
+    @Path("remove_widget")
+    public void removeWidget(@QueryParam("provider") String providerName, @QueryParam("widget_uid") String widgetUid) {
+        org.nuxeo.theme.webwidgets.Manager.removeWidget(providerName, widgetUid)
+    }
+    
+    @GET @POST
+    @Path("set_widget_state")
+    public void setWidgetState(@QueryParam("provider") String providerName, @QueryParam("widget_uid") String widgetUid, @QueryParam("state") String state) {
+        org.nuxeo.theme.webwidgets.Manager.setWidgetState(providerName, widgetUid, state)
+    }
+    
+    @GET @POST
+    @Path("set_widget_category")
+    public void setWidgetCategory(@QueryParam("category") String category) {
+        SessionManager.setWidgetCategory(category)
+    }
+    
+    @GET @POST
+    @Path("get_widget_data_info")
+    public String getWidgetDataInfo(@QueryParam("provider") String providerName, @QueryParam("widget_uid") String widgetUid, @QueryParam("name") String dataName) {
+        return org.nuxeo.theme.webwidgets.Manager.getWidgetDataInfo(providerName,  widgetUid, dataName)
+    }
+    
+    @GET @POST
+    @Path("update_widget_preferences")
+    public void updateWidgetPreferences(@QueryParam("provider") String providerName, @QueryParam("widget_uid") String widgetUid, @QueryParam("preferences") String preferences_map) {
+        Map preferencesMap = JSONObject.fromObject(preferences_map)
+        org.nuxeo.theme.webwidgets.Manager.updateWidgetPreferences(providerName, widgetUid, preferencesMap)
+    }
+    
+    /* API */
+  
     public static String getSelectedWidgetCategory() {
-        def ctx = WebEngine.getActiveContext()
-        String category = SessionManager.getWidgetCategory(ctx)
+        String category = SessionManager.getWidgetCategory()
         if (category == null) {
             category = ""
         }

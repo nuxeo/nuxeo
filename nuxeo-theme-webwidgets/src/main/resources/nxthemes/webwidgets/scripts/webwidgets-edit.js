@@ -310,25 +310,33 @@ NXThemesWebWidgets.ImageUploader.prototype = Object.extend(new NXThemesWebWidget
     var name = this.name;
     var providerName = this.providerName;
     var widgetUid = this.widgetUid;
-    Seam.Component.getInstance("nxthemesWebWidgetManager").getWidgetDataInfo(providerName, widgetUid, name, function(r) {
-      if (r) {
-        var info = r.evalJSON(true);
-        var now = new Date().getTime();
-        var src = '/nuxeo/nxthemes-webwidgets-data/?widget=' + encodeURIComponent(widgetUid) +
-           '&data=' + encodeURIComponent(name) + '&provider=' + encodeURIComponent(providerName) +
-           '&timestamp=' + now;
-        controlEl.innerHTML = '<div><img src="' + src + '" /></div>' +
-           info['filename'] + ' (' + info['content-type'] + ')' +
-           '<input type="hidden" name="' + name + '" value="' + src + '" />';
-      } else {
-        controlEl.innerHTML = '<img src="/nuxeo/site/files/nxthemes-webwidgets/img/exclamation.png" />';
-      }
-      controlEl.show();
-      boxEl.hide();
-    });
-
-  }
-
+    var url = webEngineContextPath + "/nxthemes-webwidgets/get_widget_data_info";
+    new Ajax.Request(url, {
+         method: 'get',
+         parameters: {
+             'provider': providerName,
+             'widget_uid': widgetUid,
+             'name': name
+         },
+         onComplete: function(r) {
+           var text = r.responseText;
+           if (text) {
+             var info = text.evalJSON(true);
+             var now = new Date().getTime();
+             var src = '/nuxeo/nxthemes-webwidgets-data/?widget=' + encodeURIComponent(widgetUid) +
+               '&data=' + encodeURIComponent(name) + '&provider=' + encodeURIComponent(providerName) +
+               '&timestamp=' + now;
+             controlEl.innerHTML = '<div><img src="' + src + '" /></div>' +
+               info['filename'] + ' (' + info['content-type'] + ')' +
+               '<input type="hidden" name="' + name + '" value="' + src + '" />';
+           } else {
+               controlEl.innerHTML = '<img src="/nuxeo/site/files/nxthemes-webwidgets/img/exclamation.png" />';
+           }
+           controlEl.show();
+           boxEl.hide();
+         }
+      });
+    }
 });
 
 NXThemesWebWidgets.FileUploader = Class.create();
@@ -363,30 +371,38 @@ NXThemesWebWidgets.FileUploader.prototype = Object.extend(new NXThemesWebWidgets
     var name = this.name;
     var providerName = this.providerName;
     var widgetUid = this.widgetUid;
-    Seam.Component.getInstance("nxthemesWebWidgetManager").getWidgetDataInfo(providerName, widgetUid, name, function(r) {
-      if (r) {
-        var info = r.evalJSON(true);
-        var now = new Date().getTime();
-        var src = '/nuxeo/nxthemes-webwidgets-data/?widget=' + encodeURIComponent(widgetUid) +
-           '&data=' + encodeURIComponent(name) + '&provider=' + encodeURIComponent(providerName) +
-           '&timestamp=' + now;
-        controlEl.innerHTML = info['filename'] + ' (' + info['content-type'] + ')' +
-           '<input type="hidden" name="' + name + '" value="' + src + '" />';
-      } else {
-        controlEl.innerHTML = '<img src="/nuxeo/site/files/nxthemes-webwidgets/img/exclamation.png" />';
-      }
-      controlEl.show();
-      boxEl.hide();
-    });
-
+    var url = webEngineContextPath + "/nxthemes-webwidgets/get_widget_data_info";
+    new Ajax.Request(url, {
+         method: 'get',
+         parameters: {
+             'provider': providerName,
+             'widget_uid': widgetUid,
+             'name': name
+         },
+         onComplete: function(r) {
+           var text = r.responseText;
+           if (text) {
+             var info = text.evalJSON(true);
+             var now = new Date().getTime();
+             var src = '/nuxeo/nxthemes-webwidgets-data/?widget=' + encodeURIComponent(widgetUid) +
+                '&data=' + encodeURIComponent(name) + '&provider=' + encodeURIComponent(providerName) +
+                '&timestamp=' + now;
+             controlEl.innerHTML = info['filename'] + ' (' + info['content-type'] + ')' +
+               '<input type="hidden" name="' + name + '" value="' + src + '" />';
+          } else {
+             controlEl.innerHTML = '<img src="/nuxeo/site/files/nxthemes-webwidgets/img/exclamation.png" />';
+          }
+          controlEl.show();
+          boxEl.hide();
+        }
+     });
   }
-
 });
 
 NXThemesWebWidgets.changePreferences = function(info) {
   Event.stop(info);
   var form = Event.findElement(info, "form");
-  var preferences = new Seam.Remoting.Map();
+  var preferencesMap = $H();
   var widgetUid = form.getAttribute("widget_uid");
   var widget = NXThemesWebWidgets.getWidgetById(widgetUid);
   var providerName = widget.getProviderName();
@@ -399,7 +415,7 @@ NXThemesWebWidgets.changePreferences = function(info) {
        if (type == 'checkbox') {
          value = value == 'on' ? 'true' : 'false';
        }
-       preferences.put(name, value);
+       preferencesMap.set(name, value);
        widget.setValue(name, value);
      }
   });
@@ -410,7 +426,7 @@ NXThemesWebWidgets.changePreferences = function(info) {
          parameters: {
              'provider': providerName,
              'widget_uid': widgetUid,
-             'preferences': preferences.toJSON()
+             'preferences': preferencesMap.toJSON()
          },
          onComplete: function(r) {
            widget.draw();

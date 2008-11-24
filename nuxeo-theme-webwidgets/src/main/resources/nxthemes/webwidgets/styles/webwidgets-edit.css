@@ -8,7 +8,7 @@
 
 .nxthemesWebWidgetFactoryPanelStrip {
   width: 7px;
-  background: url(/nuxeo/site/files/nxthemes-webwidgets/img/strip-bg.png) repeat-y;
+  background: url(/skin/nxthemes-webwidgets/img/strip-bg.png) repeat-y;
 }
 
 #nxthemesWebWidgetFactoryPanelStripOpen {
@@ -37,7 +37,7 @@
   font: bold 11px Arial, sans-serif;
   padding: 5px;
   border-bottom: 1px dotted #336;
-  background: #f3f0f0 url(/nuxeo/site/files/nxthemes-webwidgets/img/panel-bg.png) repeat-x;
+  background: #f3f0f0 url(/skin/nxthemes-webwidgets/img/panel-bg.png) repeat-x;
 }
 
 .nxthemesWebWidgetFactoryBox ul.body {

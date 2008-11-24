@@ -41,7 +41,6 @@
     <resource name="nxthemes-webwidgets-view.js">
       <path>nxthemes/webwidgets/scripts/webwidgets-view.js</path>
       <require>nxthemes-webwidgets-base.js</require>
-      <require>seam-remote.js</require>
     </resource>
 
     <resource name="nxthemes-webwidgets-edit.js">
@@ -49,7 +48,6 @@
       <require>nxthemes-webwidgets-view.js</require>
       <require>nxthemes-widgets.js</require>
       <require>nxthemes-controllers.js</require>
-      <require>seam-remote.js</require>
     </resource>
 
     <resource name="nxthemes-webwidgets-edit.css">
@@ -215,12 +213,12 @@
             </span>
             <span onclick="%ACTION_SHADE_WINDOW%">
               <img
-                src="/nuxeo/site/nxthemes/webwidgets/img/window-shade.png"
+                src="%BASE_PATH%/skin/nxthemes-webwidgets/img/window-shade.png"
                 width="16" height="16" />
             </span>
             <span onclick="%ACTION_DELETE_WIDGET%">
               <img
-                src="/nuxeo/site/nxthemes/webwidgets/img/window-close.png"
+                src="%BASE_PATH%/skin/nxthemes-webwidgets/img/window-close.png"
                 width="16" height="16" />
             </span>
           </div>
@@ -243,12 +241,12 @@
           <div class="nxthemesDefaultWebWidgetActions">
             <span onclick="%ACTION_UNSHADE_WINDOW%">
               <img
-                src="/nuxeo/site/nxthemes/webwidgets/img/window-unshade.png"
+                src="%BASE_PATH%/skin/nxthemes-webwidgets/img/window-unshade.png"
                 width="16" height="16" />
             </span>
             <span onclick="%ACTION_DELETE_WIDGET%">
               <img
-                src="/nuxeo/site/nxthemes/webwidgets/img/window-close.png"
+                src="%BASE_PATH%/skin/nxthemes-webwidgets/img/window-close.png"
                 width="16" height="16" />
             </span>
           </div>
@@ -285,12 +283,12 @@
             </span>
             <span onclick="%ACTION_SHADE_WINDOW%">
               <img
-                src="/nuxeo/site/nxthemes/webwidgets/img/window-shade.png"
+                src="%BASE_PATH%/skin/nxthemes-webwidgets/img/window-shade.png"
                 width="16" height="16" />
             </span>
             <span onclick="%ACTION_DELETE_WIDGET%">
               <img
-                src="/nuxeo/site/nxthemes/webwidgets/img/window-close.png"
+                src="%BASE_PATH%/skin/nxthemes-webwidgets/img/window-close.png"
                 width="16" height="16" />
             </span>
           </div>
@@ -308,12 +306,12 @@
           <div class="nxthemesFramelessWebWidgetActions">
             <span onclick="%ACTION_UNSHADE_WINDOW%">
               <img
-                src="/nuxeo/site/nxthemes/webwidgets/img/window-unshade.png"
+                src="%BASE_PATH%/skin/nxthemes-webwidgets/img/window-unshade.png"
                 width="16" height="16" />
             </span>
             <span onclick="%ACTION_DELETE_WIDGET%">
               <img
-                src="/nuxeo/site/nxthemes/webwidgets/img/window-close.png"
+                src="%BASE_PATH%/skin/nxthemes-webwidgets/img/window-close.png"
                 width="16" height="16" />
             </span>
           </div>

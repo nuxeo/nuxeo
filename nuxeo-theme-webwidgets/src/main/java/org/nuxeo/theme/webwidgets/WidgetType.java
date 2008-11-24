@@ -44,7 +44,7 @@ public final class WidgetType {
 
     private String thumbnail = "";
 
-    private String icon = "/nuxeo/nxthemes-web-widgets/icons/default-widget.png";
+    private String icon = "/skin/nxthemes-webwidgets/icons/default-widget.png";
 
     private String source;
 

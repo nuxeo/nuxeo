@@ -5,6 +5,11 @@
          <#if Document??>${Document['dc:title']}<#else>NXThemes WebEngine</#if>
        </@block>
     </title>
+    
+    <script type="text/javascript"><!-- 
+      var webEngineContextPath = "${basePath}";
+    //--></script>
+    
     <@nxthemes_head />
     <@nxthemes_resources />
     
