@@ -54,7 +54,7 @@ public class ViewContainerImpl extends ViewStack implements Extensible,
         UI.removeContextListener(this);
     }
     
-    public void registerExtension(String target, Object extension, int type) {
+    public void registerExtension(String target, Object extension) {
         if (ExtensionPoints.VIEWS_XP.equals(target)) {
             if (extension instanceof View) {
                 View item = (View)extension;

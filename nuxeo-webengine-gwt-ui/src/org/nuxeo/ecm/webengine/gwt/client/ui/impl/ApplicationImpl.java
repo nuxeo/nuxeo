@@ -130,7 +130,7 @@ public class ApplicationImpl extends UIApplication implements Extensible, Extens
         getViewContainer().selectView(name);
     }
     
-    public void registerExtension(String target, Object extension, int mode) {
+    public void registerExtension(String target, Object extension) {
         if (VIEW_CONTAINER_XP.equals(target) ) {
             setViewContainer((StackedViewContainer)extension);
         } else if (EDITOR_CONTAINER_XP.equals(target)) {

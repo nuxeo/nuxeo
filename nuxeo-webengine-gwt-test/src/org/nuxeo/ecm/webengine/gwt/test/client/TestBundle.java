@@ -33,13 +33,13 @@ import org.nuxeo.ecm.webengine.gwt.client.ui.impl.DefaultApplicationBundle;
 public interface TestBundle extends ApplicationBundle {
 
 
-    @Extension(targets=ExtensionPoints.VIEWS_XP)
+    @Extension(targets=ExtensionPoints.VIEWS_XP, hint=1000)
     public TestView testView();
 
     @Extension(targets=ExtensionPoints.VIEWS_XP)
     public TestExtension testExtension();
 
-    @Extension(targets=ExtensionPoints.VIEWS_XP)
+    @Extension(targets=ExtensionPoints.VIEWS_XP, hint=100)
     public TestNavigator testNavigator();
 
 }
