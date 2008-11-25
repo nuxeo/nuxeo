@@ -16,10 +16,17 @@ package org.nuxeo.theme.webwidgets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
@@ -50,7 +57,7 @@ public class Manager {
             return null;
         }
     }
-    
+
     public static ProviderType getProviderType(String name) {
         return getService().getProviderType(name);
     }
@@ -65,6 +72,20 @@ public class Manager {
 
     public static WidgetType getWidgetType(String widgetTypeName) {
         return getService().getWidgetType(widgetTypeName);
+    }
+
+    public static String getWidgetDecoration(String decorationName) {
+        final Map<String, String> data = new HashMap<String, String>();
+        final DecorationType decorationType = Manager.getDecorationType(decorationName);
+        if (decorationType != null) {
+            for (String mode : decorationType.getWindowDecorationModes()) {
+                data.put(mode,
+                        decorationType.getWidgetDecoration(mode).getContent());
+            }
+        } else {
+            log.error("Decoration not found: " + decorationName);
+        }
+        return org.nuxeo.theme.html.Utils.toJson(data);
     }
 
     public static String addPanelDecoration(String decorationName, String mode,
@@ -261,6 +282,47 @@ public class Manager {
         return null;
     }
 
+    public static String uploadFile(HttpServletRequest request,
+            String providerName, String uid, String dataName) {
+        DiskFileItemFactory factory = new DiskFileItemFactory();
+        ServletFileUpload upload = new ServletFileUpload(factory);
+        List<?> fileItems = null;
+        try {
+            fileItems = upload.parseRequest(request);
+        } catch (FileUploadException e) {
+            log.error("Could not upload file", e);
+        }
+        if (fileItems == null) {
+            log.error("No file upload found.");
+            return "";
+        }
+        WidgetData data = null;
+        Iterator<?> it = fileItems.iterator();
+        if (it.hasNext()) {
+            FileItem fileItem = (FileItem) it.next();
+            if (!fileItem.isFormField()) {
+                /* The file item contains an uploaded file */
+                final String contentType = fileItem.getContentType();
+                final byte[] fileData = fileItem.get();
+                final String filename = fileItem.getName();
+                data = new WidgetData(contentType, filename, fileData);
+            }
+        }
+        Manager.setWidgetData(providerName, uid, dataName, data);
+        return String.format(
+                "<script type=\"text/javascript\">window.parent.NXThemesWebWidgets.getUploader('%s', '%s', '%s').complete();</script>",
+                providerName, uid, dataName);
+
+    }
+
+    public static String getWidgetDataContent(String providerName, String uid, String dataName) {
+        WidgetData data = getWidgetData(providerName, uid, dataName);
+        if (data == null) {
+            return "";
+        }
+        return new String(data.getContent());
+    }
+    
     public static String getWidgetDataInfo(String providerName, String uid,
             String dataName) {
         final WidgetData data = getWidgetData(providerName, uid, dataName);

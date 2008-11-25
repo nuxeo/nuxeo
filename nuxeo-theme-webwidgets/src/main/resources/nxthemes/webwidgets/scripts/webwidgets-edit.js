@@ -291,7 +291,7 @@ NXThemesWebWidgets.ImageUploader.prototype = Object.extend(new NXThemesWebWidget
 
      var boxEl = this.boxEl = document.createElement("div");
      var frameName = 'f' + this.widgetUid + '_' + this.name;
-     boxEl.innerHTML = '<form style="padding: 0; margin: 0" action="/nuxeo/nxthemes-webwidgets-file-upload/?widget=' + encodeURIComponent(this.widgetUid) + '&data=' + encodeURIComponent(this.name) + '&provider=' + encodeURIComponent(this.providerName) + '"' +
+     boxEl.innerHTML = '<form style="padding: 0; margin: 0" action="' + webEngineContextPath + '/nxthemes-webwidgets/upload_file?widget_uid=' + encodeURIComponent(this.widgetUid) + '&data=' + encodeURIComponent(this.name) + '&provider=' + encodeURIComponent(this.providerName) + '"' +
        ' method="post" enctype="multipart/form-data" target="' + frameName + '">' +
        '<div><input type="file" name="file" /><input type="submit" value="Upload" /></div></form>';
      boxEl.hide();
@@ -323,14 +323,14 @@ NXThemesWebWidgets.ImageUploader.prototype = Object.extend(new NXThemesWebWidget
            if (text) {
              var info = text.evalJSON(true);
              var now = new Date().getTime();
-             var src = '/nuxeo/nxthemes-webwidgets-data/?widget=' + encodeURIComponent(widgetUid) +
+             var src = webEngineContextPath + '/nxthemes-webwidgets/get_widget_data_content?widget_uid=' + encodeURIComponent(widgetUid) +
                '&data=' + encodeURIComponent(name) + '&provider=' + encodeURIComponent(providerName) +
                '&timestamp=' + now;
              controlEl.innerHTML = '<div><img src="' + src + '" /></div>' +
                info['filename'] + ' (' + info['content-type'] + ')' +
                '<input type="hidden" name="' + name + '" value="' + src + '" />';
            } else {
-               controlEl.innerHTML = '<img src="/nuxeo/site/files/nxthemes-webwidgets/img/exclamation.png" />';
+               controlEl.innerHTML = '<img src="' + webEngineContextPath + '/nxthemes-webwidgets/img/exclamation.png" />';
            }
            controlEl.show();
            boxEl.hide();
@@ -352,7 +352,7 @@ NXThemesWebWidgets.FileUploader.prototype = Object.extend(new NXThemesWebWidgets
 
      var boxEl = this.boxEl = document.createElement("div");
      var frameName = 'f' + this.widgetUid + '_' + this.name;
-     boxEl.innerHTML = '<form style="padding: 0; margin: 0" action="/nuxeo/nxthemes-webwidgets-file-upload/?widget=' + encodeURIComponent(this.widgetUid) + '&data=' + encodeURIComponent(this.name) + '&provider=' + encodeURIComponent(this.providerName) + '"' +
+     boxEl.innerHTML = '<form style="padding: 0; margin: 0" action="' + webEngineContextPath + '/nxthemes-webwidgets/upload_file?widget_uid=' + encodeURIComponent(this.widgetUid) + '&data=' + encodeURIComponent(this.name) + '&provider=' + encodeURIComponent(this.providerName) + '"' +
        ' method="post" enctype="multipart/form-data" target="' + frameName + '">' +
        '<div><input type="file" name="file" /><input type="submit" value="Upload" /></div></form>';
      boxEl.hide();
@@ -384,13 +384,13 @@ NXThemesWebWidgets.FileUploader.prototype = Object.extend(new NXThemesWebWidgets
            if (text) {
              var info = text.evalJSON(true);
              var now = new Date().getTime();
-             var src = '/nuxeo/nxthemes-webwidgets-data/?widget=' + encodeURIComponent(widgetUid) +
+             var src = webEngineContextPath + '/nxthemes-webwidgets/get_widget_data_content?widget_uid=' + encodeURIComponent(widgetUid) +
                 '&data=' + encodeURIComponent(name) + '&provider=' + encodeURIComponent(providerName) +
                 '&timestamp=' + now;
              controlEl.innerHTML = info['filename'] + ' (' + info['content-type'] + ')' +
                '<input type="hidden" name="' + name + '" value="' + src + '" />';
           } else {
-             controlEl.innerHTML = '<img src="/nuxeo/site/files/nxthemes-webwidgets/img/exclamation.png" />';
+             controlEl.innerHTML = '<img src="' + webEngineContextPath + '/nxthemes-webwidgets/img/exclamation.png" />';
           }
           controlEl.show();
           boxEl.hide();

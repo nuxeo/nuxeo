@@ -79,7 +79,7 @@ NXThemesWebWidgets.WebWidget.prototype = {
       widget.decorate(template, widget_mode);
       widget.draw();
     } else {
-      var url = "/nuxeo/nxthemes-webwidgets-decoration/?decoration=" + encodeURIComponent(decoration);
+      var url = webEngineContextPath + "/nxthemes-webwidgets/get_widget_decoration/?decoration=" + encodeURIComponent(decoration);
       var options = {
         method: 'get',
         asynchronous: false,
