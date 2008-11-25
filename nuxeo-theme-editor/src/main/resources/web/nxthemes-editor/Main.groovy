@@ -303,7 +303,7 @@ public class Main extends DefaultModule {
   
   @GET @POST
   @Path("save_theme")
-  public String saveTheme(@QueryParam("src") String src, @QueryParam("indent") String indent ) {
+  public String saveTheme(@QueryParam("src") String src, @QueryParam("indent") int indent ) {
       return Editor.saveTheme(src, indent)
   }
   
