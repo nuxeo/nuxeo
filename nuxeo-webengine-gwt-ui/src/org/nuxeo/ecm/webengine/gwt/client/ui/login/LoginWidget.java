@@ -34,12 +34,10 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class LoginWidget extends Composite implements ClickListener {
 
-    protected LoginView view;
     protected TextBox  userBox;
     protected PasswordTextBox  passBox;
 
-    public LoginWidget(LoginView view) {
-        this.view = view;
+    public LoginWidget() {
         userBox = new TextBox();
         passBox = new PasswordTextBox();
         Button submit = new Button("Login");
@@ -55,7 +53,7 @@ public class LoginWidget extends Composite implements ClickListener {
     }
 
     public void onClick(Widget sender) {
-        view.login(userBox.getText().trim(), passBox.getText());
+        new LoginCommand(userBox.getText().trim(), passBox.getText()).execute();
     }
 
 }

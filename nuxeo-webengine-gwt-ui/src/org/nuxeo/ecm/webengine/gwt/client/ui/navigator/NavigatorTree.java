@@ -1,14 +1,9 @@
 package org.nuxeo.ecm.webengine.gwt.client.ui.navigator;
 
-import org.nuxeo.ecm.webengine.gwt.client.UI;
+import org.nuxeo.ecm.webengine.gwt.client.http.HttpResponse;
+import org.nuxeo.ecm.webengine.gwt.client.ui.HttpCommand;
 import org.nuxeo.ecm.webengine.gwt.client.ui.model.DocumentRef;
 
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
-import com.google.gwt.http.client.URL;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -120,41 +115,9 @@ public class NavigatorTree extends Tree{
 
     }
 
-    public JSONArray updateTree(String path, final TreeItem item){
-        String p = URL.encode(path+"/@json?children=true");
-        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(p));
-        try {
-            RequestCallback callback = new RequestCallback(){
-
-                public void onError(Request request, Throwable exception) {
-                }
-
-                public void onResponseReceived(Request request,
-                        Response response) {
-                    if (200 == response.getStatusCode()) {
-                        // parse the response text into JSON
-                        String text = response.getText();
-                        JSONValue jsonValue = JSONParser.parse(text);
-                        JSONArray jsonArray = jsonValue.isArray();
-                        if (jsonArray != null) {
-                            if ( item == null ){
-                                updateTree(jsonArray);
-                            } else {
-                                updateTree(jsonArray, item);
-                            }
-                        }
-                    } else {
-                        // Handle the error.  Can get the status text from response.getStatusText()
-                    }
-
-                }
-
-            };
-            Request request = builder.sendRequest(null, callback);
-        } catch (RequestException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public void updateTree(String path, final TreeItem item){
+        //TODO the path should be computed by the command
+        new GetChildrenCommand(path+"/@json?children=true", item).execute(); 
     }
 
 
@@ -195,6 +158,33 @@ public class NavigatorTree extends Tree{
         }
 
     };
+
+    class GetChildrenCommand extends HttpCommand {
+        protected TreeItem item;
+        protected String path;
+        public GetChildrenCommand(String path, TreeItem item) {
+            super (null, 100);
+            this.item = item;
+        }
+        @Override
+        protected void doExecute() throws Throwable {
+            get(path+"/@json?children=true").send();            
+        }
+        @Override
+        public void onSuccess(HttpResponse response) {
+            // parse the response text into JSON
+            String text = response.getText();
+            JSONValue jsonValue = JSONParser.parse(text);
+            JSONArray jsonArray = jsonValue.isArray();
+            if (jsonArray != null) {
+                if ( item == null ){
+                    updateTree(jsonArray);
+                } else {
+                    updateTree(jsonArray, item);
+                }
+            }
+        }
+    }
 
 
 }

@@ -19,11 +19,11 @@
 
 package org.nuxeo.ecm.webengine.gwt.client.ui.impl;
 
-import org.nuxeo.ecm.webengine.gwt.client.Framework;
 import org.nuxeo.ecm.webengine.gwt.client.ApplicationBundle;
 import org.nuxeo.ecm.webengine.gwt.client.Bundle;
 import org.nuxeo.ecm.webengine.gwt.client.Extension;
 import org.nuxeo.ecm.webengine.gwt.client.ExtensionPoint;
+import org.nuxeo.ecm.webengine.gwt.client.Framework;
 import org.nuxeo.ecm.webengine.gwt.client.ui.ExtensionPoints;
 import org.nuxeo.ecm.webengine.gwt.client.ui.login.LoginView;
 

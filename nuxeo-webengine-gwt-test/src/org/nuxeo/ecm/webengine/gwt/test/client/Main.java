@@ -23,5 +23,6 @@ public class Main implements EntryPoint {
       ApplicationBundle bundle = GWT.create(TestBundle.class);
       bundle.start("/redirect");
   }
+  
 
 }
