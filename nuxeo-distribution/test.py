@@ -148,10 +148,10 @@ def testJetty():
     data = c.get("http://localhost:8080/")
     assert "Welcome to Nuxeo WebEngine!" in data
 
-    data = c.get("http://localhost:8080/docs/index.ftl")
+    data = c.get("http://localhost:8080/help")
     assert "Nuxeo WebEngine Documentation" in data
 
-    data = c.get("http://localhost:8080/docs/about.ftl")
+    data = c.get("http://localhost:8080/about")
     assert "License:" in data
     assert "Team:" in data
     assert "Modules:" in data
@@ -193,10 +193,10 @@ def testGF3():
     data = c.get("http://localhost:8080/")
     assert "Welcome to Nuxeo WebEngine!" in data
 
-    data = c.get("http://localhost:8080/docs/index.ftl")
+    data = c.get("http://localhost:8080/help")
     assert "Nuxeo WebEngine Documentation" in data
 
-    data = c.get("http://localhost:8080/docs/about.ftl")
+    data = c.get("http://localhost:8080/about")
     assert "License:" in data
     assert "Team:" in data
     assert "Modules:" in data
