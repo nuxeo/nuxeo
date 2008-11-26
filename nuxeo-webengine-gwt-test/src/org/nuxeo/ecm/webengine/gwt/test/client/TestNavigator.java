@@ -42,7 +42,6 @@ public class TestNavigator extends View {
     public TestNavigator() {
         super("navigator");
         setTitle("Navigator");
-        setPreferredIndex(10);
         setSize("100%", "100%");
         System.out.println("-------------------"+(toString())+"-----------------");
     }

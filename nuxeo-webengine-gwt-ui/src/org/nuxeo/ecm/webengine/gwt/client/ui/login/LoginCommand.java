@@ -20,48 +20,37 @@
 package org.nuxeo.ecm.webengine.gwt.client.ui.login;
 
 import org.nuxeo.ecm.webengine.gwt.client.UI;
+import org.nuxeo.ecm.webengine.gwt.client.http.HttpResponse;
+import org.nuxeo.ecm.webengine.gwt.client.ui.HttpCommand;
 import org.nuxeo.ecm.webengine.gwt.client.ui.View;
-
-import com.google.gwt.user.client.ui.DeckPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class LoginView extends View {
+public class LoginCommand extends HttpCommand {
 
-    protected DeckPanel deck;
-
-    public LoginView() {
-        super("login");
-        setTitle("Login");
+    protected String username;
+    protected String password;
+    
+    public LoginCommand(String username, String password) {
+        this (null, username, password);
     }
-
-
+    
+    public LoginCommand(View view, String username, String password) {
+        super(view, 100);
+        this.username = username;
+        this.password = password;
+    }
+    
     @Override
-    protected Widget createContent() {
-        deck = new DeckPanel();
-        deck.add(new LoginWidget());
-        deck.add(new LogoutWidget());
-        deck.showWidget(0);
-        System.out.println("login view created");
-        return deck;
+    protected void doExecute() throws Throwable {
+        get("/skin/wiki/wiki.css").setUser(username).setPassword(password).send();            
     }
-
-
-    public void refresh() {
-        int index = deck.getVisibleWidget();
-        if (UI.isAuthenticated()) {
-            if (index == 0) { // login widget is visible
-                ((LogoutWidget)deck.getWidget(1)).refresh();
-                deck.showWidget(1);
-            }
-        } else {
-            if (index == 1) { // logout widget is visible
-                deck.showWidget(0);
-            }
-        }
+    
+    @Override
+    public void onSuccess(HttpResponse response) {
+        UI.getContext().setUsername(request.getUser());
     }
-
+    
 }

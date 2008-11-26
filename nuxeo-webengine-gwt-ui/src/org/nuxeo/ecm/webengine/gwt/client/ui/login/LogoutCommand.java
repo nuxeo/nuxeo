@@ -17,28 +17,29 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.gwt.test.client;
+package org.nuxeo.ecm.webengine.gwt.client.ui.login;
 
-
-import org.nuxeo.ecm.webengine.gwt.client.ui.View;
-
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
+import org.nuxeo.ecm.webengine.gwt.client.UI;
+import org.nuxeo.ecm.webengine.gwt.client.http.HttpResponse;
+import org.nuxeo.ecm.webengine.gwt.client.ui.HttpCommand;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TestExtension extends View {
+public class LogoutCommand extends HttpCommand {
 
-    public TestExtension() {
-        super("testExt", new Label("Test Extension!"));
-        setTitle("Test Extension");
-    }
+    public LogoutCommand() {
+    }    
     
     @Override
-    public Image getIcon() {
-        return Main.getImages().contactsgroup().createImage();
+    protected void doExecute() throws Throwable {
+        get("/skin/wiki/wiki.css").send();            
     }
 
+    @Override
+    public void onSuccess(HttpResponse response) {
+        UI.getContext().setUsername(null);
+    }
+        
 }

@@ -37,7 +37,6 @@ public class TestView extends View {
     public TestView() {
         super("dummy");
         setTitle("Dummy");
-        setPreferredIndex(20);
     }
 
     @Override

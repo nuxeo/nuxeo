@@ -40,7 +40,6 @@ import com.google.gwt.user.client.ui.Widget;
 public class View extends Composite {
     
     protected String name;
-    protected int preferredIndex = -1;
     
     protected View(String name) {
         this.name = name;
@@ -73,16 +72,6 @@ public class View extends Composite {
         return UI.getEmptyImage();
     }
     
-    public int getPreferredIndex() {
-        return preferredIndex;
-    }
-    
-    /**
-     * @param preferredIndex the preferredIndex to set.
-     */
-    public void setPreferredIndex(int preferredIndex) {
-        this.preferredIndex = preferredIndex;
-    }
         
     public String getHeader() {
         return getHeaderString(getTitle(), getIcon());
