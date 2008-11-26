@@ -46,7 +46,9 @@
         <nxh:outputLink
           value="#{nxd:fileUrl('downloadFile', currentDocument, field.fullName, currentDocument.file.filename)}">
           <nxh:graphicImage value="#{nxd:fileIconPath(currentDocument[field.schemaName][field.fieldName])}"
-            rendered="#{! empty nxd:fileIconPath(currentDocument[field.schemaName][field.fieldName])}" />
+            rendered="#{! empty nxd:fileIconPath(currentDocument[field.schemaName][field.fieldName])}" 
+            title="#{currentDocument.file.filename} #{nxu:test((currentDocument.type == 'File'), '[', '')} #{nxu:test((currentDocument.type == 'File'), nxu:printFileSize(currentDocument.file.content.length), '')} #{nxu:test((currentDocument.type == 'File'), ']', '')}" 
+            alt="#{currentDocument.file.filename} [filesize]"/>
           <nxh:outputText value="#{currentDocument.file.filename}" />
         </nxh:outputLink>
 

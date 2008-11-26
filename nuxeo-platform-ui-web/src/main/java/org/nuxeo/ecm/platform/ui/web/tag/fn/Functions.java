@@ -36,11 +36,45 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Util functions.
- *
+ * 
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
+ * 
  */
 public final class Functions {
+    public static enum BytePrefix {
+        SI(1000, new String[] { "", "k", "M", "G", "T", "P", "E", "Z", "Y" },
+                new String[] { "", "kilo", "mega", "giga", "tera", "exa",
+                        "zetta", "yotta" }), IEC(1024, new String[] { "", "Ki",
+                "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi" }, new String[] { "",
+                "kibi", "mebi", "tebi", "pebi", "exbi", "zebi", "yobi" }), JEDEC(
+                1024, new String[] { "", "K", "M", "G" }, new String[] { "",
+                        "kilo", "mega", "giga" });
+        private int base;
+
+        private String[] shortSuffixes;
+
+        private String[] longSuffixes;
+
+        private BytePrefix(int base, String[] shortSuffixes,
+                String[] longSuffixes) {
+            this.base = base;
+            this.shortSuffixes = shortSuffixes;
+            this.longSuffixes = longSuffixes;
+        }
+
+        public int getBase() {
+            return base;
+        }
+
+        public String[] getShortSuffixes() {
+            return shortSuffixes;
+        }
+
+        public String[] getLongSuffixes() {
+            return longSuffixes;
+        }
+
+    }
 
     // XXX we should not use a static variable for this cache, but use a cache
     // at a higher level in the Framework or in a facade.
@@ -106,7 +140,7 @@ public final class Functions {
 
     /**
      * Returns the full name of a user.
-     *
+     * 
      * @param username the user id, or null or empty for the current user.
      * @return the full user name.
      */
@@ -214,4 +248,23 @@ public final class Functions {
 
     }
 
+    public static String printFileSize(String size) {
+        return printFormatedFileSize(size, "SI", true);
+    }
+
+
+    public static String printFormatedFileSize(String sizeS, String format,
+            Boolean isShort) {
+        Integer size = (sizeS == null || "".equals(sizeS)) ? 0 : Integer.parseInt(sizeS);
+        BytePrefix prefix = Enum.valueOf(BytePrefix.class, format);
+        int base = prefix.getBase();
+        String[] suffix = isShort ? prefix.getShortSuffixes()
+                : prefix.getLongSuffixes();
+        int ex = 0;
+        while (size > base - 1 || ex > suffix.length) {
+            ex++;
+            size /= base;
+        }
+        return "" + size + " " + suffix[ex] + "B";
+    }
 }

@@ -39,6 +39,13 @@
       </li>
       <li> userFullName(String): returns the full name of a user given its id.
       </li>
+      <li> printFileSize(String size): same as printFormatedFileSize( size, "SI", true)
+      </li>
+      <li> printFormatedFileSize(String size, String format, bollean isShort) pretty print the size of 
+      a file using the format given in its short or long form. The format available are "SI",
+      "IEC" or "JEDEC". See <a href="http://en.wikipedia.org/wiki/Byte">the wikipedia article on Byte</a> 
+      for more information on those format.
+      </li>
     </ul>
     ]]>
   </description>
