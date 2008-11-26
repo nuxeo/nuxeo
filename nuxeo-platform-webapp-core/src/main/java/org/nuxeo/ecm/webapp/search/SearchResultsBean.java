@@ -73,36 +73,37 @@ import au.com.bytecode.opencsv.CSVWriter;
 @Name("searchResults")
 @Scope(ScopeType.CONVERSATION)
 @Transactional
-public class SearchResultsBean extends InputController implements SearchResults, Serializable {
+public class SearchResultsBean extends InputController implements
+        SearchResults, Serializable {
 
     private static final long serialVersionUID = 7823660685121811606L;
 
     private static final Log log = LogFactory.getLog(SearchResultsBean.class);
 
-    private static final String SEARCH_DOCUMENT_LIST = "SEARCH_DOCUMENT_LIST";
+    public static final String SEARCH_DOCUMENT_LIST = "SEARCH_DOCUMENT_LIST";
 
     @In(required = false, create = true)
-    private transient SearchColumns searchColumns;
+    protected transient SearchColumns searchColumns;
 
     @In(required = false, create = true)
-    private transient DocumentsListsManager documentsListsManager;
+    protected transient DocumentsListsManager documentsListsManager;
 
-    private String providerName;
+    protected String providerName;
 
     @RequestParameter("providerName")
-    private String newProviderName;
+    protected String newProviderName;
 
     @RequestParameter("sortColumn")
-    private String newSortColumn;
+    protected String newSortColumn;
 
     @In(required = false, create = true)
-    private transient ResultsProvidersCache resultsProvidersCache;
+    protected transient ResultsProvidersCache resultsProvidersCache;
 
     @In(create = true)
-    private transient ClipboardActions clipboardActions;
+    protected transient ClipboardActions clipboardActions;
 
     // Should never be access for read directly
-    private transient PagedDocumentsProvider provider;
+    protected transient PagedDocumentsProvider provider;
 
     public void reset() {
         provider = null;
@@ -153,7 +154,8 @@ public class SearchResultsBean extends InputController implements SearchResults,
     /**
      * Has the effect of setting the <code>providerName</code> field.
      */
-    public PagedDocumentsProvider getProvider(String providerName) throws ClientException {
+    public PagedDocumentsProvider getProvider(String providerName)
+            throws ClientException {
         provider = resultsProvidersCache.get(providerName);
         if (provider == null) {
             throw new ClientException(
@@ -172,22 +174,24 @@ public class SearchResultsBean extends InputController implements SearchResults,
         return sortInfo == null ? true : sortInfo.getSortAscending();
     }
 
-    public List<DocumentModel> getResultDocuments(String providerName) throws ClientException {
+    public List<DocumentModel> getResultDocuments(String providerName)
+            throws ClientException {
         return getProvider(providerName).getCurrentPage();
     }
 
     // SelectModels to use in interface
-    @Factory(value="searchSelectModel_advanced", scope=ScopeType.EVENT)
-    public SelectDataModel getResultsSelectModelAdvanced() throws ClientException {
+    @Factory(value = "searchSelectModel_advanced", scope = ScopeType.EVENT)
+    public SelectDataModel getResultsSelectModelAdvanced()
+            throws ClientException {
         return getResultsSelectModel(SearchActionsBean.QM_ADVANCED);
     }
 
-    @Factory(value="searchSelectModel_nxql", scope=ScopeType.EVENT)
+    @Factory(value = "searchSelectModel_nxql", scope = ScopeType.EVENT)
     public SelectDataModel getResultsSelectModelNxql() throws ClientException {
         return getResultsSelectModel(SearchActionsBean.PROV_NXQL);
     }
 
-    @Factory(value="searchSelectModel_simple", scope=ScopeType.EVENT)
+    @Factory(value = "searchSelectModel_simple", scope = ScopeType.EVENT)
     public SelectDataModel getResultsSelectModelSimple() throws ClientException {
         return getResultsSelectModel(SearchActionsBean.QM_SIMPLE);
     }
@@ -202,7 +206,8 @@ public class SearchResultsBean extends InputController implements SearchResults,
         context.remove("searchSelectModel_advanced");
     }
 
-    public SelectDataModel getResultsSelectModel(String providerName) throws ClientException {
+    public SelectDataModel getResultsSelectModel(String providerName)
+            throws ClientException {
         if (providerName == null) {
             throw new ClientException("providerName has not been set yet");
         }
@@ -215,8 +220,8 @@ public class SearchResultsBean extends InputController implements SearchResults,
     }
 
     @WebRemote
-    public String processSelectRow(String selectedDocRef, String providerName, Boolean selection)
-            throws ClientException {
+    public String processSelectRow(String selectedDocRef, String providerName,
+            Boolean selection) throws ClientException {
         DocumentModel data = null;
         List<DocumentModel> currentDocs = getResultDocuments(providerName);
 
@@ -288,10 +293,14 @@ public class SearchResultsBean extends InputController implements SearchResults,
             response.setHeader("Content-Disposition",
                     "attachment; filename=\"search_results.csv\"");
 
-            char separator = Framework.getProperty("org.nuxeo.ecm.webapp.search.csv.separator", ",").charAt(0);
-            char quotechar = Framework.getProperty("org.nuxeo.ecm.webapp.search.csv.quotechar", "\"").charAt(0);
-            String endOfLine = Framework.getProperty("org.nuxeo.ecm.webapp.search.csv.endofline", "\n");
-            CSVWriter writer = new CSVWriter(response.getWriter(), separator, quotechar, endOfLine);
+            char separator = Framework.getProperty(
+                    "org.nuxeo.ecm.webapp.search.csv.separator", ",").charAt(0);
+            char quotechar = Framework.getProperty(
+                    "org.nuxeo.ecm.webapp.search.csv.quotechar", "\"").charAt(0);
+            String endOfLine = Framework.getProperty(
+                    "org.nuxeo.ecm.webapp.search.csv.endofline", "\n");
+            CSVWriter writer = new CSVWriter(response.getWriter(), separator,
+                    quotechar, endOfLine);
 
             List<FieldWidget> widgetList = searchColumns.getResultColumns();
             Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
@@ -324,11 +333,11 @@ public class SearchResultsBean extends InputController implements SearchResults,
                         if (fieldSchema.equals("dublincore")
                                 && fieldName.equals("title")) {
                             value = DocumentModelFunctions.titleOrId(docModel);
-                        } else if(fieldSchema.equals("ecm")
+                        } else if (fieldSchema.equals("ecm")
                                 && fieldName.equals("primaryType")) {
                             value = docModel.getType();
-                        } else if(fieldSchema.equals("ecm")
-                                && fieldName.equals("currentLifeCycleState")){
+                        } else if (fieldSchema.equals("ecm")
+                                && fieldName.equals("currentLifeCycleState")) {
                             value = docModel.getCurrentLifeCycleState();
                         } else {
                             value = docModel.getProperty(fieldSchema, fieldName);
