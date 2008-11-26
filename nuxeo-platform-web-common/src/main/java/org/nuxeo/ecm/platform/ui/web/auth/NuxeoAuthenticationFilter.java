@@ -674,10 +674,8 @@ public class NuxeoAuthenticationFilter implements Filter {
     }
 
     protected static String getRequestedPage(HttpServletRequest httpRequest) {
-        String requestURI = httpRequest.getRequestURI();
-        String context = httpRequest.getContextPath() + '/';
-
-        return requestURI.substring(context.length());
+        String pathInfo = httpRequest.getPathInfo();
+        return pathInfo == null ? "" : pathInfo;
     }
 
     protected boolean handleLoginPrompt(HttpServletRequest httpRequest,
