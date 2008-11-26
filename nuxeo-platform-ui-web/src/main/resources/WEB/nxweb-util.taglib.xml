@@ -2,7 +2,7 @@
   "-//Sun Microsystems, Inc.//DTD Facelet Taglib 1.0//EN"
   "http://java.sun.com/dtd/facelet-taglib_1_0.dtd">
 
-	<!--
+<!--
   NXWebPlatform (re)definition of basic tags
 -->
 
@@ -33,14 +33,13 @@
       java.lang.String printFormatedFileSize(java.lang.String, java.lang.String, java.lang.Boolean)
     </function-signature>
   </function>
-	<function>
-		<function-name>join</function-name>
-		<function-class>
-			org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+  <function>
+    <function-name>join</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
     </function-class>
-		<function-signature>
-			java.lang.String join(java.lang.String[],
-			java.lang.String)
+    <function-signature>
+      java.lang.String join(java.lang.String[], java.lang.String)
     </function-signature>
 	</function>
 	<function>

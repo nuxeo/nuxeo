@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.webapp.edit.lock;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,30 +27,26 @@ import java.util.Map;
 
 import javax.ejb.Remove;
 import javax.faces.application.FacesMessage;
-import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.api.ECM;
-import org.nuxeo.ecm.platform.api.login.SystemSession;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 
 /**
  * This is the action listener that knows to decide if an user has the right to
@@ -65,7 +59,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  *
  */
 @Name("lockActions")
-@Scope(CONVERSATION)
+@Scope(ScopeType.EVENT)
 public class LockActionsBean implements LockActions {
     // XXX: OG: How a remote calls could possibly work without the seam injected
     // components??
@@ -76,17 +70,17 @@ public class LockActionsBean implements LockActions {
 
     private static final String EDIT_ACTIONS = "EDIT_ACTIONS";
 
-    @In(required = true)
-    private NavigationContext navigationContext;
+    @In
+    private transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
     protected transient FacesMessages facesMessages;
 
     @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
+    protected transient ResourcesAccessor resourcesAccessor;
 
     @In(create = true)
-    protected WebActions webActions;
+    protected transient WebActions webActions;
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -185,6 +179,27 @@ public class LockActionsBean implements LockActions {
         return unlockDocument(navigationContext.getCurrentDocument());
     }
 
+
+    // helper inner class to do the unrestricted unlock
+    protected class unrestrictedUnlocker extends UnrestrictedSessionRunner {
+
+        private DocumentRef docRefToUnlock;
+
+         public unrestrictedUnlocker(DocumentRef docRef) throws ClientException {
+             super(documentManager);
+             this.docRefToUnlock=docRef;
+         }
+         /*
+         * Use an unrestricted session to unlock the document.
+         */
+        @Override
+        public void run() throws ClientException {
+            session.unlock(docRefToUnlock);
+            session.save();
+        }
+    }
+
+
     public String unlockDocument(DocumentModel document) throws ClientException {
         log.debug("Unlock a document ...");
         String message;
@@ -205,32 +220,10 @@ public class LockActionsBean implements LockActions {
                         // Here administrator should always be able to unlock so
                         // we need to grant him this possibility even if it
                         // doesn't have the write permission.
-                        SystemSession session = new SystemSession();
-                        session.login();
 
-                        // Open a new repository session which will be
-                        // unrestricted. We need to do this here since the
-                        // document manager in Seam context has been initialized
-                        // with caller principal rights.
-                        CoreSession unrestrictedSession = ECM.getPlatform().openRepository(
-                                navigationContext.getCurrentServerLocation().getName());
-
-                        // Publish the document using the new session.
-                        unrestrictedSession.unlock(document.getRef());
-                        unrestrictedSession.save();
-
-                        // Close the unrestricted session.
-                        CoreInstance.getInstance().close(unrestrictedSession);
-
-                        // Logout the system session.
-                        // Note, this is not necessary to take further actions
-                        // here
-                        // regarding the user session.
-                        session.logout();
+                        new unrestrictedUnlocker(document.getRef()).runUnrestricted();
 
                         message = "document.unlock";
-                    } catch (LoginException e) {
-                        throw new ClientException(e.getMessage());
                     } catch (Exception e) {
                         throw new ClientException(e.getMessage());
                     }
@@ -331,7 +324,7 @@ public class LockActionsBean implements LockActions {
         return isLiveEditable;
     }
 
-    @Observer( value={ EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED }, create=false, inject=false)
+    //@Observer( value={ EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED }, create=false, inject=false)
     public void resetLockState() {
         lockDetails = null;
         canLock = null;

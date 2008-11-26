@@ -25,7 +25,6 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 
-import org.jetbrains.annotations.NotNull;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.interfaces.ejb.ECServer;
@@ -38,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
  * implementation class.
  *
  * @author Razvan Caraghin
- *
+ * @deprecated remove in 5.2
  */
 @Deprecated
 @Stateless
@@ -57,7 +56,7 @@ public class ECServerBean implements ECServer, ECServerLocal {
             LocationManagerService lms = getLocationManagerService();
             returningLocations.addAll(lms.getAvailableLocations().values());
         } catch (Throwable t) {
-            EJBExceptionHandler.wrapException(t);
+            ClientException.wrap(t);
         }
         return returningLocations;
     }
@@ -68,7 +67,7 @@ public class ECServerBean implements ECServer, ECServerLocal {
             principals.add(new UserPrincipal("q"));
             principals.add(new UserPrincipal("useradmin"));
         } catch (Throwable t) {
-            EJBExceptionHandler.wrapException(t);
+            ClientException.wrap(t);
         }
         return principals;
     }
@@ -84,7 +83,7 @@ public class ECServerBean implements ECServer, ECServerLocal {
         return repositoryLocation;
     }
 
-    public RepositoryLocation getRepositoryLocationForName(@NotNull String repName) {
+    public RepositoryLocation getRepositoryLocationForName(String repName) {
         final List<RepositoryLocation> repLocations = getAvailableRepositoryLocations();
         for (RepositoryLocation location : repLocations) {
             if (repName.equals(location.getName())) {

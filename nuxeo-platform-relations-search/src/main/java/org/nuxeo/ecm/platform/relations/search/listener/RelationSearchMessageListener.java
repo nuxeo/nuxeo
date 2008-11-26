@@ -56,17 +56,19 @@ import org.nuxeo.ecm.platform.relations.search.indexer.RelationIndexer;
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
         @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
         @ActivationConfigProperty(propertyName = "messageSelector",
-                propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " IN ('" + JMSConstant.DOCUMENT_MESSAGE + "','" + JMSConstant.EVENT_MESSAGE + "') AND " + JMSConstant.NUXEO_EVENT_ID + " IN ('"
-                    +RelationEvents.AFTER_RELATION_CREATION + "','" + RelationEvents.AFTER_RELATION_MODIFICATION + "','"
+                propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " IN ('"
+                    + JMSConstant.DOCUMENT_MESSAGE + "','" + JMSConstant.EVENT_MESSAGE
+                    + "') AND " + JMSConstant.NUXEO_EVENT_ID + " IN ('"
+                    + RelationEvents.AFTER_RELATION_CREATION + "','" + RelationEvents.AFTER_RELATION_MODIFICATION + "','"
                     + RelationEvents.AFTER_RELATION_REMOVAL + "')") })
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class RelationSearchMessageListener implements MessageListener {
 
     private static final Log log = LogFactory.getLog(RelationSearchMessageListener.class);
 
-    private transient RelationIndexer indexer;
+    private RelationIndexer indexer;
 
-    private transient SearchService service;
+    private SearchService service;
 
     private SearchService getSearchService() {
         if (service == null) {
@@ -84,9 +86,7 @@ public class RelationSearchMessageListener implements MessageListener {
 
     @SuppressWarnings("unchecked")
     public void onMessage(Message message) {
-
         try {
-
             SearchService service = getSearchService();
             initIndexer();
 
@@ -96,8 +96,9 @@ public class RelationSearchMessageListener implements MessageListener {
             }
 
             Object obj = ((ObjectMessage)message).getObject();
-            if(!(obj instanceof DocumentMessage))
+            if(!(obj instanceof DocumentMessage)) {
                 return;
+            }
             DocumentMessage doc = (DocumentMessage) obj;
             if (!RelationEvents.CATEGORY.equals(doc.getCategory())) {
                 return; // caller is trustworthy
@@ -110,9 +111,8 @@ public class RelationSearchMessageListener implements MessageListener {
                         RelationEvents.STATEMENTS_EVENT_KEY);
 
             if (RelationEvents.AFTER_RELATION_CREATION.equals(eventId)
-                || RelationEvents.AFTER_RELATION_MODIFICATION.equals(eventId))
-            {
-                if (eventInfo ==  null) { // not likely
+                    || RelationEvents.AFTER_RELATION_MODIFICATION.equals(eventId)) {
+                if (eventInfo == null) { // not likely
                     indexer.index(doc); // brutal indexing
                     return;
                 }

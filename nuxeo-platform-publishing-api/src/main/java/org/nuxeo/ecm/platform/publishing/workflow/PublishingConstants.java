@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.publishing.workflow;
 
-import java.io.Serializable;
 
 /**
  * Publishing related constants.
@@ -27,10 +26,9 @@ import java.io.Serializable;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
  */
-public final class PublishingConstants implements Serializable {
+public final class PublishingConstants {
 
-    private static final long serialVersionUID = 1L;
-
+    // Constant utility class.
     private PublishingConstants() {
     }
 

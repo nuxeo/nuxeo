@@ -8,19 +8,19 @@
   <compass name="default">
 
     <connection>
-    <!-- IMPORTANT. This connection setting is a sample.
-    It will be overridden by the compass backend's extension point for
-    NXRuntime. To avoid overriding it the latest contribution to the
-    extension point should be:
-
-     <extension target="org.nuxeo.ecm.core.search.backend.compass.CompassBackend"
-             point="connection">
-      <default/>
-    </extension>
-     -->
+      <!-- IMPORTANT. This connection setting is a sample.
+        It will be overridden by the compass backend's extension point for
+        NXRuntime. To avoid overriding it the latest contribution to the
+        extension point should be:
+        
+        <extension target="org.nuxeo.ecm.core.search.backend.compass.CompassBackend"
+        point="connection">
+        <default/>
+        </extension>
+      -->
 
       <jdbc managed="true"
-        dialectClass="org.apache.lucene.store.jdbc.dialect.HSQLDialect"
+        dialectClass="org.apache.lucene.store.jdbc.dialect.DerbyDialect"
         deleteMarkDeletedDelta="60000">
         <dataSourceProvider>
           <jndi lookup="java:/nxsearch-compass" />
@@ -30,7 +30,7 @@
 
     <transaction commitBeforeCompletion="true"
       factory="org.compass.core.transaction.JTASyncTransactionFactory">
-      <batchInsertSettings maxBufferedDocs="100" mergeFactor="50"/>
+      <batchInsertSettings maxBufferedDocs="100" mergeFactor="50" />
     </transaction>
 
     <converters>
@@ -45,7 +45,7 @@
         <setting name="format" value="#00000000000000000000" />
       </converter>
       <converter name="double" type="org.compass.core.converter.basic.DoubleConverter">
-        <setting name="format" value="#0000000000000000.00"/>
+        <setting name="format" value="0000000000000000.00"/>
       </converter>
     </converters>
 

@@ -140,8 +140,8 @@ public class DocumentManagerBusinessDelegate implements Serializable {
                  *
                  * XXX but this means we don't close the session correctly
                  */
-                log.debug("EJBAccessException while closing session for repository " +
-                        serverName);
+                log.debug("EJBAccessException while closing session for repository "
+                        + serverName);
             } catch (Exception e) {
                 log.error("Error closing session for repository " + serverName,
                         e);

@@ -1,7 +1,6 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
@@ -36,10 +35,14 @@
               <h:column>
                 <f:facet name="header">
                   <h:outputText
-                    value="#{messages['label.workflow.task.documentLocation']}" />
+                    value="#{messages['label.workflow.task.startdate']}" />
                 </f:facet>
-                <h:commandLink value="#{item.docTitle}"
-                  action="#{dashboardActions.navigateToDocumentTab(item.documentModel)}" />
+                <h:outputText
+                  value="#{item.processInstanceStartDate}">
+                  <f:convertDateTime
+                    pattern="#{nxu:dateAndTimeFormater('medium')}"
+                    timeZone="#{timeZone}" />
+                </h:outputText>
               </h:column>
               <h:column>
                 <f:facet name="header">
@@ -49,7 +52,8 @@
                 <h:outputText
                   value="#{item.processInstanceStartDate}">
                   <f:convertDateTime
-                    pattern="#{nxu:dateAndTimeFormater('medium')}" />
+                    pattern="#{nxu:dateAndTimeFormater('medium')}"
+                    timeZone="#{timeZone}" />
                 </h:outputText>
               </h:column>
             </h:dataTable>

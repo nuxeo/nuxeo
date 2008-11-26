@@ -111,7 +111,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
 
     private SchemaManager typeManager;
 
-    private static Map<String, String> prefix2SchemaNameCache = new HashMap<String, String>();
+    private static final Map<String, String> prefix2SchemaNameCache = new HashMap<String, String>();
 
     /**
      * Constructor to create a sortable provider. Note that a provider can be
@@ -194,7 +194,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
     public String getCurrentPageStatus() {
         int total = getNumberOfPages();
         int current = getCurrentPageIndex() + 1;
-        if (total == PagedDocumentsProvider.UNKNOWN_SIZE) {
+        if (total == UNKNOWN_SIZE) {
             return String.format("%d", current);
         } else {
             return String.format("%d/%d", current, total);
@@ -351,8 +351,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
         return schemaName;
     }
 
-    protected DocumentModelList constructDocumentModels()
-            throws SearchException {
+    protected DocumentModelList constructDocumentModels() {
         if (searchResults == null) {
             return EMPTY;
         }
@@ -464,7 +463,6 @@ public class SearchPageProvider implements PagedDocumentsProvider {
         }
 
         return docModel;
-
     }
 
     protected Field getSchemaField(String schemaName, String fieldName) {
