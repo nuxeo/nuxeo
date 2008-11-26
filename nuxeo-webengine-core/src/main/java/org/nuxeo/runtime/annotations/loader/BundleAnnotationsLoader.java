@@ -72,11 +72,19 @@ public class BundleAnnotationsLoader implements BundleListener {
         }
     }
 
+    public void loadAnnotationsFromDeployedBundles(Bundle bundle) throws IOException {
+        Bundle[] bundles = bundle.getBundleContext().getBundles();
+        for (Bundle b : bundles) {
+            loadAnnotations(b);
+        }
+    }
+    
     public void loadAnnotations(Bundle bundle) throws IOException {
         URL url = bundle.getEntry("OSGI-INF/annotations");
         if (url != null) {
             InputStream in = url.openStream();
             try {
+                log.info("Loading annotations from bundle: "+bundle.getSymbolicName());
                 for (String line : readLines(in)) {
                     loadAnnotation(bundle, line);
                 }

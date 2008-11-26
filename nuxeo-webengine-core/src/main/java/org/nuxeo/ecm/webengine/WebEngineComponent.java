@@ -74,9 +74,9 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
 
         //TODO: this should be moved into runtime - loads annotations from current bundle
         //TODO: move this into runtime
-        context.getRuntimeContext().getBundle().getBundleContext().addBundleListener(BundleAnnotationsLoader.getInstance());
-        BundleAnnotationsLoader.getInstance().loadAnnotations(context.getRuntimeContext().getBundle());
-
+        Bundle bundle = context.getRuntimeContext().getBundle(); 
+        bundle.getBundleContext().addBundleListener(BundleAnnotationsLoader.getInstance());
+        BundleAnnotationsLoader.getInstance().loadAnnotationsFromDeployedBundles(bundle);
 
         String webDir = Framework.getProperty("org.nuxeo.ecm.web.root");
         File root = null;
