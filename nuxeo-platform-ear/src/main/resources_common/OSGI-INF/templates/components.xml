@@ -8,10 +8,15 @@
     <property name="jndiPattern">nuxeo/#{ejbName}/local</property>
   </component>
 
-  <!-- 30 min conversation timeout -->
   <component name="org.jboss.seam.core.manager">
+    <!-- 30 min conversation timeout -->
     <property name="conversationTimeout">1800000</property>
+    <!-- 1s concurrent request timeout -->
+    <!-- 
+      <property name="concurrentRequestTimeout">1000</property>
+    -->
   </component>
+
   <!--
     <core:jbpm>
     <core:pageflow-definitions>
@@ -19,6 +24,7 @@
     </core:pageflow-definitions>
     </core:jbpm>
   -->
+
   <!-- Mail configuration -->
   <mail:mailSession sessionJndiName="java:/Mail" />
 
