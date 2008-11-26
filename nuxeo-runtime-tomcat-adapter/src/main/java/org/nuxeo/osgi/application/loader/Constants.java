@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.tomcat.loader;
+package org.nuxeo.osgi.application.loader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

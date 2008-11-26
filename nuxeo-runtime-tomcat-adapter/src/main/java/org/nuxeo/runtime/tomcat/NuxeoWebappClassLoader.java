@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.tomcat.context;
+package org.nuxeo.runtime.tomcat;
 
 import java.net.URL;
 

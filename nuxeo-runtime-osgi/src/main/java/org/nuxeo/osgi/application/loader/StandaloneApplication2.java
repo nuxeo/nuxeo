@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.tomcat.loader;
+package org.nuxeo.osgi.application.loader;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +37,6 @@ import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.osgi.application.ClassPath;
 import org.nuxeo.osgi.application.SharedClassLoader;
 import org.nuxeo.osgi.application.StandaloneApplication;
-import org.nuxeo.runtime.tomcat.context.Constants;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkEvent;
 

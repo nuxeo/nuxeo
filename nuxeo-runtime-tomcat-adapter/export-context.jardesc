@@ -12,7 +12,7 @@
 </manifest>
 <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
 <javaElement handleIdentifier="=nuxeo-runtime-tomcat-adapter/src\/main\/java&lt;org.nuxeo.osgi.application"/>
-<javaElement handleIdentifier="=nuxeo-runtime-tomcat-adapter/src\/main\/java&lt;org.nuxeo.runtime.tomcat.context"/>
+<javaElement handleIdentifier="=nuxeo-runtime-tomcat-adapter/src\/main\/java&lt;org.nuxeo.runtime.tomcat"/>
 </selectedElements>
 <fatjar builder="org.eclipse.jdt.ui.plain_jar_builder" launchConfig=""/>
 </jardesc>

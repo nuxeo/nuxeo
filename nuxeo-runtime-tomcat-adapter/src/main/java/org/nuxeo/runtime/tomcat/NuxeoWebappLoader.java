@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.tomcat.context;
+package org.nuxeo.runtime.tomcat;
 
 
 
@@ -215,7 +215,7 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
             }
             // we are using the webapp class loader an not te shared loader to get the launcher class since
             // the launcher may be put into WEB-INF/lib
-            Class<?> clazz = getClassLoader().loadClass("org.nuxeo.runtime.tomcat.loader.Loader");
+            Class<?> clazz = getClassLoader().loadClass("org.nuxeo.osgi.application.loader.Loader");
             Method method = clazz.getMethod("loadFramework", SharedClassLoader.class, File.class, List.class, Properties.class);
             method.invoke(null, loader, systemBundleFile, cp, env);
         } catch (Throwable t) {

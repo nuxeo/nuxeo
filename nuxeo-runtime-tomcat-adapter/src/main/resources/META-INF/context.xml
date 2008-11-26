@@ -21,7 +21,7 @@
   <Manager pathname="" />
 
   <!-- define custom loader that is responsible to start nuxeo runtime (it extends the default one) -->
-  <Loader className="org.nuxeo.runtime.tomcat.context.NuxeoWebappLoader" loaderClass="org.nuxeo.runtime.tomcat.context.NuxeoWebappClassLoader"
+  <Loader className="org.nuxeo.runtime.tomcat.NuxeoWebappLoader" loaderClass="org.nuxeo.runtime.tomcat.NuxeoWebappClassLoader"
           home="nxserver" classPath="bundles/.:lib/.:config" systemBundle="bundles/nuxeo-runtime-osgi-1.5-SNAPSHOT.jar" />
 
   <!--

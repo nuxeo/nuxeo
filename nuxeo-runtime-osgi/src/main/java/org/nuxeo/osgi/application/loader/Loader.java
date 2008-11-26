@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.tomcat.loader;
+package org.nuxeo.osgi.application.loader;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +35,8 @@ import org.nuxeo.osgi.SystemBundle;
 import org.nuxeo.osgi.application.SharedClassLoader;
 
 /**
+ * This class is used to load StandaloneApplication2
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
