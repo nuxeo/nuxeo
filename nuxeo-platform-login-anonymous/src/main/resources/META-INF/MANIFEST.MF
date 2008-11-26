@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo Anonymous Login Module extension
-Bundle-SymbolicName: org.nuxeo.ecm.platform.login.anonymous;singleton:=true
-Require-Bundle: org.nuxeo.ecm.platform.login,
- org.nuxeo.ecm.platform.ui
-Nuxeo-Component: OSGI-INF/login-anonymous-service-contrib.xml,
- OSGI-INF/actions-contrib.xml
-Nuxeo-RequiredBy: org.nuxeo.ecm.war
