@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -49,23 +47,17 @@ public class ResourceServlet extends HttpServlet {
     protected WebEngine engine; 
 
     @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        try {
-            engine = Framework.getService(WebEngine.class);
-            String prefix = config.getInitParameter("prefix");
-            if (engine!= null && prefix != null) {
-                engine.setSkinPathPrefix(prefix);
-            }
-        } catch (Exception e) {
-            throw new ServletException("Failed to get WebEngine", e);
-        }
-    }
-
-    @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
+        if (engine == null) {
+            try {
+                engine = Framework.getService(WebEngine.class);
+            } catch (Exception e) {
+                throw new ServletException("Failed to lookup WebEngine service", e);
+            }
+        }
+        
         String path = req.getPathInfo();
         if (path == null) {
             resp.sendError(404);

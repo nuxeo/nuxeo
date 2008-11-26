@@ -73,6 +73,8 @@ import org.osgi.framework.Bundle;
  */
 public class WebEngine implements FileChangeListener, ResourceLocator, AnnotationLoader, MessagesProvider {
 
+    public static final String SKIN_PATH_PREFIX_KEY = "org.nuxeo.ecm.webengine.skinPathPrefix";
+    
     private static final Log log = LogFactory.getLog(WebEngine.class);
 
     private static final ThreadLocal<WebContext> CTX = new ThreadLocal<WebContext>();
@@ -151,8 +153,11 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), bundleTypeProvider);
         BundleAnnotationsLoader.getInstance().addLoader(WebAdapter.class.getName(), bundleTypeProvider);
 
-        //TODO this should be in a config file       
-        skinPathPrefix = System.getProperty("jboss.home.dir") != null ? "/nuxeo/site/skin" : "/skin"; 
+        skinPathPrefix = Framework.getProperty(SKIN_PATH_PREFIX_KEY);
+        if (skinPathPrefix == null) {
+            //TODO: should put this in web.xml and not use jboss.home.dir to test if on jboss
+            skinPathPrefix = System.getProperty("jboss.home.dir") != null ? "/nuxeo/site/skin" : "/skin";     
+        }         
         loadModules();
 
         env = new HashMap<String, Object>();
