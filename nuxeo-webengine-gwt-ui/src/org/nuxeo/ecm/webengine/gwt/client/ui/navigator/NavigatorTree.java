@@ -1,6 +1,5 @@
 package org.nuxeo.ecm.webengine.gwt.client.ui.navigator;
 
-import org.nuxeo.ecm.webengine.gwt.client.UI;
 import org.nuxeo.ecm.webengine.gwt.client.ui.model.DocumentRef;
 
 import com.google.gwt.http.client.Request;
@@ -24,6 +23,7 @@ import com.google.gwt.user.client.ui.TreeListener;
  */
 public class NavigatorTree extends Tree{
 
+    public static final String JSON_CHILDREN_ADAPTER = "/@json?children=true";
     String repositoryUrl;
     String navigatorRootPath;
 
@@ -121,7 +121,7 @@ public class NavigatorTree extends Tree{
     }
 
     public JSONArray updateTree(String path, final TreeItem item){
-        String p = URL.encode(path+"/@json?children=true");
+        String p = URL.encode(path+JSON_CHILDREN_ADAPTER);
         RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(p));
         try {
             RequestCallback callback = new RequestCallback(){
