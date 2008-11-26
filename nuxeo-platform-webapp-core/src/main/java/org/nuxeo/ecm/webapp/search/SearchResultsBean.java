@@ -79,30 +79,30 @@ public class SearchResultsBean extends InputController implements
 
     private static final Log log = LogFactory.getLog(SearchResultsBean.class);
 
-    private static final String SEARCH_DOCUMENT_LIST = "SEARCH_DOCUMENT_LIST";
+    public static final String SEARCH_DOCUMENT_LIST = "SEARCH_DOCUMENT_LIST";
 
     @In(required = false, create = true)
-    private transient SearchColumns searchColumns;
+    protected transient SearchColumns searchColumns;
 
     @In(required = false, create = true)
-    private transient DocumentsListsManager documentsListsManager;
+    protected transient DocumentsListsManager documentsListsManager;
 
-    private String providerName;
+    protected String providerName;
 
     @RequestParameter("providerName")
-    private String newProviderName;
+    protected String newProviderName;
 
     @RequestParameter("sortColumn")
-    private String newSortColumn;
+    protected String newSortColumn;
 
     @In(required = false, create = true)
-    private transient ResultsProvidersCache resultsProvidersCache;
+    protected transient ResultsProvidersCache resultsProvidersCache;
 
     @In(create = true)
-    private transient ClipboardActions clipboardActions;
+    protected transient ClipboardActions clipboardActions;
 
     // Should never be access for read directly
-    private transient PagedDocumentsProvider provider;
+    protected transient PagedDocumentsProvider provider;
 
     public void reset() {
         provider = null;
