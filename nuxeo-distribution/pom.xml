@@ -53,6 +53,14 @@
       </modules>
     </profile>
     <profile>
+      <id>tomcat</id>
+      <modules>
+        <module>nuxeo-application-base</module>
+        <module>nuxeo-server-template</module>
+        <module>nuxeo-tomcat-template</module>
+      </modules>
+    </profile>
+    <profile>
       <id>core</id>
       <modules>
         <module>nuxeo-application-base</module>
