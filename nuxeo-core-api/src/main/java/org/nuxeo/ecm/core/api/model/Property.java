@@ -34,33 +34,40 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * A document property.
  * <p>
  * Document properties are instances of document schema fields.
- * You can say that a {@link Field} object is like a java class and a {@link Property} object like ia class instance.
+ * You can say that a {@link Field} object is like a java class and a {@link
+ * Property} object like ia class instance.
  * Thus, schemas defines fields (or elements) which have a name and a
  * type, and each field of a document can be instantiated (if the schema
  * permits) as a {@link Property} object.
  * <p>
- * Properties are always bound to a schema field that provides the type and constraints on the property values.
- * An exception is the root property the {@link DocumentPart} object which is not bound to a field but to a schema.
+ * Properties are always bound to a schema field that provides the type and
+ * constraints on the property values.
+ * An exception is the root property the {@link DocumentPart} object which is
+ * not bound to a field but to a schema.
  * <p>
  * So properties are holding the actual values for each defined field.
  * <p>
  * The usual way of using properties is to get a document from the storage server then modify document properties
  * and send them back to the storage server to that modifications are be stored.
  * <p>
- * Note that the storage server can be on a remote machine so when modifying properties
- * remotely they are serialized and sent through the network between the two machines. This means
- * properties must hold serializable values and also they must store some state flags so that the storage
- * can decide which property was modified and how in order to correctly update the stored versions.
+ * Note that the storage server can be on a remote machine so when modifying
+ * properties remotely they are serialized and sent through the network between
+ * the two machines. This means properties must hold serializable values and
+ * also they must store some state flags so that the storage can decide which
+ * property was modified and how in order to correctly update the stored
+ * versions.
  * <p>
- * <p>
- * As we have seen each property may hold a serializable value which we will refer to as the <code>normalized</code>
- * property value. For each schema field type there is only one java serializable object representation that will be used
- * as the normalized value.
- * The property API is giving you the possibility to use different compatible objects when setting or getting property values.
- * Each property implementation will automatically convert the given value into a normalized one; so internally only
- * the normalized value is stored. For example for date properties you may use either <code>Date</code> or <code>Calendar</code>
- * when setting or retrieving a property value but the normalized value will be the <code>Calendar</code> one.
- * <p>
+ * As we have seen each property may hold a serializable value which we will
+ * refer to as the <code>normalized</code> property value. For each schema
+ * field type there is only one java serializable object representation that
+ * will be used as the normalized value.
+ * The property API is giving you the possibility to use different compatible
+ * objects when setting or getting property values.
+ * Each property implementation will automatically convert the given value into
+ * a normalized one; so internally only the normalized value is stored. For
+ * example for date properties you may use either <code>Date</code> or
+ * <code>Calendar</code> when setting or retrieving a property value but the
+ * normalized value will be the <code>Calendar</code> one.
  * <p>
  * As we seen properties keep some state flags. Property flags can be divided in two groups:
  * <ul>
@@ -69,14 +76,17 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * </ul>
  * <p>
  * <p>
- * <b>Property Types</p>
+ * <b>Property Types</b>
+ * <p>
  * Before going deeper in property flags we will talk first about property types.
- * There are several types of properties that are very closed on the type of fields they are bound onto.
+ * There are several types of properties that are very closed on the type of
+ * fields they are bound onto.
  * <ul>
- * <li> Root Property (or <code>DocumentPart</code>) - this is a special property that is bound to a schema instead of a field
- * And it is the root of the property tree.
- * <li> Complex Properties - container properties that are bound to complex field types
- * that can be represented as java <code>Map</code> objects.
+ * <li> Root Property (or <code>DocumentPart</code>) - this is a special
+ * property that is bound to a schema instead of a field And it is the root of
+ * the property tree.
+ * <li> Complex Properties - container properties that are bound to complex
+ * field types that can be represented as java <code>Map</code> objects.
  * These properties contains a set of schema defined properties.
  * You cannot add new child properties. You can only modify existing child  properties.
  * Complex property values are expressed as java <code>Map</code> objects.
@@ -91,15 +101,16 @@ import org.nuxeo.ecm.core.schema.types.Type;
  *          An example of usage are Blob properties that use {@link Blob} values.
  *      </ul>
  * <li> List Properties - container properties that are bound to list field types.
- * <li> Scalar Properties - atomic properties that are bound to scalar field types and that are using as values
- * scalar or primitive java objects like arrays, primitives, String, Date etc.
+ * <li> Scalar Properties - atomic properties that are bound to scalar field
+ * types and that are using as values scalar or primitive java objects like
+ * arrays, primitives, String, Date etc.
  * </ul>
  * <p>
  * As we've seen there are 2 categories of properties: container properties and scalar properties
  * Complex and list properties are container properties while structured and scalar properties are scalar.
  * <p>
- * <p>
  * <b>Dirty Flags</b>
+ * <p>
  * Dirty flags are used to keep track of the dirty state of a property.
  * The following flags are supported:
  * <ul>
@@ -135,25 +146,29 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * <p>
  * The combinations not listed above are not permitted.
  * <p>
- * In case of list items, the REMOVED flag is not used since the property will be physically removed
+ * In case of list items, the REMOVED flag is not used since the property will
+ * be physically removed
  * from the property tree.
  * <p>
- * Also when the dirty flag of a children property changes, its parent is informed to update
- * its MODIFIED flag if needed.
- * This way a modification on a children property is propagated to parents in the form of a MODIFIED flag.
- * <p>
+ * Also when the dirty flag of a children property changes, its parent is
+ * informed to update its MODIFIED flag if needed.
+ * This way a modification on a children property is propagated to parents in
+ * the form of a MODIFIED flag.
  * <p>
  * <b>Internal Flags</b>
+ * <p>
  * Internal flags are used by the implementation to keep some internal state.
  * For these flags you should look into the implementation
  * <p>
- *  Apart flags properties can also hold some random user data using
- *  {@link Property#setData(Object)} and {@link Property#getData()} methods.
- *  This can be used for example to keep a context attached to a property.
- *  But be aware when using this you should provide serializable objects as the data you are attaching
- *  otherwise if properties are serialized / unserialized this will generate errors.
- *  The API is not forcing you to use serializable values since you can also use this feature to store temporary
- *  context data that will not be sent over the network.
+ * Apart flags properties can also hold some random user data using
+ * {@link Property#setData(Object)} and {@link Property#getData()} methods.
+ * This can be used for example to keep a context attached to a property.
+ * But be aware when using this you should provide serializable objects as the
+ * data you are attaching otherwise if properties are serialized /
+ * unserialized this will generate errors.
+ * The API is not forcing you to use serializable values since you can also
+ * use this feature to store temporary context data that will not be sent over
+ * the network.
  *
  * @see <code>TestPropertyModel</code> for usage of property API
  *
