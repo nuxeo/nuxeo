@@ -109,7 +109,7 @@
       </extensions>
     </mimetype>
 
-    <mimetype normalized="message/rfc822" binary="false" iconPath="mail.png">
+    <mimetype normalized="message/rfc822" binary="false" iconPath="email.png">
       <mimetypes>
         <mimetype>message/rfc822</mimetype>
       </mimetypes>
