@@ -173,6 +173,11 @@ public class Dialect {
         return dialect.getCascadeConstraintsString();
     }
 
+    // "ADD COLUMN" or "ADD"
+    public String getAddColumnString() {
+        return dialect.getAddColumnString().toUpperCase();
+    }
+
     /**
      * Does the dialect support UPDATE t SET ... FROM t, u WHERE ... ?
      */
