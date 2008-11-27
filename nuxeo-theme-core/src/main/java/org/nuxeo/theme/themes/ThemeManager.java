@@ -18,10 +18,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -42,6 +40,7 @@ import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
 import org.nuxeo.theme.Registrable;
+import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFactory;
 import org.nuxeo.theme.elements.ElementFormatter;
@@ -621,6 +620,7 @@ public final class ThemeManager implements Registrable {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         ThemeDescriptor themeDescriptor = (ThemeDescriptor) typeRegistry.lookup(
                 TypeFamily.THEME, src);
+
         if (themeDescriptor == null) {
             throw new ThemeIOException("Theme not found: " + src);
         }
@@ -630,36 +630,14 @@ public final class ThemeManager implements Registrable {
                     + src);
         }
 
-        URL url = themeDescriptor.getUrl();
-        OutputStream os = null;
-        try {
-            URLConnection urlc = url.openConnection();
-            os = urlc.getOutputStream();
-        } catch (IOException e) {
-            log.error(e);
-        }
-
         ThemeSerializer serializer = new ThemeSerializer();
         String themeName = themeDescriptor.getName();
         ThemeElement theme = Manager.getThemeManager().getThemeByName(themeName);
         final String xml = serializer.serializeToXml(theme, indent);
-
-        if (os != null) {
-            try {
-                os.write(xml.getBytes());
-                os.flush();
-            } catch (IOException e) {
-                log.error(e);
-            } finally {
-                try {
-                    os.close();
-                } catch (IOException e) {
-                    log.error(e);
-                } finally {
-                    os = null;
-                }
-            }
-        }
+        
+        // Write the file
+        URL url = themeDescriptor.getUrl();
+        Utils.writeFile(url, xml);
     }
 
     public static void repairTheme(ThemeElement theme) {

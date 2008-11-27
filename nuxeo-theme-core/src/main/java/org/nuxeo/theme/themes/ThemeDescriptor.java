@@ -49,7 +49,6 @@ public class ThemeDescriptor implements Type {
         if (url != null) {
             return url;
         }
-
         try {
             url = new URL(src);
         } catch (MalformedURLException e) {

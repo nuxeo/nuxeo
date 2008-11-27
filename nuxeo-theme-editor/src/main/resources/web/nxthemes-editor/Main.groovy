@@ -169,6 +169,19 @@ public class Main extends DefaultModule {
   }
   
   @GET @POST
+  @Path("clear_selections")
+  public void clearSelections() {
+    SessionManager.setElementId(null);
+    SessionManager.setStyleEditMode(null);
+    SessionManager.setStyleLayerId(null);
+    SessionManager.setStyleSelector(null);
+    SessionManager.setStylePropertyCategory(null);
+    SessionManager.setStyleCategory(null);
+    SessionManager.setPresetGroup(null);
+    SessionManager.setClipboardElementId(null);
+  }
+  
+  @GET @POST
   @Path("select_element")
   public void selectElement(@QueryParam("id") String id) {
     SessionManager.setElementId(id)
@@ -303,7 +316,7 @@ public class Main extends DefaultModule {
   
   @GET @POST
   @Path("save_theme")
-  public String saveTheme(@QueryParam("src") String src, @QueryParam("indent") int indent ) {
+  public int saveTheme(@QueryParam("src") String src, @QueryParam("indent") int indent ) {
       return Editor.saveTheme(src, indent)
   }
   

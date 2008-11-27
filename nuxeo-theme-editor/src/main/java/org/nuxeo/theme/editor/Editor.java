@@ -220,7 +220,7 @@ public class Editor {
     public static int saveTheme(String src, int indent) {
         int res = 1;
         try {
-            ThemeManager.saveTheme(src, new Integer(indent));
+            ThemeManager.saveTheme(src, indent);
         } catch (ThemeIOException e) {
             res = 0;
         }
