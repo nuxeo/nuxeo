@@ -1,5 +1,4 @@
-<component
-  name="org.nuxeo.ecm.platform.transform.defaultContributions">
+<component name="org.nuxeo.ecm.platform.transform.defaultContributions">
 
   <documentation>
     Default transformation plugins and transform chains.
@@ -8,13 +7,10 @@
     <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
   </documentation>
 
-  <extension
-    target="org.nuxeo.ecm.platform.transform.service.TransformService"
+  <extension target="org.nuxeo.ecm.platform.transform.service.TransformService"
     point="plugins">
 
-    <documentation>
-      Set of default transformation plugins.
-    </documentation>
+    <documentation>Set of default transformation plugins.</documentation>
 
     <!-- This plugin converts the sources to pdf using an external OOo server -->
     <plugin name="any2pdf"
@@ -29,36 +25,18 @@
 
       <!-- Microsoft office documents -->
       <sourceMimeType>application/msword</sourceMimeType>
-      <sourceMimeType>
-        application/vnd.ms-powerpoint
-      </sourceMimeType>
+      <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
       <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
 
       <!-- OpenOffice.org 1.x documents -->
-      <sourceMimeType>
-        application/vnd.sun.xml.writer
-      </sourceMimeType>
-      <sourceMimeType>
-        application/vnd.sun.xml.writer.template
-      </sourceMimeType>
-      <sourceMimeType>
-        application/vnd.sun.xml.impress
-      </sourceMimeType>
-      <sourceMimeType>
-        application/vnd.sun.xml.impress.template
-      </sourceMimeType>
-      <sourceMimeType>
-        application/vnd.sun.xml.calc
-      </sourceMimeType>
-      <sourceMimeType>
-        application/vnd.sun.xml.calc.template
-      </sourceMimeType>
-      <sourceMimeType>
-        application/vnd.sun.xml.draw
-      </sourceMimeType>
-      <sourceMimeType>
-        application/vnd.sun.xml.draw.template
-      </sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.writer</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.writer.template</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.impress</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.impress.template</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc.template</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.draw</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.draw.template</sourceMimeType>
 
       <!-- OpenOffice.org 2.x documents -->
       <sourceMimeType>
@@ -67,9 +45,7 @@
       <sourceMimeType>
         application/vnd.oasis.opendocument.spreadsheet-template
       </sourceMimeType>
-      <sourceMimeType>
-        application/vnd.oasis.opendocument.text
-      </sourceMimeType>
+      <sourceMimeType>application/vnd.oasis.opendocument.text</sourceMimeType>
       <sourceMimeType>
         application/vnd.oasis.opendocument.text-template
       </sourceMimeType>
@@ -144,17 +120,11 @@
       <sourceMimeType>application/msword</sourceMimeType>
 
       <!-- OpenOffice.org 1.x documents -->
-      <sourceMimeType>
-        application/vnd.sun.xml.writer
-      </sourceMimeType>
-      <sourceMimeType>
-        application/vnd.sun.xml.writer.template
-      </sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.writer</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.writer.template</sourceMimeType>
 
       <!-- OpenOffice.org 2.x documents -->
-      <sourceMimeType>
-        application/vnd.oasis.opendocument.text
-      </sourceMimeType>
+      <sourceMimeType>application/vnd.oasis.opendocument.text</sourceMimeType>
       <sourceMimeType>
         application/vnd.oasis.opendocument.text-template
       </sourceMimeType>
@@ -176,12 +146,8 @@
       <!-- Microsoft office documents -->
       <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
       <!-- OpenOffice.org 1.x documents -->
-      <sourceMimeType>
-        application/vnd.sun.xml.calc
-      </sourceMimeType>
-      <sourceMimeType>
-        application/vnd.sun.xml.calc.template
-      </sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc.template</sourceMimeType>
       <!-- OpenOffice.org 2.x documents -->
       <sourceMimeType>
         application/vnd.oasis.opendocument.spreadsheet
@@ -205,16 +171,10 @@
       destinationMimeType="application/vnd.oasis.opendocument.presentation">
 
       <!-- Microsoft office documents -->
-      <sourceMimeType>
-        application/vnd.ms-powerpoint
-      </sourceMimeType>
+      <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
       <!-- OpenOffice.org 1.x documents -->
-      <sourceMimeType>
-        application/vnd.sun.xml.impress
-      </sourceMimeType>
-      <sourceMimeType>
-        application/vnd.sun.xml.impress.template
-      </sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.impress</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.impress.template</sourceMimeType>
       <!-- OpenOffice.org 2.x documents -->
       <sourceMimeType>
         application/vnd.oasis.opendocument.presentation
@@ -241,63 +201,43 @@
     <plugin name="ppt2text_poi"
       class="org.nuxeo.ecm.platform.transform.plugin.poi.PowerpointToTextPlugin"
       destinationMimeType="text/plain">
-      <sourceMimeType>
-        application/vnd.ms-powerpoint
-      </sourceMimeType>
+      <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
     </plugin>
 
     <plugin name="xl2text_jr"
       class="org.nuxeo.ecm.platform.transform.plugin.jr.ExcelToTextPlugin"
       destinationMimeType="text/plain">
-      <sourceMimeType>
-        application/vnd.ms-excel
-      </sourceMimeType>
+      <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
     </plugin>
 
     <plugin name="html2text_jr"
       class="org.nuxeo.ecm.platform.transform.plugin.jr.HtmlToTextPlugin"
       destinationMimeType="text/plain">
-      <sourceMimeType>
-        text/html
-      </sourceMimeType>
+      <sourceMimeType>text/html</sourceMimeType>
     </plugin>
 
     <plugin name="oo2text_jr"
       class="org.nuxeo.ecm.platform.transform.plugin.jr.OOoSimpleTextExtractor"
       destinationMimeType="text/plain">
-      <sourceMimeType>
-        application/vnd.sun.xml.impress
-      </sourceMimeType>
-      <sourceMimeType>
-        application/vnd.sun.xml.impress.template
-      </sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.impress</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.impress.template</sourceMimeType>
       <sourceMimeType>
         application/vnd.oasis.opendocument.presentation
       </sourceMimeType>
       <sourceMimeType>
         application/vnd.oasis.opendocument.presentation-template
       </sourceMimeType>
-      <sourceMimeType>
-        application/vnd.sun.xml.calc
-      </sourceMimeType>
-      <sourceMimeType>
-        application/vnd.sun.xml.calc.template
-      </sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc.template</sourceMimeType>
       <sourceMimeType>
         application/vnd.oasis.opendocument.spreadsheet
       </sourceMimeType>
       <sourceMimeType>
         application/vnd.oasis.opendocument.spreadsheet-template
       </sourceMimeType>
-      <sourceMimeType>
-        application/vnd.sun.xml.writer
-      </sourceMimeType>
-      <sourceMimeType>
-        application/vnd.sun.xml.writer.template
-      </sourceMimeType>
-      <sourceMimeType>
-        application/vnd.oasis.opendocument.text
-      </sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.writer</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.writer.template</sourceMimeType>
+      <sourceMimeType>application/vnd.oasis.opendocument.text</sourceMimeType>
       <sourceMimeType>
         application/vnd.oasis.opendocument.text-template
       </sourceMimeType>
@@ -325,15 +265,19 @@
       <sourceMimeType>text/xml</sourceMimeType>
     </plugin>
 
+    <!-- This plugin extracts text from RFC822 (.eml) documents -->
+    <plugin name="rfc822totext"
+      class="org.nuxeo.ecm.platform.transform.plugin.email.RFC822ToTextPlugin"
+      destinationMimeType="text/plain">
+      <sourceMimeType>message/rfc822</sourceMimeType>
+    </plugin>
+
   </extension>
 
-  <extension
-    target="org.nuxeo.ecm.platform.transform.service.TransformService"
+  <extension target="org.nuxeo.ecm.platform.transform.service.TransformService"
     point="transformers">
 
-    <documentation>
-      Set of default transformation chains.
-    </documentation>
+    <documentation>Set of default transformation chains.</documentation>
 
     <!-- This transformer uses a the OOo plugin to transform documents to pdf-->
     <transformer name="any2pdf"
@@ -375,12 +319,12 @@
     </transformer>
 
     <!-- This transformer uses a the OOo plugin and then the pdf box plugin to transform documents to text-->
-  <!--  remove this transformer
-    <transformer name="any2text"
+    <!--  remove this transformer
+      <transformer name="any2text"
       class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
       <plugin name="any2pdf" />
       <plugin name="pdf2text" />
-    </transformer>
+      </transformer>
     -->
 
     <!-- This transformer tries to find automatically a way to extract text, returns an empty string otherwise-->
@@ -418,6 +362,12 @@
     <transformer name="xml2text"
       class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
       <plugin name="xml2text" />
+    </transformer>
+
+    <!-- This transformer uses the rfc822 plugin to extract text from eml documents -->
+    <transformer name="rfc822totext"
+      class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
+      <plugin name="rfc822totext" />
     </transformer>
 
   </extension>
