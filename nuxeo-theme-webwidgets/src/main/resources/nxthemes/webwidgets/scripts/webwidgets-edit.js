@@ -323,7 +323,7 @@ NXThemesWebWidgets.ImageUploader.prototype = Object.extend(new NXThemesWebWidget
            if (text) {
              var info = text.evalJSON(true);
              var now = new Date().getTime();
-             var src = webEngineContextPath + '/nxthemes-webwidgets/get_widget_data_content?widget_uid=' + encodeURIComponent(widgetUid) +
+             var src = webEngineContextPath + '/nxthemes-webwidgets/render_widget_data?widget_uid=' + encodeURIComponent(widgetUid) +
                '&data=' + encodeURIComponent(name) + '&provider=' + encodeURIComponent(providerName) +
                '&timestamp=' + now;
              controlEl.innerHTML = '<div><img src="' + src + '" /></div>' +
@@ -384,7 +384,7 @@ NXThemesWebWidgets.FileUploader.prototype = Object.extend(new NXThemesWebWidgets
            if (text) {
              var info = text.evalJSON(true);
              var now = new Date().getTime();
-             var src = webEngineContextPath + '/nxthemes-webwidgets/get_widget_data_content?widget_uid=' + encodeURIComponent(widgetUid) +
+             var src = webEngineContextPath + '/nxthemes-webwidgets/render_widget_data?widget_uid=' + encodeURIComponent(widgetUid) +
                 '&data=' + encodeURIComponent(name) + '&provider=' + encodeURIComponent(providerName) +
                 '&timestamp=' + now;
              controlEl.innerHTML = info['filename'] + ' (' + info['content-type'] + ')' +

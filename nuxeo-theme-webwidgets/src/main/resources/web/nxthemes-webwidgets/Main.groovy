@@ -3,6 +3,7 @@ package nxthemesEditor
 import java.io.*
 import javax.ws.rs.*
 import javax.ws.rs.core.*
+import javax.ws.rs.core.Response.ResponseBuilder
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import net.sf.json.JSONObject
@@ -95,9 +96,12 @@ public class Main extends DefaultModule {
     }
     
     @GET @POST
-    @Path("get_widget_data_content")
-    public String getWidgetDataContent(@QueryParam("widget_uid") String widgetUid, @QueryParam("data") String dataName, @QueryParam("provider") String providerName) {
-        return org.nuxeo.theme.webwidgets.Manager.getWidgetDataContent(providerName, widgetUid, dataName)
+    @Path("render_widget_data")
+    public Response renderWidgetData(@QueryParam("widget_uid") String widgetUid, @QueryParam("data") String dataName, @QueryParam("provider") String providerName) {
+        WidgetData data = org.nuxeo.theme.webwidgets.Manager.getWidgetData(providerName, widgetUid, dataName)
+        ResponseBuilder builder = Response.ok(data.getContent())
+        builder.type(data.getContentType())
+        return builder.build();
     }
     
     @GET @POST

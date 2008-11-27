@@ -13,6 +13,8 @@
 
 package org.nuxeo.theme.webwidgets;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -320,7 +322,13 @@ public class Manager {
         if (data == null) {
             return "";
         }
-        return new String(data.getContent());
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try {
+            os.write(data.getContent());
+        } catch (IOException e) {
+            log.error(e);
+        }
+        return os.toString();
     }
     
     public static String getWidgetDataInfo(String providerName, String uid,
