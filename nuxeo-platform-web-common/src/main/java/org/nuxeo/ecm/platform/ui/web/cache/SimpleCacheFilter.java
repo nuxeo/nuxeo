@@ -71,7 +71,7 @@ public class SimpleCacheFilter implements Filter {
             // we are using the format Expires: Thu, 01 Dec 1994 16:00:00 GMT
             Date date = new Date();
             long newDate = date.getTime() + ((new Long(cacheTime)) * 1000);
-            date = new Date(newDate);
+            date.setTime(newDate);
 
             httpResponse.setHeader("Expires",
                     HTTP_EXPIRES_DATE_FORMAT.format(date));
