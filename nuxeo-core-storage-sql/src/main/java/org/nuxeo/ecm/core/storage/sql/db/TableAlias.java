@@ -104,6 +104,10 @@ public class TableAlias implements Table {
         throw new UnsupportedOperationException();
     }
 
+    public String getAddColumnSql(Column column) {
+        throw new UnsupportedOperationException();
+    }
+
     public List<String> getPostCreateSqls() {
         throw new UnsupportedOperationException();
     }

@@ -288,22 +288,66 @@ public class Mapper {
 
             Statement st = connection.createStatement();
             try {
-                /*
-                 * Create missing tables.
-                 */
                 for (Table table : sqlInfo.getDatabase().getTables()) {
-                    String physicalName = table.getName();
-                    if (tableNames.contains(physicalName) ||
-                            tableNames.contains(physicalName.toUpperCase())) {
-                        // table already present
-                        continue;
+                    String tableName = table.getName();
+                    if (!tableNames.contains(tableName) &&
+                            !tableNames.contains(tableName.toUpperCase())) {
+                        /*
+                         * Create missing table.
+                         */
+                        String sql = table.getCreateSql();
+                        logDebug(sql);
+                        st.execute(sql);
+                        for (String s : table.getPostCreateSqls()) {
+                            logDebug(s);
+                            st.execute(s);
+                        }
                     }
-                    String sql = table.getCreateSql();
-                    logDebug(sql);
-                    st.execute(sql);
-                    for (String s : table.getPostCreateSqls()) {
-                        logDebug(s);
-                        st.execute(s);
+                    /*
+                     * Get existing columns.
+                     */
+                    rs = metadata.getColumns(null, null, tableName, "%");
+                    Map<String, Integer> columnTypes = new HashMap<String, Integer>();
+                    while (rs.next()) {
+                        String columnName = rs.getString("COLUMN_NAME").toUpperCase();
+                        int sqlType = rs.getInt("DATA_TYPE");
+                        columnTypes.put(columnName, Integer.valueOf(sqlType));
+                    }
+                    /*
+                     * Update types and create missing columns.
+                     */
+                    for (Column column : table.getColumns()) {
+                        Integer type = columnTypes.remove(column.getPhysicalName().toUpperCase());
+                        if (type == null) {
+                            log.warn("Adding missing column in database: " +
+                                    column.getFullQuotedName());
+                            String sql = table.getAddColumnSql(column);
+                            logDebug(sql);
+                            st.execute(sql);
+                        } else {
+                            int sqlType = type.intValue();
+                            int t = column.getSqlType();
+                            if (t != sqlType) {
+                                // type in database is different...
+                                if (!(t == Types.BIT && sqlType == Types.SMALLINT) // Derby
+                                        &&
+                                        !(t == Types.CLOB && sqlType == Types.VARCHAR) // PostgreSQL
+                                ) {
+                                    log.error(String.format(
+                                            "SQL type mismatch for %s: expected %s, database has %s",
+                                            column.getFullQuotedName(),
+                                            Integer.valueOf(t), type));
+                                }
+                                column.setSqlType(sqlType);
+                            }
+                        }
+                    }
+                    if (!columnTypes.isEmpty()) {
+                        log.warn("Database contains additional unused columns for table " +
+                                table.getQuotedName() +
+                                ": " +
+                                StringUtils.join(new ArrayList<String>(
+                                        columnTypes.keySet()), ", "));
                     }
                 }
 

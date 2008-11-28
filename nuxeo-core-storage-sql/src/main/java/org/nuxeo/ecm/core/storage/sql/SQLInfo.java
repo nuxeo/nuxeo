@@ -606,7 +606,8 @@ public class SQLInfo {
                 }
                 break;
             case BOOLEAN:
-                sqlType = Types.BIT;
+                sqlType = Types.BIT; // many databases don't know BOOLEAN
+                // turned into SMALLINT by Derby
                 break;
             case LONG:
                 sqlType = Types.INTEGER;

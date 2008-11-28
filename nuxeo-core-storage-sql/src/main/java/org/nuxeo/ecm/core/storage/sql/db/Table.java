@@ -64,6 +64,14 @@ public interface Table extends Serializable {
     String getCreateSql();
 
     /**
+     * Computes the SQL statement to alter a table and add a column to it.
+     *
+     * @param column the column to add
+     * @return the SQL alter table string
+     */
+    String getAddColumnSql(Column column);
+
+    /**
      * Computes the SQL statement to finish creating the table, usually some
      * ALTER TABLE statements to add constraints.
      *

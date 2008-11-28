@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.storage.sql.db;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -117,47 +118,67 @@ public class TableImpl implements Table {
      */
     public String getCreateSql() {
         StringBuilder buf = new StringBuilder();
-
         buf.append("CREATE TABLE ");
         buf.append(getQuotedName());
         buf.append(" (");
-
-        boolean first = true;
-        for (Column column : columns.values()) {
-            if (first) {
-                first = false;
-            } else {
+        for (Iterator<Column> it = columns.values().iterator(); it.hasNext();) {
+            addOneColumn(buf, it.next());
+            if (it.hasNext()) {
                 buf.append(", ");
             }
-            buf.append(column.getQuotedName());
-            buf.append(' ');
-            if (column.isIdentity()) {
-                if (dialect.hasDataTypeInIdentityColumn()) {
-                    buf.append(column.getSqlTypeString());
-                    buf.append(' ');
-                }
-                buf.append(dialect.getIdentityColumnString(column.getSqlType()));
-            } else {
-                buf.append(column.getSqlTypeString());
-                String defaultValue = column.getDefaultValue();
-                if (defaultValue != null) {
-                    buf.append(" DEFAULT ");
-                    buf.append(defaultValue);
-                }
-                if (column.isNullable()) {
-                    buf.append(dialect.getNullColumnString());
-                } else {
-                    buf.append(" NOT NULL");
-                }
-            }
-            // unique
-            // check
         }
         // unique
         // check
         buf.append(')');
         buf.append(dialect.getTableTypeString());
         return buf.toString();
+    }
+
+    /**
+     * Computes the SQL statement to alter a table and add a column to it.
+     *
+     * @param column the column to add
+     * @return the SQL alter table string
+     */
+    public String getAddColumnSql(Column column) {
+        StringBuilder buf = new StringBuilder();
+        buf.append("ALTER TABLE ");
+        buf.append(getQuotedName());
+        buf.append(' ');
+        buf.append(dialect.getAddColumnString());
+        buf.append(' ');
+        addOneColumn(buf, column);
+        return buf.toString();
+    }
+
+    /**
+     * Adds to buf the column name and its type and constraints for create /
+     * alter.
+     */
+    protected void addOneColumn(StringBuilder buf, Column column) {
+        buf.append(column.getQuotedName());
+        buf.append(' ');
+        if (column.isIdentity()) {
+            if (dialect.hasDataTypeInIdentityColumn()) {
+                buf.append(column.getSqlTypeString());
+                buf.append(' ');
+            }
+            buf.append(dialect.getIdentityColumnString(column.getSqlType()));
+        } else {
+            buf.append(column.getSqlTypeString());
+            String defaultValue = column.getDefaultValue();
+            if (defaultValue != null) {
+                buf.append(" DEFAULT ");
+                buf.append(defaultValue);
+            }
+            if (column.isNullable()) {
+                buf.append(dialect.getNullColumnString());
+            } else {
+                buf.append(" NOT NULL");
+            }
+        }
+        // unique
+        // check
     }
 
     /**

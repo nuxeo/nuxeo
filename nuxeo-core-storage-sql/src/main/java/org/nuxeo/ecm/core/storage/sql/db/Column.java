@@ -52,7 +52,7 @@ public class Column implements Serializable {
     private final PropertyType type;
 
     /** The {@link java.sql.Types} type */
-    private final int sqlType;
+    private int sqlType;
 
     private final String key;
 
@@ -121,6 +121,10 @@ public class Column implements Serializable {
 
     public int getSqlType() {
         return sqlType;
+    }
+
+    public void setSqlType(int sqlType) {
+        this.sqlType = sqlType;
     }
 
     public String getKey() {
@@ -227,6 +231,7 @@ public class Column implements Serializable {
             ps.setString(index, (String) value);
             return;
         case Types.BIT:
+        case Types.SMALLINT: // Derby
             ps.setBoolean(index, ((Boolean) value).booleanValue());
             return;
         case Types.TIMESTAMP:
@@ -275,6 +280,7 @@ public class Column implements Serializable {
             }
             break;
         case Types.BIT:
+        case Types.SMALLINT: // Derby
             result = rs.getBoolean(index);
             break;
         default:
