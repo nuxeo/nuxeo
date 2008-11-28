@@ -21,22 +21,13 @@ package org.nuxeo.ecm.core.repository.jcr;
 
 import javax.jcr.RepositoryException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Proxy to access the internal [jcr] session and perform operations not
  * available on a higher level (JCRSession).
  *
  * @author DM
- *
  */
 public final class InternalSessionOperationsProxy {
-
-    /**
-     * Logger instance.
-     */
-    private static final Log log = LogFactory.getLog(InternalSessionOperationsProxy.class);
 
     // This is an utility class.
     private InternalSessionOperationsProxy() { }

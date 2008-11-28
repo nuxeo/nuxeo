@@ -43,9 +43,10 @@ public class PropertyDiff implements Iterable<PropertyDiff> {
     public final Set<PropertyDiff> children;
 
     public PropertyDiff(int type, String name) {
-        this (type, name, null);
+        this(type, name, null);
     }
 
+    // FIXME: not fully implemented
     public PropertyDiff(int type, String name, Serializable value) {
         children = new HashSet<PropertyDiff>();
     }
@@ -63,7 +64,6 @@ public class PropertyDiff implements Iterable<PropertyDiff> {
     }
 
     public void add(String name, Serializable value) {
-
         children.add(new PropertyDiff(ADDED, name, value));
     }
 
@@ -74,9 +74,14 @@ public class PropertyDiff implements Iterable<PropertyDiff> {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof PropertyDiff) {
-            return name.equals(((PropertyDiff)obj).name);
+            return name.equals(((PropertyDiff) obj).name);
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return (name == null) ? 0 : name.hashCode();
     }
 
 }

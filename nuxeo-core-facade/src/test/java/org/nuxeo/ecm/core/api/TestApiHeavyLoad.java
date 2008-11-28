@@ -32,29 +32,29 @@ public class TestApiHeavyLoad extends TestConnection {
     private static final Log log = LogFactory.getLog(TestApiHeavyLoad.class);
 
     protected void doDeployments() throws Exception {
-        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+        deployContrib(TestConstants.CORE_BUNDLE,
                 "OSGI-INF/CoreService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+        deployContrib(TestConstants.CORE_BUNDLE,
                 "OSGI-INF/SecurityService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "TypeService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "permissions-contrib.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "RepositoryService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "test-CoreExtensions.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "CoreTestExtensions.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "DemoRepository.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "LifeCycleService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "LifeCycleServiceExtensions.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "CoreEventListenerService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "DocumentAdapterService.xml");
     }
 

@@ -50,18 +50,6 @@ public class DocumentModelComparator implements Sorter {
     final Map<String, String> orderBy;
 
     /**
-     * Constructor using a map of property names to compare on.
-     *
-     * @param orderBy map using property names as keys, and "asc" or "desc" as
-     *            values. Should be a {@link LinkedHashMap} if order of criteria
-     *            matters.
-     */
-    public DocumentModelComparator(Map<String, String> orderBy) {
-        this.schemaName = null;
-        this.orderBy = orderBy;
-    }
-
-    /**
      * Constructor using a schema and a map of field names to compare on.
      *
      * @param schemaName the schema name
@@ -73,6 +61,17 @@ public class DocumentModelComparator implements Sorter {
             Map<String, String> orderBy) {
         this.schemaName = schemaName;
         this.orderBy = orderBy;
+    }
+
+    /**
+     * Constructor using a map of property names to compare on.
+     *
+     * @param orderBy map using property names as keys, and "asc" or "desc" as
+     *            values. Should be a {@link LinkedHashMap} if order of criteria
+     *            matters.
+     */
+    public DocumentModelComparator(Map<String, String> orderBy) {
+        this(null, orderBy);
     }
 
     protected int compare(Object v1, Object v2, boolean asc) {
@@ -143,4 +142,5 @@ public class DocumentModelComparator implements Sorter {
         }
         return cmp;
     }
+
 }

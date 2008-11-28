@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -50,6 +51,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.exception.JDBCExceptionHelper;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionFragmentIterator;
@@ -203,8 +205,7 @@ public class Mapper {
     // for debug
     protected void logSQL(String sql, List<Serializable> values) {
         for (Serializable v : values) {
-            String value;
-            value = loggedValue(v);
+            String value = loggedValue(v);
             sql = sql.replaceFirst("\\?", value);
         }
         logDebug(sql);
@@ -244,6 +245,19 @@ public class Mapper {
         if (value instanceof Binary) {
             return "'" + ((Binary) value).getDigest() + "'";
         }
+        if (value.getClass().isArray()) {
+            Serializable[] v = (Serializable[]) value;
+            StringBuilder b = new StringBuilder();
+            b.append('[');
+            for (int i = 0; i < v.length; i++) {
+                if (i > 0) {
+                    b.append(',');
+                }
+                b.append(loggedValue(v[i]));
+            }
+            b.append(']');
+            return b.toString();
+        }
         return value.toString();
     }
 
@@ -275,7 +289,7 @@ public class Mapper {
             Statement st = connection.createStatement();
             try {
                 for (Table table : sqlInfo.getDatabase().getTables()) {
-                    String tableName = table.getPhysicalName();
+                    String tableName = table.getName();
                     if (!tableNames.contains(tableName) &&
                             !tableNames.contains(tableName.toUpperCase())) {
                         /*
@@ -824,10 +838,10 @@ public class Mapper {
                     return null;
                 }
                 // construct the row from the results
-                Serializable id = null;
                 Map<String, Serializable> map = new HashMap<String, Serializable>();
                 i = 0;
                 List<Column> columns = sqlInfo.getSelectByChildNameWhatColumns(complexProp);
+                Serializable id = null;
                 for (Column column : columns) {
                     i++;
                     String key = column.getKey();
@@ -1450,15 +1464,23 @@ public class Mapper {
      * Makes a NXQL query to the database.
      *
      * @param query the query as a parsed tree
+     * @param queryFilter the query filter
      * @param session the current session (to resolve paths)
      * @return the results
      * @throws StorageException
      * @throws SQLException
      */
-    public List<Serializable> query(SQLQuery query, Session session)
-            throws StorageException, SQLException {
-        QueryMaker queryMaker = new QueryMaker(sqlInfo, model, session, query);
+    public List<Serializable> query(SQLQuery query, QueryFilter queryFilter,
+            Session session) throws StorageException, SQLException {
+        QueryMaker queryMaker = new QueryMaker(sqlInfo, model, session, query,
+                queryFilter);
         queryMaker.makeQuery();
+
+        if (queryMaker.selectInfo == null) {
+            logDebug("Query cannot return anything due to conflicting clauses");
+            return Collections.emptyList();
+        }
+
         if (log.isDebugEnabled()) {
             logSQL(queryMaker.selectInfo.sql, queryMaker.selectParams);
         }
@@ -1470,6 +1492,10 @@ public class Mapper {
                     Calendar cal = (Calendar) object;
                     Timestamp ts = new Timestamp(cal.getTimeInMillis());
                     ps.setTimestamp(i++, ts, cal); // cal passed for timezone
+                } else if (object instanceof String[]) {
+                    Array array = sqlInfo.dialect.createArrayOf(Types.VARCHAR,
+                            (Object[]) object);
+                    ps.setArray(i++, array);
                 } else {
                     ps.setObject(i++, object);
                 }

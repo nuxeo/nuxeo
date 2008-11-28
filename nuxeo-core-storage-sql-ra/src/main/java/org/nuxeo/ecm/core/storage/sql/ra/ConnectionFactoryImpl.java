@@ -75,7 +75,7 @@ public class ConnectionFactoryImpl implements Repository,
      * constructed by application code and passed our manual
      * {@link ConnectionManagerImpl}.
      */
-    private boolean managed;
+    private final boolean managed;
 
     private boolean firstAccessInitialized;
 

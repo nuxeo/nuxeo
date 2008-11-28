@@ -44,8 +44,7 @@ public class LocalRepositoryInstanceHandler extends RepositoryInstanceHandler {
     }
 
     public LocalRepositoryInstanceHandler(Repository repository, String username) {
-        super(repository);
-        this.principal = new UserPrincipal(username);
+        this(repository, new UserPrincipal(username));
     }
 
     @Override

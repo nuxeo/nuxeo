@@ -35,11 +35,24 @@ public interface LifeCycleService {
 
     /**
      * Initializes the life cycle for the given document.
+     * <p>
+     * Document state will be set to the life cycle initial state.
      *
      * @param doc the document instance
      * @throws LifeCycleException
      */
     void initialize(Document doc) throws LifeCycleException;
+
+    /**
+     * Initializes the life cycle for the given document.
+     * <p>
+     * Tries to set given state on document, if it's a valid initial state.
+     *
+     * @param doc the document instance
+     * @param initialStateName the initial state name
+     * @throws LifeCycleException
+     */
+    void initialize(Document doc, String initialStateName) throws LifeCycleException;
 
     /**
      * Follows a given transition.
@@ -57,7 +70,9 @@ public interface LifeCycleService {
      * @param doc a document instance
      * @return a string holding the life cycle state of the
      * @throws LifeCycleException
+     * @deprecated use the Document method directly
      */
+    @Deprecated
     String getCurrentLifeCycleState(Document doc) throws LifeCycleException;
 
     /**
@@ -66,7 +81,9 @@ public interface LifeCycleService {
      * @param doc a document instance
      * @param stateName the name of state as a string
      * @throws LifeCycleException
+     * @deprecated use the Document method directly
      */
+    @Deprecated
     void setCurrentLifeCycleState(Document doc, String stateName)
             throws LifeCycleException;
 
@@ -76,27 +93,22 @@ public interface LifeCycleService {
      * @param doc the document instance
      * @return the life cycle policy name
      * @throws LifeCycleException TODO
+     * @deprecated use the Document method directly
      */
+    @Deprecated
     String getLifeCyclePolicy(Document doc) throws LifeCycleException;
 
     /**
      * Sets the life cycle policy for this document.
      *
-     * @param doc
-     *            the document instance
-     * @param policy
-     *            the life cycle policy name
+     * @param doc the document instance
+     * @param policy the life cycle policy name
      * @throws LifeCycleException
+     * @deprecated use the Document method directly
      */
+    @Deprecated
     void setLifeCycelPolicy(Document doc, String policy)
             throws LifeCycleException;
-
-    /**
-     * Returns the life cycle manager.
-     *
-     * @return a LifeCycleManager
-     */
-    LifeCycleManager getLifeCycleManager();
 
     /**
      * Returns a life cycle given its name.
@@ -146,8 +158,7 @@ public interface LifeCycleService {
     /**
      * Sets the mapping from life cycle names to life cycle instances.
      *
-     * @param lifeCycles
-     *            a mapping from life cycle names to life cycle instances
+     * @param lifeCycles a mapping from life cycle names to life cycle instances
      */
     void setLifeCycles(Map<String, LifeCycle> lifeCycles);
 
@@ -160,15 +171,8 @@ public interface LifeCycleService {
     LifeCycle getLifeCycleFor(Document doc);
 
     /**
-     * Returns the life cycle manager instance in use for a given document.
-     *
-     * @param doc the document instance
-     * @return the life cycle manager instance
-     */
-    LifeCycleManager getLifeCycleManagerFor(Document doc);
-
-    /**
-     * Sets the current state to the initial state as defined by the associated lifecycle.
+     * Sets the current state to the initial state as defined by the associated
+     * lifecycle.
      *
      * @param doc
      * @throws LifeCycleException

@@ -12,18 +12,35 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
- * $Id$
+ *     Anahide Tchertchian
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.security;
+
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery.Transformer;
 
 /**
  * Abstract security policy
  *
  * @author Anahide Tchertchian
+ * @author Florent Guillaume
  */
 public abstract class AbstractSecurityPolicy implements SecurityPolicy {
+
+    public boolean isRestrictingPermission(String permission) {
+        // by default, we don't know, so yes
+        return true;
+    }
+
+    public boolean isExpressibleInQuery() {
+        // by default, we don't know, so no
+        return false;
+    }
+
+    public Transformer getQueryTransformer() {
+        // implement this if isExpressibleInQuery is true
+        throw new UnsupportedOperationException();
+    }
 
 }
