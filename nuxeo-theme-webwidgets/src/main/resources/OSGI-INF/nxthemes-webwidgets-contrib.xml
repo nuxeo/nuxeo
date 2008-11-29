@@ -140,7 +140,7 @@
       <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>web widget region</model-type>
-      <icon>/nuxeo/site/nxthemes/webwidgets/icons/panel.png</icon>
+      <icon>/skin/nxthemes-webwidgets/icons/panel.png</icon>
       <class>org.nuxeo.theme.webwidgets.PanelView</class>
       <resource>nxthemes-webwidgets-view.js</resource>
     </view>

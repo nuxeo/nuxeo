@@ -253,7 +253,6 @@
       <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>text</model-type>
-      <icon>/nuxeo/nxthemes/icons/plain-text.png</icon>
       <template>nxthemes/html/widgets/plain-text.xml</template>
     </view>
 
@@ -261,7 +260,6 @@
       <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>html</model-type>
-      <icon>/nuxeo/nxthemes/icons/plain-html.png</icon>
       <template>nxthemes/html/widgets/plain-html.xml</template>
     </view>
 

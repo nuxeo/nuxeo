@@ -58,7 +58,7 @@
 
               <div id="stylePreviewArea"
                 element="#{selected_element.uid}">
-                <img src="/nuxeo/site/files/nxthemes-editor/img/progressbar.gif" alt=""
+                <img src="${skinPath}/img/progressbar.gif" alt=""
                   width="220" height="19"
                   style="padding: 5px; border: 1px solid #ccc; background-color: #fff" />
                 <@nxthemes_view resource="style-preview.json" />
@@ -71,13 +71,13 @@
 
             <!--  Style properties form -->
             <@nxthemes_panel identifier="style properties"
-              url="/nxthemes-editor/styleProperties"
+              url="${basePath}/nxthemes-editor/styleProperties"
               controlledBy="style editor perspectives,style editor actions,element form actions"
               visibleInPerspectives="style properties,style picker" />
 
             <!--  Style picker -->
             <@nxthemes_panel identifier="style picker"
-              url="/nxthemes-editor/stylePicker"
+              url="${basePath}/nxthemes-editor/stylePicker"
               controlledBy="style editor perspectives,toolbox mover"
               visibleInPerspectives="style picker" />
 

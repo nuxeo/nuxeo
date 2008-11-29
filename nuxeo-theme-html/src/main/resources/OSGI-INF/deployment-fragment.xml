@@ -77,9 +77,6 @@
   
   
   <install>
-    <unzip from="${bundle.fileName}" to="/">
-      <include>nuxeo.war/**</include>
-    </unzip>
 
     <delete path="nxthemes-html.tmp" />
     <mkdir path="nxthemes-html.tmp" />

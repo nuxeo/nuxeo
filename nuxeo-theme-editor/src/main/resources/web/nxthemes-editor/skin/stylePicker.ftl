@@ -3,7 +3,7 @@
 
 <div class="title">
 <img class="close" onclick="javascript:NXThemesStyleEditor.closeStylePicker()"
-     src="/skin/nxthemes-editor/img/close-button.png" width="14" height="14" alt="" />
+     src="${skinPath}/img/close-button.png" width="14" height="14" alt="" />
   Presets - ${style_category}</div>
 
   <div class="header">PRESETS:

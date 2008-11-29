@@ -3,7 +3,7 @@
 
 <div class="title">
 <img class="close" onclick="javascript:NXThemesEditor.backToCanvas()"
-     src="/skin/nxthemes-editor/img/close-button.png" width="14" height="14" alt="" />
+     src="${skinPath}/img/close-button.png" width="14" height="14" alt="" />
 Fragments
 </div>
 <ul>
@@ -12,7 +12,7 @@ Fragments
     <ul class="views" style="display:none">
       <#list fragment.getViews() as v>
         <li class="nxthemesFragmentFactory" title="Drag this widget to the canvas"
-          typename="${fragment.getFragmentType().getTypeName()}/${v.getViewName()}"><img src="${v.getIcon()}" width="16" height="16" /> ${v.getViewName()}</li>
+          typename="${fragment.getFragmentType().getTypeName()}/${v.getViewName()}"><img src="${basePath}/${v.getIcon()}" width="16" height="16" /> ${v.getViewName()}</li>
       </#list>
     </ul>
   </#list>

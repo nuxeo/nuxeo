@@ -111,7 +111,7 @@
     <view name="block region" template-engine="freemarker">
       <format-type>widget</format-type>
       <model-type>region</model-type>
-      <icon>/nuxeo/nxthemes/icons/block-region.png</icon>
+      <icon>/skin/nxthemes/icons/block-region.png</icon>
       <class>
         org.nuxeo.theme.webengine.fm.filters.widgets.BlockRegionView
       </class>
@@ -120,14 +120,14 @@
     <view name="plain text" template-engine="freemarker">
       <format-type>widget</format-type>
       <model-type>text</model-type>
-      <icon>/nuxeo/nxthemes/icons/plain-text.png</icon>
+      <icon>/skin/nxthemes/icons/plain-text.png</icon>
       <template>nxthemes/webengine/fm/widgets/plain-text.xml</template>
     </view>
 
     <view name="plain html" template-engine="freemarker">
       <format-type>widget</format-type>
       <model-type>html</model-type>
-      <icon>/nuxeo/nxthemes/icons/plain-html.png</icon>
+      <icon>/skin/nxthemes/icons/plain-html.png</icon>
       <template>nxthemes/webengine/fm/widgets/plain-html.xml</template>
     </view>    
 

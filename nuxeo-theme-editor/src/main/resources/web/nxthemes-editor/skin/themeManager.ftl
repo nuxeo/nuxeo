@@ -36,13 +36,13 @@ window.scrollTo(0,0);
       <td class="action">
         <a href="javascript:void(0)" onclick="NXThemesEditor.loadTheme('${theme.src}')">
           <#if theme.reloadable>
-            <img src="/skin/nxthemes-editor/img/theme-reload.png" width="16" height="16" />
+            <img src="${skinPath}/img/theme-reload.png" width="16" height="16" />
             <span>reload</span>
           <#else>
             &nbsp;
           </#if>
           <#if theme.loadable>
-            <img src="/skin/nxthemes-editor/img/theme-load.png" width="16" height="16" />          
+            <img src="${skinPath}/img/theme-load.png" width="16" height="16" />          
             <span rendered="${theme.loadable}" value="load" />
           <#else>
             &nbsp;
@@ -52,7 +52,7 @@ window.scrollTo(0,0);
       <td class="action">
         <#if theme.saveable>
           <a href="javascript:void(0)" onclick="NXThemesEditor.saveTheme('${theme.src}', 2)">
-            <img src="/skin/nxthemes-editor/img/theme-save.png" width="16" height="16" />
+            <img src="${skinPath}/img/theme-save.png" width="16" height="16" />
             <span>save</span>
           </a>
         <#else>
@@ -62,7 +62,7 @@ window.scrollTo(0,0);
       <td class="action">
         <a href="/nuxeo/nxthemes-xml-export?theme=${theme.name}&amp;download=1&amp;indent=2">
           <#if theme.exportable>
-            <img src="/skin/nxthemes-editor/img/theme-download.png" width="16" height="16" />
+            <img src="${skinPath}/img/theme-download.png" width="16" height="16" />
             <span>download</span>
           <#else>
             &nbsp;
@@ -71,7 +71,7 @@ window.scrollTo(0,0);
       </td>
       <td class="action">
         <a href="javascript:void(0)" onclick="NXThemesEditor.repairTheme('${theme.name}')">
-          <img src="/skin/nxthemes-editor/img/theme-repair.png" width="16" height="16" />
+          <img src="${skinPath}/img/theme-repair.png" width="16" height="16" />
           <span>repair</span>
         </a>
       </td>
