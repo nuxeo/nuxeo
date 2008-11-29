@@ -184,7 +184,7 @@ public class JSONModel extends StandaloneFilter {
             alignmentInfo.put("choice", position);
             alignmentInfo.put("label", position);
             alignmentInfo.put("icon", String.format(
-                    "/skin/nxthemes-editor/icons/align-%s-16.png", position));
+                    "/skin/nxthemes-editor/img/align-%s-16.png", position));
             alignments.add(alignmentInfo);
         }
         return alignments;

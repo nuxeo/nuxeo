@@ -3,8 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: NXThemes Web Engine
 Bundle-SymbolicName: org.nuxeo.theme.webengine;singleton:=true
 Bundle-Vendor: Chalmers
-Nuxeo-Component: OSGI-INF/nxthemes-webengine-contrib.xml,
- OSGI-INF/web-deployment-contrib.xml
+Nuxeo-Component: OSGI-INF/nxthemes-webengine-contrib.xml
 Bundle-Localization: bundle
 Bundle-Version: ${eclipseVersion}-r${buildNumber}
 Require-Bundle: org.nuxeo.theme.html, org.nuxeo.ecm.webengine.core

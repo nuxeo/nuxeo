@@ -71,7 +71,7 @@ public class Main extends DefaultModule {
   @GET
   @Path("fragmentFactory")
   public Object renderFragmentFactory(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("fragmentFactory.ftl").arg("fragments", getFragments())
+    return getTemplate("fragmentFactory.ftl").arg("fragments", getFragments(path))
   }
 
   @GET

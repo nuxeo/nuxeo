@@ -2,15 +2,15 @@
      "area": "nxthemesCanvasArea",
      "widget": {
        "type": "contextmenu",
-       "noIcon": "/skin/nxthemes-editor/icons/noicon-16.png",
-       "arrow":  "/skin/nxthemes-editor/icons/arrow-16.png",
+       "noIcon": "/skin/nxthemes-editor/img/noicon-16.png",
+       "arrow":  "/skin/nxthemes-editor/img/arrow-16.png",
        "showDisabled": false,
        "items": [
          {"type": "title"
          },
          {"type": "item",
           "label": "Edit",
-          "icon": "/skin/nxthemes-editor/icons/edit-16.png",
+          "icon": "/skin/nxthemes-editor/img/edit-16.png",
           "action": "edit element",
           "visible": "editable"
          },
@@ -19,7 +19,7 @@
          {"type": "submenu",
           "label": "Widget",
           "visible": "has widget",
-          "icon": "/skin/nxthemes-editor/icons/set-widget-16.png",
+          "icon": "/skin/nxthemes-editor/img/set-widget-16.png",
           "items": [
             {"type": "selection",
              "action": "set element widget",
@@ -29,7 +29,7 @@
          },
          {"type": "item",
           "label": "Style",
-          "icon": "/skin/nxthemes-editor/icons/style-16.png",
+          "icon": "/skin/nxthemes-editor/img/style-16.png",
           "action": "change element style",
           "visible": "has style"
          },
@@ -37,13 +37,13 @@
          },
          {"type": "item",
           "label": "Duplicate",
-          "icon": "/skin/nxthemes-editor/icons/duplicate-16.png",
+          "icon": "/skin/nxthemes-editor/img/duplicate-16.png",
           "action": "duplicate element",
           "visible": "duplicable"
          },
          {"type": "submenu",
           "label": "Align",
-          "icon": "/skin/nxthemes-editor/icons/align-16.png",
+          "icon": "/skin/nxthemes-editor/img/align-16.png",
           "visible": "alignable",
           "items": [
             {"type": "selection",
@@ -54,25 +54,25 @@
          },
          {"type": "item",
           "label": "Padding",
-          "icon": "/skin/nxthemes-editor/icons/padding-16.png",
+          "icon": "/skin/nxthemes-editor/img/padding-16.png",
           "action": "set element padding",
           "visible": "has padding"
          },
          {"type": "item",
           "label": "Split",
-          "icon": "/skin/nxthemes-editor/icons/split-16.png",
+          "icon": "/skin/nxthemes-editor/img/split-16.png",
           "action": "split element",
           "visible": "splittable"
          },
          {"type": "item",
           "label": "Copy",
-          "icon": "/skin/nxthemes-editor/icons/copy-16.png",
+          "icon": "/skin/nxthemes-editor/img/copy-16.png",
           "action": "copy element",
           "visible": "copyable"
          },
          {"type": "item",
           "label": "Paste",
-          "icon": "/skin/nxthemes-editor/icons/paste-16.png",
+          "icon": "/skin/nxthemes-editor/img/paste-16.png",
           "action": "paste element",
           "visible": "pastable"
          },
@@ -80,7 +80,7 @@
          },
          {"type": "item",
           "label": "Delete",
-          "icon": "/skin/nxthemes-editor/icons/delete-16.png",
+          "icon": "/skin/nxthemes-editor/img/delete-16.png",
           "action": "delete element",
           "confirm": "Deleting, are you sure?",
           "visible": "deletable"
