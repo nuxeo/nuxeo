@@ -44,7 +44,7 @@ public final class WidgetType {
 
     private String thumbnail = "";
 
-    private String icon = "/skin/nxthemes-webwidgets/icons/default-widget.png";
+    private String icon;
 
     private String source;
 
