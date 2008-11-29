@@ -3,6 +3,7 @@ package nxthemesEditor
 import java.io.*
 import javax.ws.rs.*
 import javax.ws.rs.core.*
+import javax.ws.rs.core.Response.ResponseBuilder
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import net.sf.json.JSONObject
@@ -426,6 +427,15 @@ public class Main extends DefaultModule {
       Element element = ThemeManager.getElementById(id)
       Editor.updateElementWidget(element, viewName)
   }
+  
+  @GET @POST
+  @Path("render_view_icon")
+  public Response renderViewIcon(@QueryParam("name") String viewTypeName) {
+      byte[] content = org.nuxeo.theme.editor.Editor.getViewIconContent(viewTypeName)
+      ResponseBuilder builder = Response.ok(content)
+      // builder.type(???)
+      return builder.build();
+    }
   
   /* API */
    

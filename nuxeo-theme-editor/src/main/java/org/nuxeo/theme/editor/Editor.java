@@ -44,6 +44,7 @@ import org.nuxeo.theme.properties.FieldIO;
 import org.nuxeo.theme.themes.ThemeIOException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeFamily;
+import org.nuxeo.theme.views.ViewType;
 
 public class Editor {
 
@@ -610,5 +611,17 @@ public class Editor {
         eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
                 newSection, null));
     }
+    
+    public static byte[] getViewIconContent(final String viewTypeName) {
+        ViewType viewType = (ViewType) Manager.getTypeRegistry().lookup(TypeFamily.VIEW, viewTypeName);
+        String iconResourcePath = null;
+        if (viewType != null) {
+            iconResourcePath = viewType.getIcon();
+        }
+        if (iconResourcePath == null) {
+            iconResourcePath = "nxthemes/html/icons/no-icon.png";
+        }
+        return org.nuxeo.theme.Utils.readResourceAsBytes(iconResourcePath);
+     }
 
 }

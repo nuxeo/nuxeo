@@ -142,7 +142,7 @@ public class TestThemeSerializer extends NXRuntimeTestCase {
         cell.addChild(fragment1);
         cell.addChild(fragment2);
 
-        assertEquals(Utils.getFileContent("themeSerializerOutput.xml"),
+        assertEquals(Utils.readResourceAsString("themeSerializerOutput.xml"),
                 new ThemeSerializer().serializeToXml(theme, 4));
     }
 

@@ -25,7 +25,7 @@
       <li class="nxthemesWebWidgetFactory"
            title="${type.description}"
            typename="${type.typeName}">
-           <img src="${basePath}/${type.icon}" width="16" height="16" alt="" title="Add widgets" />
+           <img src="${basePath}/nxthemes-webwidgets/render_widget_icon?name=${type.typeName}" width="16" height="16" alt="" title="Add widget" />
            ${type.typeName}
       </li>
     </#list>

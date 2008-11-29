@@ -185,7 +185,7 @@ public class Service extends DefaultComponent {
 
     private void initializeWidget(WidgetType widgetType) {
         final String path = widgetType.getPath();
-        final String source = Utils.readResource(path);
+        final String source = org.nuxeo.theme.Utils.readResourceAsString(path);
         widgetType.setSource(source);
         final String icon = Utils.extractIcon(source);
         if (icon != null) {

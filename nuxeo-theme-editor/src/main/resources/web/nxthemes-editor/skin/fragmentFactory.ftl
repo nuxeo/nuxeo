@@ -12,7 +12,7 @@ Fragments
     <ul class="views" style="display:none">
       <#list fragment.getViews() as v>
         <li class="nxthemesFragmentFactory" title="Drag this widget to the canvas"
-          typename="${fragment.getFragmentType().getTypeName()}/${v.getViewName()}"><img src="${basePath}/${v.getIcon()}" width="16" height="16" /> ${v.getViewName()}</li>
+          typename="${fragment.getFragmentType().getTypeName()}/${v.getViewName()}"><img src="${basePath}/nxthemes-editor/render_view_icon?name=${v.getTypeName()}" width="16" height="16" /> ${v.getViewName()}</li>
       </#list>
     </ul>
   </#list>

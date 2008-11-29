@@ -14,11 +14,13 @@
     <widget name="feed reader">
       <category>syndication</category>
       <path>nxthemes/webwidgets/samples/feedreader.html</path>
+      <icon>nxthemes/webwidgets/samples/feed-reader.png</icon>
     </widget>
 
     <widget name="uwa module">
       <category>modules</category>
       <path>nxthemes/webwidgets/samples/uwa-module.html</path>
+      <icon>nxthemes/webwidgets/samples/uwa-module.png</icon>
     </widget>
 
     <widget name="image box">

@@ -14,15 +14,9 @@
 
 package org.nuxeo.theme.webwidgets;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -210,67 +204,6 @@ public final class Utils {
             }
         }
         return schema;
-    }
-
-    public static String readResource(final String path) {
-        String content = null;
-        InputStream is = null;
-        try {
-            is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                    path);
-            if (is == null) {
-                log.warn("Resource not found: " + path);
-            } else {
-                Reader in = null;
-                try {
-                    in = new BufferedReader(new InputStreamReader(is));
-                    final StringBuilder sb = new StringBuilder();
-                    int ch;
-                    while ((ch = in.read()) > -1) {
-                        sb.append((char) ch);
-                    }
-                    content = sb.toString();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (in != null) {
-                        in.close();
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    is = null;
-                }
-            }
-        }
-        return content;
-    }
-
-    public static String fetchUrl(URL url) {
-        String content = null;
-        try {
-            final InputStream in = url.openStream();
-            final ByteArrayOutputStream os = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            int i;
-            while ((i = in.read(buffer)) != -1) {
-                os.write(buffer, 0, i);
-            }
-            content = os.toString();
-            in.close();
-            os.close();
-        } catch (IOException e) {
-            log.error("Could not retrieve URL: " + url.toString());
-        }
-        return content;
     }
 
 }

@@ -14,15 +14,13 @@
 
 package org.nuxeo.theme;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -50,25 +48,38 @@ public final class Utils {
         return text.replaceAll("\n", " ").replaceAll("\\t+", " ").replaceAll(
                 "\\s+", " ").trim();
     }
-
-    public static String getFileContent(String name) {
+    
+    public static byte[] readResourceAsBytes(final String path) {
+        return readResource(path).toByteArray();
+    }
+    
+    public static String readResourceAsString(final String path) {
+        return readResource(path).toString();
+    }
+    
+    private static ByteArrayOutputStream readResource(final String path) {
         InputStream is = null;
-        StringBuilder content = new StringBuilder();
+        ByteArrayOutputStream os = null;
         try {
             is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                    name);
-            Reader in = null;
-            try {
-                in = new BufferedReader(new InputStreamReader(is));
-                int ch;
-                while ((ch = in.read()) > -1) {
-                    content.append((char) ch);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (in != null) {
-                    in.close();
+                    path);
+            if (is == null) {
+                log.warn("Resource not found: " + path);
+            } else {
+                try {
+                    os = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[1024];
+                    int i;
+                    while ((i = is.read(buffer)) != -1) {
+                        os.write(buffer, 0, i);
+                    }
+                    os.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (os != null) {
+                        os.close();
+                    }
                 }
             }
         } catch (IOException e) {
@@ -84,7 +95,26 @@ public final class Utils {
                 }
             }
         }
-        return content.toString();
+        return os;
+    }
+
+    public static String fetchUrl(URL url) {
+        String content = null;
+        try {
+            final InputStream in = url.openStream();
+            final ByteArrayOutputStream os = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int i;
+            while ((i = in.read(buffer)) != -1) {
+                os.write(buffer, 0, i);
+            }
+            content = os.toString();
+            in.close();
+            os.close();
+        } catch (IOException e) {
+            log.error("Could not retrieve URL: " + url.toString());
+        }
+        return content;
     }
 
     public static void writeFile(URL url, String text) {
@@ -102,7 +132,7 @@ public final class Utils {
                 out.write(text);
                 out.close();
             }
-            
+
         } else {
             OutputStream os = null;
             URLConnection urlc;

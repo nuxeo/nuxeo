@@ -43,7 +43,7 @@ public class MVCElement {
             if (resourceType == null) {
                 log.warn("Could not find resource: " + resource);
             } else {
-                sb.append(org.nuxeo.theme.Utils.getFileContent(resourceType.getPath()));
+                sb.append(org.nuxeo.theme.Utils.readResourceAsString(resourceType.getPath()));
             }
         }
 

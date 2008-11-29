@@ -120,14 +120,14 @@
     <view name="plain text" template-engine="freemarker">
       <format-type>widget</format-type>
       <model-type>text</model-type>
-      <icon>/skin/nxthemes/icons/plain-text.png</icon>
+      <icon>nxthemes/html/icons/plain-text.png</icon>
       <template>nxthemes/webengine/fm/widgets/plain-text.xml</template>
     </view>
 
     <view name="plain html" template-engine="freemarker">
       <format-type>widget</format-type>
       <model-type>html</model-type>
-      <icon>/skin/nxthemes/icons/plain-html.png</icon>
+      <icon>nxthemes/html/icons/plain-html.png</icon>
       <template>nxthemes/webengine/fm/widgets/plain-html.xml</template>
     </view>    
 

@@ -73,7 +73,7 @@ public final class AjaxProxy extends HttpServlet implements Serializable {
         }
         String content = "";
         if (url != null) {
-            content = Utils.fetchUrl(url);
+            content = org.nuxeo.theme.Utils.fetchUrl(url);
         }
 
         final PrintWriter responseWriter = response.getWriter();

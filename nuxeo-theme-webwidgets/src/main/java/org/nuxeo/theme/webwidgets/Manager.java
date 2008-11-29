@@ -32,6 +32,8 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.theme.types.TypeFamily;
+import org.nuxeo.theme.views.ViewType;
 
 public class Manager {
 
@@ -395,4 +397,15 @@ public class Manager {
         return org.nuxeo.theme.html.Utils.toJson(data);
     }
 
+    public static byte[] getWidgetIconContent(final String widgetTypeName) {
+        WidgetType widgetType = getWidgetType(widgetTypeName);
+        String iconResourcePath = null;
+        if (widgetType != null) {
+            iconResourcePath = widgetType.getIcon();
+        }
+        if (iconResourcePath == null) {
+            iconResourcePath = "nxthemes/webwidgets/icons/default-widget.png";
+        }
+        return org.nuxeo.theme.Utils.readResourceAsBytes(iconResourcePath);
+     }
 }

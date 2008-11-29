@@ -117,6 +117,15 @@ public class Main extends DefaultModule {
         return org.nuxeo.theme.webwidgets.Manager.getWidgetDecoration(decorationName)
     }
     
+    @GET @POST
+    @Path("render_widget_icon")
+    public Response renderWidgetIcon(@QueryParam("name") String widgetTypeName) {
+        byte[] content = org.nuxeo.theme.webwidgets.Manager.getWidgetIconContent(widgetTypeName)
+        ResponseBuilder builder = Response.ok(content)
+        // builder.type(???)
+        return builder.build();
+      }
+    
     /* API */
   
     public static String getSelectedWidgetCategory() {

@@ -22,8 +22,10 @@ import org.nuxeo.theme.views.ViewType;
 
 public class FragmentInfo {
 
-    FragmentType fragmentType;
+    private FragmentType fragmentType;
 
+    public List<ViewType> viewTypes = new ArrayList<ViewType>();
+    
     FragmentInfo(FragmentType fragmentType) {
         this.fragmentType = fragmentType;
     }
@@ -35,8 +37,6 @@ public class FragmentInfo {
     public FragmentType getFragmentType() {
         return fragmentType;
     }
-
-    public List<ViewType> viewTypes = new ArrayList<ViewType>();
 
     public void addView(final ViewType viewType) {
         viewTypes.add(viewType);
