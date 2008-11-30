@@ -506,6 +506,19 @@ public class Editor {
         return duplicate.getUid();
     }
 
+    public static void createStyle(Element element) {
+        if (element == null) {
+            return;
+        }
+        final Format style = FormatFactory.create("style");
+        ThemeManager themeManager = Manager.getThemeManager();
+        themeManager.registerFormat(style);
+        ElementFormatter.setFormat(element, style);
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
+                element, null));
+    }
+
     public static void createNamedStyle(Element element, String styleName,
             String themeName) {
         ThemeManager themeManager = Manager.getThemeManager();
@@ -611,9 +624,10 @@ public class Editor {
         eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
                 newSection, null));
     }
-    
+
     public static byte[] getViewIconContent(final String viewTypeName) {
-        ViewType viewType = (ViewType) Manager.getTypeRegistry().lookup(TypeFamily.VIEW, viewTypeName);
+        ViewType viewType = (ViewType) Manager.getTypeRegistry().lookup(
+                TypeFamily.VIEW, viewTypeName);
         String iconResourcePath = null;
         if (viewType != null) {
             iconResourcePath = viewType.getIcon();
@@ -622,6 +636,6 @@ public class Editor {
             iconResourcePath = "nxthemes/html/icons/no-icon.png";
         }
         return org.nuxeo.theme.Utils.readResourceAsBytes(iconResourcePath);
-     }
+    }
 
 }

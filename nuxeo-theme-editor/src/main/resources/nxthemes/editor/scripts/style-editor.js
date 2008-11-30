@@ -86,6 +86,17 @@ NXThemesStyleEditor.setStyleSelector = function(selector) {
     });
 };
 
+NXThemesStyleEditor.createStyle = function() {
+    var url = webEngineContextPath + "/nxthemes-editor/create_style"; 
+    new Ajax.Request(url, {
+         method: 'get',
+         onComplete: function(r) {
+             NXThemes.getViewById("element style").refresh();
+             NXThemesEditor.writeMessage("New style created.");
+         }
+    });
+};
+
 NXThemesStyleEditor.getSelectorInContext = function(element, context) {
   if (element == context) {
     return "";

@@ -228,6 +228,13 @@ public class Main extends DefaultModule {
   }
   
   @GET @POST
+  @Path("create_style")
+  public void createStyle() {
+      Element element = getSelectedElement()
+      Editor.createStyle(element)
+  }
+  
+  @GET @POST
   @Path("delete_element")
   public void deleteElement(@QueryParam("id") String id) {
       Element element = ThemeManager.getElementById(id)

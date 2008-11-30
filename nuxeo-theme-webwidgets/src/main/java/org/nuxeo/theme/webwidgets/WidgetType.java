@@ -25,6 +25,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("widget")
 public final class WidgetType {
 
+    public final static String DEFAULT_WIDGET_ICON_PATH = "nxthemes/webwidgets/icons/default-widget.png";
+
     @XNode("@name")
     private String name;
 
@@ -33,6 +35,11 @@ public final class WidgetType {
 
     @XNode("path")
     private String path;
+
+    @XNode("icon")
+    private String iconPath = DEFAULT_WIDGET_ICON_PATH;
+
+    private String icon;
 
     private String author = "";
 
@@ -43,8 +50,6 @@ public final class WidgetType {
     private String screenshot = "";
 
     private String thumbnail = "";
-
-    private String icon;
 
     private String source;
 
@@ -116,6 +121,10 @@ public final class WidgetType {
 
     public void setSchema(List<WidgetFieldType> schema) {
         this.schema = schema;
+    }
+
+    public String getIconPath() {
+        return iconPath;
     }
 
     public String getIcon() {

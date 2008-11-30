@@ -32,8 +32,6 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.theme.types.TypeFamily;
-import org.nuxeo.theme.views.ViewType;
 
 public class Manager {
 
@@ -319,7 +317,8 @@ public class Manager {
 
     }
 
-    public static String getWidgetDataContent(String providerName, String uid, String dataName) {
+    public static String getWidgetDataContent(String providerName, String uid,
+            String dataName) {
         WidgetData data = getWidgetData(providerName, uid, dataName);
         if (data == null) {
             return "";
@@ -332,7 +331,7 @@ public class Manager {
         }
         return os.toString();
     }
-    
+
     public static String getWidgetDataInfo(String providerName, String uid,
             String dataName) {
         final WidgetData data = getWidgetData(providerName, uid, dataName);
@@ -397,15 +396,20 @@ public class Manager {
         return org.nuxeo.theme.html.Utils.toJson(data);
     }
 
-    public static byte[] getWidgetIconContent(final String widgetTypeName) {
+    public static String getWidgetIconPath(final String widgetTypeName) {
         WidgetType widgetType = getWidgetType(widgetTypeName);
         String iconResourcePath = null;
         if (widgetType != null) {
-            iconResourcePath = widgetType.getIcon();
+            iconResourcePath = widgetType.getIconPath();
         }
         if (iconResourcePath == null) {
-            iconResourcePath = "nxthemes/webwidgets/icons/default-widget.png";
+            iconResourcePath = "nxthemes/html/icons/no-icon.png";
         }
+        return iconResourcePath;
+    }
+
+    public static byte[] getWidgetIconContent(final String widgetTypeName) {
+        String iconResourcePath = getWidgetIconPath(widgetTypeName);
         return org.nuxeo.theme.Utils.readResourceAsBytes(iconResourcePath);
-     }
+    }
 }
