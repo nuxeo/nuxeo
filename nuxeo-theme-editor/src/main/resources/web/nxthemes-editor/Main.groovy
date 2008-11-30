@@ -223,6 +223,7 @@ public class Main extends DefaultModule {
   @GET @POST
   @Path("create_named_style")
   public void createNamedStyle(@QueryParam("id") String id, @QueryParam("theme_name") String themeName, @QueryParam("style_name") String styleName) {
+      Element element = ThemeManager.getElementById(id)
       Editor.createNamedStyle(element, styleName, themeName)
   }
   

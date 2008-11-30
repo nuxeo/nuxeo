@@ -53,9 +53,8 @@ public final class PanelView extends AbstractView {
             s.append(String.format("<div class=\"title\">%s</div>",
                     displayedRegionName));
             s.append(String.format(
-                    "<div class=\"body\"><img src=\"%s\" width=\"16\" height=\"16\" /> Web widget area. <p>Provider: <strong>%s</strong> (%s)</p></div>",
-                    getViewType().getIcon(), providerName,
-                    providerType.getDescription()));
+                    "<div class=\"body\">Web widget area. <p>Provider: <strong>%s</strong> (%s)</p></div>",
+                    providerName, providerType.getDescription()));
             s.append("</div>");
         }
 
