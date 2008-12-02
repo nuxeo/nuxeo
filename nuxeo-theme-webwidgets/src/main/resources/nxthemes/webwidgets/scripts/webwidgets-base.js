@@ -195,7 +195,7 @@ NXThemesWebWidgets.renderPanel = function(provider, decoration, panel, data) {
     panel.appendChild(el);
 
     // Set icon
-    widget._icon = widget_type.icon;
+    widget._icon = widget_type.icon || webEngineContextPath + "/nxthemes-webwidgets/render_widget_icon?name=" + widget_type.name;
 
     // Set body
     widget._body = widget_type.body;
