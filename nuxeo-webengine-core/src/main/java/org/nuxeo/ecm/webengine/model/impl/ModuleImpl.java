@@ -108,7 +108,7 @@ public class ModuleImpl implements Module {
         return descriptor;
     }
 
-    
+
     public String getName() {
         return descriptor.name;
     }
@@ -252,11 +252,11 @@ public class ModuleImpl implements Module {
         }
         return file;
     }
-    
+
     public ScriptFile getSkinResource(String path) throws IOException {
         File file = dirStack.getFile(path);
         if (file != null) {
-            return new ScriptFile(file);            
+            return new ScriptFile(file);
         }
         return null;
     }
@@ -401,10 +401,14 @@ public class ModuleImpl implements Module {
     public String getSkinPathPrefix() {
         return skinPathPrefix;
     }
-    
+
 
     @Override
     public String toString() {
         return getName();
+    }
+
+    public File getRoot() {
+        return root;
     }
 }
