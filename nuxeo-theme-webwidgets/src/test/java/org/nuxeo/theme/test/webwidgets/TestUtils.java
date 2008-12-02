@@ -14,9 +14,12 @@
 
 package org.nuxeo.theme.test.webwidgets;
 
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import org.nuxeo.theme.webwidgets.Utils;
+import org.nuxeo.theme.webwidgets.WidgetFieldType;
 
 public class TestUtils extends TestCase {
 
@@ -72,5 +75,14 @@ public class TestUtils extends TestCase {
         assertEquals(
                 "icon.png",
                 Utils.extractIcon("<link rel=\"icon\" href=\"icon.png\" type=\"image/png\" />"));
+    }
+
+    public void testExtractSchema() {
+        List<WidgetFieldType> fields = Utils.extractSchema(org.nuxeo.theme.Utils.readResourceAsString("test-widget.html"));
+        WidgetFieldType field1 = fields.get(0);
+        assertEquals("Title", field1.label);
+        assertEquals("Widget title", field1.defaultValue);
+        assertEquals("text", field1.type); 
+        assertEquals("title", field1.name); 
     }
 }

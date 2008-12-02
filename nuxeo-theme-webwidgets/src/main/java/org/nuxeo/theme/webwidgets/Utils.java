@@ -115,20 +115,21 @@ public final class Utils {
         return null;
     }
 
-    public static List<WidgetFieldType> extractSchema(String source) {
+    public static List<WidgetFieldType> extractSchema(String html) {
         final List<WidgetFieldType> schema = new ArrayList<WidgetFieldType>();
-
-        source = scriptPattern.matcher(source).replaceAll("");
-        source = stylePattern.matcher(source).replaceAll("");
-        source = bodyPattern.matcher(source).replaceAll("");
-        source = metadataPattern.matcher(source).replaceAll("");
-
+        Matcher matcher = preferencesPattern.matcher(html);
+        if (matcher.find()) {
+            html = matcher.group(0);
+        } else {
+            return schema;
+        }
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         final Document document;
         ByteArrayInputStream in = null;
         try {
-            in = new ByteArrayInputStream(source.getBytes());
+            in = new ByteArrayInputStream(html.getBytes());
             final DocumentBuilder db = dbf.newDocumentBuilder();
+
             document = db.parse(in);
         } catch (Exception e) {
             log.error("Could not parse widget code." + e);
