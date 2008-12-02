@@ -204,6 +204,22 @@ public class Manager {
         newPreferences.putAll(preferences);
         provider.setWidgetPreferences(widget, newPreferences);
     }
+    
+    public static void setWidgetPreference(String providerName, String uid,
+           String name, String value) {
+        Provider provider = getProvider(providerName);
+        if (!provider.canWrite()) {
+            return;
+        }
+        Widget widget = provider.getWidgetByUid(uid);
+        Map<String, String> newPreferences = new HashMap<String, String>();
+        Map<String, String> oldPreferences = provider.getWidgetPreferences(widget);
+        if (oldPreferences != null) {
+            newPreferences.putAll(oldPreferences);
+        }
+        newPreferences.put(name, value);
+        provider.setWidgetPreferences(widget, newPreferences);
+    }
 
     /*
      * Widget state
@@ -314,7 +330,6 @@ public class Manager {
         return String.format(
                 "<script type=\"text/javascript\">window.parent.NXThemesWebWidgets.getUploader('%s', '%s', '%s').complete();</script>",
                 providerName, uid, dataName);
-
     }
 
     public static String getWidgetDataContent(String providerName, String uid,

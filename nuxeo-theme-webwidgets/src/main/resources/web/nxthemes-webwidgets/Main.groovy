@@ -92,7 +92,10 @@ public class Main extends DefaultModule {
     @Path("upload_file")
     public String uploadFile(@QueryParam("widget_uid") String widgetUid, @QueryParam("data") String dataName, @QueryParam("provider") String providerName) {
         def req = WebEngine.getActiveContext().getRequest()
-        return org.nuxeo.theme.webwidgets.Manager.uploadFile(req, providerName, widgetUid, dataName)
+        String res = org.nuxeo.theme.webwidgets.Manager.uploadFile(req, providerName, widgetUid, dataName)
+        String src = '/nxthemes-webwidgets/render_widget_data?widget_uid=' + widgetUid + '&data=' + dataName + '&provider=' + providerName + '&timestamp='
+        org.nuxeo.theme.webwidgets.Manager.setWidgetPreference(providerName, widgetUid, dataName, src)
+        return res
     }
     
     @GET @POST
@@ -110,7 +113,7 @@ public class Main extends DefaultModule {
         Map preferencesMap = JSONObject.fromObject(preferences_map)
         org.nuxeo.theme.webwidgets.Manager.updateWidgetPreferences(providerName, widgetUid, preferencesMap)
     }
-    
+        
     @GET @POST
     @Path("get_widget_decoration")
     public String getWidgetDecoration(@QueryParam("decoration") String decorationName) {

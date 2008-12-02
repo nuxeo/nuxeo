@@ -327,8 +327,7 @@ NXThemesWebWidgets.ImageUploader.prototype = Object.extend(new NXThemesWebWidget
                '&data=' + encodeURIComponent(name) + '&provider=' + encodeURIComponent(providerName) +
                '&timestamp=' + now;
              controlEl.innerHTML = '<div><img src="' + src + '" /></div>' +
-               info['filename'] + ' (' + info['content-type'] + ')' +
-               '<input type="hidden" name="' + name + '" value="' + src + '" />';
+               info['filename'] + ' (' + info['content-type'] + ')';
            } else {
                controlEl.innerHTML = '<img src="' + webEngineContextPath + '/skin/nxthemes-webwidgets/img/exclamation.png" />';
            }
@@ -383,12 +382,7 @@ NXThemesWebWidgets.FileUploader.prototype = Object.extend(new NXThemesWebWidgets
            var text = r.responseText;
            if (text) {
              var info = text.evalJSON(true);
-             var now = new Date().getTime();
-             var src = webEngineContextPath + '/nxthemes-webwidgets/render_widget_data?widget_uid=' + encodeURIComponent(widgetUid) +
-                '&data=' + encodeURIComponent(name) + '&provider=' + encodeURIComponent(providerName) +
-                '&timestamp=' + now;
-             controlEl.innerHTML = info['filename'] + ' (' + info['content-type'] + ')' +
-               '<input type="hidden" name="' + name + '" value="' + src + '" />';
+             controlEl.innerHTML = info['filename'] + ' (' + info['content-type'] + ')';
           } else {
              controlEl.innerHTML = '<img src="' + webEngineContextPath + '/skin/nxthemes-webwidgets/img/exclamation.png" />';
           }
