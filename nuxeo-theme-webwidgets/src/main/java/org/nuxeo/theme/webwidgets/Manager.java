@@ -31,6 +31,9 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 
 public class Manager {
@@ -52,8 +55,18 @@ public class Manager {
             return null;
         }
         String className = providerType.getClassName();
+
+        WebContext ctx = WebEngine.getActiveContext();
+        UserSession session = ctx.getUserSession();
+        String session_key = String.format("nxwebwidgets_%s", name);
+        Provider provider = (Provider) session.get(session_key);
+        if (provider != null) {
+            return provider;
+        }
         try {
-            return (Provider) Class.forName(className).newInstance();
+            provider = (Provider) Class.forName(className).newInstance();
+            session.put(session_key, provider);
+            return provider;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -204,9 +217,9 @@ public class Manager {
         newPreferences.putAll(preferences);
         provider.setWidgetPreferences(widget, newPreferences);
     }
-    
+
     public static void setWidgetPreference(String providerName, String uid,
-           String name, String value) {
+            String name, String value) {
         Provider provider = getProvider(providerName);
         if (!provider.canWrite()) {
             return;
