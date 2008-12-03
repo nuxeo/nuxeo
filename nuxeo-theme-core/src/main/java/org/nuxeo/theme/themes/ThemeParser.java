@@ -28,6 +28,7 @@ import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -92,10 +93,14 @@ public class ThemeParser {
         try {
             final InputSource is = new InputSource(in);
             final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            try {
             dbf.setFeature("http://xml.org/sax/features/validation", false);
             dbf.setFeature(
                     "http://apache.org/xml/features/nonvalidating/load-external-dtd",
                     false);
+            } catch (ParserConfigurationException e) {
+                log.debug("Could not set DTD non-validation feature");
+            }
             final ThemeManager themeManager = Manager.getThemeManager();
 
             final DocumentBuilder db = dbf.newDocumentBuilder();

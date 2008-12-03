@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -126,14 +127,19 @@ public final class Utils {
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         final Document document;
         ByteArrayInputStream in = null;
+        
         try {
-            in = new ByteArrayInputStream(html.getBytes());
             dbf.setFeature("http://xml.org/sax/features/validation", false);
             dbf.setFeature(
                     "http://apache.org/xml/features/nonvalidating/load-external-dtd",
                     false);
+        } catch (ParserConfigurationException e) {
+            log.debug("Could not set DTD non-validation feature");
+        }
+        
+        try {
+            in = new ByteArrayInputStream(html.getBytes());
             final DocumentBuilder db = dbf.newDocumentBuilder();
-
             document = db.parse(in);
         } catch (Exception e) {
             log.error("Could not parse widget code." + e);

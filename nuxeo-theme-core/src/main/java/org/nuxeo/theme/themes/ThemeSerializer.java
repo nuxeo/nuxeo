@@ -27,6 +27,7 @@ import java.util.regex.Matcher;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,10 +59,14 @@ public class ThemeSerializer {
 
     public Document serialize(final Element theme) throws Exception {
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setFeature("http://xml.org/sax/features/validation", false);
-        dbf.setFeature(
-                "http://apache.org/xml/features/nonvalidating/load-external-dtd",
-                false);
+        try {
+            dbf.setFeature("http://xml.org/sax/features/validation", false);
+            dbf.setFeature(
+                    "http://apache.org/xml/features/nonvalidating/load-external-dtd",
+                    false);
+        } catch (ParserConfigurationException e) {
+            log.debug("Could not set DTD non-validation feature");
+        }
         final DocumentBuilder db = dbf.newDocumentBuilder();
         doc = db.newDocument();
         elements = new ArrayList<Element>();
