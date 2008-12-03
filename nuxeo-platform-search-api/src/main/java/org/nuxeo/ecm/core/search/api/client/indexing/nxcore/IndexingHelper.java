@@ -107,7 +107,8 @@ public final class IndexingHelper {
             // exception here.
             // TODO Not enough protection. Rebuild a session.
             // Trying to index a proxy in the section space.
-            log.error("An error occured trying to index versions...", t);
+            log.error("An error occured trying to index versions for doc: "
+                    + ref, t);
         }
     }
 

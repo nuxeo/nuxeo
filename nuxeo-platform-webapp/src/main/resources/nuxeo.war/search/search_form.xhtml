@@ -7,15 +7,15 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:t="http://myfaces.apache.org/tomahawk">
+  xmlns:c="http://java.sun.com/jstl/core">
 
 <ui:define name="page title">
   <h:outputText value="#{messages['title.search.form']}"/>
 </ui:define>
 
 <ui:define name="body">
-  <a4j:outputPanel ajaxRendered="true"><h:form id="searchForm">
+
+  <h:form id="searchForm">
 
     <div class="foldableBox">
       <h3 class="unfolded">
@@ -40,7 +40,7 @@
     </div>
 
     <ui:include src="/search/search_buttons.xhtml" />
-  </h:form></a4j:outputPanel>
+  </h:form>
 
   <f:subview rendered="#{currentNuxeoPrincipal.administrator}">
     <div class="foldableBox">

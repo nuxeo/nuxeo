@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-parent</artifactId>
-    <version>5.1.7-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-directory-ldap</artifactId>
@@ -110,6 +110,7 @@
       <groupId>org.apache.directory.server</groupId>
       <artifactId>apacheds-core-shared</artifactId>
       <version>${apacheds.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.directory.shared</groupId>
@@ -128,28 +129,4 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
-          </archive>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <!--
-              <exclude>**/TestLDAPSession.java</exclude>
-            -->
-          </excludes>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

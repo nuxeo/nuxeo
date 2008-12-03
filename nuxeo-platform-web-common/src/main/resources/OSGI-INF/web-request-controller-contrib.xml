@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService.defaultContrib">
+
+  <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="filterConfig">
+
+    <filterConfig name="BigFileDownloaderRequest" transactional="true" synchonize="true">
+      <pattern>/nuxeo/nxbigfile/.*</pattern>
+    </filterConfig>
+
+  </extension>
+
+</component>
