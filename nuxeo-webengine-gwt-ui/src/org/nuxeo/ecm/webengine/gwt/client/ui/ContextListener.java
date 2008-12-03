@@ -29,7 +29,8 @@ public interface ContextListener {
     public final static int LOGIN = 1;
     public final static int LOGOUT = 2;
     public final static int INPUT = 3;
-    
+    public final static int PROP = 4;
+
     void onContextEvent(int event);
-    
+
 }

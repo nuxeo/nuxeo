@@ -43,18 +43,4 @@ public class JSONWrapper implements DocumentConstants{
         return null;
     }
 
-
-    public String getId(){
-        return getString(KEY_ID);
-    }
-
-    public String getTitle(){
-        return getString(KEY_TITLE);
-    }
-
-
-    public String getPath(){
-        return getString(KEY_PATH);
-    }
-
 }
