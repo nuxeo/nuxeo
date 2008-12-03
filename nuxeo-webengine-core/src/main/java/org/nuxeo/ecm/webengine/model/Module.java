@@ -88,17 +88,17 @@ public interface Module extends MessagesProvider {
      * @throws IOException if any error occurs
      */
     ScriptFile getFile(String path);
-    
-    
+
+
     /**
      * Get a skin resource input stream. This must not cache resources.
-     * This method is using the module stacking directory to find the resource.   
+     * This method is using the module stacking directory to find the resource.
      * @param path
      * @return
      * @throws IOException
      */
     ScriptFile getSkinResource(String path) throws IOException;
-    
+
 
     /**
      * Loads a class given its name.
@@ -195,12 +195,14 @@ public interface Module extends MessagesProvider {
 
     /**
      * Get the path prefix to be used from templates to prepend to links to static resources.
-     *  
-     * This prefix is exposed to templates as ${skinPath} 
+     *
+     * This prefix is exposed to templates as ${skinPath}
      * @return the skin path prefix. never null.
      */
     String getSkinPathPrefix();
-    
+
     boolean isDerivedFrom(String moduleName);
-    
+
+    Validator getValidator(String docType);
+
 }

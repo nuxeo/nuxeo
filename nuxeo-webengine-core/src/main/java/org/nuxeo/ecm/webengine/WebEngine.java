@@ -71,7 +71,7 @@ import org.osgi.framework.Bundle;
 public class WebEngine implements FileChangeListener, ResourceLocator, AnnotationLoader, MessagesProvider {
 
     public static final String SKIN_PATH_PREFIX_KEY = "org.nuxeo.ecm.webengine.skinPathPrefix";
-    
+
     private static final Log log = LogFactory.getLog(WebEngine.class);
 
     private static final ThreadLocal<WebContext> CTX = new ThreadLocal<WebContext>();
@@ -121,10 +121,10 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
 
     protected final ResourceRegistry registry;
     protected Messages messages;
-    
+
     protected String skinPathPrefix;
-    
-    
+
+
     public WebEngine(ResourceRegistry registry, File root) throws IOException {
         this.registry = registry;
         isDebug = Boolean.parseBoolean(Framework.getProperty("debug", "false"));
@@ -149,8 +149,8 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         skinPathPrefix = Framework.getProperty(SKIN_PATH_PREFIX_KEY);
         if (skinPathPrefix == null) {
             //TODO: should put this in web.xml and not use jboss.home.dir to test if on jboss
-            skinPathPrefix = System.getProperty("jboss.home.dir") != null ? "/nuxeo/site/skin" : "/skin";     
-        }         
+            skinPathPrefix = System.getProperty("jboss.home.dir") != null ? "/nuxeo/site/skin" : "/skin";
+        }
         loadModules();
 
         env = new HashMap<String, Object>();
@@ -180,14 +180,14 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     public void setSkinPathPrefix(String skinPathPrefix) {
         this.skinPathPrefix = skinPathPrefix;
     }
-    
+
     /**
      * @return the skinPathPrefix.
      */
     public String getSkinPathPrefix() {
         return skinPathPrefix;
     }
-    
+
     public ResourceRegistry getRegistry() {
         return registry;
     }
@@ -268,7 +268,9 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
             if (appFile.isFile()) {
                 ModuleDescriptor ad2 = loadModuleDescriptor(appFile);
                 ad.links = ad2.links;
+                ad.validators = ad2.validators;
                 ad2.links = null;
+                ad2.validators = null;
             }
         } else {
             appFile = new File(file, "module.xml");

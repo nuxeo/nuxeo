@@ -37,6 +37,7 @@ import org.nuxeo.ecm.webengine.model.ModuleType;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
+import org.nuxeo.ecm.webengine.model.Validator;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -45,16 +46,16 @@ import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
 public abstract class AbstractModule implements Module {
 
     public static final Log log = LogFactory.getLog(AbstractModule.class);
-    
-    protected final WebEngine engine; 
+
+    protected final WebEngine engine;
     protected final Object typeLock = new Object();
     protected TypeRegistry typeReg;
     protected final ModuleDescriptor descriptor;
-    protected final AbstractModule superModule; 
+    protected final AbstractModule superModule;
     protected ModuleTypeImpl type;
     protected LinkRegistry linkReg;
     protected final String skinPathPrefix;
-    
+
     protected AbstractModule(WebEngine engine, ModuleDescriptor descriptor) {
         this.engine = engine;
         this.descriptor = descriptor;
@@ -67,20 +68,19 @@ public abstract class AbstractModule implements Module {
             .append(engine.getSkinPathPrefix()).append('/').append(descriptor.name).toString();
         loadLinks();
     }
-    
+
     public WebEngine getEngine() {
         return engine;
     }
-    
+
     public String getName() {
         return descriptor.name;
     }
-    
+
     public AbstractModule getSuperModule() {
         return superModule;
     }
 
-    
     public ModuleDescriptor getDescriptor() {
         return descriptor;
     }
@@ -127,23 +127,23 @@ public abstract class AbstractModule implements Module {
         }
         return typeReg;
     }
-    
+
     protected abstract TypeRegistry createTypeRegistry();
-    
+
     public ModuleType getModuleType() {
         if (type == null) {
             getTypeRegistry();
         }
         return type;
     }
-    
+
     public void flushTypeCache() {
         log.info("Flushing type cache for module: "+getName());
         synchronized (typeLock) {
             typeReg = null; // type registry will be recreated on first access
         }
     }
-    
+
     public void flushCache() {
         flushTypeCache();
         engine.getScripting().flushCache();
@@ -237,7 +237,7 @@ public abstract class AbstractModule implements Module {
         }
         return null;
     }
-    
+
     public ResourceBinding getModuleBinding() {
         return descriptor.binding;
     }
@@ -256,7 +256,11 @@ public abstract class AbstractModule implements Module {
         return false;
     }
 
-    
+    public Validator getValidator(String docType) {
+        return null;
+    }
+
+
     @Override
     public String toString() {
         return getName();

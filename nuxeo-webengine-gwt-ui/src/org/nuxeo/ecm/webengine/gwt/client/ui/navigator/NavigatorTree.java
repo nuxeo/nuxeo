@@ -1,9 +1,14 @@
 package org.nuxeo.ecm.webengine.gwt.client.ui.navigator;
 
+import org.nuxeo.ecm.webengine.gwt.client.UI;
 import org.nuxeo.ecm.webengine.gwt.client.http.HttpResponse;
+import org.nuxeo.ecm.webengine.gwt.client.http.ServerException;
+import org.nuxeo.ecm.webengine.gwt.client.ui.ContextListener;
 import org.nuxeo.ecm.webengine.gwt.client.ui.HttpCommand;
 import org.nuxeo.ecm.webengine.gwt.client.ui.model.DocumentRef;
 
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -183,6 +188,25 @@ public class NavigatorTree extends Tree{
                     updateTree(jsonArray);
                 } else {
                     updateTree(jsonArray, item);
+                }
+            }
+        }
+
+        @Override
+        public void onResponseReceived(Request request, Response response) {
+            // TODO Auto-generated method stub
+            super.onResponseReceived(request, response);
+        }
+
+        @Override
+        public void onFailure(Throwable cause) {
+            super.onFailure(cause);
+            if( cause instanceof ServerException){
+                ServerException e = (ServerException) cause;
+                Response response = e.getResponse();
+                if ( response.getStatusCode() == 401 ){
+                    Window.alert("connection timeout. your are not logged");
+                    UI.fireEvent(ContextListener.LOGOUT);
                 }
             }
         }

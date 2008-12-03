@@ -23,13 +23,17 @@ import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.collections.map.HashedMap;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Utils;
+import org.nuxeo.ecm.webengine.model.Validator;
 import org.nuxeo.ecm.webengine.model.WebModule;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.security.Guard;
@@ -69,6 +73,12 @@ public class ModuleDescriptor implements Cloneable {
 
     @XNodeList(value="links/link", type=ArrayList.class, componentType=LinkDescriptor.class, nullByDefault=true)
     public List<LinkDescriptor> links;
+
+    @XNodeMap(value="validators/validator", key="@type", type=HashedMap.class, componentType=Class.class, nullByDefault=true )
+    void setV(Map<String,Class<Validator>> map) {
+        validators = map;
+    }
+    public Map<String, Class<Validator>> validators;
 
     @XNodeList(value="resources/resource", type=ArrayList.class, componentType=ResourceBinding.class, nullByDefault=true)
     public List<ResourceBinding> resources;

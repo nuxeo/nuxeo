@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
+import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.WebContext;
 
 /**
@@ -78,6 +79,8 @@ public class DocumentHelper {
             if (newDoc.getTitle().length() == 0) {
                 newDoc.getPart("dublincore").get("title").setValue(newDoc.getName());
             }
+            Module m = context.getModule();
+
             newDoc = session.createDocument(newDoc);
             session.save();
             return newDoc;
