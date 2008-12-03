@@ -28,4 +28,8 @@ public class DocumentRef extends JSONWrapper {
         return getString(KEY_PATH);
     }
 
+    public String getType(){
+        return getString(KEY_TYPE);
+    }
+
 }
