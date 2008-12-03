@@ -472,7 +472,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         }
         String name = entry.file.getName();
         String parentName = entry.file.getParentFile().getName();
-        if (name.endsWith("~") || parentName.equals("i18n")) {
+        if (name.startsWith(".") || name.endsWith("~") || parentName.equals("i18n")) {
             return;
         } else if (name.equals("i18n") && parentName.equals("WEB-INF")) {
             log.info("File changed: "+entry.file);

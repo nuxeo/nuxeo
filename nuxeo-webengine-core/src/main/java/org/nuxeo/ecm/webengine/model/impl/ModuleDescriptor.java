@@ -64,8 +64,8 @@ public class ModuleDescriptor implements Cloneable {
     @XNodeList(value="types/type", componentType=TypeDescriptor.class, type=ArrayList.class, nullByDefault=false)
     public ArrayList<TypeDescriptor> types;
 
-    @XNodeList(value="actions/action", componentType=AdapterTypeImpl.class, type=ArrayList.class, nullByDefault=false)
-    public ArrayList<AdapterTypeImpl> actions;
+    @XNodeList(value="adapters/adapter", componentType=AdapterDescriptor.class, type=ArrayList.class, nullByDefault=false)
+    public ArrayList<AdapterDescriptor> adapters;
 
     @XNodeList(value="links/link", type=ArrayList.class, componentType=LinkDescriptor.class, nullByDefault=true)
     public List<LinkDescriptor> links;
@@ -118,7 +118,7 @@ public class ModuleDescriptor implements Cloneable {
     public ModuleDescriptor clone() {
         try {
             ModuleDescriptor cfg = (ModuleDescriptor) super.clone();
-            cfg.actions = (ArrayList) actions.clone();
+            cfg.adapters = (ArrayList) adapters.clone();
             cfg.types = (ArrayList) types.clone();
             return cfg;
         } catch (CloneNotSupportedException e) {
@@ -140,7 +140,7 @@ public class ModuleDescriptor implements Cloneable {
             ad.guardDescriptor = new GuardDescriptor();
             ad.guardDescriptor.setExpression(guard);
         }
-        ad.actions = new ArrayList<AdapterTypeImpl>();
+        ad.adapters = new ArrayList<AdapterDescriptor>();
         ad.types = new ArrayList<TypeDescriptor>();
         return ad;
     }

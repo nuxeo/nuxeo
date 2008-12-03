@@ -50,7 +50,13 @@ public interface ResourceType {
 
     boolean hasFacet(String facet);
 
-    ScriptFile getView(String name);
+    /**
+     * Get a view for this type in the context of the given module
+     * @param module
+     * @param name
+     * @return
+     */
+    ScriptFile getView(Module module, String name);
 
     boolean isEnabled(Resource ctx);
 

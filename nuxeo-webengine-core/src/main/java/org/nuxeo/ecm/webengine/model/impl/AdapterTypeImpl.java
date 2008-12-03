@@ -23,6 +23,7 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.model.AdapterType;
@@ -42,8 +43,9 @@ public class AdapterTypeImpl extends AbstractResourceType implements AdapterType
     protected String[] targetFacets;
     protected String adapterName;
 
-    public AdapterTypeImpl(ModuleImpl module, ResourceTypeImpl superType, String name, String adapterName, ClassProxy clazz) {
-        super(module, superType, name, clazz);
+    public AdapterTypeImpl(WebEngine engine, ModuleImpl module, ResourceTypeImpl superType, String name, String adapterName, ClassProxy clazz) {
+        super(engine, module, superType, name, clazz);
+        this.adapterName = adapterName;
     }
 
     public String getAdapterName() {

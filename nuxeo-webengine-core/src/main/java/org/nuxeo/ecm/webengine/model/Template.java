@@ -92,7 +92,7 @@ public class Template {
 
     protected void resolve(String fileName) {
         if (resource != null) {
-            script = resource.getType().getView(fileName);
+            script = resource.getType().getView(ctx.getModule(), fileName);
         } else {
             script = ctx.getModule().getFile(fileName);
         }

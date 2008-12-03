@@ -199,6 +199,8 @@ public interface Module extends MessagesProvider {
      * This prefix is exposed to templates as ${skinPath} 
      * @return the skin path prefix. never null.
      */
-    public String getSkinPathPrefix();
+    String getSkinPathPrefix();
+    
+    boolean isDerivedFrom(String moduleName);
     
 }

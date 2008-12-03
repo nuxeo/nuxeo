@@ -23,6 +23,7 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.model.Guard;
@@ -37,8 +38,8 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
  */
 public class ModuleTypeImpl extends AbstractResourceType implements ModuleType {
 
-    public ModuleTypeImpl(ModuleImpl module, AbstractResourceType superType, String name, ClassProxy clazz) {
-        super(module, superType, name, clazz);
+    public ModuleTypeImpl(WebEngine engine, ModuleImpl module, AbstractResourceType superType, String name, ClassProxy clazz) {
+        super(engine, module, superType, name, clazz);
     }
 
     @Override

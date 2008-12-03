@@ -112,6 +112,10 @@ public class AdapterDescriptor extends TypeDescriptor {
     public boolean isMainFragment() {
         return fragment == null;
     }
+    
+    public AdapterDescriptor asAdapterDescriptor() {
+        return this;
+    }
 
     public static AdapterDescriptor fromAnnotation(ClassProxy clazz, WebAdapter type) {
         return  new AdapterDescriptor(clazz, type.name(), type.type(), type.superType(), type.targetType(), type.facets());

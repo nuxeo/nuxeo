@@ -43,15 +43,13 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
 public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescriptor>{
 
     protected final Map<String, AbstractResourceType> types;
-    protected final Map<String, AdapterTypeImpl> adapters;
-    protected final Map<String, AdapterTypeImpl[]> adapterBindings;
+    protected final Map<String, AdapterType> adapters;
     protected final ModuleImpl module;
     protected Class<?> docObjectClass;
 
     public TypeRegistry(ModuleImpl module) {
         types = new ConcurrentHashMap<String, AbstractResourceType>();
-        adapters = new ConcurrentHashMap<String, AdapterTypeImpl>();
-        adapterBindings = new ConcurrentHashMap<String, AdapterTypeImpl[]>();
+        adapters = new ConcurrentHashMap<String, AdapterType>();
         this.module = module;
         // register root type
         TypeDescriptor root = new TypeDescriptor(new StaticClassProxy(Resource.class), ResourceType.ROOT_TYPE_NAME, null);
@@ -60,12 +58,12 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         registerModuleType(module);
     }
 
-    protected void registerModuleType(ModuleImpl m) {
+    protected void registerModuleType(AbstractModule m) {
         TypeDescriptor td = new ModuleTypeDescriptor(
                 new StaticClassProxy(m.descriptor.binding.clazz),
                 m.descriptor.name,
                 ResourceType.ROOT_TYPE_NAME);
-        ModuleImpl sm = m.getSuperModule();
+        AbstractModule sm = m.getSuperModule();
         if (sm != null) {
             registerModuleType(sm);
             td.superType = sm.getName();
@@ -104,7 +102,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
 
 
     public AdapterType getAdapter(Resource target, String name) {
-        AdapterTypeImpl adapter = adapters.get(name);
+        AdapterType adapter = adapters.get(name);
         if (adapter != null && adapter.acceptResource(target)) {
             return adapter;
         }
@@ -136,77 +134,53 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void collectAdaptersFor(Resource ctx, ResourceType type, List<AdapterType> result) {
-        AdapterType[] adapters = adapterBindings.get(type.getName());
-        if (adapters != null && adapters.length > 0) {
-            for (AdapterType adapter : adapters) {
-                if (adapter.acceptResource(ctx)) {
-                    result.add(adapter);
-                }
+        for (AdapterType adapter : getAdapters()) {
+            if (adapter.acceptResource(ctx)) {
+                result.add(adapter);
             }
-        }
-        ResourceType superType = type.getSuperType();
-        if (superType != null) {
-            collectAdaptersFor(ctx, superType, result);
         }
     }
 
     protected void collectAdapterNamesFor(Resource ctx, ResourceType type, List<String> result) {
-        AdapterType[] adapters = adapterBindings.get(type.getName());
-        if (adapters != null && adapters.length > 0) {
-            for (AdapterType adapter : adapters) {
-                if (adapter.acceptResource(ctx)) {
-                    result.add(adapter.getName());
-                }
+        for (AdapterType adapter : getAdapters()) {
+            if (adapter.acceptResource(ctx)) {
+                result.add(adapter.getAdapterName());
             }
-        }
-        ResourceType superType = type.getSuperType();
-        if (superType != null) {
-            collectAdapterNamesFor(ctx, superType, result);
         }
     }
 
     protected void collectEnabledAdaptersFor(Resource ctx, ResourceType type, List<AdapterType> result) {
-        AdapterType[] adapters = adapterBindings.get(type.getName());
-        if (adapters != null && adapters.length > 0) {
-            for (AdapterType adapter : adapters) {
-                if (adapter.acceptResource(ctx)) {
-                    if (adapter.isEnabled(ctx)) {
-                        result.add(adapter);
-                    }
-                }
+        for (AdapterType adapter : getAdapters()) {
+            if (adapter.acceptResource(ctx) && adapter.isEnabled(ctx)) {
+                result.add(adapter);
             }
-        }
-        ResourceType superType = type.getSuperType();
-        if (superType != null) {
-            collectEnabledAdaptersFor(ctx, superType, result);
         }
     }
 
     protected void collectEnabledAdapterNamesFor(Resource ctx, ResourceType type, List<String> result) {
-        AdapterType[] adapters = adapterBindings.get(type.getName());
-        if (adapters != null && adapters.length > 0) {
-            for (AdapterType adapter : adapters) {
-                if (adapter.acceptResource(ctx)) {
-                    if (adapter.isEnabled(ctx)) {
-                        result.add(adapter.getName());
-                    }
-                }
+        for (AdapterType adapter : getAdapters()) {
+            if (adapter.acceptResource(ctx) && adapter.isEnabled(ctx)) {
+                result.add(adapter.getAdapterName());
             }
         }
-        ResourceType superType = type.getSuperType();
-        if (superType != null) {
-            collectEnabledAdapterNamesFor(ctx, superType, result);
-        }
     }
-
+    
     public ResourceType[] getTypes() {
-        return types.values().toArray(new ResourceTypeImpl[types.size()]);
+        return types.values().toArray(new ResourceType[types.size()]);
     }
 
     public AdapterType[] getAdapters() {
-        return adapters.values().toArray(new AdapterTypeImpl[adapters.size()]);
+        return adapters.values().toArray(new AdapterType[adapters.size()]);
     }
 
+    public void registerTypeDescriptor(TypeDescriptor td) {
+        if (td.isAdapter()) {
+            registerAdapter(td.asAdapterDescriptor());
+        } else {
+            registerType(td);
+        }
+    }
+    
     public synchronized void registerType(TypeDescriptor td) {
         if (td.superType != null && !types.containsKey(td.superType)) {
             registerDocumentTypeIfNeeded(td.superType);
@@ -303,9 +277,9 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     protected void installTypeContribution(String key, TypeDescriptor object) {
         AbstractResourceType type = null;
         if (object.isModule()) {
-            type = new ModuleTypeImpl(module, null, object.type, object.clazz);
+            type = new ModuleTypeImpl(module.getEngine(), module, null, object.type, object.clazz);
         } else {
-            type = new ResourceTypeImpl(module, null, object.type, object.clazz);
+            type = new ResourceTypeImpl(module.getEngine(), module, null, object.type, object.clazz);
         }
         if (object.superType != null) {
             type.superType = types.get(object.superType);
@@ -327,30 +301,15 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void installAdapterContribution(String key, AdapterDescriptor object) {
-        AdapterTypeImpl type = new AdapterTypeImpl(module, null, object.type, object.name, object.clazz);
+        AdapterTypeImpl type = new AdapterTypeImpl(module.getEngine(), module, null, object.type, object.name, object.clazz);
         if (object.superType != null) {
             type.superType = types.get(object.superType);
             assert type.superType != null; // must never be null since the object is resolved
         }
         types.put(object.type, type);
         adapters.put(object.name, type);
-        // install bindings
-        if (object.targetType != null) {
-            installAdapterBindings(type, object.targetType);
-        }
     }
 
-    protected void installAdapterBindings(AdapterTypeImpl adapter, String targetType) {
-        AdapterTypeImpl[] bindings = adapterBindings.get(targetType);
-        if (bindings == null) {
-            bindings = new AdapterTypeImpl[] {adapter};
-        } else {
-            AdapterTypeImpl[] ar = new AdapterTypeImpl[bindings.length+1];
-            System.arraycopy(bindings, 0, ar, 0, bindings.length);
-            ar[bindings.length] = adapter;
-        }
-        adapterBindings.put(targetType, bindings);
-    }
 
     @Override
     protected void updateContribution(String key, TypeDescriptor object, TypeDescriptor oldValue) {
@@ -381,15 +340,9 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         AbstractResourceType t = types.get(key);
         if (t instanceof AdapterTypeImpl) { // update the type class
             AdapterTypeImpl adapter = (AdapterTypeImpl)t;
-            String targetType = adapter.targetType;
             adapter.clazz = object.clazz;
             adapter.loadAnnotations(module.getEngine().getAnnotationManager());
             t.flushCache();
-            // update bindings
-            if (adapter.targetType != null && !adapter.targetType.equals(targetType)) {
-                removeAdapterBindings(key, adapter);
-                installAdapterBindings(adapter, adapter.targetType);
-            }
         } else { // install the type - this should never happen since it is an update!
             throw new IllegalStateException("Updating an adapter type which is not registered: "+key);
         }
@@ -399,31 +352,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     protected void uninstallContribution(String key, TypeDescriptor value) {
         AbstractResourceType t = types.remove(key);
         if (t instanceof AdapterTypeImpl) {
-            AdapterTypeImpl s = adapters.remove(((AdapterTypeImpl)t).name);
-            if (s != null) {
-                removeAdapterBindings(key, (AdapterTypeImpl)t);
-            }
-        }
-    }
-
-    protected void removeAdapterBindings(String key, AdapterTypeImpl adapter) {
-        if (adapter.targetType != null) {
-            // remove bindings
-            AdapterTypeImpl[] ar = adapterBindings.get(adapter.targetType);
-            if (ar != null) {
-                ArrayList<AdapterTypeImpl> list = new ArrayList<AdapterTypeImpl>(ar.length);
-                for (int i=0; i<ar.length; i++) {
-                    if (!key.equals(ar[i].getName())) {
-                        list.add(ar[i]);
-                    }
-                }
-                if (list.isEmpty()) {
-                    adapterBindings.remove(key);
-                } else if (list.size() < ar.length) {
-                    ar = list.toArray(new AdapterTypeImpl[list.size()]);
-                    adapterBindings.put(key, ar);
-                }
-            }
+            adapters.remove(((AdapterTypeImpl)t).name);
         }
     }
 
@@ -432,4 +361,31 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         return object.isMainFragment();
     }
 
+    public void importTypes(TypeRegistry typeReg) {
+        ResourceType[] types = typeReg.getTypes();
+        for (ResourceType  type : types) {
+            AbstractResourceType t = (AbstractResourceType)type;
+            if (t.owner == null) continue; //ignore public types 
+            this.types.put(type.getName(), t);            
+            if (type instanceof AdapterType) {                
+                AdapterType atype = (AdapterType)type;
+                this.adapters.put(atype.getAdapterName(), atype);
+            }
+        }
+    }
+
+    public void clearImports(TypeRegistry typeReg) {
+        ResourceType[] types = getTypes();
+        for (ResourceType  type : types) {
+            AbstractResourceType t = (AbstractResourceType)type;            
+            if (t.owner != null && t.owner != this.module) { // ignore public types
+                this.types.remove(type.getName());            
+                if (type instanceof AdapterType) {
+                    AdapterType atype = (AdapterType)type;
+                    this.adapters.remove(atype.getAdapterName());
+                }
+            }
+        }
+    }
+    
 }

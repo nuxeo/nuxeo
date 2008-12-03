@@ -23,6 +23,7 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -35,8 +36,8 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
  */
 public class ResourceTypeImpl extends AbstractResourceType {
 
-    public ResourceTypeImpl(ModuleImpl module, ResourceTypeImpl superType, String name, ClassProxy clazz) {
-        super(module, superType, name, clazz);
+    public ResourceTypeImpl(WebEngine engine, ModuleImpl module, ResourceTypeImpl superType, String name, ClassProxy clazz) {
+        super(engine, module, superType, name, clazz);
     }
 
     protected void loadAnnotations(AnnotationManager annoMgr) {

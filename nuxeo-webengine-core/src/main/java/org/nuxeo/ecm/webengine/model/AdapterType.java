@@ -28,6 +28,8 @@ public interface AdapterType extends ResourceType {
     String[] getTargetFacets();
 
     String getTargetType();
+    
+    String getAdapterName();
 
     boolean acceptResource(Resource resource);
 }

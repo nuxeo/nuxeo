@@ -26,8 +26,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
+import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.TemplateNotFoundException;
@@ -42,7 +44,7 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
  */
 public abstract class AbstractResourceType implements ResourceType {
 
-    protected final ModuleImpl module;
+    protected final ModuleImpl owner;
     protected final String name;
     protected AbstractResourceType superType;
     protected volatile ClassProxy clazz;
@@ -50,13 +52,13 @@ public abstract class AbstractResourceType implements ResourceType {
     protected volatile Set<String> facets;
     protected volatile ConcurrentMap<String, ScriptFile> templateCache;
 
-    protected AbstractResourceType(ModuleImpl module, AbstractResourceType superType, String name, ClassProxy clazz) {
+    protected AbstractResourceType(WebEngine engine, ModuleImpl module, AbstractResourceType superType, String name, ClassProxy clazz) {
         templateCache = new ConcurrentHashMap<String, ScriptFile>();
-        this.module = module;
+        this.owner = module;
         this.superType = superType;
         this.name = name;
         this.clazz = clazz;
-        AnnotationManager mgr = module.engine.getAnnotationManager();
+        AnnotationManager mgr = engine.getAnnotationManager();
         loadAnnotations(mgr);
     }
 
@@ -66,6 +68,10 @@ public abstract class AbstractResourceType implements ResourceType {
         return superType;
     }
 
+    public Module getOwnerModule() {
+        return owner;
+    }
+    
     public Guard getGuard() {
         return guard;
     }
@@ -100,64 +106,6 @@ public abstract class AbstractResourceType implements ResourceType {
         return guard.check(ctx);
     }
 
-    public ScriptFile getView(String name) {
-        ScriptFile file = findView(name);
-        if (file == null) {
-            throw new TemplateNotFoundException(this, name);
-        }
-        return file;
-    }
-
-    public ScriptFile findView(String name) {
-        ScriptFile file = templateCache.get(name);
-        if (file != null) {
-            return file;
-        }
-        try {
-            file = findSkinTemplate(name);
-            if (file == null) {
-                file = findTypeTemplate(name);
-            }
-            if (file == null) {
-                AbstractResourceType t =(AbstractResourceType)getSuperType();
-                if (t != null) {
-                    file = t.findView(name);
-                }
-            }
-        } catch (IOException e) {
-            WebException.wrap("Failed to find template: "+name, e);
-        }
-        if (file != null) {
-            templateCache.put(name, file);
-        }
-        return file;
-    }
-
-    protected ScriptFile findSkinTemplate(String name) {
-        return module.getFile(new StringBuilder().append("views/")
-                .append(this.name).append("/").append(name).toString());
-    }
-
-    protected ScriptFile findTypeTemplate(String name) throws IOException {
-        String path = resolveResourcePath(clazz.getClassName(), name);
-        File f = new File(module.getEngine().getRootDirectory(), path);
-        if (f.isFile()) {
-            return new ScriptFile(f);
-        }
-        return null;
-    }
-
-    protected String resolveResourcePath(String className, String fileName) {
-        // compute resource path for resource class name
-        String path = className;
-        int p = path.lastIndexOf('.');
-        if (p > -1) {
-            path = path.substring(0, p);
-        }
-        path = path.replace('.', '/');
-        return new StringBuilder().append("/").append(path).append('/')
-                .append(fileName).toString();
-    }
 
     public boolean isDerivedFrom(String type) {
         if (type.equals(name)) {
@@ -201,6 +149,66 @@ public abstract class AbstractResourceType implements ResourceType {
     @Override
     public String toString() {
         return name + " extends " + superType + " [" + getResourceClass().getName() + "]";
+    }
+
+    
+    public ScriptFile getView(Module module, String name) {
+        ScriptFile file = findView(module, name);
+        if (file == null) {
+            throw new TemplateNotFoundException(this, name);
+        }
+        return file;
+    }
+
+    public ScriptFile findView(Module module, String name) {
+        ScriptFile file = templateCache.get(name);
+        if (file != null) {
+            return file;
+        }
+        try {
+            file = findSkinTemplate(module, name);
+            if (file == null) {
+                file = findTypeTemplate(module, name);
+            }
+            if (file == null) {
+                AbstractResourceType t =(AbstractResourceType)getSuperType();
+                if (t != null) {
+                    file = t.findView(module, name);
+                }
+            }
+        } catch (IOException e) {
+            WebException.wrap("Failed to find template: "+name, e);
+        }
+        if (file != null) {
+            templateCache.put(name, file);
+        }
+        return file;
+    }
+
+    protected ScriptFile findSkinTemplate(Module module, String name) {
+        return module.getFile(new StringBuilder().append("views/")
+                .append(this.name).append("/").append(name).toString());
+    }
+
+    protected ScriptFile findTypeTemplate(Module module, String name) throws IOException {
+        String path = resolveResourcePath(clazz.getClassName(), name);
+        File f = new File(module.getEngine().getRootDirectory(), path);
+        if (f.isFile()) {
+            return new ScriptFile(f);
+        }
+        return null;
+    }
+
+    protected String resolveResourcePath(String className, String fileName) {
+        // compute resource path for resource class name
+        String path = className;
+        int p = path.lastIndexOf('.');
+        if (p > -1) {
+            path = path.substring(0, p);
+        }
+        path = path.replace('.', '/');
+        return new StringBuilder().append("/").append(path).append('/')
+                .append(fileName).toString();
     }
 
 }

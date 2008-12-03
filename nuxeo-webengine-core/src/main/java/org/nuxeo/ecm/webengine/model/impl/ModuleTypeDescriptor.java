@@ -35,5 +35,9 @@ public class ModuleTypeDescriptor extends TypeDescriptor {
     public boolean isModule() {
         return true;
     }
+    
+    public ModuleTypeDescriptor asModuleTypeDescriptor() {
+        return this;
+    }
 
 }

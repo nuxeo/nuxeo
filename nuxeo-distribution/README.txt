@@ -55,6 +55,8 @@ Using this project you can build the following applications:
   Build syntax: `mvn install package -P gf3`
   
 5. Nuxeo Tomcat WebApp
+  
+  mvn install package -P tomcat
  
   A Nuxeo Server packaged as an exploded WAR for tomcat v6.
   This build will generated a zip containing a 'tomcat' directory. You need to copy the content of tomcat directory
