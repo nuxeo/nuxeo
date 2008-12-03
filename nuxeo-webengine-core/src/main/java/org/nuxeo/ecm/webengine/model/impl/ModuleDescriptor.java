@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webengine.model.impl;
 import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -75,10 +76,19 @@ public class ModuleDescriptor implements Cloneable {
     public List<LinkDescriptor> links;
 
     @XNodeMap(value="validators/validator", key="@type", type=HashedMap.class, componentType=Class.class, nullByDefault=true )
-    void setV(Map<String,Class<Validator>> map) {
-        validators = map;
+    public void setValidators(Map<String, Class<Validator>> m){
+        if ( m != null ) {
+            validators = new HashMap<String , Validator>();
+            for ( Map.Entry<String, Class<Validator>> entry : m.entrySet()){
+                try {
+                    validators.put(entry.getKey(), entry.getValue().newInstance());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
-    public Map<String, Class<Validator>> validators;
+    public Map<String, Validator> validators;
 
     @XNodeList(value="resources/resource", type=ArrayList.class, componentType=ResourceBinding.class, nullByDefault=true)
     public List<ResourceBinding> resources;

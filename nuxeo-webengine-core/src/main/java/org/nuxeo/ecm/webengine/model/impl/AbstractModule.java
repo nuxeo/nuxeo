@@ -257,6 +257,9 @@ public abstract class AbstractModule implements Module {
     }
 
     public Validator getValidator(String docType) {
+        if ( descriptor.validators != null ){
+            return descriptor.validators.get(docType);
+        }
         return null;
     }
 

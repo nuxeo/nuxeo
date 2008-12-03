@@ -30,6 +30,7 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.Module;
+import org.nuxeo.ecm.webengine.model.Validator;
 import org.nuxeo.ecm.webengine.model.WebContext;
 
 /**
@@ -80,7 +81,10 @@ public class DocumentHelper {
                 newDoc.getPart("dublincore").get("title").setValue(newDoc.getName());
             }
             Module m = context.getModule();
-
+            Validator v =  m.getValidator(newDoc.getType());
+            if ( v != null ){
+                newDoc = v.validate(newDoc);
+            }
             newDoc = session.createDocument(newDoc);
             session.save();
             return newDoc;
@@ -104,6 +108,12 @@ public class DocumentHelper {
                 ctxData.putScopedValue(ScopeType.REQUEST,
                         VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, false);
             }
+            Module m = ctx.getModule();
+            Validator v =  m.getValidator(doc.getType());
+            if ( v != null ){
+                doc = v.validate(doc);
+            }
+
             doc = ctx.getCoreSession().saveDocument(doc);
             ctx.getCoreSession().save();
             return doc;
