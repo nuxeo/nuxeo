@@ -117,7 +117,7 @@ public class FieldDescriptor {
         } else if (rawValue instanceof Date) {
             Date date = (Date) rawValue;
             value = "DATE '" + sf.format(date) + "'";
-        } else if (rawValue instanceof Integer || rawValue instanceof Long) {
+        } else if (rawValue instanceof Integer || rawValue instanceof Long || rawValue instanceof Double) {
             value = rawValue.toString(); // no quotes
         } else if (rawValue instanceof Boolean) {
             value = (Boolean) rawValue ? "1" : "0";
@@ -129,7 +129,7 @@ public class FieldDescriptor {
             if (fieldType == null) {
                 fieldType = getFieldType();
             }
-            if ("long".equals(fieldType) || "integer".equals(fieldType)) {
+            if ("long".equals(fieldType) || "integer".equals(fieldType) || "double".equals(fieldType)) {
                 return value;
             } else {
                 // TODO switch back to SQLQueryParser for org.nuxeo.core 1.4
