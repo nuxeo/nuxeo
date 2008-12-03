@@ -338,6 +338,15 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             addTextElement(docInfo, docMimetypeTag, mimetype);
             addTextElement(docInfo, docFileExtensionTag,
                     getFileExtension(mimetype));
+            
+            Element docFileAuthorizedExtensions = docInfo.addElement(docFileAuthorizedExtensionsTag);
+            List<String> authorizedExtensions = getFileExtensions(mimetype);
+            if (authorizedExtensions != null) {
+                for (String extension : authorizedExtensions) {
+                    addTextElement(docFileAuthorizedExtensions,
+                            docFileAuthorizedExtensionTag, extension);
+                }
+            }
 
             Element docIsVersionT = docInfo.addElement(docIsVersionTag);
             Element docIsLockedT = docInfo.addElement(docIsLockedTag);
@@ -369,6 +378,14 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             addTextElement(templateDocInfo, docMimetypeTag, mimetype);
             addTextElement(templateDocInfo, docFileExtensionTag,
                     getFileExtension(mimetype));
+            
+            Element templateFileAuthorizedExtensions = templateDocInfo.addElement(docFileAuthorizedExtensionsTag);
+            if (authorizedExtensions != null) {
+                for (String extension : authorizedExtensions) {
+                    addTextElement(templateFileAuthorizedExtensions,
+                            docFileAuthorizedExtensionTag, extension);
+                }
+            }
 
             // Browser request related informations
             Element requestInfo = root.addElement(requestInfoTag);
@@ -455,6 +472,15 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         }
     }
 
+    protected List<String> getFileExtensions(String mimetype) throws Exception {
+        if (mimetype == null) {
+            return null;
+        }
+        MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
+        List<String> extensions = mimetypeRegistry.getExtensionsFromMimetypeName(mimetype);
+        return extensions;
+    }
+    
     protected static Element addTextElement(Element parent,
             QName newElementName, String value) {
         Element element = parent.addElement(newElementName);
