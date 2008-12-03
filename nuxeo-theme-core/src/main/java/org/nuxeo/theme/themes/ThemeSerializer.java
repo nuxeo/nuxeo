@@ -58,6 +58,10 @@ public class ThemeSerializer {
 
     public Document serialize(final Element theme) throws Exception {
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setFeature("http://xml.org/sax/features/validation", false);
+        dbf.setFeature(
+                "http://apache.org/xml/features/nonvalidating/load-external-dtd",
+                false);
         final DocumentBuilder db = dbf.newDocumentBuilder();
         doc = db.newDocument();
         elements = new ArrayList<Element>();

@@ -92,6 +92,10 @@ public class ThemeParser {
         try {
             final InputSource is = new InputSource(in);
             final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setFeature("http://xml.org/sax/features/validation", false);
+            dbf.setFeature(
+                    "http://apache.org/xml/features/nonvalidating/load-external-dtd",
+                    false);
             final ThemeManager themeManager = Manager.getThemeManager();
 
             final DocumentBuilder db = dbf.newDocumentBuilder();

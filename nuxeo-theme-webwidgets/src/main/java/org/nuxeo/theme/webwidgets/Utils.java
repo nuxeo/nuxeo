@@ -128,6 +128,10 @@ public final class Utils {
         ByteArrayInputStream in = null;
         try {
             in = new ByteArrayInputStream(html.getBytes());
+            dbf.setFeature("http://xml.org/sax/features/validation", false);
+            dbf.setFeature(
+                    "http://apache.org/xml/features/nonvalidating/load-external-dtd",
+                    false);
             final DocumentBuilder db = dbf.newDocumentBuilder();
 
             document = db.parse(in);
