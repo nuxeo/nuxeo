@@ -28,9 +28,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
 import org.nuxeo.ecm.webengine.model.AdapterType;
-import org.nuxeo.ecm.webengine.model.ModuleType;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.runtime.api.Framework;
@@ -44,21 +44,34 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
 
     protected final Map<String, AbstractResourceType> types;
     protected final Map<String, AdapterType> adapters;
-    protected final ModuleImpl module;
+    protected final AbstractModule module;
+    protected final WebEngine engine; // cannot use module.getEngine() since module may be null
     protected Class<?> docObjectClass;
 
-    public TypeRegistry(ModuleImpl module) {
+    public TypeRegistry(TypeRegistry parent, WebEngine engine, AbstractModule module) {
+        super (parent);
         types = new ConcurrentHashMap<String, AbstractResourceType>();
         adapters = new ConcurrentHashMap<String, AdapterType>();
         this.module = module;
+        this.engine = engine;
         // register root type
-        TypeDescriptor root = new TypeDescriptor(new StaticClassProxy(Resource.class), ResourceType.ROOT_TYPE_NAME, null);
-        registerType(root);
-        // register module type and its parents if any
-        registerModuleType(module);
+        if (parent == null) {
+            registerRootType();
+        } else {
+            importParentContributions();
+        }
+    }
+    
+    public TypeRegistry(WebEngine engine, AbstractModule module) {
+        this (null, engine, module);
     }
 
-    protected void registerModuleType(AbstractModule m) {
+    protected void registerRootType() {
+        TypeDescriptor root = new TypeDescriptor(new StaticClassProxy(Resource.class), ResourceType.ROOT_TYPE_NAME, null);
+        registerType(root);        
+    }
+    
+    public void registerModuleType(AbstractModule m) {
         TypeDescriptor td = new ModuleTypeDescriptor(
                 new StaticClassProxy(m.descriptor.binding.clazz),
                 m.descriptor.name,
@@ -71,9 +84,6 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         registerType(td);
     }
 
-    public ModuleType getModuleType() {
-        return (ModuleType)types.get(module.descriptor.name);
-    }
 
     public ResourceType getRootType() {
         return types.get(ResourceType.ROOT_TYPE_NAME);
@@ -82,7 +92,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     /**
      * @return the engine.
      */
-    public ModuleImpl getModule() {
+    public AbstractModule getModule() {
         return module;
     }
 
@@ -277,9 +287,9 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     protected void installTypeContribution(String key, TypeDescriptor object) {
         AbstractResourceType type = null;
         if (object.isModule()) {
-            type = new ModuleTypeImpl(module.getEngine(), module, null, object.type, object.clazz);
+            type = new ModuleTypeImpl(engine, module, null, object.type, object.clazz);
         } else {
-            type = new ResourceTypeImpl(module.getEngine(), module, null, object.type, object.clazz);
+            type = new ResourceTypeImpl(engine, module, null, object.type, object.clazz, object.visibility);
         }
         if (object.superType != null) {
             type.superType = types.get(object.superType);
@@ -301,7 +311,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void installAdapterContribution(String key, AdapterDescriptor object) {
-        AdapterTypeImpl type = new AdapterTypeImpl(module.getEngine(), module, null, object.type, object.name, object.clazz);
+        AdapterTypeImpl type = new AdapterTypeImpl(engine, module, null, object.type, object.name, object.clazz, object.visibility);
         if (object.superType != null) {
             type.superType = types.get(object.superType);
             assert type.superType != null; // must never be null since the object is resolved
@@ -329,7 +339,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         AbstractResourceType t = types.get(key);
         if (t != null) { // update the type class
             t.clazz = object.clazz;
-            t.loadAnnotations(module.getEngine().getAnnotationManager());
+            t.loadAnnotations(engine.getAnnotationManager());
             t.flushCache();
         } else { // install the type - this should never happen since it is an update!
             throw new IllegalStateException("Updating an object type which is not registered.");
@@ -341,7 +351,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         if (t instanceof AdapterTypeImpl) { // update the type class
             AdapterTypeImpl adapter = (AdapterTypeImpl)t;
             adapter.clazz = object.clazz;
-            adapter.loadAnnotations(module.getEngine().getAnnotationManager());
+            adapter.loadAnnotations(engine.getAnnotationManager());
             t.flushCache();
         } else { // install the type - this should never happen since it is an update!
             throw new IllegalStateException("Updating an adapter type which is not registered: "+key);
@@ -361,31 +371,5 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         return object.isMainFragment();
     }
 
-    public void importTypes(TypeRegistry typeReg) {
-        ResourceType[] types = typeReg.getTypes();
-        for (ResourceType  type : types) {
-            AbstractResourceType t = (AbstractResourceType)type;
-            if (t.owner == null) continue; //ignore public types 
-            this.types.put(type.getName(), t);            
-            if (type instanceof AdapterType) {                
-                AdapterType atype = (AdapterType)type;
-                this.adapters.put(atype.getAdapterName(), atype);
-            }
-        }
-    }
 
-    public void clearImports(TypeRegistry typeReg) {
-        ResourceType[] types = getTypes();
-        for (ResourceType  type : types) {
-            AbstractResourceType t = (AbstractResourceType)type;            
-            if (t.owner != null && t.owner != this.module) { // ignore public types
-                this.types.remove(type.getName());            
-                if (type instanceof AdapterType) {
-                    AdapterType atype = (AdapterType)type;
-                    this.adapters.remove(atype.getAdapterName());
-                }
-            }
-        }
-    }
-    
 }

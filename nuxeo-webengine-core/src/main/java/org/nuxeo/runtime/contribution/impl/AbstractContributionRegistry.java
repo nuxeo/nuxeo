@@ -19,7 +19,9 @@
 
 package org.nuxeo.runtime.contribution.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.runtime.contribution.Contribution;
@@ -28,6 +30,9 @@ import org.nuxeo.runtime.contribution.ContributionRegistry;
 /**
  * The parent provider is read only. It is never modified by the registry.
  * It serves only to resolve dependencies. This allow greater flexibility in managing dependencies.
+ * This registry may have a parent registry that can be used only read only.
+ *
+ * TODO need to implement a visibility (PRIVATE, PROTECTED, PUBLIC etc) on contributions when extending other registries  
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -35,13 +40,45 @@ public abstract class AbstractContributionRegistry<K, T> implements
         ContributionRegistry<K, T> {
 
     protected final Map<Object, Contribution<K, T>> registry;
-
+    protected final AbstractContributionRegistry<K,T> parent;
+    protected final List<AbstractContributionRegistry<K, T>> listeners;
+    
     protected AbstractContributionRegistry() {
+        this (null);
+    }
+    
+    protected AbstractContributionRegistry(AbstractContributionRegistry<K,T> parent) {
         registry = new HashMap<Object, Contribution<K, T>>();
+        this.parent = parent;
+        listeners = new ArrayList<AbstractContributionRegistry<K,T>>();
+        // subclasses may call importParentContributions(); after initializing the registry
+        // this will import all resolved contributions from the parent
+    }
+    
+    public ContributionRegistry<K, T> getParent() {
+        return parent;
+    }
+    
+    protected synchronized void importParentContributions() {        
+        AbstractContributionRegistry<K,T> p = parent;
+        while (p != null) {
+            p.listeners.add(this);            
+            for (Contribution<K,T> contrib : p.registry.values().toArray(new Contribution[p.registry.size()])) {
+                if (contrib.isResolved()) {
+                    installContribution(contrib.getId(), contrib.getValue());
+                }
+            }
+            p = p.parent;
+        }
     }
 
+
     public synchronized Contribution<K, T> getContribution(K primaryKey) {
-        return registry.get(primaryKey);
+        Contribution<K,T> contrib = registry.get(primaryKey);
+        if (contrib == null && parent != null) {
+            contrib = parent.getContribution(primaryKey);
+        }
+        return contrib;
     }
 
     public T getObject(K key) {
@@ -82,7 +119,7 @@ public abstract class AbstractContributionRegistry<K, T> implements
     }
 
     public synchronized Contribution<K, T> getOrCreateDependency(K key) {
-        Contribution<K, T> contrib = registry.get(key);
+        Contribution<K, T> contrib = getContribution(key);
         if (contrib == null) {
             contrib = new ContributionImpl<K, T>(this, key);
             registry.put(key, contrib);
@@ -92,15 +129,27 @@ public abstract class AbstractContributionRegistry<K, T> implements
     }
 
     public void fireUnresolved(Contribution<K, T> contrib, T value) {
-        uninstallContribution(contrib.getId(), value);
+        K key = contrib.getId();
+        uninstallContribution(key, value);
+        if(!listeners.isEmpty()) {
+            for (AbstractContributionRegistry<K,T> reg : listeners) {
+                reg.uninstallContribution(key, value);
+            }
+        }
     }
 
     public void fireResolved(Contribution<K, T> contrib) {
+        K key = contrib.getId();
         T value = contrib.getValue();
         if (value == null) {
             throw new IllegalStateException("contribution is null");
         }
-        installContribution(contrib.getId(), value);
+        installContribution(key, value);
+        if(!listeners.isEmpty()) {
+            for (AbstractContributionRegistry<K,T> reg : listeners) {
+                reg.installContribution(key, value);
+            }
+        }
     }
 
     public void fireUpdated(T oldValue, Contribution<K, T> contrib) {

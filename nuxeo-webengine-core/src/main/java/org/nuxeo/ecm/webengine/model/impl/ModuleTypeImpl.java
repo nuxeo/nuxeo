@@ -28,6 +28,7 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.model.Guard;
 import org.nuxeo.ecm.webengine.model.ModuleType;
+import org.nuxeo.ecm.webengine.model.TypeVisibility;
 import org.nuxeo.ecm.webengine.model.WebModule;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.annotations.AnnotationManager;
@@ -38,8 +39,8 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
  */
 public class ModuleTypeImpl extends AbstractResourceType implements ModuleType {
 
-    public ModuleTypeImpl(WebEngine engine, ModuleImpl module, AbstractResourceType superType, String name, ClassProxy clazz) {
-        super(engine, module, superType, name, clazz);
+    public ModuleTypeImpl(WebEngine engine, AbstractModule module, AbstractResourceType superType, String name, ClassProxy clazz) {
+        super(engine, module, superType, name, clazz, TypeVisibility.DEFAULT);
     }
 
     @Override

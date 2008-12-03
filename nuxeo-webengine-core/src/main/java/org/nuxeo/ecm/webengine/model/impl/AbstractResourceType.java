@@ -33,6 +33,7 @@ import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.TemplateNotFoundException;
+import org.nuxeo.ecm.webengine.model.TypeVisibility;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.PermissionService;
@@ -44,24 +45,34 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
  */
 public abstract class AbstractResourceType implements ResourceType {
 
-    protected final ModuleImpl owner;
+    protected final AbstractModule owner;
     protected final String name;
+    protected int visibility = TypeVisibility.DEFAULT; 
     protected AbstractResourceType superType;
     protected volatile ClassProxy clazz;
     protected volatile Guard guard = Guard.DEFAULT;
     protected volatile Set<String> facets;
     protected volatile ConcurrentMap<String, ScriptFile> templateCache;
-
-    protected AbstractResourceType(WebEngine engine, ModuleImpl module, AbstractResourceType superType, String name, ClassProxy clazz) {
+    
+    
+    protected AbstractResourceType(WebEngine engine, AbstractModule module, AbstractResourceType superType, String name, ClassProxy clazz, int visibility) {
         templateCache = new ConcurrentHashMap<String, ScriptFile>();
         this.owner = module;
         this.superType = superType;
         this.name = name;
         this.clazz = clazz;
+        this.visibility = visibility;
         AnnotationManager mgr = engine.getAnnotationManager();
         loadAnnotations(mgr);
     }
 
+    /**
+     * @return the visibility.
+     */
+    public int getVisibility() {
+        return visibility;
+    }
+    
     protected abstract void loadAnnotations(AnnotationManager annoMgr);
 
     public ResourceType getSuperType() {

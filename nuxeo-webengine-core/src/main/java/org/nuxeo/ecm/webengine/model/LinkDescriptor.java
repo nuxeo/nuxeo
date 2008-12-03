@@ -31,8 +31,8 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.ecm.webengine.security.Guard;
+import org.nuxeo.ecm.webengine.security.PermissionService;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

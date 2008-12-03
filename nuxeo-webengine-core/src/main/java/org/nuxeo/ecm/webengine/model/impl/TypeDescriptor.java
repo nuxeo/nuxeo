@@ -24,7 +24,11 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
+import org.nuxeo.ecm.webengine.model.Private;
+import org.nuxeo.ecm.webengine.model.Protected;
+import org.nuxeo.ecm.webengine.model.Public;
 import org.nuxeo.ecm.webengine.model.ResourceType;
+import org.nuxeo.ecm.webengine.model.TypeVisibility;
 import org.nuxeo.ecm.webengine.model.Utils;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
@@ -50,6 +54,20 @@ public class TypeDescriptor implements Cloneable {
     @XNode("@superType")
     public String superType = ResourceType.ROOT_TYPE_NAME;
 
+    @XNode("@visibility")
+    public void setVisibility(String v) {
+        if (v.equals("public")) {
+            visibility = TypeVisibility.PUBLIC;
+        } else if (v.equals("protected")) {
+            visibility = TypeVisibility.PROTECTED;
+        } else if (v.equals("private")) {
+            visibility = TypeVisibility.PRIVATE;
+        } else {
+            visibility = TypeVisibility.DEFAULT;
+        }
+    }
+    public int visibility = TypeVisibility.DEFAULT;
+    
     /**
      *
      */
@@ -60,8 +78,23 @@ public class TypeDescriptor implements Cloneable {
         this.clazz = clazz;
         this.type = type;
         this.superType = superType;
+        Class<?> k = clazz.get();
+        if (k.isAnnotationPresent(Public.class)) {
+            visibility = TypeVisibility.PUBLIC;
+        } else if (k.isAnnotationPresent(Protected.class)) {
+            visibility = TypeVisibility.PROTECTED;
+        } else if (k.isAnnotationPresent(Private.class)) {
+            visibility = TypeVisibility.PRIVATE;
+        }
     }
 
+    /**
+     * @return the visibility.
+     */
+    public int getVisibility() {
+        return visibility;
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
@@ -120,11 +153,11 @@ public class TypeDescriptor implements Cloneable {
     }
     
     public static TypeDescriptor fromAnnotation(ClassProxy clazz, WebObject type) {
-        return  new TypeDescriptor(clazz, type.type(), type.superType());
+        return new TypeDescriptor(clazz, type.type(), type.superType());
     }
 
     @Override
     public String toString() {
-        return type+ "extends "+superType+" ["+clazz.getClassName()+"]";
+        return type+ " extends "+superType+" ["+clazz.getClassName()+"]";
     }
 }

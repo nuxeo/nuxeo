@@ -35,8 +35,6 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Messages;
-import org.nuxeo.ecm.webengine.model.ResourceType;
-import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 /**
@@ -148,29 +146,20 @@ public class ModuleImpl extends AbstractModule {
 
     public TypeRegistry createTypeRegistry() {
         //double s = System.currentTimeMillis();
-        TypeRegistry typeReg = new TypeRegistry(this);
-        // install global types
-        BundleTypeProvider bundleTypeProvider = engine.getBundleTypeProvider();
-        bundleTypeProvider.install(typeReg);
+        GlobalTypes gtypes = engine.getGlobalTypes();        
+        TypeRegistry typeReg = null;
         // install types from super modules
         if (superModule != null) { //TODO add type reg listener on super modules to update types  when needed?
-            typeReg.importTypes(superModule.getTypeRegistry());
+            typeReg = new TypeRegistry(gtypes.getTypeRegistry(), engine, this);
+        } else {
+            typeReg = new TypeRegistry(gtypes.getTypeRegistry(), engine, this);
         }
         DirectoryTypeLoader loader = new DirectoryTypeLoader(engine, typeReg, root);
         loader.load();
+        typeReg.registerModuleType(this);
         //System.out.println(">>>>>>>>>>>>>"+((System.currentTimeMillis()-s)/1000));
         return typeReg;
     }
-
-    public ResourceType getType(String typeName) {
-        ResourceType type = getTypeRegistry().getType(typeName);
-        if (type == null) {
-            throw new TypeNotFoundException(typeName);
-        }
-        return type;
-    }
-
-
 
 
     public File getRoot() {

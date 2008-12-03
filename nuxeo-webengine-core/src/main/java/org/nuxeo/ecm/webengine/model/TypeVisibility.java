@@ -17,27 +17,17 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.annotations.loader;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.nuxeo.ecm.webengine.model;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.ANNOTATION_TYPE)
-public @interface Indexable {
+public interface TypeVisibility {
 
-    /**
-     * The name of annotation arguments that should be indexed
-     * @return
-     */
-    String[] value() default {};
-
+    public static final int PRIVATE = 0; // visible only to owner module   
+    public static final int PROTECTED = 1; // visible to onwer module and decendants
+    public static final int DEFAULT = 2; // visible to owner module, to descendants and to buddies
+    public static final int PUBLIC = 3; // visible to all modules
+    
 }

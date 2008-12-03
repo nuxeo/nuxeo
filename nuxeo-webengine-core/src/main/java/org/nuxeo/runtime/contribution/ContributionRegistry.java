@@ -27,6 +27,8 @@ package org.nuxeo.runtime.contribution;
  */
 public interface ContributionRegistry<K,T> {
 
+    ContributionRegistry<K,T> getParent();
+    
     Contribution<K,T> getContribution(K key);
 
     Contribution<K,T> addFragment(K key, T fragment, K ... superKeys);

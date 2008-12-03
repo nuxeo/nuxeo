@@ -44,11 +44,8 @@ import org.nuxeo.ecm.webengine.model.Messages;
 import org.nuxeo.ecm.webengine.model.MessagesProvider;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
-import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.impl.BundleTypeProvider;
-import org.nuxeo.ecm.webengine.model.impl.DirectoryTypeProvider;
+import org.nuxeo.ecm.webengine.model.impl.GlobalTypes;
 import org.nuxeo.ecm.webengine.model.impl.ModuleDescriptor;
 import org.nuxeo.ecm.webengine.model.impl.ModuleImpl;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRegistry;
@@ -118,8 +115,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     protected Map<String, Object> env;
     protected boolean isDebug = false;
 
-    protected BundleTypeProvider bundleTypeProvider;
-    protected DirectoryTypeProvider directoryTypeProvider;
+    protected GlobalTypes globalTypes;
 
     protected AnnotationManager annoMgr;
 
@@ -148,10 +144,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         scripting.addClassPath(new File(root,".").getAbsolutePath());
         scripting.addClassPath(cp);
 
-        bundleTypeProvider = new BundleTypeProvider();
-        directoryTypeProvider = new DirectoryTypeProvider(this);
-        BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), bundleTypeProvider);
-        BundleAnnotationsLoader.getInstance().addLoader(WebAdapter.class.getName(), bundleTypeProvider);
+        globalTypes = new GlobalTypes(this);
 
         skinPathPrefix = Framework.getProperty(SKIN_PATH_PREFIX_KEY);
         if (skinPathPrefix == null) {
@@ -174,7 +167,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         // register annotation loader
         BundleAnnotationsLoader.getInstance().addLoader(Path.class.getName(), this);
 
-        // register writers
+        // register writers - TODO make an extension point
         registry.addMessageBodyWriter(new ResourceWriter());
         registry.addMessageBodyWriter(new TemplateWriter());
         registry.addMessageBodyWriter(new ScriptFileWriter());
@@ -203,13 +196,10 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         return scripting.loadClass(className);
     }
 
-    public BundleTypeProvider getBundleTypeProvider() {
-        return bundleTypeProvider;
+    public GlobalTypes getGlobalTypes() {
+        return globalTypes;
     }
 
-    public DirectoryTypeProvider getDirectoryTypeProvider() {
-        return directoryTypeProvider;
-    }
 
     public String getMimeType(String ext) {
         return (String)mimeTypes.get(ext);
@@ -418,8 +408,6 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
      */
     public synchronized void reload() {
         log.info("Reloading WebEngine");
-        bundleTypeProvider.flushCache();
-        directoryTypeProvider.flushCache();
         reloadModules();
     }
 
@@ -492,7 +480,6 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
                     } else { // not a skin may be a type
                         //module.flushCache();
                         ((ModuleImpl)module).flushTypeCache();
-                        directoryTypeProvider.flushCache();
                     }
                 }
             }

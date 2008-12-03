@@ -36,6 +36,7 @@ import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.ModuleType;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
+import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -119,7 +120,8 @@ public abstract class AbstractModule implements Module {
             synchronized (typeLock) {
                 if (typeReg == null) {
                     typeReg = createTypeRegistry();
-                    type = (ModuleTypeImpl)typeReg.getModuleType();
+                    type = (ModuleTypeImpl)typeReg.getType(descriptor.name);
+                    assert type != null;
                 }
             }
         }
@@ -180,6 +182,14 @@ public abstract class AbstractModule implements Module {
 
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         return engine.getScripting().loadClass(className);
+    }
+
+    public ResourceType getType(String typeName) {
+        ResourceType type = getTypeRegistry().getType(typeName);
+        if (type == null) {
+            throw new TypeNotFoundException(typeName);
+        }
+        return type;
     }
 
     public ResourceType[] getTypes() {

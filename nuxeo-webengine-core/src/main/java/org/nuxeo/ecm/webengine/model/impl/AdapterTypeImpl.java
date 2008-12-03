@@ -43,8 +43,9 @@ public class AdapterTypeImpl extends AbstractResourceType implements AdapterType
     protected String[] targetFacets;
     protected String adapterName;
 
-    public AdapterTypeImpl(WebEngine engine, ModuleImpl module, ResourceTypeImpl superType, String name, String adapterName, ClassProxy clazz) {
-        super(engine, module, superType, name, clazz);
+    
+    public AdapterTypeImpl(WebEngine engine, AbstractModule module, ResourceTypeImpl superType, String name, String adapterName, ClassProxy clazz, int visibility) {
+        super(engine, module, superType, name, clazz, visibility);
         this.adapterName = adapterName;
     }
 
