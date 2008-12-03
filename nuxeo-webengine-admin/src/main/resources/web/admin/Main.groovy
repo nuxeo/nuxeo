@@ -28,7 +28,7 @@ public class Main extends DefaultModule {
 
   @Path("repository")
   public Object getRepository() {
-    return new DocumentRoot(ctx, "/default-domain");
+    return new DocumentRoot(ctx, "/");
   }
 
   @GET
