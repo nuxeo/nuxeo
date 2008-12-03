@@ -21,8 +21,6 @@ package org.nuxeo.ecm.webengine.server.resteasy;
 
 import javax.ws.rs.ext.RuntimeDelegate;
 
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.nuxeo.ecm.webengine.ResourceRegistry;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -37,35 +35,32 @@ public class ResourceContainer extends DefaultComponent {
 
     public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.webengine.server");
 
-    protected Dispatcher dispatcher;
-    protected ResourceRegistryImpl registry;
+    protected WebEngineDispatcher dispatcher;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
         RuntimeDelegate.setInstance(new ResteasyProviderFactory());
         ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
-        dispatcher = new SynchronousDispatcher(providerFactory);
-        registry = new ResourceRegistryImpl(dispatcher);
+        dispatcher = new WebEngineDispatcher(providerFactory);
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        registry = null;
         dispatcher = null;
     }
 
-    public Dispatcher getDispatcher() {
+    public WebEngineDispatcher getDispatcher() {
         return dispatcher;
     }
 
-    public ResourceRegistryImpl getRegistry() {
-        return registry;
+    public ResourceRegistry getRegistry() {
+        return dispatcher.getResourceRegistry();
     }
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (ResourceRegistry.class.isAssignableFrom(adapter)) {
-            return adapter.cast(registry);
+            return adapter.cast(dispatcher.getResourceRegistry());
         }
         // TODO Auto-generated method stub
         return super.getAdapter(adapter);

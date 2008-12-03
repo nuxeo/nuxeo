@@ -29,11 +29,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.Path;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.url.URLFactory;
@@ -72,6 +75,8 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
 
     public static final String SKIN_PATH_PREFIX_KEY = "org.nuxeo.ecm.webengine.skinPathPrefix";
 
+    protected static Pattern PATH_PATTERN = Pattern.compile("\\s+@Path\\(\"([^\"]*)\"\\)\\s+");
+    
     private static final Log log = LogFactory.getLog(WebEngine.class);
 
     private static final ThreadLocal<WebContext> CTX = new ThreadLocal<WebContext>();
@@ -255,6 +260,34 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     }
 
     /**
+     * PreLoad a module this is loading only the web binding to be registered in
+     * JAX-RS engine. The module itself will be loaded later at first HTTP request on that module.
+     * This speed startup and also, may solve startup dependency problems.
+     * @param file
+     */
+    public void preloadModule(File file) throws IOException {
+        File appFile = new File(file, "Main.groovy");
+        if (!appFile.isFile()) {
+            return;
+        }
+        // extract web path from @Path annotation
+        String content = FileUtils.readFile(appFile);
+        Matcher m = PATH_PATTERN.matcher(content);
+        if (!m.find()) {
+            return;
+        }
+        String path = m.group(1);
+        String filePath = file.getAbsolutePath();
+        registry.registerLazyModule(path, filePath);
+        moduleReg.registerLazyModule(path, filePath);
+    }
+    
+    
+    public boolean loadLazyModule(String name) throws Exception {        
+        return loadModule(new File(name));
+    }
+    
+    /**
      * Try to load the module in the given directory
      * If the directory dooesn't contain a WebModule nfalse is returned.
      * @param file the module directory
@@ -293,7 +326,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         for (File file : root.listFiles()) {
             try {
                 if (file.isDirectory()) {
-                    loadModule(file);
+                    preloadModule(file);
                 }
             } catch (Exception e) {
                 e.printStackTrace(); // TODO log

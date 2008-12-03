@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.model.impl;
 
 import java.io.File;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,6 +34,8 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
  */
 public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleDescriptor> {
 
+    // used only to have a list of lazy modules
+    protected final Map<String, String> lazyModules = new Hashtable<String, String>();
     protected final Map<String, Module> modules = new ConcurrentHashMap<String, Module>();
     protected final Map<String, Module> moduleRoots = new ConcurrentHashMap<String, Module>();
     protected final WebEngine engine;
@@ -126,4 +129,28 @@ public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleD
         removeFragment(desc.name, desc);
     }
 
+    
+    public void registerLazyModule(String webPath, String modulePath) {
+        lazyModules.put(webPath, modulePath);
+    }
+    
+    public String[] getLazyModuleKeys() {
+        return lazyModules.keySet().toArray(new String[lazyModules.size()]);
+    }
+    
+    public File getLazyModuleFile(String key) {
+        String path = lazyModules.get(key);
+        if (path != null) {
+            return new File(path);
+        }
+        return null;
+    }
+
+    public String getLazyModuleName(String key) {
+        File file = getLazyModuleFile(key);
+        if (file != null) {
+            return file.getName();
+        }
+        return null;        
+    }
 }

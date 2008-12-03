@@ -35,7 +35,9 @@ import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.ResourceRegistry;
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -46,10 +48,14 @@ public class ResourceRegistryImpl implements ResourceRegistry {
     protected final Dispatcher dispatcher;
     protected final ResourceMethodRegistry registry;
     protected List<ResourceBinding> bindings;
+    
+    protected List<String> lazyModules; // MODULE_PATH, MODULE_ROOT_PATH, ... etc
 
+    
     public ResourceRegistryImpl(Dispatcher dispatcher) {
         registry = (ResourceMethodRegistry)dispatcher.getRegistry();
         bindings = new ArrayList<ResourceBinding>();
+        lazyModules = new ArrayList<String>();
         this.dispatcher = dispatcher;
     }
 
@@ -147,4 +153,41 @@ public class ResourceRegistryImpl implements ResourceRegistry {
         dispatcher.getProviderFactory().addMessageBodyWriter(writer);
     }
 
+    
+    public void registerLazyModule(String path, String name) {
+        synchronized (lazyModules) {
+            lazyModules.add(path);
+            lazyModules.add(name);
+        }
+    }
+    
+
+    public boolean loadLazyModuleIfNeeded(String path) throws Exception  {
+        if (lazyModules.isEmpty()) {
+            return false;
+        }
+        if (path == null || path.length() == 0) {
+            path = "/";
+        }
+        String name = null;
+        synchronized (lazyModules) {
+            for (int i=0,len=lazyModules.size(); i<len; i+=2) {
+                String p = lazyModules.get(i);
+                if (path.startsWith(p)) { // lazy loading works only on paths without regexp
+                    lazyModules.remove(i);
+                    name = lazyModules.remove(i);
+                    break;
+                }
+            }
+            if (name != null) {
+                WebEngine engine = Framework.getService(WebEngine.class);
+                engine.loadLazyModule(name);
+                return true;
+            }
+            return false;
+        }
+        
+    }
+    
+    
 }
