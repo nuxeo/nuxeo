@@ -29,7 +29,7 @@ ImageBox.display = function() {
   var caption = widget.getValue('caption');
     
   if (src) {
-    img.src = src;
+    img.src = NXThemesWebWidgets.getWidgetDataUrl(src);
     if (width) {
       img.width = width;
     }

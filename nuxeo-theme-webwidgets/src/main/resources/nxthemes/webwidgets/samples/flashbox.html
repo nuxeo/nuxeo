@@ -24,7 +24,7 @@ FlashBox.display = function() {
   embed.type = 'application/x-shockwave-flash';
 
   if (src) {
-    embed.src = src;
+    embed.src = NXThemesWebWidgets.getWidgetDataUrl(src);
     if (width) {
       embed.width = width;
     }

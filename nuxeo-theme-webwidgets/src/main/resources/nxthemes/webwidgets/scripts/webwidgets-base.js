@@ -134,6 +134,16 @@ NXThemesWebWidgets.WebWidget.prototype = {
 
 };
 
+NXThemesWebWidgets.getWidgetDataUrl = function(url) {
+  if (!url.substr(0, 20) == 'nxwebwidgets://data/') {
+      return url;
+  }
+  var path = url.substr(20).split('/');
+  var providerName = path[0];
+  var widgetUid = path[1];
+  var dataName = path[2];
+  return webEngineContextPath + '/nxthemes-webwidgets/render_widget_data?widget_uid=' + widgetUid + '&data=' + dataName + '&provider=' + providerName; 
+};
 
 Object.extend(NXThemesWebWidgets.WebWidget.prototype, UWA.Widget.prototype);
 
