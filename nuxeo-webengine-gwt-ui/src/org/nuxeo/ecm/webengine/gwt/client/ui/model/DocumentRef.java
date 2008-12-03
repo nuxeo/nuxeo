@@ -16,4 +16,16 @@ public class DocumentRef extends JSONWrapper {
         return false;
     }
 
+    public String getId() {
+        return getString(KEY_ID);
+    }
+
+    public String getTitle() {
+        return getString(KEY_TITLE);
+    }
+
+    public String getPath() {
+        return getString(KEY_PATH);
+    }
+
 }

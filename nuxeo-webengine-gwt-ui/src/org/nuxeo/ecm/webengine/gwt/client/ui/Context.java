@@ -28,18 +28,18 @@ import org.nuxeo.ecm.webengine.gwt.client.http.ServerException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Context extends HashMap<String,String> {
+public class Context extends HashMap<String,Object> {
 
     private static final long serialVersionUID = 1L;
 
     protected String username;
     protected Object input;
     protected ServerException exception;
-    
+
     public ServerException getServerException() {
         return this.exception;
     }
-    
+
     /**
      * @param exception the exception to set.
      */
@@ -49,13 +49,13 @@ public class Context extends HashMap<String,String> {
             UI.fireEvent(ContextListener.ERROR);
         }
     }
-    
-    
-    
+
+
+
     public String getUsername() {
         return username;
     }
-    
+
     /**
      * @param username the username to set.
      */
@@ -65,11 +65,11 @@ public class Context extends HashMap<String,String> {
             UI.fireEvent(username == null ? ContextListener.LOGOUT : ContextListener.LOGIN);
         }
     }
-    
+
     public Object getInputObject() {
         return input;
     }
-    
+
     /**
      * @param object the object to set.
      */
@@ -79,5 +79,13 @@ public class Context extends HashMap<String,String> {
             UI.fireEvent(ContextListener.INPUT);
         }
     }
-        
+
+    @Override
+    public Object put(String key, Object o ) {
+        Object obj = super.put(key, o);
+        UI.fireEvent(ContextListener.PROP);
+        return obj;
+    }
+
+
 }

@@ -4,7 +4,6 @@ import java.util.Date;
 
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONValue;
-import com.google.gwt.user.client.Window;
 
 public class Document extends JSONWrapper{
 
@@ -59,7 +58,6 @@ public class Document extends JSONWrapper{
         return defaultValue;
     }
 
-    @Override
     public String getTitle() {
         return getStringProperty("dublincore", "title");
     }
@@ -78,6 +76,14 @@ public class Document extends JSONWrapper{
 
     public String[] getSchemas() {
         return getStringArray(KEY_SCHEMAS);
+    }
+
+    public String getId() {
+        return getString(KEY_ID);
+    }
+
+    public String getPath() {
+        return getString(KEY_PATH);
     }
 
 }
