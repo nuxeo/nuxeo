@@ -59,10 +59,10 @@ public class Head {
         }
 
         // Styles
-        String basePath = params.get("basePath");
+        String path = params.get("path");
         sb.append(String.format(
                 "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"/nuxeo/nxthemes-css/?path=%s\"/>",
-                basePath));
+                path));
 
         // Base URL
         final String baseUrl = params.get("baseUrl");

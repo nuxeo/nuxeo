@@ -65,7 +65,7 @@ public class NXThemesHeadDirective implements TemplateDirectiveModel {
 
         Map<String, String> attributes = new HashMap<String, String>();
         attributes.put("themeName", ThemeManager.getThemeNameByUrl(themeUrl));
-        attributes.put("basePath", context.getModulePath());
+        attributes.put("path", context.getModulePath());
         attributes.put("baseUrl", context.getModulePath());
         writer.write(Head.render(attributes));
 

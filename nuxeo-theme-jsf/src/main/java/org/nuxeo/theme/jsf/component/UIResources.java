@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.faces.component.UIOutput;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
@@ -27,19 +28,18 @@ import org.nuxeo.theme.html.ui.Resources;
 
 public class UIResources extends UIOutput {
 
-    
     @Override
     public void encodeAll(final FacesContext context) throws IOException {
         final ResponseWriter writer = context.getResponseWriter();
+        final ExternalContext externalContext = context.getExternalContext();
 
         Map<String, String> params = new HashMap<String, String>();
-        URL themeUrl = (URL) context.getExternalContext().getRequestMap().get(
+        URL themeUrl = (URL) externalContext.getRequestMap().get(
                 "org.nuxeo.theme.url");
         params.put("themeUrl", themeUrl.toString());
-        params.put("path", context.getExternalContext().getRequestContextPath());
+        params.put("path", externalContext.getRequestContextPath());
         // XXX
         params.put("basepath", "/nuxeo/site");
-
         writer.write(Resources.render(params));
     }
 }

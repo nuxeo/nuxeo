@@ -41,7 +41,7 @@ public class UIHead extends UIOutput {
         Map<String, String> params = new HashMap<String, String>();
 
         params.put("themeName", ThemeManager.getThemeNameByUrl(themeUrl));
-        params.put("basePath", externalContext.getRequestContextPath());
+        params.put("path", externalContext.getRequestContextPath());
         params.put(
                 "baseUrl",
                 URLUtils.getBaseURL((ServletRequest) externalContext.getRequest()));
