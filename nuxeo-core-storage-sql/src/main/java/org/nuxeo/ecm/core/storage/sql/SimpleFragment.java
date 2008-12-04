@@ -19,9 +19,13 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 
 /**
  * A type of fragment corresponding to a single row in a table.
@@ -41,6 +45,9 @@ public class SimpleFragment extends Fragment {
     /** The map actually holding the data. */
     private final Map<String, Serializable> map;
 
+    /** The previous values, to be able to find dirty fields. */
+    private Map<String, Serializable> old;
+
     /**
      * Constructs an empty {@link SimpleFragment} of the given table with the
      * given id (which may be a temporary one).
@@ -58,6 +65,7 @@ public class SimpleFragment extends Fragment {
             map = new HashMap<String, Serializable>();
         }
         this.map = map;
+        clearDirty();
     }
 
     @Override
@@ -66,12 +74,15 @@ public class SimpleFragment extends Fragment {
         Map<String, Serializable> newMap = context.mapper.readSingleRowMap(
                 context.getTableName(), getId(), context);
         map.clear();
+        State state;
         if (newMap == null) {
-            return State.ABSENT;
+            state = State.ABSENT;
         } else {
             map.putAll(newMap);
-            return State.PRISTINE;
+            state = State.PRISTINE;
         }
+        clearDirty();
+        return state;
     }
 
     /**
@@ -85,6 +96,36 @@ public class SimpleFragment extends Fragment {
         accessed(); // maybe refetch other values
         map.put(key, value);
         markModified();
+    }
+
+    /**
+     * Gets the dirty fields (fields changed since last clear).
+     *
+     * @return the dirty fields
+     */
+    public List<String> getDirty() {
+        List<String> dirty = new LinkedList<String>();
+        for (Entry<String, Serializable> entry : map.entrySet()) {
+            String key = entry.getKey();
+            Serializable value = entry.getValue();
+            Serializable oldValue = old.get(key);
+            if (value == null) {
+                if (oldValue != null) {
+                    dirty.add(key);
+                }
+            } else if (!value.equals(oldValue)) {
+                dirty.add(key);
+            }
+        }
+        return dirty;
+    }
+
+    /**
+     * Clears the dirty fields.
+     */
+    @SuppressWarnings("unchecked")
+    public void clearDirty() {
+        old = (HashMap) ((HashMap) map).clone();
     }
 
     /**

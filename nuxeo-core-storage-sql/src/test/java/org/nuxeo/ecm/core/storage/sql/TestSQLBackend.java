@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -145,12 +147,16 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
 
         nodea.setSingleProperty("tst:title", "hello world");
+        Calendar cal = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34,
+                56);
+        nodea.setSingleProperty("tst:created", cal);
         nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
                 "c" });
         nodea.setCollectionProperty("tst:tags", new String[] { "1", "2" });
 
         assertEquals("hello world",
                 nodea.getSimpleProperty("tst:title").getString());
+        assertNotNull(nodea.getSimpleProperty("tst:created").getValue());
         String[] subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
         String[] tags = nodea.getCollectionProperty("tst:tags").getStrings();
         assertEquals(Arrays.asList("a", "b", "c"), Arrays.asList(subjects));
@@ -162,11 +168,20 @@ public class TestSQLBackend extends SQLBackendTestCase {
         nodea.setSingleProperty("tst:title", "another");
         nodea.setCollectionProperty("tst:subjects", new String[] { "z", "c" });
         nodea.setCollectionProperty("tst:tags", new String[] { "3" });
-
         session.save();
-        session.close();
+
+        // again
+        nodea.setSingleProperty("tst:created", null);
+        session.save();
+
+        // check the logs to see that the following doesn't do anything because
+        // the value is unchanged since the last save (UPDATE optimizations)
+        nodea.setSingleProperty("tst:title", "blah");
+        nodea.setSingleProperty("tst:title", "another");
+        session.save();
 
         // now read from another session
+        session.close();
         session = repository.getConnection();
         root = session.getRootNode();
         assertNotNull(root);
