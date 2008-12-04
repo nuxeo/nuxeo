@@ -21,7 +21,6 @@ package org.nuxeo.osgi.application.loader;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,18 +35,17 @@ import org.nuxeo.osgi.application.SharedClassLoader;
 
 /**
  * This class is used to load StandaloneApplication2
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Loader implements Constants {
 
     protected static StandaloneApplication2 app;
-    
+
     public static Environment createEnvironment() throws IOException {
         return createEnvironment(null);
     }
-    
+
     public static Environment createEnvironment(Properties props) throws IOException {
         if (props != null) {
             String val = (String)props.get(HOME_DIR);
@@ -93,7 +91,7 @@ public class Loader implements Constants {
             val = (String)props.get("bundles");
             if (val != null) {
                 env.setProperty(Environment.BUNDLES, val);
-            } 
+            }
             val = (String)props.get(TMP_DIR);
             if (val != null) {
                 env.setHostApplicationName(val);
@@ -101,7 +99,7 @@ public class Loader implements Constants {
                 env.setHostApplicationName("NXLauncher");
             }
             val = (String)props.get(TMP_DIR);
-            if (val != null) {            
+            if (val != null) {
                 env.setHostApplicationVersion(val);
             } else {
                 env.setHostApplicationVersion("1.0.0");
@@ -116,7 +114,7 @@ public class Loader implements Constants {
     }
 
     public static void loadFramework(SharedClassLoader cl, File systemBundle, List<File> classPath, Properties properties) throws Exception {
-        long startTime = System.currentTimeMillis();        
+        long startTime = System.currentTimeMillis();
         Environment env = createEnvironment(properties);
         Environment.setDefault(env);
         String[] args = env.getCommandLineArguments();
@@ -141,7 +139,7 @@ public class Loader implements Constants {
         if (sb == null) {
             throw new IllegalStateException("Property systemBundle was not set");
         }
-        
+
         System.out.println("======================================================================");
         System.out.println("= Starting Nuxeo Framework");
         System.out.println("======================================================================");
@@ -153,7 +151,7 @@ public class Loader implements Constants {
         System.out.println("  * System Bundle = "+systemBundle);
         System.out.println("  * Command Line Args = "+Arrays.asList(env.getCommandLineArguments()));
         System.out.println("======================================================================");
-        
+
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(cl);
@@ -166,8 +164,8 @@ public class Loader implements Constants {
             Thread.currentThread().setContextClassLoader(oldCl);
         }
     }
-    
-    public void shutdown() {
+
+    public static void shutdown() {
         if (app != null) {
             try {
                 app.shutdown();
@@ -180,15 +178,14 @@ public class Loader implements Constants {
     public static boolean hasArgument(String[] args, String arg) {
         if (args != null) {
             for (String el : args) {
-                if (el.equals(args)) {
+                if (el.equals(arg)) {
                     return true;
                 }
             }
         }
         return false;
     }
-    
-    
+
     public static File newFile(File home, String path) throws IOException {
         if (path.startsWith("/")) {
             return new File(path).getCanonicalFile();
@@ -225,8 +222,8 @@ public class Loader implements Constants {
         return result;
     }
 
-    public static BundleFile createSystemBundle(File file) throws URISyntaxException, IOException {      
-        BundleFile sysbf = null;
+    public static BundleFile createSystemBundle(File file) throws IOException {
+        BundleFile sysbf;
         if (file.isFile()) {
             sysbf = new JarBundleFile(file);
         } else {
@@ -234,5 +231,5 @@ public class Loader implements Constants {
         }
         return sysbf;
     }
-    
+
 }

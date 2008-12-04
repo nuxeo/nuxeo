@@ -28,12 +28,12 @@ import org.nuxeo.runtime.service.AdaptableServiceImpl;
  */
 public class Service2Impl extends AdaptableServiceImpl implements Service2 {
 
-    protected Service1 s1;
-    
+    protected final Service1 s1;
+
     public Service2Impl(Service1 s1) {
         this.s1 = s1;
     }
-    
+
     public void m2() {
         System.out.println("method: Service2Impl::m2()");
     }
@@ -42,5 +42,5 @@ public class Service2Impl extends AdaptableServiceImpl implements Service2 {
     public <T> T getAdapter(Class<T> adapter) {
         return s1.getAdapter(adapter);
     }
-    
+
 }

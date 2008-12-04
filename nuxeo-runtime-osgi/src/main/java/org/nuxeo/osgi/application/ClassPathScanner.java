@@ -72,8 +72,8 @@ public class ClassPathScanner {
                 || name.endsWith("_jar") || name.endsWith("_rar") || name.endsWith("_sar"))) {
             return;
         }
-        BundleFile bf = null;
         try {
+            BundleFile bf;
             if (file.isFile()) {
                 JarFile jar = new JarFile(file);
                 bf = new JarBundleFile(jar);
@@ -82,15 +82,14 @@ public class ClassPathScanner {
             } else {
                 return;
             }
-            Collection<BundleFile> nested = null;
-            File nestedJARsDir = null;
+            File nestedJARsDir;
             if (bf.getSymbolicName() == null) { // a regular jar
                 nestedJARsDir = callback.handleJar(bf);
             } else { // an osgi bundle
                 nestedJARsDir = callback.handleBundle(bf);
             }
             if (nestedJARsDir != null) {
-                nested = extractNestedJars(bf, nestedJARsDir);
+                Collection<BundleFile> nested = extractNestedJars(bf, nestedJARsDir);
                 if (nested != null) {
                     for (BundleFile nestedJar : nested) {
                         callback.handleNestedJar(nestedJar);

@@ -157,8 +157,7 @@ public class DeploymentPreprocessor {
         }
     }
 
-    protected void predeploy(ContainerDescriptor cd) throws Exception {
-
+    protected static void predeploy(ContainerDescriptor cd) throws Exception {
         if (cd.context == null) {
             cd.context = new CommandContextImpl(cd.directory);
         }

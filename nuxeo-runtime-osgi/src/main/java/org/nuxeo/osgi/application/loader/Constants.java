@@ -24,31 +24,38 @@ package org.nuxeo.osgi.application.loader;
  *
  */
 public interface Constants {
+
     public static final String HOME_DIR = "org.nuxeo.app.home";
+
     // the web root
     public static final String WEB_DIR = "org.nuxeo.app.web";
+
     // the config dir
     public static final String CONFIG_DIR = "org.nuxeo.app.config";
+
     // the data dir
     public static final String DATA_DIR = "org.nuxeo.app.data";
+
     // the log dir
     public static final String LOG_DIR = "org.nuxeo.app.log";
+
     // the tmp dir
     public static final String TMP_DIR = "org.nuxeo.app.tmp";
-    
+
     public static final String CLASS_PATH = "org.nuxeo.app.classpath";
-    
+
     public static final String SYSTEM_BUNDLE = "org.nuxeo.app.system_bundle";
-    
+
     public static final String BUNDLES = "org.nuxeo.app.bundles";
-    
+
     public static final String HOST_NAME = "org.nuxeo.app.host";
-    
-    public static final String HOST_VERSION = "org.nuxeo.app.host.version";    
-    
+
+    public static final String HOST_VERSION = "org.nuxeo.app.host.version";
+
     public static final String COMMAND_LINE_ARGS = "org.nuxeo.app.args";
-    
+
     public static final String OPT_SCAN_NESTED_JARS = "org.nuxeo.app.options.scanNestedJARs";
+
     public static final String OPT_CLEAR_CACHE = "org.nuxeo.app.options.clearCache";
-    
+
 }

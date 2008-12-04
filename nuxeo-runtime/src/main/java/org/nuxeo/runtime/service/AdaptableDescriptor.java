@@ -31,22 +31,22 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class AdaptableDescriptor {
 
-    public final static Class<?>[] EMPTY_CLASSES = new Class[0]; 
-    
+    public final static Class<?>[] EMPTY_CLASSES = new Class[0];
+
     protected Class<?> adaptable;
     protected Class<?>[] superTypes;
     protected Map<Class<?>, AdapterFactory<?>> factories;
-    
-    
+
+
     public AdaptableDescriptor(Class<?> adaptable) {
         this.adaptable = adaptable;
         this.factories = new ConcurrentHashMap<Class<?>, AdapterFactory<?>>();
     }
-    
+
     public Class<?> getAdaptable() {
         return adaptable;
     }
-    
+
     public Class<?>[] getSuperTypes() {
         if (superTypes == null) {
             superTypes = collectSuperTypes(adaptable);
@@ -57,7 +57,7 @@ public class AdaptableDescriptor {
     public AdapterFactory<?> getAdapterFactory(Class<?> adapter) {
         return factories.get(adapter);
     }
-    
+
     public void addAdapterFactory(Class<?> adapter, AdapterFactory<?> factory) {
         factories.put(adapter, factory);
     }
@@ -67,8 +67,8 @@ public class AdaptableDescriptor {
     }
 
     public static Class<?>[] collectSuperTypes(Class<?> klass) {
-        ArrayList<Class<?>> superClasses = new ArrayList<Class<?>>();
-        ArrayList<Class<?>> interfaces = new ArrayList<Class<?>>();
+        List<Class<?>> superClasses = new ArrayList<Class<?>>();
+        List<Class<?>> interfaces = new ArrayList<Class<?>>();
         collectSuperTypes(klass, superClasses, interfaces);
         if (!interfaces.isEmpty()) {
             superClasses.addAll(interfaces);
@@ -78,18 +78,18 @@ public class AdaptableDescriptor {
         }
         return superClasses.toArray(new Class<?>[superClasses.size()]);
     }
-    
+
     @SuppressWarnings("unchecked")
     public static void collectSuperTypes(Class<?> klass, List<Class<?>> superClasses, List<Class<?>> interfaces) {
         Class<?>[] itfs = klass.getInterfaces();
         if (itfs.length > 0) {
-            interfaces.addAll(Arrays.asList(itfs));  
+            interfaces.addAll(Arrays.asList(itfs));
         }
         Class<?> superClass = klass.getSuperclass();
         if (superClass != null) {
             superClasses.add(superClass);
             collectSuperTypes(superClass, superClasses, interfaces);
-        }        
+        }
     }
-    
+
 }

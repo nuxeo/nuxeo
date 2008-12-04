@@ -109,10 +109,9 @@ public final class ServiceManager implements org.nuxeo.runtime.ServiceManager {
     @SuppressWarnings("unchecked")
     public <T> T getService(Class<T> serviceClass) throws Exception {
         ServiceDescriptor sd = services.get(serviceClass.getName());
-        T svc = null;
         if (sd != null) {
             try {
-                svc = (T) sd.getGroup().getServer().lookup(sd);
+                T svc = (T) sd.getGroup().getServer().lookup(sd);
                 if (svc != null) {
                     return svc;
                 }

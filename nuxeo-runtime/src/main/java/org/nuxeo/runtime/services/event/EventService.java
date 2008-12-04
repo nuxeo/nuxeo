@@ -159,7 +159,7 @@ public class EventService implements Component, Adaptable {
         }
     }
 
-    private boolean sendCancelableEvent(ListenerList list, Event event) {
+    private static boolean sendCancelableEvent(ListenerList list, Event event) {
         Object[] listeners = list.getListeners();
         for (Object listener : listeners) {
             if (((EventListener) listener).aboutToHandleEvent(event)) {
@@ -172,7 +172,7 @@ public class EventService implements Component, Adaptable {
         return true;
     }
 
-    private void sendEvent(ListenerList list, Event event) {
+    private static void sendEvent(ListenerList list, Event event) {
         Object[] listeners = list.getListeners();
         for (Object listener : listeners) {
             ((EventListener) listener).handleEvent(event);

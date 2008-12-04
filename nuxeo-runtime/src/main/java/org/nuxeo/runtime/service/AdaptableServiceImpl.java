@@ -30,17 +30,16 @@ import org.nuxeo.runtime.service.proxy.MethodInvocation;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class AdaptableServiceImpl implements AdaptableService { 
-    
-    protected AdapterManager adapterManager;
-    protected Map<Class<?>, Object> adapters;
-    
-    
+public class AdaptableServiceImpl implements AdaptableService {
+
+    protected final AdapterManager adapterManager;
+    protected final Map<Class<?>, Object> adapters;
+
     public AdaptableServiceImpl() {
         adapterManager = AdapterManager.getInstance();
         adapters = new ConcurrentHashMap<Class<?>, Object>();
     }
-    
+
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Class<T> adapter) {
         Object obj = adapters.get(adapter);
@@ -51,12 +50,12 @@ public class AdaptableServiceImpl implements AdaptableService {
             }
         }
         return (T)obj;
-    }    
-    
+    }
+
     public boolean hasAdapter(Class<?> adapter) {
         return getAdapter(adapter) != null;
     }
-  
+
     public Object invokeAdapter(MethodInvocation invocation, Object[] args) throws NoSuchAdapterException, InvocationTargetException, IllegalAccessException {
         Method m = invocation.getMethod();
         Class<?> adapterClass = m.getDeclaringClass();
@@ -66,5 +65,5 @@ public class AdaptableServiceImpl implements AdaptableService {
         }
         return m.invoke(adapterInstance, args);
     }
-    
+
 }

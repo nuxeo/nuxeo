@@ -107,7 +107,7 @@ public class AutoConfigurationService {
         return config;
     }
 
-    protected void loadCompat(Server server, InvokerLocator locator) throws Exception {
+    protected static void loadCompat(Server server, InvokerLocator locator) throws Exception {
         new Configuration().load(server, locator.getHost(), locator.getLocatorURI());
     }
 

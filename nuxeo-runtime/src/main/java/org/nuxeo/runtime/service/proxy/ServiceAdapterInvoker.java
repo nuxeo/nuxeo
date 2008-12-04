@@ -30,21 +30,21 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ServiceAdapterInvoker implements InvocationHandler {
 
-    protected AdaptableServiceInvoker<?> invoker;
     protected static final ConcurrentHashMap<Method, Method> methods = new ConcurrentHashMap<Method, Method>();
 
-     
+    protected final AdaptableServiceInvoker<?> invoker;
+
     public ServiceAdapterInvoker(AdaptableServiceInvoker<?> remote) {
-        this.invoker = remote;
+        invoker = remote;
     }
-    
+
     /**
      * @return the remote.
      */
     public AdaptableServiceInvoker<?> getServiceInvoker() {
         return invoker;
     }
-    
+
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         MethodInvocation invocation = new MethodInvocation(method);
         try {
@@ -60,8 +60,7 @@ public class ServiceAdapterInvoker implements InvocationHandler {
         } catch (Throwable t) {
             invoker.handleException(t);
             throw t;
-        }        
+        }
     }
-    
-    
+
 }

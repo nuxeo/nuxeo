@@ -28,21 +28,21 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class AdapterManager {
 
-    protected Map<Class<?>, AdaptableDescriptor> adapters;
-    
-    private static AdapterManager instance = new AdapterManager();
-    
+    protected final Map<Class<?>, AdaptableDescriptor> adapters;
+
+    private static final AdapterManager instance = new AdapterManager();
+
     public static AdapterManager getInstance() {
         return instance;
     }
-    
+
     public AdapterManager() {
-        adapters = new ConcurrentHashMap<Class<?>, AdaptableDescriptor>(); 
+        adapters = new ConcurrentHashMap<Class<?>, AdaptableDescriptor>();
     }
-    
+
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Object instance, Class<T> adapter) {
-        AdapterFactory af = (AdapterFactory)getAdapterFactory(instance, adapter);
+        AdapterFactory af = getAdapterFactory(instance, adapter);
         if (af != null) {
             return adapter.cast(af.getAdapter(instance, adapter));
         }
@@ -51,11 +51,11 @@ public class AdapterManager {
         }
         return null;
     }
-    
+
     public AdapterFactory<?> getAdapterFactory(Object instance, Class<?> adapter) {
         return getAdapterFactory(instance.getClass(), adapter);
     }
-    
+
     protected AdapterFactory<?> getAdapterFactory(Class<?> klass, Class<?> adapter) {
         AdaptableDescriptor descriptor = adapters.get(klass);
         if (descriptor != null) {
@@ -63,10 +63,10 @@ public class AdapterManager {
             if (factory != null) {
                 return factory;
             }
-        }        
+        }
         return findAdapterFactory(klass, adapter);
     }
-    
+
     protected synchronized AdapterFactory<?> findAdapterFactory(Class<?> klass, Class<?> adapter) {
         // try again the lookup (we are synchronized now)
         AdaptableDescriptor descriptor = adapters.get(klass);
@@ -77,20 +77,20 @@ public class AdapterManager {
             }
         } else {
             descriptor = new AdaptableDescriptor(klass);
-            adapters.put(klass, descriptor);                        
+            adapters.put(klass, descriptor);
         }
         // ask super types
         Class<?>[] superTypes = descriptor.getSuperTypes();
-        for (int i=0; i<superTypes.length; i++) {
-            AdapterFactory<?> factory = findAdapterFactory(superTypes[i], adapter);
+        for (Class<?> superType : superTypes) {
+            AdapterFactory<?> factory = findAdapterFactory(superType, adapter);
             if (factory != null) {
                 descriptor.addAdapterFactory(adapter, factory);
                 return factory;
             }
         }
-        return null;        
+        return null;
     }
-    
+
     public synchronized void registerAdapter(AdapterFactory<?> factory) {
         Class<?> adaptable = factory.getAdaptableType();
         AdaptableDescriptor descriptor = adapters.get(adaptable);
@@ -99,13 +99,13 @@ public class AdapterManager {
             adapters.put(adaptable, descriptor);
         }
         for (Class<?> klass : factory.getAdapterTypes()) {
-            descriptor.addAdapterFactory(klass, factory);    
-        }        
+            descriptor.addAdapterFactory(klass, factory);
+        }
     }
-    
-    
+
+
     public void unregisterAdapter(Class<?> adapter) {
         //TODO
     }
-    
+
 }

@@ -36,22 +36,20 @@ import org.nuxeo.runtime.service.AdapterManager;
  */
 public class AdaptableServiceInvoker<T extends AdaptableService> implements ServiceProxy<T>, InvocationHandler, Adaptable {
 
-    protected T remote;
+    protected final T remote;
+
     //TODO this map should be managed by derived classes
     protected static final Map<Method, Method> methods = new ConcurrentHashMap<Method, Method>();
 
-    
+
     public AdaptableServiceInvoker(T remote) {
         this.remote = remote;
     }
-    
-    /**
-     * @return the remote.
-     */
+
     public T getRemote() {
         return remote;
     }
-        
+
     public <A> A getAdapter(Class<A> adapter) {
         A adapterInst = AdapterManager.getInstance().getAdapter(this, adapter);
         if (adapterInst != null) {
@@ -62,12 +60,14 @@ public class AdaptableServiceInvoker<T extends AdaptableService> implements Serv
         }
         return null;
     }
-    
+
+    @SuppressWarnings({"unchecked"})
     protected <A> A getAdapterProxy(Class<A> adapter) {
-        return (A)Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class<?> [] {adapter}, new ServiceAdapterInvoker(this)); 
+        return (A) Proxy.newProxyInstance(
+                getClass().getClassLoader(), new Class<?>[]{adapter}, new ServiceAdapterInvoker(this));
     }
-    
-    protected void handleException(Throwable t) throws Throwable {
+
+    protected static void handleException(Throwable t) throws Throwable {
         throw t;
     }
 
@@ -77,7 +77,7 @@ public class AdaptableServiceInvoker<T extends AdaptableService> implements Serv
             try {
                 m = getClass().getMethod(method.getName(), method.getParameterTypes());
             } catch (NoSuchMethodException e) {
-                m = method; 
+                m = method;
             }
             methods.put(method, m);
         }
@@ -94,9 +94,9 @@ public class AdaptableServiceInvoker<T extends AdaptableService> implements Serv
         } catch (Throwable t) {
             handleException(t);
             throw t;
-        }        
+        }
     }
-    
 
-    
+
+
 }

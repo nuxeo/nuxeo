@@ -22,9 +22,6 @@ package org.nuxeo.runtime.deploy;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -39,14 +36,14 @@ public abstract class CompositeContribution extends ExtensibleContribution {
     public void resolve(ContributionManager mgr) {
         super.resolve(mgr);
         if (baseContribution instanceof CompositeContribution) {
-            ((CompositeContribution)baseContribution).addContributionFragment(this);
+            ((CompositeContribution) baseContribution).addContributionFragment(this);
         }
     }
 
     @Override
     public void unresolve(ContributionManager mgr) {
         if (baseContribution instanceof CompositeContribution) {
-            ((CompositeContribution)baseContribution).removeContributionFragment(this);
+            ((CompositeContribution) baseContribution).removeContributionFragment(this);
         }
         super.unresolve(mgr);
     }
@@ -68,7 +65,6 @@ public abstract class CompositeContribution extends ExtensibleContribution {
             contributionFragments.add(fragment);
         }
     }
-
 
     public void removeContributionFragment(CompositeContribution fragment) {
         int index = contributionFragments.indexOf(fragment);

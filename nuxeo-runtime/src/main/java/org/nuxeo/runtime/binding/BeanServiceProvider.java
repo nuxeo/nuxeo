@@ -80,7 +80,7 @@ public class BeanServiceProvider extends AbstractServiceProvider {
 
     public Object getService(Class<?> serviceClass, String bindingKey) {
         try {
-            Object obj = null;
+            Object obj;
             if (tryLocalFirst) {
                 JndiName name = new JndiName(bindingKey, LOCAL_SUFFIX);
                 obj = ctx.lookup(name); // throws an exception if not found

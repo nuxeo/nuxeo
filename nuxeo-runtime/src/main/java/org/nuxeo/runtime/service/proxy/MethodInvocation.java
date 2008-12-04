@@ -32,14 +32,13 @@ import java.lang.reflect.Method;
 public class MethodInvocation implements Serializable {
 
     private static final long serialVersionUID = -7847013619148245793L;
-    
+
     protected transient Method method;
-    
+
     public MethodInvocation(Method method) {
-        this.method = method;        
+        this.method = method;
     }
-    
-    
+
     public Method getMethod() {
         return method;
     }
@@ -48,12 +47,11 @@ public class MethodInvocation implements Serializable {
         return method.invoke(proxy, args);
     }
 
-    
-    protected Class<?> loadClass(String name) throws ClassNotFoundException {
+    protected static Class<?> loadClass(String name) throws ClassNotFoundException {
         return Class.forName(name);
     }
-    
-    protected Class<?> getPrimitiveType(String name) {
+
+    protected static Class<?> getPrimitiveType(String name) {
         if (name.equals("byte")) return Byte.TYPE;
         if (name.equals("short")) return Short.TYPE;
         if (name.equals("int")) return Integer.TYPE;
@@ -72,14 +70,14 @@ public class MethodInvocation implements Serializable {
             p = loadClass(name);
         }
         return p;
-    }    
+    }
 
-    protected void writeChars(ObjectOutputStream out, String chars) throws IOException {
+    protected static void writeChars(ObjectOutputStream out, String chars) throws IOException {
         out.writeInt(chars.length());
         out.writeChars(chars);
     }
 
-    protected String readChars(ObjectInputStream in) throws IOException {
+    protected static String readChars(ObjectInputStream in) throws IOException {
         int len = in.readInt();
         if (len <= 0) {
             return "";
@@ -88,26 +86,25 @@ public class MethodInvocation implements Serializable {
         for (int i=0; i<len; i++) {
             chars[i] = in.readChar();
         }
-        return new String(chars);        
+        return new String(chars);
     }
-    
 
     protected Method readMethod(ObjectInputStream in) throws ClassNotFoundException, IOException {
-        Method method = null;
+        Method method;
         Class<?> klass = loadClass(readChars(in));
         String meth = readChars(in);
-            
+
         try {
         int len = in.readInt();
         if (len > 0) {
-            Class<?>[] params = new Class<?>[len]; 
+            Class<?>[] params = new Class<?>[len];
             for (int i=0; i<params.length; i++) {
                 params[i] = getType(readChars(in));
-            }            
+            }
             method = klass.getMethod(meth, params);
         } else {
             method = klass.getMethod(meth);
-        }       
+        }
         } catch (NoSuchMethodException e) {
             IOException ee = new IOException("No such method: "+meth+" for class "+klass.getName());
             ee.initCause(e);
@@ -115,21 +112,21 @@ public class MethodInvocation implements Serializable {
         }
         return method;
     }
-    
+
     protected void writeMethod(ObjectOutputStream out, Method method) throws IOException {
         writeChars(out, method.getDeclaringClass().getName());
-        writeChars(out, method.getName());                
+        writeChars(out, method.getName());
         Class<?>[] params = method.getParameterTypes();
         if (params.length > 0) {
-            out.writeInt(params.length);            
-            for (int i=0; i<params.length; i++) {
-                writeChars(out, params[i].getName());
+            out.writeInt(params.length);
+            for (Class<?> param : params) {
+                writeChars(out, param.getName());
             }
         } else {
             out.writeInt(0);
         }
     }
-    
+
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
         writeMethod(out, method);
@@ -137,9 +134,9 @@ public class MethodInvocation implements Serializable {
 
     private void readObject(ObjectInputStream in)
             throws ClassNotFoundException, IOException {
-        in.defaultReadObject();        
-        this.method = readMethod(in);        
+        in.defaultReadObject();
+        method = readMethod(in);
     }
 
-    
+
 }

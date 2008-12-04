@@ -31,7 +31,7 @@ public class FileWalker {
     public static final int RETURN = 1;
     public static final int BREAK = 2;
 
-    public int walk(File root, Visitor visitor) {
+    public static int walk(File root, Visitor visitor) {
         int ret = 0; // -1 stop walking, 0 continue, 1 break walking
         for (File file : root.listFiles()) {
             if (file.isDirectory()) {
@@ -57,7 +57,6 @@ public class FileWalker {
         }
         return CONTINUE;
     }
-
 
     public abstract static class Visitor {
         public int visitFile(File file) {

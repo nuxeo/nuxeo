@@ -155,7 +155,7 @@ public class ApplicationBundleLoader {
         }
     }
 
-    public void writeCache(File file, List<BundleFile> bundles, List<BundleFile> jars) throws BundleException {
+    public static void writeCache(File file, List<BundleFile> bundles, List<BundleFile> jars) throws BundleException {
         // write loaded bundles to the cache
         Throwable error = null;
         BufferedWriter writer = null;

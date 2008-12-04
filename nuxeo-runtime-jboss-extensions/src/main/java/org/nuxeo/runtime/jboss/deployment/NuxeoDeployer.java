@@ -211,7 +211,7 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
                     log.info(logBuf.toString());
                 }
                 List<DependencyTree.Entry<String, FragmentDescriptor>> pendingEntries = root.fragments.getPendingEntries();
-                if (pendingEntries.size() == 0) {
+                if (pendingEntries.isEmpty()) {
                     log.info("No unresolved Sub Deployments");
                 } else {
                     StringBuilder msgs = new StringBuilder();

@@ -92,7 +92,7 @@ public class ScriptingClient {
     }
 
     /**
-     * Run a remote script. Example of usage:
+     * Runs a remote script. Example of usage:
      * <p>
      * <code>
      * java -cp ... org.nuxeo.runtime.scripting.ScriptingClient localhost:62474 test.js

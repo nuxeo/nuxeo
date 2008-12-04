@@ -56,9 +56,9 @@ public class Main {
         }
 
         // construct class loader to use to load application
-        URL[] urls = new URL[1];
         try {
             File file = new File(path).getCanonicalFile();
+            URL[] urls = new URL[1];
             if (file.exists()) {
                 urls[0] = file.toURI().toURL();
             } else {

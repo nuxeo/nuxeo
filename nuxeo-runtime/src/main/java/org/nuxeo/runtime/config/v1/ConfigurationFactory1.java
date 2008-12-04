@@ -92,7 +92,7 @@ public class ConfigurationFactory1 extends ConfigurationFactory {
         return sm.getServiceDescriptors();
     }
 
-    public ServiceHost[] getServiceHosts(String host) {
+    public static ServiceHost[] getServiceHosts(String host) {
         ServiceManager sm = Framework.getLocalService(ServiceManager.class);
         ServiceHost[] serviceHosts = sm.getServers();
         for (ServiceHost shost : serviceHosts) {
@@ -124,12 +124,12 @@ public class ConfigurationFactory1 extends ConfigurationFactory {
         }
     }
 
-    public SecurityDomain[] getSecurityDomains() {
+    public static SecurityDomain[] getSecurityDomains() {
         LoginService loginService = Framework.getLocalService(LoginService.class);
         return loginService.getSecurityDomains();
     }
 
-    public Properties getProperties() {
+    public static Properties getProperties() {
          Properties props = new Properties();
          Properties rtProps = Framework.getRuntime().getProperties();
          for (Map.Entry<Object, Object> entry : rtProps.entrySet()) {
@@ -140,7 +140,7 @@ public class ConfigurationFactory1 extends ConfigurationFactory {
          return props;
     }
 
-    public Properties getJNDIProperties() {
+    public static Properties getJNDIProperties() {
         return AutoConfigurationService.readJndiProperties(Framework.getRuntime().getProperties());
     }
 

@@ -1381,9 +1381,6 @@
     <RUBY_DOC NAME="DEFAULTS" VALUE="TRUE" />
     <RUBY_DOC NAME="NUMBER" VALUE="0" />
   </component>
-  <component name="ReadonlyStatusHandler">
-    <option name="SHOW_DIALOG" value="true" />
-  </component>
   <component name="ResourceManagerContainer">
     <option name="myResourceBundles">
       <value>
