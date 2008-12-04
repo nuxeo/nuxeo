@@ -314,13 +314,21 @@ public class SQLInfo {
 
     // ----- update -----
 
-    // XXX more fined grained SQL updating only changed columns
-    public String getUpdateByIdSql(String tableName) {
-        return updateByIdSqlMap.get(tableName);
-    }
-
-    public List<Column> getUpdateByIdColumns(String tableName) {
-        return updateByIdColumnsMap.get(tableName);
+    public SQLInfoSelect getUpdateById(String tableName, List<String> keys) {
+        Table table = database.getTable(tableName);
+        List<String> values = new LinkedList<String>();
+        List<Column> columns = new LinkedList<Column>();
+        Column mainColumn = table.getColumn(model.MAIN_KEY);
+        for (String key : keys) {
+            Column column = table.getColumn(key);
+            values.add(column.getQuotedName() + " = ?");
+            columns.add(column);
+        }
+        columns.add(mainColumn);
+        Update update = new Update(table);
+        update.setNewValues(StringUtils.join(values, ", "));
+        update.setWhere(mainColumn.getQuotedName() + " = ?");
+        return new SQLInfoSelect(update.getStatement(), columns, null);
     }
 
     // ----- delete -----
@@ -1000,7 +1008,8 @@ public class SQLInfo {
                 List<Column> whereColumns) {
             this.sql = sql;
             this.whatColumns = new ArrayList<Column>(whatColumns);
-            this.whereColumns = new ArrayList<Column>(whereColumns);
+            this.whereColumns = whereColumns == null ? null
+                    : new ArrayList<Column>(whereColumns);
         }
     }
 

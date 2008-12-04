@@ -544,6 +544,7 @@ public class Mapper {
                 }
             }
         }
+        row.clearDirty();
         return row.getId();
     }
 
@@ -937,20 +938,20 @@ public class Mapper {
      * @throws StorageException
      */
     public void updateSingleRow(SimpleFragment row) throws StorageException {
+        List<String> dirty = row.getDirty();
+        if (dirty.isEmpty()) {
+            return;
+        }
         String tableName = row.getTableName();
-        // XXX more fined grained SQL updating only changed columns
-        String sql = sqlInfo.getUpdateByIdSql(tableName);
+        SQLInfoSelect update = sqlInfo.getUpdateById(tableName, dirty);
         try {
-            // update the row
-            // XXX statement should be already prepared
-            List<Column> columns = sqlInfo.getUpdateByIdColumns(tableName);
-            PreparedStatement ps = connection.prepareStatement(sql);
+            PreparedStatement ps = connection.prepareStatement(update.sql);
             try {
                 if (log.isDebugEnabled()) {
-                    logSQL(sql, columns, row);
+                    logSQL(update.sql, update.whatColumns, row);
                 }
                 int i = 0;
-                for (Column column : columns) {
+                for (Column column : update.whatColumns) {
                     i++;
                     String key = column.getKey();
                     Serializable v;
@@ -967,8 +968,9 @@ public class Mapper {
                 ps.close();
             }
         } catch (SQLException e) {
-            throw newStorageException(e, "Could not update", sql);
+            throw newStorageException(e, "Could not update", update.sql);
         }
+        row.clearDirty();
     }
 
     /**
