@@ -79,7 +79,7 @@ NXThemesWebWidgets.WebWidget.prototype = {
       widget.decorate(template, widget_mode);
       widget.draw();
     } else {
-      var url = webEngineContextPath + "/nxthemes-webwidgets/get_widget_decoration/?decoration=" + encodeURIComponent(decoration);
+      var url = nxthemesBasePath + "/nxthemes-webwidgets/get_widget_decoration/?decoration=" + encodeURIComponent(decoration);
       var options = {
         method: 'get',
         asynchronous: false,
@@ -112,7 +112,7 @@ NXThemesWebWidgets.WebWidget.prototype = {
      var metas = this.metas;
      var mode = widget_mode.split('/')[0];
      
-     html = html.replace(/%BASE_PATH%/g, webEngineContextPath);
+     html = html.replace(/%BASE_PATH%/g, nxthemesBasePath);
      html = html.replace(/%WIDGET_BODY%/g, this._body);
      html = html.replace(/%ICON_AREA%/g, 'webwidget_' + uid + '_icon');
      html = html.replace(/%TITLE_AREA%/g, 'webwidget_' + uid + '_title');
@@ -142,7 +142,7 @@ NXThemesWebWidgets.getWidgetDataUrl = function(url) {
   var providerName = path[0];
   var widgetUid = path[1];
   var dataName = path[2];
-  return webEngineContextPath + '/nxthemes-webwidgets/render_widget_data?widget_uid=' + widgetUid + '&data=' + dataName + '&provider=' + providerName; 
+  return nxthemesBasePath + '/nxthemes-webwidgets/render_widget_data?widget_uid=' + widgetUid + '&data=' + dataName + '&provider=' + providerName; 
 };
 
 Object.extend(NXThemesWebWidgets.WebWidget.prototype, UWA.Widget.prototype);
@@ -205,7 +205,7 @@ NXThemesWebWidgets.renderPanel = function(provider, decoration, panel, data) {
     panel.appendChild(el);
 
     // Set icon
-    widget._icon = widget_type.icon || webEngineContextPath + "/nxthemes-webwidgets/render_widget_icon?name=" + widget_type.name;
+    widget._icon = widget_type.icon || nxthemesBasePath + "/nxthemes-webwidgets/render_widget_icon?name=" + widget_type.name;
 
     // Set body
     widget._body = widget_type.body;

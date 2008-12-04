@@ -298,7 +298,7 @@ public final class Utils {
         }
         return sb.toString();
     }
-
+    
     public static void loadCss(final Style style, String cssSource,
             final String viewName) {
         // pre-processing: replace empty selectors (which are invalid selectors)

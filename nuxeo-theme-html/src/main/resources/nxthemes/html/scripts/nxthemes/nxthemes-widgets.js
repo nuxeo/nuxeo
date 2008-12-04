@@ -278,7 +278,7 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
           var icon = disabled ? noicon: (item.icon || noicon);
           createNode({
             tag: 'img',
-              attributes: {src: icon, alt: '*', width: '16px', height: '16px'},
+              attributes: {src: nxthemesBasePath + icon, alt: '*', width: '16px', height: '16px'},
             parent: a
           });
           a.appendChild(document.createTextNode(item.label));
@@ -302,13 +302,13 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
             var icon = disabled ? noicon: (item.icon || noicon);
             createNode({
               tag: 'img',
-              attributes: {src: icon, alt: '', width: '16px', height: '16px'},
+              attributes: {src: nxthemesBasePath + icon, alt: '', width: '16px', height: '16px'},
               parent: a
             });
             a.appendChild(document.createTextNode(s.label));
             a.appendChild(createNode({
               tag: 'img',
-              attributes: {src: noicon, alt: '', width: '16px', height: '16px'}
+              attributes: {src: nxthemesBasePath + noicon, alt: '', width: '16px', height: '16px'}
               }));
           });
           break;
@@ -335,14 +335,14 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
           if (arrow) {
             createNode({
               tag: 'img',
-              attributes: {src: arrow, alt: '>'},
+              attributes: {src: nxthemesBasePath + arrow, alt: '>'},
               classes: ['arrow'],
               parent: submenuitem
             });
           }
           createNode({
             tag: 'img',
-            attributes: {src: icon, alt: '*'},
+            attributes: {src: nxthemesBasePath + icon, alt: '*'},
             parent: submenuitem
           });
           if (!this.submenuLeft) {
@@ -524,7 +524,7 @@ Object.extend(NXThemes.ContextualActions.prototype, {
       var icon = disabled ? noicon: (item.icon || noicon);
       a.appendChild(createNode({
         tag: 'img',
-        attributes: {src: icon, alt: '*', width: '16px', height: '16px'},
+        attributes: {src: nxthemesBasePath + icon, alt: '*', width: '16px', height: '16px'},
         container: a
       }));
 

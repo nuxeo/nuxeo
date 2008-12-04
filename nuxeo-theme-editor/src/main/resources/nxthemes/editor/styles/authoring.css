@@ -49,7 +49,7 @@ ins.model, ins.view, ins.controller {
 .nxthemesContextMenu {
   font: 12px arial;
   border: 1px solid #333;
-  background: #eeeeec url(/skin/nxthemes-editor/img/context-menu-bg.png) top left repeat-y;
+  background: #eeeeec url(${basePath}${basePath}/skin/nxthemes-editor/img/context-menu-bg.png) top left repeat-y;
   color: #000;
   z-index: 10;
   width: 135px;
@@ -71,7 +71,7 @@ ins.model, ins.view, ins.controller {
 }
 
 .nxthemesContextMenu .title {
-  background: #aaa url(/skin/nxthemes-editor/img/menu-title-bg.png) repeat-x top left;
+  background: #aaa url(${basePath}/skin/nxthemes-editor/img/menu-title-bg.png) repeat-x top left;
   font: bold 11px Arial, sans-serif;
   text-transform: capitalize;
   padding: 3px 0 3px 12px;
@@ -183,7 +183,7 @@ html, body {
 
 /* Top header */
 #nxthemesHeader {
-  background: #fff url(/skin/nxthemes-editor/img/header-bg.png) top left
+  background: #fff url(${basePath}/skin/nxthemes-editor/img/header-bg.png) top left
     repeat-x;
   text-decoration: none;
   position: fixed;
@@ -222,7 +222,7 @@ html, body {
   left: 20px;
   font: 11px Arial, sans-serif;
   text-transform: uppercase;
-  background-image: url(/skin/nxthemes-editor/img/arrow_left.png);
+  background-image: url(${basePath}/skin/nxthemes-editor/img/arrow_left.png);
   background-repeat: no-repeat;
   background-position: left center;
 }
@@ -319,7 +319,7 @@ div.nxthemesButtonSelector a {
   border-style: solid;
   border-width: 1px;
   border-color: #ddd #999 #999 #ddd;
-  background-image: url(/skin/nxthemes-editor/img/button-bg.png);
+  background-image: url(${basePath}/skin/nxthemes-editor/img/button-bg.png);
   background-repeat: repeat-x;
   background-position: 0 -15px;
 }
@@ -331,7 +331,7 @@ div.nxthemesButtonSelector a:hover {
 div.nxthemesButtonSelector a.selected {
   border-color: #666 #ddd #ddd #666;
   color: #333;
-  background-image: url(/skin/nxthemes-editor/img/button-bg.png);
+  background-image: url(${basePath}/skin/nxthemes-editor/img/button-bg.png);
   background-repeat: repeat-x;
   background-position: top center;
 }
@@ -388,7 +388,7 @@ div.nxthemesEditorFrame {
   padding: 4px 4px 4px 10px ;
   color: #fff;
   border-bottom: 1px solid #444;
-  background: #000 url(/skin/nxthemes-editor/img/menu-title-bg.png) repeat-x top left;
+  background: #000 url(${basePath}/skin/nxthemes-editor/img/menu-title-bg.png) repeat-x top left;
 }
 
 .nxthemesToolbox .title img.close {
@@ -458,7 +458,7 @@ div.nxthemesEditorFrame {
   color: #000;
   cursor: pointer;
   text-transform: uppercase;
-  background-image: url(/skin/nxthemes-editor/img/menu-li.png);
+  background-image: url(${basePath}/skin/nxthemes-editor/img/menu-li.png);
   background-repeat: no-repeat;
 }
 
@@ -493,14 +493,14 @@ div.nxthemesEditorFrame {
 }
 
 .nxthemesEditTabs li {
-  background-image: url(/skin/nxthemes-editor/img/edit-tab.png);
+  background-image: url(${basePath}/skin/nxthemes-editor/img/edit-tab.png);
   background-position: 0 -22px;
   margin-right: 3px;
 }
 
 .nxthemesEditTabs li a {
   cursor: default;
-  background-image: url(/skin/nxthemes-editor/img/edit-tab.png);
+  background-image: url(${basePath}/skin/nxthemes-editor/img/edit-tab.png);
   background-position: 100% -22px;
 }
 
@@ -608,7 +608,7 @@ div.nxthemesEditorFrame {
   margin-bottom: -1px;
   margin-left: 3px;
   padding: 0px 0px 0px 14px;
-  background-image: url(/skin/nxthemes-editor/img/page-tab.png);
+  background-image: url(${basePath}/skin/nxthemes-editor/img/page-tab.png);
   background-position: 0 -28px;
 }
 
@@ -624,7 +624,7 @@ div.nxthemesEditorFrame {
 .nxthemesPageTabs li a {
   display: block;
   padding: 2px 14px 0px 0px;
-  background-image: url(/skin/nxthemes-editor/img/page-tab.png);
+  background-image: url(${basePath}/skin/nxthemes-editor/img/page-tab.png);
   background-position: 100% -28px;
   color: #444 !important;
 }
@@ -652,7 +652,7 @@ div.nxthemesEditorFrame {
 /* Top buttons */
 
 .nxthemesButton b, .nxthemesButton a {
-  background-image: url(/skin/nxthemes-editor/img/button.png);
+  background-image: url(${basePath}/skin/nxthemes-editor/img/button.png);
   font: 12px arial;
   color: #000 !important;
   padding-top: 3px;
@@ -703,7 +703,7 @@ div.nxthemesEditorFrame {
 .nxthemesForm input.picker, .nxthemesForm input.picker:focus {
   border: none;
   width: 16px;
-  background: transparent url(/skin/nxthemes-editor/img/style-picker.png) no-repeat;
+  background: transparent url(${basePath}/skin/nxthemes-editor/img/style-picker.png) no-repeat;
 }
 
 .nxthemesForm p {
@@ -778,7 +778,7 @@ div.nxthemesEditorFrame {
   color: #000;
   font: 12px Arial, sans-serif;
   background-color: #ff9;
-  background-image: url(/skin/nxthemes-editor/img/info.png);
+  background-image: url(${basePath}/skin/nxthemes-editor/img/info.png);
   background-repeat: no-repeat;
   background-position: 7px 6px;
   border: 2px solid #000;
@@ -789,7 +789,7 @@ div.nxthemesEditorFrame {
   padding: 0;
   margin-top: 10px;
   height: 20px;
-  background: url(/skin/nxthemes-editor/img/sizer.png);
+  background: url(${basePath}/skin/nxthemes-editor/img/sizer.png);
   background-repeat: repeat-x;
   background-position: center top;
   text-align: center;
@@ -798,7 +798,7 @@ div.nxthemesEditorFrame {
 .nxthemesSizer .left {
   float: left;
   margin-left: 1px;
-  background: url(/skin/nxthemes-editor/img/l-sizer.png);
+  background: url(${basePath}/skin/nxthemes-editor/img/l-sizer.png);
   background-repeat: no-repeat;
   height: 10px;
   width: 7px;
@@ -807,7 +807,7 @@ div.nxthemesEditorFrame {
 .nxthemesSizer .right {
   float: right;
   margin-right: 1px;
-  background: url(/skin/nxthemes-editor/img/r-sizer.png);
+  background: url(${basePath}/skin/nxthemes-editor/img/r-sizer.png);
   background-repeat: no-repeat;
   height: 10px;
   width: 7px;

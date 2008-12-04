@@ -119,8 +119,6 @@
 /* Buttons */
 
 .nxthemesButton b, .nxthemesButton a {
-  background-image: url(/nuxeo/nxthemes/img/button.png);
-  background-repeat: no-repeat;
   font: 12px arial;
   color: #000;
   padding-top: 3px;

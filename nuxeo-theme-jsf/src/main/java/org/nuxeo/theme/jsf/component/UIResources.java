@@ -27,6 +27,7 @@ import org.nuxeo.theme.html.ui.Resources;
 
 public class UIResources extends UIOutput {
 
+    
     @Override
     public void encodeAll(final FacesContext context) throws IOException {
         final ResponseWriter writer = context.getResponseWriter();
@@ -36,6 +37,8 @@ public class UIResources extends UIOutput {
                 "org.nuxeo.theme.url");
         params.put("themeUrl", themeUrl.toString());
         params.put("path", context.getExternalContext().getRequestContextPath());
+        // XXX
+        params.put("basepath", "/nuxeo/site");
 
         writer.write(Resources.render(params));
     }

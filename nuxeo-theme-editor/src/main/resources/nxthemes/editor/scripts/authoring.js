@@ -34,7 +34,7 @@ NXThemesEditor.deleteThemeOrPage = function(info) {
       return;
     }
     var element_id = id.substr(4);
-    var url = webEngineContextPath + "/nxthemes-editor/delete_element?id=" + encodeURIComponent(element_id);
+    var url = nxthemesBasePath + "/nxthemes-editor/delete_element?id=" + encodeURIComponent(element_id);
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -53,7 +53,7 @@ NXThemesEditor.moveElement = function(info) {
     var src_id = info.source.getAttribute('id');
     var dest_id = info.target.getAttribute('id');
     var order = info.order;
-    var url = webEngineContextPath + "/nxthemes-editor/move_element?src_id=" + encodeURIComponent(src_id) + "&dest_id=" + encodeURIComponent(dest_id) + "&order=" + encodeURIComponent(order);
+    var url = nxthemesBasePath + "/nxthemes-editor/move_element?src_id=" + encodeURIComponent(src_id) + "&dest_id=" + encodeURIComponent(dest_id) + "&order=" + encodeURIComponent(order);
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -66,7 +66,7 @@ NXThemesEditor.insertFragment = function(info) {
     var dest_id = info.target.getAttribute('id');
     var order = info.order;
     var type_name = info.source.getAttribute('typename');
-    var url = webEngineContextPath + "/nxthemes-editor/insert_fragment?type_name=" + encodeURIComponent(type_name) + "&dest_id=" + encodeURIComponent(dest_id) + "&order=" + encodeURIComponent(order);
+    var url = nxthemesBasePath + "/nxthemes-editor/insert_fragment?type_name=" + encodeURIComponent(type_name) + "&dest_id=" + encodeURIComponent(dest_id) + "&order=" + encodeURIComponent(order);
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -78,7 +78,7 @@ NXThemesEditor.insertFragment = function(info) {
 
 NXThemesEditor.editElement = function(info) {
     var id = info.target.getAttribute('id');
-    var url = webEngineContextPath + "/nxthemes-editor/select_element?id=" + encodeURIComponent(id); 
+    var url = nxthemesBasePath + "/nxthemes-editor/select_element?id=" + encodeURIComponent(id); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -94,7 +94,7 @@ NXThemesEditor.editElement = function(info) {
 
 NXThemesEditor.changeElementStyle = function(info) {
     var id = info.target.getAttribute('id');
-    var url = webEngineContextPath + "/nxthemes-editor/select_element?id=" + encodeURIComponent(id); 
+    var url = nxthemesBasePath + "/nxthemes-editor/select_element?id=" + encodeURIComponent(id); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -121,7 +121,7 @@ NXThemesEditor.setSize = function(info) {
           width = value;
         }
       });
-    var url = webEngineContextPath + "/nxthemes-editor/update_element_width?id=" + encodeURIComponent(id) + "&width=" + encodeURIComponent(width); 
+    var url = nxthemesBasePath + "/nxthemes-editor/update_element_width?id=" + encodeURIComponent(id) + "&width=" + encodeURIComponent(width); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -143,7 +143,7 @@ NXThemesEditor.updateElementProperties = function(info) {
           propertyMap.set(i.name, value);
         }
     });
-    var url = webEngineContextPath + "/nxthemes-editor/update_element_properties"; 
+    var url = nxthemesBasePath + "/nxthemes-editor/update_element_properties"; 
     new Ajax.Request(url, {
          method: 'get',
          parameters: {
@@ -173,7 +173,7 @@ NXThemesEditor.updateElementWidget = function(info) {
     if (!viewName) {
         return;
     }
-    var url = webEngineContextPath + "/nxthemes-editor/update_element_widget?id=" + encodeURIComponent(id) + "&view_name=" + encodeURIComponent(viewName); 
+    var url = nxthemesBasePath + "/nxthemes-editor/update_element_widget?id=" + encodeURIComponent(id) + "&view_name=" + encodeURIComponent(viewName); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -200,7 +200,7 @@ NXThemesEditor.updateElementDescription = function(info) {
     if (!description) {
       return;
     }
-    var url = webEngineContextPath + "/nxthemes-editor/update_element_description?id=" + encodeURIComponent(id) + "&description=" + encodeURIComponent(description); 
+    var url = nxthemesBasePath + "/nxthemes-editor/update_element_description?id=" + encodeURIComponent(id) + "&description=" + encodeURIComponent(description); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -228,7 +228,7 @@ NXThemesEditor.updateElementStyle = function() {
         }
     });
     
-    var url = webEngineContextPath + "/nxthemes-editor/update_element_style"; 
+    var url = nxthemesBasePath + "/nxthemes-editor/update_element_style"; 
     new Ajax.Request(url, {
          method: 'get',
          parameters: {
@@ -258,7 +258,7 @@ NXThemesEditor.updateElementStyleCss = function() {
           viewName = value;
         }
     });
-    var url = webEngineContextPath + "/nxthemes-editor/update_element_style_css"; 
+    var url = nxthemesBasePath + "/nxthemes-editor/update_element_style_css"; 
     new Ajax.Request(url, {
          method: 'get',
          parameters: {
@@ -289,7 +289,7 @@ NXThemesEditor.setElementVisibility = function(info) {
           perspectives = $F("perspectives");
         }
     });
-    var url = webEngineContextPath + "/nxthemes-editor/update_element_visibility"; 
+    var url = nxthemesBasePath + "/nxthemes-editor/update_element_visibility"; 
     new Ajax.Request(url, {
          method: 'get',
          parameters: {
@@ -313,7 +313,7 @@ NXThemesEditor.setElementWidget = function(info) {
     if (!viewName) {
         return;
     }
-    var url = webEngineContextPath + "/nxthemes-editor/update_element_widget?id=" + encodeURIComponent(id) + "&view_name=" + encodeURIComponent(viewName); 
+    var url = nxthemesBasePath + "/nxthemes-editor/update_element_widget?id=" + encodeURIComponent(id) + "&view_name=" + encodeURIComponent(viewName); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -324,7 +324,7 @@ NXThemesEditor.setElementWidget = function(info) {
 
 NXThemesEditor.copyElement = function(info) {
     var id =  info.target.getAttribute('id');
-    var url = webEngineContextPath + "/nxthemes-editor/copy_element?id=" + encodeURIComponent(id); 
+    var url = nxthemesBasePath + "/nxthemes-editor/copy_element?id=" + encodeURIComponent(id); 
     new Ajax.Request(url, {
          method: 'get',
          parameters: {
@@ -338,7 +338,7 @@ NXThemesEditor.copyElement = function(info) {
 
 NXThemesEditor.splitElement = function(info) {
     var id =  info.target.getAttribute('id');
-    var url = webEngineContextPath + "/nxthemes-editor/split_element?id=" + encodeURIComponent(id); 
+    var url = nxthemesBasePath + "/nxthemes-editor/split_element?id=" + encodeURIComponent(id); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -349,7 +349,7 @@ NXThemesEditor.splitElement = function(info) {
 
 NXThemesEditor.setElementPadding = function(info) {
     var id = info.target.getAttribute('id');
-    var url = webEngineContextPath + "/nxthemes-editor/select_element?id=" + encodeURIComponent(id); 
+    var url = nxthemesBasePath + "/nxthemes-editor/select_element?id=" + encodeURIComponent(id); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -367,7 +367,7 @@ NXThemesEditor.updateElementPadding = function(info) {
         var value = Form.Element.getValue(i);
         propertyMap.set(i.name, value);
     });    
-    var url = webEngineContextPath + "/nxthemes-editor/update_element_layout"; 
+    var url = nxthemesBasePath + "/nxthemes-editor/update_element_layout"; 
     new Ajax.Request(url, {
          method: 'get',
          parameters: {
@@ -386,7 +386,7 @@ NXThemesEditor.alignElement = function(info) {
       return;
     }
     var position = info.options.choice;
-    var url = webEngineContextPath + "/nxthemes-editor/align_element?id=" + encodeURIComponent(id) + "&position=" + encodeURIComponent(position); 
+    var url = nxthemesBasePath + "/nxthemes-editor/align_element?id=" + encodeURIComponent(id) + "&position=" + encodeURIComponent(position); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -397,7 +397,7 @@ NXThemesEditor.alignElement = function(info) {
 
 NXThemesEditor.duplicateElement = function(info) {
     var id =  info.target.getAttribute('id');
-    var url = webEngineContextPath + "/nxthemes-editor/duplicate_element?id=" + encodeURIComponent(id); 
+    var url = nxthemesBasePath + "/nxthemes-editor/duplicate_element?id=" + encodeURIComponent(id); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -410,7 +410,7 @@ NXThemesEditor.duplicateElement = function(info) {
 
 NXThemesEditor.pasteElement = function(info) {
     var dest_id =  info.target.getAttribute('id');
-    var url = webEngineContextPath + "/nxthemes-editor/paste_element?dest_id=" + encodeURIComponent(dest_id); 
+    var url = nxthemesBasePath + "/nxthemes-editor/paste_element?dest_id=" + encodeURIComponent(dest_id); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -424,7 +424,7 @@ NXThemesEditor.pasteElement = function(info) {
 
 NXThemesEditor.deleteElement = function(info) {
     var id =  info.target.getAttribute('id');
-    var url = webEngineContextPath + "/nxthemes-editor/delete_element?id=" + encodeURIComponent(id);
+    var url = nxthemesBasePath + "/nxthemes-editor/delete_element?id=" + encodeURIComponent(id);
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -460,7 +460,7 @@ NXThemesEditor.addTheme = function() {
         window.alert("Theme names must only contain alphabetic characters.");
         return "";
     }
-    var url = webEngineContextPath + "/nxthemes-editor/add_theme?name=" + encodeURIComponent(name);
+    var url = nxthemesBasePath + "/nxthemes-editor/add_theme?name=" + encodeURIComponent(name);
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -486,7 +486,7 @@ NXThemesEditor.addPage = function(themeName) {
         window.alert("Page names must only contain alphabetic characters.");
         return "";
     }
-    var url = webEngineContextPath + "/nxthemes-editor/add_page?path=" + encodeURIComponent(themeName + '/' + name);
+    var url = nxthemesBasePath + "/nxthemes-editor/add_page?path=" + encodeURIComponent(themeName + '/' + name);
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -514,7 +514,7 @@ NXThemesEditor.backToCanvas = function() {
 NXThemesEditor.addSection = function(info) {
     var target = Event.element(info);
     var id = target.getAttribute('sectionid') || target.getAttribute('pageid');
-    var url = webEngineContextPath + "/nxthemes-editor/insert_section_after?id=" + encodeURIComponent(id);
+    var url = nxthemesBasePath + "/nxthemes-editor/insert_section_after?id=" + encodeURIComponent(id);
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -527,7 +527,7 @@ NXThemesEditor.alignSection = function(info) {
     var target = Event.element(info);
     var id = target.getAttribute('sectionid');
     var position = target.getAttribute('position');
-    var url = webEngineContextPath + "/nxthemes-editor/align_element?id=" + encodeURIComponent(id) + "&position=" + encodeURIComponent(position); 
+    var url = nxthemesBasePath + "/nxthemes-editor/align_element?id=" + encodeURIComponent(id) + "&position=" + encodeURIComponent(position); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -559,7 +559,7 @@ NXThemesEditor.setAreaStyle = function(info) {
     } else if (property == 'border-right') {
       category = 'border';
     }
-    var url = webEngineContextPath + "/nxthemes-editor/select_style_category?category=" + encodeURIComponent(category); 
+    var url = nxthemesBasePath + "/nxthemes-editor/select_style_category?category=" + encodeURIComponent(category); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -579,7 +579,7 @@ NXThemesEditor.updateAreaStyle = function(value) {
       if (value == null) {
           value = '';
       }
-      var url = webEngineContextPath + "/nxthemes-editor/assign_style_property?element_id=" + encodeURIComponent(element_id) + "&property=" + encodeURIComponent(property) + "&value=" + encodeURIComponent(value); 
+      var url = nxthemesBasePath + "/nxthemes-editor/assign_style_property?element_id=" + encodeURIComponent(element_id) + "&property=" + encodeURIComponent(property) + "&value=" + encodeURIComponent(value); 
       new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -593,7 +593,7 @@ NXThemesEditor.updateAreaStyle = function(value) {
 
 NXThemesEditor.setPresetGroup = function(select) {
     var group = select.value;
-    var url = webEngineContextPath + "/nxthemes-editor/select_preset_group?group=" + encodeURIComponent(group); 
+    var url = nxthemesBasePath + "/nxthemes-editor/select_preset_group?group=" + encodeURIComponent(group); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -607,7 +607,7 @@ NXThemesEditor.closeAreaStyleChooser = function() {
 };
 
 NXThemesEditor.refresh = function() {
-  var url = webEngineContextPath + "/nxthemes-editor/expire_themes"; 
+  var url = nxthemesBasePath + "/nxthemes-editor/expire_themes"; 
   new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -621,7 +621,7 @@ NXThemesEditor.exit = function() {
   NXThemes.expireCookie("nxthemes.theme");
   NXThemes.expireCookie("nxthemes.engine");
   NXThemes.expireCookie("nxthemes.perspective");
-  var url = webEngineContextPath + "/nxthemes-editor/clear_selections"; 
+  var url = nxthemesBasePath + "/nxthemes-editor/clear_selections"; 
   new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -631,7 +631,7 @@ NXThemesEditor.exit = function() {
 };
 
 NXThemesEditor.repairTheme = function(themeName) {
-    var url = webEngineContextPath + "/nxthemes-editor/repair_theme?name=" + encodeURIComponent(themeName); 
+    var url = nxthemesBasePath + "/nxthemes-editor/repair_theme?name=" + encodeURIComponent(themeName); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -642,7 +642,7 @@ NXThemesEditor.repairTheme = function(themeName) {
 };
 
 NXThemesEditor.loadTheme = function(src) {
-    var url = webEngineContextPath + "/nxthemes-editor/load_theme?src=" + encodeURIComponent(src); 
+    var url = nxthemesBasePath + "/nxthemes-editor/load_theme?src=" + encodeURIComponent(src); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
@@ -655,7 +655,7 @@ NXThemesEditor.loadTheme = function(src) {
 };
 
 NXThemesEditor.saveTheme = function(src, indent) {
-    var url = webEngineContextPath + "/nxthemes-editor/save_theme?src=" + encodeURIComponent(src) + "&indent=" + encodeURIComponent(indent); 
+    var url = nxthemesBasePath + "/nxthemes-editor/save_theme?src=" + encodeURIComponent(src) + "&indent=" + encodeURIComponent(indent); 
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {

@@ -7,10 +7,6 @@
     <title>
       <ui:insert name="page title">Page title</ui:insert>
     </title>
-
-    <script type="text/javascript"><!-- 
-      var webEngineContextPath = "/nuxeo/site";
-    //--></script>
     
     <nxthemes:head />
 
@@ -56,7 +52,7 @@
         visibleInPerspectives="add fragments,edit canvas,edit padding" />
 
       <div id="nxthemesWaitAnimation" style="display:none">
-        <img src="/nuxeo/site/nxthemes-editor/img/loader.gif" alt="" width="16" height="16" /> loading ...
+        <img src="/nuxeo/site/skin/nxthemes-editor/img/loader.gif" alt="" width="16" height="16" /> loading ...
       </div>
 
       <!--  theme selector -->

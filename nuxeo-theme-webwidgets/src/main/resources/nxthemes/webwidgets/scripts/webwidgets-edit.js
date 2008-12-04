@@ -6,7 +6,7 @@ NXThemesWebWidgets.addWidget = function(info) {
     var provider = info.target.getAttribute('provider');
     var region = info.target.getAttribute('region');
     var order = info.order;
-    var url = webEngineContextPath + "/nxthemes-webwidgets/add_widget";
+    var url = nxthemesBasePath + "/nxthemes-webwidgets/add_widget";
     new Ajax.Request(url, {
          method: 'get',
          parameters: {
@@ -30,7 +30,7 @@ NXThemesWebWidgets.moveWidget = function(info) {
     var destRegionName = info.target.getAttribute('region');
     var destOrder = info.order;
     
-    var url = webEngineContextPath + "/nxthemes-webwidgets/move_widget";
+    var url = nxthemesBasePath + "/nxthemes-webwidgets/move_widget";
     new Ajax.Request(url, {
          method: 'get',
          parameters: {
@@ -58,7 +58,7 @@ NXThemesWebWidgets.deleteWidget = function(widgetUid) {
       }
       var widgetEl = $('webwidget_' + widgetUid);
       var provider = widgetEl.up('.nxthemesWebWidgetContainer').getAttribute('provider');
-      var url = webEngineContextPath + "/nxthemes-webwidgets/remove_widget";
+      var url = nxthemesBasePath + "/nxthemes-webwidgets/remove_widget";
       new Ajax.Request(url, {
          method: 'get',
          parameters: {
@@ -76,7 +76,7 @@ NXThemesWebWidgets.setWidgetState = function(widgetUid, mode, state) {
     var container = widgetEl.up('.nxthemesWebWidgetContainer');
     var provider = container.getAttribute('provider');
     var widget = NXThemesWebWidgets.getWidgetById(widgetUid);
-    var url = webEngineContextPath + "/nxthemes-webwidgets/set_widget_state";
+    var url = nxthemesBasePath + "/nxthemes-webwidgets/set_widget_state";
     new Ajax.Request(url, {
          method: 'get',
          parameters: {
@@ -100,7 +100,7 @@ NXThemesWebWidgets.setWidgetCategory = function(select) {
     if (category === null) {
       return;
     }
-    var url = webEngineContextPath + "/nxthemes-webwidgets/set_widget_category";
+    var url = nxthemesBasePath + "/nxthemes-webwidgets/set_widget_category";
     new Ajax.Request(url, {
          method: 'get',
          parameters: {
@@ -291,7 +291,7 @@ NXThemesWebWidgets.ImageUploader.prototype = Object.extend(new NXThemesWebWidget
 
      var boxEl = this.boxEl = document.createElement("div");
      var frameName = 'f' + this.widgetUid + '_' + this.name;
-     boxEl.innerHTML = '<form style="padding: 0; margin: 0" action="' + webEngineContextPath + '/nxthemes-webwidgets/upload_file?widget_uid=' + encodeURIComponent(this.widgetUid) + '&data=' + encodeURIComponent(this.name) + '&provider=' + encodeURIComponent(this.providerName) + '"' +
+     boxEl.innerHTML = '<form style="padding: 0; margin: 0" action="' + nxthemesBasePath + '/nxthemes-webwidgets/upload_file?widget_uid=' + encodeURIComponent(this.widgetUid) + '&data=' + encodeURIComponent(this.name) + '&provider=' + encodeURIComponent(this.providerName) + '"' +
        ' method="post" enctype="multipart/form-data" target="' + frameName + '">' +
        '<div><input type="file" name="file" /><input type="submit" value="Upload" /></div></form>';
      boxEl.hide();
@@ -310,7 +310,7 @@ NXThemesWebWidgets.ImageUploader.prototype = Object.extend(new NXThemesWebWidget
     var name = this.name;
     var providerName = this.providerName;
     var widgetUid = this.widgetUid;
-    var url = webEngineContextPath + "/nxthemes-webwidgets/get_widget_data_info";
+    var url = nxthemesBasePath + "/nxthemes-webwidgets/get_widget_data_info";
     new Ajax.Request(url, {
          method: 'get',
          parameters: {
@@ -323,13 +323,13 @@ NXThemesWebWidgets.ImageUploader.prototype = Object.extend(new NXThemesWebWidget
            if (text) {
              var info = text.evalJSON(true);
              var now = new Date().getTime();
-             var src = webEngineContextPath + '/nxthemes-webwidgets/render_widget_data?widget_uid=' + encodeURIComponent(widgetUid) +
+             var src = nxthemesBasePath + '/nxthemes-webwidgets/render_widget_data?widget_uid=' + encodeURIComponent(widgetUid) +
                '&data=' + encodeURIComponent(name) + '&provider=' + encodeURIComponent(providerName) +
                '&timestamp=' + now;
              controlEl.innerHTML = '<div><img src="' + src + '" /></div>' +
                info['filename'] + ' (' + info['content-type'] + ')';
            } else {
-               controlEl.innerHTML = '<img src="' + webEngineContextPath + '/skin/nxthemes-webwidgets/img/exclamation.png" />';
+               controlEl.innerHTML = '<img src="' + nxthemesBasePath + '/skin/nxthemes-webwidgets/img/exclamation.png" />';
            }
            controlEl.show();
            boxEl.hide();
@@ -351,7 +351,7 @@ NXThemesWebWidgets.FileUploader.prototype = Object.extend(new NXThemesWebWidgets
 
      var boxEl = this.boxEl = document.createElement("div");
      var frameName = 'f' + this.widgetUid + '_' + this.name;
-     boxEl.innerHTML = '<form style="padding: 0; margin: 0" action="' + webEngineContextPath + '/nxthemes-webwidgets/upload_file?widget_uid=' + encodeURIComponent(this.widgetUid) + '&data=' + encodeURIComponent(this.name) + '&provider=' + encodeURIComponent(this.providerName) + '"' +
+     boxEl.innerHTML = '<form style="padding: 0; margin: 0" action="' + nxthemesBasePath + '/nxthemes-webwidgets/upload_file?widget_uid=' + encodeURIComponent(this.widgetUid) + '&data=' + encodeURIComponent(this.name) + '&provider=' + encodeURIComponent(this.providerName) + '"' +
        ' method="post" enctype="multipart/form-data" target="' + frameName + '">' +
        '<div><input type="file" name="file" /><input type="submit" value="Upload" /></div></form>';
      boxEl.hide();
@@ -370,7 +370,7 @@ NXThemesWebWidgets.FileUploader.prototype = Object.extend(new NXThemesWebWidgets
     var name = this.name;
     var providerName = this.providerName;
     var widgetUid = this.widgetUid;
-    var url = webEngineContextPath + "/nxthemes-webwidgets/get_widget_data_info";
+    var url = nxthemesBasePath + "/nxthemes-webwidgets/get_widget_data_info";
     new Ajax.Request(url, {
          method: 'get',
          parameters: {
@@ -384,7 +384,7 @@ NXThemesWebWidgets.FileUploader.prototype = Object.extend(new NXThemesWebWidgets
              var info = text.evalJSON(true);
              controlEl.innerHTML = info['filename'] + ' (' + info['content-type'] + ')';
           } else {
-             controlEl.innerHTML = '<img src="' + webEngineContextPath + '/skin/nxthemes-webwidgets/img/exclamation.png" />';
+             controlEl.innerHTML = '<img src="' + nxthemesBasePath + '/skin/nxthemes-webwidgets/img/exclamation.png" />';
           }
           controlEl.show();
           boxEl.hide();
@@ -414,7 +414,7 @@ NXThemesWebWidgets.changePreferences = function(info) {
      }
   });
 
-  var url = webEngineContextPath + "/nxthemes-webwidgets/update_widget_preferences";
+  var url = nxthemesBasePath + "/nxthemes-webwidgets/update_widget_preferences";
   new Ajax.Request(url, {
          method: 'get',
          parameters: {
@@ -454,7 +454,7 @@ NXThemesWebWidgets.WebWidgetPanel.prototype = Object.extend(new NXThemes.View(),
     panel.setAttribute('provider', provider);
     panel.setAttribute('region', region);
 
-    var url = webEngineContextPath + "/nxthemes-webwidgets/get_panel_data";
+    var url = nxthemesBasePath + "/nxthemes-webwidgets/get_panel_data";
     new Ajax.Request(url, {
          method: 'get',
          parameters: {

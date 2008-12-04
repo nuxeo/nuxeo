@@ -27,6 +27,8 @@ public class Resources {
         final String resourcePath = "/nuxeo/nxthemes-lib/";
         final String themeUrl = params.get("themeUrl");
         final String path = params.get("path");
+        final String basepath = params.get("basepath");
+        
         final ResourceManager resourceManager = Manager.getResourceManager();
 
         final StringBuilder combinedStyles = new StringBuilder();
@@ -49,8 +51,8 @@ public class Resources {
 
         combinedStyles.deleteCharAt(combinedStyles.length() - 1);
         combinedScripts.deleteCharAt(combinedScripts.length() - 1);
-        combinedStyles.append("?path=").append(path);
-        combinedScripts.append("?path=").append(path);
+        combinedStyles.append("?path=").append(path).append("&basepath=").append(basepath);
+        combinedScripts.append("?path=").append(path).append("&basepath=").append(basepath);
 
         // styles
         if (hasStyles) {

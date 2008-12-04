@@ -8,7 +8,7 @@
 }
 
 .nxthemesDefaultWebWidgetPanelBody {
-  background: #ffc url(/skin/nxthemes-webwidgets/img/widget-area-bg.png);
+  background: #ffc url(${basePath}/skin/nxthemes-webwidgets/img/widget-area-bg.png);
   cursor: default;
   border: 1px solid #cc9;
   border-top: none;

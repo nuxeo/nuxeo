@@ -64,6 +64,7 @@ public class NXThemesResourcesDirective implements TemplateDirectiveModel {
         Map<String, String> attributes = new HashMap<String, String>();
         attributes.put("themeUrl", themeUrl.toString());
         attributes.put("path", context.getModulePath());
+        attributes.put("basepath", context.getBasePath());
 
         writer.write(Resources.render(attributes));
     }

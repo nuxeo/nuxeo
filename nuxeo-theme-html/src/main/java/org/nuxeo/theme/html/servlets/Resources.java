@@ -109,6 +109,13 @@ public final class Resources extends HttpServlet implements Serializable {
         }
 
         StringBuilder text = new StringBuilder();
+        String basePath = request.getParameter("basepath");
+
+        if (contentType.equals("text/javascript")) {
+            text.append(String.format("var nxthemesBasePath = \"%s\";\n",
+                    basePath));
+        }
+
         for (String resourceName : resourceNames) {
             final OutputStream out = new ByteArrayOutputStream();
             String source = themeManager.getResource(resourceName);
@@ -124,6 +131,8 @@ public final class Resources extends HttpServlet implements Serializable {
                 source = out.toString();
                 if (resourceName.endsWith(".js") && resource.isShrinkable()) {
                     source = JSUtils.compressSource(source);
+                } else if (resourceName.endsWith(".css")) {
+                    source = source.replaceAll("\\$\\{basePath\\}", basePath);
                 }
                 themeManager.setResource(resourceName, source);
             }

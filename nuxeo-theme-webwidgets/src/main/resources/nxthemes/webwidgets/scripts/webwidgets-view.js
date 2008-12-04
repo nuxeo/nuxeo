@@ -23,7 +23,7 @@ NXThemesWebWidgets.init = function() {
     var decoration = model.decoration;
     var mode = model.mode;
 
-    var url = webEngineContextPath + "/nxthemes-webwidgets/get_panel_data";
+    var url = nxthemesBasePath + "/nxthemes-webwidgets/get_panel_data";
     new Ajax.Request(url, {
          method: 'get',
          parameters: {
