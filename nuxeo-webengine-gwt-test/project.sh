@@ -57,3 +57,33 @@ cat <<EOF > ${PROJECT_NAME}.launch
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx256M"/>
 </launchConfiguration>
 EOF
+
+
+cat <<EOF > tomcat/webapps/ROOT/WEB-INF/web.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+
+  <servlet>
+    <servlet-name>shell</servlet-name>
+    <servlet-class>com.google.gwt.dev.shell.GWTShellServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>shell</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>redirect</servlet-name>
+    <servlet-class>org.nuxeo.ecm.webengine.gwt.debug.RedirectServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>redirect</servlet-name>
+    <url-pattern>/redirect/*</url-pattern>
+  </servlet-mapping>
+
+</web-app>
+
+EOF
