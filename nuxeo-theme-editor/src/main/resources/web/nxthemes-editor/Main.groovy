@@ -1,4 +1,4 @@
-package nxthemesEditor
+package org.nuxeo.theme.editor;
 
 import java.io.*
 import javax.ws.rs.*
