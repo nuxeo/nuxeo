@@ -45,7 +45,6 @@ public class LoginView extends View {
         deck.add(new LoginWidget());
         deck.add(new LogoutWidget());
         deck.showWidget(0);
-        System.out.println("login view created");
         return deck;
     }
 

@@ -102,10 +102,10 @@ public class Framework {
     public static String normalize(String uri) {
         if (basePath != null) {
             if (!uri.contains("://")) { // relative URL
-                if (uri.startsWith("/")) {
+                if (!uri.startsWith("/")) {
                     uri = basePath+uri;
                 } else {
-                    uri = "/"+basePath+uri;  
+                    uri = basePath+uri.substring(1);  
                 }
             }
         }
@@ -116,11 +116,12 @@ public class Framework {
         if (isStarted) {
             throw new IllegalStateException("Application already started!");
         }
-        if (url != null && url.endsWith("/")) {            
-            basePath = url.substring(0, url.length()-1); 
-        } else {
-            basePath = url;
-        }
+//        if (url != null && url.endsWith("/")) {            
+//            basePath = url.substring(0, url.length()-1); 
+//        } else {
+//            basePath = url;
+//        }
+        basePath = url != null ? url : GWT.getHostPageBaseURL();
         if (application == null) {
             GWT.log("You must define an application!", null);
             throw new IllegalStateException("There is no application to start!");

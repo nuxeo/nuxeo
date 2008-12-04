@@ -24,6 +24,7 @@ import org.nuxeo.ecm.webengine.gwt.client.Bundle;
 import org.nuxeo.ecm.webengine.gwt.client.Extension;
 import org.nuxeo.ecm.webengine.gwt.client.ui.ExtensionPoints;
 import org.nuxeo.ecm.webengine.gwt.client.ui.impl.DefaultApplicationBundle;
+import org.nuxeo.ecm.webengine.gwt.client.ui.navigator.NavigatorView;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -40,6 +41,6 @@ public interface TestBundle extends ApplicationBundle {
     public TestExtension testExtension();
 
     @Extension(targets=ExtensionPoints.VIEWS_XP, hint=100)
-    public TestNavigator testNavigator();
+    public NavigatorView navigatorView();
 
 }

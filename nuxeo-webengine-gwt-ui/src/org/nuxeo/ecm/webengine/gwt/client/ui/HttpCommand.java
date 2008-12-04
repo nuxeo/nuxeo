@@ -155,6 +155,7 @@ public abstract class HttpCommand extends HttpCallback implements Command {
         }
         @Override
         public Request send() throws RequestException {
+            setHeader("X-Requested-With", "gwt");
             setCallback(HttpCommand.this);
             showBusy();
             return super.send();
@@ -164,6 +165,7 @@ public abstract class HttpCommand extends HttpCallback implements Command {
         public Request sendRequest(String requestData, RequestCallback callback)
                 throws RequestException {
             try {
+                setHeader("X-Requested-With", "gwt");
                 showBusy();
                 return super.sendRequest(requestData, callback);
             } catch (RequestException e) {

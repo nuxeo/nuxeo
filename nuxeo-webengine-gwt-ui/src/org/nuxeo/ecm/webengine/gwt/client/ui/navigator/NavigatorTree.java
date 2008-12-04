@@ -25,19 +25,22 @@ import com.google.gwt.user.client.ui.TreeListener;
  */
 public class NavigatorTree extends Tree{
 
-    String repositoryUrl;
-    String navigatorRootPath;
+    protected String rootPath;
 
     /**
      * @param repositoryUrl - the url of the repository
      * @param navigationRootPath - the document path of the root navigator
      */
-    public NavigatorTree(String repositoryUrl, String navigatorRootPath) {
+    public NavigatorTree(String repositoryUrl) {
         super();
-        this.repositoryUrl = repositoryUrl;
-        this.navigatorRootPath = navigatorRootPath;
-        updateTree(repositoryUrl, null);
+        this.rootPath = repositoryUrl;
         addTreeListener(new NavigatorTreeListener());
+    }
+    
+    @Override
+    protected void onAttach() {
+        super.onAttach();
+        updateTree(rootPath, null);
     }
 
     public NavigatorTree(TreeImages images, boolean useLeafImages) {
@@ -70,11 +73,7 @@ public class NavigatorTree extends Tree{
     }
 
     protected String getUrl(String docPath) {
-        if( docPath != null && docPath.startsWith(navigatorRootPath)) {
-            String deltaPath = docPath.substring(navigatorRootPath.length());
-            return repositoryUrl + deltaPath;
-        }
-        return null;
+        return rootPath + docPath;
     }
 
     public String getUrl(TreeItem item){
@@ -123,7 +122,7 @@ public class NavigatorTree extends Tree{
 
     public void updateTree(String path, final TreeItem item){
         //TODO the path should be computed by the command
-        new GetChildrenCommand(path+"/@json?children=true", item).execute();
+        new GetChildrenCommand(path+"/@gwt?children=true", item).execute();
     }
 
 
@@ -139,10 +138,7 @@ public class NavigatorTree extends Tree{
                     DocumentRef obj = (DocumentRef) item.getUserObject();
                     if ( obj != null ){
                         String s = obj.getPath();
-                        if( s.startsWith(navigatorRootPath)) {
-                            String deltaPath = s.substring(navigatorRootPath.length());
-                            updateTree(repositoryUrl + deltaPath, item);
-                        }
+                        updateTree(rootPath + s, item);
                     }
                 }
             }
