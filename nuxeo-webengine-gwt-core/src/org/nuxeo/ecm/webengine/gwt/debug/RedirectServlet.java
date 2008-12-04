@@ -118,7 +118,11 @@ public class RedirectServlet extends HttpServlet implements Debug {
             String key = keys.nextElement();
             Enumeration<String> vals = req.getHeaders(key);
             while (vals.hasMoreElements()) {
-                buf.append(key).append(": ").append(vals.nextElement()).append("\r\n");
+                if (!"connection".equalsIgnoreCase(key)) { // skip Connection: Keep-Alive
+                    buf.append(key).append(": ").append(vals.nextElement()).append("\r\n");
+                } else {
+                    vals.nextElement();
+                }
             }
         }
         buf.append("\r\n");
@@ -141,7 +145,7 @@ public class RedirectServlet extends HttpServlet implements Debug {
             } else {
                 copy(in, rout);
             }
-
+            rout.flush();
             rin = new BufferedInputStream(socket.getInputStream());
             if (trace) {
                 traceln("========= HTTP RESPONSE ===========");
@@ -214,10 +218,11 @@ public class RedirectServlet extends HttpServlet implements Debug {
                             return;
                         } 
                         resp.setStatus(status);                        
+                    } else {
+                        setHeader(buf.toString().trim(), resp);
                     }
-                    cnt++;
-                    setHeader(buf.toString().trim(), resp);
                     buf.setLength(0);
+                    cnt++;
                 } else {
                     break;
                 }
@@ -235,6 +240,7 @@ public class RedirectServlet extends HttpServlet implements Debug {
                 copy(in, out);
             }
         } finally {
+            out.flush();
             out.close();
         }
     }

@@ -20,15 +20,11 @@
 package org.nuxeo.ecm.webengine.gwt.client.ui.login;
 
 import org.nuxeo.ecm.webengine.gwt.client.UI;
-import org.nuxeo.ecm.webengine.gwt.client.http.HttpRequest;
 import org.nuxeo.ecm.webengine.gwt.client.http.HttpResponse;
 import org.nuxeo.ecm.webengine.gwt.client.ui.ContextListener;
 import org.nuxeo.ecm.webengine.gwt.client.ui.HttpCommand;
 import org.nuxeo.ecm.webengine.gwt.client.ui.View;
 
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONString;
-import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Window;
 
 /**
@@ -52,10 +48,10 @@ public class LoginCommand extends HttpCommand {
 
     @Override
     protected void doExecute() throws Throwable {
-        request = post("/login/");
-        request.setHeader("Content-Type", "application/x-www-form-urlencoded");
-        request.setRequestData("caller=login&username="+username+"&password="+password);
-        request.send();
+        post("/login/")
+            .setHeader("Content-Type", "application/x-www-form-urlencoded")
+            .setRequestData("caller=login&username="+username+"&password="+password)
+            .send();
     }
 
     @Override

@@ -21,7 +21,10 @@ package org.nuxeo.ecm.webengine.gwt.client.ui.login;
 
 import org.nuxeo.ecm.webengine.gwt.client.UI;
 import org.nuxeo.ecm.webengine.gwt.client.http.HttpResponse;
+import org.nuxeo.ecm.webengine.gwt.client.http.ServerException;
 import org.nuxeo.ecm.webengine.gwt.client.ui.HttpCommand;
+
+import com.google.gwt.user.client.Cookies;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -34,12 +37,24 @@ public class LogoutCommand extends HttpCommand {
     
     @Override
     protected void doExecute() throws Throwable {
-        get("/skin/wiki/wiki.css").send();            
+        post("/login/").send();
+        Cookies.removeCookie("JSESSIONID");
     }
 
     @Override
     public void onSuccess(HttpResponse response) {
         UI.getContext().setUsername(null);
     }
-        
+       
+
+    @Override
+    public void onFailure(Throwable cause) {
+        if (cause instanceof ServerException) {
+            if ( ((ServerException)cause).getResponse().getStatusCode() == 404) {
+                UI.getContext().setUsername(null);
+                return; // logout success
+            }
+        }
+        super.onFailure(cause);
+    }
 }
