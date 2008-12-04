@@ -13,27 +13,6 @@
   <extension target="web#SERVLET">
 
     <servlet>
-      <servlet-name>NXThemes Web Widgets Decoration</servlet-name>
-      <servlet-class>
-        org.nuxeo.theme.webwidgets.DecorationServlet
-      </servlet-class>
-    </servlet>
-
-    <servlet>
-      <servlet-name>NXThemes Web Widgets Data</servlet-name>
-      <servlet-class>
-        org.nuxeo.theme.webwidgets.DataServlet
-      </servlet-class>
-    </servlet>
-
-    <servlet>
-      <servlet-name>NXThemes Web Widgets File Upload</servlet-name>
-      <servlet-class>
-        org.nuxeo.theme.webwidgets.FileUploadServlet
-      </servlet-class>
-    </servlet>
-
-    <servlet>
       <servlet-name>NXThemes Web Widgets Ajax Proxy</servlet-name>
       <servlet-class>
         org.nuxeo.theme.webwidgets.AjaxProxy
@@ -43,21 +22,6 @@
   </extension>
 
   <extension target="web#SERVLET-MAPPING">
-
-    <servlet-mapping>
-      <servlet-name>NXThemes Web Widgets Decoration</servlet-name>
-      <url-pattern>/nxthemes-webwidgets-decoration/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-      <servlet-name>NXThemes Web Widgets Data</servlet-name>
-      <url-pattern>/nxthemes-webwidgets-data/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-      <servlet-name>NXThemes Web Widgets File Upload</servlet-name>
-      <url-pattern>/nxthemes-webwidgets-file-upload/*</url-pattern>
-    </servlet-mapping>
 
     <servlet-mapping>
       <servlet-name>NXThemes Web Widgets Ajax Proxy</servlet-name>
