@@ -36,7 +36,6 @@ public class ValidationException extends Exception {
         this.errors = errors;
     }
 
-    @SuppressWarnings("unchecked")
     public ValidationException(ErrorStatus error) {
         errors = Collections.singleton(error);
     }

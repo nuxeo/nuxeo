@@ -209,7 +209,6 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
         return fragment != null;
     }
 
-    @SuppressWarnings("unchecked")
     public void applyFragment(LinkDescriptor fragment) {
         if (fragment.categories != null && !fragment.categories.isEmpty()) {
             if (categories == null) {

@@ -144,7 +144,8 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
         } else { // update contribution fragments
             fragments.add(fragment);
         }
-        if (superKeys != null && superKeys.length > 0 && superKeys[0] != null) { // when passing a null value as the superKey you get an arrray with a null element
+        // when passing a null value as the superKey you get an array with a null element
+        if (superKeys != null && superKeys.length > 0 && superKeys[0] != null) {
             for (K superKey : superKeys) {
                 Contribution<K, T> c = registry.getOrCreateDependency(superKey);
                 dependencies.add(c);

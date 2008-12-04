@@ -32,7 +32,7 @@ public abstract class TypeHandler {
 
     protected final String type;
 
-    public TypeHandler(String type) {
+    protected TypeHandler(String type) {
         this.type = type;
         handlers.put(type, this);
     }
@@ -48,24 +48,29 @@ public abstract class TypeHandler {
     public abstract Object decode(String value) throws TypeException;
 
     public static final TypeHandler STRING = new TypeHandler("string") {
+        @Override
         public Object decode(String value) throws TypeException {
             return value;
         }
     };
 
     public static final TypeHandler INTEGER = new TypeHandler("integer") {
+        @Override
         public Object decode(String value) { return Integer.valueOf(value); }
     };
 
     public static final TypeHandler FLOAT = new TypeHandler("float") {
+        @Override
         public Object decode(String value) { return Double.valueOf(value); }
     };
 
     public static final TypeHandler NUMBER = new TypeHandler("number") {
+        @Override
         public Object decode(String value) { return Double.valueOf(value); }
     };
 
     public static final TypeHandler BOOLEAN = new TypeHandler("boolean") {
+        @Override
         public Object decode(String value) { return Boolean.valueOf(value); }
     };
 

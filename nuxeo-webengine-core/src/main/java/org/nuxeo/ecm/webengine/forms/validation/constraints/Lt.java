@@ -39,12 +39,11 @@ public class Lt extends SimpleConstraint {
         this.value = (Comparable) decodedValue;
     }
 
-
     @Override
     @SuppressWarnings("unchecked")
     public Status doValidate(FormInstance form, Field field, String rawValue, Object value) {
         assert this.value != null;
-        return this.value.compareTo((Comparable) value) > 0 ? Status.OK
+        return this.value.compareTo(value) > 0 ? Status.OK
                 : error(field);
     }
 

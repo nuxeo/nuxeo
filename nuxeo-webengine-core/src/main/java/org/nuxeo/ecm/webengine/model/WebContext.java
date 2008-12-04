@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine.model;
 
-import java.io.IOException;
 import java.io.Writer;
 import java.security.Principal;
 import java.util.Map;
@@ -310,12 +309,11 @@ public interface WebContext extends Adaptable {
      * @param path
      *            the path to resolve into a file
      * @return the file or null if the path couldn't be resolved
-     * @throws IOException
      */
     ScriptFile getFile(String path);
 
 
-    /** running scripts and rendering templates */
+    /*running scripts and rendering templates */
 
     /**
      * Renders the given template using the rendering engine registered in that
@@ -351,20 +349,21 @@ public interface WebContext extends Adaptable {
 
     /**
      * Renders the given template using the rendering engine registered in that
-     * web engine. The given arguments are passed to the rendering process as
-     * context variables
+     * web engine.
+     * <p>
+     * The given arguments are passed to the rendering process as context
+     * variables.
      *
      * @param script
      *            the template to render
      * @param args
      *            the arguments to pass
-     *  @param writer
+     * @param writer
      *            the writer to use
      *
      * @throws WebException
      */
     void render(ScriptFile script, Object args, Writer writer);
-
 
     /**
      * Runs the given script.
@@ -404,4 +403,5 @@ public interface WebContext extends Adaptable {
      * @see #runScript(String, Map)
      */
     Object runScript(ScriptFile script, Map<String, Object> args);
+
 }

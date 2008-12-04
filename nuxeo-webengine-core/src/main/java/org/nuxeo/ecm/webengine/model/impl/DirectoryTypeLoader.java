@@ -45,7 +45,6 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 public class DirectoryTypeLoader {
 
     public static final Log log = LogFactory.getLog(DirectoryTypeLoader.class);
-
     public static final String CRLF = System.getProperty("line.separator");
 
     protected final GroovyClassLoader loader;
@@ -53,12 +52,11 @@ public class DirectoryTypeLoader {
     protected final File root;
     protected boolean isDebug = false;
 
-
     public DirectoryTypeLoader(WebEngine engine, TypeRegistry typeReg, File root) {
         this.typeReg = typeReg;
         this.root = root;
-        this.loader = engine.getScripting().getGroovyScripting().getGroovyClassLoader();
-        this.isDebug = engine.isDebug();
+        loader = engine.getScripting().getGroovyScripting().getGroovyClassLoader();
+        isDebug = engine.isDebug();
     }
 
     public synchronized void flushCache() {
@@ -67,7 +65,7 @@ public class DirectoryTypeLoader {
         cache.delete();
     }
 
-    public synchronized void load() {                
+    public synchronized void load() {
         try {
             File cache = new File(root, ".types");
             if (cache.isFile()) {
@@ -81,7 +79,7 @@ public class DirectoryTypeLoader {
                 Writer w = new BufferedWriter(new FileWriter(cache));
                 try {
                     scan(root, root.getName(), w);
-                    w.close();                    
+                    w.close();
                 } catch (Throwable t) {
                     w.close();
                     cache.delete();
@@ -123,7 +121,8 @@ public class DirectoryTypeLoader {
     }
 
     /**
-     * Load a type and cache it 
+     * Loads a type and cache it.
+     *
      * @param cache
      * @param className
      * @throws ClassNotFoundException
@@ -133,15 +132,16 @@ public class DirectoryTypeLoader {
         TypeDescriptor td = loadType(className);
         if (td != null) {
             cache.write(className);
-            cache.write(CRLF);            
+            cache.write(CRLF);
         }
         return td;
     }
 
     /**
-     * Get a type descriptor given an absolute className. If this class doesn't define a type or type adapter
-     * return null.  
-     * @param module the module containing the type
+     * Gets a type descriptor given an absolute className.
+     * <p>
+     * If this class doesn't define a type or type adapter return null.
+     *
      * @param className
      * @return
      * @throws ClassNotFoundException

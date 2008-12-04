@@ -48,12 +48,10 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
         parse(expr);
     }
 
-
     public Token[] getExpression() {
         return expr;
     }
 
-    @SuppressWarnings("unchecked")
     public Iterator<Token> iterator() {
         return Arrays.asList(expr).iterator();
     }

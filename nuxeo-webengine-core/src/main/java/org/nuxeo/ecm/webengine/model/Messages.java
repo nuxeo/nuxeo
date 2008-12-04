@@ -52,7 +52,7 @@ public class Messages {
         return defaultMessages;
     }
 
-    public MessagesBundle getMessagesBundle(String language) throws MissingResourceException {
+    public MessagesBundle getMessagesBundle(String language) {
         if (language == null) {
             return defaultMessages;
         }
@@ -66,7 +66,7 @@ public class Messages {
         return bundle;
     }
 
-    public Object getObject(String key, String language) throws MissingResourceException {
+    public Object getObject(String key, String language) {
         MessagesBundle bundle = getMessagesBundle(language);
         if (bundle != null) {
             return bundle.getObject(key);
@@ -78,23 +78,23 @@ public class Messages {
                 key);
     }
 
-    public Object getObject(String key) throws MissingResourceException {
+    public Object getObject(String key) {
         return getObject(key, null);
     }
 
-    public String getString(String key) throws MissingResourceException {
+    public String getString(String key) {
         return getString(key, null);
     }
 
-    public String getString(String key, String language) throws MissingResourceException {
+    public String getString(String key, String language) {
         return (String) getObject(key, language);
     }
 
-    public String[] getStringArray(String key) throws MissingResourceException {
+    public String[] getStringArray(String key) {
         return getStringArray(key, null);
     }
 
-    public String[] getStringArray(String key, String language) throws MissingResourceException {
+    public String[] getStringArray(String key, String language) {
         return (String[]) getObject(key, language);
     }
 

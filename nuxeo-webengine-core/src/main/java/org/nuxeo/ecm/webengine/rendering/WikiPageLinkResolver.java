@@ -23,9 +23,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.platform.rendering.wiki.WikiFilter;
-import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.model.Resource;
-import org.nuxeo.ecm.webengine.model.WebContext;
 
 
 public class WikiPageLinkResolver implements WikiFilter{
@@ -53,15 +50,13 @@ public class WikiPageLinkResolver implements WikiFilter{
 
     protected String buildLink(String pageName) {
         String href = null;
-        if (pageName.contains(".")){ // WikiName.WikiPage case
-            href = "../"+pageName.replace(".", "/");
+        if (pageName.contains(".")) { // WikiName.WikiPage case
+            href = "../" + pageName.replace(".", "/");
         } else {
-            href = "./"+pageName;
+            href = "./" + pageName;
         }
         // TOdO check if page exists
         return String.format(LINK_TEMPLATE, href, "", pageName);
     }
-
-
 
 }

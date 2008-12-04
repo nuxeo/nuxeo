@@ -19,11 +19,8 @@
 
 package org.nuxeo.ecm.core.rest;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.webengine.WebException;
@@ -31,7 +28,7 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
 /**
- * Resolve a document URL given its ID
+ * Resolves a document URL given its ID
  * <p>
  * Accepts the following methods:
  * <ul>
@@ -39,7 +36,6 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @WebAdapter(name="nxdoc", type="DocumentResolverService")
 public class DocumentResolverService extends DefaultAdapter {
@@ -53,5 +49,5 @@ public class DocumentResolverService extends DefaultAdapter {
             throw WebException.wrap("Failed to get lock on document", e);
         }
     }
-    
+
 }
