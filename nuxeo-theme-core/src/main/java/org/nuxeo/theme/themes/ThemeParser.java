@@ -48,6 +48,7 @@ import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentFactory;
 import org.nuxeo.theme.perspectives.PerspectiveType;
+import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.FieldIO;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
@@ -94,10 +95,10 @@ public class ThemeParser {
             final InputSource is = new InputSource(in);
             final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             try {
-            dbf.setFeature("http://xml.org/sax/features/validation", false);
-            dbf.setFeature(
-                    "http://apache.org/xml/features/nonvalidating/load-external-dtd",
-                    false);
+                dbf.setFeature("http://xml.org/sax/features/validation", false);
+                dbf.setFeature(
+                        "http://apache.org/xml/features/nonvalidating/load-external-dtd",
+                        false);
             } catch (ParserConfigurationException e) {
                 log.debug("Could not set DTD non-validation feature");
             }
@@ -127,8 +128,15 @@ public class ThemeParser {
             // create a new theme
             ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
             theme.setName(themeName);
-            String description = getCommentAssociatedTo(docElem);
-            theme.setDescription(description);
+            String description = docElem.getAttribute("description");
+            if (description != null) {
+                theme.setDescription(description);
+            }
+
+            // register theme presets
+            for (Node n : getChildElementsByTagName(docElem, "presets")) {
+                parsePresets(theme, n);
+            }
 
             // register formats
             for (Node n : getChildElementsByTagName(docElem, "formats")) {
@@ -225,6 +233,18 @@ public class ThemeParser {
 
             parent.addChild(elem);
             parseLayout(elem, n);
+        }
+    }
+
+    private static void parsePresets(final ThemeElement theme, Node node) {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        for (Node n : getChildElements(node)) {
+            NamedNodeMap attrs = n.getAttributes();
+            final String name = attrs.getNamedItem("name").getNodeValue();
+            final String category = attrs.getNamedItem("category").getNodeValue();
+            final String value = ThemeManager.resolvePresets(n.getTextContent());
+            PresetType preset = new PresetType(name, value, null, category);
+            typeRegistry.register(preset);
         }
     }
 

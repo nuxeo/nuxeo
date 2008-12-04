@@ -76,8 +76,9 @@ public class ThemeSerializer {
         // Theme description and name
         String description = theme.getDescription();
         if (description != null) {
-            doc.appendChild(doc.createComment(String.format(" %s ", description)));
+            root.setAttribute("description", description);
         }
+
         root.setAttribute("name", theme.getName());
         doc.appendChild(root);
 

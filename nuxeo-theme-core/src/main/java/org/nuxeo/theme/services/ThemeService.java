@@ -389,9 +389,9 @@ public class ThemeService extends DefaultComponent {
         if (url != null) {
             typeRegistry.register(palette);
             Map<String, String> entries = PaletteParser.parse(url);
-            for (String key : entries.keySet()) {
-                String value = ThemeManager.resolvePresets(entries.get(key));
-                PresetType preset = new PresetType(key, value, paletteName,
+            for (Map.Entry<String, String> entry : entries.entrySet()) {
+                String value = ThemeManager.resolvePresets(entry.getValue());
+                PresetType preset = new PresetType(entry.getKey(), value, paletteName,
                         category);
                 typeRegistry.register(preset);
             }

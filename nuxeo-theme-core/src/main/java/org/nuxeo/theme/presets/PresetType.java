@@ -29,7 +29,7 @@ public class PresetType implements Type {
     private String value;
 
     @XNode("@group")
-    private String group = "";
+    private String group;
 
     @XNode("@category")
     private String category = "";
@@ -49,7 +49,7 @@ public class PresetType implements Type {
     }
 
     public String getTypeName() {
-        if (!group.equals("")) {
+        if (group != null && !"".equals(group)) {
             return String.format("%s (%s)", name, group);
         }
         return name;

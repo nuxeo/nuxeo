@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Default theme -->
-<theme name="default">
+<theme description="Default theme" name="default">
   <layout>
     <!-- Page 1 -->
     <page name="page1">
       <section>
         <cell>
           <!-- The first fragment -->
-          <fragment type="dummy fragment" />
+          <fragment type="dummy fragment"/>
         </cell>
         <cell>
-          <fragment perspectives="default" type="dummy fragment" />
+          <fragment perspectives="default" type="dummy fragment"/>
           <!-- this fragment is visible in the view perspective only -->
-          <fragment type="dummy fragment" />
+          <fragment type="dummy fragment"/>
         </cell>
       </section>
     </page>
@@ -26,8 +25,8 @@
     <field2>value 4</field2>
   </properties>
   <properties element="page[1]/section[1]/cell[2]/fragment[2]">
-    <field1 />
-    <field2 />
+    <field1/>
+    <field2/>
   </properties>
   <formats>
     <!-- the theme headers, etc. -->
@@ -119,7 +118,7 @@
         <font-size>1.1em</font-size>
       </selector>
     </style>
-    <style element="page[1]/section[1]|page[1]/section[1]/cell[1]" inherit="common style 1" />
-    <style element="page[1]|page[1]/section[1]/cell[2]" inherit="default colors" />
+    <style element="page[1]/section[1]|page[1]/section[1]/cell[1]" inherit="common style 1"/>
+    <style element="page[1]|page[1]/section[1]/cell[2]" inherit="default colors"/>
   </formats>
 </theme>

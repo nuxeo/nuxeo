@@ -24,6 +24,7 @@ import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.styles.Style;
+import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.themes.ThemeParser;
 
@@ -34,7 +35,7 @@ public class TestThemeParser extends NXRuntimeTestCase {
     private ThemeElement theme1;
 
     private PageElement page1;
-
+    
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -74,6 +75,19 @@ public class TestThemeParser extends NXRuntimeTestCase {
 
         assertEquals("Theme 1", theme1.getDescription());
         assertEquals("Page 1", page1.getDescription());
+        
+        // Theme presets
+        PresetType preset1 = ThemeManager.getPresetByName("red");
+        assertNull(preset1.getGroup());
+        assertEquals("red", preset1.getName());
+        assertEquals("#f00", preset1.getValue());
+        assertEquals("color", preset1.getCategory());
+        
+        PresetType preset2 = ThemeManager.getPresetByName("nice background");
+        assertNull(preset2.getGroup());
+        assertEquals("nice background", preset2.getName());
+        assertEquals("#fff url(/skin/app/nice-bg.png) top left repeat-y", preset2.getValue());
+        assertEquals("background", preset2.getCategory());
     }
 
     public void testWidgets() {

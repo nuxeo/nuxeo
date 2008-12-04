@@ -46,7 +46,7 @@ public class ThemeIORoundTrip extends NXRuntimeTestCase {
         final URL url = getClass().getClassLoader().getResource("roundtrip-theme.xml");
         ThemeParser.registerTheme(url);
         final ThemeElement theme = Manager.getThemeManager().getThemeByName("default");
-        final String output = new ThemeSerializer().serializeToXml(theme, 2).replace("/>", " />");
+        final String output = new ThemeSerializer().serializeToXml(theme, 2);
         final String input = Utils.readResourceAsString("roundtrip-theme.xml");
         assertEquals(input, output);
     }

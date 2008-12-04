@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-
-<!-- Theme 1 -->
-<theme name="theme1">
+<theme description="Theme 1" name="theme1">
   <layout>
     <!-- Page 1 -->
     <page name="page1">
@@ -30,6 +28,12 @@
     <field2>value 4</field2>
   </properties>
 
+  <presets>
+    <preset name="red" category="color">#f00</preset>
+    <preset name="yellow" category="color">#ff0</preset>
+    <preset name="nice background" category="background">#fff url(/skin/app/nice-bg.png) top left repeat-y</preset>
+  </presets>
+  
   <formats>
     <!--  the theme headers, etc. -->
     <widget element="">
