@@ -40,6 +40,7 @@ import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.nodes.Node;
 import org.nuxeo.theme.perspectives.PerspectiveType;
+import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.FieldIO;
 import org.nuxeo.theme.uids.Identifiable;
 import org.w3c.dom.Document;
@@ -93,6 +94,20 @@ public class ThemeSerializer {
         // element properties
         for (Element element : elements) {
             serializeProperties(element, root);
+        }
+
+        // presets
+        List<PresetType> customPresets = ThemeManager.getCustomPresets();
+        if (!customPresets.isEmpty()) {
+            final org.w3c.dom.Element presetsNode = doc.createElement("presets");
+            root.appendChild(presetsNode);
+            for (PresetType preset : customPresets) {
+                final org.w3c.dom.Element presetNode = doc.createElement("preset");
+                presetNode.setAttribute("name", preset.getName());
+                presetNode.setAttribute("category", preset.getCategory());
+                presetNode.appendChild(doc.createTextNode(preset.getValue()));
+                presetsNode.appendChild(presetNode);
+            }
         }
 
         // formats

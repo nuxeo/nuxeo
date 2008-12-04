@@ -497,6 +497,17 @@ public final class ThemeManager implements Registrable {
         return (PresetType) Manager.getTypeRegistry().lookup(TypeFamily.PRESET,
                 name);
     }
+    
+    public static List<PresetType> getCustomPresets() {
+        List<PresetType> presets = new ArrayList<PresetType>();
+        for (Type type : Manager.getTypeRegistry().getTypes(TypeFamily.PRESET)) {
+            PresetType preset = (PresetType) type; 
+            if (preset.getGroup() == null) {
+                presets.add(preset);
+            }
+        }
+        return presets;
+    }
 
     public static PresetType resolvePreset(final String value) {
         PresetType preset;
@@ -919,5 +930,6 @@ public final class ThemeManager implements Registrable {
     public static Format getFormatById(final String id) {
         return (Format) getFormatById(Integer.valueOf(id));
     }
+
 
 }
