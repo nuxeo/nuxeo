@@ -41,17 +41,17 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 
 @Name("logoHelper")
 @Scope(CONVERSATION)
-@NuxeoJavaBeanErrorHandler
-public class LogoHelper implements Serializable{
+public class LogoHelper implements Serializable {
 
     private static final long serialVersionUID = 876540986876L;
 
     private static final String PAGE_NAME = "/showLogo.faces";
+
     private static final String DEFAULT_LOGO = "/img/default_logo.gif";
+
     private static final Log log = LogFactory.getLog(LogoHelper.class);
 
     @In(value = "org.jboss.seam.core.manager")
@@ -64,10 +64,12 @@ public class LogoHelper implements Serializable{
     transient CoreSession documentManager;
 
     private String lastLogoHolderKey = "";
-    private DocumentModel lastLogoHolder = null;
-    private String lastURL = "";
-    private String lastMainConversation = "";
 
+    private DocumentModel lastLogoHolder = null;
+
+    private String lastURL = "";
+
+    private String lastMainConversation = "";
 
     public String getLogoURL() {
         if ((navigationContext == null)
@@ -172,8 +174,8 @@ public class LogoHelper implements Serializable{
         HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
         try {
             if (imgBlob == null
-                    || (imgBlob.getMimeType() != null
-                            && !imgBlob.getMimeType().toLowerCase().startsWith("image"))) {
+                    || (imgBlob.getMimeType() != null && !imgBlob.getMimeType().toLowerCase().startsWith(
+                            "image"))) {
                 response.setContentType("image/gif");
                 response.sendRedirect(context.getExternalContext().getRequestContextPath()
                         + DEFAULT_LOGO);
@@ -194,7 +196,6 @@ public class LogoHelper implements Serializable{
 
         return null;
     }
-
 
     private String getLastOrMainConversationId(String cId) {
         if (!cId.startsWith("0NX")) {
@@ -218,12 +219,10 @@ public class LogoHelper implements Serializable{
             suffix += conversationManager.getConversationIdParameter() + '='
                     + cId;
             /**
-            if (conversationManager.isLongRunningConversation()) {
-                suffix += '&'
-                        + conversationManager.getConversationIsLongRunningParameter()
-                        + "true";
-                lastMainConversation = cId;
-            }**/
+             * if (conversationManager.isLongRunningConversation()) { suffix +=
+             * '&' + conversationManager.getConversationIsLongRunningParameter()
+             * + "true"; lastMainConversation = cId; }
+             **/
         } else {
             ConversationEntry conv = conversationManager.getCurrentConversationEntry();
             String convId = conv.getConversationIdStack().get(0);
@@ -231,10 +230,10 @@ public class LogoHelper implements Serializable{
             suffix += conversationManager.getConversationIdParameter() + '='
                     + convId;
             /**
-            suffix += '&'
-                    + conversationManager.getConversationIsLongRunningParameter()
-                    + "true";
-            lastMainConversation = convId;**/
+             * suffix += '&' +
+             * conversationManager.getConversationIsLongRunningParameter() +
+             * "true"; lastMainConversation = convId;
+             **/
         }
 
         return suffix;

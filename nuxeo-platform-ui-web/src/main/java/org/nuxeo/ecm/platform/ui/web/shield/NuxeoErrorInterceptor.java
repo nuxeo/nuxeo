@@ -50,8 +50,9 @@ import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ * @deprecated No need anymore, error is processed in NuxeoExceptionFilter
  */
-
+@Deprecated
 public class NuxeoErrorInterceptor implements Serializable {
 
     private static final long serialVersionUID = 6519836435278721L;

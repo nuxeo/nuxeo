@@ -31,7 +31,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUIManager;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -42,7 +41,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("directoryUIManager")
 @Scope(SESSION)
-@NuxeoJavaBeanErrorHandler
 public class DirectoryUIManagerBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = 1L;

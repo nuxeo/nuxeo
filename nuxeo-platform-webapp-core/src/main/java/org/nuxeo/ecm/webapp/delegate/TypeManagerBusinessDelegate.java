@@ -33,7 +33,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.types.TypeManager;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -42,7 +41,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("typeManager")
 @Scope(CONVERSATION)
-@NuxeoJavaBeanErrorHandler
 public class TypeManagerBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = -5326113474071108997L;

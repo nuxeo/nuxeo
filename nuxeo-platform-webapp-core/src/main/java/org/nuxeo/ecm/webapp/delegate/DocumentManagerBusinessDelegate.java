@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
 
@@ -56,7 +55,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("documentManager")
 @Scope(CONVERSATION)
-@NuxeoJavaBeanErrorHandler
 public class DocumentManagerBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = 1L;

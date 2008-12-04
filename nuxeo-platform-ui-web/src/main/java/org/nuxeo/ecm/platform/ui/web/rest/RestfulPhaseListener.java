@@ -28,6 +28,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.contexts.FacesLifecycle;
 import org.jboss.seam.transaction.Transaction;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
+import org.nuxeo.ecm.platform.ui.web.shield.ErrorPageForwarder;
 import org.nuxeo.ecm.platform.ui.web.shield.ExceptionHelper;
 import org.nuxeo.ecm.platform.ui.web.shield.NuxeoExceptionFilter;
 import org.nuxeo.runtime.api.Framework;
@@ -101,10 +103,11 @@ public class RestfulPhaseListener implements PhaseListener {
             }
 
             try {
-                NuxeoExceptionFilter.forwardToErrorPage(httpRequest,
-                        httpResponse, NuxeoExceptionFilter.getStackTrace(e),
+                ErrorPageForwarder forwarder = new ErrorPageForwarder();
+                forwarder.forwardToErrorPage(httpRequest,
+                        httpResponse, e,
                         exceptionMessage, userMessage,
-                        ExceptionHelper.isSecurityError(e));
+                        ExceptionHelper.isSecurityError(e), (ServletContext)FacesContext.getCurrentInstance().getExternalContext().getContext());
 
                 FacesLifecycle.endRequest(context.getExternalContext());
                 context.responseComplete();

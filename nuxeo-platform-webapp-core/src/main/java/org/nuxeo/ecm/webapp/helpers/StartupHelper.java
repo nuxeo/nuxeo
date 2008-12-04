@@ -44,13 +44,11 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.clipboard.ClipboardActionsBean;
 
 @Name("startupHelper")
 @Scope(SESSION)
-@NuxeoJavaBeanErrorHandler
 // TODO @Install(precedence=FRAMEWORK)
 public class StartupHelper implements Serializable {
 

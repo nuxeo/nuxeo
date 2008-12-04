@@ -24,8 +24,6 @@ import static org.jboss.seam.ScopeType.SESSION;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.interceptor.Interceptors;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
@@ -39,7 +37,6 @@ import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Filter;
-import org.nuxeo.ecm.webapp.shield.ErrorHandlingInterceptor;
 
 /**
  * This business delegate is available on session instance as a SEAM component
@@ -53,7 +50,6 @@ import org.nuxeo.ecm.webapp.shield.ErrorHandlingInterceptor;
  */
 @Name("searchDelegate")
 @Scope(SESSION)
-@Interceptors(ErrorHandlingInterceptor.class)
 public class SearchBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = 786391027463892L;

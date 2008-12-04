@@ -32,7 +32,6 @@ import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
@@ -46,7 +45,6 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 @Name("userServicesContext")
 @Scope(SESSION)
 @Startup
-@NuxeoJavaBeanErrorHandler
 public class UserServicesContext implements Serializable {
 
     private static final long serialVersionUID = -4938620211123775744L;

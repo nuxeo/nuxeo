@@ -78,7 +78,14 @@ a:hover {
   height: 700px;
   overflow: auto;
 }
-
+#requestDump {
+  border: 1px solid #999999;
+  padding: 3px;
+  margin: 15px 0;
+  width: 700px;
+  height: 700px;
+  overflow: auto;
+}
 -->
   </style>
   <script language="javascript" type="text/javascript">
@@ -103,6 +110,7 @@ a:hover {
   String stackTrace = (String) request.getAttribute("stackTrace");
   String context = request.getContextPath();
   Boolean securityError = (Boolean) request.getAttribute("securityError");
+  String request_dump = (String) request.getAttribute("request_dump");
 
   String pageTitle="An error occured";
   if ((securityError!=null) && (securityError.booleanValue()==true))
@@ -125,13 +133,11 @@ a:hover {
       <h1><%=pageTitle%></h1>
 
   <% if (!isAnonymous) { %>
-      <h2>
-      <fmt:message bundle="${messages}" key="${user_message}" />
-      </h2>
+      <h2><%=user_message%></h2>
 
 
       <div class="links">
-        <div class="back"><a href="javascript:history.back();">back</a>
+        <div class="back"><a href="<%=context %>/">back</a>
         </div>
         <div class="change"><a href="<%=context%>/logout">change username</a>
         </div>
@@ -144,9 +150,25 @@ a:hover {
           <h2><%=exception_message %>
           </h2>
           <inputTextarea rows="20" cols="100" readonly="true">
+            <pre>
             <%=stackTrace%>
+            </pre>
           </inputTextarea>
         </div>
+      <div class="stacktrace">
+          <a href="#"
+             onclick="javascript:toggleError('requestDump'); return false;">show
+            context dump</a>
+        </div>
+        <div id="requestDump" style="display: none;">
+          <h2>Context</h2>
+          <inputTextarea rows="20" cols="100" readonly="true">
+            <pre>
+            <%=request_dump%>
+            </pre>
+          </inputTextarea>
+        </div>
+      </div>
       </div>
       <%} else { %>
       <h2> You must be authenticated to perform this operation </h2>

@@ -24,7 +24,6 @@ import static org.jboss.seam.ScopeType.SESSION;
 import java.io.Serializable;
 
 import javax.annotation.security.PermitAll;
-import javax.interceptor.Interceptors;
 
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Name;
@@ -32,7 +31,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
-import org.nuxeo.ecm.webapp.shield.ErrorHandlingInterceptor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -42,7 +40,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("notificationManager")
 @Scope(SESSION)
-@Interceptors(ErrorHandlingInterceptor.class)
 public class NotificationServiceBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = 1L;

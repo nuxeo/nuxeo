@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.platform.ui.web.shield;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import javax.faces.event.PhaseId;
 import javax.servlet.Filter;
@@ -28,6 +30,8 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,20 +43,24 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.WrappedException;
 
 public class NuxeoExceptionFilter implements Filter {
+    private final ErrorPageForwarder errorPageForwarder = new ErrorPageForwarder();
 
     private static final Log log = LogFactory.getLog(NuxeoExceptionFilter.class);
 
+    private FilterConfig config;
+
     public void init(FilterConfig filterConfig) throws ServletException {
+        config = filterConfig;
     }
 
     public void destroy() {
     }
 
-    private static void handleException(ServletRequest request,
+    private void handleException(ServletRequest request,
             ServletResponse response, Throwable t) throws IOException,
             ServletException {
 
-        log.error("Uncaught exception",t);
+        log.error("Uncaught exception", t);
 
         rollbackTransactionIfNecessary();
 
@@ -94,10 +102,13 @@ public class NuxeoExceptionFilter implements Filter {
         if (exceptionMessage == null) {
             exceptionMessage = unwrappedException.toString();
         }
-        String stackTrace = getStackTrace(appException);
+        StringWriter swriter = new StringWriter();
+        PrintWriter pwriter = new PrintWriter(swriter);
+        appException.printStackTrace(pwriter);
 
-        forwardToErrorPage(request, response, stackTrace, exceptionMessage,
-                userMessage, securityError);
+        errorPageForwarder.forwardToErrorPage((HttpServletRequest) request,
+                (HttpServletResponse) response, swriter.getBuffer().toString(),
+                exceptionMessage, userMessage, securityError, config.getServletContext());
     }
 
     public void doFilter(ServletRequest request, ServletResponse response,
@@ -105,13 +116,11 @@ public class NuxeoExceptionFilter implements Filter {
         try {
             chain.doFilter(request, response);
             if (request.getAttribute("applicationException") != null) {
-                log.error(
-                        "An exception was swallowed by the component stack : " + ((Exception) request.getAttribute(
-                                "applicationException")).getMessage());
+                log.error("An exception was swallowed by the component stack : "
+                        + ((Exception) request.getAttribute("applicationException")).getMessage());
             } else if (request.getAttribute("securityException") != null) {
-                log.error(
-                        "An security exception was swallowed by the component stack : " + ((Exception) request.getAttribute(
-                                "securityException")).getMessage());
+                log.error("An security exception was swallowed by the component stack : "
+                        + ((Exception) request.getAttribute("securityException")).getMessage());
             }
         } catch (ServletException se) {
             handleException(request, response, se);
@@ -122,44 +131,6 @@ public class NuxeoExceptionFilter implements Filter {
         }
     }
 
-    public static void forwardToErrorPage(ServletRequest request,
-            ServletResponse response, String stackTrace,
-            String exceptionMessage, String userMessage)
-            throws ServletException, IOException {
-        forwardToErrorPage(request, response, stackTrace, exceptionMessage,
-                userMessage, false);
-    }
-
-    public static void forwardToErrorPage(ServletRequest request,
-            ServletResponse response, String stackTrace,
-            String exceptionMessage, String userMessage, Boolean securityError)
-            throws ServletException, IOException {
-        request.setAttribute("exception_message", exceptionMessage);
-        request.setAttribute("user_message", userMessage);
-        request.setAttribute("stackTrace", stackTrace);
-        request.setAttribute("securityError", securityError);
-        request.getRequestDispatcher("/nuxeo_error.jsp").forward(request,
-                response);
-    }
-
-    public static String getStackTraceElement(Throwable t) {
-        StringBuilder sb = new StringBuilder();
-
-        if (null != t) {
-            sb.append("\n\n");
-            sb.append(t.getClass().getName());
-            sb.append("\n\n");
-            sb.append(t.getLocalizedMessage());
-            sb.append("\n\n");
-
-            for (StackTraceElement element : t.getStackTrace()) {
-                sb.append(element.toString());
-                sb.append('\n');
-            }
-        }
-
-        return sb.toString();
-    }
 
     public static Throwable unwrapException(Throwable t) {
         Throwable cause = null;
@@ -183,10 +154,8 @@ public class NuxeoExceptionFilter implements Filter {
         String message;
 
         if (t instanceof DocumentSecurityException) {
-            DocumentSecurityException e = (DocumentSecurityException) t;
             message = "Error.Insuffisant.Rights";
-        }
-        else if (t instanceof ClientException) {
+        } else if (t instanceof ClientException) {
             ClientException e = (ClientException) t;
             message = e.getMessage();
         } else if (t instanceof WrappedException) {
@@ -217,30 +186,8 @@ public class NuxeoExceptionFilter implements Filter {
         return message;
     }
 
-    public static String getStackTrace(Throwable e) {
-        StringBuilder trace = new StringBuilder();
-
-        if (e != null) {
-            Throwable cause;
-
-            if (e instanceof ServletException) {
-                cause = ((ServletException) e).getRootCause();
-            } else {
-                cause = e.getCause();
-            }
-
-            trace.append(getStackTraceElement(e));
-
-            if (cause != null) {
-                trace.append(getStackTrace(cause));
-            }
-        }
-        return trace.toString();
-    }
-
     private static void rollbackTransactionIfNecessary() {
-        if (Contexts.isEventContextActive())
-        {
+        if (Contexts.isEventContextActive()) {
             try {
                 if (Transaction.instance().isActiveOrMarkedRollback()) {
                     log.info("killing transaction");

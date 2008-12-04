@@ -57,7 +57,6 @@ import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.utils.DocumentModelUtils;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.ecm.platform.versioning.api.SnapshotOptions;
 import org.nuxeo.ecm.platform.versioning.api.VersionIncEditOptions;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
@@ -74,7 +73,6 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  */
 @Name("documentVersioning")
 @Scope(CONVERSATION)
-@NuxeoJavaBeanErrorHandler
 @Install(precedence = FRAMEWORK)
 public class DocumentVersioningBean implements DocumentVersioning, Serializable {
 

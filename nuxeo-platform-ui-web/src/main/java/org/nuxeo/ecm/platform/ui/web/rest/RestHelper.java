@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.ecm.platform.url.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentLocation;
@@ -55,7 +54,6 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
 @Name("restHelper")
 @Scope(EVENT)
-@NuxeoJavaBeanErrorHandler
 public class RestHelper implements Serializable {
 
     private static final Log log = LogFactory.getLog(RestHelper.class);

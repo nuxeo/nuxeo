@@ -34,7 +34,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 
 /**
  * Knows what events need to be raised based on the user selected document.
@@ -45,7 +44,6 @@ import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 @Name("eventManager")
 @Scope(APPLICATION)
 @Startup
-@NuxeoJavaBeanErrorHandler
 @Install(precedence=FRAMEWORK)
 public class EventManager implements Serializable {
 
