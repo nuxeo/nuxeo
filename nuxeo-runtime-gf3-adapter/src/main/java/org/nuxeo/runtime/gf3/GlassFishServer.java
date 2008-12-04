@@ -60,9 +60,10 @@ import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.InhabitantsParser;
 import com.sun.web.security.RealmAdapter;
 
+import javax.resource.ResourceException;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class GlassFishServer extends AppServer {
 
@@ -87,7 +88,7 @@ public class GlassFishServer extends AppServer {
     public ActionReport execute(String command, Properties args) {
         PlainTextActionReporter reporter = new PlainTextActionReporter();
         CommandRunner commandRunner =
-            habitat.getComponent(CommandRunner.class);
+                habitat.getComponent(CommandRunner.class);
         return commandRunner.doCommand(command, args, reporter);
     }
 
@@ -128,12 +129,13 @@ public class GlassFishServer extends AppServer {
         return result.toArray(new String[result.size()]);
     }
 
-    public boolean pingJdbcConnectionPool(String poolName) throws Exception {
+    public boolean pingJdbcConnectionPool(String poolName) throws ResourceException {
         ConnectorRuntime connRuntime = habitat.getComponent(ConnectorRuntime.class);
         return connRuntime.pingConnectionPool(poolName);
     }
 
     // remove parser.drop(DecoratorForJ2EEInstanceListener.class); from super
+    @Override
     protected InhabitantsParser decorateInhabitantsParser(InhabitantsParser parser) {
         // registering the server using the base class and not the current instance class
         // (GlassFish server may be extended by the user)
@@ -205,8 +207,8 @@ public class GlassFishServer extends AppServer {
      */
     @Override
     protected File createTempDir() throws IOException {
-        // must simulate as if we are in glassfish/bin dir so that ${home}/glassfish is selected as the glassfish root 
-        return new File(Environment.getDefault().getHome().getAbsolutePath()+"/glassfish/bin");
+        // must simulate as if we are in glassfish/bin dir so that ${home}/glassfish is selected as the glassfish root
+        return new File(Environment.getDefault().getHome().getAbsolutePath() + "/glassfish/bin");
     }
-    
+
 }

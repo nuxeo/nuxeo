@@ -59,7 +59,7 @@ public class RMILoaderHandlerBug {
         synchronized (pathToURLsCache) {
             Object[] v = (Object[]) pathToURLsCache.get(path);
             if (v != null) {
-                return ((URL[]) v[0]);
+                return (URL[]) v[0];
             }
         }
         StringTokenizer st = new StringTokenizer(path); // divide by spaces
@@ -75,10 +75,10 @@ public class RMILoaderHandlerBug {
     }
 
     public static void main(String[] args) {
-        String path = "file:///C:/Program Files/MyApp";
         String codebase = null;
         try {
             System.out.println(new URL("file:///C:/Program Files/MyApp").toExternalForm());
+            String path = "file:///C:/Program Files/MyApp";
             codebase = urlsToPath(new URL[] { new URL(path) });
             System.out.println("urlsToPath succeded: [" + codebase + "]");
         } catch (MalformedURLException e) {
