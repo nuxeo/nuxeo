@@ -50,6 +50,9 @@ public class LoginWidget extends Composite implements ClickListener {
         panel.add(submit);
         panel.setSpacing(2);
         initWidget(panel);
+
+        userBox.setText("Administrator");
+        passBox.setText("Administrator");
     }
 
     public void onClick(Widget sender) {

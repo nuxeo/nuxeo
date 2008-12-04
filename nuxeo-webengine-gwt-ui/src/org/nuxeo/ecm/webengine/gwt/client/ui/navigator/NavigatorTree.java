@@ -28,12 +28,12 @@ public class NavigatorTree extends Tree{
     protected String rootPath;
 
     /**
-     * @param repositoryUrl - the url of the repository
+     * @param rootPath - the url of the repository
      * @param navigationRootPath - the document path of the root navigator
      */
-    public NavigatorTree(String repositoryUrl) {
+    public NavigatorTree(String rootPath) {
         super();
-        this.rootPath = repositoryUrl;
+        this.rootPath = rootPath;
         addTreeListener(new NavigatorTreeListener());
     }
     
