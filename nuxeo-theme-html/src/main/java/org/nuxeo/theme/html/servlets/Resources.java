@@ -111,11 +111,6 @@ public final class Resources extends HttpServlet implements Serializable {
         StringBuilder text = new StringBuilder();
         String basePath = request.getParameter("basepath");
 
-        if (contentType.equals("text/javascript")) {
-            text.append(String.format("var nxthemesBasePath = \"%s\";\n",
-                    basePath));
-        }
-
         for (String resourceName : resourceNames) {
             final OutputStream out = new ByteArrayOutputStream();
             String source = themeManager.getResource(resourceName);

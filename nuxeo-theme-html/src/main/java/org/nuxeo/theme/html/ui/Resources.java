@@ -28,7 +28,7 @@ public class Resources {
         final String themeUrl = params.get("themeUrl");
         final String path = params.get("path");
         final String basepath = params.get("basepath");
-        
+
         final ResourceManager resourceManager = Manager.getResourceManager();
 
         final StringBuilder combinedStyles = new StringBuilder();
@@ -51,18 +51,25 @@ public class Resources {
 
         combinedStyles.deleteCharAt(combinedStyles.length() - 1);
         combinedScripts.deleteCharAt(combinedScripts.length() - 1);
-        combinedStyles.append("?path=").append(path).append("&basepath=").append(basepath);
-        combinedScripts.append("?path=").append(path).append("&basepath=").append(basepath);
+        combinedStyles.append("?path=").append(path).append("&basepath=").append(
+                basepath);
+        combinedScripts.append("?path=").append(path).append("&basepath=").append(
+                basepath);
 
         // styles
         if (hasStyles) {
-            sb.append(String.format("<link type=\"text/css\" rel=\"stylesheet\" media=\"all\" href=\"%s\"></link>",
+            sb.append(String.format(
+                    "<link type=\"text/css\" rel=\"stylesheet\" media=\"all\" href=\"%s\"></link>",
                     combinedStyles.toString()));
         }
 
         // scripts
+        sb.append(String.format(
+                "<script type=\"text/javascript\"><!--\n var nxthemesBasePath = \"%s\";\n //--></script>\n",
+                basepath));
         if (hasScripts) {
-            sb.append(String.format("<script type=\"text/javascript\" src=\"%s\"></script>",
+            sb.append(String.format(
+                    "<script type=\"text/javascript\" src=\"%s\"></script>",
                     combinedScripts.toString()));
         }
 
