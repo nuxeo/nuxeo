@@ -12,6 +12,7 @@
 
       <!-- Other module inherits                                      -->
       <inherits name='org.nuxeo.ecm.webengine.gwt.Core'/>
+      <inherits name="com.smartgwt.SmartGwt"/>
     
       <!-- Specify the app entry point class.                         -->
       <entry-point class='org.nuxeo.ecm.webengine.gwt.client.UI'/>
