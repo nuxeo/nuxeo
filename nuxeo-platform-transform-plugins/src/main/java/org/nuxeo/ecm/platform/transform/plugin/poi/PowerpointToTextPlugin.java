@@ -1,8 +1,28 @@
+/*
+ * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.platform.transform.plugin.poi;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -42,7 +62,8 @@ public class PowerpointToTextPlugin extends AbstractPlugin {
 
             trs = super.transform(options, sources);
 
-            PowerPointExtractor extractor = new PowerPointExtractor(sources[0].getBlob().getStream());
+            PowerPointExtractor extractor = new PowerPointExtractor(
+                    sources[0].getBlob().getStream());
 
             byte[] bytes = extractor.getText().getBytes();
             f = File.createTempFile("po-ppt2text", ".txt");
@@ -54,11 +75,15 @@ public class PowerpointToTextPlugin extends AbstractPlugin {
             trs.add(new TransformDocumentImpl(blob));
 
         } finally {
+            if (fas != null) {
+                try {
+                    fas.close();
+                } catch (IOException e) {
+                    log.error(e);
+                }
+            }
             if (f != null) {
                 f.delete();
-            }
-            if (fas != null) {
-                fas.close();
             }
             timer.stop();
             log.debug("Transformation terminated." + timer);
