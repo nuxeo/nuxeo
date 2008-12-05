@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -73,7 +74,7 @@ public class QueryModel implements Serializable {
         this.descriptor = descriptor;
         if (descriptor != null) {
             descriptorName = descriptor.getName();
-            setMax(descriptor.getMax());
+            max = descriptor.getMax();
         }
 
         this.documentModel = documentModel;
@@ -206,11 +207,19 @@ public class QueryModel implements Serializable {
      */
 
     public Object getProperty(String schemaName, String name) {
-        return documentModel.getProperty(schemaName, name);
+        try {
+            return documentModel.getProperty(schemaName, name);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public void setProperty(String schemaName, String name, Object value) {
-        documentModel.setProperty(schemaName, name, value);
+        try {
+            documentModel.setProperty(schemaName, name, value);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public void setSortColumn(String value) {
@@ -238,11 +247,15 @@ public class QueryModel implements Serializable {
         return getDescriptor().isSortable();
     }
 
-    public void reset() throws ClientException {
+    public void reset() {
         for (String schemaName : defaultValues.keySet()) {
             Map<String, Object> defaultData = new HashMap<String, Object>(
                     defaultValues.get(schemaName));
-            documentModel.setProperties(schemaName, defaultData);
+            try {
+                documentModel.setProperties(schemaName, defaultData);
+            } catch (ClientException e) {
+                continue;
+            }
         }
     }
 

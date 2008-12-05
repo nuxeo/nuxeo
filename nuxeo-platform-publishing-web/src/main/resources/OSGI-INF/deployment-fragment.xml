@@ -43,10 +43,10 @@
 			from="nxpublishing.tmp/OSGI-INF/l10n/messages_it.properties"
 			to="nuxeo.war/WEB-INF/classes/messages_it.properties"
 			addNewLine="true" />
-                <append
-                        from="nxpublishing.tmp/OSGI-INF/l10n/messages_cn.properties"
-                        to="nuxeo.war/WEB-INF/classes/messages_cn.properties"
-                        addNewLine="true" />
+		<append
+			from="nxpublishing.tmp/OSGI-INF/l10n/messages_cn.properties"
+			to="nuxeo.war/WEB-INF/classes/messages_cn.properties"
+			addNewLine="true" />
 
 		<delete path="nxpublishing.tmp" />
 	</install>

@@ -20,7 +20,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.Local;
 import javax.ejb.Remote;
-import javax.ejb.Remove;
 import javax.ejb.Stateless;
 import javax.naming.NamingException;
 
@@ -150,13 +149,12 @@ public class WorkflowDocumentSecurityBean implements
     }
 
     protected ACP getACP(DocumentRef docRef) throws ClientException {
-        CoreSession docManager;
         try {
-            docManager = getDocumentManager();
+            CoreSession docManager = getDocumentManager();
+            return docManager.getACP(docRef);
         } catch (NamingException e) {
             throw new ClientException(e);
         }
-        return docManager.getACP(docRef);
     }
 
     public ACL getACL(DocumentRef docRef, String pid)
@@ -212,12 +210,13 @@ public class WorkflowDocumentSecurityBean implements
             CoreSession docManager = getDocumentManager();
             docManager.setACP(docRef, docACP, true);
             docManager.save();
+            log.debug("Modify acp, granting : " + principalName);
         } catch (SecurityException se) {
             throw new WorkflowDocumentSecurityException(se);
         } catch (ClientException ce) {
             throw new WorkflowDocumentSecurityException(ce);
-        } catch (NamingException wlce) {
-            throw new WorkflowDocumentSecurityException(wlce);
+        } catch (NamingException ne) {
+            throw new WorkflowDocumentSecurityException(ne);
         }
     }
 
@@ -244,7 +243,7 @@ public class WorkflowDocumentSecurityBean implements
                     if (ace.getUsername().equals(principalName)
                             && ace.getPermission().equals(
                                     SecurityConstants.WRITE_LIFE_CYCLE)) {
-                        log.debug("ACE removal.");
+                        log.debug("ACE removal.......");
                         acl.remove(ace);
                         updated = true;
                     }
@@ -261,8 +260,8 @@ public class WorkflowDocumentSecurityBean implements
                         throw new WorkflowDocumentSecurityException(se);
                     } catch (ClientException ce) {
                         throw new WorkflowDocumentSecurityException(ce);
-                    } catch (NamingException e) {
-                        throw new WorkflowDocumentSecurityException(e);
+                    } catch (NamingException ne) {
+                        throw new WorkflowDocumentSecurityException(ne);
                     }
                 }
             }
@@ -282,11 +281,10 @@ public class WorkflowDocumentSecurityBean implements
                 log.debug("Removing wf acp.");
             } catch (ClientException ce) {
                 throw new WorkflowDocumentSecurityException(ce);
-            } catch (NamingException e) {
-                throw new WorkflowDocumentSecurityException(e);
+            } catch (NamingException ne) {
+                throw new WorkflowDocumentSecurityException(ne);
             }
         }
-
     }
 
     public void setRules(DocumentRef docRef, List<UserEntry> userEntries,
@@ -327,13 +325,13 @@ public class WorkflowDocumentSecurityBean implements
             CoreSession docManager = getDocumentManager();
             docManager.setACP(docRef, docACP, true);
             docManager.save();
-            log.debug("Savign wf acp.");
+            log.debug("Saving wf acp.");
         } catch (SecurityException se) {
             throw new WorkflowDocumentSecurityException(se);
         } catch (ClientException ce) {
             throw new WorkflowDocumentSecurityException(ce);
-        } catch (NamingException wlce) {
-            throw new WorkflowDocumentSecurityException(wlce);
+        } catch (NamingException ne) {
+            throw new WorkflowDocumentSecurityException(ne);
         }
     }
 }

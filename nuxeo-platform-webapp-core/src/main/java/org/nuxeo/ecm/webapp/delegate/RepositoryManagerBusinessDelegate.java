@@ -28,12 +28,10 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.runtime.api.Framework;
 
 @Name("repositoryManager")
 @Scope(SESSION)
-@NuxeoJavaBeanErrorHandler
 public class RepositoryManagerBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = -827546565347489728L;

@@ -31,6 +31,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.actions.elcache.CachedJEXLManager;
 import org.nuxeo.runtime.expression.Context;
 import org.nuxeo.runtime.expression.JexlExpression;
 
@@ -198,7 +200,7 @@ public class DefaultActionFilter implements ActionFilter {
             // default check when there is not context yet
             if (principal != null) {
                 List<String> groups = principal.getGroups();
-                if (groups != null && groups.contains("administrators")) {
+                if (groups != null && groups.contains(SecurityConstants.ADMINISTRATORS)) {
                     return true;
                 }
             }
@@ -225,13 +227,13 @@ public class DefaultActionFilter implements ActionFilter {
             ActionContext context, String[] groups) {
         NuxeoPrincipal principal = context.getCurrentPrincipal();
         if (principal == null) {
-        	return false;
+            return false;
         }
         List<String> principaGroups = principal.getGroups();
         for (String group : groups) {
-        	if (principaGroups.contains(group)) {
-        		return true;
-        	}
+            if (principaGroups.contains(group)) {
+                return true;
+            }
         }
         return false;
     }
@@ -246,24 +248,22 @@ public class DefaultActionFilter implements ActionFilter {
     protected final boolean checkConditions(Action action,
             ActionContext context, String[] conditions) {
         DocumentModel doc = context.getCurrentDocument();
-        NuxeoPrincipal currentPrincipal = context.getCurrentPrincipal();        
+        NuxeoPrincipal currentPrincipal = context.getCurrentPrincipal();
 
         for (String condition : conditions) {
-            boolean eval = false;
-            JexlExpression exp;
             try {
-                exp = new JexlExpression(condition);
+                JexlExpression exp = CachedJEXLManager.getExpression(condition);
                 Context ctx = new Context();
                 ctx.put("document", doc);
                 ctx.put("principal", currentPrincipal);
                 // get custom context from ActionContext
                 for (String k : context.keySet())
                 {
-                	ctx.put(k, context.get(k));
-                }                
+                    ctx.put(k, context.get(k));
+                }
                 ctx.put("SeamContext", context.get("SeamContext"));
 
-                eval = (Boolean) exp.eval(ctx);
+                boolean eval = (Boolean) exp.eval(ctx);
                 if (eval) {
                     return true;
                 }

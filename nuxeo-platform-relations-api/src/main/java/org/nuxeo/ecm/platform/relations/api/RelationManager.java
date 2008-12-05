@@ -23,9 +23,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
  * RelationService common interface.
@@ -62,25 +64,78 @@ public interface RelationManager extends Serializable {
      * </p>
      *
      * @throws ClientException
+     * @deprecated use {@link #getResource(String, Serializable, Map)}
      */
+    @Deprecated
     Resource getResource(String namespace, Object object)
             throws ClientException;
+
+    /**
+     * Gets a resource given a namespace and a serializable object
+     * <p>
+     * There can be several resources with different namespaces associated to an
+     * incoming object. A document can for instance be used to refer to itself
+     * as a precise version as well as to the set of all versions.
+     * </p>
+     * <p>
+     * Context can hold any object useful for the adapters, like a
+     * {@link CoreSession}.
+     * </p>
+     *
+     * @since 5.2-M1
+     * @throws ClientException
+     */
+    Resource getResource(String namespace, Serializable object,
+            Map<String, Serializable> context) throws ClientException;
 
     /**
      * Computes all resources corresponding to the given object
      *
      * @return the resources as a set
      * @throws ClientException
+     * @deprecated use {@link #getAllResources(Serializable, Map)}
      */
+    @Deprecated
     Set<Resource> getAllResources(Object object) throws ClientException;
+
+    /**
+     * Computes all resources corresponding to the given object
+     *
+     * <p>
+     * Context can hold any object useful for the adapters, like a
+     * {@link CoreSession}.
+     * </p>
+     *
+     * @since 5.2-M1
+     * @return the resources as a set
+     * @throws ClientException
+     */
+    Set<Resource> getAllResources(Serializable object,
+            Map<String, Serializable> context) throws ClientException;
 
     /**
      * Gets an object representing this resource given a namespace.
      *
      * @throws ClientException
+     * @deprecated use {@link #getResourceRepresentation(String, Resource, Map)}
      */
+    @Deprecated
     Object getResourceRepresentation(String namespace, Resource resource)
             throws ClientException;
+
+    /**
+     * Gets an object representing this resource given a namespace.
+     *
+     * <p>
+     * Context can hold any object useful for the adapters, like a
+     * {@link CoreSession}.
+     * </p>
+     *
+     * @since 5.2-M1
+     * @throws ClientException
+     */
+    Serializable getResourceRepresentation(String namespace, Resource resource,
+            Map<String, Serializable> context) throws ClientException;
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#add
