@@ -125,7 +125,7 @@ public class ExtensionImpl implements Extension {
 
     @Override
     public String toString() {
-        final StringBuilder buf = new StringBuilder();
+        StringBuilder buf = new StringBuilder();
         buf.append(ExtensionImpl.class.getSimpleName());
         buf.append(" {");
         buf.append("target: ");

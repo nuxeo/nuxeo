@@ -38,7 +38,7 @@ import org.nuxeo.osgi.application.SharedClassLoader;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class Loader implements Constants {
+public class Loader {
 
     protected static StandaloneApplication2 app;
 
@@ -48,7 +48,7 @@ public class Loader implements Constants {
 
     public static Environment createEnvironment(Properties props) throws IOException {
         if (props != null) {
-            String val = (String)props.get(HOME_DIR);
+            String val = (String) props.get(Constants.HOME_DIR);
             if (val == null) {
                 val = System.getProperty(Environment.HOME_DIR);
                 if (val == null) {
@@ -58,47 +58,47 @@ public class Loader implements Constants {
             File home = new File(val);
             home = home.getCanonicalFile();
             Environment env = new Environment(home, props);
-            val = (String)props.get(SYSTEM_BUNDLE);
+            val = (String) props.get(Constants.SYSTEM_BUNDLE);
             if (val != null) {
-                env.setProperty(SYSTEM_BUNDLE, val);
+                env.setProperty(Constants.SYSTEM_BUNDLE, val);
             }
-            String[] args = (String[])props.get(COMMAND_LINE_ARGS);
+            String[] args = (String[]) props.get(Constants.COMMAND_LINE_ARGS);
             if (args != null) {
                 env.setCommandLineArguments(args);
             } else {
                 env.setCommandLineArguments(new String[0]);
             }
-            val = (String)props.get(DATA_DIR);
+            val = (String) props.get(Constants.DATA_DIR);
             if (val != null) {
                 env.setData(new File(val).getCanonicalFile());
             }
-            val = (String)props.get(LOG_DIR);
+            val = (String) props.get(Constants.LOG_DIR);
             if (val != null) {
                 env.setLog(new File(val).getCanonicalFile());
             }
-            val = (String)props.get(CONFIG_DIR);
+            val = (String) props.get(Constants.CONFIG_DIR);
             if (val != null) {
                 env.setConfig(new File(val).getCanonicalFile());
             }
-            val = (String)props.get(WEB_DIR);
+            val = (String) props.get(Constants.WEB_DIR);
             if (val != null) {
                 env.setWeb(new File(val).getCanonicalFile());
             }
-            val = (String)props.get(TMP_DIR);
+            val = (String) props.get(Constants.TMP_DIR);
             if (val != null) {
                 env.setTemp(new File(val).getCanonicalFile());
             }
-            val = (String)props.get("bundles");
+            val = (String) props.get("bundles");
             if (val != null) {
                 env.setProperty(Environment.BUNDLES, val);
             }
-            val = (String)props.get(TMP_DIR);
+            val = (String) props.get(Constants.TMP_DIR);
             if (val != null) {
                 env.setHostApplicationName(val);
             } else {
                 env.setHostApplicationName("NXLauncher");
             }
-            val = (String)props.get(TMP_DIR);
+            val = (String) props.get(Constants.TMP_DIR);
             if (val != null) {
                 env.setHostApplicationVersion(val);
             } else {
@@ -135,7 +135,7 @@ public class Loader implements Constants {
 //            app.setClassPath(classPath);
 //        }
         app.setClassPath(classPath);
-        String sb = env.getProperty(SYSTEM_BUNDLE);
+        String sb = env.getProperty(Constants.SYSTEM_BUNDLE);
         if (sb == null) {
             throw new IllegalStateException("Property systemBundle was not set");
         }

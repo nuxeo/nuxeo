@@ -108,6 +108,15 @@ public class TestJndiName extends TestCase {
         Name n7 = n1.addAll(n1.size(), new JndiName("/h"));
         assertEquals(n1, n7);
         assertEquals(new JndiName("/f/g/c/a/b/d/e/h"), n1);
+
+        n1.remove(0);
+        assertEquals(new JndiName("/g/c/a/b/d/e/h"), n1);
+
+        n1.remove(n1.size() - 1);
+        assertEquals(new JndiName("/g/c/a/b/d/e"), n1);
+
+        n1.remove(1);
+        assertEquals(new JndiName("/g/a/b/d/e"), n1);
     }
 
 }

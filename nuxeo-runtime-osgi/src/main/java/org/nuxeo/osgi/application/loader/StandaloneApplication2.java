@@ -42,13 +42,13 @@ import org.osgi.framework.FrameworkEvent;
 
 /**
  * Was copied and improved from
- * TODO: should refactor implementation from nuxeo-osgi and use this one since it 
- * is better decoupled from the launcher.   
- *  
+ * TODO: should refactor implementation from nuxeo-osgi and use this one since it
+ * is better decoupled from the launcher.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class StandaloneApplication2 extends OSGiAdapter implements Constants {
+public class StandaloneApplication2 extends OSGiAdapter {
 
     public static final String MAIN_TASK = "org.nuxeo.osgi.application.main.task";
 
@@ -83,18 +83,18 @@ public class StandaloneApplication2 extends OSGiAdapter implements Constants {
         classLoader = cl;
         this.env = env;
     }
-    
+
     public void setScanForNestedJARs(boolean value) {
         this.scanForNestedJARs = value;
     }
-    
+
     /**
      * @param flushCache the flushCache to set.
      */
     public void setFlushCache(boolean flushCache) {
         this.flushCache = flushCache;
     }
-    
+
     /**
      * @return the scanForNestedJARs.
      */
@@ -217,14 +217,13 @@ public class StandaloneApplication2 extends OSGiAdapter implements Constants {
         }
     }
 
-
     public static Environment createEnvironment() throws IOException {
         return createEnvironment(null);
     }
-    
+
     public static Environment createEnvironment(Properties props) throws IOException {
         if (props != null) {
-            String val = (String)props.get("home");
+            String val = (String) props.get("home");
             if (val == null) {
                 val = System.getProperty(Environment.HOME_DIR);
                 if (val == null) {
@@ -234,31 +233,31 @@ public class StandaloneApplication2 extends OSGiAdapter implements Constants {
             File home = new File(val);
             home = home.getCanonicalFile();
             Environment env = new Environment(home);
-            String[] args = (String[])props.get(COMMAND_LINE_ARGS);
+            String[] args = (String[]) props.get(Constants.COMMAND_LINE_ARGS);
             if (args != null) {
                 env.setCommandLineArguments(args);
             }
-            val = (String)props.get(DATA_DIR);
+            val = (String) props.get(Constants.DATA_DIR);
             if (val != null) {
                 env.setData(new File(val).getCanonicalFile());
             }
-            val = (String)props.get(LOG_DIR);
+            val = (String) props.get(Constants.LOG_DIR);
             if (val != null) {
                 env.setLog(new File(val).getCanonicalFile());
             }
-            val = (String)props.get(CONFIG_DIR);
+            val = (String) props.get(Constants.CONFIG_DIR);
             if (val != null) {
                 env.setConfig(new File(val).getCanonicalFile());
             }
-            val = (String)props.get(WEB_DIR);
+            val = (String) props.get(Constants.WEB_DIR);
             if (val != null) {
                 env.setWeb(new File(val).getCanonicalFile());
             }
-            val = (String)props.get(TMP_DIR);
+            val = (String) props.get(Constants.TMP_DIR);
             if (val != null) {
                 env.setTemp(new File(val).getCanonicalFile());
             }
-            val = (String)props.get("bundles");
+            val = (String) props.get("bundles");
             if (val != null) {
                 env.setProperty(Environment.BUNDLES, val);
             }

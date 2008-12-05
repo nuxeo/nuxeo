@@ -32,7 +32,6 @@ public class NuxeoUnMarshaller extends SerializableUnMarshaller {
     private static final long serialVersionUID = -4715053329441344482L;
 
     public NuxeoUnMarshaller() {
-        super ();
         // The only method I found to set nuxeo specific class loader
         customClassLoader = getClass().getClassLoader();
     }
@@ -41,7 +40,6 @@ public class NuxeoUnMarshaller extends SerializableUnMarshaller {
     public void setClassLoader(ClassLoader classloader) {
         // ignore - we are always using nuxeo class loader
     }
-
 
     @Override
     public UnMarshaller cloneUnMarshaller() throws CloneNotSupportedException {

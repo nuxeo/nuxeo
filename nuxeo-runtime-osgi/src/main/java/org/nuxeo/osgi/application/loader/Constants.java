@@ -23,7 +23,7 @@ package org.nuxeo.osgi.application.loader;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Constants {
+public class Constants {
 
     public static final String HOME_DIR = "org.nuxeo.app.home";
 
@@ -57,5 +57,9 @@ public interface Constants {
     public static final String OPT_SCAN_NESTED_JARS = "org.nuxeo.app.options.scanNestedJARs";
 
     public static final String OPT_CLEAR_CACHE = "org.nuxeo.app.options.clearCache";
+
+    // Constant utility class.
+    private Constants() {
+    }
 
 }

@@ -24,15 +24,15 @@ package org.nuxeo.runtime.deploy;
  * An example of listener implementation:
  * <pre>
  * public class MyListener implements FileChangeListener {
- * long lastNotif = 0;
- * public void fileChanged(File file, long since, long now) {
- *       if (now == lastNotifFlush) return;
- *       if (isIntersetedInFile(file)) {
- *          lastNotif = now;
- *          flushCache(); // flush internal cache because file on disk changed
- *       }
- *  }
- *  }
+ *   long lastNotif = 0;
+ *   public void fileChanged(File file, long since, long now) {
+ *     if (now == lastNotifFlush) return;
+ *     if (isIntersetedInFile(file)) {
+ *       lastNotif = now;
+ *       flushCache(); // flush internal cache because file on disk changed
+ *     }
+ *   }
+ * }
  * </pre>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -40,7 +40,7 @@ package org.nuxeo.runtime.deploy;
 public interface FileChangeListener {
 
     /**
-     * Notify that the given file changed.
+     * Notifies that the given file changed.
      *
      * @param entry
      * @param now the time stamp when the change was detected.

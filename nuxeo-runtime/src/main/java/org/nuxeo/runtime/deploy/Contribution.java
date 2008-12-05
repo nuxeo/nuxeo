@@ -93,7 +93,7 @@ public abstract class Contribution implements Cloneable {
             return false;
         }
         if (obj instanceof Contribution) {
-            return this.getClass() == obj.getClass()
+            return getClass() == obj.getClass()
                     && contributionId.equals(((Contribution) obj).contributionId);
         }
         return false;

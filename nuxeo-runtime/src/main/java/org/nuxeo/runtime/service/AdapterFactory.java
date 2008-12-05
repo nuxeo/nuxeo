@@ -23,12 +23,12 @@ package org.nuxeo.runtime.service;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface AdapterFactory<O> { 
-    
-    public Class<O> getAdaptableType();
-    
-    public Class<?>[] getAdapterTypes();
-    
-    public <T> T getAdapter(O instance, Class<T> adapter);
-    
+public interface AdapterFactory<O> {
+
+    Class<O> getAdaptableType();
+
+    Class<?>[] getAdapterTypes();
+
+    <T> T getAdapter(O instance, Class<T> adapter);
+
 }

@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class AdaptableDescriptor {
 
-    public final static Class<?>[] EMPTY_CLASSES = new Class[0];
+    public static final Class<?>[] EMPTY_CLASSES = new Class[0];
 
     protected Class<?> adaptable;
     protected Class<?>[] superTypes;
@@ -40,7 +40,7 @@ public class AdaptableDescriptor {
 
     public AdaptableDescriptor(Class<?> adaptable) {
         this.adaptable = adaptable;
-        this.factories = new ConcurrentHashMap<Class<?>, AdapterFactory<?>>();
+        factories = new ConcurrentHashMap<Class<?>, AdapterFactory<?>>();
     }
 
     public Class<?> getAdaptable() {

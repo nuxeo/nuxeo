@@ -37,7 +37,7 @@ import org.osgi.framework.Constants;
  */
 public class BundleWalker extends FileWalker.Visitor {
 
-    public static final FileNamePattern[] DEFAULT_PATTERNS = new FileNamePattern[] {
+    public static final FileNamePattern[] DEFAULT_PATTERNS = {
         new FileNamePattern("*.jar"),
         new FileNamePattern("*.war"),
         new FileNamePattern("*.rar"),

@@ -195,7 +195,7 @@ public class ApplicationBundleLoader {
         try {
             reader = new BufferedReader(new FileReader(file));
             List<BundleFile> list = bundles;
-            String line = null;
+            String line;
             while (true) {
                 line = reader.readLine();
                 if (line == null) {

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,14 +40,14 @@ public class FileChangeNotifier {
 
     private final ListenerList listeners = new ListenerList();
     private final Timer timer = new Timer("FileChangeNotifier");
-    private final Hashtable<String, FileEntry> files = new Hashtable<String, FileEntry>();
-
-    public void start() {
-        start(10000, 2000);
-    }
+    private final Map<String, FileEntry> files = new Hashtable<String, FileEntry>();
 
     public void start(int startAfter, int interval) {
         timer.scheduleAtFixedRate(new WatchTask(), startAfter, interval);
+    }
+
+    public void start() {
+        start(10000, 2000);
     }
 
     public void stop() {
@@ -85,7 +86,7 @@ public class FileChangeNotifier {
         long tm = System.currentTimeMillis();
         for (Object listener : listeners.getListeners()) {
             try {
-                ((FileChangeListener)listener).fileChanged(entry, tm);
+                ((FileChangeListener) listener).fileChanged(entry, tm);
             } catch (Throwable t) {
                 log.error("Error while to notifying file change for: "+entry.file, t);
             }
@@ -112,18 +113,18 @@ public class FileChangeNotifier {
     }
 
     public class FileEntry {
-        public String id;
-        public File file;
+        public final String id;
+        public final File file;
         public long lastModified;
-
-        FileEntry(File file) throws IOException {
-            this(null, file);
-        }
 
         FileEntry(String id, File file) throws IOException {
             this.file = file.getCanonicalFile();
             lastModified = file.lastModified();
             this.id = id == null ? file.getAbsolutePath() : id;
+        }
+
+        FileEntry(File file) throws IOException {
+            this(null, file);
         }
 
         @Override
@@ -135,6 +136,11 @@ public class FileChangeNotifier {
                 return id.equals(((FileEntry) obj).id);
             }
             return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return id != null ? id.hashCode() : 0;
         }
 
         @Override

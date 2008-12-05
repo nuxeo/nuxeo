@@ -107,7 +107,7 @@ public abstract class ExtensibleContribution extends Contribution {
     @Override
     public ExtensibleContribution clone() throws CloneNotSupportedException {
         try {
-            ExtensibleContribution clone = this.getClass().newInstance();
+            ExtensibleContribution clone = getClass().newInstance();
             copyOver(clone);
             clone.contributionId = contributionId;
             clone.baseContributionId = baseContributionId;

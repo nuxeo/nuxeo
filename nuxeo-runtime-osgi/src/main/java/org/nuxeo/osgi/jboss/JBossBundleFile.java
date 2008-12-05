@@ -40,13 +40,9 @@ public class JBossBundleFile implements BundleFile {
 
     private final DeploymentInfo di;
 
-    /**
-     *
-     */
     public JBossBundleFile(DeploymentInfo di) {
         this.di = di;
     }
-
 
     protected DeploymentInfo getDeploymentInfo() {
         return di;

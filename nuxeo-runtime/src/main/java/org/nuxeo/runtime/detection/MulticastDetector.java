@@ -139,7 +139,7 @@ public class MulticastDetector<T> {
         return new String(p.getData(), p.getOffset(), p.getLength());
     }
 
-    protected void notifyPeerOnline(final Peer<T> peer) {
+    protected void notifyPeerOnline(Peer<T> peer) {
         // async exec needed in that case otherwise
         // heartbeat detection may be significantly delayed and some heartbeats lost
         if (handler != null) {
@@ -147,7 +147,7 @@ public class MulticastDetector<T> {
         }
     }
 
-    protected void notifyPeerOffline(final Peer<T> peer) {
+    protected void notifyPeerOffline(Peer<T> peer) {
         // async exec not needed in that case
         if (handler != null) {
             handler.peerOffline(peer);

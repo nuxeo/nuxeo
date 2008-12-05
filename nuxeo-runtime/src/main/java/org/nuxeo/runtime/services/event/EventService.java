@@ -200,7 +200,7 @@ public class EventService implements Component, Adaptable {
 
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Class<T> adapter) {
-        return adapter == this.getClass() ? (T) this : null;
+        return adapter == getClass() ? (T) this : null;
     }
 
 }

@@ -44,7 +44,6 @@ public final class BundleManifestReader {
     private BundleManifestReader() {
     }
 
-
     public static Dictionary<String, String> getHeadersFromJar(URL url) {
         Manifest mf = JarUtils.getManifest(url);
         if (mf != null) {
