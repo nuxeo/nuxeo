@@ -40,7 +40,6 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 @Produces({"text/html", "*/*"})
 public class ScriptFileWriter implements MessageBodyWriter<ScriptFile> {
 
-
     public void writeTo(ScriptFile t, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
@@ -48,7 +47,6 @@ public class ScriptFileWriter implements MessageBodyWriter<ScriptFile> {
 
         new Template(WebEngine.getActiveContext(), t).render(entityStream);
         entityStream.flush();
-
     }
 
     public long getSize(ScriptFile arg0, Class<?> arg1, Type arg2,
@@ -60,6 +58,5 @@ public class ScriptFileWriter implements MessageBodyWriter<ScriptFile> {
             MediaType arg3) {
         return arg0 == ScriptFile.class;
     }
-
 
 }

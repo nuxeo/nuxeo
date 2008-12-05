@@ -34,17 +34,17 @@ public class View extends Template {
     protected MediaType mediaType;
 
     protected View(WebContext ctx, Resource resource, String name) {
-        super (ctx, resource, null);
+        super(ctx, resource, null);
         mediaType = ctx.getHttpHeaders().getMediaType();
         this.name = name;
     }
 
     public View(WebContext ctx, String name) {
-        this (ctx, null, name);
+        this(ctx, null, name);
     }
 
     public View(Resource resource, String name) {
-        this (resource.getContext(), resource, name);
+        this(resource.getContext(), resource, name);
     }
 
     public View mediaType(MediaType mediaType) {
@@ -54,7 +54,7 @@ public class View extends Template {
 
     public View name(String name) {
         this.name = name;
-       return this;
+        return this;
     }
 
     public View extension(String ext) {

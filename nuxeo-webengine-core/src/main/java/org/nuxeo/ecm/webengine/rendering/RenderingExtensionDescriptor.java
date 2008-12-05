@@ -38,7 +38,7 @@ public class RenderingExtensionDescriptor {
     public Object newInstance() throws Exception {
         Object obj = klass.newInstance();
         if (obj instanceof RenderingExtensionFactory) {
-            obj = ((RenderingExtensionFactory)obj).createTemplate();
+            obj = ((RenderingExtensionFactory) obj).createTemplate();
         }
         return obj;
     }

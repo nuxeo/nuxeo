@@ -49,23 +49,22 @@ public class ScriptMethod implements TemplateMethodModelEx {
             throw new TemplateModelException("Invalid number of arguments for script(...) method");
         }
 
-        String src = null;
         SimpleScalar val = (SimpleScalar)arguments.get(0);
         if (val == null) {
             throw new TemplateModelException("src attribute is required");
         }
-        src = val.getAsString();
+        String src = val.getAsString();
 
         Map<String,Object> args = new HashMap<String, Object>();
         if (arguments.size() > 1) {
             Object o = arguments.get(1);
             if (o instanceof SimpleScalar) {
-                String arg = ((SimpleScalar)o).getAsString();
+                String arg = ((SimpleScalar) o).getAsString();
                 args.put("_args", new String[] {arg});
             } else if (!(o instanceof TemplateHashModelEx)) {
                 throw new TemplateModelException("second argument should be a map");
             } else {
-                TemplateHashModelEx t = (TemplateHashModelEx)o;
+                TemplateHashModelEx t = (TemplateHashModelEx) o;
                 TemplateCollectionModel keys = t.keys();
                 TemplateModelIterator it = keys.iterator();
 
@@ -75,7 +74,7 @@ public class ScriptMethod implements TemplateMethodModelEx {
                     TemplateModel v = t.get(kk);
                     Object vv = null;
                     if (v instanceof AdapterTemplateModel) {
-                        vv = ((AdapterTemplateModel)v).getAdaptedObject(null);
+                        vv = ((AdapterTemplateModel) v).getAdaptedObject(null);
                     } else {
                         vv = v.toString();
                     }

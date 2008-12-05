@@ -29,7 +29,7 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
 /**
- * Lock Service - manage locks on documents
+ * Lock Service - manages locks on documents.
  * <p>
  * Accepts the following methods:
  * <ul>
@@ -39,7 +39,6 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @WebAdapter(name="lock", type="LockService", targetType="Document")
 public class LockService extends DefaultAdapter {
@@ -53,7 +52,6 @@ public class LockService extends DefaultAdapter {
             throw WebException.wrap("Failed to get lock on document", e);
         }
     }
-
 
     @DELETE
     public Object removeLock() {

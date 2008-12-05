@@ -76,6 +76,7 @@ public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleD
         moduleRoots.clear();
     }
 
+    @Override
     protected ModuleDescriptor clone(ModuleDescriptor descriptor) {
         return descriptor.clone();
     }
@@ -106,7 +107,7 @@ public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleD
     }
 
     @Override
-    protected void uninstallContribution(String key, ModuleDescriptor value) {
+    protected void uninstallContribution(String key, ModuleDescriptor object) {
         modules.remove(key);
     }
 
@@ -129,15 +130,14 @@ public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleD
         removeFragment(desc.name, desc);
     }
 
-    
     public void registerLazyModule(String webPath, String modulePath) {
         lazyModules.put(webPath, modulePath);
     }
-    
+
     public String[] getLazyModuleKeys() {
         return lazyModules.keySet().toArray(new String[lazyModules.size()]);
     }
-    
+
     public File getLazyModuleFile(String key) {
         String path = lazyModules.get(key);
         if (path != null) {
@@ -151,6 +151,7 @@ public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleD
         if (file != null) {
             return file.getName();
         }
-        return null;        
+        return null;
     }
+
 }

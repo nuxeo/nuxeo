@@ -45,7 +45,7 @@ import org.nuxeo.ecm.webengine.model.Validator;
  */
 public abstract class AbstractModule implements Module {
 
-    public static final Log log = LogFactory.getLog(AbstractModule.class);
+    private static final Log log = LogFactory.getLog(AbstractModule.class);
 
     protected final WebEngine engine;
     protected final Object typeLock = new Object();
@@ -167,7 +167,7 @@ public abstract class AbstractModule implements Module {
     }
 
     public File getModuleIcon() {
-        String icon = null;
+        String icon;
         try {
             icon = getMessages().getString("module.icon");
             if (icon == null) {
@@ -263,9 +263,9 @@ public abstract class AbstractModule implements Module {
         return null;
     }
 
-
     @Override
     public String toString() {
         return getName();
     }
+
 }

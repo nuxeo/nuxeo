@@ -81,7 +81,7 @@ public class ModuleTypeImpl extends AbstractResourceType implements ModuleType {
                 Class<?> gc = ag.type();
                 if (gc != null) {
                     try {
-                        guard = (org.nuxeo.ecm.webengine.security.Guard)gc.newInstance();
+                        guard = (org.nuxeo.ecm.webengine.security.Guard) gc.newInstance();
                     } catch (Exception e) {
                         throw WebException.wrap(
                                 "Failed to instantiate guard handler: "+gc.getName()+" on WebObject "+c.getName(), e);

@@ -23,7 +23,6 @@ import org.nuxeo.ecm.webengine.forms.FormInstance;
 import org.nuxeo.ecm.webengine.forms.validation.Field;
 import org.nuxeo.ecm.webengine.forms.validation.Status;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -34,16 +33,19 @@ public class GtEq extends SimpleConstraint {
     @Override
     public void doInit(Field field, String value, Object decodedValue) {
         if (!(decodedValue instanceof Comparable)) {
-            throw new IllegalArgumentException("Only Comparable objects are supported: " + this.value.getClass());
+            throw new IllegalArgumentException(
+                    "Only Comparable objects are supported: "
+                            + this.value.getClass());
         }
         this.value = (Comparable) decodedValue;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public Status doValidate(FormInstance form, Field field, String rawValue, Object value) {
+    public Status doValidate(FormInstance form, Field field, String rawValue,
+            Object value) {
         assert this.value != null;
-        return this.value.compareTo((Comparable) value) <= 0 ? Status.OK
+        return this.value.compareTo(value) <= 0 ? Status.OK
                 : error(field);
     }
 

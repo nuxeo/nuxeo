@@ -33,9 +33,8 @@ import org.nuxeo.ecm.webengine.model.WebContext;
  */
 public class DocumentRoot extends DocumentObject {
 
-
     public DocumentRoot(WebContext ctx, String uri) {
-        this (ctx, new PathRef(uri));
+        this(ctx, new PathRef(uri));
     }
 
     public DocumentRoot(WebContext ctx, DocumentRef root) {

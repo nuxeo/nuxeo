@@ -108,8 +108,8 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
     }
 
     @Override
-    protected void uninstallContribution(String key, LinkDescriptor value) {
-        removeLink(value);
+    protected void uninstallContribution(String key, LinkDescriptor object) {
+        removeLink(object);
     }
 
     @Override

@@ -59,7 +59,6 @@ import org.nuxeo.runtime.api.Framework;
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @WebAdapter(name="permissions", type="PermissionService", targetType="Document", targetFacets={"Folderish"})
 public class PermissionService extends DefaultAdapter {
@@ -134,6 +133,5 @@ public class PermissionService extends DefaultAdapter {
             throw WebException.wrap("Faield to get ACLs", e);
         }
     }
-
 
 }

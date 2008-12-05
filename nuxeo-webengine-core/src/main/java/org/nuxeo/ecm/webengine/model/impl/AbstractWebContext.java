@@ -60,7 +60,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractWebContext implements WebContext {
 
-    protected static final Log log = LogFactory.getLog(WebContext.class);
+    private static final Log log = LogFactory.getLog(WebContext.class);
 
     protected final WebEngine engine;
     protected final UserSession us;
@@ -208,7 +208,6 @@ public abstract class AbstractWebContext implements WebContext {
         vars.put(key, value);
     }
 
-
     //TODO: use FormData to get query params?
     public Object getProperty(String key) {
         Object value = getUriInfo().getPathParameters().getFirst(key);
@@ -321,7 +320,7 @@ public abstract class AbstractWebContext implements WebContext {
         return log;
     }
 
-    /** object stack API */
+    /* object stack API */
 
     public ModuleResource getModuleInstance() {
         return (ModuleResource)head;
@@ -430,7 +429,7 @@ public abstract class AbstractWebContext implements WebContext {
         return scriptExecutionStack.get(size-1).getParentFile();
     }
 
-    /** running scripts and rendering templates */
+    /* running scripts and rendering templates */
 
     public void render(String template, Writer writer) {
         render(template, null, writer);

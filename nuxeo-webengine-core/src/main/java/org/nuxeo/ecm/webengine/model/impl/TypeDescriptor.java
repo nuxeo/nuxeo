@@ -67,10 +67,7 @@ public class TypeDescriptor implements Cloneable {
         }
     }
     public int visibility = TypeVisibility.DEFAULT;
-    
-    /**
-     *
-     */
+
     public TypeDescriptor() {
     }
 
@@ -88,13 +85,10 @@ public class TypeDescriptor implements Cloneable {
         }
     }
 
-    /**
-     * @return the visibility.
-     */
     public int getVisibility() {
         return visibility;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
@@ -127,7 +121,6 @@ public class TypeDescriptor implements Cloneable {
         return fragment;
     }
 
-
     public boolean isMainFragment() {
         return fragment == null;
     }
@@ -151,7 +144,7 @@ public class TypeDescriptor implements Cloneable {
     public ModuleTypeDescriptor asModuleTypeDescriptor() {
         return null;
     }
-    
+
     public static TypeDescriptor fromAnnotation(ClassProxy clazz, WebObject type) {
         return new TypeDescriptor(clazz, type.type(), type.superType());
     }
@@ -160,4 +153,5 @@ public class TypeDescriptor implements Cloneable {
     public String toString() {
         return type+ " extends "+superType+" ["+clazz.getClassName()+"]";
     }
+
 }

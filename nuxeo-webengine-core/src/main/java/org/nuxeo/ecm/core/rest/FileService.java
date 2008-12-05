@@ -46,8 +46,8 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
 /**
- * File Service - manage attachments on a document
-
+ * File Service - manages attachments to a document.
+ *
  * <p>
  * Accepts the following methods:
  * <ul>

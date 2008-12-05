@@ -55,7 +55,7 @@ public class Scripting {
     protected final GroovyScripting groovy;
 
     public Scripting() {
-        this (false);
+        this(false);
     }
 
     public Scripting(boolean isDebug) {

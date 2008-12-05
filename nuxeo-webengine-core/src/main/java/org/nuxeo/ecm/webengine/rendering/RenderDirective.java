@@ -50,8 +50,8 @@ public class RenderDirective implements TemplateDirectiveModel {
             throw new TemplateModelException("Invalid number of arguments for render(...) method");
         }
 
-        String src = null;
-        SimpleScalar val = (SimpleScalar)params.get("src");
+        String src;
+        SimpleScalar val = (SimpleScalar) params.get("src");
         if (val == null) {
             throw new TemplateModelException("src attribute is required");
         }
@@ -62,10 +62,10 @@ public class RenderDirective implements TemplateDirectiveModel {
             ScriptFile script = ctx.getFile(src);
             Template tpl = env.getConfiguration().getTemplate(script.getURL());
             try {
-                ((AbstractWebContext)ctx).pushScriptFile(script.getFile());
+                ((AbstractWebContext) ctx).pushScriptFile(script.getFile());
                 env.include(tpl);
             } finally {
-                ((AbstractWebContext)ctx).popScriptFile();
+                ((AbstractWebContext) ctx).popScriptFile();
             }
         } else {
             throw new IllegalStateException("Not In a Web Context");

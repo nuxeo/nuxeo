@@ -79,15 +79,15 @@ public abstract class UserSession extends HashMap<String, Object>  {
         }
     }
 
-    public UserSession(Principal principal) {
+    protected UserSession(Principal principal) {
         this(principal, null);
     }
 
-    public UserSession(Principal principal, String password) {
+    protected UserSession(Principal principal, String password) {
         this(principal, password == null ? new char[0] : password.toCharArray());
     }
 
-    public UserSession(Principal principal, Object credentials) {
+    protected UserSession(Principal principal, Object credentials) {
         this.principal = principal;
         this.credentials = credentials;
         Set<Principal> principals = new HashSet<Principal>();

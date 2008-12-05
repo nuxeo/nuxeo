@@ -62,7 +62,6 @@ public class CommentService extends DefaultAdapter {
         } catch (ClientException e) {
             throw WebException.wrap(e);
         }
-
     }
 
 }

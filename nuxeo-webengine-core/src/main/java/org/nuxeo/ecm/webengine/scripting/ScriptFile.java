@@ -37,10 +37,10 @@ import org.nuxeo.runtime.api.Framework;
 public final class ScriptFile {
 
     public static final String ROOT_PATH = Framework.getLocalService(WebEngine.class)
-        .getRootDirectory().getAbsolutePath();
+            .getRootDirectory().getAbsolutePath();
 
-    protected File file;
-    protected String ext = "";
+    File file;
+    String ext = "";
 
 
     //TODO should remove the typed file name
@@ -101,4 +101,5 @@ public final class ScriptFile {
     public InputStream getInputStream() throws IOException {
         return new FileInputStream(file);
     }
+
 }

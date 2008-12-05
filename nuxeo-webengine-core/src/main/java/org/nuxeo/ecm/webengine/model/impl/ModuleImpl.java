@@ -41,44 +41,38 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
  * The default implementation for a web configuration
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ModuleImpl extends AbstractModule {
 
-    public static final Log log = LogFactory.getLog(ModuleImpl.class);
+    private static final Log log = LogFactory.getLog(ModuleImpl.class);
 
     protected final File root;
 
     protected Messages messages;
-    
+
     protected DirectoryStack dirStack;
 
     // cache used for resolved files
     protected ConcurrentMap<String, ScriptFile> fileCache;
 
-  
-
     public ModuleImpl(WebEngine engine, File root, ModuleDescriptor descriptor) {
         super (engine, descriptor);
         fileCache = new ConcurrentHashMap<String, ScriptFile>();
-        this.root = root;        
+        this.root = root;
         reloadMessages();
-        loadDirectoryStack();                
+        loadDirectoryStack();
     }
-
 
     public void flushSkinCache() {
         log.info("Flushing skin cache for module: "+getName());
         fileCache = new ConcurrentHashMap<String, ScriptFile>();
     }
 
-
-
+    @Override
     public void flushCache() {
         flushSkinCache();
         super.flushCache();
     }
-
 
     public static File getSkinDir(File moduleDir) {
         return new File(moduleDir, "skin");
@@ -142,11 +136,12 @@ public class ModuleImpl extends AbstractModule {
             return new ScriptFile(file);
         }
         return null;
-    }    
+    }
 
+    @Override
     public TypeRegistry createTypeRegistry() {
         //double s = System.currentTimeMillis();
-        GlobalTypes gtypes = engine.getGlobalTypes();        
+        GlobalTypes gtypes = engine.getGlobalTypes();
         TypeRegistry typeReg = null;
         // install types from super modules
         if (superModule != null) { //TODO add type reg listener on super modules to update types  when needed?
@@ -161,11 +156,10 @@ public class ModuleImpl extends AbstractModule {
         return typeReg;
     }
 
-
     public File getRoot() {
         return root;
     }
-    
+
     public void reloadMessages() {
         messages = new Messages(superModule != null
                 ? superModule.getMessages() : engine.getMessages(), this);
@@ -200,4 +194,5 @@ public class ModuleImpl extends AbstractModule {
             }
         }
     }
+
 }

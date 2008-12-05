@@ -100,10 +100,10 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         try {
             //return Response.seeOther(new URI(URLEncoder.encode(uri, "UTF-8"))).build();
             if (!uri.contains("://")) { // not an absolute URI
-                if (!uri.startsWith("/")) {
-                    uri = ctx.getServerURL().append('/').append(uri).toString();
-                } else {
+                if (uri.startsWith("/")) {
                     uri = ctx.getServerURL().append(uri).toString();
+                } else {
+                    uri = ctx.getServerURL().append('/').append(uri).toString();
                 }
             }
             return Response.seeOther(new URI(uri)).build();
@@ -227,9 +227,9 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
 //    public Response doGetEntries() {
 //        return getEntries();
 //    }
-//    
+//
 //    public Iterator<ResourceEntry> getEntries() {
 //        return Response.noContent().build();
 //    }
-    
+
 }

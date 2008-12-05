@@ -54,11 +54,11 @@ public class GroovyScripting {
     }
 
     public GroovyScripting() {
-        this (getParentLoader(), new CompilerConfiguration());
+        this(getParentLoader(), new CompilerConfiguration());
     }
 
     public GroovyScripting(boolean debug) {
-        this (getParentLoader(), debug);
+        this(getParentLoader(), debug);
     }
 
     public GroovyScripting(ClassLoader parent, boolean debug) {

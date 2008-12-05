@@ -67,7 +67,8 @@ public class VersionService extends DefaultAdapter {
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
-        throw new WebResourceNotFoundException("No version found for "+((DocumentObject)getTarget()).getDocument().getPath());
+        throw new WebResourceNotFoundException(
+                "No version found for "+((DocumentObject)getTarget()).getDocument().getPath());
     }
 
     @Path("{label}")
@@ -84,7 +85,8 @@ public class VersionService extends DefaultAdapter {
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
-        throw new WebResourceNotFoundException("No such version "+label+" for document"+getTarget().getPath());
+        throw new WebResourceNotFoundException(
+                "No such version "+label+" for document"+getTarget().getPath());
     }
 
     @POST

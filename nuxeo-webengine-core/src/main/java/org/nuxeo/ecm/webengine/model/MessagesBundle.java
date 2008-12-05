@@ -40,6 +40,7 @@ public class MessagesBundle extends ResourceBundle {
     }
 
 
+    @Override
     public Object handleGetObject(String key) {
         if (key == null) {
             throw new NullPointerException();
@@ -50,6 +51,7 @@ public class MessagesBundle extends ResourceBundle {
     /**
      * Implementation of ResourceBundle.getKeys.
      */
+    @Override
     public Enumeration<String> getKeys() {
         ResourceBundle parent = this.parent;
         return new Keys(messages.keySet().iterator(),
@@ -60,7 +62,7 @@ public class MessagesBundle extends ResourceBundle {
         protected final Iterator<String> it;
         protected final Enumeration<String> parent;
 
-        public Keys(Iterator<String> it, Enumeration<String> parent) {
+        Keys(Iterator<String> it, Enumeration<String> parent) {
             this.it = it;
             this.parent = parent;
         }

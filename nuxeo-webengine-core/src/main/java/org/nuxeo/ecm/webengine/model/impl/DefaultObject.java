@@ -31,7 +31,6 @@ import org.nuxeo.ecm.webengine.model.AdapterResource;
  */
 public class DefaultObject extends AbstractResource<ResourceTypeImpl> {
 
-
     public DefaultObject() {
     }
 

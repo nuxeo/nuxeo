@@ -90,7 +90,7 @@ public class DocumentObject extends DefaultObject {
             if (orderBy != null) {
                 orderClause =   " ORDER BY "+orderBy;
             }
-            String path = null;
+            String path;
             if (doc.isFolder()) {
                 path = doc.getPathAsString();
             } else {

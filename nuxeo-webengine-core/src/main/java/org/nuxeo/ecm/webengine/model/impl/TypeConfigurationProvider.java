@@ -87,8 +87,6 @@ public class TypeConfigurationProvider {
         addRegistry(registry);
     }
 
-
-
     protected void fireServiceRegistered(AdapterDescriptor ad) {
         if (registries.isEmpty()) {
             return;

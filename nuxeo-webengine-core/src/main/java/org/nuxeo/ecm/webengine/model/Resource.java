@@ -77,7 +77,7 @@ public interface Resource extends Adaptable {
 
     AdapterResource newAdapter(String type, Object ... args);
 
-    Template getView(String fileName);
+    Template getView(String viewId);
 
     Template getTemplate(String fileName);
 
@@ -91,5 +91,5 @@ public interface Resource extends Adaptable {
     AdapterResource getActiveAdapter();
 
 //    Response getEntries();
-    
+
 }

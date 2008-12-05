@@ -36,6 +36,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 public class WebException extends WebApplicationException {
 
     private static final long serialVersionUID = 176876876786L;
+
     protected String message;
     protected boolean byPassAppResponse = false;
 

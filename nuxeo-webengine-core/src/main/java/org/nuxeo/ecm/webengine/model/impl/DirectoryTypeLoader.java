@@ -156,11 +156,10 @@ public class DirectoryTypeLoader {
         WebObject type = clazz.get().getAnnotation(WebObject.class);
         if (type != null) {
             return TypeDescriptor.fromAnnotation(clazz, type);
-        } else {
-            WebAdapter ws = clazz.get().getAnnotation(WebAdapter.class);
-            if (ws != null) {
-                return AdapterDescriptor.fromAnnotation(clazz, ws);
-            }
+        }
+        WebAdapter ws = clazz.get().getAnnotation(WebAdapter.class);
+        if (ws != null) {
+            return AdapterDescriptor.fromAnnotation(clazz, ws);
         }
         return null;
     }

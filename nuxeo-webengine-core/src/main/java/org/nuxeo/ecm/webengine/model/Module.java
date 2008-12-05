@@ -85,20 +85,18 @@ public interface Module extends MessagesProvider {
      *
      * @param path the file path
      * @return null if no file found otherwise the file
-     * @throws IOException if any error occurs
      */
     ScriptFile getFile(String path);
 
-
     /**
-     * Get a skin resource input stream. This must not cache resources.
-     * This method is using the module stacking directory to find the resource.
+     * Gets a skin resource input stream. This must not cache resources. This
+     * method is using the module stacking directory to find the resource.
+     *
      * @param path
      * @return
      * @throws IOException
      */
     ScriptFile getSkinResource(String path) throws IOException;
-
 
     /**
      * Loads a class given its name.

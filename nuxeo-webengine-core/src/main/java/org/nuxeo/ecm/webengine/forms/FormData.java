@@ -69,9 +69,9 @@ public class FormData implements FormInstance {
     protected boolean isMultipart = false;
     protected RequestContext ctx;
 
-    // Multi part items cache
+    // Multipart items cache
     protected Map<String, List<FileItem>> items;
-    // para,eter map cache - used in Multipart forms to convert to ServletRequest#getParameterMap
+    // parameter map cache - used in Multipart forms to convert to ServletRequest#getParameterMap
     // format
     //protected Map<String, String[]> parameterMap;
 
@@ -369,7 +369,7 @@ public class FormData implements FormInstance {
         }
     }
 
-    void fillDocumentProperty(Property p, String key, Object[] ar) throws PropertyException {
+    static void fillDocumentProperty(Property p, String key, Object[] ar) throws PropertyException {
         if (ar == null || ar.length == 0) {
             p.remove();
         } else if (p.isScalar()) {

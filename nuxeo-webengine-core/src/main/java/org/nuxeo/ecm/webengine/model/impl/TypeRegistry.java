@@ -61,16 +61,16 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             importParentContributions();
         }
     }
-    
+
     public TypeRegistry(WebEngine engine, AbstractModule module) {
         this (null, engine, module);
     }
 
     protected void registerRootType() {
         TypeDescriptor root = new TypeDescriptor(new StaticClassProxy(Resource.class), ResourceType.ROOT_TYPE_NAME, null);
-        registerType(root);        
+        registerType(root);
     }
-    
+
     public void registerModuleType(AbstractModule m) {
         TypeDescriptor td = new ModuleTypeDescriptor(
                 new StaticClassProxy(m.descriptor.binding.clazz),
@@ -84,14 +84,10 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         registerType(td);
     }
 
-
     public ResourceType getRootType() {
         return types.get(ResourceType.ROOT_TYPE_NAME);
     }
 
-    /**
-     * @return the engine.
-     */
     public AbstractModule getModule() {
         return module;
     }
@@ -174,7 +170,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             }
         }
     }
-    
+
     public ResourceType[] getTypes() {
         return types.values().toArray(new ResourceType[types.size()]);
     }
@@ -190,7 +186,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             registerType(td);
         }
     }
-    
+
     public synchronized void registerType(TypeDescriptor td) {
         if (td.superType != null && !types.containsKey(td.superType)) {
             registerDocumentTypeIfNeeded(td.superType);
@@ -320,7 +316,6 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         adapters.put(object.name, type);
     }
 
-
     @Override
     protected void updateContribution(String key, TypeDescriptor object, TypeDescriptor oldValue) {
         if (object.isAdapter()) {
@@ -370,6 +365,5 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     protected boolean isMainFragment(TypeDescriptor object) {
         return object.isMainFragment();
     }
-
 
 }

@@ -56,7 +56,6 @@ public class DirectoryStack {
         dirs.add(dir.getCanonicalFile());
     }
 
-
     /**
      * Gets the file given its name in this virtual directory.
      * <p>
@@ -96,7 +95,6 @@ public class DirectoryStack {
     }
 
     public static void main(String[] args) {
-
         try {
             DirectoryStack vd = new DirectoryStack();
             vd.addDirectory(new File("/home/bstefanescu/Desktop"));
@@ -110,7 +108,6 @@ public class DirectoryStack {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
 }

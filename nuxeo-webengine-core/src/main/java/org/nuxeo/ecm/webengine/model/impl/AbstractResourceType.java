@@ -47,14 +47,14 @@ public abstract class AbstractResourceType implements ResourceType {
 
     protected final AbstractModule owner;
     protected final String name;
-    protected int visibility = TypeVisibility.DEFAULT; 
+    protected int visibility = TypeVisibility.DEFAULT;
     protected AbstractResourceType superType;
     protected volatile ClassProxy clazz;
     protected volatile Guard guard = Guard.DEFAULT;
     protected volatile Set<String> facets;
     protected volatile ConcurrentMap<String, ScriptFile> templateCache;
-    
-    
+
+
     protected AbstractResourceType(WebEngine engine, AbstractModule module, AbstractResourceType superType, String name, ClassProxy clazz, int visibility) {
         templateCache = new ConcurrentHashMap<String, ScriptFile>();
         this.owner = module;
@@ -66,13 +66,10 @@ public abstract class AbstractResourceType implements ResourceType {
         loadAnnotations(mgr);
     }
 
-    /**
-     * @return the visibility.
-     */
     public int getVisibility() {
         return visibility;
     }
-    
+
     protected abstract void loadAnnotations(AnnotationManager annoMgr);
 
     public ResourceType getSuperType() {
@@ -82,7 +79,7 @@ public abstract class AbstractResourceType implements ResourceType {
     public Module getOwnerModule() {
         return owner;
     }
-    
+
     public Guard getGuard() {
         return guard;
     }
@@ -116,7 +113,6 @@ public abstract class AbstractResourceType implements ResourceType {
     public boolean isEnabled(Resource ctx) {
         return guard.check(ctx);
     }
-
 
     public boolean isDerivedFrom(String type) {
         if (type.equals(name)) {
@@ -162,7 +158,6 @@ public abstract class AbstractResourceType implements ResourceType {
         return name + " extends " + superType + " [" + getResourceClass().getName() + "]";
     }
 
-    
     public ScriptFile getView(Module module, String name) {
         ScriptFile file = findView(module, name);
         if (file == null) {
@@ -188,7 +183,7 @@ public abstract class AbstractResourceType implements ResourceType {
                 }
             }
         } catch (IOException e) {
-            WebException.wrap("Failed to find template: "+name, e);
+            throw WebException.wrap("Failed to find template: "+name, e);
         }
         if (file != null) {
             templateCache.put(name, file);

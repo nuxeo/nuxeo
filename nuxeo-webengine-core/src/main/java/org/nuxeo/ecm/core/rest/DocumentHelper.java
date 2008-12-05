@@ -82,7 +82,7 @@ public class DocumentHelper {
             }
             Module m = context.getModule();
             Validator v =  m.getValidator(newDoc.getType());
-            if ( v != null ){
+            if (v != null) {
                 newDoc = v.validate(newDoc);
             }
             newDoc = session.createDocument(newDoc);
@@ -110,7 +110,7 @@ public class DocumentHelper {
             }
             Module m = ctx.getModule();
             Validator v =  m.getValidator(doc.getType());
-            if ( v != null ){
+            if (v != null) {
                 doc = v.validate(doc);
             }
 

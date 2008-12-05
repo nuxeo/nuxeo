@@ -44,12 +44,14 @@ public interface FileChangeListener {
     int DELETED = 3;
 
     /**
-     * Notify that the given file changed.
+     * Notifies that the given file changed.
      *
      * @param entry
+     * @param type
      * @param now the time stamp when the change was detected.
      *      This value can be used as a notification ID by listeners to avoid
      *      multiple processing for notification that will send multiple events
+     * @throws Exception
      */
     void fileChanged(FileChangeNotifier.FileEntry entry, int type, long now) throws Exception;
 
