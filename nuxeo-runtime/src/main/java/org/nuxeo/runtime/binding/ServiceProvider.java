@@ -28,26 +28,28 @@ package org.nuxeo.runtime.binding;
 public interface ServiceProvider {
 
     /**
-     * Attach the provider to a service manager
-     * @param mgr
+     * Attaches the provider to a service manager.
+     *
+     * @param manager
      * @throws IllegalStateException if the provider is already attached to a manager
      */
-    void setManager(ServiceManager mgr);
+    void setManager(ServiceManager manager);
 
     /**
-     * Get the service manager on which this provider is attached or null if none
+     * Gets the service manager on which this provider is attached, or null if none.
+     *
      * @return the service manager or null if none
      */
     ServiceManager getManager();
 
     /**
      * The provider is no more needed.
-     * It should release now any system resources
+     * It should immediatley release any system resources.
      */
     void destroy();
 
     /**
-     * Get the service instance given its interface class. Returns null if no service is found
+     * Gets the service instance given its interface class. Returns null if no service is found
      * <p>
      * If the lookup succeeds and the provider is attached to a service manager it may use the binding key to
      * register a service binding on the manager so that the next time the same service is requested

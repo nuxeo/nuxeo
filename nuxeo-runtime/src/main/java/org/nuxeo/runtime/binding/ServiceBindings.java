@@ -60,6 +60,7 @@ public class ServiceBindings implements BundleListener {
     // and it is binding the interface only if it is declared by a bundle in the system
     protected final Properties staticBindings;
     protected final BundleContext bundleContext;
+
     private InitialContext jndiContext;
 
     // the bindings that were done: itf ->  impl
@@ -79,11 +80,13 @@ public class ServiceBindings implements BundleListener {
     }
 
     /**
-     * Lazy get the initial context.
+     * Lazily gets the initial context.
      * <p>
      * The JNDI service may be started after this one so we need to lazy get the initial context.
-     * This can be solved by splitting the runtime in 2:  core and server
+     * This can be solved by splitting the runtime in 2:  core and server.
+     *
      * @return
+     * @throws javax.naming.NamingException
      */
     public InitialContext getInitialContext() throws NamingException {
         if (jndiContext == null) {

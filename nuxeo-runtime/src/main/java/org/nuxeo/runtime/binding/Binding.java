@@ -26,15 +26,19 @@ package org.nuxeo.runtime.binding;
 public interface Binding {
 
     /**
-     * Get the object instance. Return null if the binding is no more valid
+     * Gets the object instance. Returns null if the binding is no more valid.
+     *
      * @return the object instance or null
      */
     Object get();
 
     /**
-     * Get the binding key.
-     * The key is used by the service manager to cache bindings and should uniquely identify the bound service
+     * Gets the binding key.
+     * The key is used by the service manager to cache bindings and should uniquely
+     * identify the bound service.
+     *
      * @return the binding key, never returns null
      */
     String getKey();
+
 }

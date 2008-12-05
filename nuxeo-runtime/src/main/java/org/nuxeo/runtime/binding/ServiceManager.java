@@ -19,9 +19,9 @@
 
 package org.nuxeo.runtime.binding;
 
+import javax.naming.NamingException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 
 
 /**
@@ -33,16 +33,16 @@ public class ServiceManager implements org.nuxeo.runtime.ServiceManager {
     protected ServiceProvider[] providers;
     protected Map<String, Binding> bindings = new ConcurrentHashMap<String, Binding>();
 
-    public ServiceManager() throws Exception  {
-        this(new BeanServiceProvider(), new RuntimeServiceProvider());
-    }
-
     public ServiceManager(ServiceProvider ... providers) {
         this.providers = providers;
     }
 
+    public ServiceManager() throws NamingException {
+        this(new BeanServiceProvider(), new RuntimeServiceProvider());
+    }
+
     @SuppressWarnings("unchecked")
-    public <T> T getService(Class<T> serviceClass) throws Exception {
+    public <T> T getService(Class<T> serviceClass) {
         String bindingKey = serviceClass.getName();
         Binding binding = bindings.get(bindingKey);
         if (binding != null) {
