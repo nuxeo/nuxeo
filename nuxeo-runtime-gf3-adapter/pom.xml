@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -61,7 +62,7 @@
 
   <build>
     <plugins>
-    <!-- TODO: use gf3 maven distribution plugin? -->
+      <!-- TODO: use gf3 maven distribution plugin? -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -75,7 +76,7 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-		  <groupId>org.glassfish.embedded</groupId>
+                  <groupId>org.glassfish.embedded</groupId>
                   <artifactId>glassfish-embedded-all</artifactId>
                   <version>3.0-nx</version>
                 </artifactItem>
@@ -86,9 +87,9 @@
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.codehaus.woodstox</groupId>
-    		  <artifactId>wstx-asl</artifactId>
-	          <version>3.2.7</version>
-                </artifactItem>		
+                  <artifactId>wstx-asl</artifactId>
+                  <version>3.2.7</version>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.outputDirectory}</outputDirectory>
             </configuration>
@@ -97,37 +98,4 @@
       </plugin>
     </plugins>
   </build>
-
-     <repositories>
-       <repository>
-         <id>glassfish-repository</id>
-         <name>Java.net Repository for Glassfish</name>
-         <url>http://download.java.net/maven/glassfish</url>
-         <snapshots>
-           <updatePolicy>never</updatePolicy>
-         </snapshots>
-       </repository>
-       <repository>
-         <!-- back up glassfish maven repository in case the 'glassfish-repository' goes down -->
-         <id>glassfish-repository-wsinterop</id>
-         <name>Java.net Repository for Glassfish</name>
-         <url>http://maven.dyndns.org/glassfish/</url>
-         <snapshots>
-           <updatePolicy>never</updatePolicy>
-         </snapshots>
-       </repository>
-     </repositories>
-
-     <pluginRepositories>
-       <pluginRepository>
-         <id>glassfish-repository</id>
-         <name>Java.net Repository for Glassfish</name>
-         <url>http://download.java.net/maven/glassfish</url>
-         <snapshots>
-           <updatePolicy>never</updatePolicy>
-         </snapshots>
-       </pluginRepository>
-     </pluginRepositories>
-
-
 </project>
