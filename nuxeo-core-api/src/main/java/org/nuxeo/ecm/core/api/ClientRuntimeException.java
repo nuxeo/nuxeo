@@ -23,7 +23,19 @@ package org.nuxeo.ecm.core.api;
 public class ClientRuntimeException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
+
+    public ClientRuntimeException() {
+    }
+
+    public ClientRuntimeException(String message) {
+        super(message);
+    }
+
     public ClientRuntimeException(Throwable t) {
         super(t);
+    }
+
+    public ClientRuntimeException(String message, Throwable t) {
+        super(message, t);
     }
 }
