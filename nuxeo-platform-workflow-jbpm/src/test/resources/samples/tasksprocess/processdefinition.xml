@@ -17,7 +17,7 @@
       <transition name="review" to="review"/>
    </start-state>
 
-   <task-node name="review" create-tasks="false" end-tasks="true" signal="las-wait">
+   <task-node name="review" create-tasks="false" end-tasks="true" signal="last-wait">
       <event type="node-enter">
         <action
           class="org.nuxeo.ecm.platform.workflow.jbpm.TestActionHandler"/>
@@ -25,7 +25,7 @@
       <task name="review">
         <assignment class="org.nuxeo.ecm.platform.workflow.jbpm.DefaultAssignmentHandler"/>
         <controller>
-          <variable name="WORKLOW_TASk_PROP_DIRECTIVE" access="read,write" />
+          <variable name="WORKLOW_TASK_PROP_DIRECTIVE" access="read,write" />
         </controller>
       </task>
       <transition name="validate" to="validated">

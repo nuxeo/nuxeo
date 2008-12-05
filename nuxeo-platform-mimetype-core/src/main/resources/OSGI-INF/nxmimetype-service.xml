@@ -6,9 +6,7 @@
   <documentation>
     Core mimetype registry service.
 
-    <p>
-      Deals with mimetypes registration and mimetype detection (BETA).
-    </p>
+    <p>Deals with mimetypes registration and mimetype detection (BETA).</p>
 
     @version 2.0
     @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
@@ -20,7 +18,8 @@
     class="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService" />
 
   <service>
-    <provide interface="org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry" />
+    <provide
+      interface="org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry" />
   </service>
 
   <extension-point name="mimetype">
@@ -37,18 +36,16 @@
         <li>RFC-2046 major</li>
         <li>RFC-2046 minor</li>
         <li>Icon</li>
-        <li>
-          List of extensions (the first one will be used as default)
-        </li>
+        <li>List of extensions (the first one will be used as default)</li>
         <li>List of mimetype names</li>
         <li>Boolean flag if a file of this mimetype is binary</li>
         <li>
-          Boolean flag onlineEditable if a file of this mimetype is
-          supported by online Edit - default is false
+          Boolean flag onlineEditable if a file of this mimetype is supported by
+          online Edit - default is false
         </li>
         <li>
-          Boolean flag oleSupported if a file of this mimetype is
-          supported by the oleExtract plugin - default is false
+          Boolean flag oleSupported if a file of this mimetype is supported by
+          the oleExtract plugin - default is false
         </li>
       </ul>
 
@@ -70,8 +67,7 @@
 
     </documentation>
 
-    <object
-      class="org.nuxeo.ecm.platform.mimetype.service.MimetypeDescriptor" />
+    <object class="org.nuxeo.ecm.platform.mimetype.service.MimetypeDescriptor" />
 
   </extension-point>
 
@@ -79,14 +75,13 @@
 
     <documentation>
 
-      Extension to register filename extension to mimetype association
-      rules.
+      Extension to register filename extension to mimetype association rules.
 
       <p />
 
-      Specify how a given extension should be used to detect a mimetype.
-      If the extension is marked 'ambiguous', a sniffing of the content
-      of the file is advised.
+      Specify how a given extension should be used to detect a mimetype. If the
+      extension is marked 'ambiguous', a sniffing of the content of the file is
+      advised.
 
       For instance :
 
@@ -98,8 +93,7 @@
 
     </documentation>
 
-    <object
-      class="org.nuxeo.ecm.platform.mimetype.service.ExtensionDescriptor" />
+    <object class="org.nuxeo.ecm.platform.mimetype.service.ExtensionDescriptor" />
 
   </extension-point>
 
@@ -117,8 +111,7 @@
 
     <!--  test based document types -->
 
-    <mimetype normalized="text/plain" binary="false"
-      iconPath="text.png">
+    <mimetype normalized="text/plain" binary="false" iconPath="text.png">
       <mimetypes>
         <mimetype>text/plain</mimetype>
       </mimetypes>
@@ -127,8 +120,7 @@
       </extensions>
     </mimetype>
 
-    <mimetype normalized="text/html" binary="false"
-      iconPath="text.png">
+    <mimetype normalized="text/html" binary="false" iconPath="text.png">
       <mimetypes>
         <mimetype>text/html</mimetype>
       </mimetypes>
@@ -139,8 +131,7 @@
       </extensions>
     </mimetype>
 
-    <mimetype normalized="text/structured" binary="false"
-      iconPath="text.png">
+    <mimetype normalized="text/structured" binary="false" iconPath="text.png">
       <mimetypes>
         <mimetype>text/structured</mimetype>
       </mimetypes>
@@ -149,8 +140,7 @@
       </extensions>
     </mimetype>
 
-    <mimetype normalized="text/x-rst" binary="false"
-      iconPath="text.png">
+    <mimetype normalized="text/x-rst" binary="false" iconPath="text.png">
       <mimetypes>
         <mimetype>text/x-rst</mimetype>
         <mimetype>text/restructured</mimetype>
@@ -194,10 +184,21 @@
       </extensions>
     </mimetype>
 
+    <mimetype normalized="message/rfc822" binary="false" iconPath="email.png">
+      <mimetypes>
+        <mimetype>message/rfc822</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>eml</extension>
+        <!-- include also msg? -->
+      </extensions>
+    </mimetype>
+
+
     <!--  Microsoft Office document -->
 
-    <mimetype normalized="application/msword" binary="true"
-      iconPath="word.png" onlineEditable="true" oleSupported="true">
+    <mimetype normalized="application/msword" binary="true" iconPath="word.png"
+      onlineEditable="true" oleSupported="true">
       <mimetypes>
         <mimetype>application/msword</mimetype>
       </mimetypes>
@@ -293,8 +294,8 @@
       </extensions>
     </mimetype>
 
-    <mimetype normalized="application/vnd.sun.xml.writer.template"
-      binary="true" iconPath="stw.png" oleSupported="true">
+    <mimetype normalized="application/vnd.sun.xml.writer.template" binary="true"
+      iconPath="stw.png" oleSupported="true">
       <mimetypes>
         <mimetype>application/vnd.sun.xml.writer.template</mimetype>
       </mimetypes>
@@ -333,8 +334,8 @@
       </extensions>
     </mimetype>
 
-    <mimetype normalized="application/vnd.sun.xml.calc.template"
-      binary="true" iconPath="stc.png" oleSupported="true">
+    <mimetype normalized="application/vnd.sun.xml.calc.template" binary="true"
+      iconPath="stc.png" oleSupported="true">
       <mimetypes>
         <mimetype>application/vnd.sun.xml.calc.template</mimetype>
       </mimetypes>
@@ -353,8 +354,8 @@
       </extensions>
     </mimetype>
 
-    <mimetype normalized="application/vnd.sun.xml.draw.template"
-      binary="true" iconPath="std.png" oleSupported="true">
+    <mimetype normalized="application/vnd.sun.xml.draw.template" binary="true"
+      iconPath="std.png" oleSupported="true">
       <mimetypes>
         <mimetype>application/vnd.sun.xml.draw.template</mimetype>
       </mimetypes>
@@ -365,13 +366,11 @@
 
     <!--  OpenOffice.org 2.x document types -->
 
-    <mimetype
-      normalized="application/vnd.oasis.opendocument.spreadsheet"
-      binary="true" iconPath="ods.png" oleSupported="true"  onlineEditable="true">
+    <mimetype normalized="application/vnd.oasis.opendocument.spreadsheet"
+      binary="true" iconPath="ods.png" oleSupported="true"
+      onlineEditable="true">
       <mimetypes>
-        <mimetype>
-          application/vnd.oasis.opendocument.spreadsheet
-        </mimetype>
+        <mimetype>application/vnd.oasis.opendocument.spreadsheet</mimetype>
       </mimetypes>
       <extensions>
         <extension>ods</extension>
@@ -380,7 +379,8 @@
 
     <mimetype
       normalized="application/vnd.oasis.opendocument.spreadsheet-template"
-      binary="true" iconPath="ots.png" oleSupported="true"  onlineEditable="true">
+      binary="true" iconPath="ots.png" oleSupported="true"
+      onlineEditable="true">
       <mimetypes>
         <mimetype>
           application/vnd.oasis.opendocument.spreadsheet-template
@@ -391,8 +391,8 @@
       </extensions>
     </mimetype>
 
-    <mimetype normalized="application/vnd.oasis.opendocument.text"
-      binary="true" iconPath="odt.png" oleSupported="true"  onlineEditable="true">
+    <mimetype normalized="application/vnd.oasis.opendocument.text" binary="true"
+      iconPath="odt.png" oleSupported="true" onlineEditable="true">
       <mimetypes>
         <mimetype>application/vnd.oasis.opendocument.text</mimetype>
       </mimetypes>
@@ -401,26 +401,22 @@
       </extensions>
     </mimetype>
 
-    <mimetype
-      normalized="application/vnd.oasis.opendocument.text-template"
-      binary="true" iconPath="ott.png" oleSupported="true"  onlineEditable="true">
+    <mimetype normalized="application/vnd.oasis.opendocument.text-template"
+      binary="true" iconPath="ott.png" oleSupported="true"
+      onlineEditable="true">
       <mimetypes>
-        <mimetype>
-          application/vnd.oasis.opendocument.text-template
-        </mimetype>
+        <mimetype>application/vnd.oasis.opendocument.text-template</mimetype>
       </mimetypes>
       <extensions>
         <extension>ott</extension>
       </extensions>
     </mimetype>
 
-    <mimetype
-      normalized="application/vnd.oasis.opendocument.presentation"
-      binary="true" iconPath="odp.png" oleSupported="true"  onlineEditable="true">
+    <mimetype normalized="application/vnd.oasis.opendocument.presentation"
+      binary="true" iconPath="odp.png" oleSupported="true"
+      onlineEditable="true">
       <mimetypes>
-        <mimetype>
-          application/vnd.oasis.opendocument.presentation
-        </mimetype>
+        <mimetype>application/vnd.oasis.opendocument.presentation</mimetype>
       </mimetypes>
       <extensions>
         <extension>odp</extension>
@@ -429,7 +425,8 @@
 
     <mimetype
       normalized="application/vnd.oasis.opendocument.presentation-template"
-      binary="true" iconPath="otp.png" oleSupported="true"  onlineEditable="true">
+      binary="true" iconPath="otp.png" oleSupported="true"
+      onlineEditable="true">
       <mimetypes>
         <mimetype>
           application/vnd.oasis.opendocument.presentation-template
@@ -441,7 +438,8 @@
     </mimetype>
 
     <mimetype normalized="application/vnd.oasis.opendocument.graphics"
-      binary="true" iconPath="odg.png" oleSupported="true"  onlineEditable="true">
+      binary="true" iconPath="odg.png" oleSupported="true"
+      onlineEditable="true">
       <mimetypes>
         <mimetype>application/vnd.oasis.opendocument.graphics</mimetype>
       </mimetypes>
@@ -450,9 +448,9 @@
       </extensions>
     </mimetype>
 
-    <mimetype
-      normalized="application/vnd.oasis.opendocument.graphics-template"
-      binary="true" iconPath="otg.png" oleSupported="true"  onlineEditable="true">
+    <mimetype normalized="application/vnd.oasis.opendocument.graphics-template"
+      binary="true" iconPath="otg.png" oleSupported="true"
+      onlineEditable="true">
       <mimetypes>
         <mimetype>
           application/vnd.oasis.opendocument.graphics-template
@@ -464,8 +462,7 @@
     </mimetype>
 
     <!--  Adobe PDF -->
-    <mimetype normalized="application/pdf" binary="true"
-      iconPath="pdf.png">
+    <mimetype normalized="application/pdf" binary="true" iconPath="pdf.png">
       <mimetypes>
         <mimetype>application/pdf</mimetype>
       </mimetypes>
@@ -496,13 +493,10 @@
 
     <!-- Ms Office 2007 -->
 
-    <mimetype
-      normalized="application/vnd.ms-word.document.macroEnabled.12"
+    <mimetype normalized="application/vnd.ms-word.document.macroEnabled.12"
       binary="true" iconPath="docx.png" onlineEditable="true">
       <mimetypes>
-        <mimetype>
-          application/vnd.ms-word.document.macroEnabled.12
-        </mimetype>
+        <mimetype>application/vnd.ms-word.document.macroEnabled.12</mimetype>
       </mimetypes>
       <extensions>
         <extension>docm</extension>
@@ -524,13 +518,10 @@
     </mimetype>
 
 
-    <mimetype
-      normalized="application/vnd.ms-word.template.macroEnabled.12"
+    <mimetype normalized="application/vnd.ms-word.template.macroEnabled.12"
       binary="true" iconPath="docx.png" onlineEditable="true">
       <mimetypes>
-        <mimetype>
-          application/vnd.ms-word.template.macroEnabled.12
-        </mimetype>
+        <mimetype>application/vnd.ms-word.template.macroEnabled.12</mimetype>
       </mimetypes>
       <extensions>
         <extension>dotm</extension>
@@ -606,8 +597,7 @@
       </extensions>
     </mimetype>
 
-    <mimetype
-      normalized="application/vnd.ms-excel.sheet.binary.macroEnabled.12"
+    <mimetype normalized="application/vnd.ms-excel.sheet.binary.macroEnabled.12"
       binary="true" iconPath="xlsx.png" onlineEditable="true">
       <mimetypes>
         <mimetype>
@@ -619,13 +609,10 @@
       </extensions>
     </mimetype>
 
-    <mimetype
-      normalized="application/vnd.ms-excel.sheet.macroEnabled.12"
+    <mimetype normalized="application/vnd.ms-excel.sheet.macroEnabled.12"
       binary="true" iconPath="xlsx.png" onlineEditable="true">
       <mimetypes>
-        <mimetype>
-          application/vnd.ms-excel.sheet.macroEnabled.12
-        </mimetype>
+        <mimetype>application/vnd.ms-excel.sheet.macroEnabled.12</mimetype>
       </mimetypes>
       <extensions>
         <extension>xlsm</extension>
@@ -656,8 +643,7 @@
       </extensions>
     </mimetype>
 
-    <mimetype normalized="application/zip" binary="true"
-      iconPath="zip.png">
+    <mimetype normalized="application/zip" binary="true" iconPath="zip.png">
       <mimetypes>
         <mimetype>application/zip</mimetype>
       </mimetypes>
@@ -667,8 +653,7 @@
     </mimetype>
 
     <!-- images -->
-    <mimetype normalized="image/gif" binary="true"
-      iconPath="image.gif">
+    <mimetype normalized="image/gif" binary="true" iconPath="image.gif">
       <mimetypes>
         <mimetype>image/gif</mimetype>
       </mimetypes>
@@ -676,8 +661,7 @@
         <extension>gif</extension>
       </extensions>
     </mimetype>
-    <mimetype normalized="image/png" binary="true"
-      iconPath="image.gif">
+    <mimetype normalized="image/png" binary="true" iconPath="image.gif">
       <mimetypes>
         <mimetype>image/png</mimetype>
       </mimetypes>
@@ -685,8 +669,7 @@
         <extension>png</extension>
       </extensions>
     </mimetype>
-    <mimetype normalized="image/jpeg" binary="true"
-      iconPath="image.gif">
+    <mimetype normalized="image/jpeg" binary="true" iconPath="image.gif">
       <mimetypes>
         <mimetype>image/jpeg</mimetype>
       </mimetypes>
@@ -704,8 +687,7 @@
         <extension>pbm</extension>
       </extensions>
     </mimetype>
-    <mimetype normalized="image/bmp" binary="true"
-      iconPath="image.gif">
+    <mimetype normalized="image/bmp" binary="true" iconPath="image.gif">
       <mimetypes>
         <mimetype>image/x-bitmap</mimetype>
         <mimetype>image/bmp</mimetype>
@@ -725,8 +707,7 @@
         <extension>ppm</extension>
       </extensions>
     </mimetype>
-    <mimetype normalized="image/g3fax" binary="true"
-      iconPath="image.gif">
+    <mimetype normalized="image/g3fax" binary="true" iconPath="image.gif">
       <mimetypes>
         <mimetype>image/g3fax</mimetype>
       </mimetypes>
@@ -735,8 +716,7 @@
       </extensions>
     </mimetype>
 
-    <mimetype normalized="image/tiff" binary="true"
-      iconPath="image.gif">
+    <mimetype normalized="image/tiff" binary="true" iconPath="image.gif">
       <mimetypes>
         <mimetype>image/tiff</mimetype>
       </mimetypes>
@@ -766,8 +746,7 @@
       </extensions>
     </mimetype>
 
-    <mimetype normalized="text/csv" binary="false"
-      iconPath="csv.png">
+    <mimetype normalized="text/csv" binary="false" iconPath="csv.png">
       <mimetypes>
         <mimetype>text/csv</mimetype>
         <mimetype>text/comma-separated-values</mimetype>
@@ -794,8 +773,7 @@
     </mimetype>
 
 
-   <mimetype normalized="audio/mpeg" binary="true"
-      iconPath="audio.png">
+    <mimetype normalized="audio/mpeg" binary="true" iconPath="audio.png">
       <mimetypes>
         <mimetype>audio/mpeg</mimetype>
       </mimetypes>
@@ -806,8 +784,7 @@
       </extensions>
     </mimetype>
 
-   <mimetype normalized="audio/x-wav" binary="true"
-      iconPath="wav.png">
+    <mimetype normalized="audio/x-wav" binary="true" iconPath="wav.png">
       <mimetypes>
         <mimetype>audio/x-wav</mimetype>
       </mimetypes>
@@ -816,8 +793,7 @@
       </extensions>
     </mimetype>
 
-   <mimetype normalized="audio/x-mpegurl" binary="true"
-      iconPath="audio.png">
+    <mimetype normalized="audio/x-mpegurl" binary="true" iconPath="audio.png">
       <mimetypes>
         <mimetype>audio/x-mpegurl</mimetype>
       </mimetypes>
@@ -828,8 +804,7 @@
 
 
 
-   <mimetype normalized="audio/x-aiff" binary="true"
-      iconPath="audio.png">
+    <mimetype normalized="audio/x-aiff" binary="true" iconPath="audio.png">
       <mimetypes>
         <mimetype>audio/x-aiff</mimetype>
       </mimetypes>
@@ -840,8 +815,7 @@
       </extensions>
     </mimetype>
 
-   <mimetype normalized="audio/ogg" binary="true"
-      iconPath="audio.png">
+    <mimetype normalized="audio/ogg" binary="true" iconPath="audio.png">
       <mimetypes>
         <mimetype>audio/ogg</mimetype>
       </mimetypes>
@@ -852,8 +826,7 @@
       </extensions>
     </mimetype>
 
-   <mimetype normalized="audio/flac" binary="true"
-      iconPath="audio.png">
+    <mimetype normalized="audio/flac" binary="true" iconPath="audio.png">
       <mimetypes>
         <mimetype>audio/flac</mimetype>
       </mimetypes>
@@ -862,8 +835,7 @@
       </extensions>
     </mimetype>
 
-   <mimetype normalized="application/ogg" binary="true"
-      iconPath="audio.png">
+    <mimetype normalized="application/ogg" binary="true" iconPath="audio.png">
       <mimetypes>
         <mimetype>application/ogg</mimetype>
       </mimetypes>
@@ -873,8 +845,7 @@
       </extensions>
     </mimetype>
 
-   <mimetype normalized="audio/x-ms-wax" binary="true"
-      iconPath="audio.png">
+    <mimetype normalized="audio/x-ms-wax" binary="true" iconPath="audio.png">
       <mimetypes>
         <mimetype>audio/x-ms-wax</mimetype>
       </mimetypes>
@@ -883,8 +854,7 @@
       </extensions>
     </mimetype>
 
-   <mimetype normalized="audio/x-ms-wma" binary="true"
-      iconPath="audio.png">
+    <mimetype normalized="audio/x-ms-wma" binary="true" iconPath="audio.png">
       <mimetypes>
         <mimetype>audio/x-ms-wma</mimetype>
       </mimetypes>
@@ -893,8 +863,7 @@
       </extensions>
     </mimetype>
 
-   <mimetype normalized="video/mpeg" binary="true"
-      iconPath="video.png">
+    <mimetype normalized="video/mpeg" binary="true" iconPath="video.png">
       <mimetypes>
         <mimetype>video/mpeg</mimetype>
       </mimetypes>
@@ -907,8 +876,7 @@
       </extensions>
     </mimetype>
 
-   <mimetype normalized="video/mp4" binary="true"
-      iconPath="video.png">
+    <mimetype normalized="video/mp4" binary="true" iconPath="video.png">
       <mimetypes>
         <mimetype>video/mp4</mimetype>
       </mimetypes>
@@ -918,8 +886,7 @@
     </mimetype>
 
 
-   <mimetype normalized="video/quicktime" binary="true"
-      iconPath="video.png">
+    <mimetype normalized="video/quicktime" binary="true" iconPath="video.png">
       <mimetypes>
         <mimetype>video/quicktime</mimetype>
       </mimetypes>
@@ -929,8 +896,7 @@
       </extensions>
     </mimetype>
 
-   <mimetype normalized="video/ogg" binary="true"
-      iconPath="video.png">
+    <mimetype normalized="video/ogg" binary="true" iconPath="video.png">
       <mimetypes>
         <mimetype>video/ogg</mimetype>
       </mimetypes>
@@ -939,8 +905,7 @@
       </extensions>
     </mimetype>
 
-   <mimetype normalized="video/x-ms-asf" binary="true"
-      iconPath="video.png">
+    <mimetype normalized="video/x-ms-asf" binary="true" iconPath="video.png">
       <mimetypes>
         <mimetype>video/x-ms-asf</mimetype>
       </mimetypes>
@@ -951,8 +916,7 @@
       </extensions>
     </mimetype>
 
-   <mimetype normalized="video/x-msvideo" binary="true"
-      iconPath="video.png">
+    <mimetype normalized="video/x-msvideo" binary="true" iconPath="video.png">
       <mimetypes>
         <mimetype>video/x-msvideo</mimetype>
       </mimetypes>
@@ -961,8 +925,7 @@
       </extensions>
     </mimetype>
 
-   <mimetype normalized="video/fli" binary="true"
-      iconPath="video.png">
+    <mimetype normalized="video/fli" binary="true" iconPath="video.png">
       <mimetypes>
         <mimetype>video/fli</mimetype>
       </mimetypes>
@@ -971,8 +934,7 @@
       </extensions>
     </mimetype>
 
-   <mimetype normalized="video/flv" binary="true"
-      iconPath="video.png">
+    <mimetype normalized="video/flv" binary="true" iconPath="video.png">
       <mimetypes>
         <mimetype>video/flv</mimetype>
       </mimetypes>
@@ -981,8 +943,7 @@
       </extensions>
     </mimetype>
 
-   <mimetype normalized="video/vnd.vivo" binary="true"
-      iconPath="video.png">
+    <mimetype normalized="video/vnd.vivo" binary="true" iconPath="video.png">
       <mimetypes>
         <mimetype>video/vnd.vivo</mimetype>
       </mimetypes>
@@ -993,7 +954,7 @@
     </mimetype>
 
 
-   <mimetype normalized="application/java-archive" binary="true"
+    <mimetype normalized="application/java-archive" binary="true"
       iconPath="java.png">
       <mimetypes>
         <mimetype>application/java-archive</mimetype>
@@ -1004,7 +965,7 @@
     </mimetype>
 
 
-   <mimetype normalized="application/postscript" binary="true"
+    <mimetype normalized="application/postscript" binary="true"
       iconPath="ps.png">
       <mimetypes>
         <mimetype>application/postscript</mimetype>
@@ -1023,9 +984,7 @@
     target="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService"
     point="extension">
 
-    <documentation>
-      Default filename extension to mimetype rules.
-    </documentation>
+    <documentation>Default filename extension to mimetype rules.</documentation>
 
     <fileExtension name="xml" mimetype="text/xml" ambiguous="true" />
     <fileExtension name="vsd" mimetype="application/visio" ambiguous="false" />

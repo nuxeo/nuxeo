@@ -160,6 +160,12 @@ public interface LiveEditConstants {
     static final QName docFileExtensionTag = DocumentFactory.getInstance().createQName(
             "fileExtension");
 
+    static final QName docFileAuthorizedExtensionsTag = DocumentFactory.getInstance().createQName(
+            "authorizedExtensions");
+
+    static final QName docFileAuthorizedExtensionTag = DocumentFactory.getInstance().createQName(
+            "extension");
+
     static final QName docIsVersionTag = DocumentFactory.getInstance().createQName(
             "isVersion");
 

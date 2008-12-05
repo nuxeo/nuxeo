@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.search.backend.compass;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -40,6 +41,7 @@ import org.compass.core.CompassQueryBuilder.CompassQueryStringBuilder;
 import org.compass.core.lucene.util.LuceneHelper;
 import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
+import org.nuxeo.ecm.core.query.sql.model.DoubleLiteral;
 import org.nuxeo.ecm.core.query.sql.model.FromClause;
 import org.nuxeo.ecm.core.query.sql.model.IntegerLiteral;
 import org.nuxeo.ecm.core.query.sql.model.Literal;
@@ -322,9 +324,10 @@ public class QueryConverter {
             } else {
                 throw new QueryException("Wrong operand for query on " + name);
             }
-            if (docTypes == null) { // Maybe a bit harsh
-                throw new QueryException("No document types correspond "
-                        + "to specified facets");
+            if (docTypes == null) {
+                // cannot use empty set as this would make the criterion
+                // disappear which would change the semantics of the query
+                docTypes = Collections.singleton("__NOSUCHTYPE__");
             }
             LiteralList newRight = new LiteralList();
             for (String docType : docTypes) {
@@ -394,6 +397,12 @@ public class QueryConverter {
                 rightOb = (long) ((IntegerLiteral) right).value;
             } else {
                 rightOb = ((IntegerLiteral) right).value;
+            }
+        } else if (right instanceof DoubleLiteral) {
+            if ("float".equals(type) || "double".equals(type)) {
+                rightOb = ((DoubleLiteral) right).value;
+            } else {
+                rightOb = ((DoubleLiteral) right).value;
             }
         }
 

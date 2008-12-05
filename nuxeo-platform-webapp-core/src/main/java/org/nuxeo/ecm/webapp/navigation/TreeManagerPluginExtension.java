@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Florent Bonnet
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.webapp.navigation;
 
 
@@ -29,17 +27,28 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * @author Florent BONNET
- *
+ * @author Florent Bonnet
+ * @author Florent Guillaume
  */
-
 @XObject("treeManagerPlugin")
 public class TreeManagerPluginExtension implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    // attribute is deprecated, use the element instead
     @XNode("@filterClass")
     String filterClassName;
+
+    @XNode("filterClass")
+    public void setFilterClassName(String className) {
+        filterClassName = className;
+    }
+
+    @XNode("leafFilterClass")
+    String leafFilterClassName;
+
+    @XNode("queryModel")
+    String queryModelName;
 
     @XNode("showFiles")
     Boolean showFiles;
@@ -88,8 +97,12 @@ public class TreeManagerPluginExtension implements Serializable {
         return filterClassName;
     }
 
-    public void setFilterClassName(String className) {
-        filterClassName = className;
+    public String getLeafFilterClassName() {
+        return leafFilterClassName;
+    }
+
+    public String getQueryModelName() {
+        return queryModelName;
     }
 
 }

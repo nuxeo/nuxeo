@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.transform.plugin.html;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.parsers.AbstractSAXParser;
 import org.apache.xerces.xni.Augmentations;
 import org.apache.xerces.xni.NamespaceContext;
@@ -26,18 +28,30 @@ import org.apache.xerces.xni.XMLLocator;
 import org.apache.xerces.xni.XMLString;
 import org.apache.xerces.xni.XNIException;
 import org.cyberneko.html.HTMLConfiguration;
+import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * 
+ *
  */
 public class HtmlParser extends AbstractSAXParser {
+
+    private static final Log log = LogFactory.getLog(HtmlParser.class);
 
     private StringBuffer buffer;
 
     public HtmlParser() {
-
         super(new HTMLConfiguration());
+        try {
+            // make sure we do not download the DTD URI
+            setFeature("http://xml.org/sax/features/validation", false);
+            setFeature(
+                    "http://apache.org/xml/features/nonvalidating/load-external-dtd",
+                    false);
+        } catch (SAXException e) {
+            log.debug("Could not switch parser to non-validating: " +
+                    e.getMessage());
+        }
     }
 
     public void startDocument(XMLLocator arg0, String arg1,
@@ -89,7 +103,7 @@ public class HtmlParser extends AbstractSAXParser {
 
     /**
      * Returns parsed content
-     * 
+     *
      * @return String Parsed content
      */
     public String getContents() {

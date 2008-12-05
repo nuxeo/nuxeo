@@ -21,6 +21,6 @@ A task was suspended for document (UID: ${docId}) by ${author} at ${dateTime?dat
 A task was rejected for document (UID: ${docId}) by ${author} at ${dateTime?datetime?string("dd/MM/yyyy - HH:mm")}.
 </#if>
 <BR>
-You can consult the document at the following URL: <a href="${docUrl}">${docTitle}</a></P>
+You can consult the document at the following URL: <a href="${docUrl}">${htmlEscape(docTitle)}</a></P>
 </BODY>
 <HTML>

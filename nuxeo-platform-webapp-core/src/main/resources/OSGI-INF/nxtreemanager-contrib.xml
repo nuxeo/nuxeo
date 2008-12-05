@@ -1,16 +1,20 @@
 <?xml version="1.0"?>
 <component name="treeManagerComponentContribute">
   <documentation>
-  Default configuration for Nuxeo5 tree
+  Default configuration for Nuxeo EP tree
   </documentation>
   <extension target="treeManagerComponentBase" point="display">
     <documentation>
-    Default configuration for the Nuxeo5 tree.
-    Displays only Folderish objects.
+    Default configuration for the Nuxeo EP tree.
+
+    Displays only Folderish objects, and no children for those
+    with the BigFolder facet.
     </documentation>
     <treeManagerPlugin>
       <showFiles>false</showFiles>
       <showSection>true</showSection>
+      <leafFilterClass>org.nuxeo.ecm.webapp.navigation.BigFolderLeafFilter</leafFilterClass>
+      <!-- <queryModel>TREE_CHILDREN</queryModel> -->
     </treeManagerPlugin>
   </extension>
 </component>

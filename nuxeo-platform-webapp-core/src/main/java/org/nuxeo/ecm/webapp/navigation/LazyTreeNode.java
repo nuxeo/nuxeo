@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Razvan Caraghin
+ *     Anahide Tchertchian
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.webapp.navigation;
 
@@ -33,6 +33,8 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.search.api.client.query.QueryException;
+import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.tree.LazyTreeModel;
 import org.nuxeo.ecm.webapp.action.TypesTool;
@@ -43,19 +45,19 @@ import org.nuxeo.runtime.api.Framework;
  * This represents a tree node. Knows how to load the children from backend when
  * they are needed.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
+ * @author Razvan Caraghin
+ * @author Anahide Tchertchian
+ * @author Florent Guillaume
  */
 public class LazyTreeNode extends TreeNodeBase {
 
-    private static final long serialVersionUID = 196667825998714078L;
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(LazyTreeNode.class);
 
     public static final String TREE_FACET_NAME = "Document";
 
     public static final String DEFAULT_TITLE_PROPERTY_NAME = "dc:title";
-
-    // protected CoreSession handle;
 
     protected String sid;
 
@@ -80,49 +82,52 @@ public class LazyTreeNode extends TreeNodeBase {
 
     protected final DocumentFilter docFilter;
 
+    protected final DocumentFilter leafFilter;
+
+    protected final QueryModel queryModel;
+
     public LazyTreeNode(DocumentModel document, CoreSession session,
-            DocumentFilter docFilter) {
-        // standard attributes
-        setType(TREE_FACET_NAME);
-        setDescription(getDefaultDescription(document));
-        if (document != null) {
-            documentIdentifier = document.getRef();
-            setLeaf(document.isFolder());
-        }
-        if (documentIdentifier != null) {
-            setIdentifier(documentIdentifier.toString());
-        }
-
-        // specific attributes
-
-        this.doc = document;
-        setHandle(session);
+            DocumentFilter docFilter, DocumentFilter leafFilter,
+            QueryModel queryModel) {
+        super(TREE_FACET_NAME, getDefaultDescription(document),
+                document == null ? null : document.getRef().toString(),
+                document == null ? false : !document.isFolder());
         setNodeCellId("nodeRef:" + getIdentifier());
+        setHandle(session);
+        setDoc(document);
+        setDocumentIdentifier(document == null ? null : document.getRef());
         this.docFilter = docFilter;
-
+        this.leafFilter = leafFilter;
+        this.queryModel = queryModel;
         noData = true;
     }
 
+    @Deprecated
+    public LazyTreeNode(DocumentModel document, CoreSession session,
+            DocumentFilter docFilter) {
+        this(document, session, docFilter, null, null);
+    }
+
+    @Deprecated
     public LazyTreeNode(DocumentModel document, CoreSession session,
             DocumentFilter docFilter, boolean leaf) {
-        this(document, session, docFilter);
+        this(document, session, docFilter, null, null);
         setLeaf(leaf);
     }
 
     @Deprecated
     public LazyTreeNode(String type, String description,
-            DocumentRef identifier, TypesTool typesTool, CoreSession handle,
+            DocumentRef identifier, TypesTool typesTool, CoreSession session,
             boolean leaf, DocumentModel doc, DocumentFilter docFilter) {
         super(type, description, identifier.toString(), leaf);
-
-        documentIdentifier = identifier;
         this.typesTool = typesTool;
-        this.doc = doc;
-        setHandle(handle);
-        nodeCellId = "nodeRef:" + doc.getRef();
-        setLeaf(leaf);
+        setNodeCellId("nodeRef:" + doc.getRef());
+        setHandle(session);
+        setDoc(doc);
+        setDocumentIdentifier(identifier);
         this.docFilter = docFilter;
-
+        leafFilter = null;
+        queryModel = null;
         noData = true;
     }
 
@@ -130,54 +135,18 @@ public class LazyTreeNode extends TreeNodeBase {
     public LazyTreeNode(TypesTool typesTool, CoreSession handle,
             DocumentModel doc, DocumentFilter docFilter) {
         this(doc.getType(), typesTool, handle, doc, docFilter);
-        setNodeCellId("nodeRef:" + doc.getRef());
     }
 
     @Deprecated
-    public LazyTreeNode(String type, TypesTool typesTool, CoreSession handle,
+    public LazyTreeNode(String type, TypesTool typesTool, CoreSession session,
             DocumentModel doc, DocumentFilter docFilter) {
-        super(type, (String) doc.getProperty("dublincore", "title"),
-                doc.getRef().toString(), !doc.isFolder());
-
-        documentIdentifier = doc.getRef();
-        this.typesTool = typesTool;
-        this.doc = doc;
-        setHandle(handle);
-        nodeCellId = "nodeRef:" + doc.getRef();
-        noData = true;
-        setLeaf(!doc.isFolder());
-        this.docFilter = docFilter;
+        this(type, (String) doc.getProperty("dublincore", "title"),
+                doc.getRef(), typesTool, session, !doc.isFolder(), doc,
+                docFilter);
     }
 
     public boolean hasChildren() {
         return getChildCount() != 0;
-    }
-
-    @Deprecated
-    public TypesTool getTypesTool() {
-        return typesTool;
-    }
-
-    @Deprecated
-    public void setTypesTool(TypesTool typesTool) {
-        this.typesTool = typesTool;
-    }
-
-    public CoreSession getHandle() {
-        return CoreInstance.getInstance().getSession(sid);
-    }
-
-    public void setHandle(CoreSession handle) {
-        // this.handle = handle;
-        sid = handle.getSessionId();
-    }
-
-    public DocumentRef getDocumentIdentifier() {
-        return documentIdentifier;
-    }
-
-    public void setDocumentIdentifier(DocumentRef documentIdentifier) {
-        this.documentIdentifier = documentIdentifier;
     }
 
     @SuppressWarnings("unchecked")
@@ -217,13 +186,13 @@ public class LazyTreeNode extends TreeNodeBase {
         boolean nodeReset = false;
         // if the selected document reference is the same as the current node
         // reference we refresh the children of the node
-        if (null != currentItem
-                && currentItem.getRef().equals(documentIdentifier)) {
+        if (null != currentItem &&
+                currentItem.getRef().equals(documentIdentifier)) {
             refreshChildrenWithBackend();
 
             nodeReset = true;
-            log.debug("Refreshed children for node with doc id: "
-                    + documentIdentifier);
+            log.debug("Refreshed children for node with doc id: " +
+                    documentIdentifier);
         }
 
         return nodeReset;
@@ -247,8 +216,8 @@ public class LazyTreeNode extends TreeNodeBase {
         boolean nodeReset = false;
         // if the selected document reference is the same as the current node
         // reference we refresh the children of the node
-        if (null != currentItem
-                && currentItem.getRef().equals(documentIdentifier)) {
+        if (null != currentItem &&
+                currentItem.getRef().equals(documentIdentifier)) {
             refreshDescription();
             nodeReset = true;
         }
@@ -276,37 +245,51 @@ public class LazyTreeNode extends TreeNodeBase {
      * Retrieves again from backend the children of this node.
      *
      * @throws ClientException
-     * @throws SecurityException
      */
     @SuppressWarnings("unchecked")
     public void refreshChildrenWithBackend() throws ClientException {
-        List<LazyTreeNode> children = new ArrayList<LazyTreeNode>();
-
-        super.getChildren().clear();
-
-        List<DocumentModel> coreChildren = getHandle().getChildren(
-                documentIdentifier, null, SecurityConstants.READ, facetFilter,
-                null);
-        for (DocumentModel document : coreChildren) {
-            String title = getDefaultDescription(document);
-            if (title != null) {
-                if (docFilter != null && docFilter.accept(document)) {
-                    LazyTreeNode treeNode = new LazyTreeNode(document,
-                            getHandle(), docFilter);
-                    children.add(treeNode);
-                }
+        List<LazyTreeNode> children = super.getChildren();
+        children.clear();
+        if (leafFilter != null && leafFilter.accept(doc)) {
+            // filter says this is a leaf, don't look at children
+            return;
+        }
+        CoreSession session = getHandle();
+        List<DocumentModel> documents;
+        if (queryModel == null) {
+            // get the children using the core
+            documents = session.getChildren(
+                    documentIdentifier, null, SecurityConstants.READ,
+                    facetFilter, null);
+        } else {
+            // get the children using a query model
+            try {
+                documents = queryModel.getDocuments(new Object[] { doc.getId() });
+            } catch (QueryException e) {
+                log.warn("Could not query children", e);
+                documents = Collections.emptyList();
             }
         }
-
-        // sort by description e.g title
-        Collections.sort(children);
-
+        // filter the documents
+        for (DocumentModel document : documents) {
+            String title = getDefaultDescription(document);
+            if (title == null) {
+                continue;
+            }
+            if (docFilter == null || !docFilter.accept(document)) {
+                continue;
+            }
+            children.add(new LazyTreeNode(document, session, docFilter,
+                    leafFilter, queryModel));
+        }
+        if (queryModel == null) {
+            // no query model, sort according to TreeSorter
+            Collections.sort(children);
+        }
         int i = 0;
         for (LazyTreeNode child : children) {
-            child.nodeId = nodeId + LazyTreeModel.SEPARATOR + i;
-            i++;
+            child.nodeId = nodeId + LazyTreeModel.SEPARATOR + i++;
         }
-        super.getChildren().addAll(children);
     }
 
     /**
@@ -372,6 +355,32 @@ public class LazyTreeNode extends TreeNodeBase {
         }
 
         return nodeType;
+    }
+
+    @Deprecated
+    public TypesTool getTypesTool() {
+        return typesTool;
+    }
+
+    @Deprecated
+    public void setTypesTool(TypesTool typesTool) {
+        this.typesTool = typesTool;
+    }
+
+    public CoreSession getHandle() {
+        return CoreInstance.getInstance().getSession(sid);
+    }
+
+    public void setHandle(CoreSession session) {
+        sid = session.getSessionId();
+    }
+
+    public DocumentRef getDocumentIdentifier() {
+        return documentIdentifier;
+    }
+
+    public void setDocumentIdentifier(DocumentRef documentIdentifier) {
+        this.documentIdentifier = documentIdentifier;
     }
 
     public DocumentModel getDoc() {

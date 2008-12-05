@@ -29,6 +29,8 @@ public final class CommentConstants {
 
     public static final String PARENT_COMMENT = "parentComment";
 
+    // FIXME This should be changed to COMMENT_DOCUMENT = "comment_document" 
+    // (see NXP-2806)
     public static final String COMMENT = "comment";
 
     public static final String COMMENT_TEXT = "comment_text";

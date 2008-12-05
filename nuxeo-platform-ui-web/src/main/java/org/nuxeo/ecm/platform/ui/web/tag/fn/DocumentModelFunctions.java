@@ -31,6 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.Component;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.core.Manager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -248,27 +250,35 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (document == null) {
             return false;
         }
-        String sid = document.getSessionId();
         CoreSession session;
         boolean sessionOpened = false;
 
-        if (sid != null) {
-            session = CoreInstance.getInstance().getSession(sid);
-        } else {
-            String repositoryName = document.getRepositoryName();
-            if (repositoryName != null) {
-                session = CoreInstance.getInstance().open(repositoryName, null);
-                sessionOpened = true;
-            } else {
-                throw new ClientException("Cannot reconnect to Nuxeo core: no "
-                        + "repository name for document model");
-            }
-        }
+        session = (CoreSession) Component.getInstance("documentManager", ScopeType.CONVERSATION);
 
-        if (null == session) {
-            log.error("Cannot retrieve CoreSession for document "
-                    + document.getTitle() + " with sid=" + sid);
-            return false;
+        if (session == null) {
+
+            String sid = document.getSessionId();
+            if (sid != null) {
+                session = CoreInstance.getInstance().getSession(sid);
+            } else {
+                String repositoryName = document.getRepositoryName();
+                if (repositoryName != null) {
+                    session = CoreInstance.getInstance().open(repositoryName,
+                            null);
+                    sessionOpened = true;
+                } else {
+                    throw new ClientException(
+                            "Cannot reconnect to Nuxeo core: no "
+                                    + "repository name for document model");
+                }
+            }
+
+            if (null == session) {
+                log.error("Cannot retrieve CoreSession for document "
+                        + document.getTitle() + " with sid=" + sid);
+                return false;
+            }
+
         }
 
         boolean granted = session.hasPermission(document.getRef(), permission);

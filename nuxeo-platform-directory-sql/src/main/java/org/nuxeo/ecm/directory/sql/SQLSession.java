@@ -86,6 +86,8 @@ public class SQLSession implements Session, EntrySource {
 
     final Table table;
 
+    private final SQLDirectoryDescriptor.SubstringMatchType substringMatchType;
+
     String dataSourceName;
 
     final String idField;
@@ -116,7 +118,7 @@ public class SQLSession implements Session, EntrySource {
 
         this.sid = String.valueOf(SIDGenerator.next());
         this.managedSQLSession = managedSQLSession;
-
+        this.substringMatchType = config.getSubstringMatchType();
         this.idGenerator = idGenerator;
     }
 
@@ -156,17 +158,18 @@ public class SQLSession implements Session, EntrySource {
         }
 
         // first step: insert stored fields
-        //String columnList = StringUtils.join(storedFieldNames.iterator(), ", ");
-        //String valueList = StringUtils.join(Collections.nCopies(
-        //        storedFieldNames.size(), "?").iterator(), ", ");
+        // String columnList = StringUtils.join(storedFieldNames.iterator(), ",
+        // ");
+        // String valueList = StringUtils.join(Collections.nCopies(
+        // storedFieldNames.size(), "?").iterator(), ", ");
 
-        //String sql = String.format("INSERT INTO %s (%s) VALUES (%s)",
-        //        tableName, columnList, valueList);
+        // String sql = String.format("INSERT INTO %s (%s) VALUES (%s)",
+        // tableName, columnList, valueList);
         List<Column> columnList = new ArrayList<Column>(table.getColumns());
-        for(Iterator<Column> i=columnList.iterator(); i.hasNext(); ) {
+        for (Iterator<Column> i = columnList.iterator(); i.hasNext();) {
             Column column = i.next();
             String columnName = column.getName();
-            if(fieldMap.get(columnName) == null) {
+            if (fieldMap.get(columnName) == null) {
                 i.remove();
             }
         }
@@ -209,18 +212,21 @@ public class SQLSession implements Session, EntrySource {
         return entry;
     }
 
-    public DocumentModel getEntry(String id)  throws DirectoryException {
+    public DocumentModel getEntry(String id) throws DirectoryException {
         return directory.getCache().getEntry(id, this);
     }
 
-    public DocumentModel getEntryFromSource(String id) throws DirectoryException {
+    public DocumentModel getEntryFromSource(String id)
+            throws DirectoryException {
         acquireConnection();
-        //String sql = String.format("SELECT * FROM %s WHERE %s = ?", tableName,
-        //        idField);
+        // String sql = String.format("SELECT * FROM %s WHERE %s = ?",
+        // tableName,
+        // idField);
         Select select = new Select(dialect);
         select.setFrom(table.getQuotedName(dialect));
         select.setWhat("*");
-        select.setWhere(table.getPrimaryColumn().getQuotedName(dialect) + " = ?");
+        select.setWhere(table.getPrimaryColumn().getQuotedName(dialect)
+                + " = ?");
         String sql = select.getStatement();
 
         try {
@@ -281,16 +287,17 @@ public class SQLSession implements Session, EntrySource {
 
         if (!storedColumnList.isEmpty()) {
             // update stored fields
-            //String whereString = StringUtils.join(
-            //        storedFieldPredicateList.iterator(), ", ");
-            //String sql = String.format("UPDATE %s SET %s WHERE %s = ?",
-            //        tableName, whereString,
-            //        primaryColumn);
+            // String whereString = StringUtils.join(
+            // storedFieldPredicateList.iterator(), ", ");
+            // String sql = String.format("UPDATE %s SET %s WHERE %s = ?",
+            // tableName, whereString,
+            // primaryColumn);
 
             Update update = new Update(dialect);
             update.setTable(table);
             update.setColumns(storedColumnList);
-            String whereString = table.getPrimaryColumn().getQuotedName(dialect) + " = ?";
+            String whereString = table.getPrimaryColumn().getQuotedName(dialect)
+                    + " = ?";
             update.setWhere(whereString);
             String sql = update.getStatement();
 
@@ -352,7 +359,8 @@ public class SQLSession implements Session, EntrySource {
         try {
             Delete delete = new Delete(dialect);
             delete.setTable(table);
-            String whereString = table.getPrimaryColumn().getQuotedName(dialect) + " = ?";
+            String whereString = table.getPrimaryColumn().getQuotedName(dialect)
+                    + " = ?";
             delete.setWhere(whereString);
             String sql = delete.getStatement();
             PreparedStatement ps = sqlConnection.prepareStatement(sql);
@@ -407,8 +415,9 @@ public class SQLSession implements Session, EntrySource {
         directory.invalidateCaches();
     }
 
-    public DocumentModelList query(Map<String, Object> filter, Set<String> fulltext,
-            Map<String, String> orderBy) throws ClientException {
+    public DocumentModelList query(Map<String, Object> filter,
+            Set<String> fulltext, Map<String, String> orderBy)
+            throws ClientException {
         acquireConnection();
         Map<String, Object> filterMap = new LinkedHashMap<String, Object>(
                 filter);
@@ -429,19 +438,33 @@ public class SQLSession implements Session, EntrySource {
                 Object value = filterMap.get(columnName);
                 Column column = table.getColumn(columnName);
                 if (null == column) {
-                    // this might happen if we have a case like a chain selection and a directory without parent column
-                    throw new ClientException("cannot find column '" + columnName + "' for table: " + table);
+                    // this might happen if we have a case like a chain
+                    // selection and a directory without parent column
+                    throw new ClientException("cannot find column '"
+                            + columnName + "' for table: " + table);
                 }
                 String leftSide = column.getQuotedName(dialect);
                 if (value != null) {
                     if (fulltext != null && fulltext.contains(columnName)) {
                         // NB : remove double % in like query NXGED-833
-                        filterMap.put(columnName,
-                                 String.valueOf(value).toLowerCase() + '%');
+                        String searchedValue = null;
+                        switch (substringMatchType) {
+                        case subany:
+                            searchedValue = '%' + String.valueOf(value).toLowerCase() + '%';
+                            break;
+                        case subinitial:
+                            searchedValue = String.valueOf(value).toLowerCase() + '%';
+                            break;
+                        case subfinal:
+                            searchedValue = '%' + String.valueOf(value).toLowerCase();
+                            break;
+                        }
+                        filterMap.put(columnName, searchedValue);
                         if (dialect instanceof PostgreSQLDialect) {
                             operator = " ILIKE "; // postgresql rules
                         } else {
-                            leftSide = dialect.getLowercaseFunction() + '(' + leftSide + ')';
+                            leftSide = dialect.getLowercaseFunction() + '('
+                                    + leftSide + ')';
                             operator = " LIKE ";
                         }
                     } else {
@@ -464,8 +487,9 @@ public class SQLSession implements Session, EntrySource {
                 try {
                     // create a preparedStatement for counting and bind the
                     // values
-                    //String countQuery = new StringBuilder("SELECT count(*) FROM ")
-                    //        .append(table.getQuotedName(dialect)).append(whereClause).toString();
+                    // String countQuery = new StringBuilder("SELECT count(*)
+                    // FROM ")
+                    // .append(table.getQuotedName(dialect)).append(whereClause).toString();
                     Select select = new Select(dialect);
                     select.setWhat("count(*)");
                     select.setFrom(table.getQuotedName(dialect));
@@ -484,7 +508,8 @@ public class SQLSession implements Session, EntrySource {
                     rs.next();
                     int count = rs.getInt(1);
                     if (count > queryLimitSize) {
-                        throw new SizeLimitExceededException("too many rows in result: " + count);
+                        throw new SizeLimitExceededException(
+                                "too many rows in result: " + count);
                     }
                 } finally {
                     if (ps != null) {
@@ -494,8 +519,9 @@ public class SQLSession implements Session, EntrySource {
             }
 
             // create a preparedStatement and bind the values
-            //String query = new StringBuilder("SELECT * FROM ").append(tableName).append(
-            //        whereClause).toString();
+            // String query = new StringBuilder("SELECT * FROM
+            // ").append(tableName).append(
+            // whereClause).toString();
 
             Select select = new Select(dialect);
             select.setWhat("*");
@@ -537,8 +563,7 @@ public class SQLSession implements Session, EntrySource {
 
                 // fetch the reference fields
                 for (Reference reference : directory.getReferences()) {
-                    List<String> targetIds = reference.getTargetIdsForSource(
-                            docModel.getId());
+                    List<String> targetIds = reference.getTargetIdsForSource(docModel.getId());
                     docModel.setProperty(schemaName, reference.getFieldName(),
                             targetIds);
                 }
@@ -620,7 +645,8 @@ public class SQLSession implements Session, EntrySource {
                 }
             } else if ("date".equals(typeName)) {
                 if (value instanceof Calendar) {
-                    ps.setTimestamp(index,new Timestamp(((Calendar)value).getTimeInMillis()));
+                    ps.setTimestamp(index, new Timestamp(
+                            ((Calendar) value).getTimeInMillis()));
                 } else if (value == null) {
                     ps.setNull(index, Types.TIMESTAMP);
                 } else {

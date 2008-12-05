@@ -36,7 +36,6 @@ public abstract class AbstractPluginTestCase extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        //deploy("ServiceManagement.xml");
         deployContrib("org.nuxeo.ecm.platform.transform.plugin.tests",
                 "PlatformService.xml");
         deployContrib("org.nuxeo.ecm.platform.transform.plugin.tests",

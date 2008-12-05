@@ -1,25 +1,31 @@
 <components xmlns="http://jboss.com/products/seam/components"
-        xmlns:core="http://jboss.com/products/seam/core"
-        xmlns:mail="http://jboss.com/products/seam/mail">
+  xmlns:core="http://jboss.com/products/seam/core"
+  xmlns:mail="http://jboss.com/products/seam/mail">
 
-    <component name="org.jboss.seam.core.init">
-        <property name="debug">false</property>
-        <property name="myFacesLifecycleBug">false</property>
-        <property name="jndiPattern">nuxeo/#{ejbName}/local</property>
-    </component>
+  <component name="org.jboss.seam.core.init">
+    <property name="debug">false</property>
+    <property name="myFacesLifecycleBug">false</property>
+    <property name="jndiPattern">nuxeo/#{ejbName}/local</property>
+  </component>
 
+  <component name="org.jboss.seam.core.manager">
     <!-- 30 min conversation timeout -->
-    <component name="org.jboss.seam.core.manager">
-        <property name="conversationTimeout">1800000</property>
-    </component>
-<!--
+    <property name="conversationTimeout">1800000</property>
+    <!-- 1s concurrent request timeout -->
+    <!-- 
+      <property name="concurrentRequestTimeout">1000</property>
+    -->
+  </component>
+
+  <!--
     <core:jbpm>
-        <core:pageflow-definitions>
-            %{PAGEFLOW}%
-        </core:pageflow-definitions>
+    <core:pageflow-definitions>
+    %{PAGEFLOW}%
+    </core:pageflow-definitions>
     </core:jbpm>
--->
-    <!-- Mail configuration -->
-    <mail:mailSession sessionJndiName="java:/Mail"/>
+  -->
+
+  <!-- Mail configuration -->
+  <mail:mailSession sessionJndiName="java:/Mail" />
 
 </components>

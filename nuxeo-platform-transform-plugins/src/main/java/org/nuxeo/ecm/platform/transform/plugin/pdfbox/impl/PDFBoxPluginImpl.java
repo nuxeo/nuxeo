@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.transform.plugin.pdfbox.impl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -103,16 +104,14 @@ public class PDFBoxPluginImpl extends AbstractPlugin implements PDFBoxPlugin {
         PDDocument document = PDDocument.load(stream);
         PDFTextStripper textStripper = new PDFTextStripper();
 
-        // Let's put the content on a file instead of working in memory
-
-        // Jira NXP-1556: if document is protected an IOException will be raised
+        // NXP-1556: if document is protected an IOException will be raised
         // Instead of catching the exception based on its message string
         // lets avoid sending messages that will generate this error
         // code taken from PDFTextStripper.writeText source.
         Boolean isReadable = true;
         PDEncryptionDictionary encDictionary = document.getEncryptionDictionary();
-        //only care about standard encryption and if it was decrypted with the
-        //user password
+        // only care about standard encryption and if it was decrypted with the
+        // user password
         if (encDictionary instanceof PDStandardEncryption
                 && !document.wasDecryptedWithOwnerPassword()) {
             PDStandardEncryption stdEncryption = (PDStandardEncryption) encDictionary;
@@ -120,13 +119,28 @@ public class PDFBoxPluginImpl extends AbstractPlugin implements PDFBoxPlugin {
         }
 
         Blob blob;
-        File f = null;
         if (isReadable) {
-            f = File.createTempFile("pdfboplugin", ".txt");
-            OutputStream fas = new FileOutputStream(f);
-            byte[] bytes = textStripper.getText(document).getBytes();
-            fas.write(bytes);
-            blob = new FileBlob(new FileInputStream(f));
+            File f = null;
+            OutputStream fas = null;
+            try {
+                f = File.createTempFile("pdfboplugin", ".txt");
+                fas = new FileOutputStream(f);
+                byte[] bytes = textStripper.getText(document).getBytes();
+                fas.write(bytes);
+                blob = new FileBlob(new FileInputStream(f));
+            } finally {
+                if (fas != null) {
+                    try {
+                        fas.close();
+                    } catch (IOException e) {
+                        log.error(e);
+                    }
+                }
+                if (f != null) {
+                    f.delete();
+                }
+            }
+
         } else {
             blob = new ByteArrayBlob(new byte[] {});
         }
@@ -134,10 +148,6 @@ public class PDFBoxPluginImpl extends AbstractPlugin implements PDFBoxPlugin {
         blob.setMimeType(destinationMimeType);
 
         document.close();
-
-        if (f != null) {
-            f.delete();
-        }
 
         return new TransformDocumentImpl(blob);
     }

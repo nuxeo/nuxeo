@@ -28,7 +28,7 @@
       </jdbc>
     </connection>
 
-    <transaction commitBeforeCompletion="true"
+    <transaction commitBeforeCompletion="true" lockTimeout="0"
       factory="org.compass.core.transaction.JTASyncTransactionFactory">
       <batchInsertSettings maxBufferedDocs="100" />
     </transaction>
