@@ -22,7 +22,7 @@ package org.nuxeo.ecm.wiki.listener;
 import org.wikimodel.wem.PrintListener;
 import org.wikimodel.wem.WikiPrinter;
 
-public class WordExtractor extends PrintListener{
+public class WordExtractor extends PrintListener {
 
     protected final StringBuilder words = new StringBuilder();
 
@@ -35,17 +35,17 @@ public class WordExtractor extends PrintListener{
 
     @Override
     public void onWord(String str) {
-        if (collector != null ){
+        if (collector != null) {
             collector.append(str);
         }
     }
 
     @Override
     public void onSpecialSymbol(String str) {
-        if ( collector == null){
+        if (collector == null) {
             return;
         }
-        if  ( ".".equals(str)){
+        if (".".equals(str)) {
             collector.append(str);
         } else {
             collector.append(" ");
@@ -54,24 +54,23 @@ public class WordExtractor extends PrintListener{
 
     @Override
     public void onSpace(String str) {
-        if ( collector != null ){
+        if (collector != null) {
             collector.append(str);
         }
     }
 
     @Override
     public void onEmptyLines(int count) {
-        if ( collector != null ){
+        if (collector != null) {
             collector.append(" ");
         }
     }
 
     @Override
     public void onNewLine() {
-        if ( collector != null ){
+        if (collector != null) {
             collector.append(" ");
         }
     }
-
 
 }

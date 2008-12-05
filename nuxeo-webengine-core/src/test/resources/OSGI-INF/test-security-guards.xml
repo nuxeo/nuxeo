@@ -4,8 +4,6 @@
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="guard">
-
-
   </extension>
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"

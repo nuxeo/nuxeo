@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.tests.rendering;
+package org.nuxeo.ecm.webengine.rendering;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;

@@ -36,4 +36,8 @@ public class RelationConstants {
 
     public static final Resource UUID = new ResourceImpl(METADATA_NAMESPACE + "uuid");
 
+    // Constant utility class.
+    private RelationConstants() {
+    }
+
 }

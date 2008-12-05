@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.tests.security;
+package org.nuxeo.ecm.webengine.security;
 
 import java.text.ParseException;
 

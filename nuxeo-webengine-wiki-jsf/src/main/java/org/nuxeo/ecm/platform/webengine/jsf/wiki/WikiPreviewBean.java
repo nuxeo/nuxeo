@@ -104,8 +104,6 @@ public class WikiPreviewBean {
         Map<String, Object> input = new HashMap<String, Object>();
         input.put("doc", wikiPage);
 
-        System.err.flush();
-        double s = System.currentTimeMillis();
         engine.render("wiki_preview.ftl", input, writer);
 
         return writer.toString();

@@ -38,6 +38,10 @@ public class WikiHelper {
     static final String PATTERN = "([A-Z]+[a-z]+[A-Z][A-Za-z]*.)?([A-Z]+[a-z]+[A-Z][A-Za-z]*)";
     static final Pattern WORD_LINKS_PATTERN = Pattern.compile(PATTERN);
 
+    // Utility class.
+    private WikiHelper() {
+    }
+
     public static List<String> getWordLinks(DocumentModel doc){
         try {
             String content = (String) doc.getPart(WikiTypes.SCHEMA_WIKIPAGE).get(WikiTypes.FIELD_CONTENT).getValue();
@@ -56,7 +60,6 @@ public class WikiHelper {
             e.printStackTrace();
         }
         return null;
-
     }
 
     public static List<String> getWordLinks(String text){

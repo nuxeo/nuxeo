@@ -44,6 +44,10 @@ public class RelationHelper {
 
     static RelationManager relationManager;
 
+    // Utility class.
+    private RelationHelper() {
+    }
+
     public static RelationManager getRelationManager() {
         if (relationManager == null) {
             try {
@@ -63,7 +67,8 @@ public class RelationHelper {
         QNameResource documentResource = null;
         RelationManager rm = getRelationManager();
         if (document != null && rm != null) {
-            documentResource = (QNameResource) rm.getResource(RelationConstants.DOCUMENT_NAMESPACE, document, null);
+            documentResource = (QNameResource) rm.getResource(
+                    RelationConstants.DOCUMENT_NAMESPACE, document, null);
         }
         return documentResource;
     }
@@ -77,14 +82,14 @@ public class RelationHelper {
             QNameResource resource = (QNameResource) node;
             Map<String, Serializable> context = new HashMap<String, Serializable>();
             context.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY, coreSessionId);
-            Object o = relationManager.getResourceRepresentation(resource.getNamespace(), resource, context);
+            Object o = relationManager.getResourceRepresentation(
+                    resource.getNamespace(), resource, context);
             if (o instanceof DocumentModel) {
                 return (DocumentModel) o;
             }
         }
         return null;
     }
-
 
     public static DocumentModelList getDocumentsWithLinksTo(String pageName, String sessionId) {
         try {
@@ -182,7 +187,8 @@ public class RelationHelper {
             if (list != null) {
                 QNameResource docResource = getDocumentResource(doc);
                 for (String word : list) {
-                    Statement stmt = new StatementImpl(docResource, RelationConstants.HAS_LINK_TO, new LiteralImpl(word));
+                    Statement stmt = new StatementImpl(
+                            docResource, RelationConstants.HAS_LINK_TO, new LiteralImpl(word));
                     stmts.add(stmt);
                 }
                 rm.add(RelationConstants.GRAPH_NAME, stmts);

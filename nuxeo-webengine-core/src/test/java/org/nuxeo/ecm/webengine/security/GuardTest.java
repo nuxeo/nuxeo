@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.tests.security;
+package org.nuxeo.ecm.webengine.security;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 /**

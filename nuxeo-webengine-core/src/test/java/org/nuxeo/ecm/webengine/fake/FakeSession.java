@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.tests.fake;
+package org.nuxeo.ecm.webengine.fake;
 
 import java.util.Collections;
 import java.util.Enumeration;

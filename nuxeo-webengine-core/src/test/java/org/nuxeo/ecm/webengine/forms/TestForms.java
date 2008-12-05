@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.tests.forms;
+package org.nuxeo.ecm.webengine.forms;
 
 import java.net.URL;
 

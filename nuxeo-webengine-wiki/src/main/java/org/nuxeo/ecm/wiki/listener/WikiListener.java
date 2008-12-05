@@ -45,14 +45,13 @@ import org.nuxeo.ecm.wiki.relation.RelationConstants;
 import org.nuxeo.ecm.wiki.relation.RelationHelper;
 
 public class WikiListener extends AbstractEventListener implements AsynchronousEventListener, WikiTypes {
-    private static final Log log = LogFactory.getLog(WikiListener.class);
 
+    private static final Log log = LogFactory.getLog(WikiListener.class);
 
     public void testRelations(DocumentModel model) throws Exception{
         DocumentRef ref1 = new PathRef("/default-domain/workspaces/ws/f1");
         DocumentRef ref2 = new PathRef("/default-domain/workspaces/ws/f2");
         DocumentRef ref3 = new PathRef("/default-domain/workspaces/ws/f3");
-
 
         CoreSession session = CoreInstance.getInstance().getSession(model.getSessionId());
         RelationManager relationManager = RelationHelper.getRelationManager();
@@ -60,7 +59,6 @@ public class WikiListener extends AbstractEventListener implements AsynchronousE
         DocumentModel doc1 = session.getDocument(ref1);
         DocumentModel doc2 = session.getDocument(ref2);
         DocumentModel doc3 = session.getDocument(ref3);
-
 
         Resource res1 = RelationHelper.getDocumentResource(doc1);
         Resource res2 = RelationHelper.getDocumentResource(doc2);
@@ -81,15 +79,9 @@ public class WikiListener extends AbstractEventListener implements AsynchronousE
 
         relationManager.add(RelationConstants.GRAPH_NAME, stmts);
 
-
-
-
-
-
-        // retrive
+        // retrieve
 
         DocumentModelList list = RelationHelper.getDocumentsWithLinksTo(doc2);
-
 
 //        System.out.println("debug");
         DocumentModelList list2 = RelationHelper.getDocumentsWithLinksFrom(doc1);
@@ -100,13 +92,15 @@ public class WikiListener extends AbstractEventListener implements AsynchronousE
 
     }
 
-
+    @Override
     public void handleEvent(CoreEvent coreEvent) throws Exception  {
         /* TODO: work in progress
-         * this is not working yet  
+         * this is not working yet
          */
-        if (true) return;
-        
+        if (true) {
+            return;
+        }
+
         Object source = coreEvent.getSource();
 
         if (source instanceof DocumentModel) {
@@ -118,7 +112,6 @@ public class WikiListener extends AbstractEventListener implements AsynchronousE
                 RelationHelper.updateRelations(doc);
             }
         }
-
     }
 
 }

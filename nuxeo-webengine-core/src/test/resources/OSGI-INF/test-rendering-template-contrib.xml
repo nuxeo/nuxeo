@@ -15,8 +15,8 @@
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="rendering-extension">
 
-	<rendering-extension name="ext1" class="org.nuxeo.ecm.webengine.tests.rendering.MyRenderingExtension"/>
-	<rendering-extension name="ext2" class="org.nuxeo.ecm.webengine.tests.rendering.MyRenderingExtensionFactory"/>
+	<rendering-extension name="ext1" class="org.nuxeo.ecm.webengine.rendering.MyRenderingExtension"/>
+	<rendering-extension name="ext2" class="org.nuxeo.ecm.webengine.rendering.MyRenderingExtensionFactory"/>
 
   </extension>
 
