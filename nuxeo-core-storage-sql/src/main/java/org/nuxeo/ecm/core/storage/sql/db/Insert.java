@@ -36,7 +36,7 @@ public class Insert implements Serializable {
 
     protected final Dialect dialect;
 
-    private Table table;
+    private final Table table;
 
     private final List<Column> columns;
 
@@ -44,7 +44,7 @@ public class Insert implements Serializable {
 
     public Insert(Table table) {
         this.table = table;
-        this.dialect = table.dialect;
+        dialect = table.getDialect();
         columns = new LinkedList<Column>();
     }
 

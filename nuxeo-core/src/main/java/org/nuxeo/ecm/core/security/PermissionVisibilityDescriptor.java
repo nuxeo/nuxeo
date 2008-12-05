@@ -51,7 +51,6 @@ public class PermissionVisibilityDescriptor {
         }
     }
 
-    @SuppressWarnings("unused")
     @XNodeList(value = "item", type = PermissionUIItemDescriptor[].class, componentType = PermissionUIItemDescriptor.class)
     protected void setPermissionUIItems(PermissionUIItemDescriptor[] items) {
         this.items = Arrays.asList(items);

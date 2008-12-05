@@ -44,9 +44,9 @@ public class NamespaceRegistry {
         DEFAULT_MAPPING = Collections.unmodifiableMap(map);
     }
 
-    private Map<String, String> prefixToURI;
+    private final Map<String, String> prefixToURI;
 
-    private Map<String, String> uriToPrefix;
+    private final Map<String, String> uriToPrefix;
 
     public NamespaceRegistry() {
         prefixToURI = new HashMap<String, String>();

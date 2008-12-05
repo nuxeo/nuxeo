@@ -27,6 +27,7 @@ import javax.security.auth.Subject;
 
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryDescriptor;
+import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -110,8 +111,7 @@ public final class JCAManagedConnectionFactory
     /**
      * Creates a Connection Factory instance.
      */
-    public Object createConnectionFactory()
-            throws ResourceException {
+    public Object createConnectionFactory() {
         return createConnectionFactory(new JCAConnectionManager());
     }
 
@@ -145,13 +145,11 @@ public final class JCAManagedConnectionFactory
     public ManagedConnection matchManagedConnections(Set set, Subject subject,
             ConnectionRequestInfo cri)
             throws ResourceException {
-        //System.out.println("JCA >>>>>>>>>>>>>>>>>>>>>> calling matchManagedConnection");
         for (Object next : set) {
             if (next instanceof JCAManagedConnection) {
                 JCAManagedConnection mc = (JCAManagedConnection) next;
                 if (equals(mc.getManagedConnectionFactory())) {
                     if (!mc.isHandleValid()) { // reuse the first inactive mc
-                        //System.out.println("JCA >>>>>>>>>>>>>>>>>>>>>> matching.. "+mc.getHandle());
                         // reinitialize the connection
                         mc.initializeHandle((JCAConnectionRequestInfo) cri);
                         return mc;
@@ -159,13 +157,13 @@ public final class JCAManagedConnectionFactory
                 }
             }
         }
-        //System.out.println("JCA >>>>>>>>>>>>>>>>>>>>>> no match");
         return null;
     }
 
     /**
-     * Get the repository.
+     * Gets the repository.
      * Lazy create it if not yet created.
+     *
      * @return the repository.
      */
     public Repository getRepository() {
@@ -259,7 +257,7 @@ public final class JCAManagedConnectionFactory
         }
 
         // Check the factory class
-        Class factoryClass = descriptor.getFactoryClass();
+        Class<RepositoryFactory> factoryClass = descriptor.getFactoryClass();
         if (factoryClass == null) {
             log("Error: Property 'factory' not set");
             throw new ResourceException("Property 'factory' not set");

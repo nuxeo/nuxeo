@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.resource.cci.Connection;
 
+import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.StorageException;
 
@@ -39,7 +40,7 @@ public interface Session extends Connection {
      *
      * @return {@code true} if the session is live
      */
-    public boolean isLive();
+    boolean isLive();
 
     /**
      * Gets the {@link Model} associated to this session.
@@ -324,9 +325,11 @@ public interface Session extends Connection {
      * Makes a NXQL query to the database.
      *
      * @param query the query as a parsed tree
+     * @param queryFilter the query filter
      * @return the resulting ids
      */
     // TODO should be an iterator
-    List<Serializable> query(SQLQuery query) throws StorageException;
+    List<Serializable> query(SQLQuery query, QueryFilter queryFilter)
+            throws StorageException;
 
 }

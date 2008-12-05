@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleManager;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
@@ -44,6 +43,7 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 public class TestLifeCycleService extends RepositoryTestCase {
 
     Session session;
+
     Document root;
 
     private LifeCycleService lifeCycleService;
@@ -69,24 +69,32 @@ public class TestLifeCycleService extends RepositoryTestCase {
         super.tearDown();
     }
 
-    public void testLifeCycleManagerRegistration() {
-        LifeCycleManager manager = lifeCycleService.getLifeCycleManager();
-        assertNotNull(manager);
-        assertEquals("JCRLifeCycleManager", manager.getClass().getSimpleName());
-    }
-
-    public void testGetLifeCycleManagerFor() throws DocumentException {
-        Document doc = root.addChild("docA", "File");
-        LifeCycleManager manager = lifeCycleService.getLifeCycleManagerFor(doc);
-        assertNotNull(manager);
-    }
-
     public void testInitialize() throws LifeCycleException, DocumentException {
         Document doc = root.addChild("docB", "File");
         root.save();
         lifeCycleService.initialize(doc);
         doc.save();
-        assertEquals("work", lifeCycleService.getCurrentLifeCycleState(doc));
+        assertEquals("work", doc.getCurrentLifeCycleState());
+    }
+
+    public void testInitializeWithAdditionalInitialState()
+            throws LifeCycleException, DocumentException {
+        Document doc = root.addChild("doc", "File");
+        root.save();
+        // invalid initial states
+        try {
+            lifeCycleService.initialize(doc, "xxx");
+            fail("Invalid initial state, intialization should fail");
+        } catch (LifeCycleException e) {
+        }
+        try {
+            lifeCycleService.initialize(doc, "cancelled");
+            fail("Invalid initial state, intialization should fail");
+        } catch (LifeCycleException e) {
+        }
+        lifeCycleService.initialize(doc, "approved");
+        doc.save();
+        assertEquals("approved", doc.getCurrentLifeCycleState());
     }
 
     public void testChain() throws LifeCycleException, DocumentException {
@@ -94,15 +102,15 @@ public class TestLifeCycleService extends RepositoryTestCase {
         root.save();
         lifeCycleService.initialize(doc);
         doc.save();
-        assertEquals("work", lifeCycleService.getCurrentLifeCycleState(doc));
+        assertEquals("work", doc.getCurrentLifeCycleState());
 
         lifeCycleService.followTransition(doc, "approve");
         doc.save();
-        assertEquals("approved", lifeCycleService.getCurrentLifeCycleState(doc));
+        assertEquals("approved", doc.getCurrentLifeCycleState());
 
         lifeCycleService.followTransition(doc, "obsolete");
         doc.save();
-        assertEquals("obsolete", lifeCycleService.getCurrentLifeCycleState(doc));
+        assertEquals("obsolete", doc.getCurrentLifeCycleState());
 
         boolean checked = false;
         try {
@@ -112,11 +120,11 @@ public class TestLifeCycleService extends RepositoryTestCase {
         }
         assertTrue(checked);
         doc.save();
-        assertEquals("obsolete", lifeCycleService.getCurrentLifeCycleState(doc));
+        assertEquals("obsolete", doc.getCurrentLifeCycleState());
 
         // API document
         assertEquals(doc.getCurrentLifeCycleState(),
-                lifeCycleService.getCurrentLifeCycleState(doc));
+                doc.getCurrentLifeCycleState());
     }
 
     public void testDocumentAPI() throws DocumentException, LifeCycleException {
@@ -154,7 +162,7 @@ public class TestLifeCycleService extends RepositoryTestCase {
                 "SELECT * FROM Document WHERE ecm:currentLifecycleState='work'",
                 Query.Type.NXQL);
         QueryResult qr = query.execute();
-        DocumentModelList dml =  qr.getDocumentModels();
+        DocumentModelList dml = qr.getDocumentModels();
         assertEquals(3, dml.size());
         List<String> docs = new ArrayList<String>();
         for (DocumentModel dm : dml) {
