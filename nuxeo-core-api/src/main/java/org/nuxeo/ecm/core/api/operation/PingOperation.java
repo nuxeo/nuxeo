@@ -22,9 +22,9 @@ package org.nuxeo.ecm.core.api.operation;
 /**
  * Perform a ping operation. Can be used in remote client (NxRCP or NxShell) to
  * test connectivity.
- * 
+ *
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
- * 
+ *
  */
 public class PingOperation extends Operation {
 

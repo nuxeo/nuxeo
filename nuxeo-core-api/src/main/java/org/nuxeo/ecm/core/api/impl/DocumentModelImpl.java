@@ -74,7 +74,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  * @version $Revision: 1.0 $
  */
 @SuppressWarnings( { "SuppressionAnnotation" })
@@ -160,7 +160,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * document.
      * <p>
      * It must at least contain the type.
-     * 
+     *
      * @param type String
      */
     public DocumentModelImpl(String type) {
@@ -174,7 +174,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * document.
      * <p>
      * It must at least contain the type.
-     * 
+     *
      * @param sid String
      * @param type String
      */
@@ -188,7 +188,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * <p>
      * A client constructed data model must contain at least the path and the
      * type.
-     * 
+     *
      * @param parentPath
      * @param name
      * @param type
@@ -199,7 +199,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     /**
      * Constructor for DocumentModelImpl.
-     * 
+     *
      * @param parent DocumentModel
      * @param name String
      * @param type String
@@ -210,7 +210,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     /**
      * Constructor for DocumentModelImpl.
-     * 
+     *
      * @param parent DocumentModel
      * @param name String
      * @param type String
@@ -223,7 +223,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     /**
      * Constructor for DocumentModelImpl.
-     * 
+     *
      * @param parentPath
      * @param name
      * @param type
@@ -240,7 +240,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     /**
      * Constructor to be used on server side to create a document model.
-     * 
+     *
      * @param sid
      * @param type
      * @param id
@@ -258,7 +258,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     /**
      * Constructor for DocumentModelImpl.
-     * 
+     *
      * @param sid String
      * @param type String
      * @param id String
@@ -288,7 +288,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     /**
      * Constructor for DocumentModelImpl.
-     * 
+     *
      * @param sid String
      * @param type String
      * @param id String
@@ -326,7 +326,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     /**
      * Gets the title from the dublincore schema.
-     * 
+     *
      * @return String
      * @throws ClientException
      * @see DocumentModel#getTitle()
@@ -382,7 +382,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     /**
      * Lazily loads the given data model.
-     * 
+     *
      * @param schema
      * @return DataModel
      * @throws ClientException
@@ -459,7 +459,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * Gets property.
      * <p>
      * Get property is also consulting the prefetched properties.
-     * 
+     *
      * @param schemaName String
      * @param name String
      * @return Object

@@ -43,10 +43,10 @@ public class TestQueryVisitor extends TestCase {
     }
 
     public void testRemoveTZSuffixes() {
-    	assertEquals("000", removeTzSuffix("000+00:00')"));
-    	assertEquals("000", removeTzSuffix("000Z')"));
+        assertEquals("000", removeTzSuffix("000+00:00')"));
+        assertEquals("000", removeTzSuffix("000Z')"));
     }
- 
+
 
     public void testVisitor() throws Exception {
         String sql;
@@ -85,7 +85,7 @@ public class TestQueryVisitor extends TestCase {
         // hack around timezone variations for this test
         sql = "select * from d where foo = TIMESTAMP '2008-08-08 12:34:56'";
         expected = "SELECT * FROM d WHERE (foo = TIMESTAMP '2008-08-08T12:34:56.000+00:00')";
-        
+
         PrintVisitor v = new PrintVisitor();
         v.visitQuery(SQLQueryParser.parse(sql));
         String got = v.toString();
@@ -107,12 +107,14 @@ public class TestQueryVisitor extends TestCase {
         v.visitQuery(query);
         assertEquals(expected, v.toString());
     }
-    
+
     private static final Pattern REMOVE_TZ_PATTERN = Pattern.compile("(.*)(\\+.*|Z)'\\)$");
     private String removeTzSuffix(String value) {
-    	Matcher matcher = REMOVE_TZ_PATTERN.matcher(value);
-    	if (matcher.matches() == false) throw new RuntimeException(REMOVE_TZ_PATTERN + " pattern does not match " + value);
-    	return matcher.group(1);
+        Matcher matcher = REMOVE_TZ_PATTERN.matcher(value);
+        if (!matcher.matches()) {
+            throw new RuntimeException(REMOVE_TZ_PATTERN + " pattern does not match " + value);
+        }
+        return matcher.group(1);
     }
 
 }
@@ -341,4 +343,5 @@ class PrintVisitor extends DefaultQueryVisitor {
             }
         }
     }
+
 }
