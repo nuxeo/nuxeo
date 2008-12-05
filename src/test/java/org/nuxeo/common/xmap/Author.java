@@ -17,12 +17,12 @@
  * $Id$
  */
 
-package org.nuxeo.xmap;
+package org.nuxeo.common.xmap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.Assert;
 
@@ -130,10 +130,12 @@ public class Author {
         item3 = true;
     }
 
-    @XNodeList(value = "testNullByDefaultForList", type = ArrayList.class, componentType = String.class, nullByDefault = true)
+    @XNodeList(value = "testNullByDefaultForList", type = ArrayList.class,
+            componentType = String.class, nullByDefault = true)
     List<String> testNullByDefaultForList;
 
-    @XNodeMap(value = "testNullByDefaultForMap", key = "@name", type = HashMap.class, componentType = String.class, nullByDefault = true)
+    @XNodeMap(value = "testNullByDefaultForMap", key = "@name",
+            type = HashMap.class, componentType = String.class, nullByDefault = true)
     Map<String, String> testNullByDefaultForMap;
 
     @Override

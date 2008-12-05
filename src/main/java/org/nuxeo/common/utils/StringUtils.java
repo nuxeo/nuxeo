@@ -80,8 +80,6 @@ public final class StringUtils {
     /**
      * Improved versions of join method from org.apache.commons.lang.StringUtils.
      *
-     * @param array
-     * @return
      */
     public static String join(Object[] array) {
         if (array == null) {
@@ -103,9 +101,6 @@ public final class StringUtils {
     /**
      * Improved versions of join method from org.apache.commons.lang.StringUtils.
      *
-     * @param array
-     * @param separator
-     * @return
      */
     public static String join(Object[] array, String separator) {
         if (array == null) {
@@ -148,12 +143,7 @@ public final class StringUtils {
         if (list.isEmpty()) {
             return "";
         }
-        int seplen;
-        if (separator == null) {
-            seplen = 0;
-        } else {
-            seplen = separator.length();
-        }
+        int seplen = (separator == null) ? 0 : separator.length();
         int len = -seplen;
         for (String s : list) {
             len += seplen;
@@ -230,8 +220,8 @@ public final class StringUtils {
     }
 
     /**
-     * Expands any variable found in the given expression with the values in
-     * the given map.
+     * Expands any variable found in the given expression with the values in the
+     * given map.
      * <p>
      * The variable format is ${property_key}.
      *

@@ -133,7 +133,7 @@ public final class URIUtils {
                 existingParams = new HashMap<String, String>();
             }
             existingParams.putAll(parameters);
-            if (existingParams != null && !existingParams.isEmpty()) {
+            if (!existingParams.isEmpty()) {
                 String newQuery = getURIQuery(existingParams);
                 res = uriPath + '?' + newQuery;
             } else {
@@ -146,14 +146,15 @@ public final class URIUtils {
     }
 
     public static String quoteURIPathComponent(String s, boolean quoteSlash) {
-        URI uri;
-        if ("".equals(s))
+        if ("".equals(s)) {
             return s;
+        }
+        URI uri;
         try {
             // fake scheme so that a colon is not mistaken as a scheme
             uri = new URI("x", s, null);
         } catch (URISyntaxException e) {
-            throw new RuntimeException("Illegal characters in: " + s, e);
+            throw new IllegalArgumentException("Illegal characters in: " + s, e);
         }
         String r = uri.toASCIIString().substring(2);
         // replace reserved characters ;:$&+=?/[]@
@@ -173,4 +174,5 @@ public final class URIUtils {
         }
         return r;
     }
+
 }

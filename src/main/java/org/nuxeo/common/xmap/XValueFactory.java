@@ -20,11 +20,11 @@
 package org.nuxeo.common.xmap;
 
 import java.io.File;
+import java.net.URL;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
-import java.net.URL;
 
 import org.w3c.dom.Node;
 

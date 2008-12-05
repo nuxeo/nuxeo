@@ -81,6 +81,9 @@ public class ZipFileIterator implements Iterator<ZipEntry> {
         // get next entry
         if (entries.hasMoreElements()) {
             zentry = entries.nextElement();
+        } else {
+            zentry = null;
+            return;
         }
         // do filtering if needed
         if (filter != null) {

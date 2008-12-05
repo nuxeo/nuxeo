@@ -48,20 +48,20 @@ public class Environment {
     private static Environment DEFAULT;
 
     public static void setDefault(Environment env) {
-        Environment.DEFAULT = env;
+        DEFAULT = env;
     }
 
     public static Environment  getDefault() {
-        return Environment.DEFAULT;
+        return DEFAULT;
     }
 
-    protected File home;
+    protected final File home;
     protected File data;
     protected File log;
     protected File config;
     protected File web;
     protected File temp;
-    protected Properties properties;
+    protected final Properties properties;
     protected String[] args;
 
     protected boolean isAppServer;
@@ -79,7 +79,7 @@ public class Environment {
         if (properties != null) {
             loadProperties(properties);
         }
-        this.properties.put(Environment.HOME_DIR, this.home.getAbsolutePath());
+        this.properties.put(HOME_DIR, this.home.getAbsolutePath());
     }
 
     public File getHome() {

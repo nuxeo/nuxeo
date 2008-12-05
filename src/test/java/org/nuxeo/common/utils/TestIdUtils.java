@@ -34,7 +34,7 @@ public class TestIdUtils extends TestCase {
 
     public void testGenerateIdStupid() {
         // stupid id should return random number
-        String[] ids = new String[] { "", "-", " ", ".", ";", "\"", "  " };
+        String[] ids = { "", "-", " ", ".", ";", "\"", "  " };
         for (String id : ids) {
             String newId = IdUtils.generateId(id);
             assertNotNull(newId);
@@ -78,7 +78,7 @@ public class TestIdUtils extends TestCase {
 
     public void testGenerateIdDeterminism() {
         // test that generateId always retrun same value given same contraints
-        String[] examples = new String[] { "We are belong to us",
+        String[] examples = { "We are belong to us",
                 "C'est l'\u00E9t\u00E9 !", "?Mine", };
         // currently fails with string like "???", "???????????"
         for (String s : examples) {
