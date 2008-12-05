@@ -3,40 +3,42 @@
 <component name="org.nuxeo.theme.core.tests.views">
 
   <extension target="org.nuxeo.theme.services.ThemeService"
+    point="template-engines">
+    
+    <template-engine name="jsf-facelets" title="JSF/Facelets" />
+    
+  </extension>
+  
+  <extension target="org.nuxeo.theme.services.ThemeService"
     point="views">
 
-    <view name="page frame">
+    <view name="page frame" template-engine="jsf-facelets">
       <element-type>page</element-type>
       <format-type>widget</format-type>
       <model-type>menu item</model-type>
-      <class>org.nuxeo.theme.jsf.views.JSFView</class>
       <template>nxthemes/jsf/widgets/page-frame.xml</template>
       <resource>css/style.css</resource>
       <resource>script/script.js</resource>
     </view>
 
-    <view name="section frame">
+    <view name="section frame" template-engine="jsf-facelets">
       <element-type>section</element-type>
       <format-type>widget</format-type>
-      <class>org.nuxeo.theme.jsf.views.JSFView</class>
       <template>nxthemes/jsf/widgets/section-frame.xml</template>
     </view>
 
-    <view name="cell frame">
+    <view name="cell frame" template-engine="jsf-facelets">
       <element-type>cell</element-type>
       <format-type>widget</format-type>
-      <class>org.nuxeo.theme.jsf.views.JSFView</class>
       <template>nxthemes/jsf/widgets/cell-frame.xml</template>
     </view>
 
-    <view name="vertical menu">
+    <view name="vertical menu" template-engine="jsf-facelets">
       <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>menu item</model-type>
-      <class>org.nuxeo.theme.jsf.views.JSFView</class>
       <template>nxthemes/jsf/widgets/vertical-menu.xml</template>
     </view>
-
 
   </extension>
 

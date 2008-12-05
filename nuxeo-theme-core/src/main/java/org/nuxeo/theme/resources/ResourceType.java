@@ -29,6 +29,12 @@ public final class ResourceType implements Type {
     @XNode("path")
     public String path;
 
+    @XNode("url")
+    public String url;
+
+    @XNode("shrinkable")
+    public boolean shrinkable = true;
+
     @XNodeList(value = "require", type = String[].class, componentType = String.class)
     public String[] dependencies;
 
@@ -59,6 +65,14 @@ public final class ResourceType implements Type {
 
     public String getPath() {
         return path;
+    }
+
+    public boolean isShrinkable() {
+        return shrinkable;
+    }
+
+    public String getUrl() {
+        return url;
     }
 
 }

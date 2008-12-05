@@ -26,8 +26,8 @@ public final class StandaloneFilterType extends FilterType {
     @XNode("@name")
     public String name;
 
-    @XNode("engine")
-    public String engine = "*";
+    @XNode("@template-engine")
+    public String templateEngine = "*";
 
     @XNode("mode")
     public String mode = "*";
@@ -55,7 +55,7 @@ public final class StandaloneFilterType extends FilterType {
 
     @Override
     public String getTypeName() {
-        return String.format("%s/%s/%s", engine, mode, name);
+        return String.format("%s/%s/%s", templateEngine, mode, name);
     }
 
     @Override

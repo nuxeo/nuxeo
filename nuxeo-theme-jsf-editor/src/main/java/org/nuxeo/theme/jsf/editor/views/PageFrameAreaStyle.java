@@ -19,6 +19,7 @@ import org.nuxeo.theme.views.AbstractView;
 
 public class PageFrameAreaStyle extends AbstractView {
 
+    @Override
     public String render(final RenderingInfo info) {
         final StringBuilder sb = new StringBuilder();
         sb.append("<div id=\"nxthemesPageEditor\">").append(

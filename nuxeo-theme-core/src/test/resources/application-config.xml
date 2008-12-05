@@ -5,7 +5,7 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="applications">
 
-    <application root="/my-app">
+    <application root="/my-app" template-engine="html">
 
       <negotiation>
         <strategy>default-strategy</strategy>
@@ -36,7 +36,7 @@
 
     </application>
 
-    <application root="/my-app2">
+    <application root="/my-app2" template-engine="freemarker">
     </application>
 
   </extension>

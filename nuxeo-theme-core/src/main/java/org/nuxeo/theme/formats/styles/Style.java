@@ -23,8 +23,7 @@ public interface Style extends Format {
 
     Properties getPropertiesFor(String viewName, String path);
 
-    void setPropertiesFor(String viewName, String path,
-            Properties properties);
+    void setPropertiesFor(String viewName, String path, Properties properties);
 
     void clearPropertiesFor(String viewName);
 
@@ -33,5 +32,9 @@ public interface Style extends Format {
     Set<String> getPathsForView(String viewName);
 
     Set<String> getSelectorViewNames();
+
+    String getSelectorDescription(String path, String viewName);
+
+    void setSelectorDescription(String path, String viewName, String description);
 
 }

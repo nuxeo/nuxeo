@@ -84,7 +84,7 @@ public final class ElementRenderer {
         }
 
         copy.setMarkup(markup);
-
+        
         final RendererType renderer = engine.getRenderers().get(
                 element.getElementType().getTypeName());
 
@@ -92,23 +92,23 @@ public final class ElementRenderer {
             return copy;
         }
 
-        final String engineName = engine.getName();
+        final String templateEngineName = info.getTemplateEngine().getName();
         final String viewMode = info.getViewMode();
         for (String filterName : renderer.getFilters()) {
 
-            // get the filter for this specified engine and view mode
+            // get the filter for this specified template engine and view mode
             FilterType filterType = (FilterType) typeRegistry.lookup(
-                    TypeFamily.FILTER, String.format("%s/%s/%s", engineName,
+                    TypeFamily.FILTER, String.format("%s/%s/%s", templateEngineName,
                             viewMode, filterName));
 
             // fall back to unspecified view mode
             if (filterType == null) {
                 filterType = (FilterType) typeRegistry.lookup(
-                        TypeFamily.FILTER, String.format("%s/*/%s", engineName,
+                        TypeFamily.FILTER, String.format("%s/*/%s", templateEngineName,
                                 filterName));
             }
 
-            // fall back to unspecified engine and view mode
+            // fall back to unspecified template engine and view mode
             if (filterType == null) {
                 filterType = (FilterType) typeRegistry.lookup(
                         TypeFamily.FILTER, String.format("*/*/%s", filterName));

@@ -19,6 +19,7 @@ import org.nuxeo.theme.views.AbstractView;
 
 public class SectionFrameAreaStyle extends AbstractView {
 
+    @Override
     public String render(final RenderingInfo info) {
         final StringBuilder sb = new StringBuilder();
         sb.append(
@@ -28,4 +29,5 @@ public class SectionFrameAreaStyle extends AbstractView {
         sb.append("</td></tr></table>");
         return sb.toString();
     }
+
 }

@@ -35,8 +35,7 @@ public class ThemeDescriptor implements Type {
     private URL url;
 
     @XNode("src")
-    String src = "";
-
+    public String src = "";
 
     public TypeFamily getTypeFamily() {
         return TypeFamily.THEME;
@@ -60,13 +59,41 @@ public class ThemeDescriptor implements Type {
         return url;
     }
 
+    private boolean isXmlConfigured() {
+        return !src.equals("");
+    }
+
+    private boolean isLoaded() {
+        return lastLoaded != null;
+    }
+
     public boolean isWritable() {
         if (getUrl() == null) {
-            // theme with missing definitions are not writable
+            // themes with missing definition are not writable
             return false;
         }
-        String protocol = getUrl().getProtocol();
+        final String protocol = getUrl().getProtocol();
         return protocol.equals("ftp") || protocol.equals("file");
+    }
+
+    public boolean isLoadable() {
+        return isXmlConfigured() && !isLoaded();
+    }
+
+    public boolean isReloadable() {
+        return isXmlConfigured() && isLoaded();
+    }
+
+    public boolean isSaveable() {
+        return isXmlConfigured() && isWritable() && isLoaded();
+    }
+
+    public boolean isExportable() {
+        return !isXmlConfigured() || isLoaded();
+    }
+
+    public boolean isLoadingFailed() {
+        return isXmlConfigured() && !isLoaded();
     }
 
     public String getSrc() {

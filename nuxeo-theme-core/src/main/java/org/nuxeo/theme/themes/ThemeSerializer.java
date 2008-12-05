@@ -60,17 +60,22 @@ public class ThemeSerializer {
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         final DocumentBuilder db = dbf.newDocumentBuilder();
         doc = db.newDocument();
-
         elements = new ArrayList<Element>();
         final org.w3c.dom.Element root = doc.createElement(DOCROOT_NAME);
+        final ThemeManager themeManager = Manager.getThemeManager();
+
+        // Theme description and name
+        String description = theme.getDescription();
+        if (description != null) {
+            doc.appendChild(doc.createComment(String.format(" %s ", description)));
+        }
         root.setAttribute("name", theme.getName());
         doc.appendChild(root);
-
-        final ThemeManager themeManager = Manager.getThemeManager();
 
         // layout
         final org.w3c.dom.Element layoutNode = doc.createElement("layout");
         root.appendChild(layoutNode);
+
         for (Node page : theme.getChildren()) {
             serializeLayout((Element) page, layoutNode);
         }
@@ -86,15 +91,12 @@ public class ThemeSerializer {
 
         final String themeName = theme.getName();
         for (String formatTypeName : themeManager.getFormatTypeNames()) {
-
             // export named styles
             for (Identifiable object : themeManager.getNamedObjects(themeName,
                     formatTypeName)) {
                 serializeFormat((Format) object, formatNode);
             }
-
             for (Format format : themeManager.getFormatsByTypeName(formatTypeName)) {
-
                 // make sure that the format is used by this theme
                 boolean isUsedByThisTheme = false;
                 for (Element element : ElementFormatter.getElementsFor(format)) {
@@ -115,8 +117,8 @@ public class ThemeSerializer {
             final org.w3c.dom.Element domParent) throws Exception {
         final org.w3c.dom.Element domProperties = doc.createElement("properties");
         domProperties.setAttribute("element", parent.computeXPath());
-        for (Object element : FieldIO.dumpFieldsToProperties(parent).entrySet()) {
-            final Map.Entry entry = (Map.Entry) element;
+        for (Map.Entry<Object, Object> entry : FieldIO.dumpFieldsToProperties(
+                parent).entrySet()) {
             final org.w3c.dom.Element domProperty = doc.createElement((String) entry.getKey());
             final String value = (String) entry.getValue();
             domProperty.appendChild(doc.createTextNode(Utils.cleanUp(value)));
@@ -150,7 +152,7 @@ public class ThemeSerializer {
                 PerspectiveType perspective = it.next();
                 s.append(perspective.getTypeName());
                 if (it.hasNext()) {
-                    s.append(',');
+                    s.append(",");
                 }
             }
             if (s.length() > 0) {
@@ -188,7 +190,7 @@ public class ThemeSerializer {
             Element element = iter.next();
             s.append(element.computeXPath());
             if (iter.hasNext()) {
-                s.append('|');
+                s.append("|");
             }
         }
         if (hasElement) {
@@ -205,7 +207,7 @@ public class ThemeSerializer {
 
             // properties
             Properties properties = format.getProperties();
-            Enumeration names = properties.propertyNames();
+            Enumeration<?> names = properties.propertyNames();
 
             while (names.hasMoreElements()) {
                 String name = (String) names.nextElement();
@@ -222,7 +224,7 @@ public class ThemeSerializer {
         // layout
         else if ("layout".equals(typeName)) {
             Properties properties = format.getProperties();
-            Enumeration names = properties.propertyNames();
+            Enumeration<?> names = properties.propertyNames();
             while (names.hasMoreElements()) {
                 String name = (String) names.nextElement();
                 String value = properties.getProperty(name);
@@ -236,8 +238,7 @@ public class ThemeSerializer {
         else if ("style".equals(typeName)) {
             Style style = (Style) format;
             String styleName = style.getName();
-            Style ancestor = (Style) Manager.getThemeManager().getAncestorFormatOf(
-                    style);
+            Style ancestor = (Style) ThemeManager.getAncestorFormatOf(style);
             if (styleName != null) {
                 domElement.setAttribute("name", styleName);
             }
@@ -247,12 +248,14 @@ public class ThemeSerializer {
             for (String viewName : style.getSelectorViewNames()) {
                 for (String path : style.getPathsForView(viewName)) {
                     org.w3c.dom.Element domSelector = doc.createElement("selector");
-                    domSelector.setAttribute("path", Utils.cleanUp(path));
+                    path = Utils.cleanUp(path);
+                    domSelector.setAttribute("path", path);
                     if (!"*".equals(viewName)) {
                         domSelector.setAttribute("view", viewName);
                     }
-                    for (Object element : style.getPropertiesFor(viewName, path).entrySet()) {
-                        Map.Entry entry = (Map.Entry) element;
+
+                    for (Map.Entry<Object, Object> entry : style.getPropertiesFor(
+                            viewName, path).entrySet()) {
                         org.w3c.dom.Element domProperty = doc.createElement((String) entry.getKey());
                         String value = (String) entry.getValue();
                         value = value.trim();
@@ -265,6 +268,15 @@ public class ThemeSerializer {
                         }
                         domSelector.appendChild(domProperty);
                     }
+
+                    // Set selector description
+                    String selectorDescription = style.getSelectorDescription(
+                            path, viewName);
+                    if (selectorDescription != null) {
+                        domElement.appendChild(doc.createComment(String.format(
+                                " %s ", selectorDescription)));
+                    }
+
                     domElement.appendChild(domSelector);
                 }
             }

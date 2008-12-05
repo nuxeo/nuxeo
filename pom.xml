@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.1.7-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.theme</groupId>
@@ -17,17 +17,20 @@
   </description>
 
   <properties>
-    <nuxeo.common.version>1.4.4-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>1.4.4-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.theme.version>5.1.7-SNAPSHOT</nuxeo.theme.version>
+    <nuxeo.common.version>1.5-SNAPSHOT</nuxeo.common.version>
+    <nuxeo.runtime.version>1.5-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.theme.version>${pom.version}</nuxeo.theme.version>
+    <nuxeo.webengine.version>${pom.version}</nuxeo.webengine.version>
   </properties>
 
   <modules>
     <module>nuxeo-theme-core</module>
     <module>nuxeo-theme-fragments</module>
+    <module>nuxeo-theme-html</module>
     <module>nuxeo-theme-jsf</module>
-    <module>nuxeo-theme-jsf-editor</module>
-    <module>nuxeo-theme-jsf-editor-web</module>
+    <module>nuxeo-theme-editor</module>
+    <!--module>nuxeo-theme-webengine</module-->
+    <module>nuxeo-theme-webwidgets</module>
   </modules>
 
   <organization>
@@ -86,18 +89,23 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-html</artifactId>
+        <version>${nuxeo.theme.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-jsf</artifactId>
         <version>${nuxeo.theme.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-jsf-editor</artifactId>
+        <artifactId>nuxeo-theme-editor</artifactId>
         <version>${nuxeo.theme.version}</version>
         <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-jsf-editor-web</artifactId>
+        <artifactId>nuxeo-theme-webwidgets</artifactId>
         <version>${nuxeo.theme.version}</version>
       </dependency>
 

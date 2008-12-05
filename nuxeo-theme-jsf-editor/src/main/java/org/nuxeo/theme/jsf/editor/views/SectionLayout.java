@@ -15,14 +15,15 @@
 package org.nuxeo.theme.jsf.editor.views;
 
 import org.nuxeo.theme.formats.Format;
-import org.nuxeo.theme.jsf.filters.layouts.DefaultLayoutView;
+import org.nuxeo.theme.html.filters.layout.DefaultLayoutView;
 import org.nuxeo.theme.rendering.RenderingInfo;
 
 public class SectionLayout extends DefaultLayoutView {
 
-    final static String[] SIZER_PROPERTIES = { "width", "margin-left",
+    static final String[] SIZER_PROPERTIES = { "width", "margin-left",
             "margin-right" };
 
+    @Override
     public String render(final RenderingInfo info) {
         final Format layout = info.getFormat();
         final StringBuilder sizerStyle = new StringBuilder();

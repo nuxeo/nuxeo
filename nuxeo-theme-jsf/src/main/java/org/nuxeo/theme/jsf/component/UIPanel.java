@@ -22,7 +22,7 @@ import javax.faces.component.UIOutput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-import org.nuxeo.theme.jsf.Utils;
+import org.nuxeo.theme.html.ui.Panel;
 
 public class UIPanel extends UIOutput {
 
@@ -45,82 +45,27 @@ public class UIPanel extends UIOutput {
     private String filter;
 
     @Override
-    public void encodeBegin(final FacesContext context) throws IOException {
+    public void encodeAll(final FacesContext context) throws IOException {
         final ResponseWriter writer = context.getResponseWriter();
-
-        final Map attributes = getAttributes();
-        identifier = (String) attributes.get("identifier");
-        url = (String) attributes.get("url");
-        loading = (String) attributes.get("loading");
-        stylesheet = (String) attributes.get("stylesheet");
-        javascript = (String) attributes.get("javascript");
-        subviews = (String) attributes.get("subviews");
-        visibleInPerspectives = (String) attributes.get("visibleInPerspectives");
-        controlledBy = (String) attributes.get("controlledBy");
-        filter = (String) attributes.get("filter");
-
-        // model
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put("id", identifier);
-        Map<String, Object> data = new HashMap<String, Object>();
-
-        String[] query = url.split("\\?");
-        if (query.length > 1) {
-            Map<String, Object> form = new HashMap<String, Object>();
-            for (String param : query[1].split("&")) {
-                String[] kv = param.split("=");
-                form.put(kv[0], kv[1]);
-            }
-            data.put("form", form);
-            url = query[0];
+        Map<String, String> params = new HashMap<String, String>();
+        String applicationPath = context.getExternalContext().getRequestParameterMap().get(
+                "org.nuxeo.theme.application.path");
+        if (applicationPath == null) {
+            applicationPath = context.getExternalContext().getRequestContextPath();
         }
-        data.put("url", url);
-
-        if (null != loading) {
-            data.put("loading", loading);
-        }
-        if (null != stylesheet) {
-            data.put("css", stylesheet);
-        }
-        if (null != javascript) {
-            data.put("script", javascript);
-        }
-        model.put("data", data);
-
-        // model
-        writer.startElement("ins", this);
-        writer.writeAttribute("class", "model", null);
-        writer.write(Utils.toJson(model));
-        writer.endElement("ins");
-
-        // view
-        Map<String, Object> view = new HashMap<String, Object>();
-        view.put("id", identifier);
-        Map<String, Object> widget = new HashMap<String, Object>();
-        widget.put("type", "panel");
-        view.put("widget", widget);
-        view.put("model", identifier);
-        if (null != visibleInPerspectives) {
-            view.put("perspectives", visibleInPerspectives.split(","));
-        }
-        if (null != subviews) {
-            view.put("subviews", subviews.split(","));
-        }
-        if (null != controlledBy) {
-            view.put("controllers", controlledBy.split(","));
-        }
-        if (null != filter) {
-            view.put("filter", filter);
-        }
-        writer.startElement("ins", this);
-        writer.writeAttribute("class", "view", null);
-        writer.write(Utils.toJson(view));
-    }
-
-    @Override
-    public void encodeEnd(final FacesContext context) throws IOException {
-        final ResponseWriter writer = context.getResponseWriter();
-        writer.endElement("ins");
+        params.put("org.nuxeo.theme.application.path", applicationPath);
+        Map<String, Object> attributes = getAttributes();
+        params.put("identifier", (String) attributes.get("identifier"));
+        params.put("url", (String) attributes.get("url"));
+        params.put("loading", (String) attributes.get("loading"));
+        params.put("stylesheet", (String) attributes.get("stylesheet"));
+        params.put("javascript", (String) attributes.get("javascript"));
+        params.put("subviews", (String) attributes.get("subviews"));
+        params.put("visibleInPerspectives",
+                (String) attributes.get("visibleInPerspectives"));
+        params.put("controlledBy", (String) attributes.get("controlledBy"));
+        params.put("filter", (String) attributes.get("filter"));
+        writer.write(Panel.render(params));
     }
 
     public String getControlledBy() {
