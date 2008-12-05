@@ -249,7 +249,7 @@ font-weight:bold;
                     <li class="ie"><a href="http://download.nuxeo.org/desktop-integration/drag-drop/msie/">
                       <fmt:message bundle="${messages}" key="label.login.IEExtension" />
                     </a></li>
-                    <li class="ff"><a href="http://download.nuxeo.org/desktop-integration/drag-drop/firefox/Nuxeo5-FirefoxExtension.xpi">
+                    <li class="ff"><a href="https://download.nuxeo.com/browser/firefox/nuxeo-dragdrop-ff-extension.xpi">
                       <fmt:message bundle="${messages}" key="label.login.firefoxExtension" />
                     </a></li>
                     <li class="office"><a href="http://download.nuxeo.org/desktop-integration/live-edit/">
