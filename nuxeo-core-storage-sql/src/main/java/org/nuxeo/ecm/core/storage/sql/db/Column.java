@@ -219,6 +219,7 @@ public class Column implements Serializable {
             ps.setInt(index, ((Long) value).intValue());
             return;
         case Types.VARCHAR:
+        case Types.LONGVARCHAR:
             String v;
             if (type == PropertyType.BINARY) {
                 v = ((Binary) value).getDigest();
@@ -260,6 +261,7 @@ public class Column implements Serializable {
             result = rs.getLong(index);
             break;
         case Types.VARCHAR:
+        case Types.LONGVARCHAR:
             String string = rs.getString(index);
             if (type == PropertyType.BINARY && string != null) {
                 result = model.getBinary(string);

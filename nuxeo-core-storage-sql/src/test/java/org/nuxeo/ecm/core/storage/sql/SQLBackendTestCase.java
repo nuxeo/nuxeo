@@ -59,6 +59,8 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         switch (SQLBackendHelper.DATABASE) {
         case DERBY:
             return prepareDescriptorDerby();
+        case MYSQL:
+            return prepareDescriptorMySQL();
         case POSTGRESQL:
             return prepareDescriptorPostgreSQL();
         }
@@ -75,6 +77,19 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
                 SQLBackendHelper.DERBY_DIRECTORY).getAbsolutePath());
         properties.put("user", "sa");
         properties.put("password", "");
+        descriptor.properties = properties;
+        return descriptor;
+    }
+
+    protected RepositoryDescriptor prepareDescriptorMySQL() {
+        RepositoryDescriptor descriptor = new RepositoryDescriptor();
+        descriptor.xaDataSourceName = "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource";
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put("ServerName", SQLBackendHelper.MYSQL_HOST);
+        properties.put("PortNumber/Integer", SQLBackendHelper.MYSQL_PORT);
+        properties.put("DatabaseName", SQLBackendHelper.MYSQL_DATABASE);
+        properties.put("User", SQLBackendHelper.MYSQL_DATABASE_OWNER);
+        properties.put("Password", SQLBackendHelper.MYSQL_DATABASE_PASSWORD);
         descriptor.properties = properties;
         return descriptor;
     }

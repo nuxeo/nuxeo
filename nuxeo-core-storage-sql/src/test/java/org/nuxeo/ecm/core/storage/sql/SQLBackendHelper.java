@@ -41,6 +41,7 @@ public class SQLBackendHelper {
 
     protected static enum Database {
         DERBY, //
+        MYSQL, //
         POSTGRESQL
     }
 
@@ -55,10 +56,35 @@ public class SQLBackendHelper {
      * ----- Derby configuration -----
      */
 
+    /* Constant mentioned in the ...-derby-contrib.xml file: */
+
     /** This directory will be deleted and recreated. */
     protected static final String DERBY_DIRECTORY = "target/test/derby";
 
     protected static final String DERBY_LOG = "target/test/derby.log";
+
+    /*
+     * ----- MySQL configuration -----
+     */
+
+    // CREATE USER 'nuxeo' IDENTIFIED BY 'nuxeo';
+    protected static final String MYSQL_HOST = "localhost";
+
+    protected static final String MYSQL_PORT = "3306";
+
+    protected static final String MYSQL_SUPER_USER = "root";
+
+    protected static final String MYSQL_SUPER_PASSWORD = "";
+
+    protected static final String MYSQL_SUPER_DATABASE = "mysql";
+
+    /* Constants mentioned in the ...-mysql-contrib.xml file: */
+
+    public static final String MYSQL_DATABASE = "nuxeojunittests";
+
+    public static final String MYSQL_DATABASE_OWNER = "nuxeo";
+
+    public static final String MYSQL_DATABASE_PASSWORD = "nuxeo";
 
     /*
      * ----- PostgreSQL configuration -----
@@ -77,7 +103,7 @@ public class SQLBackendHelper {
     /** Database to connect to to issue CREATE DATABASE commands. */
     protected static final String PG_SUPER_DATABASE = "postgres";
 
-    /* Constants mentioned in the ...pg-contrib.xml file: */
+    /* Constants mentioned in the ...-postgresql-contrib.xml file: */
 
     /** The name of the database where tests take place. */
     public static final String PG_DATABASE = "nuxeojunittests";
@@ -102,6 +128,9 @@ public class SQLBackendHelper {
         case DERBY:
             setUpRepositoryDerby();
             return;
+        case MYSQL:
+            setUpRepositoryMySQL();
+            return;
         case POSTGRESQL:
             setUpRepositoryPostgreSQL();
             return;
@@ -113,6 +142,9 @@ public class SQLBackendHelper {
         switch (DATABASE) {
         case DERBY:
             tearDownRepositoryDerby();
+            return;
+        case MYSQL:
+            tearDownRepositoryMySQL();
             return;
         case POSTGRESQL:
             tearDownRepositoryPostgreSQL();
@@ -143,6 +175,36 @@ public class SQLBackendHelper {
             }
         }
         throw new RuntimeException("Expected Derby shutdown exception");
+    }
+
+    /*
+     * ----- MySQL -----
+     */
+
+    protected static void setUpRepositoryMySQL() throws Exception {
+        Class.forName("com.mysql.jdbc.Driver");
+        String url = String.format("jdbc:mysql://%s:%s/%s", MYSQL_HOST,
+                MYSQL_PORT, MYSQL_SUPER_DATABASE);
+        Connection connection = DriverManager.getConnection(url,
+                MYSQL_SUPER_USER, MYSQL_SUPER_PASSWORD);
+        Statement st = connection.createStatement();
+        String sql;
+        sql = String.format("DROP DATABASE IF EXISTS `%s`", MYSQL_DATABASE);
+        log.debug(sql);
+        st.execute(sql);
+        sql = String.format("CREATE DATABASE `%s`", MYSQL_DATABASE);
+        log.debug(sql);
+        st.execute(sql);
+        sql = String.format(
+                "GRANT ALL PRIVILEGES ON `%s`.* TO '%s'@'localhost' IDENTIFIED BY '%s'",
+                MYSQL_DATABASE, MYSQL_DATABASE_OWNER, MYSQL_DATABASE_PASSWORD);
+        log.debug(sql);
+        st.execute(sql);
+        st.close();
+        connection.close();
+    }
+
+    protected static void tearDownRepositoryMySQL() throws Exception {
     }
 
     /*
