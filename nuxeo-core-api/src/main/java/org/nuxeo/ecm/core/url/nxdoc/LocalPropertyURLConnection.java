@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.Calendar;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -34,7 +35,7 @@ import org.nuxeo.ecm.core.url.nxobj.ObjectURLConnection;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class LocalPropertyURLConnection extends ObjectURLConnection {
 
@@ -51,8 +52,9 @@ public class LocalPropertyURLConnection extends ObjectURLConnection {
                 property = ((DocumentModel) obj).getProperty(xpath);
             }
             return property;
-        } catch (PropertyException e) {
-            IOException ee = new IOException("Failed to get property: " + url.getPath());
+        } catch (ClientException e) {
+            IOException ee = new IOException("Failed to get property: "
+                    + url.getPath());
             ee.initCause(e);
             throw ee;
         }
@@ -60,21 +62,22 @@ public class LocalPropertyURLConnection extends ObjectURLConnection {
 
     @Override
     protected long lastModified() throws IOException {
-        DocumentPart part = ((DocumentModel)obj).getPart("dublincore");
+        try {
+            DocumentPart part = ((DocumentModel) obj).getPart("dublincore");
 
-        if (part != null) {
-            try {
-                Calendar cal = (Calendar)part.get("modified");
+            if (part != null) {
+                Calendar cal = (Calendar) part.get("modified");
                 if (cal != null) {
                     return cal.getTimeInMillis();
                 }
-            } catch (PropertyException e) {
-                IOException ee = new IOException("Failed to get last modified property");
-                ee.initCause(e);
-                throw ee;
-            }
-        }
 
+            }
+        } catch (ClientException e) {
+            IOException ee = new IOException(
+                    "Failed to get last modified property");
+            ee.initCause(e);
+            throw ee;
+        }
         return getProperty().isDirty() ? -1L : 0L;
     }
 
@@ -87,14 +90,15 @@ public class LocalPropertyURLConnection extends ObjectURLConnection {
                 return new ByteArrayInputStream(new byte[0]);
             }
             if (value instanceof Blob) {
-                return ((Blob)value).getStream();
+                return ((Blob) value).getStream();
             }
             if (value instanceof InputStream) {
-                return (InputStream)value;
+                return (InputStream) value;
             }
             return new ByteArrayInputStream(value.toString().getBytes());
         } catch (PropertyException e) {
-            throw new IOException("Failed to get property value: " + p.getName());
+            throw new IOException("Failed to get property value: "
+                    + p.getName());
         }
     }
 

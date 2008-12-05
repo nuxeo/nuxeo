@@ -139,8 +139,9 @@ public interface DocumentModel extends Serializable {
      * Get a text suitable to be shown in a UI for this document.
      *
      * @return the title or the internal name if no title could be found
+     * @throws ClientException 
      */
-    String getTitle();
+    String getTitle() throws ClientException;
 
     /**
      * Gets the document path as a string.
@@ -198,8 +199,9 @@ public interface DocumentModel extends Serializable {
      *
      * @param schema the schema name
      * @return the data model or null if no such schema is supported
+     * @throws ClientException 
      */
-    DataModel getDataModel(String schema);
+    DataModel getDataModel(String schema) throws ClientException;
 
     /**
      * Sets path info.
@@ -269,8 +271,9 @@ public interface DocumentModel extends Serializable {
      * recommended since it caches the ACP for later usage.
      *
      * @return the security data model or null if none
+     * @throws ClientException 
      */
-    ACP getACP();
+    ACP getACP() throws ClientException;
 
     /**
      * Sets the ACP for this document model.
@@ -281,8 +284,9 @@ public interface DocumentModel extends Serializable {
      * @see {@link CoreSession#setACP(DocumentRef, ACP, boolean)}
      * @param acp the ACP to set
      * @param overwrite whether to overwrite the old ACP or not
+     * @throws ClientException 
      */
-    void setACP(ACP acp, boolean overwrite);
+    void setACP(ACP acp, boolean overwrite) throws ClientException;
 
     /**
      * Gets a property from the given schema.
@@ -293,8 +297,9 @@ public interface DocumentModel extends Serializable {
      * @param schemaName the schema name
      * @param name the property name
      * @return the property value or null if no such property exists
+     * @throws ClientException 
      */
-    Object getProperty(String schemaName, String name);
+    Object getProperty(String schemaName, String name) throws ClientException;
 
     /**
      * Sets the property value from the given schema.
@@ -304,8 +309,9 @@ public interface DocumentModel extends Serializable {
      * @param schemaName the schema name
      * @param name the property name
      * @param value the property value
+     * @throws ClientException 
      */
-    void setProperty(String schemaName, String name, Object value);
+    void setProperty(String schemaName, String name, Object value) throws ClientException;
 
     /**
      * Gets the values from the given data model as a map.
@@ -315,8 +321,9 @@ public interface DocumentModel extends Serializable {
      *
      * @param schemaName the data model schema name
      * @return the values map
+     * @throws ClientException 
      */
-    Map<String, Object> getProperties(String schemaName);
+    Map<String, Object> getProperties(String schemaName) throws ClientException;
 
     /**
      * Sets values for the given data model.
@@ -325,8 +332,9 @@ public interface DocumentModel extends Serializable {
      *
      * @param schemaName the schema name
      * @param data the values to set
+     * @throws ClientException 
      */
-    void setProperties(String schemaName, Map<String, Object> data);
+    void setProperties(String schemaName, Map<String, Object> data) throws ClientException;
 
     /**
      * Checks whether this document model has the given schema.
@@ -362,8 +370,9 @@ public interface DocumentModel extends Serializable {
      * Checks if this document can be downloaded.
      *
      * @return true if the document has downloadable content, false otherwise
+     * @throws ClientException 
      */
-    boolean isDownloadable();
+    boolean isDownloadable() throws ClientException;
 
     /**
      * Checks if this document is a version.
@@ -489,8 +498,9 @@ public interface DocumentModel extends Serializable {
      * Copies all the data from a source document.
      *
      * @param sourceDoc
+     * @throws ClientException 
      */
-    void copyContent(DocumentModel sourceDoc);
+    void copyContent(DocumentModel sourceDoc) throws ClientException;
 
     /**
      * Returns the name of the repository in which the document is stored.
@@ -509,8 +519,9 @@ public interface DocumentModel extends Serializable {
      * We will use the last modification time if present for the timestamp.
      *
      * @return the cache key as a string
+     * @throws ClientException 
      */
-    String getCacheKey();
+    String getCacheKey() throws ClientException;
 
     /**
      * Returns the source document identifier.
@@ -582,22 +593,25 @@ public interface DocumentModel extends Serializable {
      * @param schema the schema
      * @return the document aprt or null if none exists for that schema
      * TODO throw an exception if schema is not impl  by the doc?
+     * @throws ClientException 
      */
-    DocumentPart getPart(String schema);
+    DocumentPart getPart(String schema) throws ClientException;
 
     /**
      * Get this document parts
      * @return
+     * @throws ClientException 
      */
-    DocumentPart[] getParts();
+    DocumentPart[] getParts() throws ClientException;
 
     /**
      * Get a property given a xpath
      * @param xpath
      * @return
      * @throws PropertyException
+     * @throws ClientException 
      */
-    Property getProperty(String xpath) throws PropertyException;
+    Property getProperty(String xpath) throws PropertyException, ClientException;
 
     /**
      * Gets a property value given a xpath.
@@ -605,8 +619,9 @@ public interface DocumentModel extends Serializable {
      * @param xpath
      * @return
      * @throws PropertyException
+     * @throws ClientException 
      */
-    Serializable getPropertyValue(String xpath) throws PropertyException;
+    Serializable getPropertyValue(String xpath) throws PropertyException, ClientException;
 
     /**
      * Sets a property value given a xpath.
@@ -614,8 +629,9 @@ public interface DocumentModel extends Serializable {
      * @param xpath
      * @param value
      * @throws PropertyException
+     * @throws ClientException 
      */
-    void setPropertyValue(String xpath, Serializable value) throws PropertyException;
+    void setPropertyValue(String xpath, Serializable value) throws PropertyException, ClientException;
 
     /**
      * Returns the flags set on the document model.

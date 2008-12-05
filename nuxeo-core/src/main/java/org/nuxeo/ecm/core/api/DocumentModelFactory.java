@@ -63,15 +63,25 @@ public class DocumentModelFactory {
     }
 
     public static DocumentModel newDocument(DocumentModel parent, String type) {
-        DocumentType docType = ((DocumentModelImpl) parent).getClient().getDocumentType(
-                type);
+        DocumentType docType;
+        try {
+            docType = ((DocumentModelImpl) parent).getClient().getDocumentType(
+                    type);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
         return newDocument(parent, docType);
     }
 
     public static DocumentModel newDocument(DocumentModel parent, String name,
             String type) {
-        DocumentType docType = ((DocumentModelImpl) parent).getClient().getDocumentType(
-                type);
+        DocumentType docType;
+        try {
+            docType = ((DocumentModelImpl) parent).getClient().getDocumentType(
+                    type);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
         return newDocument(parent, name, docType);
     }
 
@@ -115,7 +125,12 @@ public class DocumentModelFactory {
                 String typeName = field.getDeclaringType().getName();
                 String typeLocalName = field.getName().getLocalName();
                 String fieldName = typeName + '.' + typeLocalName;
-                Object value = docModel.getProperty(typeName, typeLocalName);
+                Object value;
+                try {
+                    value = docModel.getProperty(typeName, typeLocalName);
+                } catch (ClientException e) {
+                    continue;
+                }
                 prefetchMap.put(fieldName, (Serializable) value);
             }
         }

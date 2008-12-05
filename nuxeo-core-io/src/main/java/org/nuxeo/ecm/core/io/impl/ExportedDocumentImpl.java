@@ -34,6 +34,8 @@ import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -97,7 +99,11 @@ public class ExportedDocumentImpl implements ExportedDocument {
             throws IOException {
         id = doc.getId();
         this.path = path.makeRelative();
-        readDocument(doc, inlineBlobs);
+        try {
+            readDocument(doc, inlineBlobs);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
 
         srcLocation = new DocumentLocationImpl(doc);
     }
@@ -197,7 +203,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
     }
 
     private void readDocument(DocumentModel doc, boolean inlineBlobs)
-            throws IOException {
+            throws IOException, ClientException {
         document = DocumentFactory.getInstance().createDocument();
         document.setName(doc.getName());
         Element rootElement = document.addElement(ExportConstants.DOCUMENT_TAG);

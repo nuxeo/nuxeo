@@ -24,6 +24,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -178,7 +180,12 @@ public final class DocumentModelUtils {
         }
         final Map<String, Object> allProps = new HashMap<String, Object>();
         for (String schemaName : schemas) {
-            Map<String, Object> props = docModel.getProperties(schemaName);
+            Map<String, Object> props;
+            try {
+                props = docModel.getProperties(schemaName);
+            } catch (ClientException e) {
+                throw new ClientRuntimeException(e);
+            }
             allProps.putAll(props);
         }
         return allProps;
