@@ -27,6 +27,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.transform.service.TransformService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public abstract class AbstractPluginTestCase extends NXRuntimeTestCase {
@@ -48,7 +49,7 @@ public abstract class AbstractPluginTestCase extends NXRuntimeTestCase {
                 "nxtransform-plugins-bundle.xml");
         deployContrib("org.nuxeo.ecm.platform.transform.plugin.tests",
                 "nxtransform-platform-contrib.xml");
-        service = NXTransform.getTransformService();
+        service = (TransformService) Framework.getRuntime().getComponent(TransformService.NAME);
     }
 
     protected static File createTempFile(String extension) throws IOException {

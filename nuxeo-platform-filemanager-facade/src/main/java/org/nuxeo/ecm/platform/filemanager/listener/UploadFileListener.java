@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.platform.filemanager.listener;
 
 import java.io.Serializable;
@@ -9,6 +28,8 @@ import java.util.Map;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
@@ -18,6 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -43,8 +65,10 @@ import org.nuxeo.runtime.api.Framework;
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
         @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
         @ActivationConfigProperty(propertyName = "messageSelector",
-                propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " IN ('" + JMSConstant.DOCUMENT_MESSAGE + "','" + JMSConstant.EVENT_MESSAGE + "') AND " + JMSConstant.NUXEO_EVENT_ID + " IN ('"
+                propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " IN ('" + JMSConstant.DOCUMENT_MESSAGE + "','"
+                    + JMSConstant.EVENT_MESSAGE + "') AND " + JMSConstant.NUXEO_EVENT_ID + " IN ('"
                     + DocumentEventTypes.DOCUMENT_CREATED +"','" + DocumentEventTypes.DOCUMENT_UPDATED + "')") })
+@TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class UploadFileListener implements MessageListener {
 
     private static final Log log = LogFactory.getLog(UploadFileListener.class);
@@ -112,8 +136,9 @@ public class UploadFileListener implements MessageListener {
 
         try {
             Object obj = ((ObjectMessage)message).getObject();
-            if(!(obj instanceof DocumentMessage))
+            if(!(obj instanceof DocumentMessage)) {
                 return;
+            }
             DocumentMessage doc = (DocumentMessage) obj;
             login();
 
@@ -170,9 +195,13 @@ public class UploadFileListener implements MessageListener {
 
         } finally {
             try {
+                if (session!=null)
+                {
+                    CoreInstance.getInstance().close(session);
+                }
                 logout();
-            } catch (Exception e) {
-                log.error("Impossible to logout", e);
+            } catch (Throwable e) {
+                log.error("Error during cleanup", e);
             }
         }
     }

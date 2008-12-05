@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -103,12 +104,32 @@ public class UserManagerImpl implements UserManager {
 
     private Pattern userPasswordPattern;
 
-    private String anonymousUserId;
+    private VirtualUser anonymousUser;
 
-    private Map<String, Object> anonymousUserMap;
+    private Map<String, VirtualUserDescriptor> virtualUsers;
 
     public UserManagerImpl() {
         dirService = Framework.getLocalService(DirectoryService.class);
+        virtualUsers = new HashMap<String, VirtualUserDescriptor>();
+    }
+
+    public void setConfiguration(UserManagerDescriptor descriptor) {
+        setDefaultGroup(descriptor.defaultGroup);
+        setRootLogin(descriptor.rootLogin);
+        setUserSortField(descriptor.userSortField);
+        setGroupSortField(descriptor.groupSortField);
+        setUserListingMode(descriptor.userListingMode);
+        setGroupListingMode(descriptor.groupListingMode);
+        setUserDirectoryName(descriptor.userDirectoryName);
+        setUserEmailField(descriptor.userEmailField);
+        setUserSearchFields(descriptor.userSearchFields);
+        setUserPasswordPattern(descriptor.userPasswordPattern);
+        setGroupDirectoryName(descriptor.groupDirectoryName);
+        setGroupMembersField(descriptor.groupMembersField);
+        setGroupSubGroupsField(descriptor.groupSubGroupsField);
+        setGroupParentGroupsField(descriptor.groupParentGroupsField);
+        setAnonymousUser(descriptor.anonymousUser);
+        setVirtualUsers(descriptor.virtualUsers);
     }
 
     public void setUserDirectoryName(String userDirectoryName) {
@@ -218,23 +239,26 @@ public class UserManagerImpl implements UserManager {
         this.userPasswordPattern = userPasswordPattern;
     }
 
-    public void setAnonymousUser(Map<String, String> anonymousUser) {
-        if (anonymousUser == null) {
-            anonymousUserId = null;
-            anonymousUserMap = null;
-        } else {
-            Map<String, Object> map = new HashMap<String, Object>(anonymousUser);
-            anonymousUserId = (String) map.remove(ANONYMOUS_USER_ID_KEY);
-            if (anonymousUserId == null) {
-                anonymousUserId = DEFAULT_ANONYMOUS_USER_ID;
-            }
-            map.put(NuxeoPrincipalImpl.USERNAME_COLUMN, anonymousUserId);
-            anonymousUserMap = Collections.unmodifiableMap(map);
-        }
+    public void setAnonymousUser(VirtualUser anonymousUser) {
+        this.anonymousUser = anonymousUser;
     }
 
     public String getAnonymousUserId() {
+        if (anonymousUser == null) {
+            return null;
+        }
+        String anonymousUserId = anonymousUser.getId();
+        if (anonymousUserId == null) {
+            return DEFAULT_ANONYMOUS_USER_ID;
+        }
         return anonymousUserId;
+    }
+
+    public void setVirtualUsers(Map<String, VirtualUserDescriptor> virtualUsers) {
+        this.virtualUsers.clear();
+        if (virtualUsers != null) {
+            this.virtualUsers.putAll(virtualUsers);
+        }
     }
 
     public void remove() throws ClientException {
@@ -247,11 +271,24 @@ public class UserManagerImpl implements UserManager {
             log.warn("Trying to authenticate against null username or password");
             return false;
         }
+
+        // deal with anonymous user
+        String anonymousUserId = getAnonymousUserId();
         if (username.equals(anonymousUserId)) {
             log.warn(String.format(
                     "Trying to authenticate anonymous user (%s)",
                     anonymousUserId));
             return false;
+        }
+
+        // deal with virtual users
+        if (virtualUsers.containsKey(username)) {
+            VirtualUser user = virtualUsers.get(username);
+            String expected = user.getPassword();
+            if (expected == null) {
+                return false;
+            }
+            return expected.equals(password);
         }
 
         Session userDir = null;
@@ -271,6 +308,7 @@ public class UserManagerImpl implements UserManager {
                         + "directory: " + userDirName);
                 return false;
             }
+
             return userDir.authenticate(username, password);
         } finally {
             if (userDir != null) {
@@ -289,42 +327,66 @@ public class UserManagerImpl implements UserManager {
     }
 
     protected NuxeoPrincipal makeAnonymousPrincipal() throws ClientException {
+        DocumentModel userEntry = makeVirtualUserEntry(getAnonymousUserId(),
+                anonymousUser);
+        // XXX: pass anonymous user groups, but they will be ignored
+        return makePrincipal(userEntry, true, anonymousUser.getGroups());
+    }
+
+    protected NuxeoPrincipal makeVirtualPrincipal(VirtualUser user)
+            throws ClientException {
+        DocumentModel userEntry = makeVirtualUserEntry(user.getId(), user);
+        return makePrincipal(userEntry, false, user.getGroups());
+    }
+
+    protected DocumentModel makeVirtualUserEntry(String id, VirtualUser user)
+            throws ClientException {
         final DocumentModelImpl userEntry = new DocumentModelImpl(null,
-                userSchemaName, anonymousUserId, null, null, null,
+                userSchemaName, id, null, null, null,
                 new String[] { userSchemaName }, null);
         userEntry.addDataModel(new DataModelImpl(userSchemaName,
-                anonymousUserMap));
-        return makePrincipal(userEntry, true);
+                Collections.<String, Object> emptyMap()));
+        for (Map.Entry<String, Serializable> prop : user.getProperties().entrySet()) {
+            userEntry.setProperty(userSchemaName, prop.getKey(),
+                    prop.getValue());
+        }
+        userEntry.setProperty(userSchemaName,
+                NuxeoPrincipalImpl.USERNAME_COLUMN, id);
+        return userEntry;
     }
 
     protected NuxeoPrincipal makePrincipal(DocumentModel userEntry)
             throws ClientException {
-        return makePrincipal(userEntry, false);
+        return makePrincipal(userEntry, false, null);
     }
 
     protected NuxeoPrincipal makePrincipal(DocumentModel userEntry,
-            boolean anonymous) throws ClientException {
+            boolean anonymous, List<String> groups) throws ClientException {
         NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(
                 userEntry.getId(), anonymous);
 
         principal.setModel(userEntry);
 
+        // XXX why not set groups to anonymous user?
         if (!anonymous) {
             List<String> virtualGroups = new LinkedList<String>();
-
-            // Add preconfigured groups : useful for LDAP
+            // Add preconfigured groups: useful for LDAP
             if (defaultGroup != null) {
                 virtualGroups.add(defaultGroup);
+            }
+            // Add additional groups: useful for virtual users
+            if (groups != null) {
+                virtualGroups.addAll(groups);
             }
             // Create a default admin if needed
             if (defaultRootLogin != null
                     && defaultRootLogin.equals(principal.getName())) {
-                virtualGroups.add("administrators");
+                virtualGroups.add(SecurityConstants.ADMINISTRATORS);
             }
             principal.setVirtualGroups(virtualGroups);
         }
 
-        // TODO: renable roles initialization once we have a use case for
+        // TODO: reenable roles initialization once we have a use case for
         // a role directory. In the mean time we only set the JBOSS role
         // that is required to login
         List<String> roles = Arrays.asList("regular");
@@ -337,8 +399,12 @@ public class UserManagerImpl implements UserManager {
         if (username == null) {
             return null;
         }
+        String anonymousUserId = getAnonymousUserId();
         if (username.equals(anonymousUserId)) {
             return makeAnonymousPrincipal();
+        }
+        if (virtualUsers.containsKey(username)) {
+            return makeVirtualPrincipal(virtualUsers.get(username));
         }
         Session userDir = null;
         try {
@@ -426,7 +492,6 @@ public class UserManagerImpl implements UserManager {
         try {
             groupDir = dirService.open(groupDirectoryName);
             DocumentModel groupEntry = groupDir.getEntry(groupName);
-            // TODO: move hardcoded names to an extension point
             groupEntry.setProperty(groupSchemaName, groupMembersField,
                     group.getMemberUsers());
             groupEntry.setProperty(groupSchemaName, groupSubGroupsField,
@@ -462,18 +527,31 @@ public class UserManagerImpl implements UserManager {
     @SuppressWarnings("unchecked")
     public NuxeoGroup getGroup(DocumentModel groupEntry) {
         NuxeoGroup group = new NuxeoGroupImpl(groupEntry.getId());
-        List<String> list = (List<String>) groupEntry.getProperty(
-                groupSchemaName, groupMembersField);
+        List<String> list;
+        try {
+            list = (List<String>) groupEntry.getProperty(
+                    groupSchemaName, groupMembersField);
+        } catch (ClientException e) {
+            list = null;
+        }
         if (list != null) {
             group.setMemberUsers(list);
         }
-        list = (List<String>) groupEntry.getProperty(groupSchemaName,
-                groupSubGroupsField);
+        try {
+            list = (List<String>) groupEntry.getProperty(groupSchemaName,
+                    groupSubGroupsField);
+        } catch (ClientException e) {
+            list = null;
+        }
         if (list != null) {
             group.setMemberGroups(list);
         }
-        list = (List<String>) groupEntry.getProperty(groupSchemaName,
-                groupParentGroupsField);
+        try {
+            list = (List<String>) groupEntry.getProperty(groupSchemaName,
+                    groupParentGroupsField);
+        } catch (ClientException e) {
+            list = null;
+        }
         if (list != null) {
             group.setParentGroups(list);
         }
@@ -593,7 +671,9 @@ public class UserManagerImpl implements UserManager {
         try {
             groupDir = dirService.open(groupDirectoryName);
 
-            DocumentModelList groupEntries = groupDir.getEntries();
+            // XXX retrieve all entries with references, can be costly.
+            DocumentModelList groupEntries = groupDir.query(
+                    Collections.<String, Object> emptyMap(), null, null, true);
             List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>(
                     groupEntries.size());
             for (DocumentModel entry : groupEntries) {
@@ -614,7 +694,9 @@ public class UserManagerImpl implements UserManager {
         try {
             List<String> topLevelGroups = new LinkedList<String>();
             groupDir = dirService.open(groupDirectoryName);
-            DocumentModelList groups = groupDir.getEntries();
+            // XXX retrieve all entries with references, can be costly.
+            DocumentModelList groups = groupDir.query(
+                    Collections.<String, Object> emptyMap(), null, null, true);
             for (DocumentModel group : groups) {
                 List<String> parents = (List<String>) group.getProperty(
                         groupSchemaName, groupParentGroupsField);
@@ -658,12 +740,18 @@ public class UserManagerImpl implements UserManager {
      * using fulltext rules.)
      */
     protected boolean isAnonymousMatching(String pattern) {
+        String anonymousUserId = getAnonymousUserId();
         if (anonymousUserId == null) {
             return false;
         }
         pattern = pattern.toLowerCase();
+        Map<String, Serializable> anonymousUserMap = anonymousUser.getProperties();
+        // XXX hack: match id
+        anonymousUserMap.put(NuxeoPrincipalImpl.USERNAME_COLUMN,
+                anonymousUserId);
         for (Object value : anonymousUserMap.values()) {
-            if (value.toString().toLowerCase().startsWith(pattern)) {
+            if (value != null
+                    && value.toString().toLowerCase().startsWith(pattern)) {
                 return true;
             }
         }
@@ -672,9 +760,13 @@ public class UserManagerImpl implements UserManager {
 
     protected boolean isAnonymousMatching(Map<String, Object> filter,
             Set<String> fulltext) {
+        String anonymousUserId = getAnonymousUserId();
         if (anonymousUserId == null) {
             return false;
         }
+        Map<String, Serializable> anonymousUserMap = anonymousUser.getProperties();
+        anonymousUserMap.put(NuxeoPrincipalImpl.USERNAME_COLUMN,
+                anonymousUserId);
         for (Entry<String, Object> e : filter.entrySet()) {
             String fieldName = e.getKey();
             Object expected = e.getValue();
@@ -736,6 +828,8 @@ public class UserManagerImpl implements UserManager {
             if (isAnonymousMatching(pattern)) {
                 principals.add(makeAnonymousPrincipal());
             }
+
+            // TODO: match searchable virtual users
 
             sortPrincipals(principals, userDir.getIdField());
             return principals;
@@ -830,6 +924,9 @@ public class UserManagerImpl implements UserManager {
             if (isAnonymousMatching(filter, pattern)) {
                 principals.add(makeAnonymousPrincipal());
             }
+
+            // TODO: match searchable virtual users
+
             return principals;
         } finally {
             if (userDir != null) {
@@ -872,7 +969,9 @@ public class UserManagerImpl implements UserManager {
         Session userDir = null;
         try {
             userDir = dirService.open(userDirectoryName);
-            DocumentModelList entries = userDir.getEntries();
+            // XXX retrieve all entries with references, can be costly.
+            DocumentModelList entries = userDir.query(
+                    Collections.<String, Object> emptyMap(), null, null, true);
 
             List<NuxeoPrincipal> principalList = new ArrayList<NuxeoPrincipal>(
                     entries.size());
@@ -931,8 +1030,7 @@ public class UserManagerImpl implements UserManager {
             groupDir = dirService.open(groupDirectoryName);
             return groupDir.isReadOnly();
         } catch (DirectoryException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e);
             return false;
         } finally {
             try {
@@ -950,8 +1048,7 @@ public class UserManagerImpl implements UserManager {
             userDir = dirService.open(userDirectoryName);
             return userDir.isReadOnly();
         } catch (DirectoryException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e);
             return false;
         } finally {
             try {

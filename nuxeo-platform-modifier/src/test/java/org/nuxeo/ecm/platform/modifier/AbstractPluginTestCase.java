@@ -52,8 +52,6 @@ public abstract class AbstractPluginTestCase extends RepositoryTestCase {
                 "LifeCycleService.xml");
 
         deployContrib("org.nuxeo.ecm.platform.modifier.tests",
-                "nxmimetype-bundle.xml");
-        deployContrib("org.nuxeo.ecm.platform.modifier.tests",
                 "nxtransform-bundle-dmtest.xml");
         deployContrib("org.nuxeo.ecm.platform.modifier.tests",
                 "nxtransform-plugins-bundle-dmtest.xml");

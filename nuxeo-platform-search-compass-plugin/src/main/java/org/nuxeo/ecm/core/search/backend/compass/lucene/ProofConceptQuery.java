@@ -102,10 +102,10 @@ import org.apache.lucene.search.Weight;
         }
     }
 
+    @Override
     protected Weight createWeight(Searcher searcher) throws IOException {
         return new ProofWeight(searcher);
     }
-
 
     private static class ProofScorer extends Scorer {
 

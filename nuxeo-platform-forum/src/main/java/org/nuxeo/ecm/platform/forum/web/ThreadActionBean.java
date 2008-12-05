@@ -40,10 +40,12 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.comment.web.CommentManagerActions;
 import org.nuxeo.ecm.platform.comment.web.ThreadEntry;
 import org.nuxeo.ecm.platform.forum.web.api.PostAction;
@@ -57,37 +59,37 @@ import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 
 /**
  * This Action Listener represents a Thread inside a forum.
- *
+ * 
  * @author <a href="bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
  */
 @Name("threadAction")
 @Scope(ScopeType.CONVERSATION)
 public class ThreadActionBean extends InputController implements ThreadAction {
 
-    private static final long serialVersionUID = 1L;
-
     private static final Log log = LogFactory.getLog(ThreadActionBean.class);
 
-    protected final String schema = "thread";
+    private static final long serialVersionUID = -2667460487440135732L;
 
-    protected final String type = "Thread";
+    protected static final String schema = "thread";
+
+    protected static final String type = "Thread";
 
     protected boolean principalIsAdmin;
 
     @In(create = true)
-    protected Principal currentUser;
+    protected transient Principal currentUser;
 
     @In(create = true, required = false)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true)
-    protected DocumentActions documentActions;
+    protected transient DocumentActions documentActions;
 
     @In(create = true)
     protected PrincipalListManager principalListManager;
 
     @In(create = true)
-    protected CommentManagerActions commentManagerActions;
+    protected transient CommentManagerActions commentManagerActions;
 
     @In(create = true)
     protected PostAction postAction;
@@ -125,7 +127,7 @@ public class ThreadActionBean extends InputController implements ThreadAction {
 
     /**
      * Get the Thread to create as a DocumentModel.
-     *
+     * 
      * @return
      * @throws ClientException
      */
@@ -143,9 +145,11 @@ public class ThreadActionBean extends InputController implements ThreadAction {
         docThread.setProperty(schema, "moderated", moderated);
 
         if (moderated) {
+            // XXX: hack, administrators should have the right to moderate
+            // without being in this list
             // We automatically add administrators as moderators
-            if (!moderators.contains("administrators")) {
-                moderators.add("administrators");
+            if (!moderators.contains(SecurityConstants.ADMINISTRATORS)) {
+                moderators.add(SecurityConstants.ADMINISTRATORS);
             }
             // We can also remove Administrator() since his group is added
             if (moderators.contains("Administrator()")) {
@@ -159,8 +163,12 @@ public class ThreadActionBean extends InputController implements ThreadAction {
 
     public List<String> getModerators() {
         DocumentModel currentThread = navigationContext.getCurrentDocument();
-
-        return (List<String>) currentThread.getProperty("thread", "moderators");
+        try {
+            return (List<String>) currentThread.getProperty("thread",
+                    "moderators");
+        } catch (ClientException ce) {
+            throw new ClientRuntimeException(ce);
+        }
     }
 
     public boolean isPrincipalModerator() {
@@ -388,7 +396,7 @@ public class ThreadActionBean extends InputController implements ThreadAction {
 
     /**
      * Get the thread for a given document reference
-     *
+     * 
      * @param threadRef
      * @return
      */

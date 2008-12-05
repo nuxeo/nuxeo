@@ -59,11 +59,9 @@ import org.nuxeo.ecm.platform.audit.ejb.local.LogsLocal;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Stateful bean allowing to query the logs.
- *
+ * Stateless bean allowing to query the logs.
  * <p>
  * This class takes advantage of EJBQL.
- * </p>
  *
  * :XXX: http://jira.nuxeo.org/browse/NXP-514
  *
@@ -92,7 +90,6 @@ public class LogsBean implements Logs {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public List<LogEntry> getLogEntriesFor(String uuid) throws AuditException {
         log.debug("getLogEntriesFor() UUID=" + uuid);
         Class<LogEntry> klass = getLogEntryClass();
@@ -252,10 +249,10 @@ public class LogsBean implements Logs {
         if (eventIds != null) {
             inClause = "(";
             for (String eventId : eventIds) {
-                inClause = inClause + "'" + eventId + "',";
+                inClause += "'" + eventId + "',";
             }
             inClause = inClause.substring(0, inClause.length() - 1);
-            inClause = inClause + ")";
+            inClause += ")";
 
             queryString.append(" log.eventId IN " + inClause);
             queryString.append(" AND ");
@@ -294,7 +291,6 @@ public class LogsBean implements Logs {
         return returned;
     }
 
-    @SuppressWarnings("unchecked")
     public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
             String category, String path, int pageNb, int pageSize)
             throws AuditException {
@@ -314,7 +310,7 @@ public class LogsBean implements Logs {
     public List<LogEntry> queryLogs(String[] eventIds, String dateRange)
             throws AuditException {
 
-        // :FIXME: This is not working remotelty since the LogEntryImpl returned
+        // :FIXME: This is not working remotely since the LogEntryImpl returned
         // is not within the api package.
 
         if (eventIds == null || eventIds.length == 0) {
@@ -335,10 +331,10 @@ public class LogsBean implements Logs {
 
         String inClause = "(";
         for (String eventId : eventIds) {
-            inClause = inClause + "'" + eventId + "',";
+            inClause += "'" + eventId + "',";
         }
         inClause = inClause.substring(0, inClause.length() - 1);
-        inClause = inClause + ")";
+        inClause += ")";
         Query query = em.createQuery("from " + klass.getSimpleName()
                 + " log where log.eventId in " + inClause
                 + " AND log.eventDate >= :limit"
@@ -447,8 +443,13 @@ public class LogsBean implements Logs {
         entry.setCategory("eventDocumentCategory");
         entry.setEventId("documentCreated");
         entry.setDocLifeCycle("project");
-        Calendar creationDate = (Calendar) doc.getProperty("dublincore",
-                "created");
+        Calendar creationDate;
+        try {
+            creationDate = (Calendar) doc.getProperty("dublincore",
+                    "created");
+        } catch (ClientException e) {
+            creationDate = null;
+        }
         if (creationDate != null) {
             entry.setEventDate(creationDate.getTime());
         }
