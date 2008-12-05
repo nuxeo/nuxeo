@@ -14,7 +14,7 @@
   <service>
     <provide
       interface="org.nuxeo.ecm.webengine.WebEngine" />
-      <provide
+    <provide
       interface="org.nuxeo.ecm.webengine.util.FileChangeNotifier" />
   </service>
 
@@ -86,7 +86,6 @@
     Register global guards. Guards are used to define permissions
     <code>
       <guard id="MyGuard" expression="(GUARD1 OR GUARD2) AND user=bogdan">
-
       </guard>
     </code>
   </documentation>
@@ -96,10 +95,9 @@
   </extension-point>
 
   <extension-point name="transformer" target="org.nuxeo.ecm.webengine.WebEngineComponent">
-        <object
+    <object
       class="org.nuxeo.ecm.webengine.rendering.WikiTransformerDescriptor" />
   </extension-point>
-
 
   <extension-point name="application">
   <documentation>

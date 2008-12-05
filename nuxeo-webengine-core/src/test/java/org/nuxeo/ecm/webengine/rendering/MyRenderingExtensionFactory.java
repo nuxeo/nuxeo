@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.webengine.rendering;
 
-import org.nuxeo.ecm.webengine.rendering.RenderingExtensionFactory;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *

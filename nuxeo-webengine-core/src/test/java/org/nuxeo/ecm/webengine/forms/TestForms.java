@@ -23,8 +23,6 @@ import java.net.URL;
 
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.forms.FormManager;
-import org.nuxeo.ecm.webengine.forms.TestFormInstance;
 import org.nuxeo.ecm.webengine.forms.validation.Field;
 import org.nuxeo.ecm.webengine.forms.validation.Form;
 import org.nuxeo.ecm.webengine.forms.validation.MultiStatus;

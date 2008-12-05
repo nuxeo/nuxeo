@@ -23,8 +23,6 @@ import java.text.ParseException;
 
 import junit.framework.TestCase;
 
-import org.nuxeo.ecm.webengine.security.PostfixExpression;
-
 public class TestPostfixExpression extends TestCase {
 
     public void test1() throws ParseException {
