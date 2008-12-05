@@ -36,7 +36,7 @@ import com.google.gwt.http.client.URL;
 public class Framework {
 
     public static final String APPLICATION_XP = "APPLICATION";
-    
+
     protected static Map<String, Extensible> extensionPoints = new HashMap<String, Extensible>();
     protected static Map<String, List<Object>> waitingExtensions = new HashMap<String, List<Object>>();
     protected static Application application;
@@ -44,22 +44,22 @@ public class Framework {
     protected static String basePath = null;
     protected static boolean isStarted = false;
 
-    
+
     public static Application getApplication() {
         return application;
     }
-    
-    
+
+
     public static void setErrorHandler(ErrorHandler errorHandler) {
         Framework.errorHandler = errorHandler;
     }
-    
+
     public static ErrorHandler getErrorHandler() {
         return errorHandler;
     }
-    
 
-    
+
+
     public static String getBasePath() {
         return basePath;
     }
@@ -71,7 +71,7 @@ public class Framework {
             errorHandler.handleError(t);
         }
     }
-    
+
     public static void registerExtensionPoint(String name, Extensible extensible) {
         extensionPoints.put(name, extensible);
         List<Object> list = waitingExtensions.remove(name);
@@ -81,7 +81,7 @@ public class Framework {
             }
         }
     }
-    
+
     public static void registerExtension(String extensionPoint, Object extension) {
         Extensible xp = extensionPoints.get(extensionPoint);
         if (xp != null) {
@@ -98,44 +98,44 @@ public class Framework {
             GWT.log("Postpone extension registration for: "+extensionPoint, null);
         }
     }
-    
+
     public static String normalize(String uri) {
         if (basePath != null) {
             if (!uri.contains("://")) { // relative URL
                 if (!uri.startsWith("/")) {
                     uri = basePath+uri;
                 } else {
-                    uri = basePath+uri.substring(1);  
+                    uri = basePath+uri.substring(1);
                 }
             }
         }
-        return URL.encode(uri); 
+        return URL.encode(uri);
     }
 
     public static void start(String url) {
         if (isStarted) {
             throw new IllegalStateException("Application already started!");
         }
-//        if (url != null && url.endsWith("/")) {            
-//            basePath = url.substring(0, url.length()-1); 
+//        if (url != null && url.endsWith("/")) {
+//            basePath = url.substring(0, url.length()-1);
 //        } else {
 //            basePath = url;
 //        }
-        basePath = url != null ? url : GWT.getHostPageBaseURL();
+        basePath = url != null ? url : null;
         if (application == null) {
             GWT.log("You must define an application!", null);
             throw new IllegalStateException("There is no application to start!");
         }
         application.start();
-        if (!waitingExtensions.isEmpty()) {//TODO use onAtach in application to clear the map? 
+        if (!waitingExtensions.isEmpty()) {//TODO use onAtach in application to clear the map?
             GWT.log("There are extensions waiting to be deployed - "+waitingExtensions, null);
         }
     }
-    
+
     public static void start() {
         start(null);
-    }    
+    }
 
-    
-    
+
+
 }
