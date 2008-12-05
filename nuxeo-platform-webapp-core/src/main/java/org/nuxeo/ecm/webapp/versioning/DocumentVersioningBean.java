@@ -528,7 +528,11 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
             // XXX AT: this is a hack
             String majorProp = versioningManager.getMajorVersionPropertyName(typeName);
             String schemaName = DocumentModelUtils.getSchemaName(majorProp);
-            isAvailable = docModel.getDataModel(schemaName) != null;
+            try {
+                isAvailable = docModel.getDataModel(schemaName) != null;
+            } catch (ClientException e) {
+                isAvailable = false;
+            }
             uidInfoAvailableCache.put(typeName, isAvailable);
         }
         return isAvailable;
@@ -545,7 +549,11 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         String majorProp = versioningManager.getMajorVersionPropertyName(docModel.getType());
         String schemaName = DocumentModelUtils.getSchemaName(majorProp);
         String fieldName = DocumentModelUtils.getFieldName(majorProp);
-        return docModel.getProperty(schemaName, fieldName) != null;
+        try {
+            return docModel.getProperty(schemaName, fieldName) != null;
+        } catch (ClientException e) {
+            return null;
+        }
     }
 
     /**

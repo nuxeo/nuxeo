@@ -256,8 +256,12 @@ public class SQLSession implements Session, EntrySource {
             if (fetchReferences) {
                 for (Reference reference : directory.getReferences()) {
                     List<String> targetIds = reference.getTargetIdsForSource(entry.getId());
-                    entry.setProperty(schemaName, reference.getFieldName(),
-                            targetIds);
+                    try {
+                        entry.setProperty(schemaName, reference.getFieldName(),
+                                targetIds);
+                    } catch (ClientException e) {
+                        throw new DirectoryException(e);
+                    }
                 }
             }
             return entry;

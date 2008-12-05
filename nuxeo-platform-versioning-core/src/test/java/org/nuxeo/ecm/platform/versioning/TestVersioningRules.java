@@ -39,14 +39,14 @@ import org.nuxeo.ecm.platform.versioning.wfintf.WFState;
  * accordingly to defined rules.
  * <p>
  * Document (JCRDocument) objects are used in this test (at the core level).
- *
+ * 
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
 public class TestVersioningRules extends VersioningBaseTestCase {
 
     private static final Log log = LogFactory.getLog(TestVersioningRules.class);
 
-    private long getMajorVersion(DocumentModel doc) {
+    private long getMajorVersion(DocumentModel doc) throws Exception {
         VersioningService service = getVersioningService();
         String propertyName = service.getMajorVersionPropertyName(doc.getType());
         return (Long) doc.getProperty(
@@ -54,7 +54,7 @@ public class TestVersioningRules extends VersioningBaseTestCase {
                 DocumentModelUtils.getFieldName(propertyName));
     }
 
-    private long getMinorVersion(DocumentModel doc) {
+    private long getMinorVersion(DocumentModel doc) throws Exception {
         VersioningService service = getVersioningService();
         String propertyName = service.getMinorVersionPropertyName(doc.getType());
         return (Long) doc.getProperty(
@@ -62,14 +62,16 @@ public class TestVersioningRules extends VersioningBaseTestCase {
                 DocumentModelUtils.getFieldName(propertyName));
     }
 
-    private void setMajorVersion(DocumentModel doc, Long version) {
+    private void setMajorVersion(DocumentModel doc, Long version)
+            throws Exception {
         VersioningService service = getVersioningService();
         String propertyName = service.getMajorVersionPropertyName(doc.getType());
         doc.setProperty(DocumentModelUtils.getSchemaName(propertyName),
                 DocumentModelUtils.getFieldName(propertyName), version);
     }
 
-    private void setMinorVersion(DocumentModel doc, Long version) {
+    private void setMinorVersion(DocumentModel doc, Long version)
+            throws Exception {
         VersioningService service = getVersioningService();
         String propertyName = service.getMinorVersionPropertyName(doc.getType());
         doc.setProperty(DocumentModelUtils.getSchemaName(propertyName),
@@ -78,11 +80,10 @@ public class TestVersioningRules extends VersioningBaseTestCase {
 
     /**
      * Tests with lifecycle.
-     *
-     * @throws DocumentException
+     * 
+     * @throws Exception
      */
-    public void testVersionWFRequestRuleIncMinor() throws DocumentException,
-            ClientException {
+    public void testVersionWFRequestRuleIncMinor() throws Exception {
         Document verfile = root.addChild("testfolder1", "VerFile");
         session.save();
         DocumentRef docRef = new IdRef(verfile.getUUID());
@@ -104,8 +105,7 @@ public class TestVersioningRules extends VersioningBaseTestCase {
         assertEquals(1L, getMinorVersion(doc));
     }
 
-    public void testVersionWFRequestSelfIncMinor() throws DocumentException,
-            ClientException {
+    public void testVersionWFRequestSelfIncMinor() throws Exception {
         Document folder1 = root.addChild("testfolder1", "VerFile");
         session.save();
         DocumentRef docRef = new IdRef(folder1.getUUID());
@@ -130,8 +130,7 @@ public class TestVersioningRules extends VersioningBaseTestCase {
         assertEquals(93L, getMinorVersion(doc));
     }
 
-    public void testVersionWFRequestRuleIncMajor() throws DocumentException,
-            ClientException {
+    public void testVersionWFRequestRuleIncMajor() throws Exception {
         Document folder1 = root.addChild("testfolder1", "VerFile");
         session.save();
         DocumentRef docRef = new IdRef(folder1.getUUID());
@@ -155,8 +154,7 @@ public class TestVersioningRules extends VersioningBaseTestCase {
         assertEquals(0L, getMinorVersion(doc));
     }
 
-    public void testVersionEditRequest() throws DocumentException,
-            ClientException {
+    public void testVersionEditRequest() throws Exception {
         Document folder1 = root.addChild("testfolder1", "VerFile");
         session.save();
         DocumentRef docRef = new IdRef(folder1.getUUID());
@@ -178,8 +176,7 @@ public class TestVersioningRules extends VersioningBaseTestCase {
         assertEquals(0L, getMinorVersion(doc));
     }
 
-    public void testVersionAutoRequest() throws DocumentException,
-            ClientException {
+    public void testVersionAutoRequest() throws Exception {
         Document verfile = root.addChild("testfile1", "VerFile");
         session.save();
         DocumentRef docRef = new IdRef(verfile.getUUID());
@@ -244,7 +241,7 @@ public class TestVersioningRules extends VersioningBaseTestCase {
     /**
      * Test incrementation rules when a workflow process is in progress for the
      * document.
-     *
+     * 
      * @throws ClientException
      */
     public void testWithWorkflowInProgress() throws DocumentException,
@@ -270,7 +267,7 @@ public class TestVersioningRules extends VersioningBaseTestCase {
     /**
      * Tests edit option (inc major/minor) with lifecycle transition specified
      * by major inc option.
-     *
+     * 
      * @throws DocumentException
      * @throws ClientException
      * @throws LifeCycleException

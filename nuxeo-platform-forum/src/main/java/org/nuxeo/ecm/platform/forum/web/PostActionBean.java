@@ -40,6 +40,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -78,7 +79,7 @@ import org.nuxeo.ecm.webapp.dashboard.DashboardActions;
 /**
  * This action listener is used to create a Post inside a Thread and also to
  * handle the moderation cycle on Post.
- *
+ * 
  * @author <a href="bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
  */
 
@@ -128,7 +129,6 @@ public class PostActionBean extends InputController implements PostAction {
     private String filename;
 
     private Blob fileContent;
-
 
     @Destroy
     public void destroy() {
@@ -317,7 +317,7 @@ public class PostActionBean extends InputController implements PostAction {
 
     /**
      * Start the moderation on given Post.
-     *
+     * 
      * @param post
      * @return
      * @throws WMWorkflowException
@@ -375,7 +375,7 @@ public class PostActionBean extends InputController implements PostAction {
 
     /**
      * Gets the current task Id.
-     *
+     * 
      * @return
      * @throws WMWorkflowException
      */
@@ -437,18 +437,17 @@ public class PostActionBean extends InputController implements PostAction {
     }
 
     public List<String> getModeratorsOnParentThread() {
-        List<String> moderators = (List<String>) getParentThread().getProperty(
-                "thread", "moderators");
-        if (moderators != null) {
-            return moderators;
+        try {
+            return (List<String>) getParentThread().getProperty("thread",
+                    "moderators");
+        } catch (ClientException ce) {
+            throw new ClientRuntimeException(ce);
         }
-
-        return null;
     }
 
     /**
      * Notify event to Core.
-     *
+     * 
      * @param doc
      * @param eventId
      * @param comment
@@ -485,9 +484,9 @@ public class PostActionBean extends InputController implements PostAction {
     }
 
     /**
-     * Gets the title of the post for creation purpose. If the post to be created
-     * reply to a previous post, the title of the new post comes with the
-     * previous title, and a prefix (i.e : Re : Previous Title).
+     * Gets the title of the post for creation purpose. If the post to be
+     * created reply to a previous post, the title of the new post comes with
+     * the previous title, and a prefix (i.e : Re : Previous Title).
      */
     public String getTitle() throws ClientException {
 
@@ -549,8 +548,8 @@ public class PostActionBean extends InputController implements PostAction {
             if (currentUser instanceof NuxeoPrincipal) {
                 List<String> groupNames = ((NuxeoPrincipal) currentUser).getAllGroups();
                 for (String groupName : groupNames) {
-                    witems = wapi.getWorkItemsFor(
-                            new WMParticipantImpl(groupName), null);
+                    witems = wapi.getWorkItemsFor(new WMParticipantImpl(
+                            groupName), null);
                     witem = getWorkItemsForUserFrom(witems, post, groupName);
                     if (witem != null) {
                         break;

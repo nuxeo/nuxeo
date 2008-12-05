@@ -23,11 +23,14 @@ import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.Serializable;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
@@ -48,7 +51,7 @@ import org.restlet.data.Response;
 @Scope(EVENT)
 public class CreationContainerListRestlet extends BaseNuxeoRestlet implements
         LiveEditConstants, Serializable {
-
+    private static Log log = LogFactory.getLog(CreationContainerListRestlet.class);
     private static final long serialVersionUID = 5403775170948512675L;
 
     @Override
@@ -73,7 +76,11 @@ public class CreationContainerListRestlet extends BaseNuxeoRestlet implements
             docElement.addElement(docRepositoryTag).setText(
                     parent.getRepositoryName());
             docElement.addElement(docRefTag).setText(parent.getRef().toString());
-            docElement.addElement(docTitleTag).setText(parent.getTitle());
+            try {
+                docElement.addElement(docTitleTag).setText(parent.getTitle());
+            } catch (ClientException e) {
+                log.error("not setting doc title tag: " + e);
+            }
             docElement.addElement(docPathTag).setText(parent.getPathAsString());
         }
         res.setEntity(resultDocument.asXML(), MediaType.TEXT_XML);

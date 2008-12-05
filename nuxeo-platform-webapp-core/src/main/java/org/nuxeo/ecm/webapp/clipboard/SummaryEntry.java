@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Calendar;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
@@ -108,12 +109,31 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
     // Used in ClipBoardActionBean
     public SummaryEntry(DocumentModel doc) {
         uuid = doc.getRef().toString();
-        title = (String) doc.getProperty("dublincore", "title");
+        try {
+            title = (String) doc.getProperty("dublincore", "title");
+        } catch (ClientException e) {
+            title = null;
+        }
         documentRef = doc.getRef();
 
-        Object major = doc.getProperty("uid", "major_version");
-        Object minor = doc.getProperty("uid", "minor_version");
-        Object date = doc.getProperty("dublincore", "modified");
+        Object major;
+        try {
+            major = doc.getProperty("uid", "major_version");
+        } catch (ClientException e) {
+            major = null;
+        }
+        Object minor;
+        try {
+            minor = doc.getProperty("uid", "minor_version");
+        } catch (ClientException e) {
+            minor = null;
+        }
+        Object date;
+        try {
+            date = doc.getProperty("dublincore", "modified");
+        } catch (ClientException e) {
+            date = null;
+        }
 
         if (major != null && minor != null) {
             version = major.toString() + '.' + minor.toString();
@@ -122,7 +142,11 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
         if (date != null) {
             modifiedDate = DATE_PARSER.format(((Calendar) date).getTime());
         }
-        filename = (String) doc.getProperty("file", "filename");
+        try {
+            filename = (String) doc.getProperty("file", "filename");
+        } catch (ClientException e) {
+            filename = null;
+        }
     }
 
     public SummaryEntry(DocumentRef reference) {

@@ -5,6 +5,8 @@ import java.util.Calendar;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
@@ -46,8 +48,13 @@ public class ThreadSafeCacheHolder<T> implements Serializable {
 
     protected String getKey(DocumentModel doc, String key) {
         DocumentRef docRef = doc.getRef();
-        Calendar modified = (Calendar) doc
-                .getProperty("dublincore", "modified");
+        Calendar modified;
+        try {
+            modified = (Calendar) doc
+                    .getProperty("dublincore", "modified");
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
         if (key == null) {
             if (modified != null)
                 key = modified.toString();

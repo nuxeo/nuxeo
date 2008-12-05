@@ -429,8 +429,12 @@ public class MultiDirectorySession implements Session {
                 }
                 for (Entry<String, String> e : dirInfo.toSource.entrySet()) {
                     if (entry != null) {
-                        map.put(e.getValue(), entry.getProperty(
-                                dirInfo.dirSchemaName, e.getKey()));
+                        try {
+                            map.put(e.getValue(), entry.getProperty(
+                                    dirInfo.dirSchemaName, e.getKey()));
+                        } catch (ClientException e1) {
+                            throw new DirectoryException(e1);
+                        }
                     } else {
                         // fill with default values for this directory
                         if (!map.containsKey(e.getValue())) {

@@ -443,8 +443,13 @@ public class LogsBean implements Logs {
         entry.setCategory("eventDocumentCategory");
         entry.setEventId("documentCreated");
         entry.setDocLifeCycle("project");
-        Calendar creationDate = (Calendar) doc.getProperty("dublincore",
-                "created");
+        Calendar creationDate;
+        try {
+            creationDate = (Calendar) doc.getProperty("dublincore",
+                    "created");
+        } catch (ClientException e) {
+            creationDate = null;
+        }
         if (creationDate != null) {
             entry.setEventDate(creationDate.getTime());
         }

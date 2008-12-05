@@ -40,6 +40,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -58,7 +59,7 @@ import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 
 /**
  * This Action Listener represents a Thread inside a forum.
- *
+ * 
  * @author <a href="bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
  */
 @Name("threadAction")
@@ -126,7 +127,7 @@ public class ThreadActionBean extends InputController implements ThreadAction {
 
     /**
      * Get the Thread to create as a DocumentModel.
-     *
+     * 
      * @return
      * @throws ClientException
      */
@@ -162,8 +163,12 @@ public class ThreadActionBean extends InputController implements ThreadAction {
 
     public List<String> getModerators() {
         DocumentModel currentThread = navigationContext.getCurrentDocument();
-
-        return (List<String>) currentThread.getProperty("thread", "moderators");
+        try {
+            return (List<String>) currentThread.getProperty("thread",
+                    "moderators");
+        } catch (ClientException ce) {
+            throw new ClientRuntimeException(ce);
+        }
     }
 
     public boolean isPrincipalModerator() {
@@ -391,7 +396,7 @@ public class ThreadActionBean extends InputController implements ThreadAction {
 
     /**
      * Get the thread for a given document reference
-     *
+     * 
      * @param threadRef
      * @return
      */

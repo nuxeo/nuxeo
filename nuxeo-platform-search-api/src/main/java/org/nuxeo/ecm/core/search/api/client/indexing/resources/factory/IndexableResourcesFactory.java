@@ -111,8 +111,8 @@ public final class IndexableResourcesFactory implements Serializable {
                     dm = dm.getAdapter(DocumentModelIndexingWrapper.class);
                 } catch (ClientException e) {
                     log.warn(String.format(
-                            "Unable to fetch DocumentModel with ref '%s' and title '%s' from indexing thread context",
-                            dm.getRef(), dm.getTitle()));
+                            "Unable to fetch DocumentModel with ref '%s' from indexing thread context",
+                            dm.getRef()));
                     return null;
                 } catch (Throwable t) {
                     log.error(

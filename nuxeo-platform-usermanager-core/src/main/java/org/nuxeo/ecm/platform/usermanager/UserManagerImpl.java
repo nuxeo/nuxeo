@@ -527,18 +527,31 @@ public class UserManagerImpl implements UserManager {
     @SuppressWarnings("unchecked")
     public NuxeoGroup getGroup(DocumentModel groupEntry) {
         NuxeoGroup group = new NuxeoGroupImpl(groupEntry.getId());
-        List<String> list = (List<String>) groupEntry.getProperty(
-                groupSchemaName, groupMembersField);
+        List<String> list;
+        try {
+            list = (List<String>) groupEntry.getProperty(
+                    groupSchemaName, groupMembersField);
+        } catch (ClientException e) {
+            list = null;
+        }
         if (list != null) {
             group.setMemberUsers(list);
         }
-        list = (List<String>) groupEntry.getProperty(groupSchemaName,
-                groupSubGroupsField);
+        try {
+            list = (List<String>) groupEntry.getProperty(groupSchemaName,
+                    groupSubGroupsField);
+        } catch (ClientException e) {
+            list = null;
+        }
         if (list != null) {
             group.setMemberGroups(list);
         }
-        list = (List<String>) groupEntry.getProperty(groupSchemaName,
-                groupParentGroupsField);
+        try {
+            list = (List<String>) groupEntry.getProperty(groupSchemaName,
+                    groupParentGroupsField);
+        } catch (ClientException e) {
+            list = null;
+        }
         if (list != null) {
             group.setParentGroups(list);
         }

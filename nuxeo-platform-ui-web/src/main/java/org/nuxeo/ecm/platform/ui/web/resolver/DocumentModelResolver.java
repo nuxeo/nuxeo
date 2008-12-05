@@ -25,6 +25,7 @@ import javax.el.PropertyNotFoundException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -100,7 +101,7 @@ public class DocumentModelResolver extends BeanELResolver {
                         + (String) property);
                 value = getDocumentPropertyValue(docProperty);
                 context.setPropertyResolved(true);
-            } catch (PropertyException pe) {
+            } catch (ClientException pe) {
                 // avoid errors, return null
                 avoidErrors = true;
                 errorMessage = pe.getMessage();
@@ -202,7 +203,11 @@ public class DocumentModelResolver extends BeanELResolver {
         } else if (base instanceof DocumentPropertyContext) {
             DocumentPropertyContext ctx = (DocumentPropertyContext) base;
             value = FieldAdapterManager.getValueForStorage(value);
-            ctx.doc.setProperty(ctx.schema, (String) property, value);
+            try {
+                ctx.doc.setProperty(ctx.schema, (String) property, value);
+            } catch (ClientException e) {
+                context.setPropertyResolved(false);
+            }
             context.setPropertyResolved(true);
         } else if (base instanceof Property) {
             try {

@@ -104,7 +104,7 @@ public abstract class InputController {
         }
 
         log.debug("Removing document "
-                + document.getProperty("dublincore", "title") + " from list...");
+                + document.getId() + " from list...");
 
         for (int i = 0; i < documentList.size(); i++) {
             if (documentList.get(i).getRef().equals(document.getRef())) {
@@ -124,7 +124,7 @@ public abstract class InputController {
         if (null != document) {
             log.trace('[' + getClass().getSimpleName() + "] "
                     + someLogString + ' '
-                    + document.getProperty("dublincore", "title"));
+                    + document.getId());
             log.debug("CURRENT DOC PATH: " + document.getPathAsString());
         } else {
             log.trace('[' + getClass().getSimpleName() + "] "

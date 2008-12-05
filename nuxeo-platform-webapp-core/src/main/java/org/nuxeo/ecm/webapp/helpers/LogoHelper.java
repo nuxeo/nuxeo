@@ -36,6 +36,7 @@ import org.jboss.seam.core.ConversationEntry;
 import org.jboss.seam.core.Manager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -111,7 +112,12 @@ public class LogoHelper implements Serializable {
             return DEFAULT_LOGO;
         }
 
-        String key = doc.getCacheKey();
+        String key;
+        try {
+            key = doc.getCacheKey();
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
 
         if (key.equals(lastLogoHolderKey)) {
             return lastURL;
@@ -124,7 +130,11 @@ public class LogoHelper implements Serializable {
         lastURL = PAGE_NAME + "?key=" + key + "&docRef="
                 + doc.getRef().toString() + '&'
                 + getConversationPropagationSuffix();
-        lastLogoHolderKey = doc.getCacheKey();
+        try {
+            lastLogoHolderKey = doc.getCacheKey();
+        } catch (ClientException e) {
+            lastLogoHolderKey = null;
+        }
         lastLogoHolder = doc;
 
         return lastURL;
@@ -135,7 +145,11 @@ public class LogoHelper implements Serializable {
             return null;
         }
         if (doc.hasSchema("file")) {
-            return (Blob) doc.getProperty("file", "content");
+            try {
+                return (Blob) doc.getProperty("file", "content");
+            } catch (ClientException e) {
+                return null;
+            }
         } else {
             return null;
         }

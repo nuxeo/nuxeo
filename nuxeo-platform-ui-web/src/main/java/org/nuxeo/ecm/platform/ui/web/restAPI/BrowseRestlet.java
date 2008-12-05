@@ -42,6 +42,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 @Name("browseRestlet")
@@ -101,7 +102,13 @@ public class BrowseRestlet extends BaseNuxeoRestlet implements Serializable {
             }
 
             Element current = result.createElement("document");
-            current.setAttribute("title", dm.getTitle());
+            try {
+                current.setAttribute("title", dm.getTitle());
+            } catch (DOMException e1) {
+                handleError(res, e1);
+            } catch (ClientException e1) {
+                handleError(res, e1);
+            }
             current.setAttribute("type", dm.getType());
             current.setAttribute("id", dm.getId());
             current.setAttribute("url", getRelURL(repo, dm.getRef().toString()));
@@ -121,7 +128,13 @@ public class BrowseRestlet extends BaseNuxeoRestlet implements Serializable {
 
                 for (DocumentModel child : children) {
                     Element el = result.createElement("document");
-                    el.setAttribute("title", child.getTitle());
+                    try {
+                        el.setAttribute("title", child.getTitle());
+                    } catch (DOMException e) {
+                        handleError(res, e);
+                    } catch (ClientException e) {
+                        handleError(res, e);
+                    }
                     el.setAttribute("type", child.getType());
                     el.setAttribute("id", child.getId());
                     el.setAttribute("url", getRelURL(repo,

@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.directory;
 
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 
@@ -47,12 +49,16 @@ public class DirectoryEntry {
             throw new IllegalArgumentException("schemaName cannot be null");
         }
 
-        id = (String) model.getProperty(schemaName, "id");
-        label = (String) model.getProperty(schemaName, "label");
-        if (XVOCABULARY.equals(schemaName)) {
-            parent = (String) model.getProperty(schemaName, "parent");
-        } else {
-            parent = null;
+        try {
+            id = (String) model.getProperty(schemaName, "id");
+            label = (String) model.getProperty(schemaName, "label");
+            if (XVOCABULARY.equals(schemaName)) {
+                parent = (String) model.getProperty(schemaName, "parent");
+            } else {
+                parent = null;
+            }
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
         }
     }
 

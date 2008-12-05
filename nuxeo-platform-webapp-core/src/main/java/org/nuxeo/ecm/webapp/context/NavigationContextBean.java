@@ -52,6 +52,7 @@ import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -439,7 +440,11 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         if (ctxDoc == null && newDoc == null) {
             return false;
         }
-        return !ctxDoc.getCacheKey().equals(newDoc.getCacheKey());
+        try {
+            return !ctxDoc.getCacheKey().equals(newDoc.getCacheKey());
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public void saveCurrentDocument() throws ClientException {
@@ -1005,7 +1010,11 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
     @SuppressWarnings("unused")
     private void logDocWithTitle(String msg, DocumentModel doc) {
         if (null != doc) {
-            log.debug(msg + " " + doc.getProperty("dublincore", "title"));
+            try {
+                log.debug(msg + " " + doc.getProperty("dublincore", "title"));
+            } catch (ClientException e) {
+                log.debug(msg + ", ERROR: " + e);
+            }
         } else {
             log.debug(msg + " NULL DOC");
         }

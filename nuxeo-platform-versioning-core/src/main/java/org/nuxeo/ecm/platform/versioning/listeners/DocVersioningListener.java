@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -141,12 +142,16 @@ public class DocVersioningListener extends AbstractEventListener implements
 
                 } else if (eventId.equals(DOCUMENT_CREATED) && !doc.isProxy()) {
                     // set major version at 1
-                    doc.setProperty(
-                            DocumentModelUtils.getSchemaName(majorPropName),
-                            DocumentModelUtils.getFieldName(majorPropName), 1L);
-                    doc.setProperty(
-                            DocumentModelUtils.getSchemaName(minorPropName),
-                            DocumentModelUtils.getFieldName(minorPropName), 0L);
+                    try {
+                        doc.setProperty(
+                                DocumentModelUtils.getSchemaName(majorPropName),
+                                DocumentModelUtils.getFieldName(majorPropName), 1L);
+                        doc.setProperty(
+                                DocumentModelUtils.getSchemaName(minorPropName),
+                                DocumentModelUtils.getFieldName(minorPropName), 0L);
+                    } catch (ClientException e) {
+                        throw new ClientRuntimeException(e);
+                    }
                     return;
                 } else if (eventId.equals(BEFORE_DOC_UPDATE)) {
                     try {
@@ -190,14 +195,18 @@ public class DocVersioningListener extends AbstractEventListener implements
                     final Long majorVer = (Long) options.get(VersioningDocument.CURRENT_DOCUMENT_MAJOR_VERSION_KEY);
                     final Long minorVer = (Long) options.get(VersioningDocument.CURRENT_DOCUMENT_MINOR_VERSION_KEY);
 
-                    doc.setProperty(
-                            DocumentModelUtils.getSchemaName(majorPropName),
-                            DocumentModelUtils.getFieldName(majorPropName),
-                            majorVer);
-                    doc.setProperty(
-                            DocumentModelUtils.getSchemaName(minorPropName),
-                            DocumentModelUtils.getFieldName(minorPropName),
-                            minorVer);
+                    try {
+                        doc.setProperty(
+                                DocumentModelUtils.getSchemaName(majorPropName),
+                                DocumentModelUtils.getFieldName(majorPropName),
+                                majorVer);
+                        doc.setProperty(
+                                DocumentModelUtils.getSchemaName(minorPropName),
+                                DocumentModelUtils.getFieldName(minorPropName),
+                                minorVer);
+                    } catch (ClientException e) {
+                        throw new ClientRuntimeException(e);
+                    }
 
                     req = createAutoChangeRequest(doc);
                 } else {

@@ -29,6 +29,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentService;
@@ -79,10 +80,19 @@ public class CommentManagerBean implements CommentManager {
     }
 
     private String updateAuthor(DocumentModel docModel) {
-        String author = (String) docModel.getProperty("comment", "author");
+        String author;
+        try {
+            author = (String) docModel.getProperty("comment", "author");
+        } catch (ClientException e) {
+            author = null;
+        }
         if (author == null) {
             author = context.getCallerPrincipal().getName();
-            docModel.setProperty("comment", "author", author);
+            try {
+                docModel.setProperty("comment", "author", author);
+            } catch (ClientException e) {
+                throw new ClientRuntimeException(e);
+            }
         }
         return author;
     }

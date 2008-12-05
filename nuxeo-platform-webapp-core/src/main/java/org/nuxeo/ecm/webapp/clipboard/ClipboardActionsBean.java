@@ -873,8 +873,18 @@ public class ClipboardActionsBean extends InputController implements
             DocumentModel doc, byte[] data, SummaryEntry parent,
             SummaryImpl summary) throws IOException {
 
-        String note = (String) doc.getProperty("note", "note");
-        String fileName = doc.getProperty("dublincore", "title") + ".html";
+        String note;
+        try {
+            note = (String) doc.getProperty("note", "note");
+        } catch (ClientException e1) {
+            note = null;
+        }
+        String fileName;
+        try {
+            fileName = doc.getProperty("dublincore", "title") + ".html";
+        } catch (ClientException e1) {
+            fileName = null;
+        }
         Blob content = new StringBlob(note);
 
         SummaryEntry summaryLeaf = new SummaryEntry(doc);
