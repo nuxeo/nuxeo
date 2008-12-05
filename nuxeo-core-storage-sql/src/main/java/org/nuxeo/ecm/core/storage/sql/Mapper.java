@@ -317,6 +317,8 @@ public class Mapper {
                                 // type in database is different...
                                 if (!(t == Types.BIT && sqlType == Types.SMALLINT) // Derby
                                         &&
+                                        !(t == Types.CLOB && sqlType == Types.LONGVARCHAR) // MySQL
+                                        &&
                                         !(t == Types.CLOB && sqlType == Types.VARCHAR) // PostgreSQL
                                 ) {
                                     log.error(String.format(
