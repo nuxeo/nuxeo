@@ -65,12 +65,14 @@ public interface Component extends Serializable {
      * Get the component name if any.
      * A component may be initialized under a name.
      * For singleton components no name is needed so this method might return null.
+     *
      * @return the name if any otherwise null
      */
     String getName();
 
     /**
-     * Check whether this component was initialized and can be used
+     * Checks whether this component was initialized and can be used.
+     *
      * @return
      */
     boolean isLive();

@@ -78,7 +78,7 @@ public class BundleAnnotationsLoader implements BundleListener {
             loadAnnotations(b);
         }
     }
-    
+
     public void loadAnnotations(Bundle bundle) throws IOException {
         URL url = bundle.getEntry("OSGI-INF/annotations");
         if (url != null) {
@@ -198,7 +198,7 @@ public class BundleAnnotationsLoader implements BundleListener {
 
     public static List<String> readLines(InputStream in) throws IOException {
         List<String> lines = new ArrayList<String>();
-        BufferedReader reader = null;
+        BufferedReader reader;
         reader = new BufferedReader(new InputStreamReader(in));
         String line;
         while ((line = reader.readLine()) != null) {

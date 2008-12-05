@@ -120,10 +120,10 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
             path = _guessPath();
         }
         StringBuilder buf = new StringBuilder();
-        if (!path.startsWith("/")) {
-            buf.append(ctx.getBasePath()).append('/').append(path);
-        } else {
+        if (path.startsWith("/")) {
             buf.append(ctx.getBasePath()).append(path);
+        } else {
+            buf.append(ctx.getBasePath()).append('/').append(path);
         }
         if (path.endsWith("/")) {
             buf.setLength(buf.length()-1);
@@ -133,7 +133,7 @@ public class DefaultModule extends AbstractResource<ModuleType> implements Modul
 
     /**
      * The correct method to guess the path that is not working for now because of a bug in RestEasy.
-     * 
+     *
      * @return
      */
     protected String _guessPath() {
