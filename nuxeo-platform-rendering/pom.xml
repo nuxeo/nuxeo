@@ -93,20 +93,4 @@
 
 
 
-  <repositories>
-    <repository>
-      <id>theoretiker-repo</id>
-      <name>Semweb4j.org maven repo</name>
-      <url>http://semweb4j.org/repo/</url>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
-        <checksumPolicy>fail</checksumPolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
 </project>

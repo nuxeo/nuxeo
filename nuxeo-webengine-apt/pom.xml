@@ -59,15 +59,4 @@
     </plugins>
   </build>
 
-  <distributionManagement>
-    <repository>
-      <id>nuxeo_release</id>
-      <url>scpexe://tamise.nuxeo.com/home/archiva/repositories/nuxeo_release</url>
-    </repository>
-    <snapshotRepository>
-      <id>nuxeo_snapshot</id>
-      <url>scpexe://tamise.nuxeo.com/home/archiva/repositories/nuxeo_snapshot</url>
-    </snapshotRepository>
-  </distributionManagement>                                 
-
 </project>

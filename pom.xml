@@ -204,15 +204,15 @@
 
   <repositories>
     <repository>
-      <id>nuxeo_release</id>
-      <url>http://archiva.nuxeo.org/archiva/repository/nuxeo_release</url>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/public</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
     </repository>
     <repository>
-      <id>nuxeo_snapshot</id>
-      <url>http://archiva.nuxeo.org/archiva/repository/nuxeo_snapshot</url>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/public-snapshot</url>
       <releases>
         <enabled>false</enabled>
       </releases>
@@ -221,9 +221,17 @@
 
   <distributionManagement>
     <site>
-      <id>maven_website</id>
+      <id>maven-website</id>
       <url>scpexe://gironde.nuxeo.com/home/mavenweb/webengine/</url>
     </site>
+    <repository>
+      <id>nuxeo-release</id>
+      <url>scpexe://amour.nuxeo.com/home/nexus/repositories/nuxeo-release</url>
+    </repository>
+    <snapshotRepository>
+      <id>nuxeo-snapshot</id>
+      <url>scpexe://amour.nuxeo.com/home/nexus/repositories/nuxeo-snapshot</url>
+    </snapshotRepository>
   </distributionManagement>
 
   <scm>
