@@ -41,6 +41,7 @@ public class NXRuntimeEventListener extends AbstractEventListener implements
 
     private static final Log log = LogFactory.getLog(NXRuntimeEventListener.class);
 
+    @Override
     public void handleEvent(CoreEvent coreEvent) {
         log.debug("notifyEvent");
         EventService service = (EventService) Framework.getRuntime().getComponent(

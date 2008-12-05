@@ -45,9 +45,13 @@ public class DoubleLiteral extends Literal {
         this.value = Double.parseDouble(value);
     }
 
-    @Override
     public void accept(IVisitor visitor) {
         visitor.visitDoubleLiteral(this);
+    }
+
+    @Override
+    public String asString() {
+        return String.valueOf(value);
     }
 
     @Override

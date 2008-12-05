@@ -36,8 +36,18 @@ public class TestJCRRepositoryQuery extends QueryTestCase {
     }
 
     @Override
-    public void testQueryWithIn() {
+    public void testQueryMultiple() {
         // JCR cannot do IN queries
+    }
+
+    @Override
+    public void testQueryWithProxies() {
+        // JCR cannot do queries on proxies or versions
+    }
+
+    @Override
+    public void testQuerySpecialFields() {
+        // JCR cannot do queries on special fields
     }
 
 }

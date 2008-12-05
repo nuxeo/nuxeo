@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.api.impl;
 
 import java.io.Serializable;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelTreeNode;
 
@@ -54,7 +55,11 @@ public class DocumentModelTreeNodeImpl implements Serializable, DocumentModelTre
         for (int i = 0; i < levelTree; i++) {
             label.append(HTML_TAB);
         }
-        label.append(document.getProperty("dublincore", "title"));
+        try {
+            label.append(document.getProperty("dublincore", "title"));
+        } catch (ClientException e) {
+            //don't append anything
+        }
         return label.toString();
     }
 
@@ -76,16 +81,10 @@ public class DocumentModelTreeNodeImpl implements Serializable, DocumentModelTre
         this.levelTree = levelTree;
     }
 
-    /**
-     * @return the version
-     */
     public String getVersion() {
         return version;
     }
 
-    /**
-     * @param version the version to set
-     */
     public void setVersion(String version) {
         this.version = version;
     }

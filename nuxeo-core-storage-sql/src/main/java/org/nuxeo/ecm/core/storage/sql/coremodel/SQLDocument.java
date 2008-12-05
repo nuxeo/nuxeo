@@ -163,7 +163,7 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         property.clearDirtyFlags();
     }
 
-    protected static Map<String, String> systemPropNameMap;
+    protected static final Map<String, String> systemPropNameMap;
 
     static {
         systemPropNameMap = new HashMap<String, String>();
@@ -203,19 +203,35 @@ public class SQLDocument extends SQLComplexProperty implements Document {
      */
 
     public String getLifeCyclePolicy() throws LifeCycleException {
-        LifeCycleService service = NXCore.getLifeCycleService();
-        if (service == null) {
-            throw new LifeCycleException("LifeCycleService not available");
+        try {
+            return getString(Model.MISC_LIFECYCLE_POLICY_PROP);
+        } catch (DocumentException e) {
+            throw new LifeCycleException("Failed to get policy", e);
         }
-        return service.getLifeCyclePolicy(this);
+    }
+
+    public void setLifeCyclePolicy(String policy) throws LifeCycleException {
+        try {
+            setString(Model.MISC_LIFECYCLE_POLICY_PROP, policy);
+        } catch (DocumentException e) {
+            throw new LifeCycleException("Failed to set policy", e);
+        }
     }
 
     public String getCurrentLifeCycleState() throws LifeCycleException {
-        LifeCycleService service = NXCore.getLifeCycleService();
-        if (service == null) {
-            throw new LifeCycleException("LifeCycleService not available");
+        try {
+            return getString(Model.MISC_LIFECYCLE_STATE_PROP);
+        } catch (DocumentException e) {
+            throw new LifeCycleException("Failed to get state", e);
         }
-        return service.getCurrentLifeCycleState(this);
+    }
+
+    public void setCurrentLifeCycleState(String state) throws LifeCycleException {
+        try {
+            setString(Model.MISC_LIFECYCLE_STATE_PROP, state);
+        } catch (DocumentException e) {
+            throw new LifeCycleException("Failed to set state", e);
+        }
     }
 
     public boolean followTransition(String transition)
@@ -238,7 +254,7 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         if (lifeCycle == null) {
             return Collections.emptyList();
         }
-        return lifeCycle.getAllowedStateTransitionsFrom(service.getCurrentLifeCycleState(this));
+        return lifeCycle.getAllowedStateTransitionsFrom(getCurrentLifeCycleState());
     }
 
     /*

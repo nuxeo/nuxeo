@@ -155,7 +155,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(Arrays.asList("e", "f"), Arrays.asList((String[]) strings));
         Object participants = child.getProperty("testList", "participants");
         assertTrue(participants instanceof List);
-        assertEquals(Arrays.asList("c", "d"), (List<?>) participants);
+        assertEquals(Arrays.asList("c", "d"), participants);
     }
 
     public void testSystemProperties() throws Exception {
@@ -291,8 +291,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         checkComplexDocs(0, 10);
     }
 
-    protected void createComplexDocs(int iMin, int iMax) throws ClientException,
-            PropertyException {
+    protected void createComplexDocs(int iMin, int iMax) throws ClientException {
         for (int i = iMin; i < iMax; i++) {
             DocumentModel doc = session.createDocumentModel("/", "doc" + i,
                     "ComplexDoc");
@@ -320,7 +319,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     protected void checkComplexDocs(int iMin, int iMax) throws ClientException,
-            PropertyException, IOException {
+            IOException {
         for (int i = iMin; i < iMax; i++) {
             DocumentModel doc = session.getDocument(new PathRef("/doc" + i));
 
@@ -366,7 +365,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         String title = (String) doc.getProperty("dublincore", "title");
         assertEquals("title2", title);
         Object participants = doc.getProperty("testList", "participants");
-        assertEquals(Arrays.asList("c", "d"), (List<?>) participants);
+        assertEquals(Arrays.asList("c", "d"), participants);
     }
 
     public void testMarkDirtyForList() throws Exception {
@@ -375,17 +374,17 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         List<Map<String, Object>> vignettes = new ArrayList<Map<String, Object>>();
         attachedFile.put("vignettes", vignettes);
         Map<String, Object> vignette = new HashMap<String, Object>();
-        vignette.put("width", Long.valueOf(111));
+        vignette.put("width", 111L);
         vignettes.add(vignette);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
         doc = session.createDocument(doc);
         session.save();
 
-        doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").setValue(Long.valueOf(222));
+        doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").setValue(222L);
         session.saveDocument(doc);
         session.save();
 
-        doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").setValue(Long.valueOf(333));
+        doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").setValue(333L);
         session.saveDocument(doc);
         session.save();
 
@@ -393,7 +392,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         closeSession();
         openSession();
         doc = session.getDocument(new PathRef("/doc"));
-        assertEquals(Long.valueOf(333), doc.getProperty(
+        assertEquals(333L, doc.getProperty(
         "cmpf:attachedFile/vignettes/vignette[0]/width").getValue());
     }
 
@@ -2102,7 +2101,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 name2, "File");
         childFile = createChildDocument(childFile);
 
-        String[] str = new String[] { "a", "b", "c" };
+        String[] str = { "a", "b", "c" };
         childFile.setProperty("dublincore", "participants", str);
         session.saveDocument(childFile);
 

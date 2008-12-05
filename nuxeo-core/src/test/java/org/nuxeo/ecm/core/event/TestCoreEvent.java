@@ -36,10 +36,9 @@ import org.nuxeo.ecm.core.model.Document;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class TestCoreEvent extends MockObjectTestCase {
+    private static final String COMMENT = "comment";
 
-    private final static String COMMENT = "comment";
-
-    private final static String CATEGORY = "category";
+    private static final String CATEGORY = "category";
 
     public void testCoreEventVarious() {
         String eventId = "someEvent";
@@ -93,8 +92,7 @@ public class TestCoreEvent extends MockObjectTestCase {
     }
 
     // ::FIXME:
-    @SuppressWarnings("unchecked")
-    public void testCoreEventWithInfoMap() throws Exception {
+    public void testCoreEventWithInfoMap() {
         String eventId = "someEvent";
 
         Map<String, Serializable> info = new HashMap<String, Serializable>();
@@ -103,8 +101,8 @@ public class TestCoreEvent extends MockObjectTestCase {
         CoreEvent coreEvent = new CoreEventImpl(eventId, null, info, null, null, null);
         assertEquals(eventId, coreEvent.getEventId());
         Map<String, ?> infoBack = coreEvent.getInfo();
-        ((Map)info).put(COMMENT, null);
-        ((Map)info).put(CATEGORY, null);
+        info.put(COMMENT, null);
+        info.put(CATEGORY, null);
         assertEquals(info, infoBack);
         assertEquals("xxx", infoBack.get("destination"));
         assertNull(coreEvent.getSource());
@@ -116,7 +114,7 @@ public class TestCoreEvent extends MockObjectTestCase {
     }
 
     // :FIXME:
-    public void testCoreEventWithInfo() throws Exception {
+    public void testCoreEventWithInfo() {
         String eventId = "someEvent";
         Document source = (Document) new Mock(Document.class).proxy();
 

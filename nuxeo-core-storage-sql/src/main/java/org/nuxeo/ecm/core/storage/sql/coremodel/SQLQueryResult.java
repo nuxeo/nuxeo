@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,9 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
@@ -55,8 +52,8 @@ public class SQLQueryResult implements QueryResult {
 
     public SQLQueryResult(SQLSession session, List<Serializable> ids) {
         this.session = session;
-        this.it = ids.iterator();
-        this.size = ids.size();
+        it = ids.iterator();
+        size = ids.size();
     }
 
     public long count() {
@@ -68,7 +65,7 @@ public class SQLQueryResult implements QueryResult {
     }
 
     public DocumentModelList getDocumentModels() throws QueryException {
-        String[] schemas = new String[] { "common" };
+        String[] schemas = { "common" };
         List<DocumentModel> list = new ArrayList<DocumentModel>((int) size);
         while (it.hasNext()) {
             currentId = it.next();

@@ -49,7 +49,6 @@ public interface Repository {
     /**
      * TODO: hide shutdown from public API.
      *
-     * @throws Exception
      */
     void shutdown();
 
