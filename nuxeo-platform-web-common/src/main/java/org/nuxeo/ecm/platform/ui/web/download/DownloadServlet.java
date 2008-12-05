@@ -41,8 +41,8 @@ import org.nuxeo.ecm.core.utils.DocumentModelUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Simple download servlet used for big files that can not be downloaded from within the JSF context
- * (because of Buffered ResponseWrapper)
+ * Simple download servlet used for big files that can not be downloaded from
+ * within the JSF context (because of Buffered ResponseWrapper)
  *
  * @author tiry
  *
@@ -78,12 +78,11 @@ public class DownloadServlet extends HttpServlet {
         String fieldPath = pathParts[2];
         String fileName = pathParts[3];
 
-        String completePath= filePath.split(docId)[1];
-        int idx =completePath.lastIndexOf("/");
-        if (idx>0)
-        {
-            fieldPath=completePath.substring(0, idx);
-            fileName=completePath.substring(idx+1);
+        String completePath = filePath.split(docId)[1];
+        int idx = completePath.lastIndexOf("/");
+        if (idx > 0) {
+            fieldPath = completePath.substring(0, idx);
+            fileName = completePath.substring(idx + 1);
         }
 
         CoreSession session = null;
@@ -94,6 +93,9 @@ public class DownloadServlet extends HttpServlet {
             DocumentModel doc = session.getDocument(new IdRef(docId));
             Blob blob;
             if (fieldPath != null) {
+                // Hack for Flash Url wich doesn't support ':' char
+                fieldPath = fieldPath.replace(';', ':');
+
                 blob = (Blob) DocumentModelUtils.getPropertyValue(doc,
                         DocumentModelUtils.decodePropertyName(fieldPath));
                 if (blob == null) {
@@ -110,9 +112,12 @@ public class DownloadServlet extends HttpServlet {
             }
             boolean inline = req.getParameter("inline") != null;
             String userAgent = req.getHeader("User-Agent");
-            String contentDisposition = RFC2231.encodeContentDisposition(
-                    fileName, inline, userAgent);
-            resp.setHeader("Content-Disposition", contentDisposition);
+            String flash = req.getHeader("x-flash-version");
+            if (flash != null && !flash.equals("")) {
+                String contentDisposition = RFC2231.encodeContentDisposition(
+                        fileName, inline, userAgent);
+                resp.setHeader("Content-Disposition", contentDisposition);
+            }
             resp.setContentType(blob.getMimeType());
 
             OutputStream out = resp.getOutputStream();
