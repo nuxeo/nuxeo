@@ -33,24 +33,25 @@ import javax.naming.Name;
  * <p>
  * Default Java implementation is not at all optimized.
  * <p>
- * This class is not thread safe
+ * This class is not thread safe.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class JndiName implements Name {
 
-    private static final long serialVersionUID = -4112999828077524879L;
-
     public static final char SEP = '/';
+
     protected static final String[] NO_SEGMENTS = new String[0];
+
+    private static final long serialVersionUID = -4112999828077524879L;
 
     protected String[] segments;
     protected int hashCode;
 
     public JndiName() {
+        segments = NO_SEGMENTS;
     }
-
 
     public JndiName(String ... segments) {
         this.segments = segments;
@@ -145,7 +146,6 @@ public class JndiName implements Name {
         }
     }
 
-
     public Name add(int posn, String comp) throws InvalidNameException {
         if (posn < 0 && posn > segments.length) {
             throw new ArrayIndexOutOfBoundsException(posn);
@@ -183,7 +183,7 @@ public class JndiName implements Name {
             String[] tmp = new String[len+n];
             System.arraycopy(segments, 0, tmp, 0, len);
             segments = tmp;
-            for (int i=0; i<n; i++) {
+            for (int i = 0; i < n; i++) {
                 segments[len+i] = suffix.get(i);
             }
         }
@@ -208,20 +208,19 @@ public class JndiName implements Name {
         } else if (posn == segments.length) {
             System.arraycopy(segments, 0, tmp, 0, segments.length);
             for (int i=0; i<size; i++) {
-                tmp[i] = name.get(i);
+                tmp[segments.length+i] = name.get(i);
             }
         } else {
             System.arraycopy(segments, 0, tmp, 0, posn);
             for (int i=0; i<size; i++) {
-                tmp[i] = name.get(i);
+                tmp[posn+i] = name.get(i);
             }
-            System.arraycopy(segments, posn, tmp, posn+size, segments.length);
+            System.arraycopy(segments, posn, tmp, posn+size, segments.length-posn);
         }
         segments = tmp;
         hashCode = 0;
         return this;
     }
-
 
     public Object remove(int posn) throws InvalidNameException {
         if (posn <0 || posn >= segments.length) {
@@ -320,15 +319,17 @@ public class JndiName implements Name {
     }
 
     public int compareTo(Object obj) {
-        Name name = (Name)obj;
+        Name name = (Name) obj;
         int size = name.size();
-        int r = segments.length - size;
-        if (r != 0) {
-            return r;
+        if (segments.length > size) {
+            return 1;
+        }
+        if (segments.length < size) {
+            return -1;
         }
         // the same number of segments
         for (int i=0; i<size; i++) {
-            r = segments[i].compareTo(name.get(i));
+            int r = segments[i].compareTo(name.get(i));
             if (r != 0) {
                 return r;
             }
@@ -361,10 +362,10 @@ public class JndiName implements Name {
             return true;
         }
         if (obj instanceof Name) {
-            Name n = (Name)obj;
-            if (segments.length == n.size()) {
-                for (int i=0; i<segments.length; i++) {
-                    if (!segments[i].equals(n.get(i))) {
+            Name other = (Name) obj;
+            if (segments.length == other.size()) {
+                for (int i = 0; i < segments.length; i++) {
+                    if (!segments[i].equals(other.get(i))) {
                         return false;
                     }
                 }
@@ -381,7 +382,6 @@ public class JndiName implements Name {
         }
         return hashCode;
     }
-
 
     protected int computeHashCode() {
         int hash = 17;
