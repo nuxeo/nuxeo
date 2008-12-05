@@ -129,11 +129,15 @@ public class RFC822ToTextPlugin extends AbstractPlugin {
             } catch (Exception e) {
                 log.error(e);
             } finally {
+                if (fo != null) {
+                    try {
+                        fo.close();
+                    } catch (IOException e) {
+                        log.error(e);
+                    }
+                }
                 if (f != null) {
                     f.delete();
-                }
-                if (fo != null) {
-                    fo.close();
                 }
             }
         }

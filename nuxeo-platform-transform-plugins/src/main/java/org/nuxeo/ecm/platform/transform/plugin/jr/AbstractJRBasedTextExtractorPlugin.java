@@ -103,16 +103,15 @@ public abstract class AbstractJRBasedTextExtractorPlugin extends AbstractPlugin 
                     log.error("Error when closing reader", e);
                 }
             }
-            blob = null;
-            if (f != null) {
-                f.delete();
-            }
             if (fas != null) {
                 try {
                     fas.close();
                 } catch (IOException e) {
                     log.error("Error when closing FileOutputStream", e);
                 }
+            }
+            if (f != null) {
+                f.delete();
             }
         }
     }
