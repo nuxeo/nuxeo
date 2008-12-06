@@ -186,7 +186,11 @@ public class DocumentObject extends DefaultObject {
     }
 
     public String getTitle() {
-        return doc.getTitle();
+        try {
+            return doc.getTitle();
+        } catch (ClientException e) {
+            throw WebException.wrap(e);
+        }
     }
 
 }

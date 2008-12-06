@@ -26,6 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.wiki.WikiTypes;
@@ -42,6 +43,7 @@ public class WikiHelper {
     private WikiHelper() {
     }
 
+    // FIXME: properly handle exceptions
     public static List<String> getWordLinks(DocumentModel doc){
         try {
             String content = (String) doc.getPart(WikiTypes.SCHEMA_WIKIPAGE).get(WikiTypes.FIELD_CONTENT).getValue();
@@ -57,6 +59,8 @@ public class WikiHelper {
         } catch (PropertyNotFoundException e) {
             e.printStackTrace();
         } catch (PropertyException e) {
+            e.printStackTrace();
+        } catch (ClientException e) {
             e.printStackTrace();
         }
         return null;

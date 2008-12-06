@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 
 public class WikiPageDocResourceLocator implements ResourceLocator {
@@ -43,7 +44,13 @@ public class WikiPageDocResourceLocator implements ResourceLocator {
     }
 
     private File getTempFileFromWikiPage() throws IOException {
-        String wikiContent = (String) wikiPage.getProperty("wikiPage", "content");
+        String wikiContent = null;
+        try {
+            wikiContent = (String) wikiPage.getProperty("wikiPage", "content");
+        } catch (ClientException e) {
+            // FIXME: properly handle exception
+            e.printStackTrace();
+        }
 
         wikiFile = File.createTempFile("wikiContent", wikiPage.getId());
 

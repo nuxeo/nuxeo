@@ -32,6 +32,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
@@ -111,7 +112,13 @@ public class WikiPreviewBean {
 
     protected String getSimplePreview(DocumentModel wikiPage)
             throws IOException, WikiParserException {
-        String wikiContent = (String) wikiPage.getProperty("wikiPage", "content");
+        String wikiContent = null;
+        try {
+            wikiContent = (String) wikiPage.getProperty("wikiPage", "content");
+        } catch (ClientException e) {
+            // FIXME: properly handle exception
+            e.printStackTrace();
+        }
 
         if (wikiContent == null) {
             return null;

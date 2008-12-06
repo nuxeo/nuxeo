@@ -28,8 +28,8 @@ import org.nuxeo.ecm.webengine.ui.tree.ContentProvider;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
+// FIXME: properly handle exceptions
 public class DocumentContentProvider implements ContentProvider {
 
     private static final long serialVersionUID = 1L;
@@ -52,7 +52,7 @@ public class DocumentContentProvider implements ContentProvider {
     public Object[] getElements(Object input) {
         if (input instanceof Repository) {
             try {
-                return new DocumentModel[] {session.getRootDocument()};
+                return new DocumentModel[]{session.getRootDocument()};
             } catch (ClientException e) {
                 e.printStackTrace();
                 return null;
@@ -65,7 +65,7 @@ public class DocumentContentProvider implements ContentProvider {
     public Object[] getChildren(Object obj) {
         if (obj instanceof DocumentModel) {
             try {
-                DocumentModelList list = session.getChildren(((DocumentModel)obj).getRef());
+                DocumentModelList list = session.getChildren(((DocumentModel) obj).getRef());
                 return list.toArray(new DocumentModel[list.size()]);
             } catch (ClientException e) {
                 e.printStackTrace();
@@ -76,14 +76,18 @@ public class DocumentContentProvider implements ContentProvider {
 
     public boolean isContainer(Object obj) {
         if (obj instanceof DocumentModel) {
-            return ((DocumentModel)obj).isFolder();
+            return ((DocumentModel) obj).isFolder();
         }
         return false;
     }
 
     public String getLabel(Object obj) {
         if (obj instanceof DocumentModel) {
-            return ((DocumentModel)obj).getTitle();
+            try {
+                return ((DocumentModel) obj).getTitle();
+            } catch (ClientException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }
@@ -94,7 +98,7 @@ public class DocumentContentProvider implements ContentProvider {
 
     public String getName(Object obj) {
         if (obj instanceof DocumentModel) {
-            return ((DocumentModel)obj).getName();
+            return ((DocumentModel) obj).getName();
         }
         return null;
     }
