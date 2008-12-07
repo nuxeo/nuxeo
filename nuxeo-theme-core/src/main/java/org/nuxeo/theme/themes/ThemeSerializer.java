@@ -40,6 +40,7 @@ import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.nodes.Node;
 import org.nuxeo.theme.perspectives.PerspectiveType;
+import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.FieldIO;
 import org.nuxeo.theme.uids.Identifiable;
@@ -97,7 +98,7 @@ public class ThemeSerializer {
         }
 
         // presets
-        List<PresetType> customPresets = ThemeManager.getCustomPresets();
+        List<PresetType> customPresets = PresetManager.getCustomPresets();
         if (!customPresets.isEmpty()) {
             final org.w3c.dom.Element presetsNode = doc.createElement("presets");
             root.appendChild(presetsNode);
@@ -283,11 +284,9 @@ public class ThemeSerializer {
                             viewName, path).entrySet()) {
                         org.w3c.dom.Element domProperty = doc.createElement((String) entry.getKey());
                         String value = (String) entry.getValue();
-                        value = value.trim();
-                        Matcher presetMatcher = ThemeManager.PRESET_PATTERN.matcher(value);
-                        if (presetMatcher.find()) {
-                            domProperty.setAttribute("preset",
-                                    presetMatcher.group(1));
+                        String presetName = PresetManager.extractPresetName(null, value);
+                        if (presetName != null) {
+                            domProperty.setAttribute("preset", presetName);
                         } else {
                             domProperty.appendChild(doc.createTextNode(Utils.cleanUp(value)));
                         }

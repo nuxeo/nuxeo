@@ -1,4 +1,4 @@
-package org.nuxeo.theme.webwidgets
+package webwidgets
 
 import java.io.*
 import javax.ws.rs.*

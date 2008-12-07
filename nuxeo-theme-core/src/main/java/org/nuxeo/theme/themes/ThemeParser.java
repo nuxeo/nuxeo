@@ -48,6 +48,8 @@ import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentFactory;
 import org.nuxeo.theme.perspectives.PerspectiveType;
+import org.nuxeo.theme.presets.CustomPresetType;
+import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.FieldIO;
 import org.nuxeo.theme.types.TypeFamily;
@@ -132,8 +134,8 @@ public class ThemeParser {
             if (description != null) {
                 theme.setDescription(description);
             }
-
-            // register theme presets
+            
+            // register custom presets
             for (Node n : getChildElementsByTagName(docElem, "presets")) {
                 parsePresets(theme, n);
             }
@@ -237,13 +239,15 @@ public class ThemeParser {
     }
 
     private static void parsePresets(final ThemeElement theme, Node node) {
-        TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        final String themeName = theme.getName();
         for (Node n : getChildElements(node)) {
             NamedNodeMap attrs = n.getAttributes();
             final String name = attrs.getNamedItem("name").getNodeValue();
             final String category = attrs.getNamedItem("category").getNodeValue();
-            final String value = ThemeManager.resolvePresets(n.getTextContent());
-            PresetType preset = new PresetType(name, value, null, category);
+            final String value = PresetManager.resolvePresets(themeName, n.getTextContent());
+            final String group = theme.getName(); // use the theme's name as group name
+            PresetType preset = new CustomPresetType(name, value, group, category);
             typeRegistry.register(preset);
         }
     }

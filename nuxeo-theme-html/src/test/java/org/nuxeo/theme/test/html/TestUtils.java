@@ -18,11 +18,18 @@ import java.util.Properties;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.elements.Element;
+import org.nuxeo.theme.elements.ElementFactory;
+import org.nuxeo.theme.elements.ElementFormatter;
+import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.formats.styles.StyleFormat;
+import org.nuxeo.theme.formats.widgets.Widget;
 import org.nuxeo.theme.html.JSUtils;
 import org.nuxeo.theme.html.Utils;
+import org.nuxeo.theme.presets.CustomPresetType;
 import org.nuxeo.theme.presets.PresetType;
+import org.nuxeo.theme.themes.ThemeManager;
 
 public class TestUtils extends NXRuntimeTestCase {
 
@@ -158,17 +165,26 @@ public class TestUtils extends NXRuntimeTestCase {
     }
 
     public void testStyleToCssWithPresets() {
-        Style style = new StyleFormat();
+        Element theme = ElementFactory.create("theme");
+        theme.setName("theme1");
+        Style style = (Style) FormatFactory.create("style");
         style.setUid(1);
+        ElementFormatter.setFormat(theme, style);
+        
         Properties properties = new Properties();
 
         PresetType preset = new PresetType("default font", "11px Verdana",
                 "test fonts", "font");
+        PresetType customPreset = new CustomPresetType("custom color", "red",
+                "theme1", "color");
         Manager.getTypeRegistry().register(preset);
-        properties.setProperty("color", "\"default font (test fonts)\"");
+        Manager.getTypeRegistry().register(customPreset);
+        
+        properties.setProperty("font", "\"default font (test fonts)\"");
+        properties.setProperty("color", "\"custom color\"");
         style.setPropertiesFor("horizontal menu", "a", properties);
 
-        assertEquals(".nxStyle1HorizontalMenu a {color:11px Verdana;}\n",
+        assertEquals(".nxStyle1HorizontalMenu a {color:red;font:11px Verdana;}\n",
                 Utils.styleToCss(style, style.getSelectorViewNames(), true, // resolvePresets
                         false, // ignoreViewName
                         false, // ignoreClassName

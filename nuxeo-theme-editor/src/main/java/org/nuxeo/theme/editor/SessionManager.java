@@ -15,7 +15,6 @@
 package org.nuxeo.theme.editor;
 
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.session.AbstractComponent;
 import org.nuxeo.ecm.webengine.session.UserSession;
 
@@ -47,11 +46,11 @@ public class SessionManager extends AbstractComponent {
         getUserSession().put(SELECTED_ELEMENT_ID, id);
     }
 
-    public static synchronized String getElementId(WebContext ctx) {
+    public static synchronized String getElementId() {
         return (String) getUserSession().get(SELECTED_ELEMENT_ID);
     }
 
-    public static synchronized String getStyleEditMode(WebContext ctx) {
+    public static synchronized String getStyleEditMode() {
         return (String) getUserSession().get(STYLE_EDIT_MODE);
     }
 
@@ -59,7 +58,7 @@ public class SessionManager extends AbstractComponent {
         getUserSession().put(STYLE_EDIT_MODE, mode);
     }
 
-    public static synchronized String getStyleLayerId(WebContext ctx) {
+    public static synchronized String getStyleLayerId() {
         return (String) getUserSession().get(STYLE_LAYER_ID);
     }
 
@@ -67,7 +66,7 @@ public class SessionManager extends AbstractComponent {
         getUserSession().put(STYLE_LAYER_ID, id);
     }
 
-    public static synchronized String getStyleSelector(WebContext ctx) {
+    public static synchronized String getStyleSelector() {
         return (String) getUserSession().get(STYLE_SELECTOR);
     }
 
@@ -75,7 +74,7 @@ public class SessionManager extends AbstractComponent {
         getUserSession().put(STYLE_SELECTOR, selector);
     }
 
-    public static synchronized String getStylePropertyCategory(WebContext ctx) {
+    public static synchronized String getStylePropertyCategory() {
         return (String) getUserSession().get(STYLE_PROPERTY_CATEGORY);
     }
 
@@ -83,7 +82,7 @@ public class SessionManager extends AbstractComponent {
         getUserSession().put(STYLE_PROPERTY_CATEGORY, category);
     }
 
-    public static synchronized String getStyleCategory(WebContext ctx) {
+    public static synchronized String getStyleCategory() {
         return (String) getUserSession().get(STYLE_CATEGORY);
     }
 
@@ -91,7 +90,7 @@ public class SessionManager extends AbstractComponent {
         getUserSession().put(STYLE_CATEGORY, category);
     }
 
-    public static synchronized String getPresetGroup(WebContext ctx) {
+    public static synchronized String getPresetGroup() {
         return (String) getUserSession().get(PRESET_GROUP);
     }
 
@@ -99,7 +98,7 @@ public class SessionManager extends AbstractComponent {
         getUserSession().put(PRESET_GROUP, group);
     }
 
-    public static synchronized String getClipboardElementId(WebContext ctx) {
+    public static synchronized String getClipboardElementId() {
         return (String) getUserSession().get(CLIPBOARD_ELEMENT_ID);
     }
 

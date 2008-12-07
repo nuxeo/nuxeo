@@ -23,16 +23,16 @@ import org.nuxeo.theme.types.TypeFamily;
 public class PresetType implements Type {
 
     @XNode("@name")
-    private String name;
+    protected String name;
 
     @XNode("@value")
-    private String value;
+    protected String value;
 
     @XNode("@group")
-    private String group;
+    protected String group;
 
     @XNode("@category")
-    private String category = "";
+    protected String category = "";
 
     public PresetType() {
     }
@@ -48,15 +48,19 @@ public class PresetType implements Type {
         return TypeFamily.PRESET;
     }
 
+    public String getName() {
+        return name;
+    }
+    
     public String getTypeName() {
         if (group != null && !"".equals(group)) {
             return String.format("%s (%s)", name, group);
         }
         return name;
     }
-
-    public String getName() {
-        return name;
+    
+    public String getEffectiveName() {
+        return getTypeName();
     }
 
     public String getValue() {

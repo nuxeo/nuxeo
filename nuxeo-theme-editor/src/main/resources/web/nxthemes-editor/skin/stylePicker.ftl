@@ -8,10 +8,19 @@
 
   <div class="header">PRESETS:
     <div>
-      <select name="" id="stylePickerGroupName" onchange="NXThemesStyleEditor.setPresetGroup(this)">
-      <#list preset_groups as preset_group>
-        <option value="${preset_group}">${preset_group}</option>
-      </#list>
+      <select name="preset_group" id="stylePickerGroupName" onchange="NXThemesStyleEditor.setPresetGroup(this)">
+        <#if !selected_preset_group>
+          <option value="" selected="selected">Custom presets</option>
+        <#else>
+          <option value="">Custom presets</option>
+        </#if>
+        <#list preset_groups as preset_group>
+          <#if preset_group == selected_preset_group>
+            <option value="${preset_group}" selected="selected">${preset_group}</option>
+          <#else>
+            <option value="${preset_group}">${preset_group}</option>
+          </#if>
+        </#list>
       </select>
     </div>
   </div>

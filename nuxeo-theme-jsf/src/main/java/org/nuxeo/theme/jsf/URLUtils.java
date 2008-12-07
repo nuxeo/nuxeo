@@ -114,9 +114,8 @@ public final class URLUtils {
             String baseURL = facesContext.getExternalContext().getRequestContextPath();
             baseURL = baseURL.replace("/", "");
             return baseURL;
-        } else {
-            return "nuxeo";
         }
+        return "nuxeo";
     }
 
     /**

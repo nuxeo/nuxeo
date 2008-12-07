@@ -32,8 +32,10 @@ import net.sf.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.CachingDef;
+import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.styles.Style;
+import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.OrderedProperties;
 import org.nuxeo.theme.themes.ThemeManager;
@@ -67,6 +69,9 @@ public final class Utils {
     private static final Pattern emptyCssSelectorPattern = Pattern.compile(
             "(.*?)\\{(.*?)\\}", Pattern.DOTALL);
 
+    public static final Pattern PRESET_PATTERN = Pattern.compile("^\"(.*?)\"$",
+            Pattern.DOTALL);
+
     private static final String EMPTY_CSS_SELECTOR = "EMPTY";
 
     private static final String CLASS_ATTR_PREFIX = "nxStyle";
@@ -90,7 +95,7 @@ public final class Utils {
     public static String toJson(final Object object) {
         return JSONObject.fromObject(object).toString();
     }
-    
+
     /* web lengths */
 
     public static String addWebLengths(final String length1,
@@ -201,20 +206,18 @@ public final class Utils {
         if (classAttributes.length() == 0) {
             return markup;
 
-        } else {
-            // remove the old 'class="..."' attributes, if there were some
-            inBrackets = inBrackets.replaceAll(classAttrPattern.toString(), "");
-
-            // write the final markup
-            if (inBrackets.endsWith("/")) {
-                return String.format("<%s class=\"%s\" />%s",
-                        inBrackets.replaceAll("/$", "").trim(),
-                        classAttributes.toString(), othersMatcher.group(1));
-            } else {
-                return String.format("<%s class=\"%s\">%s", inBrackets,
-                        classAttributes.toString(), othersMatcher.group(1));
-            }
         }
+        // remove the old 'class="..."' attributes, if there were some
+        inBrackets = inBrackets.replaceAll(classAttrPattern.toString(), "");
+
+        // write the final markup
+        if (inBrackets.endsWith("/")) {
+            return String.format("<%s class=\"%s\" />%s",
+                    inBrackets.replaceAll("/$", "").trim(),
+                    classAttributes.toString(), othersMatcher.group(1));
+        }
+        return String.format("<%s class=\"%s\">%s", inBrackets,
+                classAttributes.toString(), othersMatcher.group(1));
 
     }
 
@@ -227,6 +230,11 @@ public final class Utils {
             final boolean ignoreViewName, final boolean ignoreClassName,
             final boolean indent) {
 
+        ThemeElement theme = ThemeManager.getThemeOfFormat(style);
+        String themeName = null;
+        if (theme != null) {
+            themeName = theme.getName();
+        }
         final StringBuilder sb = new StringBuilder();
         final StringBuilder pSb = new StringBuilder();
         for (String viewName : viewNames) {
@@ -279,7 +287,12 @@ public final class Utils {
                         sb.append(' ');
                     }
                     if (resolvePresets) {
-                        final PresetType preset = ThemeManager.resolvePreset(value);
+                        PresetType preset = null;
+                        String presetName = PresetManager.extractPresetName(
+                                themeName, value);
+                        if (presetName != null) {
+                            preset = PresetManager.getPresetByName(presetName);
+                        }
                         if (preset != null) {
                             value = preset.getValue();
                         }
@@ -298,7 +311,7 @@ public final class Utils {
         }
         return sb.toString();
     }
-    
+
     public static void loadCss(final Style style, String cssSource,
             final String viewName) {
         // pre-processing: replace empty selectors (which are invalid selectors)

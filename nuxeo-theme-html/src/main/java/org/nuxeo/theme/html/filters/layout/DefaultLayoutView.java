@@ -73,20 +73,18 @@ public class DefaultLayoutView extends AbstractView {
 
         if (styleAttributes.length() == 0) {
             return markup;
-        } else {
-            // remove the old 'style="..."' attributes, if there were some
-            inBrackets = inBrackets.replaceAll(styleAttrPattern.toString(), "");
-
-            // write the final markup
-            if (inBrackets.endsWith("/")) {
-                return String.format("<%s style=\"%s\" />%s",
-                        inBrackets.replaceAll("/$", "").trim(),
-                        styleAttributes.toString(), othersMatcher.group(1));
-            } else {
-                return String.format("<%s style=\"%s\">%s", inBrackets,
-                        styleAttributes.toString(), othersMatcher.group(1));
-            }
         }
+        // remove the old 'style="..."' attributes, if there were some
+        inBrackets = inBrackets.replaceAll(styleAttrPattern.toString(), "");
+
+        // write the final markup
+        if (inBrackets.endsWith("/")) {
+            return String.format("<%s style=\"%s\" />%s",
+                    inBrackets.replaceAll("/$", "").trim(),
+                    styleAttributes.toString(), othersMatcher.group(1));
+        }
+        return String.format("<%s style=\"%s\">%s", inBrackets,
+                styleAttributes.toString(), othersMatcher.group(1));
     }
 
 }

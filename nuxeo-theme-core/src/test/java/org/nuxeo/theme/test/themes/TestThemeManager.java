@@ -35,7 +35,6 @@ import org.nuxeo.theme.formats.widgets.Widget;
 import org.nuxeo.theme.fragments.FragmentFactory;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
-import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.test.DummyFragment;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.themes.ThemeParser;
@@ -270,7 +269,6 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testRemoveOrphanedFormats() {
-        ThemeManager themeManager = Manager.getThemeManager();
         Element theme = ElementFactory.create("theme");
 
         DefaultFormat widget0 = (DefaultFormat) FormatFactory.create("widget");
@@ -324,8 +322,6 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testStyleInheritance() {
-        ThemeManager themeManager = Manager.getThemeManager();
-
         Style style = (Style) FormatFactory.create("style");
         style.setUid(1);
         Style ancestor1 = (Style) FormatFactory.create("style");
@@ -389,8 +385,6 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testStyleInheritanceCycles() {
-        ThemeManager themeManager = Manager.getThemeManager();
-
         Style style = (Style) FormatFactory.create("style");
         style.setUid(1);
         Style ancestor1 = (Style) FormatFactory.create("style");
@@ -417,8 +411,6 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testDestroyElement() {
-        ThemeManager themeManager = Manager.getThemeManager();
-
         Element theme = ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         Element section = ElementFactory.create("section");
@@ -454,20 +446,5 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(Manager.getRelationStorage().list().isEmpty());
         assertTrue(Manager.getUidManager().listUids().isEmpty());
     }
-
-    public void testResolvePresets() {
-        PresetType preset1 = new PresetType("orange", "#fc0", "colors", "color");
-        PresetType preset2 = new PresetType("green", "#0f0", "colors", "color");
-        typeRegistry.register(preset1);
-        typeRegistry.register(preset2);
-        assertEquals(
-                "#000 #fc0 #0f0 #fff",
-                ThemeManager.resolvePresets("#000 \"orange (colors)\" \"green (colors)\" #fff"));
-        assertEquals("1px solid \"red\"",
-                ThemeManager.resolvePresets("1px solid \"red\""));
-        assertEquals("1px solid #fc0",
-                ThemeManager.resolvePresets("1px solid \"orange (colors)\""));
-        assertEquals("#fc0", ThemeManager.resolvePresets("\"orange (colors)\""));
-    }
-
+    
 }

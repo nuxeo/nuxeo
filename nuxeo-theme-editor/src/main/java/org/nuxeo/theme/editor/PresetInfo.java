@@ -33,7 +33,7 @@ public class PresetInfo {
     }
 
     public String getName() {
-        return preset.getTypeName();
+        return preset.getEffectiveName();
     }
 
     public String getPreview() {
@@ -47,6 +47,7 @@ public class PresetInfo {
         try {
             preview = (Preview) Class.forName(previewClassName).newInstance();
         } catch (Exception e) {
+            e.getStackTrace();
         }
         if (preview == null) {
             return "";

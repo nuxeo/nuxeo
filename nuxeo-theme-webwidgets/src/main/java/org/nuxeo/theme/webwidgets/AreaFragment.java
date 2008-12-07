@@ -32,8 +32,7 @@ public final class AreaFragment extends AbstractFragment {
     public AreaFragment() {
     }
 
-    public AreaFragment(String name, String provider, String security,
-            String decoration) {
+    public AreaFragment(String name, String provider, String decoration) {
         this.name = name;
         this.provider = provider;
         this.decoration = decoration;

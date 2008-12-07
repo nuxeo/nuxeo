@@ -41,6 +41,7 @@ import org.nuxeo.theme.events.EventType;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.presets.PaletteType;
+import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.themes.ThemeDescriptor;
@@ -79,14 +80,14 @@ public class ThemeService extends DefaultComponent {
     }
 
     @Override
-    public void activate(ComponentContext context) {
-        this.context = context.getRuntimeContext();
+    public void activate(ComponentContext ctx) {
+        this.context = ctx.getRuntimeContext();
         registries = new HashMap<String, Registrable>();
         log.debug("Theme service activated");
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
+    public void deactivate(ComponentContext ctx) {
         registries = null;
         log.debug("Theme service deactivated");
     }
@@ -136,14 +137,11 @@ public class ThemeService extends DefaultComponent {
                 || xp.equals("engines") || xp.equals("template-engines")
                 || xp.equals("negotiations") || xp.equals("perspectives")
                 || xp.equals("applications") || xp.equals("shortcuts")
-                || xp.equals("vocabularies")) {
+                || xp.equals("vocabularies") || (xp.equals("presets"))
+                || (xp.equals("views")) || (xp.equals("themes"))) {
             unregisterTypeExtension(extension);
         } else if (xp.equals("event-listeners")) {
             unregisterEventListenerExtension(extension);
-        } else if (xp.equals("themes")) {
-            unregisterThemeExtension(extension);
-        } else if (xp.equals("presets")) {
-            unregisterPresetExtension(extension);
         } else if (xp.equals("views")) {
             unregisterViewExtension(extension);
         } else {
@@ -352,10 +350,6 @@ public class ThemeService extends DefaultComponent {
         }
     }
 
-    private void unregisterThemeExtension(Extension extension) {
-        // TODO
-    }
-
     private void registerPresetExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         RuntimeContext extensionContext = extension.getContext();
@@ -367,10 +361,6 @@ public class ThemeService extends DefaultComponent {
                 typeRegistry.register((Type) contrib);
             }
         }
-    }
-
-    private void unregisterPresetExtension(Extension extension) {
-        // TODO
     }
 
     private void registerPalette(PaletteType palette,
@@ -390,9 +380,9 @@ public class ThemeService extends DefaultComponent {
             typeRegistry.register(palette);
             Map<String, String> entries = PaletteParser.parse(url);
             for (Map.Entry<String, String> entry : entries.entrySet()) {
-                String value = ThemeManager.resolvePresets(entry.getValue());
-                PresetType preset = new PresetType(entry.getKey(), value, paletteName,
-                        category);
+                String value = PresetManager.resolvePresets(null, entry.getValue());
+                PresetType preset = new PresetType(entry.getKey(), value,
+                        paletteName, category);
                 typeRegistry.register(preset);
             }
         }

@@ -30,8 +30,7 @@ public class PaletteType implements Type {
 
     @XNode("@category")
     private String category = "";
-
-
+    
     public TypeFamily getTypeFamily() {
         return TypeFamily.PALETTE;
     }

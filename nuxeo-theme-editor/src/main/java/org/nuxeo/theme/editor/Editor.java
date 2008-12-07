@@ -39,6 +39,7 @@ import org.nuxeo.theme.formats.widgets.Widget;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentFactory;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
+import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.FieldIO;
 import org.nuxeo.theme.themes.ThemeIOException;
@@ -75,7 +76,7 @@ public class Editor {
                 ElementFormatter.setFormat(element, layout);
             }
             for (Object key : propertyMap.keySet()) {
-                layout.setProperty((String) key, (String) propertyMap.get(key));
+                layout.setProperty((String) key, propertyMap.get(key));
             }
             EventManager eventManager = Manager.getEventManager();
             eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
@@ -238,6 +239,9 @@ public class Editor {
         if (style == null) {
             return "";
         }
+        ThemeElement theme = ThemeManager.getThemeOf(element);
+        String themeName = theme.getName();
+
         StringBuilder css = new StringBuilder();
         List<Style> styles = new ArrayList<Style>();
         for (Format ancestor : ThemeManager.listAncestorFormatsOf(style)) {
@@ -262,7 +266,12 @@ public class Editor {
                     }
                     css.append(propertyName);
                     css.append(':');
-                    PresetType preset = ThemeManager.resolvePreset(value);
+                    PresetType preset = null;
+                    String presetName = PresetManager.extractPresetName(
+                            themeName, value);
+                    if (presetName != null) {
+                        preset = PresetManager.getPresetByName(presetName);
+                    }
                     if (preset != null) {
                         value = preset.getValue();
                     }

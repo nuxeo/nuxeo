@@ -368,9 +368,8 @@ public class Manager {
             fileInfo.put("content-type", data.getContentType());
             fileInfo.put("filename", data.getFilename());
             return org.nuxeo.theme.html.Utils.toJson(fileInfo);
-        } else {
-            return null;
         }
+        return null;
     }
 
     /*

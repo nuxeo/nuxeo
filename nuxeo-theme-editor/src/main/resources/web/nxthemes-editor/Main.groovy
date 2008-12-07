@@ -1,4 +1,4 @@
-package org.nuxeo.theme.editor;
+package editor
 
 import java.io.*
 import javax.ws.rs.*
@@ -139,6 +139,7 @@ public class Main extends DefaultModule {
   public Object renderStylePicker(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("stylePicker.ftl").arg(
             "style_category", getSelectedStyleCategory()).arg(
+            "selected_preset_group", getSelectedPresetGroup()).arg(                            
             "preset_groups", getPresetGroupsForSelectedCategory()).arg(
             "presets_for_selected_group", getPresetsForSelectedGroup())
   }
@@ -744,7 +745,6 @@ public class Main extends DefaultModule {
   public static List<String> getPresetGroupsForSelectedCategory() {
       def groups = []
       String category = getSelectedStyleCategory()
-      groups.add("")
       if (category == null) {
           return groups
       }
@@ -753,6 +753,10 @@ public class Main extends DefaultModule {
           PresetType preset = (PresetType) type
           String group = preset.getGroup()
           if (!preset.getCategory().equals(category)) {
+              continue
+          }
+          // skip custom presets
+          if (preset instanceof CustomPresetType) {
               continue
           }
           if (!groupNames.contains(group)) {
@@ -809,15 +813,10 @@ public class Main extends DefaultModule {
   public static List<PresetInfo> getPresetsForSelectedGroup() {
       String category = getSelectedStyleCategory()
       String group = getSelectedPresetGroup()
+      String themeName = getCurrentThemeName()
       def presets = []
-      for (type in Manager.getTypeRegistry().getTypes(TypeFamily.PRESET)) {
-          PresetType preset = (PresetType) type
-          if (!preset.getCategory().equals(category)) {
-              continue
-          }
-          if (!preset.getGroup().equals(group)) {
-              continue
-          }
+      def presetTypes = group ? PresetManager.getGlobalPresets(group, category) : PresetManager.getCustomPresets(category)
+      for (preset in presetTypes) {
           presets.add(new PresetInfo(preset))
       }
       return presets

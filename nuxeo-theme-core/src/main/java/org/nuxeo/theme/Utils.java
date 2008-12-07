@@ -48,7 +48,7 @@ public final class Utils {
         return text.replaceAll("\n", " ").replaceAll("\\t+", " ").replaceAll(
                 "\\s+", " ").trim();
     }
-    
+        
     public static byte[] readResourceAsBytes(final String path) {
         return readResource(path).toByteArray();
     }

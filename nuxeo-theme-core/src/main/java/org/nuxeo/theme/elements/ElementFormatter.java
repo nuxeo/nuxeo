@@ -51,10 +51,9 @@ public final class ElementFormatter {
         final Iterator<Relation> i = relations.iterator();
         if (i.hasNext()) {
             return (Format) ((DyadicRelation) i.next()).getRelate(2);
-        } else {
-            // TODO throw exception;
-            return null;
         }
+        // TODO throw exception;
+        return null;
     }
 
     public static Collection<Format> getFormatsFor(final Element element) {

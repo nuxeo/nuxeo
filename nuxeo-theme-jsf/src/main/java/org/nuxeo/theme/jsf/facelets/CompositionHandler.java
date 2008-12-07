@@ -160,14 +160,11 @@ public final class CompositionHandler extends TagHandler implements
             if (handler != null) {
                 handler.apply(ctx, parent);
                 return true;
-            } else {
-                return false;
             }
-        } else {
-            nextHandler.apply(ctx, parent);
-            return true;
+            return false;
         }
-
+        nextHandler.apply(ctx, parent);
+        return true;
     }
 
 }

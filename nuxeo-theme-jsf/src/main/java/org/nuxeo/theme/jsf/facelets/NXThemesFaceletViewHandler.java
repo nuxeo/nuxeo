@@ -35,10 +35,12 @@ public class NXThemesFaceletViewHandler extends FaceletViewHandler {
 
 
     // Facelets
+    @SuppressWarnings("hiding")
     private static final long DEFAULT_REFRESH_PERIOD = 2;
 
     private static final String PARAM_REFRESH_PERIOD = "facelets.REFRESH_PERIOD";
 
+    @SuppressWarnings("hiding")
     private static final String PARAM_RESOURCE_RESOLVER = "facelets.RESOURCE_RESOLVER";
 
     public NXThemesFaceletViewHandler(ViewHandler parent) {

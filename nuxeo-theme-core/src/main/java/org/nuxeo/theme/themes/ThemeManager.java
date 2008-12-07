@@ -31,8 +31,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,7 +57,6 @@ import org.nuxeo.theme.models.ModelType;
 import org.nuxeo.theme.nodes.Node;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
-import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.FieldIO;
 import org.nuxeo.theme.relations.DefaultPredicate;
 import org.nuxeo.theme.relations.DyadicRelation;
@@ -77,8 +74,6 @@ import org.nuxeo.theme.views.ViewType;
 public final class ThemeManager implements Registrable {
 
     private static final Log log = LogFactory.getLog(ThemeManager.class);
-
-    public static final Pattern PRESET_PATTERN = Pattern.compile("^\"(.*?)\"$");
 
     private Long lastModified = 0L;
 
@@ -450,8 +445,8 @@ public final class ThemeManager implements Registrable {
     public List<Format> listFormats() {
         final UidManager uidManager = Manager.getUidManager();
         List<Format> formats = new ArrayList<Format>();
-        for (String key : formatsByTypeName.keySet()) {
-            for (Integer uid : formatsByTypeName.get(key)) {
+        for (Map.Entry<String, List<Integer>> entry : formatsByTypeName.entrySet()) {
+            for (Integer uid : entry.getValue()) {
                 Format format = (Format) uidManager.getObjectByUid(uid);
                 formats.add(format);
             }
@@ -490,55 +485,6 @@ public final class ThemeManager implements Registrable {
             formats.add((Format) uidManager.getObjectByUid(id));
         }
         return formats;
-    }
-
-    // Presets
-    public static PresetType getPresetByName(final String name) {
-        return (PresetType) Manager.getTypeRegistry().lookup(TypeFamily.PRESET,
-                name);
-    }
-    
-    public static List<PresetType> getCustomPresets() {
-        List<PresetType> presets = new ArrayList<PresetType>();
-        for (Type type : Manager.getTypeRegistry().getTypes(TypeFamily.PRESET)) {
-            PresetType preset = (PresetType) type; 
-            if (preset.getGroup() == null) {
-                presets.add(preset);
-            }
-        }
-        return presets;
-    }
-
-    public static PresetType resolvePreset(final String value) {
-        PresetType preset;
-        Matcher presetMatcher = PRESET_PATTERN.matcher(value);
-        if (presetMatcher.find()) {
-            preset = getPresetByName(presetMatcher.group(1));
-        } else {
-            return null;
-        }
-        return preset;
-    }
-
-    public static String resolvePresets(final String value) {
-        Pattern presetPattern = Pattern.compile(".*?\"(.*?)\".*?");
-        Matcher presetMatcher = presetPattern.matcher(value);
-        StringBuilder sb = new StringBuilder();
-        int end = 0;
-        while (presetMatcher.find()) {
-            end = presetMatcher.end(1) + 1;
-            sb.append(value.substring(presetMatcher.start(),
-                    presetMatcher.start(1) - 1));
-            String presetName = presetMatcher.group(1);
-            PresetType preset = getPresetByName(presetName);
-            if (preset == null) {
-                sb.append('\"').append(presetName).append('\"');
-            } else {
-                sb.append(preset.getValue());
-            }
-        }
-        sb.append(value.substring(end));
-        return sb.toString();
     }
 
     // Cache management
@@ -645,7 +591,7 @@ public final class ThemeManager implements Registrable {
         String themeName = themeDescriptor.getName();
         ThemeElement theme = Manager.getThemeManager().getThemeByName(themeName);
         final String xml = serializer.serializeToXml(theme, indent);
-        
+
         // Write the file
         URL url = themeDescriptor.getUrl();
         Utils.writeFile(url, xml);
@@ -928,8 +874,17 @@ public final class ThemeManager implements Registrable {
     }
 
     public static Format getFormatById(final String id) {
-        return (Format) getFormatById(Integer.valueOf(id));
+        return getFormatById(Integer.valueOf(id));
     }
 
+    public static ThemeElement getThemeOfFormat(Format format) {
+        Collection<Element> elements = ElementFormatter.getElementsFor(format);
+        if (elements.isEmpty()) {
+            return null;
+        }
+        // Get the first element assuming all elements belong to the same theme.
+        Element element = elements.iterator().next();
+        return getThemeOf(element);
+    }
 
 }
