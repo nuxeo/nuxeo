@@ -32,12 +32,12 @@ public class EditorContainer extends ViewDeck {
     public EditorContainer() {
         super("editorContainer");
     }
-    
+
     public void open(Object input) {
         DeckPanel panel = getDeckPanel();
         int cnt = panel.getWidgetCount();
         for (int i=0; i<cnt; i++) {
-            Editor view = (Editor)panel.getWidget(i); 
+            Editor view = (Editor)panel.getWidget(i);
             if (view.acceptInput(input)) {
                 view.open(input);
                 panel.showWidget(i);
@@ -50,10 +50,10 @@ public class EditorContainer extends ViewDeck {
         v.open(input);
         panel.showWidget(panel.getWidgetCount()-1);
     }
-    
+
     @Override
     public void add(View item) {
-        // we need to make sure the last item is always the default one 
+        // we need to make sure the last item is always the default one
         DeckPanel panel = getDeckPanel();
         if (panel.getWidget(panel.getWidgetCount()-1) instanceof DefaultEditor) {
             panel.insert(item, panel.getWidgetCount()-1);
@@ -72,7 +72,7 @@ public class EditorContainer extends ViewDeck {
         }
         panel.insert(item, beforeIndex);
     }
-    
+
     static class DefaultEditor extends Editor {
         public DefaultEditor() {
             super("_default_", new HTML());

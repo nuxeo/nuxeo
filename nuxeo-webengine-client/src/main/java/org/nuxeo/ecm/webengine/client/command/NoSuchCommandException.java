@@ -30,5 +30,5 @@ public class NoSuchCommandException extends CommandException {
     public NoSuchCommandException(String cmdName) {
         super ("Command Not Found: "+cmdName);
     }
-    
+
 }

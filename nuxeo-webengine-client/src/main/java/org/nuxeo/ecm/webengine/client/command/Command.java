@@ -32,42 +32,42 @@ import org.nuxeo.ecm.webengine.client.http.HttpClient;
  *
  */
 public abstract class Command {
-       
+
     protected CommandSyntax syntax;
     protected String[] aliases;
     protected String synopsis;
     protected URL url;
 
-    
+
     protected Command() {
-        
+
     }
-  
+
     public String getName() {
         return aliases[0];
     }
-    
+
     /**
      * @return the aliases.
      */
     public String[] getAliases() {
         return aliases;
     }
-    
+
     /**
      * @return the synopsis.
      */
     public String getSynopsis() {
         return synopsis;
     }
-    
+
     /**
      * @return the syntax.
      */
     public CommandSyntax getSyntax() {
         return syntax;
     }
-    
+
     /**
      * @return the help.
      */
@@ -97,40 +97,40 @@ public abstract class Command {
         }
         return out.toString();
     }
-    
-    
+
+
     /**
      * @return the url.
      */
     public URL getUrl() {
         return url;
     }
-        
-   
+
+
     public void print(String str) {
         System.out.print(str);
     }
-    
+
     public void println(String str) {
         System.out.println(str);
     }
-    
+
     public boolean isLocal() {
         return true;
     }
 
     public abstract void run(HttpClient client, CommandLine cmdLine) throws Exception;
-        
+
 
     public static void main(String[] args) {
         Help help = new Help();
-                         
+
         //String r = "org/nuxeo/ecm/webengine/client/builtin/HelpCommand.help";
         URL url = Help.class.getResource("HelpCommand.help");
         System.out.println(url);
         url = Help.class.getResource("ExitCommand.help");
         System.out.println(url);
-        
+
     }
-    
+
 }

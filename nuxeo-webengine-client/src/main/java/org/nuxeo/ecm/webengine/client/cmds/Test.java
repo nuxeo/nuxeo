@@ -40,5 +40,5 @@ public class Test extends AnnotatedCommand {
         System.out.println("-o: "+cmdLine.getParameter("-o"));
         System.out.println("-d: "+cmdLine.getParameter("-d"));
     }
-    
+
 }

@@ -31,7 +31,7 @@ import com.google.gwt.core.ext.UnableToCompleteException;
  */
 public class ApplicationBundleGenerator extends Generator {
 
-    
+
     @Override
     public String generate(TreeLogger logger, GeneratorContext context,
             String typeName) throws UnableToCompleteException {

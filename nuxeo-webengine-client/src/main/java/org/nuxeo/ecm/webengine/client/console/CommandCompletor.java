@@ -35,7 +35,7 @@ public class CommandCompletor extends jline.SimpleCompletor {
         super(registry.getCommandNames());
         this.registry = registry;
     }
-    
+
 
     @Override
     public int complete(String buffer, int cursor, List clist) {

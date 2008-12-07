@@ -35,7 +35,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class LogoutWidget extends Composite implements ClickListener {
 
     protected Label username;
-    
+
     public LogoutWidget() {
         Hyperlink submit = new Hyperlink();
         submit.setText("Logout");
@@ -47,13 +47,13 @@ public class LogoutWidget extends Composite implements ClickListener {
         panel.add(submit);
         initWidget(panel);
     }
-    
+
     public void onClick(Widget sender) {
         new LogoutCommand().execute();
     }
-    
+
     public void refresh() {
         username.setText("You are logged in as "+UI.getContext().getUsername());
     }
-    
+
 }

@@ -44,7 +44,7 @@ public class ResourceServlet extends HttpServlet {
 
     private static final long serialVersionUID = 6548084847887645044L;
 
-    protected WebEngine engine; 
+    protected WebEngine engine;
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp)
@@ -57,12 +57,12 @@ public class ResourceServlet extends HttpServlet {
                 throw new ServletException("Failed to lookup WebEngine service", e);
             }
         }
-        
+
         String path = req.getPathInfo();
         if (path == null) {
             resp.sendError(404);
             return;
-        }        
+        }
         int p = path.indexOf('/', 1);
         String moduleName = null;
         if (p > -1) {
@@ -70,28 +70,28 @@ public class ResourceServlet extends HttpServlet {
             path = path.substring(p);
         } else {
             resp.sendError(404);
-            return;            
+            return;
         }
-        
+
         Module module = engine.getModule(moduleName);
         if (module == null) {
             resp.sendError(404);
             return;
         }
-        
+
         service(req, resp, module, path);
     }
 
     protected void service(HttpServletRequest req, HttpServletResponse resp, Module module, String path)
             throws ServletException, IOException {
-                
-        ScriptFile file = module.getSkinResource(path);       
+
+        ScriptFile file = module.getSkinResource(path);
         if (file != null) {
             long lastModified = file.lastModified();
             resp.setDateHeader("Last-Modified:", lastModified);
             resp.addHeader("Cache-Control", "public");
             resp.addHeader("Server", "Nuxeo/WebEngine-1.0");
-            
+
             String mimeType = engine.getMimeType(file.getExtension());
             if (mimeType == null) {
                 mimeType = "text/plain";
@@ -104,9 +104,9 @@ public class ResourceServlet extends HttpServlet {
             }
             return;
         }
-        resp.sendError(404);    
+        resp.sendError(404);
     }
-    
+
     protected static void sendBinaryContent(ScriptFile file, HttpServletResponse resp) throws IOException {
         OutputStream out = resp.getOutputStream();
         InputStream in = file.getInputStream();

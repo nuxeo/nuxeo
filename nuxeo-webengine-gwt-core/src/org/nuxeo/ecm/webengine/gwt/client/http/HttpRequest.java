@@ -46,7 +46,7 @@ public class HttpRequest {
     public RequestBuilder getBuilder() {
         return builder;
     }
-    
+
     /**
      * @return
      * @see com.google.gwt.http.client.RequestBuilder#getCallback()
@@ -169,7 +169,7 @@ public class HttpRequest {
         builder.setRequestData(requestData);
         return this;
     }
-    
+
     public HttpRequest setRequestData(JSONValue value) {
         builder.setRequestData(value.toString());
         return this;
@@ -192,5 +192,5 @@ public class HttpRequest {
         builder.setUser(user);
         return this;
     }
-    
+
 }

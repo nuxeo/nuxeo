@@ -35,12 +35,12 @@ public interface TestBundle extends ApplicationBundle {
 
 
     @Extension(targets=ExtensionPoints.VIEWS_XP, hint=1000)
-    public TestView testView();
+    TestView testView();
 
     @Extension(targets=ExtensionPoints.VIEWS_XP)
-    public TestExtension testExtension();
+    TestExtension testExtension();
 
     @Extension(targets=ExtensionPoints.VIEWS_XP, hint=100)
-    public NavigatorView navigatorView();
+    NavigatorView navigatorView();
 
 }

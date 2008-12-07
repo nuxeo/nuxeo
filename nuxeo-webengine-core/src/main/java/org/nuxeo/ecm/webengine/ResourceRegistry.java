@@ -39,8 +39,8 @@ public interface ResourceRegistry {
 
     ResourceBinding[] getBindings();
 
-    void registerLazyModule(String path, String name); 
-    
+    void registerLazyModule(String path, String name);
+
     void addMessageBodyWriter(MessageBodyWriter<?> writer);
 
     void addMessageBodyReader(MessageBodyReader<?> reader);

@@ -32,31 +32,31 @@ import com.google.gwt.http.client.Response;
 public abstract class HttpCallback implements RequestCallback {
 
     protected HttpRequest request;
-    
+
     protected void setRequest(HttpRequest request) {
-        this.request = request; 
+        this.request = request;
     }
-    
+
     public HttpRequest getRequest() {
         return request;
     }
-    
+
     public void onError(Request request, Throwable exception) {
         onFailure(exception);
     }
 
     public void onResponseReceived(Request request, Response response) {
         if (response.getStatusCode() < 400) {
-            onSuccess(new HttpResponse(response));            
+            onSuccess(new HttpResponse(response));
         } else {
             onFailure(new ServerException(response));
-        }      
+        }
     }
 
     public void onFailure(Throwable cause) {
         Framework.handleError(cause);
     }
-    
+
     public abstract void onSuccess(HttpResponse response);
 
 }

@@ -3,7 +3,7 @@
 
 function doLogout() {
   //jQuery.cookie("JSESSIONID", null, {path: "/"});
-  jQuery.post(document.location.pathname, {nuxeo_login : "true"})
+  jQuery.post(document.location.pathname, {nuxeo_login : "true"});
   document.location.reload();
 }
 
@@ -47,18 +47,18 @@ function doLogin2(username, password, loginUrl) {
       } else {
         loggedin = false;
       }
-    },
-  })
-  return loggedin
+    }
+  });
+  return loggedin;
 }
 
 function showLoginError(errtext) {
-  logstate = $('#logstate')
+  logstate = $('#logstate');
   if (errtext != null) {
     errmsg = "Login Error: " + errtext;
   } else {
-    errmsg = errtext
+    errmsg = errtext;
   }
-  logstate.html(errmsg)
-  logstate.css({color: 'red'})
+  logstate.html(errmsg);
+  logstate.css({color: 'red'});
 }

@@ -35,7 +35,7 @@ import com.google.gwt.user.client.Command;
 
 /**
  * TODO: busy timeout is not propagated to UI.showBusy
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -45,8 +45,8 @@ public abstract class HttpCommand extends HttpCallback implements Command {
     /**
      *  the timeout to wait before starting busy state.
      *  If -1 busy state is disabled.
-     *  You should use a value >=0 for long time running commands 
-     */     
+     *  You should use a value >=0 for long time running commands
+     */
     protected int busyTimeout = -1;
 
     public HttpCommand() {
@@ -56,7 +56,7 @@ public abstract class HttpCommand extends HttpCallback implements Command {
     public HttpCommand(int busyTimeout) {
         this (null, -1);
     }
-    
+
     public HttpCommand(View view) {
         this (view, -1);
     }
@@ -69,7 +69,7 @@ public abstract class HttpCommand extends HttpCallback implements Command {
     public View getView() {
         return view;
     }
-    
+
     public HttpCommand setView(View view) {
         this.view = view;
         return this;
@@ -81,7 +81,7 @@ public abstract class HttpCommand extends HttpCallback implements Command {
     public int getBusyTimeout() {
         return busyTimeout;
     }
-    
+
     /**
      * @param busyTimeout the busyTimeout to set.
      */
@@ -89,7 +89,7 @@ public abstract class HttpCommand extends HttpCallback implements Command {
         this.busyTimeout = busyTimeout;
         return this;
     }
-    
+
     public void execute() {
         try {
             doExecute();
@@ -97,38 +97,38 @@ public abstract class HttpCommand extends HttpCallback implements Command {
             Framework.handleError(t);
         }
     }
-    
+
     protected abstract void doExecute() throws Throwable;
-    
-    
+
+
     public HttpRequest get(String url) {
         return new CommandRequest(RequestBuilder.GET, url);
     }
 
     public HttpRequest post(String url) {
-        return new CommandRequest(RequestBuilder.POST, url); 
+        return new CommandRequest(RequestBuilder.POST, url);
     }
 
-    
+
     @Override
     public void onError(Request request, Throwable exception) {
         hideBusy();
         super.onError(request, exception);
     }
-    
+
     @Override
     public void onResponseReceived(Request request, Response response) {
         hideBusy();
         super.onResponseReceived(request, response);
     }
-    
+
     public void onSuccess(HttpResponse response) {
     }
-    
+
     public void onFailure(Throwable cause) {
         Framework.handleError(cause);
     }
-    
+
     protected void showBusy() {
         if (busyTimeout > -1) {
             if (view != null) {
@@ -138,18 +138,18 @@ public abstract class HttpCommand extends HttpCallback implements Command {
             }
         }
     }
-    
+
     protected void hideBusy() {
         if (busyTimeout > -1) {
             if (view != null) {
                 view.hideBusy();
             } else {
                 UI.hideBusy();
-            }        
+            }
         }
     }
 
-    class CommandRequest extends HttpRequest {      
+    class CommandRequest extends HttpRequest {
         public CommandRequest(Method method, String url) {
             super(method, url);
         }
@@ -160,7 +160,7 @@ public abstract class HttpCommand extends HttpCallback implements Command {
             showBusy();
             return super.send();
         }
-        
+
         @Override
         public Request sendRequest(String requestData, RequestCallback callback)
                 throws RequestException {
@@ -174,5 +174,5 @@ public abstract class HttpCommand extends HttpCallback implements Command {
             }
         }
     }
-    
+
 }

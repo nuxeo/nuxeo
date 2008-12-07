@@ -32,5 +32,5 @@ public abstract class AnnotatedCommand extends Command {
         this.aliases = this.syntax.getCommandToken().getNames();
     }
 
-    
+
 }

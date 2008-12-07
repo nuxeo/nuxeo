@@ -48,7 +48,7 @@ public class TestNavigator extends View {
 
     @Override
     protected Widget createContent() {
-        Button button1 = new Button("Show Tabs");        
+        Button button1 = new Button("Show Tabs");
         button1.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
                 System.out.println("cliccccccccccccck");
@@ -64,7 +64,7 @@ public class TestNavigator extends View {
                         System.out.println("errrrrrrror");
                         cause.printStackTrace();
                     }
-                    
+
                 }).send();
                 } catch (Exception e) {
                     Framework.handleError(e);
@@ -76,25 +76,25 @@ public class TestNavigator extends View {
             public void onClick(Widget sender) {
                 UI.openInEditor("Testing Unknown Input");
             }
-        });        
+        });
         Button button3 = new Button("Button 3");
         button3.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
                 System.out.println(TestNavigator.this.toString());
             }
         });
-        
+
         HorizontalPanel panel = new HorizontalPanel();
         //panel.setWidth("100%");
         panel.add(button1);
         panel.add(button2);
         panel.add(button3);
-        
+
         System.out.println(panel.toString());
-        
+
         return panel;
     }
-    
+
     @Override
     public Image getIcon() {
         return Main.getImages().filtersgroup().createImage();

@@ -7,14 +7,14 @@
        </@block>
     </title>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    
+
    <link rel="stylesheet" href="${skinPath}/css/webengine.css" type="text/css" media="screen" charset="utf-8">
    <link rel="stylesheet" href="${skinPath}/css/wiki.css" type="text/css" media="screen" charset="utf-8">
    <link rel="stylesheet" href="${skinPath}/script/jquery/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
    <link rel="stylesheet" type="text/css" href="${skinPath}/script/markitup/skins/markitup/style.css" />
    <link rel="stylesheet" type="text/css" href="${skinPath}/script/markitup/sets/wiki/style.css" />
    <link rel="shortcut icon" href="${skinPath}/image/favicon.gif" />
-    
+
     <@block name="stylesheets" />
     <script type="text/javascript" src="${skinPath}/script/jquery/jquery.js"></script>
     <script type="text/javascript" src="${skinPath}/script/jquery/ui/ui.base.js"></script>
@@ -27,10 +27,10 @@
            $(document).ready(function(){
              $('#query').focus(function() {
                if (this.value == "Search") {
-                 this.value = ""
+                 this.value = "";
                }
-             })
-           })
+             });
+           });
           </script>
     </#if>
      <@block name="header_scripts" />

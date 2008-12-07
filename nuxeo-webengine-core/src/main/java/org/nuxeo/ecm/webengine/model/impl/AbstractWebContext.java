@@ -255,6 +255,7 @@ public abstract class AbstractWebContext implements WebContext {
                 path = "/nuxeo/site"; // for testing
             }
             buf.append(path).append(request.getServletPath());
+
             int len = buf.length();
             if (len > 0 && buf.charAt(len-1) == '/') {
                 buf.setLength(len-1);
@@ -304,13 +305,13 @@ public abstract class AbstractWebContext implements WebContext {
             path = "/nuxeo/site"; // for testing
         }
         buf.append(path).append(request.getServletPath());
+
         path = request.getPathInfo();
         if (path != null) {
             buf.append(path);
         }
         return buf.toString();
     }
-
 
     public String getUrlPath(DocumentModel document) {
         return getModuleInstance().getLink(document);

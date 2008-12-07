@@ -48,7 +48,7 @@ public interface TreeView extends Serializable {
     /**
      * Set the input data
      *
-     * @param input. may be null
+     * @param input may be null
      */
     void setInput(Object input);
 

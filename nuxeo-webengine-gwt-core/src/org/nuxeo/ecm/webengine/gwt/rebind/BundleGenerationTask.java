@@ -44,23 +44,23 @@ import com.google.gwt.core.ext.typeinfo.JType;
  */
 public class BundleGenerationTask extends GenerationTask {
 
-    
-    
+
+
     @Override
     public void run() throws UnableToCompleteException {
         composer.addImport(Framework.class.getName());
         composer.addImport(ApplicationBundle.class.getName());
         composer.addImplementedInterface(ApplicationBundle.class.getName());
-        
+
         // Bundles will be processed from right to root
         // Given bundles A: B, C and B: B1, B2 and C: C1, C2
         // they will be processed in the following order:
         // C2, C1, C, B2, B1, B, A
         ArrayList<JClassType> bundles = new ArrayList<JClassType>();
-        bundles.add(typeInfo.getClassType());        
+        bundles.add(typeInfo.getClassType());
         collectSuperBundles(typeInfo.getClassType(), bundles);
         Collections.reverse(bundles);
-        
+
         writer.indent();
         writer.println();
         writer.indent();
@@ -68,29 +68,29 @@ public class BundleGenerationTask extends GenerationTask {
         writeStartMethod();
         writer.println();
         writeStartMethod2();
-        writer.println();        
+        writer.println();
         writeDeployMethod(bundles);
         writer.outdent();
         writer.outdent();
         writer.println();
         writer.commit(logger);
     }
-    
+
     private void collectSuperBundles(JClassType type, List<JClassType> bundles) throws UnableToCompleteException {
         Bundle bundle = type.getAnnotation(Bundle.class);
         if (bundle == null) {
             logger.log(TreeLogger.ERROR, "Application Bundles must be annotated with @Bundle'"
                     + typeName + "'", null);
-            throw new UnableToCompleteException();            
-        }            
+            throw new UnableToCompleteException();
+        }
         Class<?>[] superBundles = bundle.value();
         for (Class<?> clazz : superBundles) {
             type = getTypeForClass(clazz);
             bundles.add(type);
             collectSuperBundles(type, bundles);
         }
-    }    
-    
+    }
+
     private void writeStartMethod() {
         writer.println("public void start() {");
         writer.indent();
@@ -109,13 +109,13 @@ public class BundleGenerationTask extends GenerationTask {
         writer.println("}");
     }
 
-    private void writeDeployMethod(List<JClassType> bundles) throws UnableToCompleteException { 
+    private void writeDeployMethod(List<JClassType> bundles) throws UnableToCompleteException {
         // it's important to preserve order so lets use a LinkedHashSet
         Set<JMethod> extensions = new LinkedHashSet<JMethod>();
         Set<JMethod> lastExtensions = new LinkedHashSet<JMethod>();
         Set<JMethod> extPoints = new LinkedHashSet<JMethod>();
         Set<JMethod> instances = new LinkedHashSet<JMethod>();
-        
+
 
         // start processing bundles
         for (JClassType type : bundles) {
@@ -125,7 +125,7 @@ public class BundleGenerationTask extends GenerationTask {
         // write method start
         writer.println("public void deploy() {");
         writer.indent();
-        // write local vars instantiation 
+        // write local vars instantiation
         writer.println();
         writeInstanceDecls(instances);
         writer.println();
@@ -156,12 +156,12 @@ public class BundleGenerationTask extends GenerationTask {
             writeInstanceDecl(m.getReturnType(), m.getName());
         }
     }
-    
+
     private void writeInstanceDecl(JType type, String name) {
         composer.addImport(type.getQualifiedSourceName());
         writer.println(type.getSimpleSourceName()+" "+name +" = new "+ type.getSimpleSourceName() +"();");
     }
-    
+
     private void writeExtensionPoint(JMethod method) {
         ExtensionPoint point = method.getAnnotation(ExtensionPoint.class);
         for (String xp : point.value()) {
@@ -171,12 +171,12 @@ public class BundleGenerationTask extends GenerationTask {
 
     private void writeExtension(JMethod method) {
         Extension ext = method.getAnnotation(Extension.class);
-        for (String point : ext.targets()) {            
+        for (String point : ext.targets()) {
             writer.println("Framework.registerExtension(\""+point+"\", "+ method.getName()+");");
         }
     }
 
-    public void collectAnnotatedMethods(JClassType type, 
+    public void collectAnnotatedMethods(JClassType type,
             Set<JMethod> extensions, Set<JMethod> lastExtensions,
             Set<JMethod> extPoints, Set<JMethod> instances) throws UnableToCompleteException {
         for (JMethod m : type.getMethods()) {
@@ -200,7 +200,7 @@ public class BundleGenerationTask extends GenerationTask {
             if (found) {
                 JType rt = m.getReturnType();
                 if (!(rt instanceof JClassType)) {
-                    logger.log(TreeLogger.ERROR, 
+                    logger.log(TreeLogger.ERROR,
                             "Extension point definition methods inside Application Bundles must return object instances '"
                             + m.getName() + "'", null);
                     throw new UnableToCompleteException();
@@ -219,10 +219,10 @@ public class BundleGenerationTask extends GenerationTask {
         Collections.sort(result, new ExtensionComparator());
         return result;
     }
-    
+
     static class ExtensionComparator implements Comparator<JMethod> {
         public int compare(JMethod o1, JMethod o2) {
-            int h1 = o1.getAnnotation(Extension.class).hint();            
+            int h1 = o1.getAnnotation(Extension.class).hint();
             int h2 = o2.getAnnotation(Extension.class).hint();
             if (h1 == h2) {
                 return 0;
@@ -234,6 +234,6 @@ public class BundleGenerationTask extends GenerationTask {
                 return -1;
             }
             return h1 - h2;
-        }  
+        }
     }
 }

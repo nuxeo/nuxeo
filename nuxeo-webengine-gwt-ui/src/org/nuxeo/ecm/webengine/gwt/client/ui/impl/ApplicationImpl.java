@@ -44,19 +44,19 @@ public class ApplicationImpl extends UIApplication implements Extensible, Extens
     protected SimplePanel footerPanel;
     protected SimplePanel editorContainer;
     protected SimplePanel viewContainer;
-    
-    
+
+
     public ApplicationImpl() {
         DockPanel panel = new DockPanel();
         panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
         panel.setSpacing(2);
         panel.setSize("100%", "100%");
-        
+
         headerPanel = new SimplePanel();
         panel.add(headerPanel, DockPanel.NORTH);
         footerPanel = new SimplePanel();
         panel.add(footerPanel, DockPanel.SOUTH);
-        
+
         panel.setCellHeight(headerPanel, "4%");
         panel.setCellHeight(footerPanel, "4%");
 
@@ -75,10 +75,10 @@ public class ApplicationImpl extends UIApplication implements Extensible, Extens
         panel.setPixelSize(Window.getClientWidth(), Window.getClientHeight());
         initWidget(panel);
     }
-    
+
 
     @Override
-    protected void onAttach() {        
+    protected void onAttach() {
         super.onAttach();
         // if no contributions were made initialize with default values
         if (editorContainer.getWidget() == null) {
@@ -95,16 +95,16 @@ public class ApplicationImpl extends UIApplication implements Extensible, Extens
         }
         Framework.setErrorHandler(this);
     }
-    
-    
-    protected void setViewContainer(StackedViewContainer container) {        
+
+
+    protected void setViewContainer(StackedViewContainer container) {
         this.viewContainer.setWidget(container);
     }
 
     protected void setEditorContainer(StackedViewContainer container) {
         this.editorContainer.setWidget(container);
     }
-    
+
     protected void setHeader(Widget header) {
         this.headerPanel.setWidget(header);
     }
@@ -120,28 +120,28 @@ public class ApplicationImpl extends UIApplication implements Extensible, Extens
     public StackedViewContainer getViewContainer() {
         return (StackedViewContainer)viewContainer.getWidget();
     }
-    
+
     public void openInEditor(Object input) {
         getEditorContainer().open(input);
     }
-        
+
     @Override
     public void showView(String name) {
         getViewContainer().selectView(name);
     }
-    
+
     public void registerExtension(String target, Object extension) {
         if (VIEW_CONTAINER_XP.equals(target) ) {
             setViewContainer((StackedViewContainer)extension);
         } else if (EDITOR_CONTAINER_XP.equals(target)) {
-            setEditorContainer((EditorContainer)extension); 
+            setEditorContainer((EditorContainer)extension);
         } else if (HEADER_CONTAINER_XP.equals(target)) {
             setHeader((Widget)extension);
         } else if (FOOTER_CONTAINER_XP.equals(target)) {
             setFooter((Widget)extension);
         }
     }
-    
+
     public ApplicationImpl register() {
         Framework.registerExtension(Framework.APPLICATION_XP, this);
         Framework.registerExtensionPoint(VIEW_CONTAINER_XP, this);
@@ -155,5 +155,5 @@ public class ApplicationImpl extends UIApplication implements Extensible, Extens
     public void handleError(Throwable t) {
         UI.showError(t);
     }
-    
+
 }

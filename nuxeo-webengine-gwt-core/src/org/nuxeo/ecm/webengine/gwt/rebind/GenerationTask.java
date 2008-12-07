@@ -42,23 +42,23 @@ public abstract class GenerationTask {
     protected TypeInfo typeInfo;
     protected ClassSourceFileComposerFactory composer;
     protected SourceWriter writer;
-    
+
     public GenerationTask() {
     }
-    
+
     public String generate(TreeLogger logger, GeneratorContext context, String typeName) throws UnableToCompleteException {
         this.logger = logger;
         this.context = context;
-        this.typeName = typeName;        
+        this.typeName = typeName;
         oracle = context.getTypeOracle();
         typeInfo = new TypeInfo(getType(typeName));
-        
+
         PrintWriter printWriter = context.tryCreate(logger, typeInfo.getProxyPackage(),
                 typeInfo.getProxyName());
         if (printWriter !=null) {
             composer = new ClassSourceFileComposerFactory(
                     typeInfo.getProxyPackage(), typeInfo.getProxyName());
-            //composer.addImplementedInterface(typeInfo.getClassType().getSimpleSourceName());         
+            //composer.addImplementedInterface(typeInfo.getClassType().getSimpleSourceName());
             writer = new JSourceWriter(composer, context, printWriter);
             run();
         }
@@ -86,5 +86,5 @@ public abstract class GenerationTask {
     }
 
     public abstract void run() throws UnableToCompleteException;
-    
+
 }

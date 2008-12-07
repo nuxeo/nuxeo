@@ -36,11 +36,11 @@ public class CommandLine {
     protected List<CommandParameter> params;
     protected Map<String, CommandParameter> map;
     protected Command cmd;
-    
+
     public CommandLine(CommandRegistry registry, String cmd) throws CommandException {
         this (registry, StringUtils.tokenize(cmd));
     }
-    
+
     public CommandLine(CommandRegistry registry, String[] args) throws CommandException {
         if (args.length == 0) {
             throw new IllegalArgumentException("CommandLine cannot be empty");
@@ -60,14 +60,14 @@ public class CommandLine {
             if (param != null && param.token.isValueRequired()) {
                 param.value = key;
                 param = null;
-            } else {                
+            } else {
                 CommandToken token = cmd.syntax.getToken(key);
                 if (token == null) {
                     token = cmd.syntax.getArgument(k++);
                     if (token == null) {
                         throw new CommandSyntaxException(cmd, "Syntax Error: Extra argument found on position "+i);
                     }
-                }      
+                }
                 if (token.isArgument()) {
                     param = new CommandParameter(token.getName(), token);
                     param.value = key;
@@ -99,7 +99,7 @@ public class CommandLine {
         }
         return params.get(params.size()-1);
     }
-        
+
     public List<CommandParameter> getParameters() {
         return params;
     }
@@ -113,7 +113,7 @@ public class CommandLine {
         }
         return result;
     }
-    
+
     public CommandParameter getParameter(String key) {
         return this.map.get(key);
     }
@@ -126,7 +126,7 @@ public class CommandLine {
         getCommand().run(client, this);
     }
 
-    
+
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
@@ -134,12 +134,12 @@ public class CommandLine {
             buf.append(param.key).append(" ");
             if (param.token.isValueRequired()) {
                 String value = param.getValue();
-                if (value != null) buf.append(value).append(" ");    
+                if (value != null) buf.append(value).append(" ");
             }
         }
         buf.setLength(buf.length()-1);
         return buf.toString();
     }
-    
-    
+
+
 }

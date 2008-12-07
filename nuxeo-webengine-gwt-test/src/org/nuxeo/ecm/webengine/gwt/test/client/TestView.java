@@ -41,22 +41,22 @@ public class TestView extends View {
 
     @Override
     protected Widget createContent() {
-        Button button2 = new Button("Open some text");        
+        Button button2 = new Button("Open some text");
         button2.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
-                HTML w = new HTML("<h1>My Content</h1>Some html text!");                
+                HTML w = new HTML("<h1>My Content</h1>Some html text!");
                 UI.openInEditor(w);
                 // switch to "login" view
-                UI.showView("login");                
+                UI.showView("login");
             }
-        });        
+        });
         return button2;
     }
-    
+
     @Override
     public Image getIcon() {
         return Main.getImages().mailgroup().createImage();
     }
 
-    
+
 }

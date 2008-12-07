@@ -35,33 +35,33 @@ import com.google.gwt.user.client.ui.DeckPanel;
  *
  */
 public class EditorContainerImpl extends EditorContainer implements Extensible, ContextListener {
-    
-    
+
+
     public EditorContainerImpl() {
-    }        
+    }
 
     @Override
     protected void onAttach() {
         super.onAttach();
         UI.addContextListener(this);
     }
-    
+
     @Override
     protected void onDetach() {
         super.onDetach();
         UI.removeContextListener(this);
     }
-    
+
     public void registerExtension(String target, Object extension) {
         if (ExtensionPoints.EDITORS_XP.equals(target)) {
             DeckPanel panel = getDeckPanel();
             Editor editor = (Editor)extension;
-            panel.add(editor);    
+            panel.add(editor);
         } else if (ExtensionPoints.EDITORS_XP.equals(target)) {
-            GWT.log("Unknown extension point: "+target, null);            
+            GWT.log("Unknown extension point: "+target, null);
         }
     }
-    
+
     public EditorContainerImpl register() {
         Framework.registerExtension(ExtensionPoints.EDITOR_CONTAINER_XP, this);
         Framework.registerExtensionPoint(ExtensionPoints.EDITORS_XP, this);
@@ -71,5 +71,5 @@ public class EditorContainerImpl extends EditorContainer implements Extensible, 
     public void onContextEvent(int event) {
         refresh();
     }
-    
+
 }

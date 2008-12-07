@@ -47,5 +47,5 @@ public class Help extends AnnotatedCommand {
             println(getHelp());
         }
     }
-    
+
 }

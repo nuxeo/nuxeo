@@ -26,12 +26,12 @@ package org.nuxeo.ecm.webengine.gwt.client.ui;
  */
 public interface ExtensionPoints {
 
-    public final static String VIEW_CONTAINER_XP = "VIEW_CONTAINER";
-    public final static String EDITOR_CONTAINER_XP = "EDITOR_CONTAINER";
-    public final static String HEADER_CONTAINER_XP = "HEADER_CONTAINER";
-    public final static String FOOTER_CONTAINER_XP = "FOOTER_CONTAINER";
+    final static String VIEW_CONTAINER_XP = "VIEW_CONTAINER";
+    final static String EDITOR_CONTAINER_XP = "EDITOR_CONTAINER";
+    final static String HEADER_CONTAINER_XP = "HEADER_CONTAINER";
+    final static String FOOTER_CONTAINER_XP = "FOOTER_CONTAINER";
 
-    public final static String VIEWS_XP = "VIEWS";
-    public final static String EDITORS_XP = "EDITORS";
-    
+    final static String VIEWS_XP = "VIEWS";
+    final static String EDITORS_XP = "EDITORS";
+
 }

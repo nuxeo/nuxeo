@@ -49,5 +49,5 @@ public class DefaultHeader extends Composite {
         grid.getCellFormatter().setWidth(0, 2, "100%");
         initWidget(grid);
     }
-    
+
 }

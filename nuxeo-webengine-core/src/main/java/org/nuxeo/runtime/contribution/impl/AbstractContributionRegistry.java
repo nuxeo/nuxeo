@@ -32,7 +32,7 @@ import org.nuxeo.runtime.contribution.ContributionRegistry;
  * It serves only to resolve dependencies. This allow greater flexibility in managing dependencies.
  * This registry may have a parent registry that can be used only read only.
  *
- * TODO need to implement a visibility (PRIVATE, PROTECTED, PUBLIC etc) on contributions when extending other registries  
+ * TODO need to implement a visibility (PRIVATE, PROTECTED, PUBLIC etc) on contributions when extending other registries
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -42,11 +42,11 @@ public abstract class AbstractContributionRegistry<K, T> implements
     protected final Map<Object, Contribution<K, T>> registry;
     protected final AbstractContributionRegistry<K,T> parent;
     protected final List<AbstractContributionRegistry<K, T>> listeners;
-    
+
     protected AbstractContributionRegistry() {
         this (null);
     }
-    
+
     protected AbstractContributionRegistry(AbstractContributionRegistry<K,T> parent) {
         registry = new HashMap<Object, Contribution<K, T>>();
         this.parent = parent;
@@ -54,15 +54,15 @@ public abstract class AbstractContributionRegistry<K, T> implements
         // subclasses may call importParentContributions(); after initializing the registry
         // this will import all resolved contributions from the parent
     }
-    
+
     public ContributionRegistry<K, T> getParent() {
         return parent;
     }
-    
-    protected synchronized void importParentContributions() {        
+
+    protected synchronized void importParentContributions() {
         AbstractContributionRegistry<K,T> p = parent;
         while (p != null) {
-            p.listeners.add(this);            
+            p.listeners.add(this);
             for (Contribution<K,T> contrib : p.registry.values().toArray(new Contribution[p.registry.size()])) {
                 if (contrib.isResolved()) {
                     installContribution(contrib.getId(), contrib.getValue());

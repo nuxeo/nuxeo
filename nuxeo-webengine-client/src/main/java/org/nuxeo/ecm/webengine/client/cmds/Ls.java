@@ -35,5 +35,5 @@ public class Ls extends AnnotatedCommand {
     public void run(HttpClient client, CommandLine cmdLine) throws Exception {
         System.out.println("TODO: Open session ...");
     }
-    
+
 }

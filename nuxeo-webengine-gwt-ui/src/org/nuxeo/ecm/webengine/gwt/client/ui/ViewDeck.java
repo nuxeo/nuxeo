@@ -27,29 +27,29 @@ import com.google.gwt.user.client.ui.DeckPanel;
  * Manage a collection of views. Only one view is visible at a time.
  * When refreshed this container will show the first view that is enabled for the current context.
  * To find out the enabled view the {@link View#isEnabled(Context)} method is asked.
- * If no view is eanbled for the given context the default view is used.  
- * 
+ * If no view is eanbled for the given context the default view is used.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class ViewDeck extends StackedViewContainer {
-    
+
     public ViewDeck(String name) {
         super(name);
-    }    
-    
+    }
+
     @Override
     protected ComplexPanel createPanel() {
         DeckPanel panel = new DeckPanel();
         panel.setSize("100%", "100%");
         return panel;
     }
-    
-    
+
+
     public DeckPanel getDeckPanel() {
         return (DeckPanel)getWidget();
     }
-    
+
     @Override
     public int getSelectedIndex() {
         return getDeckPanel().getVisibleWidget();

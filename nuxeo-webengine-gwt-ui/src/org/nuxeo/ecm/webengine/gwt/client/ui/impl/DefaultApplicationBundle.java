@@ -33,24 +33,24 @@ import org.nuxeo.ecm.webengine.gwt.client.ui.login.LoginView;
  */
 @Bundle
 public interface DefaultApplicationBundle extends ApplicationBundle {
-  
+
     @Extension(targets=Framework.APPLICATION_XP)
-    @ExtensionPoint({ 
-        ExtensionPoints.VIEW_CONTAINER_XP, 
+    @ExtensionPoint({
+        ExtensionPoints.VIEW_CONTAINER_XP,
         ExtensionPoints.EDITOR_CONTAINER_XP,
         ExtensionPoints.HEADER_CONTAINER_XP,
         ExtensionPoints.FOOTER_CONTAINER_XP})
      ApplicationImpl applicationWindow();
-  
+
     @Extension(targets=ExtensionPoints.EDITOR_CONTAINER_XP)
     @ExtensionPoint(ExtensionPoints.EDITORS_XP)
     EditorContainerImpl editorContainer();
-    
+
     @Extension(targets=ExtensionPoints.VIEW_CONTAINER_XP)
     @ExtensionPoint(ExtensionPoints.VIEWS_XP)
-    ViewContainerImpl viewContainer();  
+    ViewContainerImpl viewContainer();
 
     @Extension(targets=ExtensionPoints.VIEWS_XP, hint=300)
     LoginView loginView();
-    
+
 }

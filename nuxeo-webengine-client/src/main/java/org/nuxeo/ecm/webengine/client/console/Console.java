@@ -39,14 +39,14 @@ import com.sun.corba.se.spi.orbutil.fsm.Guard.Complement;
 public class Console {
 
     protected ConsoleReader console;
-    
+
     protected HttpClient client;
 
     public Console() throws IOException {
         console = new ConsoleReader();
         initialize("http://localhost:8080");
     }
-    
+
     public void initialize(String host, int port, String path, String username, String password) throws IOException {
         initialize(new URL("http", host, port, path));
         //TODO username and password
@@ -55,14 +55,14 @@ public class Console {
     public void initialize(String url) throws IOException {
         initialize(new URL(url));
     }
-    
+
     public void initialize(URL url) throws IOException {
         CompletionHandler ch = console.getCompletionHandler();
         if (ch instanceof CandidateListCompletionHandler) {
             ((CandidateListCompletionHandler)ch).setAlwaysIncludeNewline(false);
         }
         console.setDefaultPrompt("|> ");
-        client = new HttpClient(url); 
+        client = new HttpClient(url);
         // register completors
         console.addCompletor(new CompositeCompletor(this, client.getRegistry()));
     }
@@ -70,7 +70,7 @@ public class Console {
     public ConsoleReader getReader() {
         return console;
     }
-    
+
     /**
      * @return the client.
      */
@@ -89,20 +89,20 @@ public class Console {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            line = console.readLine().trim();            
+            line = console.readLine().trim();
         }
         console.printString("Bye");
         console.printNewline();
     }
-    
+
     protected void newLine() throws IOException {
         console.flushConsole();
         console.printNewline();
     }
-    
-    protected boolean execute(String line) throws Exception {        
+
+    protected boolean execute(String line) throws Exception {
         try {
-            client.run(line);            
+            client.run(line);
         } catch (ExitException e) {
             return false;
         } catch (CommandException e) {
@@ -111,5 +111,5 @@ public class Console {
         return true;
     }
 
-    
+
 }

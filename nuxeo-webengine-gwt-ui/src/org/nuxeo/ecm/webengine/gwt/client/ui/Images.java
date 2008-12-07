@@ -30,7 +30,7 @@ public interface Images extends ImageBundle {
 
       /**
        * An empty image
-       * 
+       *
        * @return a prototype of this image
        */
       @Resource("noimage.png")

@@ -35,6 +35,5 @@ import org.nuxeo.runtime.annotations.loader.Indexable;
 @Target({ElementType.TYPE})
 @Indexable
 public @interface Public {
-    
-}
 
+}

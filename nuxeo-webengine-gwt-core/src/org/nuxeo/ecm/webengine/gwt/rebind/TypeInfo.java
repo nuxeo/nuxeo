@@ -22,7 +22,7 @@ package org.nuxeo.ecm.webengine.gwt.rebind;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 
 /**
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -47,26 +47,26 @@ public class TypeInfo {
     public JClassType getClassType() {
         return classType;
     }
-    
+
     /**
      * @return the proxyName.
      */
     public String getProxyName() {
         return proxyName;
     }
-    
+
     /**
      * @return the proxyPackage.
      */
     public String getProxyPackage() {
         return proxyPackage;
     }
-    
+
     /**
      * @return the proxyQName.
      */
     public String getProxyQName() {
         return proxyQName;
     }
-    
+
 }

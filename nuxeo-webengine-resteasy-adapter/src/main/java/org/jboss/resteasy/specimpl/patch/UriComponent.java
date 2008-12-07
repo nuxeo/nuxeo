@@ -192,22 +192,22 @@ public final class UriComponent {
     }
 
     private final static char[] HEX_DIGITS = {
-	'0', '1', '2', '3', '4', '5', '6', '7',
-	'8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+    '0', '1', '2', '3', '4', '5', '6', '7',
+    '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
 
     private static void appendPercentEncodedOctet(StringBuilder sb, int b) {
-	sb.append('%');
-	sb.append(HEX_DIGITS[b >> 4]);
-	sb.append(HEX_DIGITS[b & 0x0F]);
+    sb.append('%');
+    sb.append(HEX_DIGITS[b >> 4]);
+    sb.append(HEX_DIGITS[b & 0x0F]);
     }
 
     private static void appendUTF8EncodedCharacter(StringBuilder sb, char c) {
         final ByteBuffer bb = UTF_8_CHARSET.encode("" + c);
 
-	while (bb.hasRemaining()) {
+    while (bb.hasRemaining()) {
             appendPercentEncodedOctet(sb, bb.get() & 0xFF);
-	}
+    }
     }
 
     private static final String[] SCHEME = {"0-9", "A-Z", "a-z", "+", "-", "."};
@@ -286,26 +286,26 @@ public final class UriComponent {
      *         detected
      */
     public static String decode(String s, Type t) {
-	if (s == null)
-	    throw new IllegalArgumentException();
+    if (s == null)
+        throw new IllegalArgumentException();
 
-	final int n = s.length();
-	if (n == 0)
-	    return s;
+    final int n = s.length();
+    if (n == 0)
+        return s;
 
         // If there are no percent-escaped octets
-	if (s.indexOf('%') < 0)
-	    return s;
+    if (s.indexOf('%') < 0)
+        return s;
 
         // Malformed percent-escaped octet at the end
         if (n < 2)
             // TODO localize
-	    throw new IllegalArgumentException("Malformed percent-encoded octet at index 1");
+        throw new IllegalArgumentException("Malformed percent-encoded octet at index 1");
 
         // Malformed percent-escaped octet at the end
         if (s.charAt(n - 2) == '%')
             // TODO localize
-	    throw new IllegalArgumentException("Malformed percent-encoded octet at index " + (n - 2));
+        throw new IllegalArgumentException("Malformed percent-encoded octet at index " + (n - 2));
 
         return (t != Type.HOST) ? decode(s, n) : decodeHost(s, n);
     }
@@ -363,44 +363,44 @@ public final class UriComponent {
     }
 
     private static String decode(String s, int n) {
-	final StringBuilder sb = new StringBuilder(n);
-	ByteBuffer bb = ByteBuffer.allocate(1);
+    final StringBuilder sb = new StringBuilder(n);
+    ByteBuffer bb = ByteBuffer.allocate(1);
 
-	for (int i = 0; i < n;) {
+    for (int i = 0; i < n;) {
             final char c = s.charAt(i++);
-	    if (c != '%') {
-		sb.append(c);
-	    } else {
+        if (c != '%') {
+        sb.append(c);
+        } else {
                 bb = decodePercentEncodedOctets(s, i, bb);
                 i = decodeOctets(i, bb, sb);
             }
-	}
+    }
 
-	return sb.toString();
+    return sb.toString();
     }
 
     private static String decodeHost(String s, int n) {
-	final StringBuilder sb = new StringBuilder(n);
-	ByteBuffer bb = ByteBuffer.allocate(1);
+    final StringBuilder sb = new StringBuilder(n);
+    ByteBuffer bb = ByteBuffer.allocate(1);
 
-    	boolean betweenBrackets = false;
-	for (int i = 0; i < n;) {
+        boolean betweenBrackets = false;
+    for (int i = 0; i < n;) {
             final char c = s.charAt(i++);
-	    if (c == '[') {
-		betweenBrackets = true;
-	    } else if (betweenBrackets && c == ']') {
-		betweenBrackets = false;
-	    }
+        if (c == '[') {
+        betweenBrackets = true;
+        } else if (betweenBrackets && c == ']') {
+        betweenBrackets = false;
+        }
 
-	    if (c != '%' || betweenBrackets) {
-		sb.append(c);
-	    } else {
+        if (c != '%' || betweenBrackets) {
+        sb.append(c);
+        } else {
                 bb = decodePercentEncodedOctets(s, i, bb);
                 i = decodeOctets(i, bb, sb);
             }
-	}
+    }
 
-	return sb.toString();
+    return sb.toString();
     }
 
     /**

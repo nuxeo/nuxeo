@@ -36,24 +36,24 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class ViewContainerImpl extends ViewStack implements Extensible,
         ContextListener {
-    
-    
+
+
     public ViewContainerImpl() {
         super("view_container");
     }
-    
+
     @Override
     protected void onAttach() {
         super.onAttach();
         UI.addContextListener(this);
     }
-    
+
     @Override
     protected void onDetach() {
         super.onDetach();
         UI.removeContextListener(this);
     }
-    
+
     public void registerExtension(String target, Object extension) {
         if (ExtensionPoints.VIEWS_XP.equals(target)) {
             if (extension instanceof View) {
@@ -61,7 +61,7 @@ public class ViewContainerImpl extends ViewStack implements Extensible,
                 add(item);
             } else if (extension instanceof Widget) {
                 Widget w = (Widget)extension;
-                getStackPanel().add(w, View.getHeaderString(w.getTitle(), UI.getEmptyImage()), true); 
+                getStackPanel().add(w, View.getHeaderString(w.getTitle(), UI.getEmptyImage()), true);
             } else {
                 GWT.log("Extension is not a widget. Ignoring", null);
             }
@@ -73,12 +73,12 @@ public class ViewContainerImpl extends ViewStack implements Extensible,
     public void onContextEvent(int event) {
         refresh();
     }
-    
+
 
     public ViewContainerImpl register() {
         Framework.registerExtension(ExtensionPoints.VIEW_CONTAINER_XP, this);
         Framework.registerExtensionPoint(ExtensionPoints.VIEWS_XP, this);
         return this;
     }
-    
+
 }

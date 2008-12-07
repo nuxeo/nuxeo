@@ -25,9 +25,9 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * A view container is a composite that wraps a complex panel. It is used to
  * manage views
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public abstract class ViewContainer extends View {
 

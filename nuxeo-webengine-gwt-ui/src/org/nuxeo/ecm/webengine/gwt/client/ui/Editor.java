@@ -25,7 +25,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * A view that support input objects
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -34,18 +34,18 @@ public abstract class Editor extends View {
     public Editor(String name) {
         super(name);
     }
-    
+
     public Editor(String name, Widget widget) {
-        super(name, widget); 
+        super(name, widget);
     }
-   
+
     public abstract boolean acceptInput(Object input);
-    
+
     public void open(Object input) {
         setInput(input);
         UI.getContext().setInputObject(input);
     }
-    
+
     public abstract void setInput(Object input);
-    
+
 }

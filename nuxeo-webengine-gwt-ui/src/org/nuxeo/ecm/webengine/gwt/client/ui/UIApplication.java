@@ -31,14 +31,14 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public abstract class UIApplication extends Composite implements Application {
 
-      
+
     public void start() {
         RootPanel.get().add(this);
-    }  
+    }
 
     public abstract void showView(String name);
-    
+
     public abstract void openInEditor(Object input);
-    
+
     //TODO add getView , showView etc
 }

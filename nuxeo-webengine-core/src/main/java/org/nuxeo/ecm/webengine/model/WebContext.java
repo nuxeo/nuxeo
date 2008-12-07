@@ -52,7 +52,7 @@ public interface WebContext extends Adaptable {
     Module getModule();
 
     /**
-     * Get the root resource if any resource was defined as being the root
+     * Gets the root resource if any resource was defined as being the root
      * <p>
      * A root resource can be any resource from the resource chain.
      *
@@ -61,10 +61,11 @@ public interface WebContext extends Adaptable {
     Resource getRoot();
 
     /**
-     * Get the i18n message for the given key.
+     * Gets the i18n message for the given key.
      * The current module i18n messages are queried first then if no message is found
      * the global message pool is queried (the one living in WEB-INF/i18n)
-     * If no message is found  the key surrounded by exclamation marks is returned
+     * If no message is found  the key surrounded by exclamation marks is returned.
+     *
      * @param key the message key
      * @return the message
      */
@@ -73,7 +74,8 @@ public interface WebContext extends Adaptable {
     String getMessage(String key, String ... args);
 
     /**
-     * Same as {@link #getMessage(String)} but use the given locale
+     * Same as {@link #getMessage(String)} but use the given locale.
+     *
      * @param key the message key
      * @param locale the locale to use
      * @return the message
@@ -90,10 +92,10 @@ public interface WebContext extends Adaptable {
     WebEngine getEngine();
 
     /**
-     * Get the current user session.
+     * Gets the current user session.
      * <p>
      * The user session is a WebEngine abstraction for the current user session and can be
-     * used to retrieve current login, core session, and to set or get user session variables
+     * used to retrieve current login, core session, and to set or get user session variables.
      *
      * @return the user session. Never returns null.
      */
@@ -114,13 +116,15 @@ public interface WebContext extends Adaptable {
     Principal getPrincipal();
 
     /**
-     * Get the JAX-RS UriInfo
+     * Gets the JAX-RS UriInfo.
+     *
      * @return the uri info
      */
     UriInfo getUriInfo();
 
     /**
-     * Get HTTP Headers as defined by JAX-RS
+     * Gets HTTP Headers as defined by JAX-RS.
+     *
      * @return HTTP headers object
      */
     HttpHeaders getHttpHeaders();
@@ -133,7 +137,8 @@ public interface WebContext extends Adaptable {
     HttpServletRequest getRequest();
 
     /**
-     * Get HTTP Method
+     * Get HTTP Method.
+     *
      * @return the method
      */
     String getMethod();
@@ -149,7 +154,7 @@ public interface WebContext extends Adaptable {
 
     /**
      * Gets the URL requested by the client. Same as
-     * {@link HttpServletRequest#getRequestURL()}
+     * {@link HttpServletRequest#getRequestURL()}.
      *
      * @return the request URL. Cannot return null.
      */
@@ -158,7 +163,7 @@ public interface WebContext extends Adaptable {
     /**
      * Returns the part of this request's URL from the protocol name up to the
      * query string in the first line of the HTTP request. This is the same as
-     * {@link HttpServletRequest#getRequestURI()}
+     * {@link HttpServletRequest#getRequestURI()}.
      *
      * @return the request URI. Cannot return null.
      */
@@ -173,13 +178,14 @@ public interface WebContext extends Adaptable {
 
     /**
      * Get the path prefix that identify the current web application.
-     * The application path will include the base path (context + servlet path)
+     * The application path will include the base path (context + servlet path).
+     *
      * @return the application path. Cannot be null
      */
     String getModulePath();
 
     /**
-     * Gets the path of the servlet. Same as servlet context path + servlet path
+     * Gets the path of the servlet. Same as servlet context path + servlet path.
      *
      * @return the site path
      */
@@ -195,7 +201,8 @@ public interface WebContext extends Adaptable {
 
     /**
      * Gets the server URL without any path.
-     * The return string builder can be used to build the wanted URL
+     * The returned string builder can be used to build the wanted URL.
+     *
      * @return a string builder
      */
     StringBuilder getServerURL();
@@ -246,14 +253,16 @@ public interface WebContext extends Adaptable {
     Object getProperty(String key, Object defaultValue);
 
     /**
-     * Convenience method to get a cookie value
+     * Convenience method to get a cookie value.
+     *
      * @param name the cookie name
      * @return the cookie value if any null otherwise
      */
     String getCookie(String name);
 
     /**
-     * Convenience method to get a cookie value using a default value
+     * Convenience method to get a cookie value using a default value.
+     *
      * @param name the cookie name
      * @param defaultValue the value to return when cookie is not set
      * @return the cookie value if any or the default if none
@@ -261,7 +270,8 @@ public interface WebContext extends Adaptable {
     String getCookie(String name, String defaultValue);
 
     /**
-     * Get a logger to be used by scripts for logging
+     * Gets a logger to be used by scripts for logging.
+     *
      * @return a logger
      */
     Log getLog();
@@ -288,7 +298,6 @@ public interface WebContext extends Adaptable {
 
     AdapterResource getTargetAdapter();
 
-
     /** template and script resolver */
 
     /**
@@ -312,7 +321,6 @@ public interface WebContext extends Adaptable {
      */
     ScriptFile getFile(String path);
 
-
     /*running scripts and rendering templates */
 
     /**
@@ -325,7 +333,7 @@ public interface WebContext extends Adaptable {
      * @param template
      *            the template to render. Can be a path absolute to the web
      *            directory or relative to the caller script if any.
-     *  @param writer
+     * @param writer
      *            the writer to use
      * @see #render(String, Map)
      */
@@ -340,7 +348,7 @@ public interface WebContext extends Adaptable {
      *            the template to render
      * @param args
      *            the arguments to pass
-     *  @param writer
+     * @param writer
      *            the writer to use
      *
      * @throws WebException

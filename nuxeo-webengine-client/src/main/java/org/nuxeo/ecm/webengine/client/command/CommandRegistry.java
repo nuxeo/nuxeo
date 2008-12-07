@@ -41,25 +41,25 @@ public class CommandRegistry {
         builtinCommands.registerCommand(new Exit());
         builtinCommands.registerCommand(new Test());
     }
-    
-    
+
+
     public CommandRegistry() {
         this (builtinCommands.commands);
     }
-    
+
     public CommandRegistry(Map<String, Command> cmds) {
         commands = new HashMap<String, Command>();
         if (cmds != null) {
             commands.putAll(cmds);
         }
     }
-    
+
     public void registerCommand(Command cmd) {
         for (String alias : cmd.getAliases()) {
             commands.put(alias, cmd);
         }
     }
-    
+
     public void unregisterCommand(String name) {
         Command cmd = commands.remove(name);
         if (cmd != null) {
@@ -68,15 +68,15 @@ public class CommandRegistry {
             }
         }
     }
-    
+
     public String[] getCommandNames() {
         return commands.keySet().toArray(new String[commands.size()]);
     }
-    
+
     public Command[] getCommands() {
         return commands.values().toArray(new Command[commands.size()]);
     }
-    
+
     public Command getCommand(String name) {
         return commands.get(name);
     }
@@ -93,11 +93,11 @@ public class CommandRegistry {
                 break;
             }
             i--;
-        }        
-        String word = offset > i && i>=0 ? line.substring(i+1, offset) : ""; 
+        }
+        String word = offset > i && i>=0 ? line.substring(i+1, offset) : "";
         String prefix = line.substring(0, i).trim();
         if (prefix.length() == 0) {
-           return new String[] {CommandToken.COMMAND, word}; 
+           return new String[] {CommandToken.COMMAND, word};
         }
         String[] segments = StringUtils.tokenize(prefix);
         String cmdName = segments[0];
@@ -113,7 +113,7 @@ public class CommandRegistry {
             while (i > 0) {
                 token = cmd.syntax.getToken(segments[i]);
                 if (token != null) {
-                    
+
                 }
                  i--;
                  k++;
@@ -125,16 +125,16 @@ public class CommandRegistry {
         }
         return new String[] {token.valueType, word} ;
     }
-    
-    
+
+
     public static CommandRegistry getBuiltinCommands() {
         return builtinCommands;
     }
-    
+
     public static Command getBuiltinCommand(String name) {
         return builtinCommands.getCommand(name);
     }
-    
+
     public static void registerBuiltinCommand(Command cmd) {
         builtinCommands.registerCommand(cmd);
     }

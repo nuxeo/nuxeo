@@ -25,11 +25,11 @@ package org.nuxeo.ecm.webengine.gwt.client.ui;
  */
 public interface ContextListener {
 
-    public final static int ERROR = 0;
-    public final static int LOGIN = 1;
-    public final static int LOGOUT = 2;
-    public final static int INPUT = 3;
-    public final static int PROP = 4;
+    final static int ERROR = 0;
+    final static int LOGIN = 1;
+    final static int LOGOUT = 2;
+    final static int INPUT = 3;
+    final static int PROP = 4;
 
     void onContextEvent(int event);
 

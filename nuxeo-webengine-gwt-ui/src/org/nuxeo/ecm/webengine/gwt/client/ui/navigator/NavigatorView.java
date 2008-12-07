@@ -34,10 +34,10 @@ public class NavigatorView extends View {
         super ("navigatorTree");
         setTitle("Navigator");
     }
-    
+
     @Override
     protected Widget createContent() {
         return new NavigatorTree("repository");
     }
-    
+
 }

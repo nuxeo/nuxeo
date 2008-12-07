@@ -35,7 +35,7 @@ public class TestExtension extends View {
         super("testExt", new Label("Test Extension!"));
         setTitle("Test Extension");
     }
-    
+
     @Override
     public Image getIcon() {
         return Main.getImages().contactsgroup().createImage();

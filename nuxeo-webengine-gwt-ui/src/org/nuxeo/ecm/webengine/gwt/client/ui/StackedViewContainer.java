@@ -22,7 +22,7 @@ package org.nuxeo.ecm.webengine.gwt.client.ui;
 
 /**
  * An item container which is showing only one item at a time.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -32,10 +32,10 @@ public abstract class StackedViewContainer extends ViewContainer {
     public StackedViewContainer(String name) {
         super(name);
     }
-    
+
     public abstract int getSelectedIndex();
 
-    
+
     public abstract void selectView(int index);
 
     public View getSelectedView() {
@@ -45,7 +45,7 @@ public abstract class StackedViewContainer extends ViewContainer {
         }
         return null;
     }
-    
+
     public void selectView(View view) {
         int i = indexOf(view);
         if (i > -1) {
@@ -57,8 +57,7 @@ public abstract class StackedViewContainer extends ViewContainer {
         int i = indexOf(name);
         if (i > -1) {
             selectView(i);
-        }        
+        }
     }
-            
-}
 
+}

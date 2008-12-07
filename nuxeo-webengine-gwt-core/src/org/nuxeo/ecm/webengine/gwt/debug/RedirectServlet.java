@@ -43,7 +43,7 @@ public class RedirectServlet extends HttpServlet implements Debug {
     private static final long serialVersionUID = 1L;
 
     protected static Pattern HTTP_RESP = Pattern.compile("HTTP/1\\..\\s+([0-9]+)\\s+(.*)");
-    
+
     protected String  redirectPrefix = REDIRECT_PREFIX;
     protected String  redirectHost = REDIRECT_HOST;
     protected int  redirectPort = REDIRECT_PORT;
@@ -51,7 +51,7 @@ public class RedirectServlet extends HttpServlet implements Debug {
     protected String redirectReplacement = REDIRECT_REPLACEMENT;
     protected boolean trace = REDIRECT_TRACE;
     protected boolean traceContent = REDIRECT_TRACE_CONTENT;
-    
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -63,15 +63,15 @@ public class RedirectServlet extends HttpServlet implements Debug {
         val = System.getProperty("redirect.host");
         if (val != null) {
             redirectHost = val;
-        }        
+        }
         val = System.getProperty("redirect.port");
         if (val != null) {
             redirectPort = Integer.parseInt(val);
-        }        
+        }
         val = System.getProperty("redirect.pattern");
         if (val != null) {
             redirectPattern = val;
-        }        
+        }
         val = System.getProperty("redirect.replacement");
         if (val != null) {
             redirectReplacement = val;
@@ -98,13 +98,13 @@ public class RedirectServlet extends HttpServlet implements Debug {
     @SuppressWarnings("unchecked")
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp)
-    throws ServletException, IOException {        
+    throws ServletException, IOException {
 // TODO used to test loading... progress bar
 //        if (true) {
 //            try {Thread.sleep(3000);} catch (Exception e) {}
 //        }
-        
-        StringBuilder buf = new StringBuilder(); // getRequestURL(req);        
+
+        StringBuilder buf = new StringBuilder(); // getRequestURL(req);
         String urlPath = req.getRequestURI();
         if (redirectPrefix.equals(urlPath)) {
             urlPath = "/";
@@ -161,7 +161,7 @@ public class RedirectServlet extends HttpServlet implements Debug {
         }
     }
 
-    
+
     public void copy(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = new byte[1024*64];
         int read;
@@ -190,11 +190,11 @@ public class RedirectServlet extends HttpServlet implements Debug {
         }
         return -1;
     }
-        
+
 
     public void transferResponse(InputStream in, HttpServletResponse resp) throws IOException {
         int cnt = 0;
-        StringBuilder buf = new StringBuilder(); 
+        StringBuilder buf = new StringBuilder();
         while (true) {
             int c = in.read();
             if (c == -1) {
@@ -209,15 +209,15 @@ public class RedirectServlet extends HttpServlet implements Debug {
                         int status = getStatusCode(buf.toString().trim());
                         if (status == -1) {
                             throw new IOException("Bug in RedirectServlet?");
-                        }          
+                        }
                         if (trace) {
                             traceln(buf.toString());
                         }
                         if (status >= 400) {
                             resp.sendError(status);
                             return;
-                        } 
-                        resp.setStatus(status);                        
+                        }
+                        resp.setStatus(status);
                     } else {
                         setHeader(buf.toString().trim(), resp);
                     }
@@ -230,7 +230,7 @@ public class RedirectServlet extends HttpServlet implements Debug {
                 buf.append((char)c);
             }
         }
-                
+
         OutputStream out = resp.getOutputStream();
         try {
             if (trace) {
@@ -244,7 +244,7 @@ public class RedirectServlet extends HttpServlet implements Debug {
             out.close();
         }
     }
-    
+
     protected void setHeader(String header, HttpServletResponse resp) {
         if (trace) {
             traceln(header);
@@ -261,7 +261,7 @@ public class RedirectServlet extends HttpServlet implements Debug {
     public static void trace(String str) {
         System.out.print(str);
     }
-    
+
     public static void main(String[] args) {
         Matcher m = HTTP_RESP.matcher("HTTP/1.1 404 Not Found");
         if (m.matches()) {
@@ -269,6 +269,6 @@ public class RedirectServlet extends HttpServlet implements Debug {
             System.out.println(m.group(2));
         }
     }
-    
+
 
 }

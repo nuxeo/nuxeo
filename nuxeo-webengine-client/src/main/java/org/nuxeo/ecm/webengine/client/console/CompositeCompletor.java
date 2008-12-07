@@ -41,7 +41,7 @@ import org.nuxeo.ecm.webengine.client.command.CommandToken;
 public class CompositeCompletor implements Completor {
 
     private final CommandRegistry registry;
-    private final CommandCompletor completor;    
+    private final CommandCompletor completor;
     private final Console console;
     private final Map<String, Completor> completors = new HashMap<String, Completor>();
     private final Map<String,Completor> paramCompletors = new HashMap<String, Completor>();
@@ -103,7 +103,7 @@ public class CompositeCompletor implements Completor {
                 if (token != null) {
                     if (token.isValueRequired()) {
                         if (token.valueType != null) {
-                            comp = completors.get(token.valueType); 
+                            comp = completors.get(token.valueType);
                         } else {
                             return -1; // no completion available
                         }
@@ -121,7 +121,7 @@ public class CompositeCompletor implements Completor {
                         i++; // skip value too
                     }
                     continue;
-                } 
+                }
                 k++;
             }
             CommandToken token = cmd.getSyntax().getArgument(k);
@@ -129,9 +129,9 @@ public class CompositeCompletor implements Completor {
                 comp = completors.get(token.getValueType());
             }
             // 2. if completor not found try to complete parameter names
-            if (comp == null) { 
+            if (comp == null) {
                 comp = paramCompletors.get(cmd.getName());
-                if (comp == null) { // build param completor 
+                if (comp == null) { // build param completor
                     comp = new ParameterNameCompletor(cmd);
                     // TODO we really need to cache this?
                     paramCompletors.put(cmd.getName(), comp);
@@ -140,7 +140,7 @@ public class CompositeCompletor implements Completor {
             // complete if completor found
             if (comp != null) {
                 int ret =  comp.complete(argPrefix, offset, candidates);
-                return ret + (list.getBufferPosition() - offset);                
+                return ret + (list.getBufferPosition() - offset);
             }
             return -1;
         }

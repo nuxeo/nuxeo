@@ -36,5 +36,5 @@ public class Exit extends AnnotatedCommand {
     public void run(HttpClient client, CommandLine cmdLine) throws Exception {
         throw new ExitException();
     }
-    
+
 }

@@ -22,8 +22,8 @@ package org.nuxeo.ecm.webengine.gwt.client.http;
 import com.google.gwt.http.client.Response;
 
 /**
- * When a remote call returns an error HTTP code 
- * 
+ * When a remote call returns an error HTTP code
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -32,17 +32,17 @@ public class ServerException extends Exception {
     private static final long serialVersionUID = 1L;
 
     protected Response response;
-    
+
     public ServerException(Response response) {
         super(response.getStatusCode()+" "+response.getStatusText());
         this.response = response;
     }
-    
+
     /**
-     * Get the status code of the server response 
+     * Get the status code of the server response
      */
     public int getStatusCode() {
-        return response.getStatusCode(); 
+        return response.getStatusCode();
     }
 
     /**

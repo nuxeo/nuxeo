@@ -33,8 +33,8 @@ import com.google.gwt.user.client.Cookies;
 public class LogoutCommand extends HttpCommand {
 
     public LogoutCommand() {
-    }    
-    
+    }
+
     @Override
     protected void doExecute() throws Throwable {
         post("/login/").send();
@@ -45,7 +45,7 @@ public class LogoutCommand extends HttpCommand {
     public void onSuccess(HttpResponse response) {
         UI.getContext().setUsername(null);
     }
-       
+
 
     @Override
     public void onFailure(Throwable cause) {

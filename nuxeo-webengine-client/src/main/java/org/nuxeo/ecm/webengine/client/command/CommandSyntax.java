@@ -26,32 +26,32 @@ import java.util.List;
 import org.nuxeo.ecm.webengine.client.util.StringUtils;
 
 /**
- * 
- * cmd [-opt|-o:type?defValue] [name:type] 
- * 
+ *
+ * cmd [-opt|-o:type?defValue] [name:type]
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class CommandSyntax {
-    
+
     protected List<CommandToken> tokens = new ArrayList<CommandToken>();
     protected List<CommandToken> args = new ArrayList<CommandToken>();
     protected HashMap<String, CommandToken> map = new HashMap<String, CommandToken>();
-    
-    
+
+
     public CommandToken getCommandToken() {
         return tokens.get(0);
-    } 
-    
-    public List<CommandToken> getArguments() {
-        return args; 
     }
-    
+
+    public List<CommandToken> getArguments() {
+        return args;
+    }
+
     public CommandToken getArgument(int index) {
         if (index >=args.size()) {
             return null;
         }
-        return args.get(index);        
+        return args.get(index);
     }
 
     public List<CommandToken> getTokens() {
@@ -82,7 +82,7 @@ public class CommandSyntax {
         }
         return keys.toArray(new String[keys.size()]);
     }
-    
+
     public void addToken(CommandToken tok) {
         tokens.add(tok);
         for (int i=0; i<tok.names.length; i++) {
@@ -92,7 +92,7 @@ public class CommandSyntax {
             args.add(tok);
         }
     }
-    
+
     public static CommandToken parseToken(String text) {
         CommandToken tok = new CommandToken();
         if (text.startsWith("[")) {
@@ -106,7 +106,7 @@ public class CommandSyntax {
             p = tok.valueType.indexOf('?');
             if (p > -1) {
                 tok.defaultValue = tok.valueType.substring(p+1);
-                tok.valueType = tok.valueType.substring(0, p);                
+                tok.valueType = tok.valueType.substring(0, p);
             }
         }
         // parse names in text
@@ -114,7 +114,7 @@ public class CommandSyntax {
         tok.isArgument = !tok.names[0].startsWith("-");
         return tok;
     }
-    
+
     public static CommandSyntax parse(String text) {
         String[] toks = StringUtils.tokenize(text);
         if (toks.length == 0) {
@@ -124,17 +124,17 @@ public class CommandSyntax {
         if (toks.length == 0) {
             return syntax;
         }
-        CommandToken tok = new CommandToken();        
+        CommandToken tok = new CommandToken();
         tok.names = StringUtils.split(toks[0], '|', false);
         tok.valueType = CommandToken.COMMAND;
         syntax.addToken(tok);
         for (int i=1; i<toks.length; i++) {
             tok = parseToken(toks[i]);
-            syntax.addToken(tok);    
-        }        
+            syntax.addToken(tok);
+        }
         return syntax;
     }
-    
+
 
 
 }

@@ -31,7 +31,7 @@ public class ViewStack extends StackedViewContainer {
     public ViewStack(String name) {
         super(name);
     }
-    
+
     @Override
     protected ComplexPanel createPanel() {
         StackPanel stackPanel = new StackPanel();
@@ -43,7 +43,7 @@ public class ViewStack extends StackedViewContainer {
     public StackPanel getStackPanel() {
         return (StackPanel)getWidget();
     }
-    
+
     @Override
     public int getSelectedIndex() {
         return getStackPanel().getSelectedIndex();
@@ -58,7 +58,7 @@ public class ViewStack extends StackedViewContainer {
     public void add(View view) {
         getStackPanel().add(view, view.getHeader(), true);
     }
-    
+
     @Override
     public void insert(View view, int beforeIndex) {
         StackPanel panel = getStackPanel();

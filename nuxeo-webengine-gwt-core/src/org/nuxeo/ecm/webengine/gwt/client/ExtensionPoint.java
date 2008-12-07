@@ -37,5 +37,5 @@ public @interface ExtensionPoint {
      * @return
      */
     String[] value() default {};
-    
+
 }

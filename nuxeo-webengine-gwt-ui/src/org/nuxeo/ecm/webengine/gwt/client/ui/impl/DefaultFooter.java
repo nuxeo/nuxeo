@@ -31,8 +31,8 @@ public class DefaultFooter extends Composite {
 
     public DefaultFooter() {
         HTML html = new HTML("Copyright Nuxeo...");
-        html.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);        
+        html.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
         initWidget(html);
     }
-    
+
 }

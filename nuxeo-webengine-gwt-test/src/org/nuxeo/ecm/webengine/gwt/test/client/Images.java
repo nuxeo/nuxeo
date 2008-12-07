@@ -28,10 +28,10 @@ import com.google.gwt.user.client.ui.ImageBundle;
  */
 public interface Images extends ImageBundle {
 
-    
+
     AbstractImagePrototype contactsgroup();
 
     AbstractImagePrototype mailgroup();
-    
+
     AbstractImagePrototype filtersgroup();
 }

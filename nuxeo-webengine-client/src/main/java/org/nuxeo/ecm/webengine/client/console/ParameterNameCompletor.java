@@ -32,5 +32,5 @@ public class ParameterNameCompletor extends SimpleCompletor {
     public ParameterNameCompletor(Command cmd) {
         super (cmd.getSyntax().getParameterKeys());
     }
-    
+
 }

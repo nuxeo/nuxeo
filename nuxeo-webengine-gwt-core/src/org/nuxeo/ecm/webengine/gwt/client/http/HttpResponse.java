@@ -84,7 +84,7 @@ public class HttpResponse extends Response {
     public String getText() {
         return response.getText();
     }
-    
+
     public JSONValue asJSON() {
         return JSONParser.parse(getText());
     }

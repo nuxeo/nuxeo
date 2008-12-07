@@ -28,7 +28,7 @@ public class CommandParameter {
     protected String key;
     protected String value;
     protected CommandToken token;
-    
+
     public CommandParameter(String key, CommandToken token) {
         this.key = key;
         this.token = token;
@@ -36,11 +36,11 @@ public class CommandParameter {
     public String getKey() {
         return key;
     }
-    
+
     public CommandToken getToken() {
         return token;
     }
-       
+
     public String getValue() {
         return value;
     }

@@ -26,63 +26,63 @@ package org.nuxeo.ecm.webengine.client.command;
 public class CommandToken {
 
     public final static String COMMAND = "command";
-    public final static String ANY = "*"; 
+    public final static String ANY = "*";
     public final static String FILE = "file";
     public final static String DOCUMENT = "document";
-    
+
     public String[] names;
     public String valueType; // null | string | command | file | doc
     public String defaultValue;
     public boolean isArgument;
     public boolean isOptional;
 
-    
+
     public boolean isValueRequired() {
         return valueType != COMMAND && valueType != null && !isArgument;
     }
-    
+
     public boolean isCommand() {
         return valueType == COMMAND;
     }
-    
+
     public boolean isOptional() {
         return isOptional;
     }
-    
+
     public boolean isFlag() {
         return valueType == null;
     }
-    
+
     /**
      * @return the isArgument.
      */
     public boolean isArgument() {
         return isArgument;
     }
-    
+
     /**
      * @return the defaultValue.
      */
     public String getDefaultValue() {
         return defaultValue;
     }
-    
+
     /**
      * @return the valueType.
      */
     public String getValueType() {
         return valueType;
     }
-    
+
     public String getName() {
         return names[0];
     }
-    
+
     /**
      * @return the names.
      */
     public String[] getNames() {
         return names;
     }
-    
+
 }

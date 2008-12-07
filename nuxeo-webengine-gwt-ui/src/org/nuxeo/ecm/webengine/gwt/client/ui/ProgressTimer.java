@@ -28,16 +28,16 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * This class is used to show the progress dialog if an async request was not completed after a given
- * time interval.   
- * 
+ * time interval.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class ProgressTimer {
-    
+
     protected Timer timer;
     protected PopupPanel busy;
-        
+
     public void cancel() {
         if (timer != null) {
             timer.cancel();
@@ -45,7 +45,7 @@ public class ProgressTimer {
         }
         hideBusy();
     }
-    
+
     public void start(int timeout) {
         if (timer != null) {
             return;
@@ -54,20 +54,20 @@ public class ProgressTimer {
             @Override
             public void run() {
                 if (timer != null) { // not canceled
-                    showBusy();  
+                    showBusy();
                 }
                 if (timer == null) { // canceled
                     hideBusy();
                 }
             }
         };
-        timer.schedule(timeout); 
+        timer.schedule(timeout);
     }
-    
+
     public void showBusy() {
         if (busy == null) {
             busy = new PopupPanel(false, true);
-            //HorizontalPanel panel = new HorizontalPanel();            
+            //HorizontalPanel panel = new HorizontalPanel();
             //panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
             //panel.add(new Image("images/loading.gif"));
             //panel.add(new HTML(<img src="images/loading.gif"));
@@ -85,15 +85,15 @@ public class ProgressTimer {
 //        busy.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
 //            public void setPosition(int offsetWidth, int offsetHeight) {
 //                RootPanel root = RootPanel.get();
-//                busy.setPopupPosition((root.getOffsetWidth() - offsetWidth) / 2, 
+//                busy.setPopupPosition((root.getOffsetWidth() - offsetWidth) / 2,
 //                        (root.getOffsetHeight() - offsetHeight) / 2);
 //            }
-//        });        
+//        });
     }
-    
+
     public void hideBusy() {
         if (busy == null) return;
         busy.hide();
     }
-    
+
 }

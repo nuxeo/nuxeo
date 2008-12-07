@@ -35,11 +35,11 @@ import org.nuxeo.ecm.webengine.client.util.Path;
  */
 public class HttpClient {
 
-    protected CommandRegistry registry;    
+    protected CommandRegistry registry;
     protected URL url;
     protected Path cwd;
     protected List<Path> pathStack;
-    
+
     public HttpClient(String url) throws MalformedURLException {
         this (new URL(url));
     }
@@ -61,16 +61,16 @@ public class HttpClient {
     public CommandRegistry getRegistry() {
         return registry;
     }
-    
+
     public CommandLine parseCommandLine(String line) throws CommandException {
-        return new CommandLine(registry, line);    
+        return new CommandLine(registry, line);
     }
 
     public void run(String cmd) throws Exception {
         parseCommandLine(cmd).run(this);
     }
-    
-    
+
+
     public void cd(String path) {
         if (path.startsWith("/")) {
             cwd = new Path(path);
@@ -101,5 +101,5 @@ public class HttpClient {
     }
 
 
-    
+
 }

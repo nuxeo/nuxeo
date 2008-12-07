@@ -29,19 +29,19 @@ import org.nuxeo.ecm.webengine.client.console.Console;
  */
 public class Main {
 
-    
+
     public static void main(String[] args) {
-        
+
         if (args.length > 0) {
             String cmd = args[0];
             if (!cmd.startsWith("-")) {
                 // builtin command
                 if ("command".equals(cmd)) {
-                    
+
                 } else if ("help".equals(cmd)) {
-                    
+
                 } else {
-                    
+
                 }
             }
         }
@@ -53,7 +53,7 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
     }
-    
+
 }

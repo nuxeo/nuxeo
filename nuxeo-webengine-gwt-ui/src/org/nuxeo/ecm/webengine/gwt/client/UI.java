@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.webengine.gwt.client;
 
 import java.util.ArrayList;
@@ -21,45 +40,45 @@ import com.google.gwt.user.client.ui.PopupPanel;
  */
 public class UI implements EntryPoint {
 
-    private static Image EMPTY_IMAGE = null;    
+    private static Image EMPTY_IMAGE = null;
     protected static Images imagesBundle = GWT.create(Images.class);
     protected static List<ContextListener> contextListeners = new ArrayList<ContextListener>();
-    protected static Context ctx = new Context();    
+    protected static Context ctx = new Context();
     protected static ProgressTimer progressTimer = new ProgressTimer();
-    
+
     public static Images getImages() {
         return imagesBundle;
     }
-    
+
     public static Image getEmptyImage() {
         if (EMPTY_IMAGE == null) {
             EMPTY_IMAGE = imagesBundle.noimage().createImage();
         }
         return EMPTY_IMAGE;
     }
-   
+
     public static void addContextListener(ContextListener listener) {
         contextListeners.add(listener);
     }
-    
+
     public static void removeContextListener(ContextListener listener) {
         contextListeners.remove(listener);
-    }    
-    
+    }
+
     public static ContextListener[] getContextListeners() {
         return contextListeners.toArray(new ContextListener[contextListeners.size()]);
     }
-    
+
     public static void fireEvent(int event) {
         for (ContextListener listener : contextListeners) {
             listener.onContextEvent(event);
-        }  
-    }    
-    
+        }
+    }
+
     public static boolean isAuthenticated() {
         return ctx.getUsername() != null;
-    }    
-    
+    }
+
     public static Context getContext() {
         return ctx;
     }
@@ -71,7 +90,7 @@ public class UI implements EntryPoint {
     public static void showView(String name) {
         ((UIApplication)Framework.getApplication()).showView(name);
     }
-    
+
     public static void showError(Throwable t) {
         final PopupPanel panel = new PopupPanel(true, true);
         panel.add(new Label(t.getMessage()));
@@ -79,20 +98,20 @@ public class UI implements EntryPoint {
 //        panel.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
 //            public void setPosition(int offsetWidth, int offsetHeight) {
 //                RootPanel root = RootPanel.get();
-//                panel.setPopupPosition((root.getOffsetWidth() - offsetWidth) / 2, 
+//                panel.setPopupPosition((root.getOffsetWidth() - offsetWidth) / 2,
 //                        (root.getOffsetHeight() - offsetHeight) / 2);
 //            }
-//        });        
+//        });
     }
-    
+
     public static void showBusy() {
         progressTimer.start(100);
     }
-    
+
     public static void hideBusy() {
         progressTimer.cancel();
     }
-    
+
   /**
    * This is the entry point method.
    */
@@ -101,5 +120,5 @@ public class UI implements EntryPoint {
       bundle.start();
   }
 
-   
+
 }
