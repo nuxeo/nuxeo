@@ -8,7 +8,7 @@
 
   <div class="header">PRESETS:
     <div>
-      <select name="preset_group" id="stylePickerGroupName" onchange="NXThemesStyleEditor.setPresetGroup(this)">
+      <select id="stylePickerGroupName" onchange="NXThemesStyleEditor.setPresetGroup(this)">
         <#if !selected_preset_group>
           <option value="" selected="selected">Custom presets</option>
         <#else>
