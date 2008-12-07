@@ -49,7 +49,7 @@ ins.model, ins.view, ins.controller {
 .nxthemesContextMenu {
   font: 12px arial;
   border: 1px solid #333;
-  background: #eeeeec url(${basePath}${basePath}/skin/nxthemes-editor/img/context-menu-bg.png) top left repeat-y;
+  background: #eeeeec url(${basePath}/skin/nxthemes-editor/img/context-menu-bg.png) top left repeat-y;
   color: #000;
   z-index: 10;
   width: 135px;
@@ -871,6 +871,7 @@ div.nxthemesFragment b {
 #stylePreviewArea {
   width: auto;
   overflow: hidden;
+  background: #fff url(${basePath}/skin/nxthemes-editor/img/checker.png) repeat; 
 }
 
 #stylePreviewArea, #stylePreviewArea a {
