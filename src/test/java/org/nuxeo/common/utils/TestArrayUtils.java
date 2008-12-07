@@ -26,7 +26,6 @@ import junit.framework.TestCase;
 public class TestArrayUtils extends TestCase {
 
     public void testArraysJoinSimple1() {
-
         String[] a1 = { "a", "b", "c" };
         String[] a2 = { "a", "b", "d" };
 
@@ -38,7 +37,6 @@ public class TestArrayUtils extends TestCase {
     }
 
     public void testArraysJoinSimple2() {
-
         String[] a1 = { "a", "b", "c" };
         String[] a2 = { "a", "b", "d" };
         String[] a3 = { "b", "d", "e", "f" };
@@ -51,7 +49,6 @@ public class TestArrayUtils extends TestCase {
     }
 
     public void testArraysJoinSimple3() {
-
         String[] a1 = { "a", "b", "c" };
         String[] a2 = { "x", "y", "z" };
         String[] a3 = { "b", "d", "e", "f" };
@@ -64,7 +61,6 @@ public class TestArrayUtils extends TestCase {
     }
 
     public void testArraysJoinSimple4() {
-
         String[] a1 = {};
         String[] a2 = { "b", "y", "z" };
         String[] a3 = { "b", "d", "e", "f" };
@@ -77,7 +73,6 @@ public class TestArrayUtils extends TestCase {
     }
 
     public void testArraysJoinSimple5() {
-
         String[] a1 = { "b", "y", "z" };
         String[] a2 = {};
         String[] a3 = { "b", "d", "e", "f" };
@@ -90,7 +85,6 @@ public class TestArrayUtils extends TestCase {
     }
 
     public void testArraysMerge() {
-
         String[] a1 = { "b", "y", "z" };
         String[] a2 = {};
         String[] a3 = { "b", "d", "e", "f" };
@@ -103,7 +97,6 @@ public class TestArrayUtils extends TestCase {
     }
 
     public void testArraysMerge2() {
-
         String[] a1 = {};
         String[] a2 = { "b", "y", "z" };
         String[] a3 = { "b", "d", "e", "f" };
@@ -116,7 +109,6 @@ public class TestArrayUtils extends TestCase {
     }
 
     public void testArraysMerge3() {
-
         String[] a1 = {};
         String[] a2 = {};
 

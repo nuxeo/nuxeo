@@ -32,7 +32,7 @@ public class RFC2231 {
 
     private static final String UTF8 = "UTF-8";
 
-    private static final byte[] UNKNOWN_BYTES = new byte[] { '?' };
+    private static final byte[] UNKNOWN_BYTES = { '?' };
 
     // Utility class
     private RFC2231() {
@@ -101,4 +101,5 @@ public class RFC2231 {
         }
         return buf.append(';').toString();
     }
+
 }

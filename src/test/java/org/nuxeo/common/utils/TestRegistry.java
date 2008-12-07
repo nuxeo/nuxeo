@@ -31,7 +31,7 @@ public class TestRegistry extends TestCase {
     @Override
     public void setUp() {
         object = new Object();
-        registry = new Registry("My Registry");
+        registry = new Registry<Object>("My Registry");
     }
 
     @Override

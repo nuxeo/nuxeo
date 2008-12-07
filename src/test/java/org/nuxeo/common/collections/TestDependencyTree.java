@@ -30,7 +30,7 @@ public class TestDependencyTree extends TestCase {
     private DependencyTree<String, String> dt;
 
     @Override
-    protected void setUp() throws Exception {
+    protected void setUp() {
         dt = new DependencyTree<String, String>();
     }
 

@@ -32,7 +32,6 @@ public final class Null implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Null() {
-
     }
 
     /**
@@ -40,7 +39,7 @@ public final class Null implements Serializable {
      *
      * @return
      */
-    protected Object readResolve() {
+    Object readResolve() {
         return VALUE;
     }
 
