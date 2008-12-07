@@ -1157,7 +1157,7 @@ NXThemes.View.prototype = {
     if (!this._visible) {
       return;
     }
-    var data = this.readData();
+    var data = this.getData();
     if (data) {
       this.display(data);
     }

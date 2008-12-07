@@ -83,11 +83,8 @@ NXThemesEditor.editElement = function(info) {
          method: 'get',
          onComplete: function(r) {
              NXThemes.getControllerById("editor perspectives").switchTo("edit element");
-             NXThemes.getViewById("element editor").refresh();
              var v = NXThemes.getViewById("element editor tabs");
-             if (typeof v !== 'undefined') {
-                 v.switchTo("element editor perspectives/edit properties");
-             }
+             v.switchTo("element editor perspectives/edit properties");
          }
     });
 };
