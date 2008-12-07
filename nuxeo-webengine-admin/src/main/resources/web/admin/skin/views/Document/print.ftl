@@ -1,5 +1,4 @@
 <#import "common/util.ftl" as base/>
-
 <html>
   <head>
     <title>${Root.document.title} :: ${This.document.title} :: print preview</title>
@@ -7,8 +6,8 @@
     <link rel="stylesheet" href="${skinPath}/css/print.css" type="text/css" media="print" charset="utf-8">
     <link rel="stylesheet" href="${skinPath}/css/print_version.css" type="text/css" media="screen" charset="utf-8">
   </head>
-  <body>
 
+  <body>
 
 <div class="printButton">
   <form>
@@ -17,8 +16,8 @@
 </div>
 
 <div class="closeWindow">
-<form>
-    <input type="button" value=" Close this window " onclick="self.close()" />
+  <form>
+    <input type="button" value=" Close this window " onclick="self.close();" />
   </form>
 </div>
 
@@ -29,14 +28,14 @@
 <hr/>
 
 <div id="entry-print">
-<@block name="print-content">
-<h1>${Document.title}</h1>
+  <@block name="print-content">
+  <h1>${Document.title}</h1>
 
-<div id="entry-content">
+  <div id="entry-content">
     <#include "@print_page"/>
-</div>
+  </div>
 
-</@block>
+  </@block>
 </div>
 
 <hr/>
@@ -52,8 +51,8 @@
 </div>
 
 <div class="closeWindow">
-<form>
-    <input type="button" value=" Close this window " onclick="self.close()" />
+  <form>
+    <input type="button" value=" Close this window " onclick="self.close();" />
   </form>
 </div>
 

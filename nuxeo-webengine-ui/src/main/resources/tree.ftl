@@ -1,5 +1,3 @@
-
-
 <@extends src="base.ftl">
 
   <#macro mod_tree>
@@ -9,26 +7,22 @@
   </#macro>
 
   <#macro tree id url="${appPath}/common/tree.groovy" root="/default-domain">
-
     <script type="text/javascript">
-
-  $(document).ready(function(){
-    $("#${id}").treeview({
-      url: "${url}",
-      root: "${root}"
-    })
-  });
-  </script>
+      $(document).ready(function(){
+        $("#${id}").treeview({
+          url: "${url}",
+          root: "${root}"
+        });
+      });
+    </script>
     <ul id="${id}">
     </ul>
   </#macro>
-
 
   <@block name="header_scripts">
     <@superBlock/>
     <@mod_tree />
   </@block>
-
 
   <@block name="content">
     <@tree id="myTree" root="/default-domain"/>

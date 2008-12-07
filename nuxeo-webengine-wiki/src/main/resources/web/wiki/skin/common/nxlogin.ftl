@@ -2,7 +2,7 @@
 
 function doLogout() {
   jQuery.cookie("JSESSIONID", null, {path: "/"});
-  jQuery.post("${basePath}/login", {caller: "login", nuxeo_login : "true"})
+  jQuery.post("${basePath}/login", {caller: "login", nuxeo_login : "true"});
 }
 
 function doLogin(username, password) {
@@ -17,7 +17,7 @@ function doLogin(username, password) {
     success: function(html, status) {
       document.location.reload();
       result = true;
-    },    
+    },
     error: function(html, status) {
       result = html.status != 401;
     }
@@ -26,33 +26,33 @@ function doLogin(username, password) {
 }
 
 function showLoginError(errtext) {
-  logstate = $('#logstate')
+  logstate = $('#logstate');
   if (errtext != null) {
     errmsg = "Login Error: " + errtext;
   } else {
-    errmsg = errtext
+    errmsg = errtext;
   }
-  logstate.html(errmsg)
-  logstate.css({color: 'red'})
+  logstate.html(errmsg);
+  logstate.css({color: 'red'});
 }
- 
+
  $(document).ready(function(){
-    
+
     $('#logout').click( function() {
-      doLogout()
-    } );
-    
+      doLogout();
+    });
+
     $('#username').focus( function() {
       if (this.value == 'Username') {
-       this.value = "" 
+       this.value = "";
       }
-    })
-    
+    });
+
     $('#password').focus( function() {
       if (this.value == 'password') {
-       this.value = "" 
+       this.value = "";
       }
-    })
+    });
 
     $('#login_form').submit(function() {
 
@@ -63,22 +63,22 @@ function showLoginError(errtext) {
         showLoginError("Username and Password fields have to be filled in.");
         return false;
       }
-      
+
       loggedin = doLogin(username, password);
       if (!loggedin) {
         //login failed
         showLoginError("Username or password incorrect.")
       }
       return false;
-    })
+    });
 
-  })
+  });
 </script>
 
   <#if (Context.principal.isAnonymous())>
-  
+
   <div id="logstate">Hi Guest! You are not logged in.</div>
-  
+
   <div id="login">
   <form id="login_form" method="post" action="#">
     <input type="text" name="userid" id="username" value="Username" class="username">

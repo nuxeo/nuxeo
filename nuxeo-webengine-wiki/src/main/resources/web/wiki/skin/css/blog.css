@@ -9,7 +9,7 @@ body {
     padding:0;
     padding-top:6px;
     margin:0;
-    font-family: "Century Gothic","Trebuchet MS", Verdana;
+    font-family: "Century Gothic","Trebuchet MS", Verdana, sans-serif;
     border-bottom: none;
 }
 
@@ -39,7 +39,7 @@ h2 {
 #entry-actions .ui-tabs-panel {
   border-color:#7fb2ff;
   }
-  
+
 #entry-actions .ui-tabs-nav a:link,#entry-actions .ui-tabs-nav a:visited {
 color:#0066cc;
 }
