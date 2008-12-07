@@ -40,6 +40,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class DebugServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 4235895566712482208L;
+
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {

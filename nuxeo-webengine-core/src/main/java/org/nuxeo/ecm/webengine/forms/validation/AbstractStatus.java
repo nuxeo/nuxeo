@@ -43,13 +43,9 @@ public abstract class AbstractStatus implements Status {
         return message;
     }
 
-    /**
-     * @param message the message to set.
-     */
     public void setMessage(String message) {
         this.message = message;
     }
-
 
     public String getParametrizedMessage(FormInstance data) {
         String msg = getMessage();

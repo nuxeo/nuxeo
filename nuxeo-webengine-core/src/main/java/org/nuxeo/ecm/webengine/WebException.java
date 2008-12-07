@@ -159,7 +159,7 @@ public class WebException extends WebApplicationException {
                 || "javax.ejb.EJBAccessException".equals(e.getClass().getName())) {
             return new WebSecurityException(message, e);
         } else if (e instanceof WebException) {
-            return (WebException)e;
+            return (WebException) e;
         } else if (e instanceof ClientException) {
             Throwable cause = e.getCause();
             if (cause != null && cause.getMessage() != null) {

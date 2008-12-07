@@ -20,6 +20,7 @@ import org.jboss.resteasy.util.PathHelper;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  */
+@SuppressWarnings({"ALL"})
 public class Encode
 {
    private static final Pattern PARAM_REPLACEMENT = Pattern.compile("_resteasy_uri_parameter");

@@ -13,7 +13,6 @@
   <name>Nuxeo WebEngine UI</name>
   <description>WebEngine's UI toolkit.</description>
 
-
   <build>
     <plugins>
       <plugin>
