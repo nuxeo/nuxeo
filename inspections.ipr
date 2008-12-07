@@ -108,6 +108,9 @@
       <entry name="!?*.java" />
     </wildcardResourcePatterns>
   </component>
+  <component name="CopyrightManager" default="">
+    <module2copyright />
+  </component>
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
     <option name="REVERSE_PATCH" value="false" />
@@ -670,12 +673,6 @@
         </inspection_tool>
         <inspection_tool class="UnnecessaryQualifierForThis" level="WARNING" enabled="true" />
         <inspection_tool class="MultipleTypedDeclaration" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyAssignmentCanBeOperatorAssignment" level="WARNING" enabled="true">
-          <option name="ignoreLazyOperators" value="true" />
-          <option name="ignoreObscureOperators" value="false" />
-        </inspection_tool>
-        <inspection_tool class="GroovyNestedAssignment" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyResultOfAssignmentUsed" level="WARNING" enabled="true" />
         <inspection_tool class="MissingDeprecatedAnnotation" level="WARNING" enabled="true" />
         <inspection_tool class="MissingOverrideAnnotation" level="WARNING" enabled="true" />
         <inspection_tool class="ProtectedMemberInFinalClass" level="WARNING" enabled="true" />
@@ -1320,6 +1317,9 @@
     <option name="projectName" value="nuxeo-runtime-parent" />
   </component>
   <component name="ProjectFileVersion" converted="true" />
+  <component name="ProjectKey">
+    <option name="state" value="project:///Users/fermigier/hg/nuxeo52-superclean/nuxeo-runtime/inspections.ipr" />
+  </component>
   <component name="ProjectLevelVcsManager">
     <OptionsSetting value="true" id="Add" />
     <OptionsSetting value="true" id="Remove" />

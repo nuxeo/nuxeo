@@ -60,7 +60,7 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
     public static final String MBEANS_DIR = CONFIG_DIR + "/mbeans";
 
     /** The suffixes we accept, along with their relative order. */
-    private static final String[] DEFAULT_ENHANCED_SUFFIXES = new String[] {
+    private static final String[] DEFAULT_ENHANCED_SUFFIXES = {
           "650:.ear", // from EARDeployer
           // additional extension -> but do not use them  because there are some inconsistencies
           // in jboss in how ejb3 mbean names (and jndi bean bindings) are generated.

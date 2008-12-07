@@ -155,7 +155,7 @@ public class LocatorHelper {
     }
 
     public static String resolveHost(String host) {
-        if (host.indexOf("0.0.0.0") != -1) {
+        if (host.contains("0.0.0.0")) {
             if (System.getProperty(SERVER_BIND_ADDRESS, "0.0.0.0").equals(
                     "0.0.0.0")) {
                 host = fixRemoteAddress(host);

@@ -99,4 +99,9 @@ public abstract class Contribution implements Cloneable {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return contributionId != null ? contributionId.hashCode() : 0;
+    }
+
 }

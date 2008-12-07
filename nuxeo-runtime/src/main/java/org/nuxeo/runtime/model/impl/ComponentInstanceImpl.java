@@ -42,7 +42,6 @@ public class ComponentInstanceImpl implements ComponentInstance {
     protected Object instance;
     protected RegistrationInfoImpl ri;
 
-
     protected ComponentInstanceImpl() {
     }
 

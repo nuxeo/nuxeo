@@ -365,7 +365,6 @@ public final class Framework {
     }
 
     public static void main(String[] args) {
-
     }
 
 }
