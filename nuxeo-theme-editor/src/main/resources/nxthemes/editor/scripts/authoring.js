@@ -500,6 +500,9 @@ NXThemesEditor.addPage = function(themeName) {
 };
 
 NXThemesEditor.switchToEditCanvas = function() {
+    if (typeof NXThemesStyleEditor != 'undefined') {
+      NXThemesStyleEditor.closeStylePicker();
+    }
     NXThemes.getControllerById('editor buttons').select('edit canvas');
     NXThemes.getControllerById('editor perspectives').switchTo('edit canvas');
 };
