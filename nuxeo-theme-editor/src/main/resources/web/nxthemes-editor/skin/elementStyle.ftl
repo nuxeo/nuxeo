@@ -75,12 +75,6 @@
               controlledBy="style editor perspectives,style editor actions,element form actions"
               visibleInPerspectives="style properties,style picker" />
 
-            <!--  Style picker -->
-            <@nxthemes_panel identifier="style picker"
-              url="${basePath}/nxthemes-editor/stylePicker"
-              controlledBy="style editor perspectives,toolbox mover"
-              visibleInPerspectives="style picker" />
-
           </td>
         </tr>
       </table>

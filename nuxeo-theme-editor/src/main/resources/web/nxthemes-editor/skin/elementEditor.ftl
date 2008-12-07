@@ -4,6 +4,12 @@
 window.scrollTo(0,0);
 //--></script>
 
+<!--  Style picker -->
+<@nxthemes_panel identifier="style picker"
+  url="${basePath}/nxthemes-editor/stylePicker"
+  controlledBy="style editor perspectives,toolbox mover"
+  visibleInPerspectives="style picker" />
+
 <div class="nxthemesScreen">
 
 <@nxthemes_controller resource="element-form-actions.json" />
