@@ -155,9 +155,9 @@ public class RelationHelper {
     public static List<Statement> getStatementsWithLinksFrom(DocumentModel doc) {
         try {
             QNameResource docResource = getDocumentResource(doc);
-            Statement pattern = new StatementImpl(docResource, RelationConstants.HAS_LINK_TO, null);
-            List<Statement> stmts = relationManager.getStatements(RelationConstants.GRAPH_NAME, pattern);
-            return stmts;
+            Statement pattern = new StatementImpl(
+                    docResource, RelationConstants.HAS_LINK_TO, null);
+            return relationManager.getStatements(RelationConstants.GRAPH_NAME, pattern);
         } catch (ClientException e) {
             e.printStackTrace();
         }

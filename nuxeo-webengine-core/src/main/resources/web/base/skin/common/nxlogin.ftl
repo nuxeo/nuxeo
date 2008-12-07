@@ -40,7 +40,7 @@ function showLoginError(errtext) {
 
     $('#logout').click( function() {
       doLogout();
-    } );
+    });
 
     $('#username').focus( function() {
       if (this.value == 'Username') {
@@ -67,7 +67,7 @@ function showLoginError(errtext) {
       loggedin = doLogin(username, password);
       if (!loggedin) {
         //login failed
-        showLoginError("Username or password incorrect.")
+        showLoginError("Username or password incorrect.");
       }
       return false;
     });

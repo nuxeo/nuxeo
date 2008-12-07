@@ -119,7 +119,7 @@ public class DebugServlet extends HttpServlet {
                     }
                 }
 
-                buffer.append(indent + " +- " + name);
+                buffer.append(indent).append(" +- ").append(name);
 
                 // Display reference targets
                 if (isLinkRef) {
@@ -138,7 +138,7 @@ public class DebugServlet extends HttpServlet {
 
                 // Display proxy interfaces
                 if (isProxy) {
-                    buffer.append(" (proxy: " + pair.getClassName());
+                    buffer.append(" (proxy: ").append(pair.getClassName());
                     if (c != null) {
                         Class[] ifaces = c.getInterfaces();
                         buffer.append(" implements ");
@@ -148,10 +148,10 @@ public class DebugServlet extends HttpServlet {
                         }
                         buffer.setCharAt(buffer.length() - 1, ')');
                     } else {
-                        buffer.append(" implements " + className + ")");
+                        buffer.append(" implements ").append(className).append(")");
                     }
                 } else if (verbose) {
-                    buffer.append(" (class: " + pair.getClassName() + ")");
+                    buffer.append(" (class: ").append(pair.getClassName()).append(")");
                 }
 
                 buffer.append('\n');
@@ -162,13 +162,12 @@ public class DebugServlet extends HttpServlet {
                             Context subctx = (Context) value;
                             list(subctx, indent + " |  ", buffer, verbose);
                         } else {
-                            buffer.append(indent + " |   NonContext: " + value);
+                            buffer.append(indent).append(" |   NonContext: ").append(value);
                             buffer.append('\n');
                         }
                     } catch (Throwable t) {
-                        buffer.append("Failed to lookup: " + name + ", errmsg="
-                                + t.getMessage());
-                        buffer.append('\n');
+                        buffer.append("Failed to lookup: ").append(name)
+                                .append(", errmsg=").append(t.getMessage()).append('\n');
                     }
                 }
             }

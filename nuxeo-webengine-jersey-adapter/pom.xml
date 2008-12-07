@@ -13,7 +13,6 @@
   <name>Nuxeo WebEngine Jersey Adapter</name>
   <description>WebEngine's Jersey Adapter.</description>
 
-
   <build>
     <plugins>
       <plugin>
@@ -66,7 +65,7 @@
       <version>0.8</version>
     </dependency>
 
-<!-- needed for distribution 
+<!-- needed for distribution
       <dependency>
          <groupId>javax.annotation</groupId>
          <artifactId>jsr250-api</artifactId>

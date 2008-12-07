@@ -9,7 +9,8 @@ function doLogout() {
 
 function doLogin(username, password) {
   //jQuery.cookie("JSESSIONID", null, {path: "/"});
-  req = jQuery.post(document.location.pathname, {nuxeo_login : "true", userid : username, password : password});
+  req = jQuery.post(document.location.pathname,
+        {nuxeo_login : "true", userid : username, password : password});
   if (req.status == 200) {
     document.location.reload();
     return true;
@@ -24,8 +25,7 @@ function make_base_auth(user, pass) {
 }
 
 function doLogin2(username, password, loginUrl) {
-
-  auth = make_base_auth(username, password)
+  auth = make_base_auth(username, password);
 
   //remove the JSESSIONID cookie to initiate a new session
   jQuery.cookie("JSESSIONID", null, {path: "/"});
@@ -39,7 +39,7 @@ function doLogin2(username, password, loginUrl) {
       req.setRequestHeader("Authorization", auth);
     },
     error: function() {
-      alert("Cannot send login informations!")
+      alert("Cannot send login informations!");
     },
     complete: function(xhr, textStatus) {
       if (xhr.responseText == "Authenticated") {
@@ -49,7 +49,7 @@ function doLogin2(username, password, loginUrl) {
       }
     }
   });
-  return loggedin
+  return loggedin;
 }
 
 function showLoginError(errtext) {
