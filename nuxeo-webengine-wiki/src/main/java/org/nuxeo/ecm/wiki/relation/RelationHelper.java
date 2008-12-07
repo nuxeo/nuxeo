@@ -98,9 +98,8 @@ public class RelationHelper {
             List<Statement> stmts = relationManager.getStatements(RelationConstants.GRAPH_NAME, pattern);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
-                DocumentModel d;
                 for (Statement stmt : stmts) {
-                    d = getDocumentModel(stmt.getSubject(), sessionId);
+                    DocumentModel d = getDocumentModel(stmt.getSubject(), sessionId);
                     if (d != null) {
                         docs.add(d);
                     }
@@ -120,9 +119,8 @@ public class RelationHelper {
             List<Statement> stmts = relationManager.getStatements(RelationConstants.GRAPH_NAME, pattern);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
-                DocumentModel d;
                 for (Statement stmt : stmts) {
-                    d = getDocumentModel(stmt.getSubject(), doc.getSessionId());
+                    DocumentModel d = getDocumentModel(stmt.getSubject(), doc.getSessionId());
                     if (d != null) {
                         docs.add(d);
                     }
@@ -140,9 +138,8 @@ public class RelationHelper {
             List<Statement> stmts = getStatementsWithLinksFrom(doc);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
-                DocumentModel d;
                 for (Statement stmt : stmts) {
-                    d = getDocumentModel(stmt.getObject(), doc.getSessionId());
+                    DocumentModel d = getDocumentModel(stmt.getObject(), doc.getSessionId());
                     if (d != null) {
                         docs.add(d);
                     }

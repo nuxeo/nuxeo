@@ -44,8 +44,9 @@ public class BlockDirective implements TemplateDirectiveModel {
         if (scalar != null) {
             name = scalar.getAsString();
         }
-        String ifBlockDefined = null;
+
         scalar = (SimpleScalar)params.get("ifBlockDefined");
+        String ifBlockDefined = null;
         if (scalar != null) {
             ifBlockDefined = scalar.getAsString();
         }

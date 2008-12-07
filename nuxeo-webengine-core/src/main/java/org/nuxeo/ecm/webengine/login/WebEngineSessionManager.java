@@ -52,12 +52,12 @@ public class WebEngineSessionManager extends DefaultSessionManager {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-        UserSession userSession = null;
         // check for a valid session
         if (httpSession == null) {
             httpSession = httpRequest.getSession(false);
         }
 
+        UserSession userSession;
         if (httpSession == null) {
             // create WE custom UserSession
             userSession = new StatelessUserSession(cachebleUserInfo

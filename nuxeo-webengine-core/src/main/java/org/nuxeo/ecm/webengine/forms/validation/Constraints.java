@@ -66,4 +66,8 @@ public class Constraints {
         return klass.newInstance();
     }
 
+    // Utility class.
+    private Constraints() {
+    }
+
 }

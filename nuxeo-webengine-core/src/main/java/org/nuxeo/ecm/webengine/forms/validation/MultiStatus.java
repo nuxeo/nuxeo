@@ -65,6 +65,7 @@ public class MultiStatus extends AbstractStatus implements Iterable<Status>{
         return children.toArray(new Status[children.size()]);
     }
 
+    @Override
     public String getMessage() {
         if (message == null) {
             for (Status status : children) {
@@ -95,6 +96,7 @@ public class MultiStatus extends AbstractStatus implements Iterable<Status>{
         return true;
     }
 
+    @Override
     public boolean isOk() {
         return isOk;
     }

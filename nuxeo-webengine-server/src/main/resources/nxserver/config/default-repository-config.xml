@@ -10,7 +10,7 @@
   	Declare a JackRabbit repository to be used for development and tests.
   	The extension content is the jackrabbit XML configuration of the repository.
   	</documentation>
-<repository name="default" factory="org.nuxeo.ecm.core.repository.jcr.JCRRepositoryFactory" securityManager="org.nuxeo.ecm.core.repository.jcr.JCRSecurityManager"
+    <repository name="default" factory="org.nuxeo.ecm.core.repository.jcr.JCRRepositoryFactory" securityManager="org.nuxeo.ecm.core.repository.jcr.JCRSecurityManager"
 		forceReloadTypes="false">
       <Repository>
         <!--

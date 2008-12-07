@@ -140,8 +140,8 @@ public class DebugServlet extends HttpServlet {
                     if (c != null) {
                         Class[] ifaces = c.getInterfaces();
                         buffer.append(" implements ");
-                        for (int i = 0; i < ifaces.length; i++) {
-                            buffer.append(ifaces[i]);
+                        for (Class iface : ifaces) {
+                            buffer.append(iface);
                             buffer.append(',');
                         }
                         buffer.setCharAt(buffer.length() - 1, ')');

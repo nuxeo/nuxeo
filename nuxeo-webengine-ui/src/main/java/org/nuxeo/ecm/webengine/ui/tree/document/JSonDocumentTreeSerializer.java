@@ -36,6 +36,7 @@ public class JSonDocumentTreeSerializer extends JSonTreeSerializer {
         this.ctx = ctx;
     }
 
+    @Override
     public String getUrl(TreeItem item) {
         return ctx.getUrlPath((DocumentModel)item.getObject());
     }

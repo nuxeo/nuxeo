@@ -39,6 +39,7 @@ import org.nuxeo.ecm.webengine.model.WebContext;
  */
 public class DocumentHelper {
 
+    // Utility class.
     private DocumentHelper() {
     }
 

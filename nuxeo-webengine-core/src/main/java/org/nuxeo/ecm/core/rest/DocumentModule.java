@@ -39,7 +39,7 @@ public class DocumentModule extends DefaultModule {
     protected DocumentModel doc;
 
     public DocumentModule(String path) {
-        this (new PathRef(path));
+        this(new PathRef(path));
     }
 
     public DocumentModule(DocumentRef ref) {
@@ -62,7 +62,7 @@ public class DocumentModule extends DefaultModule {
     @SuppressWarnings("unchecked")
     public <A> A getAdapter(Class<A> adapter) {
         if (DocumentModel.class.isAssignableFrom(adapter)) {
-            return (A)doc;
+            return (A) doc;
         }
         return super.getAdapter(adapter);
     }

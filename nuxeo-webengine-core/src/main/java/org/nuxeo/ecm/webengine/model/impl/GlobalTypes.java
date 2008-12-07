@@ -34,8 +34,8 @@ import org.osgi.framework.Bundle;
  */
 public class GlobalTypes  implements AnnotationLoader {
 
-    protected TypeRegistry typeReg; 
-    
+    protected final TypeRegistry typeReg;
+
     public GlobalTypes(WebEngine engine) {
         typeReg = new TypeRegistry(engine, null);
         BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), this);
@@ -61,5 +61,5 @@ public class GlobalTypes  implements AnnotationLoader {
     public TypeRegistry getTypeRegistry() {
         return typeReg;
     }
-    
+
 }

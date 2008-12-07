@@ -44,6 +44,7 @@ public class DocumentObjectWrapper extends DefaultObjectWrapper {
     }
 
 
+    @Override
     public final TemplateModel wrap(Object obj) throws TemplateModelException {
         if (obj == null) {
             return null;

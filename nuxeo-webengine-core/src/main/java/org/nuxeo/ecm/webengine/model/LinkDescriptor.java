@@ -77,7 +77,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     }
 
     public LinkDescriptor(String id) {
-        this (id, null);
+        this(id, null);
     }
 
     public LinkDescriptor(String id, String fragment) {

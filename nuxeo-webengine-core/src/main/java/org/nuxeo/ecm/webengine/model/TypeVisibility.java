@@ -23,11 +23,15 @@ package org.nuxeo.ecm.webengine.model;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface TypeVisibility {
+public class TypeVisibility {
 
-    public static final int PRIVATE = 0; // visible only to owner module   
+    public static final int PRIVATE = 0; // visible only to owner module
     public static final int PROTECTED = 1; // visible to onwer module and decendants
     public static final int DEFAULT = 2; // visible to owner module, to descendants and to buddies
     public static final int PUBLIC = 3; // visible to all modules
-    
+
+    // Constant utility class
+    private TypeVisibility() {
+    }
+
 }

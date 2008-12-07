@@ -32,11 +32,11 @@ public class ClassMap<T> extends HashMap<Class<?>, T>{
     public T find(Class<?> key) {
         T v = get(key);
         if (v == null) {
-            Class<?>[] itfs = null;
             Class<?> sk = key.getSuperclass();
             if (sk != null) {
                 v = get(sk);
             }
+            Class<?>[] itfs = null;
             if (v == null) { // try interfaces
                 itfs = key.getInterfaces();
                 for (Class<?> itf : itfs) {

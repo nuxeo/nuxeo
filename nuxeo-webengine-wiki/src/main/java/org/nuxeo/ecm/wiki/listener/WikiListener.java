@@ -44,11 +44,11 @@ import org.nuxeo.ecm.wiki.WikiTypes;
 import org.nuxeo.ecm.wiki.relation.RelationConstants;
 import org.nuxeo.ecm.wiki.relation.RelationHelper;
 
-public class WikiListener extends AbstractEventListener implements AsynchronousEventListener, WikiTypes {
+public class WikiListener extends AbstractEventListener implements AsynchronousEventListener {
 
     private static final Log log = LogFactory.getLog(WikiListener.class);
 
-    public void testRelations(DocumentModel model) throws Exception{
+    public void testRelations(DocumentModel model) throws Exception {
         DocumentRef ref1 = new PathRef("/default-domain/workspaces/ws/f1");
         DocumentRef ref2 = new PathRef("/default-domain/workspaces/ws/f2");
         DocumentRef ref3 = new PathRef("/default-domain/workspaces/ws/f3");
@@ -93,7 +93,7 @@ public class WikiListener extends AbstractEventListener implements AsynchronousE
     }
 
     @Override
-    public void handleEvent(CoreEvent coreEvent) throws Exception  {
+    public void handleEvent(CoreEvent coreEvent) throws Exception {
         /* TODO: work in progress
          * this is not working yet
          */
@@ -108,7 +108,7 @@ public class WikiListener extends AbstractEventListener implements AsynchronousE
             testRelations(doc);
             final String type = doc.getType();
             String eventId = coreEvent.getEventId();
-            if ( WIKIPAGE.equals(type) && DOCUMENT_UPDATED.equals(eventId)){
+            if (WikiTypes.WIKIPAGE.equals(type) && DOCUMENT_UPDATED.equals(eventId)) {
                 RelationHelper.updateRelations(doc);
             }
         }

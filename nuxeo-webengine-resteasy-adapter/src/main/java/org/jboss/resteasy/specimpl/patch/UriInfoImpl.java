@@ -1,3 +1,8 @@
+/*
+ * This file has been copied from the Resteasy project:
+ * http://sourceforge.net/projects/resteasy/
+ * According to this page, it is under the LGPL v2 license.
+ */
 package org.jboss.resteasy.specimpl.patch;
 
 import java.io.UnsupportedEncodingException;
@@ -17,8 +22,8 @@ import org.jboss.resteasy.specimpl.PathSegmentImpl;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
- * @version $Revision: 1 $
  */
+@SuppressWarnings({"ALL"})
 public class UriInfoImpl implements UriInfo
 {
    private String path;
@@ -29,7 +34,7 @@ public class UriInfoImpl implements UriInfo
    private MultivaluedMap<String, String> encodedPathParameters;
    private MultivaluedMap<String, PathSegment[]> pathParameterPathSegments = new MultivaluedMapImpl<String, PathSegment[]>();
    private MultivaluedMap<String, PathSegment[]> encodedPathParameterPathSegments = new MultivaluedMapImpl<String, PathSegment[]>();
-   
+
    private List<PathSegment> pathSegments;
    private List<PathSegment> encodedPathSegments;
    private URI absolutePath;
@@ -40,7 +45,7 @@ public class UriInfoImpl implements UriInfo
    private List<String> encodedMatchedUris;
    private List<Object> ancestors;
 
-   
+
    public static UriInfoImpl create(HttpServletRequest req) {
        StringBuilder serverPart = new StringBuilder ();
        String scheme = req.getScheme ();
@@ -64,15 +69,15 @@ public class UriInfoImpl implements UriInfo
        }
        return new UriInfoImpl(serverPart, urlPath, basePath, pathInfo, req.getQueryString());
    }
-   
 
-   
+
+
    /**
     * All paths are in encoded form.
     * @param serverPart - the complete URI (in encoded form) without query string
-    * @urlPath - the complete path in encoded form without query string. Allways starts with /  
+    * @urlPath - the complete path in encoded form without query string. Allways starts with /
     * @param basePath starts with /. Doesn't end with /. Never null or empty.
-    * @param path Never null. Can be an empty string. If non empty starts in / but never end in / 
+    * @param path Never null. Can be an empty string. If non empty starts in / but never end in /
     * @param query query string or null if none
     */
    public UriInfoImpl(StringBuilder serverPart, String urlPath, String basePath, String path, String queryString) {
@@ -83,7 +88,7 @@ public class UriInfoImpl implements UriInfo
        this.absolutePath = URI.create(sb.append(urlPath).toString());
        this.encodedPath = path;
        this.path = UriComponent.decode(encodedPath, UriComponent.Type.PATH);
-       
+
        this.queryParameters = new MultivaluedMapImpl<String, String>();
        this.encodedQueryParameters = new MultivaluedMapImpl<String, String>();
        extractParameters(queryString);
@@ -101,16 +106,16 @@ public class UriInfoImpl implements UriInfo
            this.absolutePathWithQueryString = absolutePath;
        }
        else
-       {           
+       {
            sb.setLength(0); sb.append(absolutePathAsString).append('?').append(queryString);
            this.absolutePathWithQueryString = URI.create(sb.toString());
        }
    }
-   
+
 
    public static List<PathSegment> split(String str, char delimiter) {
        List<PathSegment> ar = new ArrayList<PathSegment>();
-       int len = str.length(); 
+       int len = str.length();
        if (len == 0) {
            return ar;
        }
@@ -153,7 +158,7 @@ public class UriInfoImpl implements UriInfo
    {
       this(absolutePath, path, queryString, PathSegmentImpl.parseSegments(path));
    }
-   
+
    public UriInfoImpl(URI absolutePath, String encodedPath, String queryString, List<PathSegment> encodedPathSegments)
    {
       this.encodedPath = encodedPath;

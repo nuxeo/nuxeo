@@ -198,8 +198,7 @@ public class BundleAnnotationsLoader implements BundleListener {
 
     public static List<String> readLines(InputStream in) throws IOException {
         List<String> lines = new ArrayList<String>();
-        BufferedReader reader;
-        reader = new BufferedReader(new InputStreamReader(in));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String line;
         while ((line = reader.readLine()) != null) {
             lines.add(line);

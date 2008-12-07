@@ -58,6 +58,7 @@ import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
  *
  * @author Paul.Sandoz@Sun.Com
  */
+@SuppressWarnings({"ALL"})
 public final class UriComponent {
 
     public enum Type {

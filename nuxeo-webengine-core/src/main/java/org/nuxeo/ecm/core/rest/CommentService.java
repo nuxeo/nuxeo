@@ -47,7 +47,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 public class CommentService extends DefaultAdapter {
 
     @POST
-    public Response doPost(@FormParam("text")  String cText) {
+    public Response doPost(@FormParam("text") String cText) {
         if (cText == null) {
             throw new IllegalParameterException("Expecting a 'text' parameter");
         }

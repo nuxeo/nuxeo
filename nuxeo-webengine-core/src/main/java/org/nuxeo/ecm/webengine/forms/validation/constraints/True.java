@@ -35,6 +35,7 @@ public class True extends AbstractConstraint {
     private True() {}
 
 
+    @Override
     public Status validate(FormInstance form, Field field, String rawValue, Object value) {
         return Status.OK;
     }

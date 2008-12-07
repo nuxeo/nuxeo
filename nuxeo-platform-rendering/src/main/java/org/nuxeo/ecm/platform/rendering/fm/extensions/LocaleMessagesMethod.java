@@ -73,8 +73,8 @@ public class LocaleMessagesMethod implements TemplateMethodModelEx {
             throw new TemplateModelException("the argument is not defined");
         }
 
-        String locale;
         scalar = (SimpleScalar) arguments.get(1);
+        String locale;
         if (scalar != null) {
             locale = scalar.getAsString();
         } else {

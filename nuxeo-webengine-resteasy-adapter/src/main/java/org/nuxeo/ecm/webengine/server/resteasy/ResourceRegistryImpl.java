@@ -48,10 +48,10 @@ public class ResourceRegistryImpl implements ResourceRegistry {
     protected final Dispatcher dispatcher;
     protected final ResourceMethodRegistry registry;
     protected List<ResourceBinding> bindings;
-    
-    protected List<String> lazyModules; // MODULE_PATH, MODULE_ROOT_PATH, ... etc
 
-    
+    protected final List<String> lazyModules; // MODULE_PATH, MODULE_ROOT_PATH, ... etc
+
+
     public ResourceRegistryImpl(Dispatcher dispatcher) {
         registry = (ResourceMethodRegistry)dispatcher.getRegistry();
         bindings = new ArrayList<ResourceBinding>();
@@ -153,14 +153,14 @@ public class ResourceRegistryImpl implements ResourceRegistry {
         dispatcher.getProviderFactory().addMessageBodyWriter(writer);
     }
 
-    
+
     public void registerLazyModule(String path, String name) {
         synchronized (lazyModules) {
             lazyModules.add(path);
             lazyModules.add(name);
         }
     }
-    
+
 
     public boolean loadLazyModuleIfNeeded(String path) throws Exception  {
         if (lazyModules.isEmpty()) {
@@ -186,8 +186,8 @@ public class ResourceRegistryImpl implements ResourceRegistry {
             }
             return false;
         }
-        
+
     }
-    
-    
+
+
 }

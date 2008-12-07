@@ -45,25 +45,24 @@ import org.nuxeo.ecm.webengine.session.UserSession;
 /**
  * We need this wrapper to be able to know when resteasy is sending a 404...
  * This way we can optimize lazy module loading - because we can check for a lazy module
- * after dispatching the jax-rs request    
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * after dispatching the jax-rs request
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class WebEngineDispatcher extends SynchronousDispatcher {
 
-    protected ResourceRegistryImpl resourceReg;
-    
+    protected final ResourceRegistryImpl resourceReg;
+
     public WebEngineDispatcher(ResteasyProviderFactory providerFactory) {
-        super(providerFactory);        
+        super(providerFactory);
         resourceReg = new ResourceRegistryImpl(this);
         addInterceptors();
     }
-    
+
     public ResourceRegistry getResourceRegistry() {
         return resourceReg;
     }
-    
+
     @Override
     protected void handleFailure(HttpRequest request, HttpResponse response,
             Exception e) {
@@ -72,8 +71,6 @@ public class WebEngineDispatcher extends SynchronousDispatcher {
             throw failure;
         }
     }
-    
-    
 
     public void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String httpMethod = req.getMethod();
@@ -104,7 +101,7 @@ public class WebEngineDispatcher extends SynchronousDispatcher {
 
     public void service(String httpMethod, HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
-        
+
         // bs: is this needed anymore?
         // String path = request.getPathInfo();
         // if (path == null) path = "/";
@@ -116,13 +113,12 @@ public class WebEngineDispatcher extends SynchronousDispatcher {
         //UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, request.getServletPath());
         UriInfoImpl uriInfo = UriInfoImpl.create(request);
 
-        HttpRequest in;
-        in = new HttpServletInputMessage(headers, new HttpRequestLazyInputStream(request),
-                    uriInfo, httpMethod.toUpperCase());
+        HttpRequest in = new HttpServletInputMessage(headers,
+                new HttpRequestLazyInputStream(request), uriInfo, httpMethod.toUpperCase());
         HttpResponse theResponse = new HttpServletResponseWrapper(response,
                 super.getProviderFactory());
 //        double d = System.currentTimeMillis();
-        WebContext ctx =null;
+        WebContext ctx = null;
         try {
             // bs: initialize webengine context
             ctx = new WebEngineContext(in, request);
@@ -134,11 +130,11 @@ public class WebEngineDispatcher extends SynchronousDispatcher {
                     request));
             super.invoke(in, theResponse);
         } finally {
-            if (ctx!=null)
-            {
+            if (ctx != null) {
                 UserSession us = ctx.getUserSession();
-                if (us!=null)
+                if (us != null) {
                     us.terminateRequest(request);
+                }
             }
             ResteasyProviderFactory.clearContextData();
             // bs: cleanup webengine context
@@ -151,5 +147,5 @@ public class WebEngineDispatcher extends SynchronousDispatcher {
         super.getProviderFactory().getInterceptorRegistry().registerResourceMethodInterceptor(
                 new SecurityInterceptor());
     }
-    
+
 }

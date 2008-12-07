@@ -75,8 +75,8 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
 
     public static final String SKIN_PATH_PREFIX_KEY = "org.nuxeo.ecm.webengine.skinPathPrefix";
 
-    protected static Pattern PATH_PATTERN = Pattern.compile("\\s+@Path\\(\"([^\"]*)\"\\)\\s+");
-    
+    protected static final Pattern PATH_PATTERN = Pattern.compile("\\s+@Path\\(\"([^\"]*)\"\\)\\s+");
+
     private static final Log log = LogFactory.getLog(WebEngine.class);
 
     private static final ThreadLocal<WebContext> CTX = new ThreadLocal<WebContext>();
@@ -281,12 +281,12 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         registry.registerLazyModule(path, filePath);
         moduleReg.registerLazyModule(path, filePath);
     }
-    
-    
-    public boolean loadLazyModule(String name) throws Exception {        
+
+
+    public boolean loadLazyModule(String name) throws Exception {
         return loadModule(new File(name));
     }
-    
+
     /**
      * Try to load the module in the given directory
      * If the directory dooesn't contain a WebModule nfalse is returned.

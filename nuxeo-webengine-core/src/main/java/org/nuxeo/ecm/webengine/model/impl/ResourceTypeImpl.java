@@ -40,6 +40,7 @@ public class ResourceTypeImpl extends AbstractResourceType {
         super(engine, module, superType, name, clazz, visibility);
     }
 
+    @Override
     protected void loadAnnotations(AnnotationManager annoMgr) {
         Class<?> c = clazz.get();
         WebObject wo = c.getAnnotation(WebObject.class);

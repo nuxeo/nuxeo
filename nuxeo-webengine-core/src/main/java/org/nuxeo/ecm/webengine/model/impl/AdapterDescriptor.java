@@ -112,7 +112,8 @@ public class AdapterDescriptor extends TypeDescriptor {
     public boolean isMainFragment() {
         return fragment == null;
     }
-    
+
+    @Override
     public AdapterDescriptor asAdapterDescriptor() {
         return this;
     }

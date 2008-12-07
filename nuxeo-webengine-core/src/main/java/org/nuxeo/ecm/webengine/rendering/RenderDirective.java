@@ -50,12 +50,11 @@ public class RenderDirective implements TemplateDirectiveModel {
             throw new TemplateModelException("Invalid number of arguments for render(...) method");
         }
 
-        String src;
         SimpleScalar val = (SimpleScalar) params.get("src");
         if (val == null) {
             throw new TemplateModelException("src attribute is required");
         }
-        src = val.getAsString();
+        String src = val.getAsString();
 
         WebContext ctx = WebEngine.getActiveContext();
         if (ctx != null) {

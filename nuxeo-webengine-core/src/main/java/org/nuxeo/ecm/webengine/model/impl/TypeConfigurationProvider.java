@@ -29,8 +29,8 @@ import java.util.Vector;
  */
 public class TypeConfigurationProvider {
 
-    protected List<TypeDescriptor> types;
-    protected List<AdapterDescriptor> services;
+    protected final List<TypeDescriptor> types;
+    protected final List<AdapterDescriptor> services;
     protected final List<TypeRegistry> registries;
 
     public TypeConfigurationProvider() {

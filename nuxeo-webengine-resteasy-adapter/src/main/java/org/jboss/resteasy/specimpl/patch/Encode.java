@@ -1,3 +1,7 @@
+/*
+ * Copied from the Resteasy project: http://sourceforge.net/projects/resteasy/
+ * License is LGPL.
+ */
 package org.jboss.resteasy.specimpl.patch;
 
 import java.io.UnsupportedEncodingException;
@@ -15,7 +19,6 @@ import org.jboss.resteasy.util.PathHelper;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
- * @version $Revision: 1 $
  */
 public class Encode
 {
@@ -24,7 +27,7 @@ public class Encode
    public static String encodePath_notok(String value, boolean ignorePathParams) {
        return UriComponent.encode(value, UriComponent.Type.PATH, ignorePathParams);
    }
-   
+
    /**
     * Keep encoded values "%...", matrix parameters, and '/' characters intact.
     *
@@ -33,7 +36,7 @@ public class Encode
     * @Param params whether or not to encode stuff between '{' and '}' false means don't encode
     */
    public static String encodePath(String value, boolean ignorePathParams)
-   {       
+   {
       ArrayList<String> params = new ArrayList<String>();
       boolean foundParam = false;
       if (ignorePathParams)
@@ -126,9 +129,9 @@ public class Encode
    public static String encodeSegment(String segment, boolean ignorePathParams) {
        return UriComponent.encode(segment, UriComponent.Type.PATH_SEGMENT, ignorePathParams);
    }
-   
+
    //bs: this method encodes @ to %40 which is not correct
-   // may add a rreplace("%40", "@") but this sucks 
+   // may add a rreplace("%40", "@") but this sucks
    public static String encodeSegment2(String segment, boolean ignorePathParams)
    {
       ArrayList<String> params = new ArrayList<String>();

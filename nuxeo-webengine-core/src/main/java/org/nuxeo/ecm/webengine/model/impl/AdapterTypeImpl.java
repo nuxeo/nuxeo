@@ -42,7 +42,7 @@ public class AdapterTypeImpl extends AbstractResourceType implements AdapterType
     // we are using arrays and not sets since the targetTypes and targetFacets have usually very small sizes
     protected String targetType;
     protected String[] targetFacets;
-    protected String adapterName;
+    protected final String adapterName;
 
 
     public AdapterTypeImpl(WebEngine engine, AbstractModule module, ResourceTypeImpl superType, String name, String adapterName, ClassProxy clazz, int visibility) {
