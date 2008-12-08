@@ -1184,3 +1184,13 @@ div.nxthemesUnregisteredWidget {
   border-width: 1px;
   border-color: #999 #000 #000 #999;
 }
+
+a.addPreset {
+  text-decoration: none;
+  color: #000;
+  text-align: right;
+  padding: 4px 8px;
+  font-size: 11px;
+  color: #333;
+  display: block;
+}

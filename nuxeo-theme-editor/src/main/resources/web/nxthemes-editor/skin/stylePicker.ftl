@@ -26,6 +26,9 @@
   </div>
 
   <div class="frame">
+    <#if !selected_preset_group>
+      <a class="addPreset" href="javascript:void(0)" onclick="NXThemesEditor.addPreset('&quot;${current_theme_name}&quot;', '&quot;${style_category}&quot;')">ADD PRESET</a>
+    </#if>
     <#list presets_for_selected_group as preset_info>
         <div class="selection" onclick="NXThemesStyleEditor.updateFormField('&quot;${preset_info.name}&quot;')">
            ${preset_info.preview}

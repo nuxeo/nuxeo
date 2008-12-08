@@ -84,6 +84,10 @@ public class PresetManager {
         return presets;
     }
 
+    public static PresetType getCustomPreset(final String themeName, final String presetName) {
+        return getPresetByName(String.format("%s/%s",themeName, presetName));
+    }
+    
     public static List<PresetType> getCustomPresets(final String themeName) {
         return getCustomPresets(themeName, null);
     }
@@ -130,6 +134,11 @@ public class PresetManager {
         }
         sb.append(str.substring(end));
         return sb.toString();
+    }
+
+    public static void createCustomPreset(String themeName, String presetName, String category) {
+        PresetType preset = new CustomPresetType(presetName, "", themeName, category);
+        Manager.getTypeRegistry().register(preset);
     }
 
 }

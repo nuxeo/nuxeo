@@ -139,6 +139,7 @@ public class Main extends DefaultModule {
   public Object renderStylePicker(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("stylePicker.ftl").arg(
             "style_category", getSelectedStyleCategory()).arg(
+            "current_theme_name", getCurrentThemeName(path)).arg(                          
             "selected_preset_group", getSelectedPresetGroup()).arg(                            
             "preset_groups", getPresetGroupsForSelectedCategory()).arg(
             "presets_for_selected_group", getPresetsForSelectedGroup())
@@ -274,6 +275,12 @@ public class Main extends DefaultModule {
   public void insertSectionAfter(@QueryParam("id") String id) {
       Element element = ThemeManager.getElementById(id)
       Editor.insertSectionAfter(element)    
+  }
+
+  @GET @POST
+  @Path("add_preset")
+  public String addPreset(@QueryParam("theme_name") String themeName, @QueryParam("preset_name") String presetName, @QueryParam("category") String category) {
+      return Editor.addPreset(themeName, presetName, category);
   }
   
   @GET @POST

@@ -508,6 +508,35 @@ NXThemesEditor.backToCanvas = function() {
     NXThemesEditor.switchToEditCanvas();
 }
 
+NXThemesEditor.addPreset = function(themeName, category) {
+    var name = prompt("Please enter a preset name:", "");
+    if (name === "") {
+        window.alert("Preset names must not be empty.");
+        return "";
+    }
+    if (!NXThemesEditor.isAlpha(name)) {
+        window.alert("Preset names must only contain alphabetic characters.");
+        return "";
+    }
+    var url = nxthemesBasePath + "/nxthemes-editor/add_preset";
+    new Ajax.Request(url, {
+         method: 'get',
+         parameters: {
+             themeName: themeName,
+             presetName: name,
+             category: category
+         },
+         onComplete: function(r) {
+             var text = r.responseText;
+             if (text === "") {
+                 window.alert("The preset name is already taken.");
+             } else {
+                 NXThemes.getViewById("style picker").refresh();
+             }
+         }
+    });     
+}    
+    
 NXThemesEditor.addSection = function(info) {
     var target = Event.element(info);
     var id = target.getAttribute('sectionid') || target.getAttribute('pageid');
