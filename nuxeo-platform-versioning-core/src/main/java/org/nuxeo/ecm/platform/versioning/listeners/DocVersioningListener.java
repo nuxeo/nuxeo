@@ -28,7 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -74,8 +74,8 @@ public class DocVersioningListener extends AbstractEventListener implements
      * Gets core events and updates versions if needed.
      *
      * @param coreEvent instance thrown at core layer
-     *
      */
+    @Override
     public void notifyEvent(CoreEvent coreEvent) {
 
         final String logPrefix = "<notifyEvent> ";
@@ -114,7 +114,7 @@ public class DocVersioningListener extends AbstractEventListener implements
 
                 if (LifeCycleEventTypes.LIFECYCLE_TRANSITION_EVENT.equals(eventId)) {
 
-                    final Map evtInfoMap;
+                    final Map<String, ?> evtInfoMap;
                     try {
                         evtInfoMap = coreEvent.getInfo();
                     } catch (ClassCastException e) {
@@ -142,12 +142,16 @@ public class DocVersioningListener extends AbstractEventListener implements
 
                 } else if (eventId.equals(DOCUMENT_CREATED) && !doc.isProxy()) {
                     // set major version at 1
-                    doc.setProperty(
-                            DocumentModelUtils.getSchemaName(majorPropName),
-                            DocumentModelUtils.getFieldName(majorPropName), 1L);
-                    doc.setProperty(
-                            DocumentModelUtils.getSchemaName(minorPropName),
-                            DocumentModelUtils.getFieldName(minorPropName), 0L);
+                    try {
+                        doc.setProperty(
+                                DocumentModelUtils.getSchemaName(majorPropName),
+                                DocumentModelUtils.getFieldName(majorPropName), 1L);
+                        doc.setProperty(
+                                DocumentModelUtils.getSchemaName(minorPropName),
+                                DocumentModelUtils.getFieldName(minorPropName), 0L);
+                    } catch (ClientException e) {
+                        throw new ClientRuntimeException(e);
+                    }
                     return;
                 } else if (eventId.equals(BEFORE_DOC_UPDATE)) {
                     try {
@@ -161,8 +165,6 @@ public class DocVersioningListener extends AbstractEventListener implements
                                 + "Should be incremented by user selection.");
                     } catch (VersioningException e) {
                         log.error(e);
-                    } catch (DocumentException e) {
-                        log.error(e);
                     } catch (ClientException e) {
                         log.error(e);
                     }
@@ -174,7 +176,8 @@ public class DocVersioningListener extends AbstractEventListener implements
                     }
 
                     // has to be string
-                    final VersioningActions incOption = (VersioningActions) options.get(VersioningActions.KEY_FOR_INC_OPTION);
+                    final VersioningActions incOption = (VersioningActions) options.get(
+                            VersioningActions.KEY_FOR_INC_OPTION);
                     if (incOption == null) {
                         log.debug("version increment option not available");
                         return;
@@ -182,7 +185,7 @@ public class DocVersioningListener extends AbstractEventListener implements
 
                     req = createEditChangeRequest(doc, incOption);
                 } else if (eventId.equals(DocumentEventTypes.DOCUMENT_RESTORED)) {
-                    final Map options = coreEvent.getInfo();
+                    final Map<String, ?> options = coreEvent.getInfo();
                     if (options == null) {
                         log.warn("options is null. versions not available");
                         return;
@@ -192,14 +195,18 @@ public class DocVersioningListener extends AbstractEventListener implements
                     final Long majorVer = (Long) options.get(VersioningDocument.CURRENT_DOCUMENT_MAJOR_VERSION_KEY);
                     final Long minorVer = (Long) options.get(VersioningDocument.CURRENT_DOCUMENT_MINOR_VERSION_KEY);
 
-                    doc.setProperty(
-                            DocumentModelUtils.getSchemaName(majorPropName),
-                            DocumentModelUtils.getFieldName(majorPropName),
-                            majorVer);
-                    doc.setProperty(
-                            DocumentModelUtils.getSchemaName(minorPropName),
-                            DocumentModelUtils.getFieldName(minorPropName),
-                            minorVer);
+                    try {
+                        doc.setProperty(
+                                DocumentModelUtils.getSchemaName(majorPropName),
+                                DocumentModelUtils.getFieldName(majorPropName),
+                                majorVer);
+                        doc.setProperty(
+                                DocumentModelUtils.getSchemaName(minorPropName),
+                                DocumentModelUtils.getFieldName(minorPropName),
+                                minorVer);
+                    } catch (ClientException e) {
+                        throw new ClientRuntimeException(e);
+                    }
 
                     req = createAutoChangeRequest(doc);
                 } else {
@@ -300,10 +307,9 @@ public class DocVersioningListener extends AbstractEventListener implements
      * @return
      * @throws VersioningException
      * @throws ClientException
-     * @throws DocumentException
      */
     private static boolean isIncOptionUserSelected(DocumentModel doc)
-            throws VersioningException, DocumentException, ClientException {
+            throws VersioningException, ClientException {
 
         final String logPrefix = "<isIncOptionUserSelected> ";
 

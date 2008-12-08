@@ -27,7 +27,13 @@ import java.lang.annotation.Target;
 
 import javax.interceptor.Interceptors;
 
+/**
+ * 
+ * @author arussel
+ * @deprecated No need anymore, error is processed in NuxeoExceptionFilter
+ */
 @Target(TYPE)
 @Retention(RUNTIME)
 @Interceptors(NuxeoErrorInterceptor.class)
+@Deprecated
 public @interface NuxeoJavaBeanErrorHandler {}

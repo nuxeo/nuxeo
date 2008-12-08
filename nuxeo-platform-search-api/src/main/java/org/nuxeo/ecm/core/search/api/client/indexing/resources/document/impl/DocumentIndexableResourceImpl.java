@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -131,7 +132,11 @@ public class DocumentIndexableResourceImpl extends
                 log.warn("Cannot get additionial document model properties.");
             }
         }
-        docAcp = dm.getACP();
+        try {
+            docAcp = dm.getACP();
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
 
         // FACETS
 
@@ -153,13 +158,13 @@ public class DocumentIndexableResourceImpl extends
         if (dm instanceof DocumentModelImpl) {
             flags = dm.getFlags();
         }
-
     }
 
     public DocumentRef getDocRef() {
         return docRef;
     }
 
+    @SuppressWarnings("unchecked")
     protected Serializable extractComplexProperty(Serializable complex,
             String subField) {
         if (complex == null) {
@@ -229,14 +234,11 @@ public class DocumentIndexableResourceImpl extends
 
             if (docRef != null) {
                 try {
-                    if (targetDoc!=null)
-                    {
+                    if (targetDoc != null) {
                         res = (Serializable) targetDoc.getProperty(schemaPrefix, fieldName);
-                    }
-                    else
-                    {
+                    } else {
                         res = (Serializable) getCoreSession().getDataModelField(
-                            docRef, schemaPrefix, fieldName);
+                                docRef, schemaPrefix, fieldName);
                     }
                     if (split.length > 2) {
                         res = extractComplexProperty(res, split[2]);

@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-parent</artifactId>
-    <version>5.1.7-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-directory-multi</artifactId>
@@ -30,26 +30,5 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-core</artifactId>
     </dependency>
-
-    <!-- test scope -->
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
-          </archive>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

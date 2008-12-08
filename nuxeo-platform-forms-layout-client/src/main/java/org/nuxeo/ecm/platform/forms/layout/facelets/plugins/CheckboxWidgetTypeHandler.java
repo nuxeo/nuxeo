@@ -66,9 +66,8 @@ public class CheckboxWidgetTypeHandler extends AbstractWidgetTypeHandler {
             return new CompositeFaceletHandler(handlers);
         } else {
             // default on text for other modes
-            ComponentHandler output = helper.getHtmlComponentHandler(
+            return helper.getHtmlComponentHandler(
                     attributes, leaf, HtmlOutputText.COMPONENT_TYPE, null);
-            return output;
         }
     }
 }
