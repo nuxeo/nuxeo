@@ -44,6 +44,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -134,14 +135,22 @@ public class CommentManagerActionsBean extends InputController implements
 
     protected DocumentModel initializeComment(DocumentModel comment) {
         if (comment != null) {
-            if (comment.getProperty("dublincore", "contributors") == null) {
-                String[] contributors = new String[1];
-                contributors[0] = getPrincipalName();
-                comment.setProperty("dublincore", "contributors", contributors);
+            try {
+                if (comment.getProperty("dublincore", "contributors") == null) {
+                    String[] contributors = new String[1];
+                    contributors[0] = getPrincipalName();
+                    comment.setProperty("dublincore", "contributors", contributors);
+                }
+            } catch (ClientException e) {
+                throw new ClientRuntimeException(e);
             }
-            if (comment.getProperty("dublincore", "created") == null) {
-                comment.setProperty("dublincore", "created",
-                        Calendar.getInstance());
+            try {
+                if (comment.getProperty("dublincore", "created") == null) {
+                    comment.setProperty("dublincore", "created",
+                            Calendar.getInstance());
+                }
+            } catch (ClientException e) {
+                throw new ClientRuntimeException(e);
             }
         }
         return comment;

@@ -309,11 +309,19 @@ public class DirectoryTreeNode {
                 Session session = getDirectoryService().open(dirName);
                 DocumentModel docMod = session.getEntry(bitsOfPath[b]);
                 if (b == 0) {
-                    property = (String) docMod.getProperty("vocabulary",
-                            "label");
+                    try {
+                        property = (String) docMod.getProperty("vocabulary",
+                                "label");
+                    } catch (ClientException e) {
+                        throw new DirectoryException(e);
+                    }
                 } else {
-                    property = (String) docMod.getProperty("xvocabulary",
-                            "label");
+                    try {
+                        property = (String) docMod.getProperty("xvocabulary",
+                                "label");
+                    } catch (ClientException e) {
+                        throw new DirectoryException(e);
+                    }
                 }
                 myPath = myPath + property + '/';
 

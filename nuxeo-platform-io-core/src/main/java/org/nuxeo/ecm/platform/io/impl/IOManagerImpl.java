@@ -501,9 +501,10 @@ public class IOManagerImpl implements IOManager {
             Collection<String> ioAdapters) throws ClientException {
         File tempFile = null;
         FileOutputStream fos = null;
+        StreamSource src = null;
         try {
             // copy via a temp file...
-            tempFile = File.createTempFile("export-import", "zip");
+            tempFile = File.createTempFile("export-import", ".zip");
 
             fos = new FileOutputStream(tempFile);
             // TODO specify format
@@ -532,7 +533,7 @@ public class IOManagerImpl implements IOManager {
                         "StreamManager service not available locally");
             }
 
-            StreamSource src = new FileSource(tempFile);
+            src = new FileSource(tempFile);
             double start = System.currentTimeMillis();
             String uri = null;
             try {
@@ -551,6 +552,9 @@ public class IOManagerImpl implements IOManager {
                 closeStream(fos);
             } catch (IOException e) {
                 throw new ClientException(e);
+            }
+            if (src != null) {
+                src.destroy();
             }
             if (tempFile != null) {
                 tempFile.delete();
@@ -601,7 +605,7 @@ public class IOManagerImpl implements IOManager {
         double start = System.currentTimeMillis();
         File tempFile;
         try {
-            tempFile = File.createTempFile("export-import", "zip");
+            tempFile = File.createTempFile("export-import", ".zip");
             log.info("get stream source at uri: " + uri);
             StreamSource source = streamManager.getStream(uri);
             if (source == null) {

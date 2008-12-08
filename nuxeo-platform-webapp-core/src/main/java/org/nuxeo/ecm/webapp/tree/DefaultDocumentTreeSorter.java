@@ -23,6 +23,7 @@ import java.text.Collator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
@@ -66,13 +67,13 @@ public class DefaultDocumentTreeSorter implements DocumentTreeSorter {
         Object v1;
         try {
             v1 = doc1.getPropertyValue(sortPropertyPath);
-        } catch (PropertyException e) {
+        } catch (ClientException e) {
             v1 = null;
         }
         Object v2;
         try {
             v2 = doc2.getPropertyValue(sortPropertyPath);
-        } catch (PropertyException e) {
+        } catch (ClientException e) {
             v2 = null;
         }
         boolean useHash = false;

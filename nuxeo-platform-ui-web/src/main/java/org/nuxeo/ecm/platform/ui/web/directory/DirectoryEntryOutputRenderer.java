@@ -29,6 +29,7 @@ import javax.faces.render.Renderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -69,9 +70,14 @@ public class DirectoryEntryOutputRenderer extends Renderer {
                 }
                 Boolean translate = dirComponent.getLocalize();
 
-                String label = (String) entry.getProperty(
-                        keySeparator != null ? "xvocabulary" : "vocabulary",
-                        "label");
+                String label;
+                try {
+                    label = (String) entry.getProperty(
+                            keySeparator != null ? "xvocabulary" : "vocabulary",
+                            "label");
+                } catch (ClientException e) {
+                    label = null;
+                }
                 String display = (String) dirComponent.getAttributes().get(
                         "display");
                 if (label == null || "".equals(label)) {

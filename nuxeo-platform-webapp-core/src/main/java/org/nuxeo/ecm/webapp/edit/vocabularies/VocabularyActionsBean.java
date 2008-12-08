@@ -54,6 +54,7 @@ import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Directory;
@@ -423,23 +424,41 @@ public class VocabularyActionsBean implements VocabularyActions {
     private VocabularyEntry getVocabularyEntry(DocumentModel vocabularyEntry)
             throws DirectoryException {
         String schemaName = dirService.getDirectorySchema(selectedVocabularyName);
-        VocabularyEntry result = new VocabularyEntry(
-                (String) vocabularyEntry.getProperty(schemaName,
-                        VocabularyConstants.VOCABULARY_ID),
-                (String) vocabularyEntry.getProperty(schemaName,
-                        VocabularyConstants.VOCABULARY_LABEL));
-        result.setObsolete(((Long) vocabularyEntry.getProperty(schemaName,
-                VocabularyConstants.VOCABULARY_OBSOLETE)).intValue() == 0 ? Boolean.FALSE
-                : Boolean.TRUE);
+        VocabularyEntry result;
+        try {
+            result = new VocabularyEntry(
+                    (String) vocabularyEntry.getProperty(schemaName,
+                            VocabularyConstants.VOCABULARY_ID),
+                    (String) vocabularyEntry.getProperty(schemaName,
+                            VocabularyConstants.VOCABULARY_LABEL));
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+        try {
+            result.setObsolete(((Long) vocabularyEntry.getProperty(schemaName,
+                    VocabularyConstants.VOCABULARY_OBSOLETE)).intValue() == 0 ? Boolean.FALSE
+                    : Boolean.TRUE);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
         // TODO VocabularyEntry ordering should be changed to use a Long
-        Integer ordering = ((Long) vocabularyEntry.getProperty(schemaName,
-                VocabularyConstants.VOCABULARY_ORDERING)).intValue();
+        Integer ordering;
+        try {
+            ordering = ((Long) vocabularyEntry.getProperty(schemaName,
+                    VocabularyConstants.VOCABULARY_ORDERING)).intValue();
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
         result.setOrdering(ordering.equals(VocabularyConstants.DEFAULT_VOCABULARY_ORDER) ? null
                 : ordering);
 
         if (isHierarchical()) {
-            result.setParent((String) vocabularyEntry.getProperty(schemaName,
-                    VocabularyConstants.VOCABULARY_PARENT));
+            try {
+                result.setParent((String) vocabularyEntry.getProperty(schemaName,
+                        VocabularyConstants.VOCABULARY_PARENT));
+            } catch (ClientException e) {
+                throw new ClientRuntimeException(e);
+            }
         }
         return result;
     }

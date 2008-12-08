@@ -556,7 +556,12 @@ public class LDAPSession implements Session, EntrySource {
         String columnNameinDocModel = directory.getFieldMapper().getDirectoryField(
                 columnName);
         for (DocumentModel docModel : docList) {
-            Object obj = docModel.getProperty(schemaName, columnNameinDocModel);
+            Object obj;
+            try {
+                obj = docModel.getProperty(schemaName, columnNameinDocModel);
+            } catch (ClientException e) {
+                throw new DirectoryException(e);
+            }
             String propValue;
             if (obj instanceof String) {
                 propValue = (String) obj;

@@ -97,7 +97,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
                 md.schemaSet);
     }
 
-    public void testCreate() {
+    public void testCreate() throws Exception {
         // created in setUp
         assertEquals("1", entry.getProperty(SCHEMA_NAME, "i"));
         assertEquals("secr", entry.getProperty(SCHEMA_NAME, "pw"));

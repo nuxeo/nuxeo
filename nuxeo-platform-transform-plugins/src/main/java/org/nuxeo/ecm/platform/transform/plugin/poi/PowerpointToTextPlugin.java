@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.transform.plugin.poi;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -61,7 +62,8 @@ public class PowerpointToTextPlugin extends AbstractPlugin {
 
             trs = super.transform(options, sources);
 
-            PowerPointExtractor extractor = new PowerPointExtractor(sources[0].getBlob().getStream());
+            PowerPointExtractor extractor = new PowerPointExtractor(
+                    sources[0].getBlob().getStream());
 
             byte[] bytes = extractor.getText().getBytes();
             f = File.createTempFile("po-ppt2text", ".txt");
@@ -73,11 +75,15 @@ public class PowerpointToTextPlugin extends AbstractPlugin {
             trs.add(new TransformDocumentImpl(blob));
 
         } finally {
+            if (fas != null) {
+                try {
+                    fas.close();
+                } catch (IOException e) {
+                    log.error(e);
+                }
+            }
             if (f != null) {
                 f.delete();
-            }
-            if (fas != null) {
-                fas.close();
             }
             timer.stop();
             log.debug("Transformation terminated." + timer);

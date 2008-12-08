@@ -505,8 +505,12 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         sb.append(userName);
         Calendar modified = null;
         if (doc != null) {
-            modified = (Calendar) doc.getProperty(DUBLINCORE_SCHEMA,
-                    MODIFIED_FIELD);
+            try {
+                modified = (Calendar) doc.getProperty(DUBLINCORE_SCHEMA,
+                        MODIFIED_FIELD);
+            } catch (ClientException e) {
+                modified = null;
+            }
         }
         if (modified == null) {
             modified = Calendar.getInstance();

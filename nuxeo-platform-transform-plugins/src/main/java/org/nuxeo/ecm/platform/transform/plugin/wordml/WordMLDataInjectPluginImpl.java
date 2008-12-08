@@ -63,7 +63,8 @@ public class WordMLDataInjectPluginImpl extends AbstractPlugin implements
     private static final Log log = LogFactory.getLog(WordMLDataInjectPluginImpl.class);
 
     // TODO : make this configurable (for example passing the format as option)
-    private final DateFormat tzDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    private final DateFormat tzDateFormat = new SimpleDateFormat(
+            "yyyy-MM-dd'T'HH:mm:ssZ");
 
     public WordMLDataInjectPluginImpl() {
         // Only takes XML as sources documents.
@@ -104,26 +105,17 @@ public class WordMLDataInjectPluginImpl extends AbstractPlugin implements
         try {
             results = super.transform(options, sources);
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (options == null) {
-            // used for unit testing
+            log.error(e);
         }
 
         for (TransformDocument srcDocument : sources) {
-            // XXX: maybe the caller should check if this plugin is appliable
-            // for the given sources
-
             String srcMimeType;
             try {
                 srcMimeType = srcDocument.getMimetype();
             } catch (Exception e) {
-                // TODO what exactly is the mean of throwing an exception here?
-                e.printStackTrace();
+                log.error(e);
                 srcMimeType = null;
             }
-            // XXX: can srcMimeType be null? api doesn't specify it
             if (srcMimeType == null || !sourceMimeTypes.contains(srcMimeType)) {
                 log.debug(logPrefix
                         + "cannot apply transformer plugin for mimeType: "
@@ -163,15 +155,13 @@ public class WordMLDataInjectPluginImpl extends AbstractPlugin implements
             final String stringValue;
             if (value instanceof String) {
                 stringValue = (String) value;
-            }
-            else if (value instanceof Calendar) {
-                stringValue = tzDateFormat.format(((Calendar)value).getTime());
-            }
-            else if (value instanceof Date) {
-                stringValue = tzDateFormat.format((Date)value);
-            }
-            else {
-                log.warn("using default toString for value type: " + value.getClass());
+            } else if (value instanceof Calendar) {
+                stringValue = tzDateFormat.format(((Calendar) value).getTime());
+            } else if (value instanceof Date) {
+                stringValue = tzDateFormat.format((Date) value);
+            } else {
+                log.warn("using default toString for value type: "
+                        + value.getClass());
                 stringValue = value.toString();
             }
 
@@ -201,6 +191,7 @@ public class WordMLDataInjectPluginImpl extends AbstractPlugin implements
         TransformDocument resultDoc;
 
         File tmpFile = null;
+        OutputStream ostream = null;
 
         try {
             // XMLDocument
@@ -212,20 +203,25 @@ public class WordMLDataInjectPluginImpl extends AbstractPlugin implements
 
             log.info(logPrefix + "created tmpFile: " + tmpFile);
 
-            OutputStream ostream = new FileOutputStream(tmpFile);
+            ostream = new FileOutputStream(tmpFile);
 
             xmlDataInjector.transform(xmlDoc, ostream);
-
-            ostream.close();
 
             InputStream istream = new FileInputStream(tmpFile);
             // create a transform document containing the result
             resultDoc = new TransformDocumentImpl(new FileBlob(istream),
                     destinationMimeType);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
             resultDoc = null;
         } finally {
+            if (ostream != null) {
+                try {
+                    ostream.close();
+                } catch (IOException e) {
+                    log.error(e);
+                }
+            }
             if (tmpFile != null) {
                 tmpFile.delete();
             }

@@ -41,6 +41,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.directory.AbstractReference;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -598,8 +599,12 @@ public class LDAPReference extends AbstractReference {
         String schemaName = getSourceDirectory().getSchema();
         try {
             // XXX: looks broken
-            return (List<String>) session.getEntry(sourceId).getProperty(
-                    schemaName, fieldName);
+            try {
+                return (List<String>) session.getEntry(sourceId).getProperty(
+                        schemaName, fieldName);
+            } catch (ClientException e) {
+                throw new DirectoryException(e);
+            }
         } finally {
             session.close();
         }

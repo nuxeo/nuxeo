@@ -29,6 +29,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -99,6 +101,8 @@ public class DigestComputer extends AbstractEventListener {
             } catch (PropertyException e) {
                 log.debug("Property " + xpathField
                         + " not found on doc, skipping");
+            } catch (ClientException e) {
+                throw new ClientRuntimeException(e);
             }
             if (blobProp != null && !blobProp.isPhantom() && blobProp.isDirty()) {
                 try {
