@@ -23,37 +23,37 @@ import org.nuxeo.theme.rendering.RenderingInfo;
 public class AreaStyleToolbox {
 
     public static String render(final RenderingInfo info) {
-        final Style style = (Style) ElementFormatter.getFormatFor(info.getElement(),
-                "style");
+        final Style style = (Style) ElementFormatter.getFormatFor(
+                info.getElement(), "style");
         Properties properties = null;
         if (style != null) {
             String viewName = info.getFormat().getName();
             properties = style.getPropertiesFor(viewName, "");
         }
         final StringBuilder sb = new StringBuilder();
-        sb.append("<div class=\"toolbox\">");
+        sb.append("<table class=\"toolbox\"><tr>");
         sb.append(renderIcon(properties, "background", "background",
-                "area-style-background.png"));
+                "areaStyleBackground"));
         sb.append(renderIcon(properties, "border-left", "left border",
-                "area-style-border-left.png"));
+                "areaStyleBorderLeft"));
         sb.append(renderIcon(properties, "border-top", "top border",
-                "area-style-border-top.png"));
+                "areaStyleBorderTop"));
         sb.append(renderIcon(properties, "border-bottom", "bottom border",
-                "area-style-border-bottom.png"));
+                "areaStyleBorderBottom"));
         sb.append(renderIcon(properties, "border-right", "right border",
-                "area-style-border-right.png"));
-        sb.append("</div>");
+                "areaStyleBorderRight"));
+        sb.append("</tr></table>");
         return sb.toString();
     }
 
-    private static String renderIcon(final Properties properties, final String name,
-            final String title, final String image) {
+    private static String renderIcon(final Properties properties,
+            final String name, final String title, final String iconClassName) {
         String className = "picker";
         if (properties != null && properties.getProperty(name) != null) {
             className = "picker selected";
         }
         return String.format(
-                "<img class=\"%s\" name=\"%s\" width=\"16\" height=\"16\" title=\"%s\" src=\"/skin/nxthemes-editor/img/%s\" />",
-                className, name, title, image);
+                "<td><div class=\"%s %s\" name=\"%s\" title=\"%s\"></div></td>",
+                className, iconClassName, name, title);
     }
 }

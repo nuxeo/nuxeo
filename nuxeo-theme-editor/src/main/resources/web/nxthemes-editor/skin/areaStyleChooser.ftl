@@ -26,9 +26,10 @@ Style chooser - ${style_category}</div>
 </div>
 
 <div class="frame">
-  <div class="selection" style="padding: 10px 5px; font-style: italic; font-weight: 1.2em;"
+  <div class="selection"
     onclick="NXThemesEditor.updateAreaStyle(null)">
     No style
+    <div class="noStyle"></div>
   </div>
   <#if presets_for_selected_group>
     <#list presets_for_selected_group as preset_info>

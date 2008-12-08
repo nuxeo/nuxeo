@@ -279,22 +279,44 @@ html, body {
 }
 
 .nxthemesAreaStyle .toolbox {
-  white-space: nowrap;
+  margin-left: auto; margin-right: auto
 }
 
-.nxthemesAreaStyle img.picker {
+.nxthemesAreaStyle .picker {
   background-color: #fff;
   cursor: pointer;
   border: 1px solid #ccc;
-  padding: 1px;
+  padding: 0px;
   margin: 2px;
+  width: 16px;
+  height: 16px;
 }
 
-.nxthemesAreaStyle img.selected {
+.nxthemesAreaStyle .selected {
   background-color: #fff;
   border: 2px solid #f00;
-  padding: 1px;
+  padding: 0px;
   margin: 1px;
+}
+
+.nxthemesAreaStyle .areaStyleBackground {
+  background-image: url(${basePath}/skin/nxthemes-editor/img/area-style-background.png);
+}
+
+.nxthemesAreaStyle .areaStyleBorderLeft {
+  background-image: url(${basePath}/skin/nxthemes-editor/img/area-style-border-left.png);
+}
+
+.nxthemesAreaStyle .areaStyleBorderTop {
+  background-image: url(${basePath}/skin/nxthemes-editor/img/area-style-border-top.png);
+}
+
+.nxthemesAreaStyle .areaStyleBorderBottom {
+  background-image: url(${basePath}/skin/nxthemes-editor/img/area-style-border-bottom.png);
+}
+
+.nxthemesAreaStyle .areaStyleBorderRight {
+  background-image: url(${basePath}/skin/nxthemes-editor/img/area-style-border-right.png);
 }
 
 
@@ -432,6 +454,9 @@ div.nxthemesEditorFrame {
   background-color: #ffc;
 }
 
+.nxthemesToolbox .noStyle {
+  background: #fff url(${basePath}/skin/nxthemes-editor/img/checker.png) repeat;   
+}
 
 /* Collapsible menu */
 .nxthemesCollapsible {
