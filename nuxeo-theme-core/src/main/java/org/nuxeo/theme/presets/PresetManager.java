@@ -84,20 +84,26 @@ public class PresetManager {
         return presets;
     }
 
-    public static List<PresetType> getCustomPresets() {
-        return getCustomPresets(null);
+    public static List<PresetType> getCustomPresets(final String themeName) {
+        return getCustomPresets(themeName, null);
     }
 
-    public static List<PresetType> getCustomPresets(final String category) {
+    public static List<PresetType> getCustomPresets(final String themeName,
+            final String category) {
         List<PresetType> presets = new ArrayList<PresetType>();
         for (Type type : getAllPresets()) {
             PresetType preset = (PresetType) type;
+            if (!(preset instanceof CustomPresetType)) {
+                continue;
+            }
             if (category != null && !preset.getCategory().equals(category)) {
                 continue;
             }
-            if (preset instanceof CustomPresetType) {
-                presets.add(preset);
+            if (themeName != null && !preset.getGroup().equals(themeName)) {
+                continue;
             }
+            presets.add(preset);
+
         }
         return presets;
     }

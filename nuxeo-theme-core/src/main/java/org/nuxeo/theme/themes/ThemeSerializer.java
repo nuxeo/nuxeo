@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.regex.Matcher;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -76,12 +75,13 @@ public class ThemeSerializer {
         final ThemeManager themeManager = Manager.getThemeManager();
 
         // Theme description and name
-        String description = theme.getDescription();
+        final String description = theme.getDescription();
         if (description != null) {
             root.setAttribute("description", description);
         }
 
-        root.setAttribute("name", theme.getName());
+        final String themeName = theme.getName();
+        root.setAttribute("name", themeName);
         doc.appendChild(root);
 
         // layout
@@ -98,7 +98,7 @@ public class ThemeSerializer {
         }
 
         // presets
-        List<PresetType> customPresets = PresetManager.getCustomPresets();
+        List<PresetType> customPresets = PresetManager.getCustomPresets(themeName);
         if (!customPresets.isEmpty()) {
             final org.w3c.dom.Element presetsNode = doc.createElement("presets");
             root.appendChild(presetsNode);
@@ -115,7 +115,6 @@ public class ThemeSerializer {
         final org.w3c.dom.Element formatNode = doc.createElement("formats");
         root.appendChild(formatNode);
 
-        final String themeName = theme.getName();
         for (String formatTypeName : themeManager.getFormatTypeNames()) {
             // export named styles
             for (Identifiable object : themeManager.getNamedObjects(themeName,

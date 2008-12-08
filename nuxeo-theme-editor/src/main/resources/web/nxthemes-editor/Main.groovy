@@ -815,7 +815,7 @@ public class Main extends DefaultModule {
       String group = getSelectedPresetGroup()
       String themeName = getCurrentThemeName()
       def presets = []
-      def presetTypes = group ? PresetManager.getGlobalPresets(group, category) : PresetManager.getCustomPresets(category)
+      def presetTypes = group ? PresetManager.getGlobalPresets(group, category) : PresetManager.getCustomPresets(themeName, category)
       for (preset in presetTypes) {
           presets.add(new PresetInfo(preset))
       }
