@@ -57,12 +57,10 @@ import org.nuxeo.ecm.core.search.api.client.search.results.document.impl.ResultD
 import org.nuxeo.ecm.core.search.api.client.search.results.impl.DocumentModelResultItem;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceConf;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.ResourceType;
-import org.nuxeo.runtime.services.streaming.StreamSource;
-import org.nuxeo.runtime.services.streaming.StringSource;
 
 /**
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
- * 
+ *
  */
 public class SearchPageProvider implements PagedDocumentsProvider {
 
@@ -117,7 +115,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
      * Constructor to create a sortable provider. Note that a provider can be
      * sortable and have a null sortInfo, which means a subsequent method call
      * with sortInfo not null will succeed.
-     * 
+     *
      * @param set The resultset
      * @param sortable if sortable, a subsequent call that provides sorting info
      * @param sortInfo the sorting info or null if the resultset is not sorted
@@ -136,7 +134,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
 
     /**
      * Constructor to create a non-sortable resultset.
-     * 
+     *
      * @param set
      */
     public SearchPageProvider(ResultSet set) {
@@ -174,7 +172,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
 
     /**
      * Return the current list of document models
-     * 
+     *
      * @return the list
      * @deprecated use {@link getCurrentPage} (see in interface) instead. will
      *             be removed in 5.2
@@ -327,7 +325,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
      * </p>
      * TODO This is wrong: prefix and schema name are actually transversal
      * concepts
-     * 
+     *
      * @param prefix
      * @return the schema name
      */
@@ -471,7 +469,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
 
     /**
      * Gets the type manager from the platform service platform service.
-     * 
+     *
      * @return a type manager instance.
      */
     protected SchemaManager getTypeManager() {
@@ -484,10 +482,10 @@ public class SearchPageProvider implements PagedDocumentsProvider {
     /**
      * Introspect typed value and create Blob instances instead of Maps when
      * appropriate
-     * 
+     *
      * @param value raw value as returned by the search service backend
      * @param field Field instance of the matching core Schema
-     * 
+     *
      * @return the filter Object with Blob instances instead of Map instances
      *         when required
      */
