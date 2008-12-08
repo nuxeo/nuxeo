@@ -145,6 +145,7 @@ NXThemes.Panel.prototype = Object.extend(new NXThemes.View(), {
           }
         }
         view._rendering = false;
+        view.ready();
       }
     };
 
@@ -205,6 +206,7 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
   render: function(data) {
     this.widget.innerHTML = '';
     this._renderFragment(this.widget, this.def.widget, data);
+    this.ready();
   },
 
   _getSubmenu: function(element) {
@@ -553,6 +555,7 @@ NXThemes.Tooltip.prototype = Object.extend(new NXThemes.View(), {
 
   render: function(data) {
     this.widget.innerHTML = data.get('hint');
+    this.ready();
   },
 
   prepare: function() {
@@ -645,6 +648,7 @@ NXThemes.Button.prototype = Object.extend(new NXThemes.View(), {
       link = 'javascript:void(0)';
     }
     widget.innerHTML = '<b>&nbsp;</b><a href="' + link+ '">' + label + '</a>';
+    this.ready();
   },
 
   clickEvent: function(e) {
@@ -714,6 +718,7 @@ NXThemes.Tabs.prototype = Object.extend(new NXThemes.View(), {
        }
     });
     this.widget.appendChild(createNode({tag: 'div', style: {clear: 'both'} }));
+    this.ready();
   },
 
   switchTo: function(p) {

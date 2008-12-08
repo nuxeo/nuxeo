@@ -38,7 +38,12 @@ var NXThemes = {
   },
 
   getViewById: function(id) {
-    return this._views.get(id);
+    var view = this._views.get(id);
+    if (!view) {
+      view = new NXThemes.DelayedView(id);
+      this._views.set(id, view);
+    }
+    return view;
   },
 
   getViews: function() {
@@ -232,14 +237,6 @@ var NXThemes = {
     return (subscriber._handlers || new Hash()).get(eventid);
   },
   
-  periodicallyTryTo: function(handler) {
-      var res = handler();
-      if (res) {
-          return;
-      }
-      new PeriodicalExecuter(handler, 1);
-  },
-
   /* Document parsing */
 
   _hasClassName: function(element, className) {
@@ -1171,20 +1168,14 @@ NXThemes.View.prototype = {
     }
     // refresh the sub-views
     this.subviews.entries().each(function(v) {
-      var view = NXThemes.getViewById(v);
-      if (view) {
-        view.refresh();
-      }
+      NXThemes.getViewById(v).refresh();
     });
   },
 
   load: function() {
     this.init();
     this.subviews.entries().each(function(v) {
-      var view = NXThemes.getViewById(v);
-      if (view) {
-        view.load();
-      }
+      NXThemes.getViewById(v).load();
     });
   },
 
@@ -1261,6 +1252,51 @@ NXThemes.View.prototype = {
       }
       this.effect = NXThemes.Effects.get(options.transition)(widget, options);
     }
+  },
+  
+  ready: function() {
+    var view = this;
+    NXThemes.notify("view ready", {publisher: view, scope: view.hash()});
+  }
+
+};
+
+
+NXThemes.DelayedView = Class.create();
+NXThemes.DelayedView.prototype = {
+
+  initialize: function(id) {
+    this.id = id;
+  },
+  
+  switchTo: function(perspective) {
+    var delayed_view = this;
+    NXThemes.registerEventHandler("view ready", delayed_view, function(event) {
+      var real_view = event.publisher; 
+      real_view.switchTo(perspective);
+      NXThemes.unsubscribe("view ready", {subscriber: delayed_view, publisher: real_view});
+    });
+    NXThemes.subscribe("view ready", {subscriber: delayed_view, scope: delayed_view.id});
+  },
+  
+  refresh: function() {
+    var delayed_view = this;
+    NXThemes.registerEventHandler("view ready", delayed_view, function(event) {
+      var real_view = event.publisher; 
+      real_view.refresh();    
+      NXThemes.unsubscribe("view ready", {subscriber: delayed_view, publisher: real_view});
+    });
+    NXThemes.subscribe("view ready", {subscriber: delayed_view, scope: delayed_view.id});
+  },
+  
+  load: function() {
+    var delayed_view = this;
+    NXThemes.registerEventHandler("view ready", delayed_view, function(event) {
+      var real_view = event.publisher; 
+      real_view.load();
+      NXThemes.unsubscribe("view ready", {subscriber: delayed_view, publisher: real_view});
+    });
+    NXThemes.subscribe("view ready", {subscriber: delayed_view, scope: delayed_view.id});
   }
 
 };
