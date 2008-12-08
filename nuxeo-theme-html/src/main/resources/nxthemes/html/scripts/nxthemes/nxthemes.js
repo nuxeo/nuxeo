@@ -23,7 +23,7 @@ var NXThemes = {
 
   _initialized: new Hash(),
   _defs: new Hash(),
-
+  
   init: function() {
     NXThemes.parse(document);
     NXThemes.getViews().invoke('init');
@@ -230,6 +230,14 @@ var NXThemes = {
 
   getEventHandler: function(eventid, subscriber) {
     return (subscriber._handlers || new Hash()).get(eventid);
+  },
+  
+  periodicallyTryTo: function(handler) {
+      var res = handler();
+      if (res) {
+          return;
+      }
+      new PeriodicalExecuter(handler, 1);
   },
 
   /* Document parsing */
@@ -1157,7 +1165,7 @@ NXThemes.View.prototype = {
     if (!this._visible) {
       return;
     }
-    var data = this.getData();
+    var data = this.readData();
     if (data) {
       this.display(data);
     }
@@ -1208,6 +1216,7 @@ NXThemes.View.prototype = {
     if (this._visible || !this._displayed) {
       return;
     }
+    
     var widget = $(this.widget);
 
     this._visible = true;

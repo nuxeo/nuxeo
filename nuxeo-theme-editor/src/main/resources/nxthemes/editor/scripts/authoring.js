@@ -78,26 +78,50 @@ NXThemesEditor.insertFragment = function(info) {
 
 NXThemesEditor.editElement = function(info) {
     var id = info.target.getAttribute('id');
-    var url = nxthemesBasePath + "/nxthemes-editor/select_element?id=" + encodeURIComponent(id); 
+    var url = nxthemesBasePath + "/nxthemes-editor/select_element?id=" + encodeURIComponent(id);
+    
+    var switchToPropertyTab = function(pe) {
+        var v = NXThemes.getViewById("element editor tabs");
+        if (v) {
+            v.switchTo("element editor perspectives/edit properties");
+            if (pe) {
+                pe.stop();
+            }
+            return true;
+        }
+        return false;
+    }
+    
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
              NXThemes.getControllerById("editor perspectives").switchTo("edit element");
-             var v = NXThemes.getViewById("element editor tabs");
-             v.switchTo("element editor perspectives/edit properties");
+             NXThemes.periodicallyTryTo(switchToPropertyTab);             
          }
     });
 };
 
 NXThemesEditor.changeElementStyle = function(info) {
     var id = info.target.getAttribute('id');
-    var url = nxthemesBasePath + "/nxthemes-editor/select_element?id=" + encodeURIComponent(id); 
+    var url = nxthemesBasePath + "/nxthemes-editor/select_element?id=" + encodeURIComponent(id);
+
+    var switchToStyleTab = function(pe) {
+        var v = NXThemes.getViewById("element editor tabs");
+        if (v) {
+            v.switchTo("element editor perspectives/edit style");
+            if (pe) {
+                pe.stop();
+            }
+            return true;
+        }
+        return false;
+    }
+    
     new Ajax.Request(url, {
          method: 'get',
          onComplete: function(r) {
              NXThemes.getControllerById("editor perspectives").switchTo("edit element");
-             var v = NXThemes.getViewById("element editor tabs");
-             v.switchTo("element editor perspectives/edit style");
+             NXThemes.periodicallyTryTo(switchToStyleTab);
          }
     });
 };
