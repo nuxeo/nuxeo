@@ -3,7 +3,21 @@
 <project name="Nuxeo EP Language Pack" default="lang" basedir=".">
  <property file="build.properties" />
 
-  <target name="lang">
+
+  <target name="lang" depends="copy,concat" description="Update language files" />
+
+  <target name="copy" description="Copy default properties files">
+    <copy todir="${basedir}/src/main/resources/nuxeo.war/WEB-INF/classes/">
+        <fileset dir="${basedir}/.." casesensitive="yes">
+          <include name="nuxeo-platform-webapp/src/main/resources/nuxeo.war/WEB-INF/classes/messages_fr.properties" />
+          <include name="nuxeo-platform-webapp/src/main/resources/nuxeo.war/WEB-INF/classes/messages_en.properties" />
+          <include name="nuxeo-platform-webapp/src/main/resources/nuxeo.war/WEB-INF/classes/messages.properties" />
+        </fileset>
+      </copy>
+	
+  </target>
+
+  <target name="concat" description="concat all properties files from all nuxeo packages including addons" >
     <concat destfile="${basedir}/src/main/resources/nuxeo.war/WEB-INF/classes/messages_fr.properties"
 	  force="no">
         <fileset dir="${basedir}/.." casesensitive="yes">
@@ -41,6 +55,22 @@
     </concat>
 
 
+      <concat destfile="${basedir}/src/main/resources/nuxeo.war/WEB-INF/classes/messages.properties"
+            force="no">
+      <fileset dir="${basedir}/.." casesensitive="yes">
+            <include name="**/src/main/resources/**/messages.properties"/>
+            <exclude name="**/target/**"/>
+            <exclude name="**/bin**"/>
+        <exclude name="nuxeo-platform-lang/src/main/resources/nuxeo.war/WEB-INF/classes/messages.properties" />
+      </fileset>
+
+        <fileset dir="${nuxeo.addons}" casesensitive="yes">
+          <include name="**/src/main/resources/**/messages.properties"/>
+          <exclude name="**/target/**"/>
+          <exclude name="**/bin**"/>
+        </fileset>
+
+    </concat>
 
 	
       <concat destfile="${basedir}/src/main/resources/nuxeo.war/WEB-INF/classes/messages_cn.properties"
