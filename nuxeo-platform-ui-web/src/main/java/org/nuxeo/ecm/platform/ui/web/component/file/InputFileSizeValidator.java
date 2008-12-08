@@ -112,12 +112,13 @@ public class InputFileSizeValidator implements Validator, StateHolder {
                 log.error("Invalid maximum size " + maxSize);
                 return res;
             }
+            // Using IS units
             if ("Ko".equals(suffix)) {
-                res = maxSizeInt * 8 * 1024;
+                res = maxSizeInt * 1000;
             } else if ("Mo".equals(suffix)) {
-                res = maxSizeInt * 8 * 1024 * 1000;
+                res = maxSizeInt * 1000 * 1000;
             } else if (maxSize.endsWith("Go")) {
-                res = maxSizeInt * 8 * 1024 * 1000 * 1000;
+                res = maxSizeInt * 1000 * 1000 * 1000;
             } else {
                 log.error("Invalid maximum size " + maxSize);
             }
