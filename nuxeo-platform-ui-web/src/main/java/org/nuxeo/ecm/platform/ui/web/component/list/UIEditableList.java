@@ -42,7 +42,6 @@ import javax.faces.event.PhaseId;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jetbrains.annotations.NotNull;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.platform.ui.web.model.EditableModel;
@@ -87,7 +86,6 @@ public class UIEditableList extends UIInput implements NamingContainer {
 
     private InternalState state;
 
-    @SuppressWarnings("unchecked")
     private static final class InternalState implements Serializable {
 
         private static final long serialVersionUID = 4730664880938551346L;
@@ -181,7 +179,6 @@ public class UIEditableList extends UIInput implements NamingContainer {
         return value;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void restoreState(FacesContext context, Object state) {
         final Object superState;
@@ -383,12 +380,11 @@ public class UIEditableList extends UIInput implements NamingContainer {
     }
 
     /**
-     * Returns a new EditableModel fro given value.
+     * Returns a new EditableModel from given value.
      *
      * @param current the current CollectionModel, or null if there is none.
      * @param value this is the value returned from {@link #getValue()}
      */
-    @SuppressWarnings("unchecked")
     protected EditableModel createEditableModel(EditableModel current,
             Object value) {
         EditableModel model = new EditableModelImpl(value);
@@ -401,9 +397,10 @@ public class UIEditableList extends UIInput implements NamingContainer {
             try {
                 Object template = getTemplate();
                 if (template instanceof Serializable) {
+                    Serializable serializableTemplate = (Serializable) template;
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
                     ObjectOutputStream oos = new ObjectOutputStream(out);
-                    oos.writeObject(template);
+                    oos.writeObject(serializableTemplate);
                     oos.close();
                     for (int i = 0; i < missing; i++) {
                         // deserialize to make sure it is not the same instance
@@ -798,8 +795,7 @@ public class UIEditableList extends UIInput implements NamingContainer {
     }
 
     @Override
-    public void processDecodes(@NotNull
-    FacesContext context) {
+    public void processDecodes(FacesContext context) {
         if (!isRendered()) {
             return;
         }
@@ -824,8 +820,7 @@ public class UIEditableList extends UIInput implements NamingContainer {
     }
 
     @Override
-    public void processValidators(@NotNull
-    FacesContext context) {
+    public void processValidators(FacesContext context) {
         if (!isRendered()) {
             return;
         }
@@ -840,10 +835,8 @@ public class UIEditableList extends UIInput implements NamingContainer {
         // }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public void processUpdates(@NotNull
-    FacesContext context) {
+    public void processUpdates(FacesContext context) {
         if (!isRendered()) {
             return;
         }
@@ -927,7 +920,6 @@ public class UIEditableList extends UIInput implements NamingContainer {
                 throw (RuntimeException) exception;
             }
         }
-
     }
 
     protected final void processComponent(FacesContext context,

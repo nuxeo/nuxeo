@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webapp.dashboard;
 import java.util.Date;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance;
@@ -158,7 +159,11 @@ public class DashBoardItemImpl implements DashBoardItem {
     public String getText() {
         String schemaName = textUtils.keySet().toArray(new String[0])[0];
         String field = textUtils.get(schemaName);
-        text = (String) docModel.getProperty(schemaName, field);
+        try {
+            text = (String) docModel.getProperty(schemaName, field);
+        } catch (ClientException e) {
+            text = null;
+        }
         if (text != null) {
             String[] lines = text.split("\n");
             StringBuilder result = new StringBuilder();

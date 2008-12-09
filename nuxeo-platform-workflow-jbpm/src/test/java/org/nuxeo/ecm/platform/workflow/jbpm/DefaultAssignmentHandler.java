@@ -39,7 +39,8 @@ public class DefaultAssignmentHandler extends JbpmWorkflowAssignmentHandler {
     public void assign(Assignable assignable, ExecutionContext executionContext) throws Exception {
         String assignee = (String) executionContext.getVariable(WorkflowConstants.WORKFLOW_TASK_ASSIGNEE);
         if (assignee == null) {
-            String creatorId = (String) executionContext.getProcessInstance().getContextInstance().getVariable(WorkflowConstants.WORKFLOW_CREATOR);
+            String creatorId = (String) executionContext.getProcessInstance().getContextInstance().getVariable(
+                    WorkflowConstants.WORKFLOW_CREATOR);
             if (creatorId != null) {
                 log.debug("Assigning task to author :" + creatorId);
             }

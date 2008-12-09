@@ -82,7 +82,6 @@ public abstract class BaseDocumentsListsManager implements Serializable{
         }
 
         return persistenceManager;
-
     }
 
     public List<DocumentModel> resetWorkingList(String listName) {

@@ -25,6 +25,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -125,7 +127,11 @@ public class VersioningModifierService extends DefaultComponent {
     private static void performReset(DocumentModel document, String schema,
             String fieldname) {
         if (document != null && !"".equals(schema) && !"".equals(fieldname)) {
-            document.setProperty(schema, fieldname, null);
+            try {
+                document.setProperty(schema, fieldname, null);
+            } catch (ClientException e) {
+                throw new ClientRuntimeException(e);
+            }
             log.info(schema + ':' + fieldname + " resetted");
         }
     }

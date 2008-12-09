@@ -25,15 +25,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJBException;
 import javax.ejb.MessageDriven;
+import javax.ejb.SessionContext;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 import javax.mail.MessagingException;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -89,54 +99,127 @@ import org.nuxeo.runtime.api.Framework;
                 + JMSConstant.DOCUMENT_MESSAGE
                 + "','"
                 + JMSConstant.EVENT_MESSAGE + "')") })
+@TransactionManagement(TransactionManagementType.BEAN)
 public class NotificationMessageListener implements MessageListener {
 
     private static final Log log = LogFactory.getLog(NotificationMessageListener.class);
 
     private DocumentViewCodecManager docLocator;
 
+    @Resource
+    private SessionContext sessionContext;
+
+    private LoginContext loginCtx;
+
+    private void login() throws Exception {
+        loginCtx = Framework.login();
+    }
+
+    private void logout() throws Exception {
+        if (loginCtx != null) {
+            loginCtx.logout();
+            loginCtx=null;
+        }
+    }
+
     public void onMessage(Message message) {
-        log.debug("onMessage");
-        try {
+        final UserTransaction transaction = sessionContext.getUserTransaction();
+
+        CoreSession session=null;
+        DocumentMessage docMsg=null;
+        String eventId=null;
+
+        try
+        {
             Object obj = ((ObjectMessage) message).getObject();
-            if (!(obj instanceof DocumentMessage))
+            if (!(obj instanceof DocumentMessage)) {
                 return;
-            DocumentMessage doc = (DocumentMessage) obj;
+            }
+            docMsg = (DocumentMessage) obj;
 
-            String eventId = doc.getEventId();
-            log.debug("Recieved a message for notification with eventId : "
-                    + eventId);
+            eventId = docMsg.getEventId();
+            log.debug("Recieved a message for notification with eventId : "+ eventId);
+        }
+        catch (JMSException e) {
+            log.error("Error getting message from topic", e);
+            return;
+        }
 
-            NotificationService service = NotificationServiceHelper.getNotificationService();
+        NotificationService service = NotificationServiceHelper.getNotificationService();
+        if (service==null)
+        {
+            log.error("Unable to get NotificationService, exiting");
+            return;
+        }
 
-            // (2)
-            List<Notification> notifs = service.getNotificationsForEvents(eventId);
-            if (notifs == null || notifs.isEmpty()) {
+        List<Notification> notifs = service.getNotificationsForEvents(eventId);
+        if (notifs == null || notifs.isEmpty()) {
+            log.debug("No notification bound to " + eventId);
+            return;
+        }
+
+
+
+        Map<Notification, List<String>> targetUsers = new HashMap<Notification, List<String>>();
+
+
+        try {
+            transaction.begin();
+        } catch (Exception e) {
+            log.error("Unable to start transaction, existing", e);
+            return;
+        }
+
+        try {
+            login();
+        } catch (Exception e) {
+            log.error("Unable to do Framework.login", e);
+            return;
+        }
+
+        String repoName = docMsg.getRepositoryName();
+        Repository repo = null;
+        Boolean errDuringProcess=false;
+        CoreSession coreSession=null;
+
+        try {
+            RepositoryManager mgr = Framework.getService(RepositoryManager.class);
+            if (repoName != null) {
+                repo = mgr.getRepository(repoName);
+            }
+            else {
+                repo = mgr.getDefaultRepository();
+            }
+
+            if (repo==null)
+            {
+                log.error("can not find repository, existing");
+                errDuringProcess=true;
                 return;
             }
 
-            // (3)
-            Map<Notification, List<String>> targetUsers = new HashMap<Notification, List<String>>();
-
-            LoginContext lc = Framework.login();
-            if (eventId.equals("documentPublicationApproved")
-                    || eventId.equals("documentPublished")) {
-                DocumentModel publishedDoc = getDocFromPath((String) doc.getEventInfo().get(
-                        "sectionPath"), doc);
-                gatherConcernedUsersForDocument(publishedDoc, notifs,
-                        targetUsers);
+            coreSession = repo.open();
+            if (eventId.equals("documentPublicationApproved") || eventId.equals("documentPublished")) {
+                DocumentModel publishedDoc = getDocFromPath(coreSession, (String) docMsg.getEventInfo().get("sectionPath"), docMsg);
+                if (publishedDoc==null)
+                {
+                    log.error("unable to find published doc, existing");
+                    return;
+                }
+                gatherConcernedUsersForDocument(coreSession, publishedDoc, notifs, targetUsers);
             } else {
-                gatherConcernedUsersForDocument(doc, notifs, targetUsers);
+                gatherConcernedUsersForDocument(coreSession,docMsg, notifs, targetUsers);
             }
-            lc.logout();
+
+
 
             for (Notification notif : targetUsers.keySet()) {
                 if (!notif.getAutoSubscribed()) {
                     for (String user : targetUsers.get(notif)) {
-                        sendNotificationSignalForUser(notif, user, doc);
+                        sendNotificationSignalForUser(notif, user, docMsg);
                     }
                 } else {
-                    Map<String, Serializable> info = doc.getEventInfo();
+                    Map<String, Serializable> info = docMsg.getEventInfo();
                     String recipient = (String) info.get("recipients");
                     if (recipient == null || recipient.trim().length() <= 0) {
                         // nobody to send notification to
@@ -146,42 +229,54 @@ public class NotificationMessageListener implements MessageListener {
                     }
                     List<String> users = getUsersForMultiRecipients(recipient);
                     for (String user : users) {
-                        sendNotificationSignalForUser(notif, user, doc);
+                        sendNotificationSignalForUser(notif, user, docMsg);
                     }
 
                 }
             }
 
-        } catch (Exception e) {
-            throw new EJBException(e);
+
         }
+        catch (Exception e) {
+            log.error("Error during message processing", e);
+            errDuringProcess=true;
+        }
+        finally {
+            if (errDuringProcess) {
+                try {
+                    transaction.rollback();
+                } catch (Exception te) {
+                    log.error("Error during transaction rollback", te);
+                }
+            }
+            else {
+                try {
+                    transaction.commit();
+                }
+                catch (Exception te) {
+                    log.error("Error during transaction commit", te);
+                }
+            }
+
+            if(coreSession!=null) {
+                CoreInstance.getInstance().close(coreSession);
+                coreSession=null;
+            }
+            try {
+                logout();
+            }
+            catch (Exception le) {
+                log.error("Error during logout",le);
+            }
+        }
+
     }
 
-    private DocumentModel getDocFromPath(String path, DocumentMessage doc) throws ClientException {
+    private DocumentModel getDocFromPath(CoreSession coreSession, String path, DocumentMessage doc) throws ClientException {
         DocumentModel sectionDoc;
-        // Create a new system session.
-        try {
-            LoginContext lc = Framework.login();
-            RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-            String repoName = doc.getRepositoryName();
-            if (repoName != null) {
-                Repository repo = mgr.getRepository(repoName);
-                if (repo != null) {
-                    CoreSession coreSession = repo.open();
-                    sectionDoc = coreSession.getDocument(new PathRef(path));
-                    CoreInstance.getInstance().close(coreSession);
-                } else {
-                    throw new ClientException(
-                            "Cannot find repository instance : + " + repoName);
-                }
-            } else {
-                throw new ClientException("No associated repository...");
-            }
-            lc.logout();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-
+        if (path==null)
+            return null;
+        sectionDoc = coreSession.getDocument(new PathRef(path));
         return sectionDoc;
     }
 
@@ -222,49 +317,24 @@ public class NotificationMessageListener implements MessageListener {
      * @param targetUsers
      * @throws Exception
      */
-    private void gatherConcernedUsersForDocument(DocumentModel doc,
+    private void gatherConcernedUsersForDocument(CoreSession coreSession, DocumentModel doc,
             List<Notification> notifs,
             Map<Notification, List<String>> targetUsers) throws Exception {
         if (doc.getPath().segmentCount() > 1) {
             log.debug("Searching document.... : " + doc.getName());
             getInterstedUsers(doc, notifs, targetUsers);
-            DocumentModel parent = getDocumentParent(doc);
-            gatherConcernedUsersForDocument(parent, notifs, targetUsers);
+            DocumentModel parent = getDocumentParent(coreSession, doc);
+            gatherConcernedUsersForDocument(coreSession, parent, notifs, targetUsers);
         }
     }
 
-    private DocumentModel getDocumentParent(DocumentModel doc)
+    private DocumentModel getDocumentParent(CoreSession coreSession, DocumentModel doc)
             throws ClientException {
-
         DocumentModel parentDoc = null;
-
         if (doc == null) {
             return parentDoc;
         }
-
-        // Create a new system session.
-        try {
-            LoginContext lc = Framework.login();
-            RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-            String repoName = doc.getRepositoryName();
-            if (repoName != null) {
-                Repository repo = mgr.getRepository(repoName);
-                if (repo != null) {
-                    CoreSession coreSession = repo.open();
-                    parentDoc = coreSession.getDocument(doc.getParentRef());
-                    CoreInstance.getInstance().close(coreSession);
-                } else {
-                    throw new ClientException(
-                            "Cannot find repository instance : + " + repoName);
-                }
-            } else {
-                throw new ClientException("No associated repository...");
-            }
-            lc.logout();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-
+        parentDoc = coreSession.getDocument(doc.getParentRef());
         return parentDoc;
     }
 
