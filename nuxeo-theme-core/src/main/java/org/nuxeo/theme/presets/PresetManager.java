@@ -107,7 +107,6 @@ public class PresetManager {
                 continue;
             }
             presets.add(preset);
-
         }
         return presets;
     }
@@ -137,8 +136,14 @@ public class PresetManager {
     }
 
     public static void createCustomPreset(String themeName, String presetName, String category) {
-        PresetType preset = new CustomPresetType(presetName, "", themeName, category);
+        CustomPresetType preset = new CustomPresetType(presetName, "", themeName, category);
         Manager.getTypeRegistry().register(preset);
+    }
+
+    public static void editPreset(String themeName, String presetName,
+            String value) {
+      PresetType preset = PresetManager.getCustomPreset(themeName, presetName);
+      preset.setValue(value);
     }
 
 }

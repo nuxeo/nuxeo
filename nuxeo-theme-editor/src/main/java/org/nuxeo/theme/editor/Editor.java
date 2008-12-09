@@ -557,14 +557,23 @@ public class Editor {
         themeManager.removeNamedObject(themeName, "style", styleName);
     }
 
-    public static String addPreset(String themeName, String presetName, String category) {
-        if (PresetManager.getPresetByName(presetName) != null) {
+    public static String addPreset(String themeName, String presetName,
+            String category) {
+        if (PresetManager.getCustomPreset(themeName, presetName) != null) {
             return "";
         }
         PresetManager.createCustomPreset(themeName, presetName, category);
         return presetName;
     }
-    
+
+    public static void editPreset(String themeName, String presetName,
+            String value) {
+        PresetManager.editPreset(themeName, presetName, value);
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                null, null));
+    }
+
     public static void expireThemes() {
         Manager.getEventManager().notify(Events.THEME_MODIFIED_EVENT,
                 new EventContext(null, null));

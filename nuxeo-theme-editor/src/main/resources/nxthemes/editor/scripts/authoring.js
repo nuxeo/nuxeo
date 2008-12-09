@@ -15,7 +15,16 @@ if (typeof NXThemesEditor == "undefined") {
             }
           }
           return true;
-        }
+        },
+        isLowerCase: function(s) {
+          for (var i = 0; i < s.length; i= i+1) {
+            var c = s.charAt(i);
+            if ( !((c>="a") && (c<="z")) || c == " ") {
+              return false;
+            }
+          }
+          return true;
+        }        
     };
 
 }
@@ -514,16 +523,16 @@ NXThemesEditor.addPreset = function(themeName, category) {
         window.alert("Preset names must not be empty.");
         return "";
     }
-    if (!NXThemesEditor.isAlpha(name)) {
-        window.alert("Preset names must only contain alphabetic characters.");
+    if (!NXThemesEditor.isLowerCase(name)) {
+        window.alert("Preset names may only contain lower case characters and spaces.");
         return "";
     }
     var url = nxthemesBasePath + "/nxthemes-editor/add_preset";
     new Ajax.Request(url, {
          method: 'get',
          parameters: {
-             themeName: themeName,
-             presetName: name,
+             theme_name: themeName,
+             preset_name: name,
              category: category
          },
          onComplete: function(r) {
@@ -535,7 +544,23 @@ NXThemesEditor.addPreset = function(themeName, category) {
              }
          }
     });     
-}    
+};
+
+NXThemesEditor.editPreset = function(themeName, presetName) {
+    var value = prompt("Enter a preset value:", "");
+    var url = nxthemesBasePath + "/nxthemes-editor/edit_preset";
+    new Ajax.Request(url, {
+         method: 'get',
+         parameters: {
+             theme_name: themeName,
+             preset_name: presetName,
+             value: value
+         },
+         onComplete: function(r) {
+             NXThemes.getViewById("style picker").refresh();
+         }
+    });      
+};
     
 NXThemesEditor.addSection = function(info) {
     var target = Event.element(info);

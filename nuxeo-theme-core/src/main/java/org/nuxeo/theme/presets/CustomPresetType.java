@@ -14,10 +14,10 @@
 
 package org.nuxeo.theme.presets;
 
-
 public class CustomPresetType extends PresetType {
 
-    public CustomPresetType(String name, String value, String group, String category) {
+    public CustomPresetType(String name, String value, String group,
+            String category) {
         super(name, value, group, category);
     }
 
@@ -25,7 +25,7 @@ public class CustomPresetType extends PresetType {
     public String getTypeName() {
         return String.format("%s/%s", group, name);
     }
-    
+
     @Override
     public String getEffectiveName() {
         return name;

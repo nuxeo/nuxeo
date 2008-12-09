@@ -142,7 +142,7 @@ public class Main extends DefaultModule {
             "current_theme_name", getCurrentThemeName(path)).arg(                          
             "selected_preset_group", getSelectedPresetGroup()).arg(                            
             "preset_groups", getPresetGroupsForSelectedCategory()).arg(
-            "presets_for_selected_group", getPresetsForSelectedGroup())
+            "presets_for_selected_group", getPresetsForSelectedGroup(path))
   }
   
   @GET
@@ -282,6 +282,13 @@ public class Main extends DefaultModule {
   public String addPreset(@QueryParam("theme_name") String themeName, @QueryParam("preset_name") String presetName, @QueryParam("category") String category) {
       return Editor.addPreset(themeName, presetName, category);
   }
+  
+  @GET @POST
+  @Path("edit_preset")
+  public void addPreset(@QueryParam("theme_name") String themeName, @QueryParam("preset_name") String presetName, @QueryParam("value") String value) {
+      Editor.editPreset(themeName, presetName, value);
+  }
+  
   
   @GET @POST
   @Path("load_theme")
@@ -817,10 +824,10 @@ public class Main extends DefaultModule {
       return org.nuxeo.theme.editor.Utils.getPropertiesOf(selectedElement) 
   }
   
-  public static List<PresetInfo> getPresetsForSelectedGroup() {
+  public static List<PresetInfo> getPresetsForSelectedGroup(applicationPath) {
       String category = getSelectedStyleCategory()
       String group = getSelectedPresetGroup()
-      String themeName = getCurrentThemeName()
+      String themeName = getCurrentThemeName(applicationPath)
       def presets = []
       def presetTypes = group ? PresetManager.getGlobalPresets(group, category) : PresetManager.getCustomPresets(themeName, category)
       for (preset in presetTypes) {
