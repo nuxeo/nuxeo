@@ -27,10 +27,8 @@ import org.nuxeo.ecm.platform.events.api.DocumentMessage;
  * NXAuditEvents interface.
  * <p>
  * Allows to query for auditable events.
- * </p>
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public interface NXAuditEvents {
 
@@ -58,7 +56,7 @@ public interface NXAuditEvents {
     /**
      * Computes a log entry given a document message instance.
      *
-     * @param doc :
+     * @param doc
      *            the document message instance.
      * @return a log entry instance.
      */

@@ -44,7 +44,7 @@ import org.nuxeo.ecm.webapp.base.InputController;
 
 /**
  * Creates ResultsProvider for the children of the current document.
- * 
+ *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
 @Name("documentChildrenFarm")

@@ -28,12 +28,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 
@@ -105,6 +109,12 @@ public class MemoryDirectorySession implements Session {
     }
 
     public DocumentModel getEntry(String id) throws DirectoryException {
+        return getEntry(id, true);
+    }
+
+    public DocumentModel getEntry(String id, boolean fetchReferences)
+            throws DirectoryException {
+        // XXX no references here
         Map<String, Object> map = data.get(id);
         if (map == null) {
             return null;
@@ -115,14 +125,19 @@ public class MemoryDirectorySession implements Session {
         // "user" is the schema name.
         DocumentModelImpl entry = new DocumentModelImpl(null,
                 directory.schemaName, id, null, null, null,
-                new String[]{ directory.schemaName }, null);
+                new String[] { directory.schemaName }, null);
         entry.addDataModel(dataModel);
         return entry;
     }
 
     public void updateEntry(DocumentModel docModel) throws DirectoryException {
         String id = docModel.getId();
-        DataModel dataModel = docModel.getDataModel(directory.schemaName);
+        DataModel dataModel;
+        try {
+            dataModel = docModel.getDataModel(directory.schemaName);
+        } catch (ClientException e) {
+            throw new DirectoryException(e);
+        }
 
         Map<String, Object> map = data.get(id);
         if (map == null) {
@@ -131,12 +146,20 @@ public class MemoryDirectorySession implements Session {
         }
 
         for (String fieldName : directory.schemaSet) {
-            if (!dataModel.isDirty(fieldName)
-                    || fieldName.equals(directory.idField)) {
+            try {
+                if (!dataModel.isDirty(fieldName)
+                        || fieldName.equals(directory.idField)) {
+                    continue;
+                }
+            } catch (PropertyNotFoundException e) {
                 continue;
             }
             // TODO references
-            map.put(fieldName, dataModel.getData(fieldName));
+            try {
+                map.put(fieldName, dataModel.getData(fieldName));
+            } catch (PropertyException e) {
+                throw new ClientRuntimeException(e);
+            }
         }
         dataModel.getDirtyFields().clear();
     }
@@ -193,6 +216,12 @@ public class MemoryDirectorySession implements Session {
     public DocumentModelList query(Map<String, Object> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws DirectoryException {
+        return query(filter, fulltext, orderBy, true);
+    }
+
+    public DocumentModelList query(Map<String, Object> filter,
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences) throws DirectoryException {
         DocumentModelList results = new DocumentModelListImpl();
         // canonicalize filter
         Map<String, Object> filt = new HashMap<String, Object>();
@@ -216,7 +245,7 @@ public class MemoryDirectorySession implements Session {
                         continue data_loop;
                     }
                 } else {
-                    if (fulltext.contains(fieldName)) {
+                    if (fulltext != null && fulltext.contains(fieldName)) {
                         if (!value.toString().toLowerCase().startsWith(
                                 expected.toString().toLowerCase())) {
                             continue data_loop;
@@ -232,7 +261,7 @@ public class MemoryDirectorySession implements Session {
             results.add(getEntry(id));
         }
         // order entries
-        if (!orderBy.isEmpty()) {
+        if (orderBy != null && !orderBy.isEmpty()) {
             directory.orderEntries(results, orderBy);
         }
         return results;
@@ -249,7 +278,12 @@ public class MemoryDirectorySession implements Session {
         DocumentModelList l = query(filter, fulltext);
         List<String> results = new ArrayList<String>(l.size());
         for (DocumentModel doc : l) {
-            Object value = doc.getProperty(directory.schemaName, columnName);
+            Object value;
+            try {
+                value = doc.getProperty(directory.schemaName, columnName);
+            } catch (ClientException e) {
+                throw new DirectoryException(e);
+            }
             if (value != null) {
                 results.add(value.toString());
             } else {

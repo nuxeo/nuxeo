@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
@@ -166,14 +168,23 @@ public class MimetypeIconUpdater extends AbstractEventListener {
             throws PropertyException {
 
         if (doc.hasSchema(MAIN_BLOB_FIELD.split(":")[0])) {
-            Property filenameProperty = doc.getProperty(MAIN_EXTERNAL_FILENAME_FIELD);
+            Property filenameProperty;
+            try {
+                filenameProperty = doc.getProperty(MAIN_EXTERNAL_FILENAME_FIELD);
+            } catch (ClientException e) {
+                throw new ClientRuntimeException(e);
+            }
             if (filenameProperty.isDirty()) {
                 String filename = filenameProperty.getValue(String.class);
-                if (doc.getProperty(MAIN_BLOB_FIELD).getValue() != null) {
-                    Blob blob = doc.getProperty(MAIN_BLOB_FIELD).getValue(
-                            Blob.class);
-                    blob.setFilename(filename);
-                    doc.setPropertyValue(MAIN_BLOB_FIELD, (Serializable) blob);
+                try {
+                    if (doc.getProperty(MAIN_BLOB_FIELD).getValue() != null) {
+                        Blob blob = doc.getProperty(MAIN_BLOB_FIELD).getValue(
+                                Blob.class);
+                        blob.setFilename(filename);
+                        doc.setPropertyValue(MAIN_BLOB_FIELD, (Serializable) blob);
+                    }
+                } catch (ClientException e) {
+                    throw new ClientRuntimeException(e);
                 }
             }
         }

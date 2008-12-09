@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.cache;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -50,6 +51,10 @@ public abstract class AbstractCacheListener implements CacheListener {
     }
 
     private String getDocInfo(DocumentModel doc) {
-        return (String)doc.getProperty("common", "title");
+        try {
+            return (String)doc.getProperty("common", "title");
+        } catch (ClientException e) {
+            return null;
+        }
     }
 }

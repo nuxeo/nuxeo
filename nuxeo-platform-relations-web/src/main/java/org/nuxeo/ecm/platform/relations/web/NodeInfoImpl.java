@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.relations.web;
 
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
@@ -119,8 +121,13 @@ public class NodeInfoImpl implements NodeInfo {
             String resourceTitle = null;
             QNameResource resource = (QNameResource) node;
             if (documentModel != null) {
-                String documentTitle = (String) documentModel.getProperty(
-                        "dublincore", "title");
+                String documentTitle;
+                try {
+                    documentTitle = (String) documentModel.getProperty(
+                            "dublincore", "title");
+                } catch (ClientException e) {
+                    throw new ClientRuntimeException(e);
+                }
                 if (documentTitle != null && documentTitle.length() > 0) {
                     resourceTitle = documentTitle;
                 }
