@@ -53,6 +53,7 @@
   <properties>
     <jboss.version>4.0.4.GA</jboss.version>
     <jboss.ejb.version>3.0-RC8</jboss.ejb.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <dependencyManagement>
