@@ -34,9 +34,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
-import org.jboss.seam.contexts.Lifecycle;
-import org.jboss.seam.core.Redirect;
-import org.jboss.seam.util.Transactions;
+import org.jboss.seam.contexts.FacesLifecycle;
+import org.jboss.seam.faces.Redirect;
+import org.jboss.seam.transaction.Transaction;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
@@ -50,8 +50,9 @@ import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ * @deprecated No need anymore, error is processed in NuxeoExceptionFilter
  */
-
+@Deprecated
 public class NuxeoErrorInterceptor implements Serializable {
 
     private static final long serialVersionUID = 6519836435278721L;
@@ -78,13 +79,13 @@ public class NuxeoErrorInterceptor implements Serializable {
                 throw e;
             }
 
-            if (Transactions.isTransactionActive()) {
-                Transactions.setTransactionRollbackOnly();
+            if (Transaction.instance().isActive()) {
+                Transaction.instance().setRollbackOnly();
             }
 
             FacesContext facesContext = FacesContext.getCurrentInstance();
 
-            if (Lifecycle.getPhaseId() == PhaseId.RENDER_RESPONSE) {
+            if (FacesLifecycle.getPhaseId() == PhaseId.RENDER_RESPONSE) {
                 if (ExceptionHelper.isSecurityError(t)) {
                     if (facesContext != null) {
                         Object req = facesContext.getExternalContext().getRequest();
@@ -102,7 +103,7 @@ public class NuxeoErrorInterceptor implements Serializable {
             ClientException cException = new ClientException(t);
             // redirect is not allowed during render response phase => throw the
             // error without redirecting
-            if (Lifecycle.getPhaseId() == PhaseId.RENDER_RESPONSE) {
+            if (FacesLifecycle.getPhaseId() == PhaseId.RENDER_RESPONSE) {
                 if (facesContext != null) {
                     Object req = facesContext.getExternalContext().getRequest();
                     if (req instanceof ServletRequest) {

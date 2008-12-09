@@ -27,6 +27,8 @@ import java.util.List;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -103,10 +105,20 @@ public class UIComment implements Comparable, Serializable {
         }
 
         DocumentModel other = ((UIComment) o).comment;
-        Calendar myDate = (Calendar) comment.getProperty("dublincore",
-                "created");
-        Calendar otherDate = (Calendar) other.getProperty("dublincore",
-                "created");
+        Calendar myDate;
+        try {
+            myDate = (Calendar) comment.getProperty("dublincore",
+                    "created");
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+        Calendar otherDate;
+        try {
+            otherDate = (Calendar) other.getProperty("dublincore",
+                    "created");
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
         return myDate.compareTo(otherDate);
     }
 

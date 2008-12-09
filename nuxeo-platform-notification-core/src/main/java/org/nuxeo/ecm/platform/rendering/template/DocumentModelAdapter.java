@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -69,7 +70,12 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
             return wrapper.wrap(accessor.getValue(doc));
         }
         // may be a schema name
-        DocumentPart part = doc.getPart(key);
+        DocumentPart part;
+        try {
+            part = doc.getPart(key);
+        } catch (ClientException e1) {
+            throw new TemplateModelException(e1);
+        }
         if (part != null) {
             // TODO it is easier for now to export the part as a map
             // may be in future we may want to implement a property template model
@@ -115,6 +121,8 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
             }
         } catch (PropertyException e) {
             throw new TemplateModelException("failed to fetch a document", e);
+        } catch (ClientException e) {
+            throw new TemplateModelException(e);
         }
         return (TemplateCollectionModel)wrapper.wrap(values);
     }

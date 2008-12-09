@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -101,7 +100,7 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         assertNotNull(service);
     }
 
-    public void testCreationDate() throws DocumentException, ClientException {
+    public void testCreationDate() throws ClientException {
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 "file-007", "File");
         DocumentModel childFile2 = remote.createDocument(childFile);
@@ -116,8 +115,7 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         // assertEquals("toto", (String)dm.getData("creator"));
     }
 
-    public void testModificationDate() throws DocumentException,
-            ClientException {
+    public void testModificationDate() throws ClientException {
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 "file-008", "File");
         DocumentModel childFile2 = remote.createDocument(childFile);
@@ -144,7 +142,7 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
     }
 
     // Wait until we can have a real list management
-    public void testContributors() throws DocumentException, ClientException {
+    public void testContributors() throws ClientException {
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 "file-008", "File");
         DocumentModel childFile2 = remote.createDocument(childFile);

@@ -50,7 +50,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
-@SuppressWarnings({ "unchecked", "IOResourceOpenedButNotSafelyClosed" })
+@SuppressWarnings({ "IOResourceOpenedButNotSafelyClosed" })
 public class TestJenaGraph extends NXRuntimeTestCase {
 
     private JenaGraph graph;
@@ -78,32 +78,32 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertNotNull(graph);
         assertEquals(JenaGraph.class, graph.getClass());
         this.graph = (JenaGraph) graph;
-        this.statements = new ArrayList<Statement>();
-        this.doc1 = new ResourceImpl(
+        statements = new ArrayList<Statement>();
+        doc1 = new ResourceImpl(
                 "http://www.ecm.org/uid/DOC200600013_02.01");
-        this.doc2 = new ResourceImpl(
+        doc2 = new ResourceImpl(
                 "http://www.ecm.org/uid/DOC200600015_01.00");
-        this.namespace = "http://purl.org/dc/terms/";
-        this.isBasedOn = new QNameResourceImpl(this.namespace, "IsBasedOn");
-        this.references = new QNameResourceImpl(this.namespace, "References");
-        this.statements.add(new StatementImpl(doc2, isBasedOn, doc1));
-        this.statements.add(new StatementImpl(
+        namespace = "http://purl.org/dc/terms/";
+        isBasedOn = new QNameResourceImpl(namespace, "IsBasedOn");
+        references = new QNameResourceImpl(namespace, "References");
+        statements.add(new StatementImpl(doc2, isBasedOn, doc1));
+        statements.add(new StatementImpl(
                 doc1,
                 references,
                 new ResourceImpl(
                         "http://www.wikipedia.com/Enterprise_Content_Management")));
-        this.statements.add(new StatementImpl(doc2, references,
+        statements.add(new StatementImpl(doc2, references,
                 new LiteralImpl("NXRuntime")));
-        Collections.sort(this.statements);
+        Collections.sort(statements);
     }
 
-    private String getTestFile() {
+    private static String getTestFile() {
         String filePath = "test.rdf";
         return FileUtils.getResourcePathFromContext(filePath);
     }
 
     public void testGetGraph() {
-        Model jenaGraph = this.graph.openGraph().getGraph();
+        Model jenaGraph = graph.openGraph().getGraph();
         Map<?, ?> map = jenaGraph.getNsPrefixMap();
         assertEquals("http://www.w3.org/1999/02/22-rdf-syntax-ns#",
                 map.get("rdf"));

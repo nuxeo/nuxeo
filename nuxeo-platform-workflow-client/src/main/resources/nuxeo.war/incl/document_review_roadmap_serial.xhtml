@@ -3,7 +3,6 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"><nxu:methodResult
@@ -71,7 +70,8 @@
           <h:outputText value="#{messages['label.workflow.task.startdate']}" />
         </f:facet>
         <h:outputText value="#{workflowTaskInstance.startDate}">
-           <f:convertDateTime pattern="#{nxu:dateAndTimeFormater('medium')}" />
+           <f:convertDateTime pattern="#{nxu:dateAndTimeFormater('medium')}"
+           timeZone="#{timeZone}" />
         </h:outputText>
       </h:column>
 
@@ -80,7 +80,8 @@
           <h:outputText value="#{messages['label.workflow.task.duedate']}" />
         </f:facet>
         <h:outputText value="#{workflowTaskInstance.dueDate}">
-           <f:convertDateTime pattern="#{nxu:dateAndTimeFormater('medium')}" />
+           <f:convertDateTime pattern="#{nxu:dateAndTimeFormater('medium')}"
+            timeZone="#{timeZone}" />
         </h:outputText>
       </h:column>
 
@@ -142,7 +143,7 @@
           <h:commandLink
             actionListener="#{documentTaskActions.moveWorkItemDown(workflowTaskInstance.id)}"
             rendered="#{canMoveDownWorkItem}">
-            <t:graphicImage value="/icons/arrow_up.gif" />
+            <nxu:graphicImage value="/icons/arrow_up.gif" />
           </h:commandLink>
         </nxu:methodResult>
       </h:column>
@@ -158,7 +159,7 @@
           <h:commandLink
             actionListener="#{documentTaskActions.moveWorkItemUp(workflowTaskInstance.id)}"
             rendered="#{canMoveUpWorkItem}">
-            <t:graphicImage value="/icons/arrow_down.gif" />
+            <nxu:graphicImage value="/icons/arrow_down.gif" />
           </h:commandLink>
         </nxu:methodResult>
       </h:column>

@@ -53,7 +53,7 @@ public abstract class ExportRepresentation extends OutputRepresentation {
 
     protected String rootId;
 
-    public ExportRepresentation(MediaType mediaType, DocumentModel root) {
+    protected ExportRepresentation(MediaType mediaType, DocumentModel root) {
         super(mediaType);
         repositoryName = root.getRepositoryName();
         rootId = root.getId();
