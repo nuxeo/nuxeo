@@ -73,6 +73,8 @@ public class SearchMessageListener implements MessageListener {
 
     private LoginContext loginCtx;
 
+    private static final String ASYNC_INDEXING_DELAY_PROPERTY = "org.nuxeo.ecm.platform.search.asynchronousIndexingDelay";
+
     private SearchService getSearchService() {
         if (service == null) {
             // XXX : use local interface since the MDB is part of the Facade
@@ -160,6 +162,23 @@ public class SearchMessageListener implements MessageListener {
 
                 if (log.isDebugEnabled()) {
                     log.debug("indexing " + dm.getPath());
+                }
+
+                String asynchronousIndexingDelay = Framework.getProperty(ASYNC_INDEXING_DELAY_PROPERTY);
+                if (asynchronousIndexingDelay != null && asynchronousIndexingDelay.length() > 0) {
+                    long asyncIndexingDelayValue = 0;
+                    try {
+                        asyncIndexingDelayValue = Long.parseLong(asynchronousIndexingDelay);
+                    } catch (NumberFormatException e) {
+                        log.error("Wrong asynchronous indexing delay specified", e);
+                    }
+                    if (asyncIndexingDelayValue > 0) {
+                        try {
+                            Thread.sleep(asyncIndexingDelayValue);
+                        } catch (InterruptedException e) {
+                            log.error("Couldn't wait before asynchronous indexing", e);
+                        }
+                    }
                 }
 
                 // Compute full text as well.
