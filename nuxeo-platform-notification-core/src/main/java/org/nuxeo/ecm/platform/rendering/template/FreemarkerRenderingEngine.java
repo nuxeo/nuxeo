@@ -37,10 +37,11 @@ public abstract class FreemarkerRenderingEngine implements RenderingEngine {
     protected Configuration cfg;
 
     /**
-     *  TODO : It works like this but this default implementation should
-     *  return just a <code>new Configuration()</code>
-     *  There should be a class that extends this class and overrides this
-     *  but that brokes it right now.
+     * TODO : It works like this but this default implementation should return
+     * just a <code>new Configuration()</code> There should be a class that
+     * extends this class and overrides this but that brokes it right now.
+     *
+     * TODO: write a clear TODO
      *
      * @return
      * @throws Exception
@@ -48,10 +49,12 @@ public abstract class FreemarkerRenderingEngine implements RenderingEngine {
     public Configuration createConfiguration() throws Exception {
         Configuration config = new Configuration();
         config.setTemplateLoader(new NuxeoTemplatesLoader());
+        config.setDefaultEncoding("UTF-8");
         return config;
     }
 
-    protected abstract FreemarkerRenderingJob createJob(RenderingContext ctx) throws RenderingException;
+    protected abstract FreemarkerRenderingJob createJob(RenderingContext ctx)
+            throws RenderingException;
 
     public RenderingResult process(RenderingContext ctx)
             throws RenderingException {
@@ -60,7 +63,8 @@ public abstract class FreemarkerRenderingEngine implements RenderingEngine {
                 cfg = createConfiguration();
             }
             FreemarkerRenderingJob job = createJob(ctx);
-            cfg.getTemplate(job.getTemplate()).process(ctx, job.getWriter());
+            cfg.getTemplate(job.getTemplate(), cfg.getDefaultEncoding()).process(
+                    ctx, job.getWriter());
             return job.getResult();
         } catch (RenderingException e) {
             throw e;
