@@ -49,12 +49,16 @@ public final class PanelView extends AbstractView {
         /* Theme editor mode: manage web widget panels inside a theme */
         if (engineName.equals("page-editor")) {
             ProviderType providerType = Manager.getProviderType(providerName);
+            String description = "";
+            if (providerType != null) {
+                description = providerType.getDescription();
+            }
             s.append("<div class=\"nxthemesPageArea\">");
             s.append(String.format("<div class=\"title\">%s</div>",
                     displayedRegionName));
             s.append(String.format(
                     "<div class=\"body\">Web widget area. <p>Provider: <strong>%s</strong> (%s)</p></div>",
-                    providerName, providerType.getDescription()));
+                    providerName, description));
             s.append("</div>");
         }
 
