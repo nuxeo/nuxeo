@@ -150,8 +150,9 @@ public class Main extends DefaultModule {
   public Object renderAreaStyleChooser(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("areaStyleChooser.ftl").arg(
             "style_category", getSelectedStyleCategory()).arg(
+            "current_theme_name", getCurrentThemeName(path)).arg(                              
             "preset_groups", getPresetGroupsForSelectedCategory()).arg(
-            "presets_for_selected_group", getPresetsForSelectedGroup()).arg(
+            "presets_for_selected_group", getPresetsForSelectedGroup(path)).arg(
             "selected_preset_group", getSelectedPresetGroup())
   }
 

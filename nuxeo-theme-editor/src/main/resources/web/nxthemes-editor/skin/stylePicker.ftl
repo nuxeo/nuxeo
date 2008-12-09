@@ -27,13 +27,13 @@
 
   <div class="frame">
     <#if !selected_preset_group>
-      <a class="addPreset" href="javascript:void(0)" onclick="NXThemesEditor.addPreset('${current_theme_name}', '${style_category}')">ADD PRESET</a>
+      <a class="addPreset" href="javascript:void(0)" onclick="NXThemesEditor.addPreset('${current_theme_name}', '${style_category}', 'style picker')">ADD PRESET</a>
     </#if>
     <#list presets_for_selected_group as preset_info>
-        <div>
+      <div>
         <#if !selected_preset_group>
-          <a class="editPreset" href="javascript:void(0)" onclick="NXThemesEditor.editPreset('${current_theme_name}', '${preset_info.name}');">
-	  <img src="${basePath}/skin/nxthemes-editor/img/edit-12.png" /></a>
+          <a class="editPreset" href="javascript:void(0)" onclick="NXThemesEditor.editPreset('${current_theme_name}', '${preset_info.name}', '${preset_info.value}', 'style picker');">
+	      <img src="${basePath}/skin/nxthemes-editor/img/edit-12.png" /></a>
         </#if>
         <div class="selection" onclick="NXThemesStyleEditor.updateFormField('&quot;${preset_info.name}&quot;')">
            ${preset_info.preview}
@@ -41,6 +41,10 @@
 	</div>
     </#list>
   </div>
+
+<div class="footer">
+&nbsp;
+</div>
 
 </div>
 

@@ -7,19 +7,19 @@ if (typeof NXThemesEditor == "undefined") {
           box.show();
           NXThemes.Effects.get('fadeout')(box, {delay: 1700});
         },
-        isAlpha: function(s) {
+        isLowerCase: function(s) {
           for (var i = 0; i < s.length; i= i+1) {
             var c = s.charAt(i);
-            if ( !((c>="A") && (c<="Z")) && !((c>="a") && (c<="z")) ) {
+            if ( !((c>="a") && (c<="z")) ) {
               return false;
             }
           }
           return true;
         },
-        isLowerCase: function(s) {
+        isLowerCaseOrSpace: function(s) {
           for (var i = 0; i < s.length; i= i+1) {
             var c = s.charAt(i);
-            if ( !((c>="a") && (c<="z")) || c == " ") {
+            if ( !((c>="a") && (c<="z") || c == ' ')) {
               return false;
             }
           }
@@ -459,7 +459,7 @@ NXThemesEditor.addTheme = function() {
         window.alert("Theme names must not be empty.");
         return "";
     }
-    if (!NXThemesEditor.isAlpha(name)) {
+    if (!NXThemesEditor.isLowerCase(name)) {
         window.alert("Theme names must only contain alphabetic characters.");
         return "";
     }
@@ -485,7 +485,7 @@ NXThemesEditor.addPage = function(themeName) {
         window.alert("Page names must not be empty.");
         return "";
     }
-    if (!NXThemesEditor.isAlpha(name)) {
+    if (!NXThemesEditor.isLowerCase(name)) {
         window.alert("Page names must only contain alphabetic characters.");
         return "";
     }
@@ -517,13 +517,13 @@ NXThemesEditor.backToCanvas = function() {
     NXThemesEditor.switchToEditCanvas();
 }
 
-NXThemesEditor.addPreset = function(themeName, category) {
+NXThemesEditor.addPreset = function(themeName, category, view_id) {
     var name = prompt("Please enter a preset name:", "");
     if (name === "") {
         window.alert("Preset names must not be empty.");
         return "";
     }
-    if (!NXThemesEditor.isLowerCase(name)) {
+    if (!NXThemesEditor.isLowerCaseOrSpace(name)) {
         window.alert("Preset names may only contain lower case characters and spaces.");
         return "";
     }
@@ -540,14 +540,14 @@ NXThemesEditor.addPreset = function(themeName, category) {
              if (text === "") {
                  window.alert("The preset name is already taken.");
              } else {
-                 NXThemes.getViewById("style picker").refresh();
+                 NXThemes.getViewById(view_id).refresh();
              }
          }
     });     
 };
 
-NXThemesEditor.editPreset = function(themeName, presetName) {
-    var value = prompt("Enter a preset value:", "");
+NXThemesEditor.editPreset = function(themeName, presetName, value, view_id) {
+    var value = prompt("Enter a preset value:", value);
     var url = nxthemesBasePath + "/nxthemes-editor/edit_preset";
     new Ajax.Request(url, {
          method: 'get',
@@ -557,7 +557,7 @@ NXThemesEditor.editPreset = function(themeName, presetName) {
              value: value
          },
          onComplete: function(r) {
-             NXThemes.getViewById("style picker").refresh();
+             NXThemes.getViewById(view_id).refresh();
          }
     });      
 };

@@ -56,6 +56,10 @@ public class PresetInfo {
         return preview.render(preset.getValue(), content);
     }
 
+    public String getValue() {
+        return preset.getValue();
+    }
+    
     /* Load properties */
     private Properties getPreviewProperties() {
         Utils.loadProperties(previewProperties, PREVIEW_PROPERTIES_RESOURCE);

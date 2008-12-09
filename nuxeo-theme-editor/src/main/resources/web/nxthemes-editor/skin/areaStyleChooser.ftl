@@ -16,9 +16,9 @@ Style chooser - ${style_category}</div>
       </#if>
       <#list preset_groups as preset_group>
         <#if selected_preset_group == preset_group>
-          <option value="${preset_group}" selected="selected">${preset_group}</option>
+          <option class="locked" value="${preset_group}" selected="selected">${preset_group}</option>
         <#else>
-          <option value="${preset_group}">${preset_group}</option>
+          <option class="locked" value="${preset_group}">${preset_group}</option>
         </#if>
       </#list>
     </select>
@@ -26,22 +26,29 @@ Style chooser - ${style_category}</div>
 </div>
 
 <div class="frame">
+  <#if !selected_preset_group>
+    <a class="addPreset" href="javascript:void(0)" onclick="NXThemesEditor.addPreset('${current_theme_name}', '${style_category}', 'area style chooser')">ADD PRESET</a>
+  </#if>
   <div class="selection"
     onclick="NXThemesEditor.updateAreaStyle(null)">
     No style
     <div class="noStyle"></div>
   </div>
-  <#if presets_for_selected_group>
-    <#list presets_for_selected_group as preset_info>
+  <#list presets_for_selected_group as preset_info>
+    <div>    
+      <#if !selected_preset_group>
+        <a class="editPreset" href="javascript:void(0)" onclick="NXThemesEditor.editPreset('${current_theme_name}', '${preset_info.name}', '${preset_info.value}', 'area style chooser');">
+	    <img src="${basePath}/skin/nxthemes-editor/img/edit-12.png" /></a>
+      </#if>    
       <div class="selection" onclick="NXThemesEditor.updateAreaStyle('&quot;${preset_info.name}&quot;')">
-          ${preset_info.preview}
+        ${preset_info.preview}
       </div>
-    </#list>
-  </#if>
+    </div>        
+  </#list>
 </div>
 
 <div class="footer">
-&#32;
+&nbsp;
 </div>
 
 </div>
