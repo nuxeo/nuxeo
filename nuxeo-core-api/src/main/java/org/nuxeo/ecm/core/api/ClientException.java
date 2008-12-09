@@ -20,8 +20,7 @@
 package org.nuxeo.ecm.core.api;
 
 /**
- * The most generic exception thrown by the Nuxeo Core, and the only one
- * you should care about when writing client code.
+ * The most generic exception thrown by the Nuxeo Core.
  *
  * @author bstefanescu
  */
