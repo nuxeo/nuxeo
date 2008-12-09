@@ -107,7 +107,7 @@ public final class EmailHelper {
             templ.process(mail, out);
             out.flush();
 
-            msg.setSubject(out.toString(), "UTF8");
+            msg.setSubject(out.toString(), "UTF-8");
         } else {
             rs.registerEngine(new NotificationsRenderingEngine(
                     customSubjectTemplate));
@@ -122,7 +122,7 @@ public final class EmailHelper {
             }
             subjectMail = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix()
                     + subjectMail;
-            msg.setSubject(subjectMail, "UTF8");
+            msg.setSubject(subjectMail, "UTF-8");
 
             lc.logout();
         }
@@ -145,8 +145,6 @@ public final class EmailHelper {
 
         rs.unregisterEngine("ftl");
 
-        // String bodyMail = out.toString();
-
         msg.setContent(bodyMail, "text/html; charset=utf-8");
 
         // Send the message.
@@ -160,9 +158,7 @@ public final class EmailHelper {
      */
     private static Session getSession() {
         Session session = null;
-        /*
-         * First, try to get the session from JNDI, as would be done under J2EE.
-         */
+        // First, try to get the session from JNDI, as would be done under J2EE.
         try {
             NotificationService service = (NotificationService) Framework.getRuntime().getComponent(
                     NotificationService.NAME);
