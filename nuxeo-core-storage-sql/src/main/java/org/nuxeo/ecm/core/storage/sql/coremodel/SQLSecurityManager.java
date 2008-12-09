@@ -247,8 +247,8 @@ public class SQLSecurityManager implements SecurityManager {
     }
 
     protected ACL getInheritedACLs(Document doc) throws DocumentException {
-        ACL merged = null;
         doc = doc.getParent();
+        ACL merged = null;
         while (doc != null) {
             ACP acp = getACP(doc);
             if (acp != null) {

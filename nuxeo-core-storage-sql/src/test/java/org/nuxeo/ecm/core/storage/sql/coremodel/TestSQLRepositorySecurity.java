@@ -288,12 +288,12 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         String name2 = "repositoryWorkspace2#";
         DocumentModel repositoryWorkspace = new DocumentModelImpl(
                 workspaces.getPathAsString(), name2, "Workspace");
-        session.createDocument(repositoryWorkspace);
+        repositoryWorkspace = session.createDocument(repositoryWorkspace);
 
         String name3 = "ws#3";
         DocumentModel ws1 = new DocumentModelImpl(
                 repositoryWorkspace.getPathAsString(), name3, "Workspace");
-        session.createDocument(ws1);
+        ws1 = session.createDocument(ws1);
         String name4 = "ws#4";
         DocumentModel ws2 = new DocumentModelImpl(ws1.getPathAsString(), name4,
                 "Workspace");

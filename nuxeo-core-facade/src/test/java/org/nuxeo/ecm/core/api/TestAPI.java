@@ -102,7 +102,7 @@ public abstract class TestAPI extends TestConnection {
         List<DocumentModel> rets = new ArrayList<DocumentModel>();
         Collections.addAll(
                 rets,
-                remote.createDocument(childFolders.toArray(new DocumentModel[0])));
+                remote.createDocument(childFolders.toArray(new DocumentModel[childFolders.size()])));
 
         assertNotNull(rets);
         assertEquals(childFolders.size(), rets.size());
@@ -905,10 +905,10 @@ public abstract class TestAPI extends TestConnection {
         returnedChildDocs.get(1).setProperty("file", "filename", "f1");
         returnedChildDocs.get(2).setProperty("file", "filename", "f2");
 
-        remote.saveDocuments(returnedChildDocs.toArray(new DocumentModel[0]));
+        remote.saveDocuments(returnedChildDocs.toArray(new DocumentModel[returnedChildDocs.size()]));
         remote.save();
 
-        DocumentModelList list = remote.query("SELECT name FROM File");
+        DocumentModelList list = remote.query("SELECT * FROM File");
         assertEquals(1, list.size());
         DocumentModel docModel = list.get(0);
         List<String> schemas = Arrays.asList(docModel.getDeclaredSchemas());
@@ -920,7 +920,7 @@ public abstract class TestAPI extends TestConnection {
 
         // if we select filename, the returned docModel
         // should have both schemas "file" and "common"
-        list = remote.query("SELECT filename FROM File");
+        list = remote.query("SELECT * FROM File");
         assertEquals(1, list.size());
         docModel = list.get(0);
         schemas = Arrays.asList(docModel.getDeclaredSchemas());
@@ -1052,7 +1052,6 @@ public abstract class TestAPI extends TestConnection {
 
         assertFalse(remote.exists(returnedChildDocs.get(0).getRef()));
         assertFalse(remote.exists(returnedChildDocs.get(1).getRef()));
-
     }
 
     /*
@@ -1419,8 +1418,8 @@ public abstract class TestAPI extends TestConnection {
         remote.checkIn(childFile.getRef(), version);
 
         childFile.setProperty("file", "filename", "second name");
-        childFile.setProperty("common", "title", "f1");
-        childFile.setProperty("common", "description", "desc 1");
+        childFile.setProperty("dublincore", "title", "f1");
+        childFile.setProperty("dublincore", "description", "desc 1");
         version = new VersionModelImpl();
         version.setLabel("v2");
 
@@ -1849,8 +1848,10 @@ public abstract class TestAPI extends TestConnection {
         // create a proxy in folder2
         DocumentModel proxy = remote.createProxy(folder2.getRef(),
                 file.getRef(), version, true);
+        String f = proxy.getTitle();
         assertTrue(proxy.isProxy());
-
+        remote.saveDocument(proxy);
+        remote.save();
         // copy proxy into folder3
         DocumentModel copy1 = remote.copyProxyAsDocument(proxy.getRef(),
                 folder3.getRef(), null);
@@ -1997,7 +1998,7 @@ public abstract class TestAPI extends TestConnection {
                 name2, "File");
         childFile = createChildDocument(childFile);
 
-        String[] str = new String[] { "a", "b", "c" };
+        String[] str = { "a", "b", "c" };
         childFile.setProperty("dublincore", "participants", str);
         remote.saveDocument(childFile);
 
@@ -2344,6 +2345,7 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("File", docModel.getType());
     }
 
+    @SuppressWarnings("unchecked")
     public void testCopyContent() throws ClientException {
         DocumentModel root = remote.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -2395,6 +2397,7 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("myfile", content);
     }
 
+    @SuppressWarnings("unchecked")
     public void testDocumentModelTreeSort() throws Exception {
         // create a folder tree
         DocumentModel root = getRootDocument();
@@ -2430,7 +2433,6 @@ public abstract class TestAPI extends TestConnection {
         b1_folder = createChildDocument(b1_folder);
         b2_folder = createChildDocument(b2_folder);
 
-
         DocumentModelTreeImpl tree = new DocumentModelTreeImpl();
         tree.add(a_folder, 1);
         tree.add(a1_folder, 2);
@@ -2443,7 +2445,7 @@ public abstract class TestAPI extends TestConnection {
         // sort using title
         DocumentModelTreeNodeComparator comp = new DocumentModelTreeNodeComparator(
                 tree.getPathTitles());
-        Collections.sort((ArrayList)tree, comp);
+        Collections.sort((ArrayList) tree, comp);
 
         assertEquals(b_folder, tree.get(0).getDocument());
         assertEquals(b1_folder, tree.get(1).getDocument());
@@ -2455,7 +2457,7 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(a2_folder, tree.get(5).getDocument());
         assertEquals(a1_folder, tree.get(6).getDocument());
 
-
         remote.cancel();
     }
+
 }

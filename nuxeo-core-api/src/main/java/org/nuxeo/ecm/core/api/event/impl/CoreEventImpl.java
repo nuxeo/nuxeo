@@ -44,7 +44,7 @@ public class CoreEventImpl implements CoreEvent {
     protected final Date date;
 
     protected final Principal principal;
-    
+
     protected final String category;
 
     protected final String comment;
@@ -70,7 +70,7 @@ public class CoreEventImpl implements CoreEvent {
             this.info = new HashMap<String, Object>(info);
         }
         this.principal = principal;
-     
+
         // CB: NXP-2253 - Values passed as parameters will be put into the info
         // map only if the map doesn't contain the corresponding keys.
         if (!((Map) this.info).containsKey(COMMENT_ATTRIBUTE)) {

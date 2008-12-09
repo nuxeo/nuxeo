@@ -77,7 +77,7 @@ public class RepositoryDescriptor {
             }
             throw new IllegalArgumentException(value);
         }
-    };
+    }
 
     /**
      * Which id generation policy to use.

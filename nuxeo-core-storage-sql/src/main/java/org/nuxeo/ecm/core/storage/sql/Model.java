@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -221,7 +222,7 @@ public class Model {
     private final AtomicLong temporaryIdCounter;
 
     /** Shared high-level properties that don't come from the schema manager. */
-    private Map<String, Type> specialPropertyTypes;
+    private final Map<String, Type> specialPropertyTypes;
 
     /** Per-schema/type info about properties. */
     private final HashMap<String, Map<String, PropertyInfo>> schemaPropertyInfos;
@@ -259,8 +260,8 @@ public class Model {
     /** Maps schema to simple+collection fragments. */
     protected final Map<String, Set<String>> typeFragments;
 
-    /** Set of doc types, for search. */
-    protected final Set<String> documentTypes;
+    /** Map of doc types to facets, for search. */
+    protected final Map<String, Set<String>> documentTypesFacets;
 
     /** Map of doc type to its supertype, for search. */
     protected final Map<String, String> documentSuperTypes;
@@ -291,7 +292,7 @@ public class Model {
         typeSimpleFragments = new HashMap<String, Set<String>>();
         typeCollectionFragments = new HashMap<String, Set<String>>();
 
-        documentTypes = new HashSet<String>();
+        documentTypesFacets = new HashMap<String, Set<String>>();
         documentSuperTypes = new HashMap<String, String>();
         documentSubTypes = new HashMap<String, Set<String>>();
 
@@ -329,7 +330,7 @@ public class Model {
         switch (idGenPolicy) {
         case APP_UUID:
             return UUID.randomUUID().toString();
-            // return "U_" + temporaryIdCounter.incrementAndGet();
+            // return "UUID_" + temporaryIdCounter.incrementAndGet();
         case DB_IDENTITY:
             return "T" + temporaryIdCounter.incrementAndGet();
         default:
@@ -407,8 +408,9 @@ public class Model {
         if (previous == null) {
             mergedPropertyInfos.put(propertyName, propertyInfo);
         } else {
-            log.warn(String.format(
-                    "Schemas '%s' and '%s' both have a property '%s', unqualified reference will use schema '%1$s'",
+            log.info(String.format(
+                    "Schemas '%s' and '%s' both have a property '%s', "
+                            + "unqualified reference in queries will use schema '%1$s'",
                     previous.fragmentName, fragmentName, propertyName));
         }
     }
@@ -429,7 +431,7 @@ public class Model {
                 // schema with no properties (complex list)
                 continue;
             }
-            for (Map.Entry<String, PropertyInfo> info : infos.entrySet()) {
+            for (Entry<String, PropertyInfo> info : infos.entrySet()) {
                 propertyInfos.put(info.getKey(), info.getValue());
             }
         }
@@ -568,7 +570,7 @@ public class Model {
     }
 
     public boolean isDocumentType(String typeName) {
-        return documentTypes.contains(typeName);
+        return documentTypesFacets.containsKey(typeName);
     }
 
     public String getDocumentSuperType(String typeName) {
@@ -577,6 +579,11 @@ public class Model {
 
     public Set<String> getDocumentSubTypes(String typeName) {
         return documentSubTypes.get(typeName);
+    }
+
+    public Set<String> getDocumentTypeFacets(String typeName) {
+        Set<String> facets = documentTypesFacets.get(typeName);
+        return facets == null ? Collections.<String> emptySet() : facets;
     }
 
     /**
@@ -636,8 +643,9 @@ public class Model {
             log.debug("Fragments for " + typeName + ": " +
                     getTypeFragments(typeName));
 
-            // record doc type, super type, sub types
-            documentTypes.add(typeName);
+            // record doc type and facets, super type, sub types
+            documentTypesFacets.put(typeName, new HashSet<String>(
+                    documentType.getFacets()));
             Type superType = documentType.getSuperType();
             if (superType != null) {
                 String superTypeName = superType.getName();
@@ -645,7 +653,7 @@ public class Model {
             }
         }
         // compute subtypes for all types
-        for (String type : documentTypes) {
+        for (String type : documentTypesFacets.keySet()) {
             String superType = type;
             do {
                 Set<String> subTypes = documentSubTypes.get(superType);
@@ -767,11 +775,10 @@ public class Model {
             return schemaFragment.get(typeName); // may be null
         }
 
-        /** Initialized if this type has a table associated. */
-        String thisFragmentName = null;
-
         log.debug("Making model for type " + typeName);
 
+        /** Initialized if this type has a table associated. */
+        String thisFragmentName = null;
         for (Field field : complexType.getFields()) {
             Type fieldType = field.getType();
             if (fieldType.isComplexType()) {

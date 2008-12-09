@@ -241,8 +241,7 @@ class FileManager {
 
     protected static String toHexString(byte[] data) {
         StringBuilder buf = new StringBuilder(2 * data.length);
-        for (int i = 0; i < data.length; i++) {
-            byte b = data[i];
+        for (byte b : data) {
             buf.append(HEX_DIGITS[(0xF0 & b) >> 4]);
             buf.append(HEX_DIGITS[0x0F & b]);
         }
@@ -261,4 +260,5 @@ class FileManager {
         dir.mkdirs();
         return new File(dir, digest);
     }
+
 }

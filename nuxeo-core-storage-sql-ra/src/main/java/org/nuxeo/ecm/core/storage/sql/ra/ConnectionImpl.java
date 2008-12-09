@@ -28,6 +28,7 @@ import javax.resource.cci.Interaction;
 import javax.resource.cci.LocalTransaction;
 import javax.resource.cci.ResultSetInfo;
 
+import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryResult;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -239,8 +240,9 @@ public class ConnectionImpl implements Session {
         return getSession().addProxy(targetId, versionableId, parent, name, pos);
     }
 
-    public List<Serializable> query(SQLQuery query) throws StorageException {
-        return getSession().query(query);
+    public List<Serializable> query(SQLQuery query, QueryFilter queryFilter)
+            throws StorageException {
+        return getSession().query(query, queryFilter);
     }
 
 }
