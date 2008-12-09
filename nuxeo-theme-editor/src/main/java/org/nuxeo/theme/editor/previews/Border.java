@@ -17,8 +17,8 @@ package org.nuxeo.theme.editor.previews;
 public class Border implements Preview {
 
     public String render(final String value, final String content) {
-        return String.format("<div style=\"border:%s; margin: 7px\">%s</div>", value,
-                content);
+        return String.format("%s <div style=\"border:%s; margin: 7px\"></div>", content,
+                value);
     }
 
 }

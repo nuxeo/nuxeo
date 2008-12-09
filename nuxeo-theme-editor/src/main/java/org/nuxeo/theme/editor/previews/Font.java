@@ -17,7 +17,7 @@ package org.nuxeo.theme.editor.previews;
 public class Font implements Preview {
 
     public String render(final String value, final String content) {
-        return String.format("<div style=\"font:%s\">%s</div>", value, content);
+        return String.format("%s <div style=\"font:%s\">ABC abc 123</div>", content, value);
     }
 
 }
