@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.wiki.relation;
+package org.nuxeo.ecm.webengine.util;
 
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;

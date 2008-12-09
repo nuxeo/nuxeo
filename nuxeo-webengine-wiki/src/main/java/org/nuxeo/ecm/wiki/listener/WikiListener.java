@@ -40,9 +40,10 @@ import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.LiteralImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
+import org.nuxeo.ecm.webengine.util.RelationConstants;
+import org.nuxeo.ecm.webengine.util.RelationHelper;
 import org.nuxeo.ecm.wiki.WikiTypes;
-import org.nuxeo.ecm.wiki.relation.RelationConstants;
-import org.nuxeo.ecm.wiki.relation.RelationHelper;
+import org.nuxeo.ecm.wiki.relation.WikiRelationHelper;
 
 public class WikiListener extends AbstractEventListener implements AsynchronousEventListener {
 
@@ -109,7 +110,7 @@ public class WikiListener extends AbstractEventListener implements AsynchronousE
             final String type = doc.getType();
             String eventId = coreEvent.getEventId();
             if (WikiTypes.WIKIPAGE.equals(type) && DOCUMENT_UPDATED.equals(eventId)) {
-                RelationHelper.updateRelations(doc);
+                WikiRelationHelper.updateRelations(doc);
             }
         }
     }

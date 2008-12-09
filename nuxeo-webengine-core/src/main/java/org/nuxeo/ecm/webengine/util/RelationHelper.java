@@ -1,23 +1,4 @@
-/*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
- */
-
-package org.nuxeo.ecm.wiki.relation;
+package org.nuxeo.ecm.webengine.util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -37,7 +18,6 @@ import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.LiteralImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
-import org.nuxeo.ecm.wiki.listener.WikiHelper;
 import org.nuxeo.runtime.api.Framework;
 
 public class RelationHelper {
@@ -73,6 +53,7 @@ public class RelationHelper {
         return documentResource;
     }
 
+
     /**
      * Returns the document model corresponding to a relation node.
      */
@@ -90,6 +71,9 @@ public class RelationHelper {
         }
         return null;
     }
+
+
+
 
     public static DocumentModelList getDocumentsWithLinksTo(String pageName, String sessionId) {
         try {
@@ -164,35 +148,7 @@ public class RelationHelper {
         return null;
     }
 
-    // this will update links graph
-    // TODO optimize this!
-    // keep old statements
-    public static void updateRelations(DocumentModel doc) {
-        List<String> list = WikiHelper.getWordLinks(doc);
-        List<Statement> stmts = getStatementsWithLinksFrom(doc);
-        try {
-            // remove old links
-            RelationManager rm = getRelationManager();
-            if (stmts != null) {
-                rm.remove(RelationConstants.GRAPH_NAME, stmts);
-                stmts.clear();
-            } else {
-                stmts = new ArrayList<Statement>();
-            }
 
-            // add new links
-            if (list != null) {
-                QNameResource docResource = getDocumentResource(doc);
-                for (String word : list) {
-                    Statement stmt = new StatementImpl(
-                            docResource, RelationConstants.HAS_LINK_TO, new LiteralImpl(word));
-                    stmts.add(stmt);
-                }
-                rm.add(RelationConstants.GRAPH_NAME, stmts);
-            }
-        } catch (ClientException e) {
-            e.printStackTrace();
-        }
-    }
+
 
 }
