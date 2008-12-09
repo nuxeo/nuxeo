@@ -42,8 +42,8 @@
            rendered="#{not empty row.data.lock}"/>
         <nxu:graphicImage
           value="#{nxd:iconPath(row.data)}" alt="#{row.data.type}" 
-          title="#{row.data.file.filename} #{nxu:test((row.data.type == 'File'), '[', '')} #{nxu:test((row.data.type == 'File'), nxu:printFileSize(row.data.file.content.length), '')} #{nxu:test((row.data.type == 'File'), ']', '')}">
-       </nxu:graphicImage></div></div>
+          title="#{nxd:fileDescription(currentDocument, 'file:content', 'file:filename')}"  />
+        </div></div>
         <script type="text/javascript">
           <h:outputText
             value="new Draggable('docRef:#{row.data.ref}', {revert:true});"/>

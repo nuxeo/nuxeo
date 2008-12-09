@@ -379,6 +379,38 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return null;
     }
 
+    public static String fileDescription(DocumentModel document,
+            String blobPropertyName, String filePropertyName) {
+        String fileInfo = "";
+        if (document != null) {
+            Long blobLength = null;
+            try {
+                Blob blob = (Blob) document.getPropertyValue(blobPropertyName);
+                if (blob != null) {
+                    blobLength = blob.getLength();
+                }
+            } catch (ClientException e) {
+                // no prop by that name with that type
+            }
+            String filename = null;
+            try {
+                filename = (String) document.getPropertyValue(filePropertyName);
+            } catch (ClientException e) {
+                // no prop by that name with that type
+            }
+            if (blobLength != null && filename != null) {
+                fileInfo = String.format("%s [%s]", filename,
+                        Functions.printFileSize(String.valueOf(blobLength)));
+            } else if (blobLength != null) {
+                fileInfo = String.format("[%s]",
+                        Functions.printFileSize(String.valueOf(blobLength)));
+            } else if (filename != null) {
+                fileInfo = filename;
+            }
+        }
+        return fileInfo;
+    }
+
     /**
      * Convenient method to get the REST URL of a blob inside the
      * <code>Files</code> schema.
