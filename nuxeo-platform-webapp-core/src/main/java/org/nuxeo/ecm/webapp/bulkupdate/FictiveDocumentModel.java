@@ -31,6 +31,7 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DataModelMap;
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -150,12 +151,20 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
 
     public Map<String, Object> getProperties(String schemaName) {
         DataModel dm = getDataModel(schemaName);
-        return dm == null ? null : dm.getMap();
+        try {
+            return dm == null ? null : dm.getMap();
+        } catch (PropertyException e) {
+            return null;
+        }
     }
 
     public Object getProperty(String schemaName, String name) {
         DataModel dm = getDataModel(schemaName);
-        return dm == null ? null : dm.getData(name);
+        try {
+            return dm == null ? null : dm.getData(name);
+        } catch (PropertyException e) {
+            return null;
+        }
     }
 
     public String getTitle() {
@@ -216,11 +225,19 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
     }
 
     public void setProperties(String schemaName, Map<String, Object> data) {
-        getDataModel(schemaName, true).setMap(data);
+        try {
+            getDataModel(schemaName, true).setMap(data);
+        } catch (PropertyException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public void setProperty(String schemaName, String name, Object value) {
-        getDataModel(schemaName, true).setData(name, value);
+        try {
+            getDataModel(schemaName, true).setData(name, value);
+        } catch (PropertyException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public void unlock() throws ClientException {

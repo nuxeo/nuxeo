@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -217,8 +218,13 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         assertEquals("5", entry.getProperty("schema3", "uid"));
         assertEquals("foo5", entry.getProperty("schema3", "thefoo"));
         assertEquals("bar5", entry.getProperty("schema3", "thebar"));
-        assertNull(entry.getProperty("schema3", "xyz"));
-
+        boolean exceptionThrown = false;
+        try {
+            entry.getProperty("schema3", "xyz");
+        } catch (ClientException ce) {
+            exceptionThrown = true;
+        }
+        assertTrue(exceptionThrown);
         // check underlying directories
         assertNotNull(dir1.getEntry("5"));
         assertEquals("foo5", dir1.getEntry("5").getProperty("schema1", "foo"));

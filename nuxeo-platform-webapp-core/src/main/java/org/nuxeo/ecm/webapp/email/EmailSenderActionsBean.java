@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -131,7 +132,11 @@ public class EmailSenderActionsBean extends InputController implements
             NuxeoPrincipal currentUser = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
             // XXX hack, principals have only one model
             DataModel dm = currentUser.getModel().getDataModels().values().iterator().next();
-            fromEmail = (String) dm.getData(NuxeoPrincipalImpl.EMAIL_COLUMN); // XXX
+            try {
+                fromEmail = (String) dm.getData(NuxeoPrincipalImpl.EMAIL_COLUMN);
+            } catch (PropertyException e1) {
+                fromEmail = null;
+            } // XXX
             List<NuxeoPrincipal> listEmails = new ArrayList<NuxeoPrincipal>();
             for (String user : principalListManager.getSelectedUsers()) {
                 try {

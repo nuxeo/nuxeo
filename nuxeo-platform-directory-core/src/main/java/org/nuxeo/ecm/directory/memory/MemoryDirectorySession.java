@@ -36,6 +36,8 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 
@@ -144,12 +146,20 @@ public class MemoryDirectorySession implements Session {
         }
 
         for (String fieldName : directory.schemaSet) {
-            if (!dataModel.isDirty(fieldName)
-                    || fieldName.equals(directory.idField)) {
+            try {
+                if (!dataModel.isDirty(fieldName)
+                        || fieldName.equals(directory.idField)) {
+                    continue;
+                }
+            } catch (PropertyNotFoundException e) {
                 continue;
             }
             // TODO references
-            map.put(fieldName, dataModel.getData(fieldName));
+            try {
+                map.put(fieldName, dataModel.getData(fieldName));
+            } catch (PropertyException e) {
+                throw new ClientRuntimeException(e);
+            }
         }
         dataModel.getDirtyFields().clear();
     }

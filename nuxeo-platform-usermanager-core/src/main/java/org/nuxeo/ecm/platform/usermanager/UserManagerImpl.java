@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -46,6 +47,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -106,7 +108,7 @@ public class UserManagerImpl implements UserManager {
 
     private VirtualUser anonymousUser;
 
-    private Map<String, VirtualUserDescriptor> virtualUsers;
+    private final Map<String, VirtualUserDescriptor> virtualUsers;
 
     public UserManagerImpl() {
         dirService = Framework.getLocalService(DirectoryService.class);
@@ -347,8 +349,16 @@ public class UserManagerImpl implements UserManager {
         userEntry.addDataModel(new DataModelImpl(userSchemaName,
                 Collections.<String, Object> emptyMap()));
         for (Map.Entry<String, Serializable> prop : user.getProperties().entrySet()) {
-            userEntry.setProperty(userSchemaName, prop.getKey(),
-                    prop.getValue());
+            try {
+                userEntry.setProperty(userSchemaName, prop.getKey(),
+                        prop.getValue());
+            } catch (ClientException ce) {
+                log.error(
+                        "Property: "
+                                + prop.getKey()
+                                + " does not exists. Check your UserService configuration.",
+                        ce);
+            }
         }
         userEntry.setProperty(userSchemaName,
                 NuxeoPrincipalImpl.USERNAME_COLUMN, id);
@@ -529,8 +539,8 @@ public class UserManagerImpl implements UserManager {
         NuxeoGroup group = new NuxeoGroupImpl(groupEntry.getId());
         List<String> list;
         try {
-            list = (List<String>) groupEntry.getProperty(
-                    groupSchemaName, groupMembersField);
+            list = (List<String>) groupEntry.getProperty(groupSchemaName,
+                    groupMembersField);
         } catch (ClientException e) {
             list = null;
         }
@@ -875,8 +885,14 @@ public class UserManagerImpl implements UserManager {
             // XXX hack, principals have only one model
             DataModel m1 = p1.getModel().getDataModels().values().iterator().next();
             DataModel m2 = p1.getModel().getDataModels().values().iterator().next();
-            String s1 = (String) m1.getData(fieldName);
-            String s2 = (String) m2.getData(fieldName);
+            String s1 = null;
+            String s2 = null;
+            try {
+                s1 = (String) m1.getData(fieldName);
+                s2 = (String) m2.getData(fieldName);
+            } catch (PropertyException e) {
+                throw new ClientRuntimeException(e);
+            }
             if (s1 == null && s2 != null) {
                 return -1;
             } else if (s1 != null && s2 == null) {

@@ -42,12 +42,14 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
 import org.nuxeo.ecm.directory.Directory;
@@ -99,7 +101,7 @@ public class SQLSession implements Session, EntrySource {
 
     Connection sqlConnection;
 
-    private boolean managedSQLSession;
+    private final boolean managedSQLSession;
 
     private final Dialect dialect;
 
@@ -131,7 +133,11 @@ public class SQLSession implements Session, EntrySource {
         String id = String.valueOf(fieldMap.get(idField));
         DocumentModelImpl docModel = new DocumentModelImpl(sid, schemaName, id,
                 null, null, null, new String[] { schemaName }, null);
-        dataModel.setMap(fieldMap);
+        try {
+            dataModel.setMap(fieldMap);
+        } catch (PropertyException e) {
+            throw new ClientRuntimeException(e);
+        }
         docModel.addDataModel(dataModel);
 
         return docModel;

@@ -52,12 +52,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
@@ -580,7 +582,11 @@ public class LDAPSession implements Session, EntrySource {
         String id = String.valueOf(fieldMap.get(getIdField()));
         DocumentModelImpl docModel = new DocumentModelImpl(sid, schemaName, id,
                 null, null, null, new String[] { schemaName }, null);
-        dataModel.setMap(fieldMap);
+        try {
+            dataModel.setMap(fieldMap);
+        } catch (PropertyException e) {
+            throw new ClientRuntimeException(e);
+        }
         docModel.addDataModel(dataModel);
 
         return docModel;

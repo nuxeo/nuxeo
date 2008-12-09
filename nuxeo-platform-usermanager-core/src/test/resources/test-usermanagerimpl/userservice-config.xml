@@ -37,7 +37,7 @@
       <defaultAdministratorId>tehroot</defaultAdministratorId>
       <defaultGroup>defgr</defaultGroup>
       <userListingMode>search_only</userListingMode>
-      <userSortField>name</userSortField>
+      <userSortField>username</userSortField>
       <groupSortField>sn</groupSortField>
     </userManager>
   </extension>

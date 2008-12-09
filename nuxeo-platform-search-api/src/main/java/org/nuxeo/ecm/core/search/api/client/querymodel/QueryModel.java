@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.search.api.client.SearchException;
@@ -84,8 +85,12 @@ public class QueryModel implements Serializable {
 
         if (documentModel != null) {
             for (DataModel dm : documentModel.getDataModels().values()) {
-                defaultValues.put(dm.getSchema(), new HashMap<String, Object>(
-                        dm.getMap()));
+                try {
+                    defaultValues.put(dm.getSchema(), new HashMap<String, Object>(
+                            dm.getMap()));
+                } catch (PropertyException e) {
+                    continue;
+                }
             }
         }
 
@@ -113,10 +118,6 @@ public class QueryModel implements Serializable {
     public DocumentModelList getDocuments(Object[] params)
             throws ClientException, QueryException {
         return getResultsProvider(params).getCurrentPage();
-    }
-
-    private SearchPrincipal getSearchPrincipal() {
-        return principal;
     }
 
     private void lookupSearchService() {
