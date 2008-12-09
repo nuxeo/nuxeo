@@ -107,8 +107,15 @@ public class DocumentModelComparator implements Sorter {
             for (Entry<String, String> e : orderBy.entrySet()) {
                 final String fieldName = e.getKey();
                 final boolean asc = ORDER_ASC.equals(e.getValue());
-                final Object v1 = d1.getData(fieldName);
-                final Object v2 = d2.getData(fieldName);
+                Object v1;
+                Object v2;
+                try {
+                    v1 = d1.getData(fieldName);
+                    v2 = d2.getData(fieldName);
+
+                } catch (PropertyException e1) {
+                    throw new ClientRuntimeException(e1);
+                }
                 cmp = compare(v1, v2, asc);
                 if (cmp != 0) {
                     break;

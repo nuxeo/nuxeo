@@ -1418,8 +1418,8 @@ public abstract class TestAPI extends TestConnection {
         remote.checkIn(childFile.getRef(), version);
 
         childFile.setProperty("file", "filename", "second name");
-        childFile.setProperty("common", "title", "f1");
-        childFile.setProperty("common", "description", "desc 1");
+        childFile.setProperty("dublincore", "title", "f1");
+        childFile.setProperty("dublincore", "description", "desc 1");
         version = new VersionModelImpl();
         version.setLabel("v2");
 
@@ -1848,8 +1848,10 @@ public abstract class TestAPI extends TestConnection {
         // create a proxy in folder2
         DocumentModel proxy = remote.createProxy(folder2.getRef(),
                 file.getRef(), version, true);
+        String f = proxy.getTitle();
         assertTrue(proxy.isProxy());
-
+        remote.saveDocument(proxy);
+        remote.save();
         // copy proxy into folder3
         DocumentModel copy1 = remote.copyProxyAsDocument(proxy.getRef(),
                 folder3.getRef(), null);

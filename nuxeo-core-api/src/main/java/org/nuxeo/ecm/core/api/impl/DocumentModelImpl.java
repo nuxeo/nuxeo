@@ -41,6 +41,7 @@ import org.nuxeo.common.utils.Null;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -875,12 +876,21 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         DataModel dm = new DataModelImpl(schema.getName());
         for (Field field : schema.getFields()) {
             String key = field.getName().getLocalName();
-            Object value = data.getData(key);
+            Object value;
+            try {
+                value = data.getData(key);
+            } catch (PropertyException e1) {
+                continue;
+            }
             if (value == null) {
                 continue;
             }
             Object clone = cloneField(field, key, value);
-            dm.setData(key, clone);
+            try {
+                dm.setData(key, clone);
+            } catch (PropertyException e) {
+                throw new ClientRuntimeException(e);
+            }
         }
         return dm;
     }
@@ -1147,7 +1157,12 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         for (Map.Entry<String, DataModel> entry : dataModels.entrySet()) {
             String key = entry.getKey();
             DataModel data = entry.getValue();
-            DataModelImpl newData = new DataModelImpl(key, data.getMap());
+            DataModelImpl newData;
+            try {
+                newData = new DataModelImpl(key, data.getMap());
+            } catch (PropertyException e) {
+                throw new ClientRuntimeException(e);
+            }
             dm.dataModels.put(key, newData);
         }
         return dm;
