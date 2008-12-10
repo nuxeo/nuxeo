@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.ui.web.shield;
+package org.nuxeo.ecm.platform.web.common.exceptionhandling;
 
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 

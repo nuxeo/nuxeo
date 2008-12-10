@@ -24,11 +24,11 @@ import static javax.faces.event.PhaseId.RENDER_RESPONSE;
 
 import java.io.IOException;
 
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,10 +37,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.contexts.FacesLifecycle;
 import org.jboss.seam.transaction.Transaction;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
-import org.nuxeo.ecm.platform.ui.web.shield.ErrorPageForwarder;
-import org.nuxeo.ecm.platform.ui.web.shield.ExceptionHelper;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoExceptionFilter;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionHandler;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -67,7 +67,6 @@ public class RestfulPhaseListener implements PhaseListener {
         return service;
     }
 
-
     public PhaseId getPhaseId() {
         return RENDER_RESPONSE;
     }
@@ -77,7 +76,12 @@ public class RestfulPhaseListener implements PhaseListener {
         FacesContext context = event.getFacesContext();
         HttpServletRequest httpRequest = (HttpServletRequest) context.getExternalContext().getRequest();
         try {
-            URLPolicyService service = getURLPolicyService();
+            URLPolicyService service;
+            try {
+                service = getURLPolicyService();
+            } catch (Exception e) {
+                throw new ClientRuntimeException(e);
+            }
             if (service.isCandidateForDecoding(httpRequest)) {
                 // restore state
                 service.navigate(context);
@@ -87,12 +91,6 @@ public class RestfulPhaseListener implements PhaseListener {
             }
         } catch (Exception e) {
             FacesLifecycle.setPhaseId(INVOKE_APPLICATION); // XXX Hack !
-            Throwable unwrappedException = NuxeoExceptionFilter.unwrapException(e);
-            String userMessage = NuxeoExceptionFilter.getMessageForException(unwrappedException);
-            String exceptionMessage = unwrappedException.getLocalizedMessage();
-            HttpServletResponse httpResponse = (HttpServletResponse) context.getExternalContext().getResponse();
-            httpRequest.setAttribute("applicationException", null);
-            // Do the rollback
             try {
                 if (Transaction.instance().isMarkedRollback()) {
                     Transaction.instance().rollback();
@@ -103,21 +101,22 @@ public class RestfulPhaseListener implements PhaseListener {
             }
 
             try {
-                ErrorPageForwarder forwarder = new ErrorPageForwarder();
-                forwarder.forwardToErrorPage(httpRequest,
-                        httpResponse, e,
-                        exceptionMessage, userMessage,
-                        ExceptionHelper.isSecurityError(e), (ServletContext)FacesContext.getCurrentInstance().getExternalContext().getContext());
-
-                FacesLifecycle.endRequest(context.getExternalContext());
-                context.responseComplete();
-                return;
+                ExternalContext externalContext = context.getExternalContext();
+                ExceptionHandlingService exceptionHandlingService;
+                try {
+                    exceptionHandlingService = Framework.getService(ExceptionHandlingService.class);
+                } catch (Exception e1) {
+                    //hopeless
+                    throw new ClientRuntimeException(e1);
+                }
+                NuxeoExceptionHandler handler = exceptionHandlingService.getExceptionHandler();
+                handler.handleException(
+                        (HttpServletRequest) externalContext.getRequest(),
+                        (HttpServletResponse) externalContext.getResponse(), e);
             } catch (ServletException e1) {
-                log.error("Error During redirect in PhaseListener : "
-                        + e1.getMessage());
+                throw new ClientRuntimeException(e1);
             } catch (IOException e1) {
-                log.error("Error During redirect in PhaseListener : "
-                        + e1.getMessage());
+                throw new ClientRuntimeException(e1);
             }
         }
     }
