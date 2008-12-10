@@ -65,6 +65,12 @@
       </class>
     </standalone-filter>
 
+    <standalone-filter name="control fragment visibility" template-engine="freemarker">
+      <class>
+        org.nuxeo.theme.html.filters.standalone.FragmentVisibility
+      </class>
+    </standalone-filter>       
+
   </extension>
   
 
@@ -213,6 +219,8 @@
       </negotiation>
     
     </application>
+    
+    <!-- For testing: to move to the web application -->
     
     <!-- Jetty server -->
     <application root="/" template-engine="freemarker">

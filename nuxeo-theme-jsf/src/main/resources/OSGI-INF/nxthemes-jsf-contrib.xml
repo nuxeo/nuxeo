@@ -93,6 +93,18 @@
       </class>
     </standalone-filter>
 
+    <standalone-filter name="collect xmlns" template-engine="jsf-facelets">
+      <class>
+        org.nuxeo.theme.html.filters.standalone.XmlNamespaces
+      </class>
+    </standalone-filter>
+
+    <standalone-filter name="control fragment visibility" template-engine="jsf-facelets">
+      <class>
+        org.nuxeo.theme.html.filters.standalone.FragmentVisibility
+      </class>
+    </standalone-filter>    
+
   </extension>
 
   <extension target="org.nuxeo.theme.services.ThemeService"
