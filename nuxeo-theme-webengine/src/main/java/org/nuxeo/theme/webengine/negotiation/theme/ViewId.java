@@ -27,28 +27,31 @@ public final class ViewId implements Scheme {
 
     public String getOutcome(final Object context) {
         WebContext webContext = (WebContext) context;
-        final String viewId = webContext.getMethod();
-        
-        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         final String applicationPath = webContext.getModulePath();
+        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         final ApplicationType application = (ApplicationType) typeRegistry.lookup(
                 TypeFamily.APPLICATION, applicationPath);
         if (application == null) {
             return null;
         }
-
-        final ViewDef view = application.getViewById(viewId);
-        if (view == null) {
-            return null;
-        }
-
-        final String path = view.getTheme();
-        if (path == null) {
-            return null;
-        }
-        final PageElement page = Manager.getThemeManager().getPageByPath(path);
-        if (page != null) {
-            return path;
+        for (String path : webContext.getUriInfo().getMatchedURIs()) {
+            if (path.equals(applicationPath)) {
+                return null;
+            }
+            final String viewId = path.substring(applicationPath.length() + 1,
+                    path.length());
+            final ViewDef view = application.getViewById(viewId);
+            if (view == null) {
+                continue;
+            }
+            final String themePath = view.getTheme();
+            if (themePath == null) {
+                continue;
+            }
+            final PageElement page = Manager.getThemeManager().getPageByPath(themePath);
+            if (page != null) {
+                return themePath;
+            }
         }
         return null;
     }

@@ -26,28 +26,30 @@ public final class ViewId implements Scheme {
 
     public String getOutcome(final Object context) {
         WebContext webContext = (WebContext) context;
-        final String viewId = webContext.getMethod();
-
-        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         final String applicationPath = webContext.getModulePath();
+        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         final ApplicationType application = (ApplicationType) typeRegistry.lookup(
                 TypeFamily.APPLICATION, applicationPath);
         if (application == null) {
             return null;
         }
-
-        final ViewDef view = application.getViewById(viewId);
-        if (view == null) {
-            return null;
-        }
-
-        final String engineName = view.getEngine();
-        if (engineName == null) {
-            return null;
-        }
-
-        if (Manager.getTypeRegistry().lookup(TypeFamily.ENGINE, engineName) != null) {
-            return engineName;
+        for (String path : webContext.getUriInfo().getMatchedURIs()) {
+            if (path.equals(applicationPath)) {
+                return null;
+            }
+            final String viewId = path.substring(applicationPath.length() + 1,
+                    path.length());
+            final ViewDef view = application.getViewById(viewId);
+            if (view == null) {
+                continue;
+            }
+            final String engineName = view.getEngine();
+            if (engineName == null) {
+                continue;
+            }
+            if (Manager.getTypeRegistry().lookup(TypeFamily.ENGINE, engineName) != null) {
+                return engineName;
+            }
         }
         return null;
     }
