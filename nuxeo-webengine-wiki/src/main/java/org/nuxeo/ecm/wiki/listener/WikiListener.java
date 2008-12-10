@@ -43,9 +43,10 @@ import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.webengine.util.RelationConstants;
 import org.nuxeo.ecm.webengine.util.RelationHelper;
 import org.nuxeo.ecm.wiki.WikiTypes;
+import org.nuxeo.ecm.wiki.relation.WikiRelationConstants;
 import org.nuxeo.ecm.wiki.relation.WikiRelationHelper;
 
-public class WikiListener extends AbstractEventListener implements AsynchronousEventListener {
+public class WikiListener extends AbstractEventListener implements AsynchronousEventListener, WikiRelationConstants {
 
     private static final Log log = LogFactory.getLog(WikiListener.class);
 
@@ -66,29 +67,27 @@ public class WikiListener extends AbstractEventListener implements AsynchronousE
         Resource res3 = RelationHelper.getDocumentResource(doc3);
 
         List<Statement> stmts = new ArrayList<Statement>();
-        Statement stmt = new StatementImpl(res1,
-                RelationConstants.HAS_LINK_TO, res2);
+        Statement stmt = new StatementImpl(res1, HAS_LINK_TO, res2);
         stmts.add(stmt);
-        stmt = new StatementImpl(res1,
-                RelationConstants.HAS_LINK_TO, res3);
+        stmt = new StatementImpl(res1, HAS_LINK_TO, res3);
         stmts.add(stmt);
 
 
         stmt = new StatementImpl(res1,
-                RelationConstants.HAS_LINK_TO, new LiteralImpl("mumu"));
+                WikiRelationConstants.HAS_LINK_TO, new LiteralImpl("mumu"));
         stmts.add(stmt);
 
         relationManager.add(RelationConstants.GRAPH_NAME, stmts);
 
         // retrieve
 
-        DocumentModelList list = RelationHelper.getDocumentsWithLinksTo(doc2);
+        DocumentModelList list = RelationHelper.getSubjectDocuments(HAS_LINK_TO, doc2);
 
 //        System.out.println("debug");
-        DocumentModelList list2 = RelationHelper.getDocumentsWithLinksFrom(doc1);
+        DocumentModelList list2 = RelationHelper.getObjectDocuments(doc1, HAS_LINK_TO);
 //        System.out.println("debug");
 
-        DocumentModelList list3 = RelationHelper.getDocumentsWithLinksTo("mumu", doc1.getSessionId());
+        DocumentModelList list3 = RelationHelper.getSubjectDocuments(HAS_LINK_TO, "mumu", doc1.getSessionId());
         System.out.println();
 
     }

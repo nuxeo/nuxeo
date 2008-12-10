@@ -14,13 +14,14 @@ import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
+import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.LiteralImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.runtime.api.Framework;
 
-public class RelationHelper {
+public class RelationHelper implements RelationConstants{
 
     static RelationManager relationManager;
 
@@ -73,12 +74,10 @@ public class RelationHelper {
     }
 
 
-
-
-    public static DocumentModelList getDocumentsWithLinksTo(String pageName, String sessionId) {
+    public static DocumentModelList getSubjectDocuments(Resource predicat, String stringObject, String sessionId) {
         try {
-            Literal literal = new LiteralImpl(pageName);
-            Statement pattern = new StatementImpl(null, RelationConstants.HAS_LINK_TO, literal);
+            Literal literal = new LiteralImpl(stringObject);
+            Statement pattern = new StatementImpl(null, predicat, literal);
             List<Statement> stmts = relationManager.getStatements(RelationConstants.GRAPH_NAME, pattern);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
@@ -96,15 +95,15 @@ public class RelationHelper {
         return null;
     }
 
-    public static DocumentModelList getDocumentsWithLinksTo(DocumentModel doc) {
+    public static DocumentModelList getSubjectDocuments(Resource predicat, DocumentModel objectDocument) {
         try {
-            QNameResource docResource = getDocumentResource(doc);
-            Statement pattern = new StatementImpl(null, RelationConstants.HAS_LINK_TO, docResource);
+            QNameResource docResource = getDocumentResource(objectDocument);
+            Statement pattern = new StatementImpl(null, predicat, docResource);
             List<Statement> stmts = relationManager.getStatements(RelationConstants.GRAPH_NAME, pattern);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
-                    DocumentModel d = getDocumentModel(stmt.getSubject(), doc.getSessionId());
+                    DocumentModel d = getDocumentModel(stmt.getSubject(), objectDocument.getSessionId());
                     if (d != null) {
                         docs.add(d);
                     }
@@ -117,13 +116,13 @@ public class RelationHelper {
         return null;
     }
 
-    public static DocumentModelList getDocumentsWithLinksFrom(DocumentModel doc) {
+    public static DocumentModelList getObjectDocuments(DocumentModel subjectDoc,  Resource predicat ) {
         try {
-            List<Statement> stmts = getStatementsWithLinksFrom(doc);
+            List<Statement> stmts = getStatements(subjectDoc, predicat);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
-                    DocumentModel d = getDocumentModel(stmt.getObject(), doc.getSessionId());
+                    DocumentModel d = getDocumentModel(stmt.getObject(), subjectDoc.getSessionId());
                     if (d != null) {
                         docs.add(d);
                     }
@@ -136,11 +135,11 @@ public class RelationHelper {
         return null;
     }
 
-    public static List<Statement> getStatementsWithLinksFrom(DocumentModel doc) {
+    public static List<Statement> getStatements(DocumentModel subjectDoc, Resource predicat) {
         try {
-            QNameResource docResource = getDocumentResource(doc);
+            QNameResource docResource = getDocumentResource(subjectDoc);
             Statement pattern = new StatementImpl(
-                    docResource, RelationConstants.HAS_LINK_TO, null);
+                    docResource, predicat, null);
             return relationManager.getStatements(RelationConstants.GRAPH_NAME, pattern);
         } catch (ClientException e) {
             e.printStackTrace();
@@ -149,6 +148,19 @@ public class RelationHelper {
     }
 
 
-
+    public static void removeRelation(DocumentModel subjectDoc, Resource predicat, DocumentModel objectDoc){
+        QNameResource subject = null;
+        QNameResource object = null;
+        try {
+            subject = getDocumentResource(subjectDoc);
+            object = getDocumentResource(objectDoc);
+            List<Statement> stmts = new ArrayList<Statement>();
+            Statement stmt = new StatementImpl(subject, predicat, object);
+            stmts.add(stmt);
+            getRelationManager().remove(GRAPH_NAME, stmts);
+        } catch (ClientException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

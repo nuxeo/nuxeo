@@ -48,30 +48,37 @@ public class JSonHelper {
         return getChildrenList(doc).toString();
     }
 
-    public static JSONArray getChildrenList(DocumentModel doc) {
+
+    public static JSONArray asJSON(DocumentModelList docList)  {
         JSONArray list  = new JSONArray();
-        if( doc == null ){
-            return list;
-        }
-        CoreSession session = CoreInstance.getInstance().getSession(doc.getSessionId());
-        try {
-            DocumentModelList docs = session.getChildren(doc.getRef());
-            for ( DocumentModel d : docs) {
+        if ( docList != null) {
+            for ( DocumentModel d : docList) {
                 JSONObject o = new JSONObject();
                 o.put("id", d.getId());
                 o.put("name", d.getName());
                 o.put("path", d.getPathAsString());
                 o.put("type", d.getType());
-                o.put("title", d.getTitle());
+                try {
+                    o.put("title", d.getTitle());
+                } catch (ClientException e) {
+                    o.put("title", d.getName());
+                }
                 o.put("isFolderish", d.hasFacet("Folderish"));
                 list.add(o);
-
             }
+        }
+        return list;
+    }
+
+    public static JSONArray getChildrenList(DocumentModel doc) {
+        CoreSession session = CoreInstance.getInstance().getSession(doc.getSessionId());
+        try {
+            DocumentModelList docs = session.getChildren(doc.getRef());
+            return asJSON(docs);
         } catch (ClientException e) {
             e.printStackTrace();
         }
-
-        return list;
+        return null;
     }
 
 
@@ -119,17 +126,17 @@ public class JSonHelper {
 
 
 
-//    public static DocumentModel fromJSon(JSONObject obj) {
-//        String id = obj.getString("id");
-//        String type = obj.getString("type");
-//        String name = obj.getString("name");
-//        String path = obj.getString("path");
-//        String parentPath = new Path(path).removeLastSegments(1).toString();
-//        DocumentModelImpl doc = new DocumentModelImpl(String sid, String type, String id, Path path,
-//                String lock, DocumentRef docRef, DocumentRef parentRef,
-//                String[] schemas, Set<String> facets, String sourceId,
-//                String repositoryName);
-//        return doc;
-//    }
+//  public static DocumentModel fromJSon(JSONObject obj) {
+//  String id = obj.getString("id");
+//  String type = obj.getString("type");
+//  String name = obj.getString("name");
+//  String path = obj.getString("path");
+//  String parentPath = new Path(path).removeLastSegments(1).toString();
+//  DocumentModelImpl doc = new DocumentModelImpl(String sid, String type, String id, Path path,
+//  String lock, DocumentRef docRef, DocumentRef parentRef,
+//  String[] schemas, Set<String> facets, String sourceId,
+//  String repositoryName);
+//  return doc;
+//  }
 
 }
