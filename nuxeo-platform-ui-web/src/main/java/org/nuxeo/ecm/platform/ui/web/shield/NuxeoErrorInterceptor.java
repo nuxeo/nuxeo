@@ -40,6 +40,7 @@ import org.jboss.seam.transaction.Transaction;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 
 /**
  * Error handling interceptor.

@@ -22,27 +22,6 @@
   <!-- AT: mixing filters and mappings for clarity, does not change
     resulting web.xml file -->
 
-
-  <!-- comment that to disable exception filter -->
-  <extension target="web#EXCEPTION-FILTER">
-
-    <filter>
-      <display-name>Nuxeo Exception Filter</display-name>
-      <filter-name>NuxeoExceptionFilter</filter-name>
-      <filter-class>
-        org.nuxeo.ecm.platform.ui.web.shield.NuxeoExceptionFilter
-      </filter-class>
-    </filter>
-
-    <filter-mapping>
-      <filter-name>NuxeoExceptionFilter</filter-name>
-      <url-pattern>/*</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
-
-  </extension>
-
   <extension target="web#STD-AUTH-FILTER">
 
     <!-- auth filter configuration, filter is defined in web-common -->
