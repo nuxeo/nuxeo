@@ -27,24 +27,27 @@ public final class ViewId implements Scheme {
 
     public String getOutcome(final Object context) {
         WebContext webContext = (WebContext) context;
-        final String viewId = webContext.getMethod();
-        
-        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         final String applicationPath = webContext.getModulePath();
+        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         final ApplicationType application = (ApplicationType) typeRegistry.lookup(
                 TypeFamily.APPLICATION, applicationPath);
         if (application == null) {
             return null;
         }
-
-        final ViewDef view = application.getViewById(viewId);
-        if (view == null) {
-            return null;
-        }
-
-        final String perspectiveName = view.getPerspective();
-        if (PerspectiveManager.hasPerspective(perspectiveName)) {
-            return perspectiveName;
+        for (String path : webContext.getUriInfo().getMatchedURIs()) {
+            if (path.equals(applicationPath)) {
+                return null;
+            }
+            final String viewId = path.substring(applicationPath.length() + 1,
+                    path.length());
+            final ViewDef view = application.getViewById(viewId);
+            if (view == null) {
+                continue;
+            }
+            final String perspectiveName = view.getPerspective();
+            if (PerspectiveManager.hasPerspective(perspectiveName)) {
+                return perspectiveName;
+            }
         }
         return null;
     }
