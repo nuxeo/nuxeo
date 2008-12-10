@@ -31,7 +31,7 @@ public class WikiEntityUtil {
 
         public final String fWikiSymbol;
 
-        public Entity(String wikiSymbol, String htmlSymbol, int htmlCode) {
+        private Entity(String wikiSymbol, String htmlSymbol, int htmlCode) {
             fWikiSymbol = wikiSymbol;
             fHtmlSymbol = htmlSymbol;
             fHtmlCode = htmlCode;

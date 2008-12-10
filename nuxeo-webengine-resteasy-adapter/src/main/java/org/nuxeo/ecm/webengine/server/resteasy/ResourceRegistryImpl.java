@@ -126,9 +126,8 @@ public class ResourceRegistryImpl implements ResourceRegistry {
     }
 
     public void clearRegistrations() {
-        Field f;
         try {
-            f = registry.getClass().getDeclaredField("rootSegment");
+            Field f = registry.getClass().getDeclaredField("rootSegment");
             if (!f.isAccessible()) {
                 f.setAccessible(true);
             }
@@ -169,8 +168,8 @@ public class ResourceRegistryImpl implements ResourceRegistry {
         if (path == null || path.length() == 0) {
             path = "/";
         }
-        String name = null;
         synchronized (lazyModules) {
+            String name = null;
             for (int i=0,len=lazyModules.size(); i<len; i+=2) {
                 String p = lazyModules.get(i);
                 if (path.startsWith(p)) { // lazy loading works only on paths without regexp

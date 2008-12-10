@@ -152,7 +152,6 @@ public class WebException extends WebApplicationException {
         return wrap(null, e);
     }
 
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
     public static WebException wrap(String message, Throwable e) {
         //TODO add EJBAccessException dependency
         if (e instanceof DocumentSecurityException

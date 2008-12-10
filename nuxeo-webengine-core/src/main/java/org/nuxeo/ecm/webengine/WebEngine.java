@@ -498,28 +498,28 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         if (name.startsWith(".") || name.endsWith("~") || parentName.equals("i18n")) {
             return;
         } else if (name.equals("i18n") && parentName.equals("WEB-INF")) {
-            log.info("File changed: "+entry.file);
+            log.info("File changed: " + entry.file);
             messages = new Messages(null, this);
         } else if (type == DELETED || type == CREATED) {
             if (entry.file.getParentFile().equals(root)) {
-                log.info("File changed: "+entry.file);
+                log.info("File changed: " + entry.file);
                 reload();
             } else {
                 Module module = getModuleFromPath(rootPath, path);
                 if (module != null) {
-                    log.info("File changed: "+entry.file);
+                    log.info("File changed: " + entry.file);
                     if (path.indexOf("/skin/", 0) > 0) {
-                        ((ModuleImpl)module).flushSkinCache();
+                        ((ModuleImpl) module).flushSkinCache();
                     } else if (name.equals("i18n")) {
-                        ((ModuleImpl)module).reloadMessages();
+                        ((ModuleImpl) module).reloadMessages();
                     } else { // not a skin may be a type
                         //module.flushCache();
-                        ((ModuleImpl)module).flushTypeCache();
+                        ((ModuleImpl) module).flushTypeCache();
                     }
                 }
             }
         } else if (name.equals("module.xml") || name.equals("Main.groovy")) {
-            log.info("File changed: "+entry.file);
+            log.info("File changed: " + entry.file);
             reload();
         }
         lastMessagesUpdate = now;

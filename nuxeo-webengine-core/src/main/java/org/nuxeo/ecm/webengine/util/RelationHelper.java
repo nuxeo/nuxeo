@@ -147,13 +147,10 @@ public class RelationHelper implements RelationConstants{
         return null;
     }
 
-
     public static void removeRelation(DocumentModel subjectDoc, Resource predicat, DocumentModel objectDoc){
-        QNameResource subject = null;
-        QNameResource object = null;
         try {
-            subject = getDocumentResource(subjectDoc);
-            object = getDocumentResource(objectDoc);
+            QNameResource subject = getDocumentResource(subjectDoc);
+            QNameResource object = getDocumentResource(objectDoc);
             List<Statement> stmts = new ArrayList<Statement>();
             Statement stmt = new StatementImpl(subject, predicat, object);
             stmts.add(stmt);

@@ -52,7 +52,6 @@ public class DirectoryContentProvider implements ContentProvider {
         query.put("parent", id);
     }
 
-
     public Object[] getElements(Object input) {
         if (input instanceof Directory) {
             return getChildren(null);
@@ -100,4 +99,5 @@ public class DirectoryContentProvider implements ContentProvider {
     public String[] getFacets(Object object) {
         return null;
     }
+
 }
