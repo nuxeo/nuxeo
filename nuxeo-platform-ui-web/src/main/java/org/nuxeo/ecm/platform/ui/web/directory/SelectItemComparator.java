@@ -34,8 +34,11 @@ public class SelectItemComparator implements Comparator<SelectItem>,
 
     private final String ordering;
 
-    public SelectItemComparator(String ordering) {
+    private final boolean caseSensitive;
+
+    public SelectItemComparator(String ordering, boolean caseSensitive) {
         this.ordering = ordering;
+        this.caseSensitive = caseSensitive;
     }
 
     protected int compare(String item1, String item2) {
@@ -52,10 +55,23 @@ public class SelectItemComparator implements Comparator<SelectItem>,
 
     public int compare(SelectItem item1, SelectItem item2) {
         if (ordering.equals("label")) {
-            return compare(item1.getLabel(), item2.getLabel());
+            String label1 = item1.getLabel();
+            String label2 = item2.getLabel();
+
+            if (caseSensitive) {
+                return compare(label1, label2);
+            } else {
+                return compare(label1.toLowerCase(), label2.toLowerCase());
+            }
         } else if (ordering.equals("id")) {
-            return compare(String.valueOf(item1.getValue()),
-                    String.valueOf(item2.getValue()));
+            String value1 = String.valueOf(item1.getValue());
+            String value2 = String.valueOf(item2.getValue());
+
+            if (caseSensitive) {
+                return compare(value1, value2);
+            } else {
+                return compare(value1.toLowerCase(), value2.toLowerCase());
+            }
         } else {
             throw new RuntimeException("invalid sort criteria");
         }
