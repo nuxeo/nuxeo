@@ -72,6 +72,7 @@ public class DummyRenderingInfo extends RenderingInfo {
         return ThemeManager.getEngineByUrl(themeUrl);
     }
 
+    @Override
     public String getViewMode() {
         return ThemeManager.getViewModeByUrl(themeUrl);
     }
