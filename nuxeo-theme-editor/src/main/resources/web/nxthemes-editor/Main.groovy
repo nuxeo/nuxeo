@@ -442,7 +442,7 @@ public class Main extends DefaultModule {
   public void updateElementPadding(@QueryParam("property_map") String property_map) {
       Map propertyMap = JSONObject.fromObject(property_map)
       Element element = getSelectedElement()
-      Editor.updateElementPadding(element, propertyMap)
+      Editor.updateElementLayout(element, propertyMap)
   }
   
   @GET @POST
