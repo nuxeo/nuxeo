@@ -27,12 +27,16 @@ import java.util.Set;
 
 import org.nuxeo.runtime.contribution.Contribution;
 import org.nuxeo.runtime.contribution.ContributionRegistry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class ContributionImpl<K, T> implements Contribution<K, T> {
+
+    private static final Log log = LogFactory.getLog(ContributionImpl.class);
 
     protected final AbstractContributionRegistry<K, T> registry;
     protected final K primaryKey;
@@ -178,7 +182,7 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
             value = result;
             return result;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
             return null; //TODO
         }
     }

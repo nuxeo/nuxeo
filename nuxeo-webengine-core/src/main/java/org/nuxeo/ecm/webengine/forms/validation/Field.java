@@ -29,6 +29,8 @@ import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -36,6 +38,8 @@ import org.w3c.dom.NodeList;
  */
 @XObject(value = "field", order = {"@type"})
 public class Field {
+
+    private static final Log log = LogFactory.getLog(AbstractStatus.class);
 
     @XNode("@id") protected String id;
     @XNode("label") protected String label;
@@ -67,14 +71,13 @@ public class Field {
                 root = top;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 
     protected Constraint root;
 
     public Field() {
-
     }
 
     public Field(TypeHandler handler, Constraint root) {
@@ -82,116 +85,66 @@ public class Field {
         this.handler = handler;
     }
 
-    /**
-     * @return the handler.
-     */
     public TypeHandler getHandler() {
         return handler;
     }
 
-    /**
-     * @return the id.
-     */
     public String getId() {
         return id;
     }
 
-    /**
-     * @return the form.
-     */
     public Form getForm() {
         return form;
     }
 
-
-    /**
-     * @return the maxCount.
-     */
     public int getMaxCount() {
         return maxCount;
     }
 
-    /**
-     * @return the maxLength.
-     */
     public int getMaxLength() {
         return maxLength;
     }
 
-    /**
-     * @return the minLength.
-     */
     public int getMinLength() {
         return minLength;
     }
 
-    /**
-     * @return the minCount.
-     */
     public int getMinCount() {
         return minCount;
     }
 
-    /**
-     * @param maxCount the maxCount to set.
-     */
     public void setMaxCount(int maxCount) {
         this.maxCount = maxCount;
     }
 
-    /*
-    /**
-     * @param maxLength the maxLength to set.
-     */
     public void setMaxLength(int maxLength) {
         this.maxLength = maxLength;
     }
 
-    /**
-     * @param handler the handler to set.
-     */
     public void setHandler(TypeHandler handler) {
         this.handler = handler;
     }
 
-    /**
-     * @param minCount the minCount to set.
-     */
     public void setMinCount(int minCount) {
         this.minCount = minCount;
     }
 
-    /**
-     * @param minLength the minLength to set.
-     */
     public void setMinLength(int minLength) {
         this.minLength = minLength;
     }
 
-    /**
-     * @return the label.
-     */
     public String getLabel() {
         return label;
     }
 
-    /**
-     * @param label the label to set.
-     */
     public void setLabel(String label) {
         this.label = label;
     }
 
-    /**
-     * @param required the required to set.
-     */
     public void setRequired(boolean required) {
         this.required = required;
     }
 
-    /**
-     * @return the required.
-     */
     public boolean isRequired() {
         return required;
     }
@@ -268,7 +221,7 @@ public class Field {
             Node ref = attrs.getNamedItem("ref");
             if (ref != null) {
                 if (constraint instanceof SimpleConstraint) {
-                    SimpleConstraint sc = (SimpleConstraint)constraint;
+                    SimpleConstraint sc = (SimpleConstraint) constraint;
                     sc.setRef(ref.getNodeValue());
                     Node index = attrs.getNamedItem("index");
                     if (index != null) {
@@ -276,7 +229,8 @@ public class Field {
                         sc.setIndex(i);
                     }
                 } else {
-                    throw new IllegalArgumentException("Constraint "+name+" doesn't support 'ref' attribute");
+                    throw new IllegalArgumentException(
+                            "Constraint " + name + " doesn't support 'ref' attribute");
                 }
             } else {
                 String value = body.getTextContent();
@@ -289,7 +243,5 @@ public class Field {
     public Constraint getConstraints() {
         return root;
     }
-
-
 
 }

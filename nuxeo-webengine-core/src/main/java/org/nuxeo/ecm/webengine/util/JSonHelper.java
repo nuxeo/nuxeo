@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.webengine.WebException;
 
 /**
@@ -48,11 +49,10 @@ public class JSonHelper {
         return getChildrenList(doc).toString();
     }
 
-
     public static JSONArray asJSON(DocumentModelList docList)  {
         JSONArray list  = new JSONArray();
-        if ( docList != null) {
-            for ( DocumentModel d : docList) {
+        if (docList != null) {
+            for (DocumentModel d : docList) {
                 JSONObject o = new JSONObject();
                 o.put("id", d.getId());
                 o.put("name", d.getName());
@@ -80,7 +80,6 @@ public class JSonHelper {
         }
         return null;
     }
-
 
     public static String toJSon(DocumentModel doc, String ... schemas) {
         return doc2JSon(doc).toString();
@@ -116,15 +115,14 @@ public class JSonHelper {
                 }
             }
             return obj;
-        } catch (Exception e) {
-            throw new WebException("Failed to export documnt as json: "
+        } catch (PropertyException e) {
+            throw new WebException("Failed to export document as json: "
+                    + doc.getPath(), e);
+        } catch (ClientException e) {
+            throw new WebException("Failed to export document as json: "
                     + doc.getPath(), e);
         }
     }
-
-
-
-
 
 //  public static DocumentModel fromJSon(JSONObject obj) {
 //  String id = obj.getString("id");

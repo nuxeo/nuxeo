@@ -44,7 +44,7 @@ public abstract class AbstractContributionRegistry<K, T> implements
     protected final List<AbstractContributionRegistry<K, T>> listeners;
 
     protected AbstractContributionRegistry() {
-        this (null);
+        this(null);
     }
 
     protected AbstractContributionRegistry(AbstractContributionRegistry<K,T> parent) {

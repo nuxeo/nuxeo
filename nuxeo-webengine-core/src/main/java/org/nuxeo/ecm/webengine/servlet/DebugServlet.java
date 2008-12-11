@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.webengine.servlet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.IOException;
 import java.lang.reflect.Proxy;
 
@@ -39,6 +42,8 @@ import javax.servlet.http.HttpServletResponse;
  * @author <a href="mailto:bs@nuxeo.com">Stefanescu Bogdan</a>
  */
 public class DebugServlet extends HttpServlet {
+
+    private static final Log log = LogFactory.getLog(DebugServlet.class);
 
     private static final long serialVersionUID = 4235895566712482208L;
 

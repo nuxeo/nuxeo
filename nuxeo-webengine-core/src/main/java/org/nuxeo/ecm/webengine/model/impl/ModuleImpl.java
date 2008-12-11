@@ -189,7 +189,7 @@ public class ModuleImpl extends AbstractModule {
                 try {
                     in.close();
                 } catch (IOException ee) {
-                    ee.printStackTrace();
+                    log.error(ee);
                 }
             }
         }

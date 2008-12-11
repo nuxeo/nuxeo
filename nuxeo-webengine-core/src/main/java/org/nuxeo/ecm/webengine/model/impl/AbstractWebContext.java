@@ -168,10 +168,10 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
-    public String getMessageL(String key, String language, String ... args) {
+    public String getMessageL(String key, String locale, String ... args) {
         Messages messages = module.getMessages();
         try {
-            String msg = messages.getString(key, language);
+            String msg = messages.getString(key, locale);
             if (args != null && args.length > 0) { // format the string using given args
                 msg = MessageFormat.format(msg, (Object[]) args);
             }
@@ -306,9 +306,9 @@ public abstract class AbstractWebContext implements WebContext {
         }
         buf.append(path).append(request.getServletPath());
 
-        path = request.getPathInfo();
-        if (path != null) {
-            buf.append(path);
+        String pathInfo = request.getPathInfo();
+        if (pathInfo != null) {
+            buf.append(pathInfo);
         }
         return buf.toString();
     }
@@ -460,7 +460,6 @@ public abstract class AbstractWebContext implements WebContext {
             pushScriptFile(script.getFile());
             engine.getRendering().render(template, bindings, writer);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new WebException("Failed to render template: "
                     + (script == null ? script : script.getAbsolutePath()), e);
         } finally {
@@ -490,7 +489,6 @@ public abstract class AbstractWebContext implements WebContext {
         } catch (WebException e) {
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new WebException("Failed to run script "+script, e);
         } finally {
             if (!scriptExecutionStack.isEmpty()) {

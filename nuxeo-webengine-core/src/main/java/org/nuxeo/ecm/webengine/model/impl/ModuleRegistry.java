@@ -27,6 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -34,6 +36,8 @@ import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
  */
 public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleDescriptor> {
 
+    private static final Log log = LogFactory.getLog(ModuleRegistry.class);
+    
     // used only to have a list of lazy modules
     protected final Map<String, String> lazyModules = new Hashtable<String, String>();
     protected final Map<String, Module> modules = new ConcurrentHashMap<String, Module>();
@@ -97,7 +101,7 @@ public class ModuleRegistry extends AbstractContributionRegistry<String, ModuleD
                 moduleRoots.put(object.directory.getName(), app);
             }
         } catch (Exception e) {
-            e.printStackTrace(); //TODO
+            log.error(e); //TODO
         }
     }
 

@@ -29,10 +29,10 @@ public class WebSecurityException extends WebException {
 
     private static final long serialVersionUID = 1L;
 
-    protected String action;
+    protected final String action;
 
     public WebSecurityException(String message) {
-        super(message);
+        this(message, "");
     }
 
     public WebSecurityException(String message, String action) {
@@ -42,15 +42,11 @@ public class WebSecurityException extends WebException {
 
     public WebSecurityException(String message, String action, Throwable cause) {
         super(message, cause);
-        this.action =action;
+        this.action = action;
     }
 
     public WebSecurityException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public void setAction(String action) {
-        this.action = action;
+        this(message, "", cause);
     }
 
     public String getAction() {

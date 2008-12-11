@@ -24,6 +24,8 @@ import org.nuxeo.ecm.webengine.forms.FormInstance;
 import org.nuxeo.ecm.webengine.forms.validation.Field;
 import org.nuxeo.ecm.webengine.forms.validation.Status;
 import org.nuxeo.ecm.webengine.forms.validation.TypeException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -31,6 +33,8 @@ import org.nuxeo.ecm.webengine.forms.validation.TypeException;
  *
  */
 public abstract class SimpleConstraint extends AbstractConstraint {
+
+    private static final Log log = LogFactory.getLog(SimpleConstraint.class);
 
     // reference another field
     protected String ref;
@@ -64,7 +68,7 @@ public abstract class SimpleConstraint extends AbstractConstraint {
                 decodedValue = field.decode(value);
             } catch (TypeException e) {
                 throw new IllegalArgumentException("constraint for "+field.getId()
-                        +" must have a value of type "+field.getHandler().getType()+" but is "+value);
+                        +" must have a value of type "+field.getHandler().getType()+" but is "+value, e);
             }
             doInit(field, value, decodedValue);
         } // else the constraint value is a reference to another field
@@ -86,7 +90,7 @@ public abstract class SimpleConstraint extends AbstractConstraint {
                 decodedValue = field.decode(againstValue);
             } catch (TypeException e) {
                 throw new IllegalArgumentException("constraint for "+field.getId()
-                        +" must have a value of type "+field.getHandler().getType()+" but is "+value);
+                        +" must have a value of type "+field.getHandler().getType()+" but is "+value, e);
             }
             sc.doInit(field, againstValue, decodedValue);
             return sc.doValidate(form, field, rawValue, value);
@@ -107,7 +111,7 @@ public abstract class SimpleConstraint extends AbstractConstraint {
             Object obj = values[index];
             return obj != null ? obj.toString() : null;
         } catch (WebException e) {
-            e.printStackTrace();
+            log.error(e);
         }
         return null;
     }

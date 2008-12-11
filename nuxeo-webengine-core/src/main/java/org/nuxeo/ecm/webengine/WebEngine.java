@@ -234,7 +234,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
                 try {
                     in.close();
                 } catch (IOException ee) {
-                    ee.printStackTrace();
+                    log.error(ee);
                 }
             }
         }
@@ -329,11 +329,10 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
                     preloadModule(file);
                 }
             } catch (Exception e) {
-                e.printStackTrace(); // TODO log
+                log.error(e);
             }
         }
     }
-
 
     /**
      * Loads a module given its annotated class.
@@ -352,7 +351,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
             }
             return ad;
         } catch (ClassNotFoundException e) {
-            e.printStackTrace(); //TODO log
+            log.error(e);
             // do nothing
         }
         return null;
@@ -376,7 +375,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
             }
             return md;
         } catch (Exception e) {
-            e.printStackTrace(); // TODO log exception
+            log.error(e);
         }
         return null;
     }

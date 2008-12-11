@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -47,6 +49,8 @@ import org.nuxeo.runtime.model.Adaptable;
  */
 @XObject("module")
 public class ModuleDescriptor implements Cloneable {
+
+    private static final Log log = LogFactory.getLog(ModuleDescriptor.class);
 
     /**
      * The application directory.
@@ -76,14 +80,14 @@ public class ModuleDescriptor implements Cloneable {
     public List<LinkDescriptor> links;
 
     @XNodeMap(value="validators/validator", key="@type", type=HashedMap.class, componentType=Class.class, nullByDefault=true )
-    public void setValidators(Map<String, Class<Validator>> m){
-        if ( m != null ) {
-            validators = new HashMap<String , Validator>();
-            for ( Map.Entry<String, Class<Validator>> entry : m.entrySet()){
+    public void setValidators(Map<String, Class<Validator>> m) {
+        if (m != null) {
+            validators = new HashMap<String, Validator>();
+            for (Map.Entry<String, Class<Validator>> entry : m.entrySet()) {
                 try {
                     validators.put(entry.getKey(), entry.getValue().newInstance());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error(e);
                 }
             }
         }
@@ -117,7 +121,7 @@ public class ModuleDescriptor implements Cloneable {
             try {
                 guard = guardDescriptor != null? guardDescriptor.getGuard() : Guard.DEFAULT;
             } catch (ParseException e) {
-                e.printStackTrace();
+                log.error(e);
                 return null;
             }
         }

@@ -51,7 +51,8 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
     }
 
     /**
-     * Get the path info to be used to redirect after login
+     * Gets the path info to be used to redirect after login.
+     *
      * @param request
      * @return
      */
@@ -130,7 +131,7 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
                 response.sendRedirect(path+"?failed=true");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
             return false;
         }
         return true;
@@ -151,7 +152,7 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
                 response.sendRedirect(path);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
             return false;
         }
         return true;

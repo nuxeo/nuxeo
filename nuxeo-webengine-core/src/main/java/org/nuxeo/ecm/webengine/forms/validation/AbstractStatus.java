@@ -24,12 +24,16 @@ import net.sf.json.JSONObject;
 
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormInstance;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public abstract class AbstractStatus implements Status {
+
+    private static final Log log = LogFactory.getLog(AbstractStatus.class);
 
     protected String field;
     protected String message;
@@ -61,7 +65,7 @@ public abstract class AbstractStatus implements Status {
                 //TODO: handle multi values?
                 return String.format(msg, val[0]);
             } catch (WebException e) {
-                e.printStackTrace();
+                log.error(e);
             }
         }
         return getMessage();
