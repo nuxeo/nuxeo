@@ -39,5 +39,4 @@
       class="org.nuxeo.ecm.platform.commandline.executor.service.CommandTesterDescriptor" />
   </extension-point>
 
-
 </component>

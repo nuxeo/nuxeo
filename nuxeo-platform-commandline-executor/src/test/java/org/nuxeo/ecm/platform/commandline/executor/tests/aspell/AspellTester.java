@@ -1,18 +1,3 @@
-package org.nuxeo.ecm.platform.commandline.executor.tests.aspell;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.util.List;
-
-import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
-import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
-
 /*
  * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
@@ -33,11 +18,23 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  *
  */
 
+package org.nuxeo.ecm.platform.commandline.executor.tests.aspell;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.util.List;
+
+import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
+
 /**
- *
  * Test Aspell command line
- *
- *
  */
 public class AspellTester extends NXRuntimeTestCase {
 
@@ -55,7 +52,7 @@ public class AspellTester extends NXRuntimeTestCase {
                 .getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
-        CommandAvailability ca =  cles.getCommandAvailability("aspell");
+        CommandAvailability ca = cles.getCommandAvailability("aspell");
 
         if (!ca.isAvailable()) {
             System.out.println("Aspell is not avalaible, skipping test");
@@ -76,10 +73,10 @@ public class AspellTester extends NXRuntimeTestCase {
 
         params.addNamedParameter("textFile", file2Check);
 
-        ExecResult result =  cles.execCommand("aspell", params);
+        ExecResult result = cles.execCommand("aspell", params);
 
         assertTrue(result.isSuccessful());
-        assertTrue(result.getReturnCode()==0);
+        assertSame(0, result.getReturnCode());
 
         List<String> lines = result.getOutput();
 
@@ -88,20 +85,20 @@ public class AspellTester extends NXRuntimeTestCase {
         assertTrue(checkOutput(lines));
 
         params.addNamedParameter("textFile", "");
-        result =  cles.execCommand("aspell", params);
+        result = cles.execCommand("aspell", params);
         assertFalse(result.isSuccessful());
-        assertTrue(result.getReturnCode()!=0);
+        assertNotSame(0, result.getReturnCode());
         System.out.println(result.getOutput());
-
 
     }
 
     protected boolean checkOutput(List<String> lines) {
-        for (String line:lines) {
+        for (String line : lines) {
             if (line.contains("& teste 10 10")) {
                 return true;
             }
         }
         return false;
     }
+
 }

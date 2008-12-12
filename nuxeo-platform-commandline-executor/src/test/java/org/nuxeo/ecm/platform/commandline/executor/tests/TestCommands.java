@@ -19,6 +19,7 @@
  */
 
 package org.nuxeo.ecm.platform.commandline.executor.tests;
+
 import java.io.File;
 import java.util.List;
 
@@ -35,14 +36,11 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * Tests commands parsing
  *
  * @author tiry
- *
  */
 public class TestCommands extends NXRuntimeTestCase {
 
-
     @Override
-    public void setUp() throws Exception
-    {
+    public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
 
@@ -52,7 +50,7 @@ public class TestCommands extends NXRuntimeTestCase {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
-        deployContrib("org.nuxeo.ecm.platform.commandline.executor","OSGI-INF/commandline-aspell-test-contribs.xml");
+        deployContrib("org.nuxeo.ecm.platform.commandline.executor", "OSGI-INF/commandline-aspell-test-contribs.xml");
         List<String> cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
         assertEquals(1, cmds.size());
@@ -67,21 +65,19 @@ public class TestCommands extends NXRuntimeTestCase {
         File textFile = File.createTempFile("testMe", "txt");
         String textFilePath = "/tmp/textMe.txt";
 
-
         CmdParameters params = new CmdParameters();
         params.addNamedParameter("lang", "fr_FR");
         params.addNamedParameter("encoding", "utf-8");
 
         // test String params
-        params.addNamedParameter("textFile",textFilePath);
+        params.addNamedParameter("textFile", textFilePath);
         String parsedParamString = AbstractExecutor.getParametersString(cmdDesc, params);
         assertEquals("-a --lang=fr_FR --encoding=utf-8 -H --rem-sgml-check=alt < /tmp/textMe.txt", parsedParamString);
 
         // test with File param
-        params.addNamedParameter("textFile",textFile);
+        params.addNamedParameter("textFile", textFile);
         parsedParamString = AbstractExecutor.getParametersString(cmdDesc, params);
-        assertTrue( parsedParamString.startsWith("-a --lang=fr_FR --encoding=utf-8 -H --rem-sgml-check=alt < "));
-
+        assertTrue(parsedParamString.startsWith("-a --lang=fr_FR --encoding=utf-8 -H --rem-sgml-check=alt < "));
     }
 
 }

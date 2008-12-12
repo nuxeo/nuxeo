@@ -32,10 +32,8 @@ import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor
  * Simple check for the target command in the system path.
  *
  * @author tiry
- *
  */
-public class SystemPathExistTester implements CommandTester{
-
+public class SystemPathExistTester implements CommandTester {
 
     public SystemPathExistTester() {
         // NOP
@@ -48,15 +46,11 @@ public class SystemPathExistTester implements CommandTester{
     }
 
     public CommandTestResult test(CommandLineDescriptor cmdDescriptor) {
-
         String cmd = cmdDescriptor.getCommand();
-
         if (new File(cmd).exists()) {
             return new CommandTestResult();
         }
-
         for (String path : getSystemPaths()) {
-
             String cmdPath = new Path(path).append(cmd).toString();
             if (new File(cmdPath).exists()) {
                 return new CommandTestResult();
@@ -64,4 +58,5 @@ public class SystemPathExistTester implements CommandTester{
         }
         return new CommandTestResult("command " + cmd + " not found in system path");
     }
+
 }

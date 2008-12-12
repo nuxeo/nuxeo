@@ -45,10 +45,16 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * handles the Extension Point logic.
  *
  * @author tiry
- *
  */
 public class CommandLineExecutorComponent extends DefaultComponent implements
         CommandLineExecutorService {
+
+    public static final String EP_ENV = "environment";
+    public static final String EP_CMD = "command";
+    public static final String EP_CMDTESTER = "commandTester";
+
+    public static final String DEFAULT_TESTER = "SystemPathTester";
+    public static final String DEFAULT_EXECUTOR = "ShellExecutor";
 
     protected static Map<String, CommandLineDescriptor> commandDescriptors = new HashMap<String, CommandLineDescriptor>();
 
@@ -60,13 +66,6 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
 
     private static final Log log = LogFactory
             .getLog(CommandLineExecutorComponent.class);
-
-    public final static String EP_ENV = "environment";
-    public final static String EP_CMD = "command";
-    public final static String EP_CMDTESTER = "commandTester";
-
-    public final static String DEFAULT_TESTER = "SystemPathTester";
-    public final static String DEFAULT_EXECUTOR = "ShellExecutor";
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -142,11 +141,11 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
             throws Exception {
     }
 
-    /** Service interface * */
-
+    /*
+     * Service interface *
+     */
     public ExecResult execCommand(String commandName, CmdParameters params)
             throws CommandNotAvailable {
-
         CommandAvailability availability = getCommandAvailability(commandName);
         if (!availability.isAvailable()) {
             throw new CommandNotAvailable(availability);
@@ -160,7 +159,6 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
     }
 
     public CommandAvailability getCommandAvailability(String commandName) {
-
         if (!commandDescriptors.containsKey(commandName)) {
             return new CommandAvailability(commandName
                     + " is not a registred command");
@@ -199,4 +197,5 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
     public static CommandLineDescriptor getCommandDescriptor(String commandName) {
         return commandDescriptors.get(commandName);
     }
+
 }

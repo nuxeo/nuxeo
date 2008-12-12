@@ -21,15 +21,13 @@
 package org.nuxeo.ecm.platform.commandline.executor.api;
 
 import java.util.List;
+
 /**
- *
- * Interface for the service that manage commandline execution
+ * Interface for the service that manages commandline execution.
  *
  * @author tiry
- *
  */
 public interface CommandLineExecutorService {
-
 
     CommandAvailability getCommandAvailability(String commandName);
 

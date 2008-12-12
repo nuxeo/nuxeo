@@ -1,16 +1,3 @@
-package org.nuxeo.ecm.platform.commandline.executor.tests.imagemagic;
-
-import java.io.File;
-import java.util.List;
-
-import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
-import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
-
 /*
  * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
@@ -31,13 +18,23 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  *
  */
 
+package org.nuxeo.ecm.platform.commandline.executor.tests.imagemagic;
+
+import java.io.File;
+import java.util.List;
+
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
+
 /**
- *
- *  Test indetify imagemagick commandline
- *
+ * Test indetify imagemagick commandline
  */
 public class ImageMagickTester extends NXRuntimeTestCase {
-
 
     @Override
     public void setUp() throws Exception {
@@ -53,7 +50,7 @@ public class ImageMagickTester extends NXRuntimeTestCase {
                 .getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
-        CommandAvailability ca =  cles.getCommandAvailability("identify");
+        CommandAvailability ca = cles.getCommandAvailability("identify");
 
         if (!ca.isAvailable()) {
             System.out.println("Imagemagick is not avalaible, skipping test");
@@ -65,16 +62,16 @@ public class ImageMagickTester extends NXRuntimeTestCase {
         CmdParameters params = new CmdParameters();
         params.addNamedParameter("filePath", img);
 
-        ExecResult result =  cles.execCommand("identify", params);
+        ExecResult result = cles.execCommand("identify", params);
 
         assertTrue(result.isSuccessful());
-        assertTrue(result.getReturnCode()==0);
+        assertSame(0, result.getReturnCode());
 
         List<String> lines = result.getOutput();
 
         System.out.println(lines);
 
         assertEquals("PNG 48 48", lines.get(0));
-
     }
+
 }

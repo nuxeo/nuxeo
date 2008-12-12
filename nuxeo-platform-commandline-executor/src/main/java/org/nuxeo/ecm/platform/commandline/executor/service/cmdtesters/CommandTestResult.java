@@ -23,31 +23,25 @@ package org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters;
 import java.io.Serializable;
 
 /**
- * Wraps result for a CommandTest execution
+ * Wraps result for a CommandTest execution.
  *
  * @author tiry
- *
  */
 public class CommandTestResult implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
-
-    protected boolean testSucces=false;
+    protected boolean testSucces;
 
     protected String errorMessage;
 
-
     public CommandTestResult() {
-        testSucces=true;
+        testSucces = true;
     }
 
     public CommandTestResult(String error) {
-        errorMessage=error;
-        testSucces=false;
+        errorMessage = error;
+        testSucces = false;
     }
 
     public boolean succeed() {

@@ -35,13 +35,9 @@ import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor
  * Use simple shell exec.
  *
  * @author tiry
- *
  */
 public class ShellExecutor extends AbstractExecutor implements Executor {
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.commandline.executor.service.executors.Executor#exec(org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor, java.lang.String)
-     */
     public ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params) {
 
         long t0 = System.currentTimeMillis();
@@ -52,21 +48,21 @@ public class ShellExecutor extends AbstractExecutor implements Executor {
         String[] cmd = {
                 "/bin/sh",
                 "-c",
-                cmdDesc.getCommand() + " " + paramString + " 2>&1" };
+                cmdDesc.getCommand() + " " + paramString + " 2>&1"};
 
         if (isWindows()) {
             cmd[0] = "cmd";
             cmd[1] = "/C";
         }
 
-        Process p1 = null;
+        Process p1;
         try {
             p1 = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
             return new ExecResult(e);
         }
-        int exitCode = 0;
 
+        int exitCode = 0;
         if (cmdDesc.getReadOutput()) {
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(
                     p1.getInputStream()));
@@ -87,6 +83,7 @@ public class ShellExecutor extends AbstractExecutor implements Executor {
         }
 
         long t1 = System.currentTimeMillis();
-        return new ExecResult(output,t1-t0, exitCode);
+        return new ExecResult(output, t1 - t0, exitCode);
     }
+
 }

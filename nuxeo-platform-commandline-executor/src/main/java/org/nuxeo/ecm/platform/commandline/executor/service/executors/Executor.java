@@ -28,10 +28,9 @@ import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor
  * Interface for class that provide a way to execute a {@link CommandLineDescriptor}
  *
  * @author tiry
- *
  */
 public interface Executor {
 
-    public ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params);
+    ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params);
 
 }

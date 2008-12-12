@@ -24,20 +24,17 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- *
- * Wraps result of the commandline execution :
- *  - output buffer
- *  - return code
- *  - java Exception
+ * Wraps result of the commandline execution:
+ * <ul>
+ * <li>output buffer
+ * <li>return code
+ * <li>java Exception
+ * </ul>
  *
  * @author tiry
- *
  */
 public class ExecResult implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     protected List<String> output;
@@ -53,21 +50,20 @@ public class ExecResult implements Serializable {
     public ExecResult(List<String> output, long execTime, int returnCode) {
         this.execTime = execTime;
         this.output = output;
-        this.success=true;
-        this.error=null;
-        this.returnCode=returnCode;
+        this.returnCode = returnCode;
+        success = true;
+        error = null;
         if (returnCode != 0) {
-            this.success=false;
+            success = false;
         }
     }
 
-    public ExecResult( Exception error) {
-        this.execTime = 0;
-        this.output = null;
-        this.success=false;
-        this.error=error;
+    public ExecResult(Exception error) {
+        this.error = error;
+        execTime = 0;
+        output = null;
+        success = false;
     }
-
 
     public List<String> getOutput() {
         return output;
@@ -88,4 +84,5 @@ public class ExecResult implements Serializable {
     public int getReturnCode() {
         return returnCode;
     }
+
 }

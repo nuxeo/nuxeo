@@ -26,17 +26,11 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
 
 /**
- *
- * Base class for {@link Executor}
+ * Base class for {@link Executor}.
  *
  * @author tiry
- *
  */
 public abstract class AbstractExecutor {
-
-    public AbstractExecutor() {
-        super();
-    }
 
     protected boolean isWindows() {
         String osName = System.getProperty("os.name");
@@ -44,12 +38,11 @@ public abstract class AbstractExecutor {
     }
 
     public static String getParametersString(CommandLineDescriptor cmdDesc, CmdParameters params) {
-
         String paramString = cmdDesc.getParametersString();
         Map<String, String> paramsValues = params.getParameters();
 
         for (String pname : paramsValues.keySet()) {
-            paramString =paramString.replaceAll("\\#\\{" + pname + "\\}", paramsValues.get(pname));
+            paramString = paramString.replaceAll("\\#\\{" + pname + "\\}", paramsValues.get(pname));
         }
         return paramString;
     }

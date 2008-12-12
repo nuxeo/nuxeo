@@ -23,26 +23,23 @@ package org.nuxeo.ecm.platform.commandline.executor.api;
 import java.io.Serializable;
 
 /**
- *
- * Exception indicating that the target command is not available :
- *  - because it was never registred
- *  - becasue it was disabled
- *  - because the target command is not installed on the server *
+ * Exception indicating that the target command is not available:
+ * <ul>
+ * <li>because it was never registred
+ * <li>becasue it was disabled
+ * <li>because the target command is not installed on the server *
+ * </ul>
  *
  * @author tiry
- *
  */
 public class CommandNotAvailable extends Exception implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
-    protected CommandAvailability availability=null;
+    protected CommandAvailability availability;
 
     public CommandNotAvailable(CommandAvailability availability) {
-        this.availability=availability;
+        this.availability = availability;
     }
 
     public String getInstallMessage() {
@@ -52,4 +49,5 @@ public class CommandNotAvailable extends Exception implements Serializable {
     public String getErrorMessage() {
         return availability.getErrorMessage();
     }
+
 }

@@ -25,19 +25,15 @@ import java.io.Serializable;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters.CommandTester;
+
 /**
- *
- * XMap descriptor for a new contributed {@link CommandTester}
+ * XMap descriptor for a new contributed {@link CommandTester}.
  *
  * @author tiry
- *
  */
 @XObject("commandTester")
-public class CommandTesterDescriptor implements Serializable{
+public class CommandTesterDescriptor implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     @XNode("@name")
@@ -47,7 +43,7 @@ public class CommandTesterDescriptor implements Serializable{
     protected Class className;
 
     public String getName() {
-        if (name==null) {
+        if (name == null) {
             return getTesterClass().getName();
         }
         return name;
@@ -56,6 +52,5 @@ public class CommandTesterDescriptor implements Serializable{
     public Class getTesterClass() {
         return className;
     }
-
 
 }

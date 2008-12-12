@@ -23,19 +23,14 @@ package org.nuxeo.ecm.platform.commandline.executor.api;
 import java.io.Serializable;
 
 /**
- *
- * Represent the availability status of a command.
- * If command is not n ot available, {@link CommandAvailability}
+ * Represents the availability status of a command.
+ * If command is not available, {@link CommandAvailability}
  * contains the errorMessage and some installation instructions.
  *
  * @author tiry
- *
  */
 public class CommandAvailability implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
 
@@ -47,18 +42,18 @@ public class CommandAvailability implements Serializable {
 
 
     public CommandAvailability() {
-        available=true;
+        available = true;
     }
 
     public CommandAvailability(String errorMessage) {
-        available=false;
-        this.errorMessage=errorMessage;
+        available = false;
+        this.errorMessage = errorMessage;
     }
 
     public CommandAvailability(String installMessage, String errorMessage) {
-        available=false;
-        this.installMessage=installMessage;
-        this.errorMessage=errorMessage;
+        available = false;
+        this.installMessage = installMessage;
+        this.errorMessage = errorMessage;
     }
 
     public String getInstallMessage() {
@@ -72,6 +67,5 @@ public class CommandAvailability implements Serializable {
     public boolean isAvailable() {
         return available;
     }
-
 
 }

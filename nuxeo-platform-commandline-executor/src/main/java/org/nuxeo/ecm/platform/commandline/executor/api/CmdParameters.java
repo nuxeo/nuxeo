@@ -26,24 +26,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
  * Wraps command parameters (String or File).
  *
  * @author tiry
- *
  */
 public class CmdParameters implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
-
 
     Map<String, String> params;
 
     public CmdParameters() {
-        params= new HashMap<String, String>();
+        params = new HashMap<String, String>();
     }
 
     public void addNamedParameter(String name, String value) {
@@ -57,6 +51,5 @@ public class CmdParameters implements Serializable {
     public Map<String, String> getParameters() {
         return params;
     }
-
 
 }
