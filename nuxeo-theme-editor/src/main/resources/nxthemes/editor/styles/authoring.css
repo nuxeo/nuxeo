@@ -871,11 +871,6 @@ td.nxthemesCellLayout input {
   color: #000;
 }
 
-img.nxthemesAddSection {
-  margin: 15px;
-  cursor: pointer;
-}
-
 div.nxthemesFragment {
   border-style: solid;
   border-width: 1px;
@@ -1211,4 +1206,39 @@ a.editPreset img {
 
 option.locked {
   background:#FFFFFF url(/skin/nxthemes-editor/img/option_lock.png) no-repeat right top;
+}
+
+.nxthemesAlignSection {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.nxthemesAlignSection div {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.nxthemesAlignSection .nxthemesAlignSectionRight {
+  background-image: url(${basePath}/skin/nxthemes-editor/img/align-right-24.png);
+}
+
+.nxthemesAlignSection .nxthemesAlignSectionCenter {
+  background-image: url(${basePath}/skin/nxthemes-editor/img/align-center-24.png);
+}
+
+.nxthemesAlignSection .nxthemesAlignSectionLeft {
+  background-image: url(${basePath}/skin/nxthemes-editor/img/align-left-24.png);
+}
+
+.nxthemesAddSection div {
+  background-image: url(${basePath}/skin/nxthemes-editor/img/add.png);
+  height: 14px;
+  width: 14px;
+  margin-left: 10px;
+  margin-bottom: 20px;
+}
+
+.nxthemesAddSection:hover div {
+  background-image: url(${basePath}/skin/nxthemes-editor/img/add-hover.png);
 }

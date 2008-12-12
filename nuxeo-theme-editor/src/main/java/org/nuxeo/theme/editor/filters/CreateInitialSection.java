@@ -39,13 +39,9 @@ public final class CreateInitialSection extends StandaloneFilter {
         if (element.hasChildren()) {
             return info;
         }
-        html.append("<img class=\"nxthemesAddSection\" src=\"/skin/nxthemes-editor/img/add.png\" ")
-            .append("onmouseover=\"this.src='/skin/nxthemes-editor/img/add-hover.png'\" ")
-            .append("onmouseout=\"this.src='/skin/nxthemes-editor/img/add.png'\" ")
-            .append("sectionid=\"")
-            .append(info.getElement().getUid().toString())
-            .append("\" title=\"Add a section\" />");
-
+        html.append(
+                "<a href=\"javascript:void(0)\" class=\"nxthemesAddSection\" title=\"Add a section\"><div sectionid=\"").append(
+                info.getElement().getUid().toString()).append("\"></div></a>");
         info.setMarkup(html.toString());
         return info;
     }

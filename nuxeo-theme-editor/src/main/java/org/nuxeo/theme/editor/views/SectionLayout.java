@@ -55,24 +55,22 @@ public class SectionLayout extends DefaultLayoutView {
                 layout.getUid().toString()).append("\" /></form>");
         html.append(super.render(info));
 
-        html.append("<div style=\"text-align: center\">");
+        html.append("<table class=\"nxthemesAlignSection\"><tr>");
         html.append(
-                "<img class=\"nxthemesAlignSection\" position=\"left\" src=\"/skin/nxthemes-editor/img/align-left-24.png\" title=\"Left\" sectionid=\"").append(
-                sectionId).append("\" />");
+                "<td><div class=\"nxthemesAlignSectionLeft\" title=\"Left\" sectionid=\"").append(
+                sectionId).append("\"></div></td>");
         html.append(
-                "<img class=\"nxthemesAlignSection\" position=\"center\" src=\"/skin/nxthemes-editor/img/align-center-24.png\" title=\"Center\" sectionid=\"").append(
-                sectionId).append("\" />");
+                "<td><div class=\"nxthemesAlignSectionCenter\" title=\"Center\" sectionid=\"").append(
+                sectionId).append("\" ></div></td>");
         html.append(
-                "<img class=\"nxthemesAlignSection\" position=\"right\" src=\"/skin/nxthemes-editor/img/align-right-24.png\" title=\"Right\" sectionid=\"").append(
-                sectionId).append("\" />");
-        html.append("</div>");
+                "<td><div class=\"nxthemesAlignSectionRight\" title=\"Right\" sectionid=\"").append(
+                sectionId).append("\" ></div></td>");
+        html.append("</tr></table>");
 
         html.append(
-                "<img class=\"nxthemesAddSection\" src=\"/skin/nxthemes-editor/img/add.png\" ").append(
-                "onmouseover=\"this.src='/skin/nxthemes-editor/img/add-hover.png'\" ").append(
-                "onmouseout=\"this.src='/skin/nxthemes-editor/img/add.png'\" ").append(
-                "sectionid=\"").append(sectionId).append(
-                "\" title=\"Add a section\" />");
+                "<a href=\"javascript:void(0)\" class=\"nxthemesAddSection\" title=\"Add a section\"><div sectionid=\"").append(
+                sectionId).append("\" ></div></a>");
+
         html.append("</div>");
         return html.toString();
     }

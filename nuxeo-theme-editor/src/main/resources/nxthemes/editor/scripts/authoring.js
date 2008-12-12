@@ -574,10 +574,9 @@ NXThemesEditor.addSection = function(info) {
     });
 };
 
-NXThemesEditor.alignSection = function(info) {
+NXThemesEditor.alignSection = function(info, position) {
     var target = Event.element(info);
-    var id = target.getAttribute('sectionid');
-    var position = target.getAttribute('position');
+    var id = target.getAttribute('sectionid');;
     var url = nxthemesBasePath + "/nxthemes-editor/align_element?id=" + encodeURIComponent(id) + "&position=" + encodeURIComponent(position); 
     new Ajax.Request(url, {
          method: 'get',
@@ -586,6 +585,19 @@ NXThemesEditor.alignSection = function(info) {
          }
     }); 
 };
+
+NXThemesEditor.alignSectionLeft = function(info) {
+    NXThemesEditor.alignSection(info, "left");
+}
+
+NXThemesEditor.alignSectionCenter = function(info) {
+    NXThemesEditor.alignSection(info, "center");
+}
+
+NXThemesEditor.alignSectionRight = function(info) {
+    NXThemesEditor.alignSection(info, "right");
+}
+
 
 NXThemesEditor.setAreaStyle = function(info) {
     var target = Event.element(info);
@@ -770,7 +782,9 @@ NXThemes.addActions({
     'set canvas mode': NXThemesEditor.setCanvasMode,
     'set size': NXThemesEditor.setSize,
     'add section': NXThemesEditor.addSection,
-    'align section': NXThemesEditor.alignSection,
+    'align section left': NXThemesEditor.alignSectionLeft,
+    'align section center': NXThemesEditor.alignSectionCenter,
+    'align section right': NXThemesEditor.alignSectionRight,        
     'align element': NXThemesEditor.alignElement,
     'split element': NXThemesEditor.splitElement,
     'set element padding': NXThemesEditor.setElementPadding,
