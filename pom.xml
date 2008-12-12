@@ -39,6 +39,7 @@
     <module>nuxeo-platform-cache-jboss</module>
     <module>nuxeo-platform-cache-server</module>
     <module>nuxeo-platform-cache-web</module>
+    <module>nuxeo-platform-commandline-executor</module>
     <module>nuxeo-platform-comment-api</module>
     <module>nuxeo-platform-comment</module>
     <module>nuxeo-platform-comment-web</module>
@@ -293,6 +294,11 @@
         <artifactId>nuxeo-platform-cache-web</artifactId>
         <version>${nuxeo.platform.version}</version>
         <type>ejb</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-commandline-executor</artifactId>
+        <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
