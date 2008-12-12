@@ -32,7 +32,7 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
-import org.nuxeo.ecm.platform.ui.web.auth.NXAuthContants;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -71,7 +71,7 @@ public class AnonymousLoginManager implements Serializable {
             HttpServletRequest request = (HttpServletRequest) req;
             HttpServletResponse response = (HttpServletResponse) resp;
             request.setAttribute(URLPolicyService.DISABLE_REDIRECT_REQUEST_KEY, Boolean.TRUE);
-            response.sendRedirect(BaseURL.getBaseURL(request) + NXAuthContants.LOGOUT_PAGE);
+            response.sendRedirect(BaseURL.getBaseURL(request) + NXAuthConstants.LOGOUT_PAGE);
             context.responseComplete();
         }
         return null;
