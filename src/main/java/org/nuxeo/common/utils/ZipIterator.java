@@ -19,6 +19,9 @@
 
 package org.nuxeo.common.utils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -36,6 +39,8 @@ import java.util.zip.ZipInputStream;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ZipIterator implements Iterator<ZipEntry> {
+
+    private static final Log log = LogFactory.getLog(ZipIterator.class);
 
     private final ZipInputStream zin;
     private final ZipEntryFilter filter;
@@ -101,7 +106,7 @@ public class ZipIterator implements Iterator<ZipEntry> {
         try {
             zentry = getNextEntry();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
             zentry = null;
         }
         return oldEntry;
@@ -115,8 +120,8 @@ public class ZipIterator implements Iterator<ZipEntry> {
         if (zin != null) {
             try {
                 zin.close();
-            } catch (IOException ee) {
-                ee.printStackTrace();
+            } catch (IOException e) {
+                log.error(e);
             }
         }
     }

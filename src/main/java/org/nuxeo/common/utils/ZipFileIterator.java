@@ -19,6 +19,9 @@
 
 package org.nuxeo.common.utils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -36,6 +39,8 @@ import java.util.zip.ZipFile;
  *
  */
 public class ZipFileIterator implements Iterator<ZipEntry> {
+
+    private static final Log log = LogFactory.getLog(ZipFileIterator.class);
 
     private final ZipFile zip;
     private final ZipEntryFilter filter;
@@ -102,7 +107,6 @@ public class ZipFileIterator implements Iterator<ZipEntry> {
         throw new UnsupportedOperationException("remove is not supported by this iterator");
     }
 
-
     public ZipFile getZipFile() {
         return zip;
     }
@@ -111,8 +115,8 @@ public class ZipFileIterator implements Iterator<ZipEntry> {
         if (zip != null) {
             try {
                 zip.close();
-            } catch (IOException ee) {
-                ee.printStackTrace();
+            } catch (IOException e) {
+                log.error(e);
             }
         }
     }

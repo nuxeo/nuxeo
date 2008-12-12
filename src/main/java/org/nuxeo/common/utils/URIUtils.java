@@ -63,8 +63,8 @@ public final class URIUtils {
                         if (value == null) {
                             value = "";
                         }
-                        items.add(String.format("%s=%s", URLEncoder.encode(key,
-                                "UTF-8"), URLEncoder.encode(value, "UTF-8")));
+                        items.add(String.format("%s=%s",
+                                URLEncoder.encode(key, "UTF-8"), URLEncoder.encode(value, "UTF-8")));
                     }
                 }
                 query = StringUtils.join(items, "&");

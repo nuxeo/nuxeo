@@ -27,6 +27,7 @@ import java.util.Properties;
  *
  */
 public class Environment {
+
     // the home directory
     public static final String HOME_DIR = "org.nuxeo.app.home";
     // the web root
@@ -37,7 +38,6 @@ public class Environment {
     public static final String DATA_DIR = "org.nuxeo.app.data";
     // the log dir
     public static final String LOG_DIR = "org.nuxeo.app.log";
-
 
     // the application layout (optional)
     // directory containing nuxeo runtime osgi bundles
