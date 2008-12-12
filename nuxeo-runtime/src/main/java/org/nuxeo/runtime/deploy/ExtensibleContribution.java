@@ -19,7 +19,8 @@
 
 package org.nuxeo.runtime.deploy;
 
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -27,19 +28,21 @@ package org.nuxeo.runtime.deploy;
  */
 public abstract class ExtensibleContribution extends Contribution {
 
+    private static final Log log = LogFactory.getLog(ExtensibleContribution.class);
+
     protected ExtensibleContribution baseContribution;
     protected String baseContributionId;
-
 
     /**
      * Copy this contribution data over the given one.
      * <p>
-     * Warn that the copy must be done deeply - you should clone every element in any collection you have
-     * This is to avoid merging data you copy into the base contribution and breaking subsequent merging operations
+     * Warn that the copy must be done deeply - you should clone every element
+     * in any collection you have.
+     * This is to avoid merging data you copy into the base contribution
+     * and breaking subsequent merging operations.
      * <p>
-     * The baseContributionId and contributionId fields should not be copied since their are copied
-     * by the base classes implementation
-     *
+     * The baseContributionId and contributionId fields should not be copied
+     * since their are copied by the base classes implementation.
      */
     protected abstract void copyOver(ExtensibleContribution contrib);
 
@@ -113,7 +116,7 @@ public abstract class ExtensibleContribution extends Contribution {
             clone.baseContributionId = baseContributionId;
             return clone;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
             throw new CloneNotSupportedException(
                     "Failed to instantiate the contribution class. Contribution classes must have a trivial constructor");
         }

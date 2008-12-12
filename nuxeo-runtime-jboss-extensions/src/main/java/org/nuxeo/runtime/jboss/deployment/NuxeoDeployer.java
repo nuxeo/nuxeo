@@ -46,7 +46,6 @@ import org.nuxeo.runtime.jboss.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.jboss.deployment.preprocessor.FragmentDescriptor;
 import org.nuxeo.runtime.jboss.deployment.preprocessor.FragmentRegistry;
 
-
 /**
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
@@ -88,9 +87,9 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
         setEnhancedSuffixes(DEFAULT_ENHANCED_SUFFIXES);
         // controller = ServiceLocator.getServiceController();
         //we do not use ServiceLocator because of isolation issues
-        controller = (ServiceControllerMBean) MBeanProxyExt
-                .create(ServiceControllerMBean.class,
-                        ServiceControllerMBean.OBJECT_NAME, MBeanServerLocator.locateJBoss());
+        controller = (ServiceControllerMBean) MBeanProxyExt.create(
+                ServiceControllerMBean.class, ServiceControllerMBean.OBJECT_NAME,
+                MBeanServerLocator.locateJBoss());
     }
 
     public void setDebug(boolean value) {

@@ -28,12 +28,16 @@ import java.util.Map;
 
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class ConfigurationDeployer implements FileChangeListener {
+
+    private static final Log log = LogFactory.getLog(ConfigurationDeployer.class);
 
     protected final Map<String, Entry> urls;
     protected final FileChangeNotifier notifier;
@@ -69,7 +73,7 @@ public class ConfigurationDeployer implements FileChangeListener {
                     watchFile = new File(new URI(str));
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e);
                 watchFile = null;
             }
         }

@@ -94,7 +94,6 @@ public class XMLComponentDeployer extends SubDeployerSupport implements XMLCompo
             context.deploy(di.url);
             di.context.put("RUNTIME_CONTEXT", context);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new DeploymentException(e);
         } finally {
             Thread.currentThread().setContextClassLoader(ctxCL);
@@ -112,7 +111,6 @@ public class XMLComponentDeployer extends SubDeployerSupport implements XMLCompo
                 context.destroy();
             }
         } catch (Exception e) {
-            e.printStackTrace();
             throw new DeploymentException(e);
         }
 

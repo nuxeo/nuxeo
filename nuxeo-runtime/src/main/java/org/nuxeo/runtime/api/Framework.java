@@ -29,6 +29,7 @@ import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
+import org.nuxeo.runtime.ServiceManager;
 import org.nuxeo.runtime.api.login.LoginService;
 
 /**
@@ -56,7 +57,7 @@ public final class Framework {
      */
     private static RuntimeService runtime;
 
-    private static org.nuxeo.runtime.ServiceManager serviceMgr;
+    private static ServiceManager serviceMgr;
 
     private static final ListenerList listeners = new ListenerList();
 
@@ -96,10 +97,9 @@ public final class Framework {
             serviceMgr = org.nuxeo.runtime.api.ServiceManager.getInstance();
         } else {
             try {
-                serviceMgr = (org.nuxeo.runtime.ServiceManager) Class.forName(sm).newInstance();
+                serviceMgr = (ServiceManager) Class.forName(sm).newInstance();
             } catch (Exception e) {
-                e.printStackTrace();
-                throw new Error("Failed to initialize service manager");
+                throw new RuntimeException("Failed to initialize service manager", e);
             }
         }
     }

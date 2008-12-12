@@ -37,12 +37,16 @@ import java.util.zip.ZipEntry;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.StringUtils;
 import org.osgi.framework.Constants;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class JarBundleFile implements BundleFile {
+
+    private static final Log log = LogFactory.getLog(JarBundleFile.class);
 
     protected final JarFile jarFile;
 
@@ -136,10 +140,10 @@ public class JarBundleFile implements BundleFile {
                 extractNestedJar(jarFile, path, dest);
                 nested.add(new NestedJarBundleFile(location, dest));
             } catch (FileNotFoundException e) {
-                System.err.println("### A nested jar is referenced in manifest but not found: "
+                log.error("A nested jar is referenced in manifest but not found: "
                         + location);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e);
             }
         }
         return nested;

@@ -32,12 +32,16 @@ import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.Property;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class ComponentInstanceImpl implements ComponentInstance {
+
+    private static final Log log = LogFactory.getLog(ComponentInstanceImpl.class);
 
     protected Object instance;
     protected RegistrationInfoImpl ri;
@@ -66,7 +70,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
                 ri.activate();
                 return instance;
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e);
             }
             return null;
         case RegistrationInfo.ACTIVATED:
@@ -148,7 +152,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
                 return;
             }
         } else {
-            System.err.println("Warning: TARGET EXTENSION POINT IS UNKNOWN. Check your extension in "
+            log.error("Warning: TARGET EXTENSION POINT IS UNKNOWN. Check your extension in "
                     +extension.getComponent().getName());
         }
         // this extension is for us - register it

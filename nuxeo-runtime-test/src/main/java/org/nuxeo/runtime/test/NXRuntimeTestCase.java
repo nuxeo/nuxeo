@@ -227,7 +227,7 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
         try {
             runtime.getContext().deploy(url);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
             fail("Failed to deploy contrib " + url.toString());
         }
     }
@@ -326,7 +326,7 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
         try {
             runtime.getContext().undeploy(url);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
             fail("Failed to undeploy contrib " + url.toString());
         }
     }

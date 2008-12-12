@@ -58,7 +58,7 @@ public abstract class NXRuntimeApplication {
             run();
             shutdown();
         } catch (Throwable t) {
-            t.printStackTrace();
+            log.error(t);
             System.exit(1);
         }
     }

@@ -43,7 +43,7 @@ public class CommandLineOptions {
                 this.args.put(op, arg);
                 op = null;
             } else {
-                this.args.put(new Integer(i++), arg);
+                this.args.put(i++, arg);
                 op = null;
             }
         }

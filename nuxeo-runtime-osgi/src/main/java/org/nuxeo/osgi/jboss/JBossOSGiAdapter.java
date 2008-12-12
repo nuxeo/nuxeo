@@ -125,7 +125,7 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
     @Override
     protected void createService() throws Exception {
         super.createService();
-        super.subscribe(true); // subscribe listeners
+        subscribe(true); // subscribe listeners
     }
 
     @Override
@@ -175,7 +175,7 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
 
     @Override
     protected void destroyService() throws Exception {
-        super.unsubscribe();
+        unsubscribe();
         super.destroyService();
     }
 
@@ -250,21 +250,19 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
                     }
                 }
             } else if (type == SubDeployer.START_NOTIFICATION) {
-                String symbolicName = (String)di.context.get(Constants.BUNDLE_SYMBOLICNAME);
+                String symbolicName = (String) di.context.get(Constants.BUNDLE_SYMBOLICNAME);
                 if (symbolicName != null) {
                     installBundle(symbolicName, di);
                 }
             } else if (type == SubDeployer.STOP_NOTIFICATION) {
-                String symbolicName = (String)di.context.get(Constants.BUNDLE_SYMBOLICNAME);
+                String symbolicName = (String) di.context.get(Constants.BUNDLE_SYMBOLICNAME);
                 if (symbolicName != null) {
-                   uninstallBundle(symbolicName, di);
+                    uninstallBundle(symbolicName, di);
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace(); // TODO
             throw new IllegalStateException("NXRuntime deployment failed", e);
         }
     }
-
 
 }

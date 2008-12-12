@@ -19,6 +19,9 @@
 
 package org.nuxeo.runtime.deploy;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -27,6 +30,8 @@ import java.util.Collection;
  *
  */
 public class ContributionManager extends DependencyTree<String, Contribution> {
+
+    private static final Log log = LogFactory.getLog(ContributionManager.class);
 
     private final ManagedComponent component;
 
@@ -66,7 +71,7 @@ public class ContributionManager extends DependencyTree<String, Contribution> {
         try {
             contrib.install(component);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 
@@ -76,7 +81,7 @@ public class ContributionManager extends DependencyTree<String, Contribution> {
         try {
             contrib.uninstall(component);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
         }
         contrib.unresolve(this);
     }

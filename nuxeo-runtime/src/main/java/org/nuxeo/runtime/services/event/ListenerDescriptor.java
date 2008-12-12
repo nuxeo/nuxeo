@@ -24,6 +24,8 @@ import java.util.Arrays;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -33,6 +35,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class ListenerDescriptor {
 
     private static final NullListener NULL_LISTENER = new NullListener();
+
+    private static final Log log = LogFactory.getLog(ListenerDescriptor.class);
 
     @XNodeList(value = "topic", type = String[].class, componentType = String.class)
     String[] topics;
@@ -45,8 +49,8 @@ public class ListenerDescriptor {
         try {
             listener = listenerClass.newInstance();
         } catch (Exception e) {
+            log.error(e);
             listener = NULL_LISTENER;
-            e.printStackTrace();
         }
     }
 
