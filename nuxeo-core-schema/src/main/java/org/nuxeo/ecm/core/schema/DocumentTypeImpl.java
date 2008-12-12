@@ -154,9 +154,9 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
         }
     }
 
-    public void setDeclaredFacets(String[] facetAr) {
-        declaredFacets = facetAr == null ? EMPTY_FACETS : facetAr;
-        facets = null;
+    public void setDeclaredFacets(String[] facets) {
+        declaredFacets = facets == null ? EMPTY_FACETS : facets;
+        this.facets = null;
     }
 
     protected Set<String> buildFacets() {

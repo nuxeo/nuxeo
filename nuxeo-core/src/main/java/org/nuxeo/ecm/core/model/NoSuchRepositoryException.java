@@ -33,4 +33,8 @@ public class NoSuchRepositoryException extends CoreException {
         super("No such repository '" + name + "'");
     }
 
+    public NoSuchRepositoryException(String name, Throwable t) {
+        super("No such repository '" + name + "'", t);
+    }
+
 }
