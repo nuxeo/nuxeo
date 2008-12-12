@@ -84,7 +84,7 @@ public final class ElementRenderer {
         }
 
         copy.setMarkup(markup);
-        
+
         final RendererType renderer = engine.getRenderers().get(
                 element.getElementType().getTypeName());
 
@@ -93,25 +93,18 @@ public final class ElementRenderer {
         }
 
         final String templateEngineName = info.getTemplateEngine().getName();
+        final String engineName = info.getEngine().getName();
         final String viewMode = info.getViewMode();
         for (String filterName : renderer.getFilters()) {
 
-            // get the filter for this specified template engine and view mode
-            FilterType filterType = (FilterType) typeRegistry.lookup(
-                    TypeFamily.FILTER, String.format("%s/%s/%s", templateEngineName,
-                            viewMode, filterName));
+            // Look for a filter for the current engine
+            FilterType filterType = getFilterFor(engineName, filterName,
+                    templateEngineName, viewMode);
 
-            // fall back to unspecified view mode
+            // Fall back to no specific engine
             if (filterType == null) {
-                filterType = (FilterType) typeRegistry.lookup(
-                        TypeFamily.FILTER, String.format("%s/*/%s", templateEngineName,
-                                filterName));
-            }
-
-            // fall back to unspecified template engine and view mode
-            if (filterType == null) {
-                filterType = (FilterType) typeRegistry.lookup(
-                        TypeFamily.FILTER, String.format("*/*/%s", filterName));
+                filterType = getFilterFor("*", filterName, templateEngineName,
+                        viewMode);
             }
 
             if (filterType == null) {
@@ -152,5 +145,29 @@ public final class ElementRenderer {
             }
         }
         return copy;
+    }
+
+    private static FilterType getFilterFor(final String engineName,
+            final String filterName, final String templateEngineName,
+            final String viewMode) {
+
+        // get the filter for this specified template engine and view mode
+        FilterType filterType = (FilterType) typeRegistry.lookup(
+                TypeFamily.FILTER, String.format("%s/%s/%s/%s", engineName,
+                        templateEngineName, viewMode, filterName));
+
+        // fall back to unspecified view mode
+        if (filterType == null) {
+            filterType = (FilterType) typeRegistry.lookup(TypeFamily.FILTER,
+                    String.format("%s/%s/*/%s", engineName, templateEngineName,
+                            filterName));
+        }
+
+        // fall back to unspecified template engine and view mode
+        if (filterType == null) {
+            filterType = (FilterType) typeRegistry.lookup(TypeFamily.FILTER,
+                    String.format("%s/*/*/%s", engineName, filterName));
+        }
+        return filterType;
     }
 }

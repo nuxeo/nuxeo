@@ -180,6 +180,7 @@ public class ThemeService extends DefaultComponent {
         TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
         for (Object contrib : contribs) {
             typeRegistry.register((Type) contrib);
+            System.out.println(((Type) contrib).getTypeName());
         }
     }
 

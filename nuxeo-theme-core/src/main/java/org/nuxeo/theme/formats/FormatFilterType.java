@@ -34,6 +34,9 @@ public final class FormatFilterType extends FilterType {
     @XNode("engine")
     public String engine = "*";
 
+    @XNode("template-engine")
+    public String templateEngine = "*";
+    
     @XNode("mode")
     public String mode = "*";
 
@@ -77,7 +80,7 @@ public final class FormatFilterType extends FilterType {
 
     @Override
     public String getTypeName() {
-        return String.format("%s/%s/%s", engine, mode, name);
+        return String.format("%s/%s/%s/%s", engine, templateEngine, mode, name);
     }
 
     @Override
