@@ -14,11 +14,10 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Runtime component that implements the {@link RequestControllerManager} interface
- * Contains both the Extension point logic and the service immplementation
+ * Runtime component that implements the {@link RequestControllerManager} interface.
+ * Contains both the Extension point logic and the service immplementation.
  *
  * @author tiry
- *
  */
 public class RequestControllerService extends DefaultComponent implements
         RequestControllerManager {
@@ -59,7 +58,7 @@ public class RequestControllerService extends DefaultComponent implements
             throws Exception {
     }
 
-    /** Service interface * */
+    /* Service interface */
 
     public RequestFilterConfig getConfigForRequest(HttpServletRequest request) {
         String uri = request.getRequestURI();
@@ -86,7 +85,6 @@ public class RequestControllerService extends DefaultComponent implements
     }
 
     public RequestFilterConfig computeConfigForRequest(String uri) {
-
         // handle deny patterns
         for (FilterConfigDescriptor desc : denyPatterns.values()) {
             Pattern pat = desc.getCompiledPattern();

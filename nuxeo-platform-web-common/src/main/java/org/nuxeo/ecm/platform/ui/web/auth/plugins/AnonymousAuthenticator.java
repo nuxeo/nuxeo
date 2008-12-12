@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 public class AnonymousAuthenticator implements NuxeoAuthenticationPlugin,
         NuxeoAuthenticationPluginLogoutExtension {
 
-    public static String BLOCK_ANONYMOUS_LOGIN_KEY = "org.nuxeo.ecm.platform.ui.web.auth.anonymous.block";
+    public static final String BLOCK_ANONYMOUS_LOGIN_KEY = "org.nuxeo.ecm.platform.ui.web.auth.anonymous.block";
 
     protected boolean initialized;
 
@@ -70,16 +70,15 @@ public class AnonymousAuthenticator implements NuxeoAuthenticationPlugin,
             return null;
         }
 
-        if (isAnonymousLoginBlocked(httpRequest))
+        if (isAnonymousLoginBlocked(httpRequest)) {
             return null;
+        }
 
         return new UserIdentificationInfo(anonymousLogin, anonymousLogin);
     }
 
-    protected boolean isAnonymousLoginBlocked(HttpServletRequest httpRequest)
-    {
-        if (Boolean.TRUE.equals(httpRequest.getAttribute(BLOCK_ANONYMOUS_LOGIN_KEY)))
-        {
+    protected boolean isAnonymousLoginBlocked(HttpServletRequest httpRequest) {
+        if (Boolean.TRUE.equals(httpRequest.getAttribute(BLOCK_ANONYMOUS_LOGIN_KEY))) {
             httpRequest.removeAttribute(BLOCK_ANONYMOUS_LOGIN_KEY);
             return true;
         }
@@ -92,7 +91,6 @@ public class AnonymousAuthenticator implements NuxeoAuthenticationPlugin,
             return true;
         }
         return false;
-
     }
 
     public void initPlugin(Map<String, String> parameters) {

@@ -41,6 +41,7 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.RequestDumper
  *
  */
 public class NuxeoExceptionHandler {
+
     private static String NUXEO_EXCEPTION_HANDLER_SET = "NUXEO_EXCEPTION_HANDLER_SET";
 
     private static Log log = LogFactory.getLog(NuxeoExceptionHandler.class);
@@ -97,7 +98,6 @@ public class NuxeoExceptionHandler {
     public void handleException(HttpServletRequest request,
             HttpServletResponse response, Throwable t) throws IOException,
             ServletException {
-        String errorPage = null;
         if (request.getAttribute(NUXEO_EXCEPTION_HANDLER_SET) != null) {
             request.getRequestDispatcher(
                     (String) request.getAttribute(NUXEO_EXCEPTION_HANDLER_SET)).forward(
@@ -130,7 +130,7 @@ public class NuxeoExceptionHandler {
         if (error != null) {
             response.setStatus(error);
         }
-        errorPage = handler.getPage();
+        String errorPage = handler.getPage();
         errorPage = (errorPage == null) ? defaultErrorPage : errorPage;
         request.setAttribute(NUXEO_EXCEPTION_HANDLER_SET, errorPage);
         request.getRequestDispatcher(errorPage).forward(request, response);
@@ -200,4 +200,5 @@ public class NuxeoExceptionHandler {
     public void setDefaultErrorPage(String defaultErrorPage) {
         this.defaultErrorPage = defaultErrorPage;
     }
+
 }

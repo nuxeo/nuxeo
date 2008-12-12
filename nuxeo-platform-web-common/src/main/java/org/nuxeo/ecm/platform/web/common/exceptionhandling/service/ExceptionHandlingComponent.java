@@ -34,7 +34,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  */
 public class ExceptionHandlingComponent extends DefaultComponent implements ExceptionHandlingService {
+
     private final NuxeoExceptionHandler exceptionHandler = new NuxeoExceptionHandler();
+
     public enum ExtensionPoint {
         errorhandlers, requestdump, listener
     }
@@ -74,4 +76,5 @@ public class ExceptionHandlingComponent extends DefaultComponent implements Exce
     public NuxeoExceptionHandler getExceptionHandler() {
         return exceptionHandler;
     }
+
 }

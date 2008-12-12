@@ -32,18 +32,19 @@ import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 public interface NuxeoAuthenticationSessionManager {
 
     /**
-     * Check whether or not this request was made to perform login.
-     * This is tested by the authentication filter to decide if a switch user is needed.  
+     * Checks whether or not this request was made to perform login.
+     * This is tested by the authentication filter to decide if a switch user is needed.
+     *
      * @param req
      * @return
      */
     boolean needResetLogin(ServletRequest req);
-    
+
     /**
-     * returns true if request does not require to be authenticated
+     * Returns true if request does not require to be authenticated
      *
      * @param request
-     * @return
+     * @return true if request does not require to be authenticated
      */
     boolean canBypassRequest(ServletRequest request);
 
@@ -53,23 +54,20 @@ public interface NuxeoAuthenticationSessionManager {
     void onBeforeSessionInvalidate(ServletRequest request);
 
     /**
-     * CallBack before SessionReinit
+     * CallBack before SessionReinit.
      */
     void onBeforeSessionReinit(ServletRequest request);
 
 
     /**
-     * CallBack after SessionReinit
+     * CallBack after SessionReinit.
      */
     void onAfterSessionReinit(ServletRequest request);
 
     /**
-     *
      * CallBack for session creation
-     *
-     * @param request
-     * @param session
-     * @param cachebleUserInfo
      */
-    void onAuthenticatedSessionCreated(ServletRequest request, HttpSession session, CachableUserIdentificationInfo cachebleUserInfo);
+    void onAuthenticatedSessionCreated(ServletRequest request, HttpSession session,
+            CachableUserIdentificationInfo cachebleUserInfo);
+
 }

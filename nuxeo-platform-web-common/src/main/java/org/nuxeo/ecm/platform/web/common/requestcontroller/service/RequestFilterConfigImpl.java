@@ -1,17 +1,12 @@
 package org.nuxeo.ecm.platform.web.common.requestcontroller.service;
 
 /**
- *
- * Basic implementation of the {@link RequestFilterConfig} interface
+ * Basic implementation of the {@link RequestFilterConfig} interface.
  *
  * @author tiry
- *
  */
 public class RequestFilterConfigImpl implements RequestFilterConfig {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     protected boolean useTx;

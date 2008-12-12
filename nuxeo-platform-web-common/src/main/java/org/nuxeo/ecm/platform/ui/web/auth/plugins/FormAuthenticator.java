@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
-import org.nuxeo.ecm.platform.ui.web.auth.NXAuthContants;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 
 public class FormAuthenticator implements NuxeoAuthenticationPlugin {
@@ -39,19 +39,19 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
 
     protected String loginPage = "login.jsp";
 
-    protected String usernameKey = NXAuthContants.USERNAME_KEY;
+    protected String usernameKey = NXAuthConstants.USERNAME_KEY;
 
-    protected String passwordKey = NXAuthContants.PASSORD_KEY;
+    protected String passwordKey = NXAuthConstants.PASSORD_KEY;
 
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse, String baseURL) {
         try {
             log.debug("Forward to Login Screen");
-            String loginError = (String) httpRequest.getAttribute(NXAuthContants.LOGIN_ERROR);
+            String loginError = (String) httpRequest.getAttribute(NXAuthConstants.LOGIN_ERROR);
             if (loginError == null) {
                 httpResponse.sendRedirect(baseURL + loginPage);
             } else {
-                if (NXAuthContants.ERROR_USERNAME_MISSING.equals(loginError)) {
+                if (NXAuthConstants.ERROR_USERNAME_MISSING.equals(loginError)) {
                     httpResponse.sendRedirect(baseURL + loginPage
                             + "?loginMissing=true");
                 } else {
@@ -73,10 +73,10 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
         String userName = httpRequest.getParameter(usernameKey);
         String password = httpRequest.getParameter(passwordKey);
         // NXP-2650: ugly hack to check if form was submitted
-        if (httpRequest.getParameter(NXAuthContants.FORM_SUBMITTED_MARKER) != null
+        if (httpRequest.getParameter(NXAuthConstants.FORM_SUBMITTED_MARKER) != null
                 && (userName == null || userName.length() == 0)) {
-            httpRequest.setAttribute(NXAuthContants.LOGIN_ERROR,
-                    NXAuthContants.ERROR_USERNAME_MISSING);
+            httpRequest.setAttribute(NXAuthConstants.LOGIN_ERROR,
+                    NXAuthConstants.ERROR_USERNAME_MISSING);
         }
 
         return new UserIdentificationInfo(userName, password);

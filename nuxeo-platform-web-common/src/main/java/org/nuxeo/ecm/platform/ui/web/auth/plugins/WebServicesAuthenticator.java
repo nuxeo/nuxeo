@@ -31,27 +31,30 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 
 /**
  * The Web Service Servlet needs no login prompt and / or authentiocation.
- *  I see 2 different scenarios:
- *  S1. The client application is a standalone application. It connects to WS with the
- *  real credentials and keeps a session only for WS. It has nothing to do with the Web
- *  Application or whatsoever. Initially client comes to MainEntrancePoint and tries to
- *  get a Stateful WebService (actual WS perfoming the job). NuxeoAuthenticationFilter
- *  (NAF) finds no authentication data in message. It has to let the request pass and not
- *  forward the request to login page. The WS makes the authentication based on user
- *  credentials.
- *  S2. The client application reuses a Web Session or uses another mechanism to hold a
- *  HTTP Session (the SSO case). Client comes to MainEntrancePoint and tries to gets a
- *  Stateful WebService (actual WS perfoming the job) calling a different method (no
- *  user/pass). NAF finds the authentication data in message this time. It establishes the
- *  JAAS context and forwards the request on chain. The WS is not doing authentication
- *  anymore, but relies on the JAAS context already established.Further, the same will
- *  apply while communicating with SFWS. The SFWS relies on JAAS Login Context established
- *  by NAF, while the Core Session is managed internally. The SFWS will be able to work
- *  only if the JAAS context is kept valid (the Web Session is on).
- *  This plugin has to only block the login form for the requests addressed to WS. The
- *  requests are identified by the prefix of the URL.
- * @author rux
+ * <p>
+ * I see 2 different scenarios:
+ * <ol>
+ * <li>The client application is a standalone application. It connects to WS with the
+ * real credentials and keeps a session only for WS. It has nothing to do with the Web
+ * Application or whatsoever. Initially client comes to MainEntrancePoint and tries to
+ * get a Stateful WebService (actual WS perfoming the job). NuxeoAuthenticationFilter
+ * (NAF) finds no authentication data in message. It has to let the request pass and not
+ * forward the request to login page. The WS makes the authentication based on user
+ * credentials.
+ * <li>The client application reuses a Web Session or uses another mechanism to hold a
+ * HTTP Session (the SSO case). Client comes to MainEntrancePoint and tries to gets a
+ * Stateful WebService (actual WS perfoming the job) calling a different method (no
+ * user/pass). NAF finds the authentication data in message this time. It establishes the
+ * JAAS context and forwards the request on chain. The WS is not doing authentication
+ * anymore, but relies on the JAAS context already established.Further, the same will
+ * apply while communicating with SFWS. The SFWS relies on JAAS Login Context established
+ * by NAF, while the Core Session is managed internally. The SFWS will be able to work
+ * only if the JAAS context is kept valid (the Web Session is on).
+ * </ol>
+ * This plugin has to only block the login form for the requests addressed to WS. The
+ * requests are identified by the prefix of the URL.
  *
+ * @author rux
  */
 public class WebServicesAuthenticator implements NuxeoAuthenticationPlugin {
 

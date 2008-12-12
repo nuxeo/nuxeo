@@ -44,4 +44,5 @@ import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallbackHandler;
 public interface NuxeoCallbackHandlerFactory {
 
     UserIdentificationInfoCallbackHandler createCallbackHandler(UserIdentificationInfo userIdent);
+
 }

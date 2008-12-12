@@ -7,18 +7,13 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- *
  * Descriptor for {@link RequestFilterConfig}
  *
  * @author tiry
- *
  */
 @XObject(value = "filterConfig")
 public class FilterConfigDescriptor implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     @XNode("@name")
@@ -36,10 +31,10 @@ public class FilterConfigDescriptor implements Serializable {
     @XNode("pattern")
     protected String pattern;
 
-    protected Pattern compiledPattern=null;
+    protected Pattern compiledPattern;
 
     public String getName() {
-        if (name==null) {
+        if (name == null) {
             return pattern;
         }
         return name;
@@ -61,17 +56,11 @@ public class FilterConfigDescriptor implements Serializable {
         return pattern;
     }
 
-    public Pattern getCompiledPattern()
-    {
-        if (compiledPattern==null)
-        {
+    public Pattern getCompiledPattern() {
+        if (compiledPattern == null) {
             compiledPattern = Pattern.compile(pattern);
         }
         return compiledPattern;
     }
-
-
-
-
 
 }

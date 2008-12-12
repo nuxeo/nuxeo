@@ -26,8 +26,9 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionHandler
 
 public interface ExceptionHandlingService {
 
-    public NuxeoExceptionHandler getExceptionHandler();
+    NuxeoExceptionHandler getExceptionHandler();
 
-    public void forwardToErrorPage(HttpServletRequest request, HttpServletResponse response, Throwable t) throws IOException, ServletException;
+    void forwardToErrorPage(HttpServletRequest request, HttpServletResponse response, Throwable t)
+            throws IOException, ServletException;
 
 }

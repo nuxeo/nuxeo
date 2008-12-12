@@ -1,3 +1,6 @@
+/*
+ * Code take from JBoss Seam. See JBoss Seam site for copyright.
+ */
 package org.nuxeo.ecm.platform.web.common.tx;
 
 import static javax.transaction.Status.STATUS_ACTIVE;
@@ -16,14 +19,10 @@ import javax.transaction.UserTransaction;
  * Code taken from Seam 1.1.5
  *
  * @author tiry
- *
  */
 public class TransactionsHelper {
 
-
     private static String userTransactionName = "UserTransaction";
-
-
 
     public static void setTransactionRollbackOnly() throws SystemException,
             NamingException {

@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  */
 public interface ExceptionHandlingListener {
+
     void startHandling(Throwable t, HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException;
 

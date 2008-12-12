@@ -23,21 +23,19 @@ import org.nuxeo.ecm.platform.web.common.tx.TransactionsHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * Filter to handle Transactions and Requests synchronization.
  * This filter is useful when accessing web resources that are not
  * protected by Seam Filter.
  * This is the case for specific Servlets, WebEngine, XML-RPC connector ...
  *
  * @author tiry
- *
  */
 public class NuxeoRequestControllerFilter implements Filter {
 
     protected static final String SESSION_LOCK_KEY = "NuxeoSessionLockKey";
     protected static final String SYNCED_REQUEST_FLAG = "NuxeoSessionAlreadySync";
 
-    protected static final int LOCK_TIMOUT_S=120;
+    protected static final int LOCK_TIMOUT_S = 120;
 
     protected static RequestControllerManager rcm;
 
@@ -53,7 +51,6 @@ public class NuxeoRequestControllerFilter implements Filter {
         log.debug("Staring NuxeoRequestControler filter");
     }
 
-
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
 
@@ -67,7 +64,7 @@ public class NuxeoRequestControllerFilter implements Filter {
         boolean useSync = config.needSynchronization();
         boolean useTx = config.needTransaction();
 
-        if ((!useSync) && (!useTx)) {
+        if (!useSync && !useTx) {
             log.debug("Existing NuxeoRequestControler filter : nothing to be done for uri " + targetURI);
             chain.doFilter(request, response);
             return;
@@ -104,8 +101,9 @@ public class NuxeoRequestControllerFilter implements Filter {
     }
 
     /**
-     * Starts a new {@link UserTransaction}
-     * @return
+     * Starts a new {@link UserTransaction}.
+     *
+     * @return true if the transaction was successfully translated, false otherwise
      */
     protected boolean startUserTransaction() {
         try {
@@ -118,7 +116,7 @@ public class NuxeoRequestControllerFilter implements Filter {
     }
 
     /**
-     * Marks the {@link UserTransaction} RollBack
+     * Marks the {@link UserTransaction} for rollBack.
      */
     protected void markTransactionForRollBack() {
         try {
@@ -130,8 +128,7 @@ public class NuxeoRequestControllerFilter implements Filter {
     }
 
     /**
-     * Commits or Rollbacks the {@link UserTransaction} depending on the Transaction status
-     *
+     * Commits or rollbacks the {@link UserTransaction} depending on the Transaction status
      */
     protected void commitOrRollBackUserTransaction() {
         try {
@@ -150,10 +147,11 @@ public class NuxeoRequestControllerFilter implements Filter {
     }
 
     /**
-     * Synchronize the HttpSession
-     * Use a {@link Lock} object in Http Session and lock's it
+     * Synchronize the HttpSession.
+     * <p>
+     * Use a {@link Lock} object in Http Session and lock's it.
      *
-     * If HttpSession is not created, exists without locking anything
+     * If HttpSession is not created, exists without locking anything.
      *
      * @param request
      * @return
@@ -172,13 +170,12 @@ public class NuxeoRequestControllerFilter implements Filter {
             lock = new ReentrantLock();
             session.setAttribute(SESSION_LOCK_KEY, lock);
         }
-        if (request.getAttribute(SYNCED_REQUEST_FLAG)!=null)
-        {
+        if (request.getAttribute(SYNCED_REQUEST_FLAG) != null) {
             log.warn("Request has already be synced, filter is reentrant, exiting without locking");
             return false;
         }
 
-        boolean locked =false;
+        boolean locked = false;
         try {
             locked = lock.tryLock(LOCK_TIMOUT_S, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -193,7 +190,7 @@ public class NuxeoRequestControllerFilter implements Filter {
     }
 
     /**
-     * Release the {@link Lock} if present in the HttpSession
+     * Releases the {@link Lock} if present in the HttpSession.
      *
      * @param request
      */

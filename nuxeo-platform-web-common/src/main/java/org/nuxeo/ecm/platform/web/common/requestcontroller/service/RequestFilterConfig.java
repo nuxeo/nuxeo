@@ -8,10 +8,9 @@ import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoRequestCo
 
 /**
  * Interface for the {@link NuxeoRequestControllerFilter} config
- * for a given {@link HttpServletRequest}
+ * for a given {@link HttpServletRequest}.
  *
  * @author tiry
- *
  */
 public interface RequestFilterConfig  extends Serializable{
 

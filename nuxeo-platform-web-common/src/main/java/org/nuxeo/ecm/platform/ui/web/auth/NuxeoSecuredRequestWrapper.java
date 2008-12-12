@@ -47,7 +47,7 @@ public class NuxeoSecuredRequestWrapper extends HttpServletRequestWrapper {
             if (session == null) {
                 return null;
             } else {
-                return (Principal) session.getAttribute(NXAuthContants.PRINCIPAL_KEY);
+                return (Principal) session.getAttribute(NXAuthConstants.PRINCIPAL_KEY);
             }
         }
     }

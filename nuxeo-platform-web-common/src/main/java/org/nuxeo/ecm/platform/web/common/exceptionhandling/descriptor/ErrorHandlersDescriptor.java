@@ -29,6 +29,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  */
 @XObject("errorHandlers")
 public class ErrorHandlersDescriptor {
+
     @XNode("@bundle")
     private String bundle;
 

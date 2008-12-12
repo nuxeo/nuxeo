@@ -5,6 +5,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 @XObject
 public class ErrorHandler {
+
     @XNode("@error")
     private String error;
 

@@ -26,9 +26,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class DefaultRequestDumper implements RequestDumper {
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.web.common.exceptionhandling.service.RequestDumper#getDump(javax.servlet.http.HttpServletRequest)
-     */
     @SuppressWarnings("unchecked")
     public String getDump(HttpServletRequest request) {
         StringBuilder builder = new StringBuilder();

@@ -26,6 +26,7 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHand
  */
 @XObject("listener")
 public class ListenerDescriptor {
+
     @XNode("@class")
     private Class<? extends ExceptionHandlingListener> klass;
 
@@ -36,4 +37,5 @@ public class ListenerDescriptor {
     public void setKlass(Class<? extends ExceptionHandlingListener> klass) {
         this.klass = klass;
     }
+
 }

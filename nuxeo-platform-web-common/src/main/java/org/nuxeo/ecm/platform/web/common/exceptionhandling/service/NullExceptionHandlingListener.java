@@ -28,50 +28,21 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class NullExceptionHandlingListener implements ExceptionHandlingListener {
 
-    /*
-     * (non-Javadoc)
-     *
-     * @seeorg.nuxeo.ecm.platform.web.common.exceptionhandling.service.
-     * ExceptionHandlingListener#beforeForwardToErrorPage(java.lang.Throwable,
-     * javax.servlet.http.HttpServletRequest)
-     */
     public void beforeForwardToErrorPage(Throwable t,
             HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @seeorg.nuxeo.ecm.platform.web.common.exceptionhandling.service.
-     * ExceptionHandlingListener#beforeGetErrorMessageKey(java.lang.Throwable,
-     * javax.servlet.http.HttpServletRequest)
-     */
     public void beforeGetErrorMessageKey(Throwable t,
             HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @seeorg.nuxeo.ecm.platform.web.common.exceptionhandling.service.
-     * ExceptionHandlingListener
-     * #beforeSetErrorPageAttribute(java.lang.Throwable,
-     * javax.servlet.http.HttpServletRequest)
-     */
     public void beforeSetErrorPageAttribute(Throwable t,
             HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @seeorg.nuxeo.ecm.platform.web.common.exceptionhandling.service.
-     * ExceptionHandlingListener#startHandling(java.lang.Throwable,
-     * javax.servlet.http.HttpServletRequest)
-     */
     public void startHandling(Throwable t, HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException {
     }

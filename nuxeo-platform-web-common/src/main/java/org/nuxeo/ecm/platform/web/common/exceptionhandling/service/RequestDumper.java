@@ -23,5 +23,7 @@ import javax.servlet.http.HttpServletRequest;
  *
  */
 public interface RequestDumper {
+
     String getDump(HttpServletRequest request);
+
 }

@@ -38,9 +38,8 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Adding http cache header (Cache-Control : max-age AND Expire) to the
  * response.
- * 
+ *
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
- * 
  */
 public class SimpleCacheFilter implements Filter {
 
@@ -70,7 +69,7 @@ public class SimpleCacheFilter implements Filter {
             // Generating expires using current date and adding cache time.
             // we are using the format Expires: Thu, 01 Dec 1994 16:00:00 GMT
             Date date = new Date();
-            long newDate = date.getTime() + ((new Long(cacheTime)) * 1000);
+            long newDate = date.getTime() + new Long(cacheTime) * 1000;
             date.setTime(newDate);
 
             httpResponse.setHeader("Expires",

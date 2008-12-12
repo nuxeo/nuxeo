@@ -42,10 +42,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Simple download servlet used for big files that can not be downloaded from
- * within the JSF context (because of Buffered ResponseWrapper)
+ * within the JSF context (because of Buffered ResponseWrapper).
  *
  * @author tiry
- *
  */
 public class DownloadServlet extends HttpServlet {
 

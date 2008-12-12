@@ -68,15 +68,15 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     private Map<String, NuxeoAuthenticationSessionManager> sessionManagers;
 
-    private NuxeoAuthenticationSessionManager  defaultSessionManager;
+    private NuxeoAuthenticationSessionManager defaultSessionManager;
 
-    private NuxeoAuthenticationPropagator propagator=null;
+    private NuxeoAuthenticationPropagator propagator = null;
 
-    private NuxeoCallbackHandlerFactory cbhFactory=null;
+    private NuxeoCallbackHandlerFactory cbhFactory = null;
 
     private List<String> authChain;
 
-    private final List<String> startupURLs =  new ArrayList<String>();
+    private final List<String> startupURLs = new ArrayList<String>();
 
     @Override
     public void activate(ComponentContext context) {
@@ -148,8 +148,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
             } catch (IllegalAccessException e) {
                 log.error("Unable to create propagator", e);
             }
-        }
-        else if (extensionPoint.equals(EP_CBFACTORY)) {
+        } else if (extensionPoint.equals(EP_CBFACTORY)) {
             CallbackHandlerFactoryDescriptor cbhfContrib = (CallbackHandlerFactoryDescriptor) contribution;
 
             // create the new instance
@@ -247,8 +246,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
     public NuxeoAuthenticationPlugin getPlugin(String pluginName) {
-        if ((authenticatorsDescriptors.containsKey(pluginName))
-                && (authenticatorsDescriptors.get(pluginName).getEnabled())) {
+        if (authenticatorsDescriptors.containsKey(pluginName)
+                && authenticatorsDescriptors.get(pluginName).getEnabled()) {
             if (authenticators.containsKey(pluginName)) {
                 return authenticators.get(pluginName);
             }
@@ -265,64 +264,54 @@ public class PluggableAuthenticationService extends DefaultComponent {
         }
     }
 
-
-    public void invalidateSession(ServletRequest request)
-    {
-        if (sessionManagers.size()>0)
-        {
-            for (String smName : sessionManagers.keySet())
-            {
-                NuxeoAuthenticationSessionManager sm  = sessionManagers.get(smName);
+    public void invalidateSession(ServletRequest request) {
+        if (sessionManagers.size() > 0) {
+            for (String smName : sessionManagers.keySet()) {
+                NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
                 sm.onBeforeSessionInvalidate(request);
             }
         }
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpSession session = httpRequest.getSession(false);
-        if (session!=null)
+        if (session != null) {
             session.invalidate();
+        }
     }
 
-    public  HttpSession reinitSession(HttpServletRequest httpRequest)
-    {
+    public HttpSession reinitSession(HttpServletRequest httpRequest) {
 
-        if (sessionManagers.size()>0)
-        {
-            for (String smName : sessionManagers.keySet())
-            {
-                NuxeoAuthenticationSessionManager sm  = sessionManagers.get(smName);
+        if (sessionManagers.size() > 0) {
+            for (String smName : sessionManagers.keySet()) {
+                NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
                 sm.onBeforeSessionReinit(httpRequest);
             }
         }
 
         HttpSession session = httpRequest.getSession(true);
 
-        if (sessionManagers.size()>0)
-        {
-            for (String smName : sessionManagers.keySet())
-            {
-                NuxeoAuthenticationSessionManager sm  = sessionManagers.get(smName);
+        if (sessionManagers.size() > 0) {
+            for (String smName : sessionManagers.keySet()) {
+                NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
                 sm.onAfterSessionReinit(httpRequest);
             }
         }
         return session;
     }
 
-    public boolean canBypassRequest(ServletRequest request)
-    {
-        if (sessionManagers.size()>0)
-        {
-            for (String smName : sessionManagers.keySet())
-            {
-                NuxeoAuthenticationSessionManager sm  = sessionManagers.get(smName);
-                if (sm.canBypassRequest(request))
+    public boolean canBypassRequest(ServletRequest request) {
+        if (sessionManagers.size() > 0) {
+            for (String smName : sessionManagers.keySet()) {
+                NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
+                if (sm.canBypassRequest(request)){
                     return true;
+                }
             }
         }
         return false;
     }
 
     public boolean needResetLogin(ServletRequest request) {
-        if (sessionManagers.size()>0) {            
+        if (sessionManagers.size() > 0) {
             for (NuxeoAuthenticationSessionManager sm : sessionManagers.values()) {
                 if (sm.needResetLogin(request)) {
                     return true;
@@ -332,21 +321,17 @@ public class PluggableAuthenticationService extends DefaultComponent {
         return false;
     }
 
-    
-    public String getBaseURL(ServletRequest request)
-    {
+    public String getBaseURL(ServletRequest request) {
         return VirtualHostHelper.getBaseURL(request);
     }
 
-    public void onAuthenticatedSessionCreated(ServletRequest request, HttpSession session, CachableUserIdentificationInfo cachebleUserInfo)
-    {
-         if (sessionManagers.size()>0)
-         {
-             for (String smName : sessionManagers.keySet())
-             {
-                 NuxeoAuthenticationSessionManager sm  = sessionManagers.get(smName);
-                 sm.onAuthenticatedSessionCreated(request, session, cachebleUserInfo);
-             }
-         }
+    public void onAuthenticatedSessionCreated(ServletRequest request, HttpSession session, CachableUserIdentificationInfo cachebleUserInfo) {
+        if (sessionManagers.size() > 0) {
+            for (String smName : sessionManagers.keySet()) {
+                NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
+                sm.onAuthenticatedSessionCreated(request, session, cachebleUserInfo);
+            }
+        }
     }
+
 }

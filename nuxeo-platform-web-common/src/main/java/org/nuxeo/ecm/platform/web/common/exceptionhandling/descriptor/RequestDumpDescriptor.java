@@ -26,6 +26,7 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.RequestDumper
  */
 @XObject("requestdump")
 public class RequestDumpDescriptor {
+
     @XNode("@class")
     Class<? extends RequestDumper> klass;
 

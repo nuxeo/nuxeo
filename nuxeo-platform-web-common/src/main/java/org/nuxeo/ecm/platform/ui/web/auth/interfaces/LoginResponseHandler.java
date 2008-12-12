@@ -23,33 +23,33 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Interface for services that knows how to handle login responses. 
- * This was especially introduced to extend {@link NuxeoAuthenticationPlugin} interface
- * to add login response handling capabilities to existing authenticators.  
- * 
- * This interface should be implemented by {@link NuxeoAuthenticationPlugin} instances that needs 
+ * Interface for services that knows how to handle login responses.
+ * This was specially introduced to extend {@link NuxeoAuthenticationPlugin} interface
+ * to add login response handling capabilities to existing authenticators.
+ * <p>
+ * This interface should be implemented by {@link NuxeoAuthenticationPlugin} instances that needs
  * full control over the login response.
- *  
- *  
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface LoginResponseHandler {
 
     /**
-     * Handle the login error response
+     * Handles the login error response.
+     *
      * @param request the http request
      * @param response the http response
      * @return true if error was handled, false otherwise
      */
     boolean onError(HttpServletRequest request, HttpServletResponse response);
-    
+
     /**
-     * Handle login success response
+     * Handles login success response.
+     *
      * @param request
      * @param response
      * @return true if response was handled, false otherwise
      */
     boolean onSuccess(HttpServletRequest request, HttpServletResponse response);
-    
+
 }
