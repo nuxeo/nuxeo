@@ -94,7 +94,7 @@ public interface DeleteActions {
             throws ClientException;
 
     boolean getCanDeleteItem(DocumentModel container) throws ClientException;
-    
+
     boolean getCanDelete() throws ClientException;
 
     boolean getCanDeleteSections() throws ClientException;

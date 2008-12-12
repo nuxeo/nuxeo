@@ -51,7 +51,6 @@ public class SQLDirectoryProxy implements Directory {
             } catch (ClientException e) {
                 throw new DirectoryException(e);
             }
-
         }
         return directory;
     }

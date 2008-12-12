@@ -307,16 +307,16 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         return pi;
     }
 
+    @SuppressWarnings( { "unchecked" })
     public Collection<WMProcessInstance> getProcessInstancesFor(String pdefId) {
         Collection<WMProcessInstance> pis = new ArrayList<WMProcessInstance>();
 
         JbpmWorkflowExecutionContext ctx = getExecutionContext();
         GraphSession session = ctx.getGraphSession();
 
-        List processInstances = session.findProcessInstances(IDConverter.getJbpmIdentifier(pdefId));
+        List<ProcessInstance> processInstances = session.findProcessInstances(IDConverter.getJbpmIdentifier(pdefId));
 
-        for (Object ob : processInstances) {
-            ProcessInstance pi = (ProcessInstance) ob;
+        for (ProcessInstance pi : processInstances) {
             pis.add(WAPIGenerator.createProcessInstance(pi));
         }
 
@@ -381,9 +381,9 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         }
 
         if (pi != null) {
-            List objects = pi.findAllTokens();
-            for (Object object : objects) {
-                Token token = (Token) object;
+            @SuppressWarnings( { "unchecked" })
+            List<Token> tokens = pi.findAllTokens();
+            for (Token token : tokens) {
                 activities.add(WAPIGenerator.createActivityInstance(token));
             }
         }
@@ -599,9 +599,9 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         }
 
         TaskMgmtSession taskSession = ctx.getTaskMgmtSession();
-        List objects = taskSession.findTaskInstancesByToken(token.getId());
-        for (Object object : objects) {
-            TaskInstance taskInstance = (TaskInstance) object;
+        @SuppressWarnings( { "unchecked" })
+        List<TaskInstance> taskInstances = taskSession.findTaskInstancesByToken(token.getId());
+        for (TaskInstance taskInstance : taskInstances) {
             if (taskInstance != null) {
                 String actorId = taskInstance.getActorId();
                 if (actorId != null && actorId.equals(participant.getName())) {
@@ -616,6 +616,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         return workItems;
     }
 
+    @SuppressWarnings("unchecked")
     public Collection<WMWorkItemInstance> getWorkItemsFor(
             WMParticipant participant, String state) {
 
@@ -650,6 +651,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         return workItems;
     }
 
+    @SuppressWarnings("unchecked")
     public Collection<WMWorkItemInstance> getWorkItemsFor(
             List<WMParticipant> participants, String state) {
         try {
@@ -788,6 +790,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
                 maxResults, totalResults);
     }
 
+    @SuppressWarnings("unchecked")
     public Collection<WMWorkItemInstance> getWorkItemsFor(
             String workflowInstanceId, String state, WMParticipant participant) {
 
@@ -804,9 +807,8 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
 
         if (pi != null) {
             TaskMgmtSession taskSession = ctx.getTaskMgmtSession();
-            List tokenObjects = taskSession.findTaskInstances(participant.getName());
-            for (Object object : tokenObjects) {
-                TaskInstance taskInstance = (TaskInstance) object;
+            List<TaskInstance> tokenObjects = taskSession.findTaskInstances(participant.getName());
+            for (TaskInstance taskInstance : tokenObjects) {
                 if (taskInstance != null) {
                     if (isStateCandidate(taskInstance, state)) {
                         // :TODO: we should have another way to do this than
@@ -823,6 +825,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         return workItems;
     }
 
+    @SuppressWarnings("unchecked")
     public Collection<WMWorkItemInstance> listWorkItems(String pid, String state) {
 
         final Collection<WMWorkItemInstance> workItems = new ArrayList<WMWorkItemInstance>();
@@ -839,7 +842,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
 
         if (pi != null) {
             // Find all tokens
-            List objects = pi.findAllTokens();
+            List<Token> objects = pi.findAllTokens();
             Collection<Token> tokens = new ArrayList<Token>();
             for (Object object : objects) {
                 Token token = (Token) object;
@@ -1023,7 +1026,6 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         return WAPIGenerator.createWorkItemInstance(eti);
     }
 
-    @SuppressWarnings("unchecked")
     public void assignWorkItem(WMWorkItemInstance workItem,
             WMParticipant participant) {
 
@@ -1048,10 +1050,8 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         ctx.getContext().save(pi);
 
         ctx.closeContext();
-
     }
 
-    @SuppressWarnings("unchecked")
     public void unAssignWorkItem(WMWorkItemInstance workItem,
             WMParticipant participant) {
 
@@ -1072,7 +1072,6 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         ctx.getContext().save(pi);
 
         ctx.closeContext();
-
     }
 
     /**
@@ -1081,7 +1080,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
      * @param inputStream the jdpl
      * @return the status if the jpdl check
      */
-    private String[] getJpdlStatus(InputStream inputStream) {
+    private static String[] getJpdlStatus(InputStream inputStream) {
         NXJpdlXmlReader reader = new NXJpdlXmlReader(inputStream);
         // :XXX: return (String[]) reader.getStatus().toArray();
         String[] status = new String[reader.getStatus().size()];
@@ -1101,8 +1100,8 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
      * @param session a jbpm graph session
      * @return a jBPM ProcessDefinition instance
      */
-    private ProcessDefinition getProcessDefinition(String workflowDefinitionId,
-            GraphSession session) {
+    private static ProcessDefinition getProcessDefinition(
+            String workflowDefinitionId, GraphSession session) {
         return session.getProcessDefinition(IDConverter.getJbpmIdentifier(workflowDefinitionId));
     }
 
@@ -1110,12 +1109,12 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
      * Given a workflow instance id, return its corresponding jBPM process
      * instance.
      *
-     * @param workflowInstanceID a NXWorkflow workflow instansce ID
-     * @param session a jBPM graph sesssion
+     * @param workflowInstanceID a NXWorkflow workflow instance ID
+     * @param session a jBPM graph session
      * @return a jBPM ProcessInstance instance
      */
-    private ProcessInstance getProcessInstance(String workflowInstanceID,
-            GraphSession session) {
+    private static ProcessInstance getProcessInstance(
+            String workflowInstanceID, GraphSession session) {
         return session.getProcessInstance(IDConverter.getJbpmIdentifier(workflowInstanceID));
     }
 
@@ -1124,7 +1123,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
      *
      * @return
      */
-    private JbpmWorkflowExecutionContext getExecutionContext() {
+    private static JbpmWorkflowExecutionContext getExecutionContext() {
         return new JbpmWorkflowExecutionContext();
     }
 
@@ -1148,8 +1147,6 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
             WMActivityInstance activityInstance,
             WMWorkItemDefinition workItemDefinition,
             Map<String, Serializable> attrs) throws WMWorkflowException {
-
-        WMWorkItemInstance workItem;
 
         // Task aware activityDefinition ?
         if (!activityInstance.getActivityDefinition().isTaskAwareActivity()) {
@@ -1232,7 +1229,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
 
         ctx.getContext().save(pi);
 
-        workItem = WAPIGenerator.createWorkItemInstance(eti);
+        WMWorkItemInstance workItem = WAPIGenerator.createWorkItemInstance(eti);
 
         ctx.closeContext();
         return workItem;
@@ -1314,7 +1311,6 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
 
         ctx.getContext().save(pi);
         ctx.closeContext();
-
     }
 
     protected boolean isStateCandidate(TaskInstance taskInstance,
@@ -1384,7 +1380,6 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
 
         ctx.getContext().save(pi);
         ctx.closeContext();
-
     }
 
     public void updateProcessInstanceAttributes(String pid,
@@ -1412,6 +1407,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         ctx.closeContext();
     }
 
+    @SuppressWarnings("unchecked")
     public WMProcessInstanceIterator listProcessInstances(WMFilter filter)
             throws WMWorkflowException {
 
@@ -1426,7 +1422,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
             List defs = ctx.getGraphSession().findAllProcessDefinitions();
 
             for (Object pd : defs) {
-                List procs = ctx.getGraphSession().findProcessInstances(
+                List<ProcessInstance> procs = ctx.getGraphSession().findProcessInstances(
                         ((ProcessDefinition) pd).getId());
                 for (Object proc : procs) {
                     wprocs.add(WAPIGenerator.createProcessInstance((ProcessInstance) proc));
@@ -1538,7 +1534,6 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         }
 
         return filtered;
-
     }
 
     @SuppressWarnings("unchecked")

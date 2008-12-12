@@ -1047,9 +1047,9 @@ public class SearchServiceImpl extends DefaultComponent implements
     }
 
     public void setNumberOfIndexingThreads(int numberOfIndexingThreads) {
-        log.info("Setting indexing thread pool size: "
-                + Integer.toString(numberOfIndexingThreads));
-        this.threadPoolSizeMax = numberOfIndexingThreads;
+        log.info("Setting indexing thread pool size: " +
+                Integer.toString(numberOfIndexingThreads));
+        threadPoolSizeMax = numberOfIndexingThreads;
     }
 
     public void saveAllSessions() throws IndexingException {
@@ -1162,7 +1162,6 @@ public class SearchServiceImpl extends DefaultComponent implements
             // TODO: what should we *really* do here??
             throw new IllegalStateException("Could not commit transaction", e);
         }
-
     }
 
     // search policy methods

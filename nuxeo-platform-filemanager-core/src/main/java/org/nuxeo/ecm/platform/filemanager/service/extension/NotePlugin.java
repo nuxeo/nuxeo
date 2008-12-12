@@ -38,7 +38,7 @@ import org.nuxeo.ecm.platform.types.TypeManager;
  * Import the string content of a blob as text for the content of the "note"
  * field of a new Note document. If an existing document with the same title is
  * found the existing Note document is updated instead.
- * 
+ *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
 public class NotePlugin extends AbstractPlugin {
