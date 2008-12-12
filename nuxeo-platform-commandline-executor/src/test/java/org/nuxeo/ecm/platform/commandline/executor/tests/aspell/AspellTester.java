@@ -63,10 +63,10 @@ public class AspellTester extends NXRuntimeTestCase {
         }
 
         CmdParameters params = new CmdParameters();
-        params.addNamedParameter("lang", "fr_FR");
+        params.addNamedParameter("lang", "en_US");
         params.addNamedParameter("encoding", "utf-8");
 
-        String text2Check = "ceci est un test avec une fautte \n et encor une autre \n et une derniere pour la route";
+        String text2Check = "this is a teste with a typo";
         File file2Check = File.createTempFile("nuxeo-spell-check-in", "txt");
         PrintWriter printout = new PrintWriter(new BufferedWriter(
                 new FileWriter(file2Check)));
@@ -98,7 +98,7 @@ public class AspellTester extends NXRuntimeTestCase {
 
     protected boolean checkOutput(List<String> lines) {
         for (String line:lines) {
-            if (line.contains("& fautte 11 26")) {
+            if (line.contains("& teste 10 10")) {
                 return true;
             }
         }
