@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth;
 
-public final class NXAuthContants {
+public final class NXAuthConstants {
 
     public static final String PRINCIPAL_KEY = "org.nuxeo.ecm.Principal";
 
@@ -46,7 +46,7 @@ public final class NXAuthContants {
     public static final String ERROR_USERNAME_MISSING = "username.missing";
 
     // Constant utility class.
-    private NXAuthContants() {
+    private NXAuthConstants() {
     }
 
 }
