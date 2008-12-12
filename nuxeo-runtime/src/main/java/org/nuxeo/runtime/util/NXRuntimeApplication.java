@@ -32,9 +32,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class NXRuntimeApplication {
 
-    private static final Log log = LogFactory.getLog(NXRuntimeApplication.class);
-
     protected static RuntimeService runtime;
+
+    private static final Log log = LogFactory.getLog(NXRuntimeApplication.class);
 
     protected final File home;
 
@@ -83,7 +83,7 @@ public abstract class NXRuntimeApplication {
         try {
             Framework.getRuntime().getContext().deploy(url);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 
@@ -93,14 +93,13 @@ public abstract class NXRuntimeApplication {
         try {
             Framework.getRuntime().getContext().undeploy(url);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 
     public URL getResource(String resource) {
         return runtime.getContext().getResource(resource);
     }
-
 
     protected void deployAll() {
         //deploy("RemotingService.xml");

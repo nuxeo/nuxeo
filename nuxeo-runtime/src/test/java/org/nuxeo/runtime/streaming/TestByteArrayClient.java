@@ -41,9 +41,6 @@ public class TestByteArrayClient {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
-
-
 
 }

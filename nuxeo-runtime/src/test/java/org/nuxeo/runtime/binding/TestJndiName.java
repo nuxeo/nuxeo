@@ -61,6 +61,7 @@ public class TestJndiName extends TestCase {
         assertEquals(0, n1.compareTo(n3));
         assertEquals(0, n1.compareTo(n4));
 
+        //noinspection ObjectEqualsNull
         assertFalse(n1.equals(null));
         assertFalse(n1.equals(n5));
         assertFalse(n1.equals(n6));

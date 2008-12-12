@@ -26,12 +26,16 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.nuxeo.runtime.api.Framework;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Bogdan Stefanescu
  *
  */
 public abstract class PropertyDecoder {
+
+    private static final Log log = LogFactory.getLog(PropertyDecoder.class);
 
     private static final Map<String, PropertyDecoder> decoders = new HashMap<String, PropertyDecoder>();
 
@@ -45,7 +49,7 @@ public abstract class PropertyDecoder {
         try {
             return decoder == null ? value : decoder.decode(value);
         } catch (Throwable t) {
-            t.printStackTrace();
+            log.error(t);
             return null;
         }
     }

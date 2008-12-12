@@ -70,7 +70,6 @@ public class ServerImpl implements Server {
     }
 
     public String getName() {
-
         String name = Framework.getRuntime().getProperty("org.nuxeo.ecm.instance.name");
         if (name == null) {
             name = "Nuxeo Runtime Server";

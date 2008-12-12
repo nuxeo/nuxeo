@@ -98,8 +98,8 @@ public class ServiceManager implements org.nuxeo.runtime.ServiceManager {
     }
 
     protected void destroyProviders() {
-        if (this.providers != null) {
-            for (ServiceProvider provider : this.providers) {
+        if (providers != null) {
+            for (ServiceProvider provider : providers) {
                 provider.destroy();
             }
         }

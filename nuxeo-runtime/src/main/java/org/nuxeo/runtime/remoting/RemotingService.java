@@ -37,6 +37,7 @@ import org.nuxeo.runtime.config.v1.ConfigurationFactory1;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.remoting.transporter.NuxeoUnMarshaller;
 import org.nuxeo.runtime.remoting.transporter.TransporterClient;
 import org.nuxeo.runtime.remoting.transporter.TransporterServer;
@@ -133,8 +134,9 @@ public class RemotingService extends DefaultComponent {
         isServer = val.equalsIgnoreCase("true");
         if (isServer) {
             String locator = Framework.getProperty("org.nuxeo.runtime.server.locator", DEFAULT_LOCATOR);
+            RuntimeContext runtimeContext = context.getRuntimeContext();
+            server = new ServerImpl(this, runtimeContext.getRuntime());
             serverLocator = new InvokerLocator(locator);
-            server = new ServerImpl(this, context.getRuntimeContext().getRuntime());
             transporterServer = TransporterServer.createTransporterServer(
                     serverLocator, server, Server.class.getName());
 
@@ -150,7 +152,7 @@ public class RemotingService extends DefaultComponent {
                             new ObjectName(INVOKER_NAME));
                 }
             }
-            serviceBindings = new ServiceBindings(context.getRuntimeContext().getBundle().getBundleContext());
+            serviceBindings = new ServiceBindings(runtimeContext.getBundle().getBundleContext());
         }
     }
 
