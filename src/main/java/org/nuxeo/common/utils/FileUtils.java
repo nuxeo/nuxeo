@@ -19,6 +19,9 @@
 
 package org.nuxeo.common.utils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -45,6 +48,8 @@ public final class FileUtils {
     private static final int BUFFER_SIZE = 1024 * 64; // 64K
     private static final int MAX_BUFFER_SIZE = 1024 * 1024; // 64K
     private static final int MIN_BUFFER_SIZE = 1024 * 8; // 64K
+
+    private static final Log log = LogFactory.getLog(FileUtils.class);
 
     // This is an utility class
     private FileUtils() {
@@ -387,7 +392,7 @@ public final class FileUtils {
             try {
                 path = URLDecoder.decode(url.getPath(), "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                log.error(e);
             }
         }
         return path;
@@ -511,7 +516,7 @@ public final class FileUtils {
             try {
                 in.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e);
             }
         }
     }
@@ -521,7 +526,7 @@ public final class FileUtils {
             try {
                 out.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e);
             }
         }
     }
