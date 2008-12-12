@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.WrappedException;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ErrorHandler;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingListener;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.RequestDumper;
@@ -40,6 +41,8 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.RequestDumper
  *
  */
 public class NuxeoExceptionHandler {
+    private static String NUXEO_EXCEPTION_HANDLER_SET = "NUXEO_EXCEPTION_HANDLER_SET";
+
     private static Log log = LogFactory.getLog(NuxeoExceptionHandler.class);
 
     private String bundleName;
@@ -94,6 +97,13 @@ public class NuxeoExceptionHandler {
     public void handleException(HttpServletRequest request,
             HttpServletResponse response, Throwable t) throws IOException,
             ServletException {
+        String errorPage = null;
+        if (request.getAttribute(NUXEO_EXCEPTION_HANDLER_SET) != null) {
+            request.getRequestDispatcher(
+                    (String) request.getAttribute(NUXEO_EXCEPTION_HANDLER_SET)).forward(
+                    request, response);
+            return;
+        }
         ErrorHandler handler = getHandler(t);
         listener.startHandling(t, request, response);
         Throwable unwrappedException = unwrapException(t);
@@ -119,19 +129,26 @@ public class NuxeoExceptionHandler {
         Integer error = handler.getCode();
         if (error != null) {
             response.setStatus(error);
-        } else {
-            String errorPage = handler.getPage();
-            errorPage = (errorPage == null) ? defaultErrorPage : errorPage;
-            request.getRequestDispatcher(errorPage).forward(request, response);
         }
-
+        errorPage = handler.getPage();
+        errorPage = (errorPage == null) ? defaultErrorPage : errorPage;
+        request.setAttribute(NUXEO_EXCEPTION_HANDLER_SET, errorPage);
+        request.getRequestDispatcher(errorPage).forward(request, response);
         listener.afterDispatch(unwrappedException, request, response);
     }
 
     private ErrorHandler getHandler(Throwable t) {
-        String className = unwrapException(t).getClass().getName();
+        Throwable throwable = unwrapException(t);
+        String className = null;
+        if (throwable instanceof WrappedException) {
+            WrappedException wrappedException = (WrappedException) throwable;
+            className = wrappedException.getClassName();
+        } else {
+            className = throwable.getClass().getName();
+        }
         for (ErrorHandler handler : handlers) {
-            if (handler.getError() != null && className.matches(handler.getError())) {
+            if (handler.getError() != null
+                    && className.matches(handler.getError())) {
                 return handler;
             }
         }
