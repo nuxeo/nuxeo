@@ -31,16 +31,15 @@ import org.nuxeo.osgi.application.SharedClassLoader;
 public class NuxeoWebappClassLoader extends WebappClassLoader {
 
     public NuxeoWebappClassLoader() {
-
     }
 
-    public NuxeoWebappClassLoader(ClassLoader parent) {        
-        super (new SharedClassLoader(parent));
+    public NuxeoWebappClassLoader(ClassLoader parent) {
+        super(new SharedClassLoader(parent));
     }
 
     @Override
     public void addURL(URL url) {
         super.addURL(url);
-    }      
-    
+    }
+
 }

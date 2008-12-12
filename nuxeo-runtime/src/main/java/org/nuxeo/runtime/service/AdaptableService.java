@@ -31,8 +31,8 @@ import org.nuxeo.runtime.service.proxy.MethodInvocation;
 public interface AdaptableService extends Adaptable {
 
     boolean hasAdapter(Class<?> adapter);
-    
-    Object invokeAdapter(MethodInvocation invocation, Object[] args) 
+
+    Object invokeAdapter(MethodInvocation invocation, Object[] args)
             throws NoSuchAdapterException, InvocationTargetException, IllegalAccessException;
-    
+
 }

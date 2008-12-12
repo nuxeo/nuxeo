@@ -28,5 +28,5 @@ import org.nuxeo.runtime.model.Adaptable;
 public interface Service2 extends Adaptable {
 
     void m2();
-    
+
 }

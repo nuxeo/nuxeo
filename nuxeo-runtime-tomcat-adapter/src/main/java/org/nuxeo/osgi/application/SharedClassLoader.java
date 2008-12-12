@@ -30,7 +30,7 @@ import java.net.URLClassLoader;
  *
  */
 public class SharedClassLoader extends URLClassLoader {
-    
+
     public SharedClassLoader(ClassLoader parent) {
         this (new URL[0], parent);
     }
@@ -47,5 +47,5 @@ public class SharedClassLoader extends URLClassLoader {
     public void addURL(URL url) {
         super.addURL(url);
     }
-    
+
 }

@@ -22,7 +22,7 @@ package org.nuxeo.runtime.service.proxy;
 
 
 /**
- * 
+ *
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *

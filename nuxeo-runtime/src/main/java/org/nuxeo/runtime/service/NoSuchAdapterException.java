@@ -30,5 +30,5 @@ public class NoSuchAdapterException extends Exception {
     public NoSuchAdapterException(String adapterName) {
         super (adapterName);
     }
-    
+
 }

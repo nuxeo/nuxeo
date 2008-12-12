@@ -32,5 +32,5 @@ public class Service2Adapter extends AnnotatedAdapterFactory<Service1> {
     public <T> T getAdapter(Service1 instance, Class<T> adapter) {
         return adapter.cast(new Service2Impl(instance));
     }
-    
+
 }

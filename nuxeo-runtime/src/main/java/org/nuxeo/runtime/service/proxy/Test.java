@@ -26,9 +26,9 @@ package org.nuxeo.runtime.service.proxy;
 public class Test<T> {
 
     T obj;
-    
+
     public Test(T obj) {this.obj = obj;}
-    
+
     public static void main(String[] args) {
         Test<String> t = new Test<String>("abc");
         System.out.println(t.obj);
@@ -37,6 +37,6 @@ public class Test<T> {
         System.out.println(t.getClass().getTypeParameters()[0].getBounds()[0]);
         System.out.println(t.getClass().getTypeParameters()[0].getGenericDeclaration());
     }
-    
-    
+
+
 }

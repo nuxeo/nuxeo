@@ -24,8 +24,8 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Define wrappers for some methods on the target c;ass                                                                                                            
- * 
+/** Define wrappers for some methods on the target c;ass
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -37,7 +37,7 @@ public abstract class MethodsWrapper implements InvocationHandler {
     public MethodsWrapper(Class<?> klass) {
         methods = new ConcurrentHashMap<Method, Method>();
     }
-    
+
     protected void loadMethods() {
         methods = new ConcurrentHashMap<Method, Method>();
         Method[] methods = getClass().getMethods();
@@ -52,18 +52,18 @@ public abstract class MethodsWrapper implements InvocationHandler {
             }
         }
     }
-    
+
     public Method getWrappedMethod(Method method) {
         if (methods == null) {
             synchronized (this) {
                 if (methods == null) {
-                    loadMethods();                   
+                    loadMethods();
                 }
             }
         }
         return methods.get(method);
     }
-    
+
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
         Method m = methods.get(method);
@@ -73,5 +73,5 @@ public abstract class MethodsWrapper implements InvocationHandler {
             return method.invoke(this, args);
         }
     }
-    
+
 }

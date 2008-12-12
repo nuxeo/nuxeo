@@ -30,12 +30,12 @@ public class Main {
     public static void main(String[] args) throws Exception {
         AdapterManager mgr = AdapterManager.getInstance();
         mgr.registerAdapter(new Service2Adapter());
-        
+
         Service1Impl s1 = new Service1Impl();
         Service2 s2 = s1.getAdapter(Service2.class);
         s1.m1();
         s2.m2();
-        
+
     }
-    
+
 }

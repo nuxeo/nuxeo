@@ -39,68 +39,50 @@ import org.nuxeo.osgi.application.SharedClassLoader;
  *
  */
 public class NuxeoWebappLoader extends WebappLoader implements Constants {
-    
+
     protected boolean isStarted = false;
     protected String home = "nuxeo";
     protected String data;
     protected String tmp;
     protected String log;
-    protected String config;    
+    protected String config;
     protected String systemBundle;
     protected String bundles;
     protected String classPath;
     protected String args;
-    
+
     public void setHome(String root) {
         home = root;
     }
-    
+
     public String getHome() {
         return home;
     }
-        
-    /**
-     * @param tmp the tmp to set.
-     */
+
     public void setTmp(String tmp) {
         this.tmp = tmp;
     }
-    
-    /**
-     * @return the tmp.
-     */
+
     public String getTmp() {
         return tmp;
     }
-    
-    /**
-     * @param log the log to set.
-     */
+
     public void setLog(String log) {
         this.log = log;
     }
-    
-    /**
-     * @return the log.
-     */
+
     public String getLog() {
         return log;
     }
-    
-    /**
-     * @param data the data to set.
-     */
+
     public void setData(String data) {
         this.data = data;
     }
-    
-    /**
-     * @return the data.
-     */
+
     public String getData() {
         return data;
     }
-    
+
     public String getClassPath() {
         return classPath;
     }
@@ -109,72 +91,47 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         this.classPath = classPath;
     }
 
-    /**
-     * @param bundles the bundles to set.
-     */
     public void setBundles(String bundles) {
         this.bundles = bundles;
     }
-    
-    /**
-     * @return the bundles.
-     */
+
     public String getBundles() {
         return bundles;
     }
-    
-    /**
-     * @param config the config to set.
-     */
+
     public void setConfig(String config) {
         this.config = config;
     }
-    
-    /**
-     * @return the config.
-     */
+
     public String getConfig() {
         return config;
     }
-    
-    /**
-     * @param systemBundle the systemBundle to set.
-     */
+
     public void setSystemBundle(String systemBundle) {
         this.systemBundle = systemBundle;
     }
-    
-    /**
-     * @return the systemBundle.
-     */
+
     public String getSystemBundle() {
         return systemBundle;
     }
-    
-    
-    /**
-     * @param args the scanNestedJARs to set.
-     */
+
     public void setArgs(String args) {
         this.args = args;
     }
-    
-    /**
-     * @return the scanNestedJARs.
-     */
+
     public String getArgs() {
         return args;
     }
-    
-    
+
+
     @Override
-    public void start() throws LifecycleException {        
+    public void start() throws LifecycleException {
          // start tomcat webapp loader
         super.start();
         // start nuxeo osgi framework
         startFramework();
     }
-    
+
     @Override
     public void stop() throws LifecycleException {
         // stop nuxeo osgi framework
@@ -182,14 +139,14 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         // stop tomcat webapp loader
         super.stop();
     }
-   
+
     protected void stopFramework() {
         if (!isStarted) {
             return;
         }
         System.out.println("Stopping Nuxeo Framework");
     }
-    
+
     protected void startFramework() {
         File home = resolveHomeDirectory();
         if (home == null) {
@@ -198,13 +155,13 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         if (systemBundle == null) {
             System.err.println("The attribute 'systemBundle' is not defined, Check your context.xml file. Nuxeo will not be started.");
             return; // systemBundle is required
-        }  
-        
+        }
+
         Properties env = createEnvironment(home);
         try {
             File systemBundleFile = newFile(home, (String)env.get(SYSTEM_BUNDLE));
             SharedClassLoader loader = (SharedClassLoader)getClassLoader().getParent();
-            // add system bundle to class path so that we can instantiate the loader without having class not found errors          
+            // add system bundle to class path so that we can instantiate the loader without having class not found errors
             loader.addURL(systemBundleFile.toURI().toURL());
             // add any other nuxeo bundles and libs on the class path
             List<File> cp = null;
@@ -222,11 +179,11 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
             System.err.println("Failed to invoke nuxeo launcher");
             t.printStackTrace();
         }
-        
+
         isStarted = true;
     }
-    
-    
+
+
     public static File newFile(File home, String path) throws IOException {
         if (path.startsWith("/")) {
             return new File(path).getCanonicalFile();
@@ -262,7 +219,7 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         }
         return result;
     }
-    
+
     protected Properties createEnvironment(File homeDir) {
         Properties env = new Properties();
         env.put(SYSTEM_BUNDLE, systemBundle);
@@ -280,7 +237,7 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         }
         if (tmp != null) {
             env.put(TMP_DIR, tmp);
-        }        
+        }
         if (bundles != null) {
             env.put(BUNDLES, bundles);
         }
@@ -302,7 +259,7 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
             try {
                 Method method = StandardContext.class.getDeclaredMethod("getBasePath");
                 method.setAccessible(true);
-                path = (String)method.invoke(container);            
+                path = (String)method.invoke(container);
             } catch (Throwable t) {
                 t.printStackTrace();
                 System.err.println("Cannot find base path from context "+container.getClass()+". Trying to use 'nuxeo.path' system property");
@@ -312,7 +269,7 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
                     return null;
                 }
             }
-          path = path+"/"+home;  
+          path = path+"/"+home;
         }
         return new File(path);
     }

@@ -34,7 +34,7 @@ public abstract class AnnotatedAdapterFactory<O> implements AdapterFactory<O> {
         }
         return (Class<O>)anno.type();
     }
-    
+
     public Class<?>[] getAdapterTypes() {
         Adapter anno = getClass().getAnnotation(Adapter.class);
         if (anno == null) {
@@ -42,5 +42,5 @@ public abstract class AnnotatedAdapterFactory<O> implements AdapterFactory<O> {
         }
         return anno.interfaces();
     }
-    
+
 }

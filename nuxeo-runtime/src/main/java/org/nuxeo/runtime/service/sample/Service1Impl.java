@@ -31,6 +31,6 @@ public class Service1Impl extends AdaptableServiceImpl implements Service1 {
     public void m1() {
         System.out.println("method: Service1Impl::m1()");
     }
-    
-    
+
+
 }
