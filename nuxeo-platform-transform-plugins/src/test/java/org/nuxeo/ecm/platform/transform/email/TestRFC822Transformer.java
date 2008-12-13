@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.transform.email;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.nuxeo.common.utils.FileUtils;
@@ -51,10 +52,9 @@ public class TestRFC822Transformer extends AbstractPluginTestCase {
         super.tearDown();
     }
 
-    private Blob getTestBlob(String filePath) {
-        String path = FileUtils.getResourcePathFromContext(filePath);
-        Blob blob = new FileBlob(new File(path));
-        return blob;
+    private Blob getTestBlob(String filePath) throws Exception {
+        File file = FileUtils.getResourceFileFromContext(filePath);
+        return new FileBlob(file);
     }
 
     public void testTextEmailTransformation() throws Exception {
