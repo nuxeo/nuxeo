@@ -33,6 +33,8 @@ import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.AbstractDocumentWriter;
 import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Writes to a file or output stream the XML corresponding to the document
@@ -53,6 +55,8 @@ import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class XMLDocumentWriter extends AbstractDocumentWriter {
+
+    private static final Log log = LogFactory.getLog(XMLDocumentWriter.class);
 
     protected final OutputStream out;
 
@@ -94,7 +98,7 @@ public class XMLDocumentWriter extends AbstractDocumentWriter {
             try {
                 out.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e);
             }
         }
     }
