@@ -30,11 +30,11 @@ public final class BaseURL {
 
     private static final Log log = LogFactory.getLog(BaseURL.class);
 
-    protected static ServletRequest getRequest()
-    {
+    static ServletRequest getRequest() {
         final FacesContext facesContext = FacesContext.getCurrentInstance();
-        if (facesContext==null)
+        if (facesContext == null) {
             return null;
+        }
         ServletRequest request = (ServletRequest) facesContext.getExternalContext().getRequest();
         return request;
     }
@@ -42,7 +42,6 @@ public final class BaseURL {
     public static String getServerURL() {
         return getServerURL(getRequest(), false);
     }
-
 
     /**
      * @return Server URL as : protocol://serverName:port/

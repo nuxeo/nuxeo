@@ -12,15 +12,11 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 
 public class ThreadSafeCacheHolder<T> implements Serializable {
 
-    /**
-     *
-     */
+    public static final int DEFAULT_SIZE = 20;
+
     private static final long serialVersionUID = 1L;
 
-
-    protected Map<String, T> cacheMap = null;
-
-    public final static int DEFAULT_SIZE = 20;
+    protected Map<String, T> cacheMap;
 
     protected ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
 
@@ -34,15 +30,17 @@ public class ThreadSafeCacheHolder<T> implements Serializable {
 
     protected String getKey(DocumentRef docRef, String key) {
         if (docRef == null) {
-            if (key == null)
+            if (key == null) {
                 return "default";
-            else
+            } else {
                 return key;
+            }
         } else {
-            if (key == null)
+            if (key == null) {
                 return docRef.toString();
-            else
+            } else {
                 return docRef.toString() + "-" + key;
+            }
         }
     }
 
@@ -56,12 +54,12 @@ public class ThreadSafeCacheHolder<T> implements Serializable {
             throw new ClientRuntimeException(e);
         }
         if (key == null) {
-            if (modified != null)
+            if (modified != null) {
                 key = modified.toString();
-        }
-
-        else
+            }
+        } else {
             key = key + "-" + key;
+        }
 
         return getKey(docRef, key);
     }

@@ -16,11 +16,8 @@ public class SeamJsfSessionManager extends DefaultSessionManager implements
         NuxeoAuthenticationSessionManager {
 
     @Override
-    public boolean canBypassRequest(ServletRequest request)
-    {
-        if (request instanceof FancyURLRequestWrapper)
-            return true;
-        return false;
+    public boolean canBypassRequest(ServletRequest request) {
+        return request instanceof FancyURLRequestWrapper;
     }
 
     @Override
@@ -32,7 +29,6 @@ public class SeamJsfSessionManager extends DefaultSessionManager implements
             super.onBeforeSessionInvalidate(request);
         }
     }
-
 
     @Override
     public void onBeforeSessionReinit(ServletRequest request) {

@@ -92,6 +92,10 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     // static cache of default viewId per document type shared all among threads
     private static final Map<String, String> defaultViewCache = Collections.synchronizedMap(new HashMap<String, String>());
 
+    // Utility class.
+    private DocumentModelFunctions() {
+    }
+
     private static DirectoryService getDirectoryService() {
         if (dirService == null) {
             dirService = DirectoryHelper.getDirectoryService();
@@ -137,10 +141,6 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             defaultViewCache.put(docType, defaultView);
             return defaultView;
         }
-    }
-
-    // Utility class.
-    private DocumentModelFunctions() {
     }
 
     public static TypeInfo typeInfo(DocumentModel document) {
