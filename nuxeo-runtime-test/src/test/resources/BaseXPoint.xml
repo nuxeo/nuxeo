@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-
 <component name="BaseXPoint" version="1.0.0">
+
   <documentation>
-  This component is declaring one extension point that will be
-  overrided by another extension point from OverrindingXPoint.xml
+    This component is declaring one extension point that will be
+    overrided by another extension point from OverrindingXPoint.xml
   </documentation>
 
   <implementation class="org.nuxeo.runtime.ComponentWithXPoint"/>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.runtime.server">
   <implementation
-          class="org.nuxeo.runtime.gf3.GF3Component" />
+      class="org.nuxeo.runtime.gf3.GF3Component"/>
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)
     GlassFish3 Server
@@ -9,7 +9,7 @@
 
   <service>
     <provide
-      interface="org.mortbay.jetty.Server" />
+        interface="org.mortbay.jetty.Server"/>
   </service>
 
   <extension-point name="webapp">

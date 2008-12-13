@@ -1,16 +1,15 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.runtime.ScriptingComponent" version="1.0">
   <documentation>
-  A scripting service. Adds scripting capability by using JSR223.
+    A scripting service. Adds scripting capability by using JSR223.
 
-  @author Bogdan Stefanescu (bs@nuxeo.com)
+    @author Bogdan Stefanescu (bs@nuxeo.com)
   </documentation>
 
   <implementation class="org.nuxeo.runtime.scripting.ScriptingComponent"/>
 
   <service>
-    <provide interface="org.nuxeo.runtime.scripting.ScriptingService" />
+    <provide interface="org.nuxeo.runtime.scripting.ScriptingService"/>
   </service>
 
   <property name="isServer" value="true" type="Boolean"/>
@@ -21,4 +20,3 @@
   </extension-point>
 
 </component>
-

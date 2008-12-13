@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.runtime.remoting.RemotingService" version="1.0.0">
   <documentation>
-  A service that expose an administration interface via jboss-remoting
+  A service that expose an administration interface via jboss-remoting.
+
   @property discovery whether the remoting discovery should be enabled.
-  By default this is disabled.
+             By default this is disabled.
   @property debug whether or not this is a debug session
   @property server-host (optional) the host ip, defaults to InetAddress.getLocalHost().getHostAddress()
   @property server-port (optional) the host port, defaults to 62474
@@ -29,7 +29,6 @@
   <property name="net-factory" value="org.nuxeo.runtime.remoting.net.impl.NetworkNodeFactoryImpl"/>
   <!-- property name="net-group" value="socket://192.168.2.12:62474/nxruntime"/-->
   <property name="net-group" value="socket://127.0.0.1:62474/nxruntime"/>
-
 
 </component>
 

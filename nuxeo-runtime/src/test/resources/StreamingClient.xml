@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.runtime.remoting.StreamingClient" version="1.0.0">
   <documentation>
   A streaming service. It behaves like a registry of streams that can be created and retrieved from remote.
