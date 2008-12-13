@@ -1,0 +1,8 @@
+<ul>
+  <#assign items="${nxthemesInfo.model.children}" />
+  <#list items as item>
+    <li>
+      <a href="${item.url}">${item.title}</a>
+    </li>
+  </#list>
+</ul>

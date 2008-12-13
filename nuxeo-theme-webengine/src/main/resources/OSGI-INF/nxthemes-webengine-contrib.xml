@@ -123,6 +123,20 @@
       </class>
     </view>   
 
+    <view name="vertical menu" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <model-type>menu item</model-type>
+      <template>nxthemes/webengine/widgets/vertical-menu.xml</template>
+    </view>
+
+    <view name="horizontal tabs" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <model-type>menu item</model-type>
+      <template>
+        nxthemes/webengine/widgets/horizontal-tabs.xml
+      </template>
+    </view>
+    
     <view name="plain text" template-engine="freemarker">
       <format-type>widget</format-type>
       <model-type>text</model-type>
