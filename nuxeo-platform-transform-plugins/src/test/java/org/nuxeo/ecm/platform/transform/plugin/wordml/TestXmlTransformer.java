@@ -17,7 +17,7 @@
  * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
-package org.nuxeo.ecm.platform.transform.wordml;
+package org.nuxeo.ecm.platform.transform.plugin.wordml;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

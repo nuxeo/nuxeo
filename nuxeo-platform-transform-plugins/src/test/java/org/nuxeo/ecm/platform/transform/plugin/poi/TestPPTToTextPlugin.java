@@ -14,10 +14,10 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: TestPDFBoxTransformer.java 28924 2008-01-10 14:04:05Z sfermigier $
+ * $Id$
  */
 
-package org.nuxeo.ecm.platform.transform.pdfbox;
+package org.nuxeo.ecm.platform.transform.plugin.poi;
 
 import java.io.File;
 import java.util.List;
@@ -26,44 +26,39 @@ import org.nuxeo.ecm.platform.transform.AbstractPluginTestCase;
 import org.nuxeo.ecm.platform.transform.DocumentTestUtils;
 import org.nuxeo.ecm.platform.transform.document.TransformDocumentImpl;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
-import org.nuxeo.ecm.platform.transform.interfaces.Transformer;
+import org.nuxeo.ecm.platform.transform.interfaces.Plugin;
+import org.nuxeo.ecm.platform.transform.timer.SimpleTimer;
 
-/**
- * Test the PDFBoxplugin for pdf to text transformation.
- *
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
- */
-public class TestPDFBoxTransformer extends AbstractPluginTestCase {
+public class TestPPTToTextPlugin extends AbstractPluginTestCase {
 
-    private Transformer transformer;
+    private Plugin plugin;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        transformer = service.getTransformerByName("pdf2text");
+        plugin = service.getPluginByName("ppt2text_poi");
     }
 
     @Override
     public void tearDown() throws Exception {
-        transformer = null;
+        plugin = null;
         super.tearDown();
     }
 
-    public void testPDF2textConversion() throws Exception {
-        String path = "test-data/hello.pdf";
+    public void testSmallPpt2textConversion() throws Exception {
+        String path = "test-data/hello.ppt";
 
-        TransformDocumentImpl transformDocument = new TransformDocumentImpl(
-                getBlobFromPath(path), "application/pdf");
-        List<TransformDocument> results = transformer.transform(null,
-                transformDocument);
+        SimpleTimer timer = new SimpleTimer();
+        timer.start();
+        List<TransformDocument> results = plugin.transform(null,
+                new TransformDocumentImpl(getBlobFromPath(path)));
+        timer.stop();
+        System.out.println(timer);
 
         File textFile = getFileFromInputStream(
                 results.get(0).getBlob().getStream(), "txt");
-        textFile.deleteOnExit();
-        assertEquals("text content", "Hello  from  a PDF Document!",
+        assertEquals("text content", "Hello from a Microsoft PowerPoint Presentation!",
                 DocumentTestUtils.readContent(textFile));
-        textFile.delete();
     }
 
 }

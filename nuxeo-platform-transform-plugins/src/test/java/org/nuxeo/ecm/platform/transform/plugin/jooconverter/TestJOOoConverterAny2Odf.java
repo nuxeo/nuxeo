@@ -17,7 +17,7 @@
  * $Id: TestJOOoConverterAny2Odf.java 28924 2008-01-10 14:04:05Z sfermigier $
  */
 
-package org.nuxeo.ecm.platform.transform.jooconverter;
+package org.nuxeo.ecm.platform.transform.plugin.jooconverter;
 
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class TestJOOoConverterAny2Odf extends AbstractPluginTestCase {
         List<TransformDocument> results = service.transform("any2odt", null,
                 new TransformDocumentImpl(getBlobFromPath(path)));
 
-        assertTrue(!results.isEmpty());
+        assertFalse(results.isEmpty());
         assertEquals("application/vnd.oasis.opendocument.text",
                 results.get(0).getMimetype());
     }
@@ -53,7 +53,7 @@ public class TestJOOoConverterAny2Odf extends AbstractPluginTestCase {
         List<TransformDocument> results = service.transform("any2ods", null,
                 new TransformDocumentImpl(getBlobFromPath(path)));
 
-        assertTrue(!results.isEmpty());
+        assertFalse(results.isEmpty());
         assertEquals("application/vnd.oasis.opendocument.spreadsheet",
                 results.get(0).getMimetype());
     }
@@ -63,7 +63,7 @@ public class TestJOOoConverterAny2Odf extends AbstractPluginTestCase {
         List<TransformDocument> results = service.transform("any2odp", null,
                 new TransformDocumentImpl(getBlobFromPath(path)));
 
-        assertTrue(!results.isEmpty());
+        assertFalse(results.isEmpty());
         assertEquals("application/vnd.oasis.opendocument.presentation",
                 results.get(0).getMimetype());
     }
@@ -73,7 +73,7 @@ public class TestJOOoConverterAny2Odf extends AbstractPluginTestCase {
         List<TransformDocument> results = service.transform("any2odt", null,
                 new TransformDocumentImpl(getBlobFromPath(path)));
 
-        assertTrue(!results.isEmpty());
+        assertFalse(results.isEmpty());
         assertEquals("application/vnd.oasis.opendocument.text",
                 results.get(0).getMimetype());
     }
@@ -83,7 +83,7 @@ public class TestJOOoConverterAny2Odf extends AbstractPluginTestCase {
         List<TransformDocument> results = service.transform("any2ods", null,
                 new TransformDocumentImpl(getBlobFromPath(path)));
 
-        assertTrue(!results.isEmpty());
+        assertFalse(results.isEmpty());
         assertEquals("application/vnd.oasis.opendocument.spreadsheet",
                 results.get(0).getMimetype());
     }
@@ -93,7 +93,7 @@ public class TestJOOoConverterAny2Odf extends AbstractPluginTestCase {
         List<TransformDocument> results = service.transform("any2odp", null,
                 new TransformDocumentImpl(getBlobFromPath(path)));
 
-        assertTrue(!results.isEmpty());
+        assertFalse(results.isEmpty());
         assertEquals("application/vnd.oasis.opendocument.presentation",
                 results.get(0).getMimetype());
     }

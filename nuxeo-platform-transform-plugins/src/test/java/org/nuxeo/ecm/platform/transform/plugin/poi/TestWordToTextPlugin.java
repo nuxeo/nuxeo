@@ -14,10 +14,10 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: TestWordToTextTransformer.java 28924 2008-01-10 14:04:05Z sfermigier $
+ * $Id: TestWordToTextPlugin.java 28924 2008-01-10 14:04:05Z sfermigier $
  */
 
-package org.nuxeo.ecm.platform.transform.poi;
+package org.nuxeo.ecm.platform.transform.plugin.poi;
 
 import java.io.File;
 import java.util.List;
@@ -28,7 +28,7 @@ import org.nuxeo.ecm.platform.transform.AbstractPluginTestCase;
 import org.nuxeo.ecm.platform.transform.DocumentTestUtils;
 import org.nuxeo.ecm.platform.transform.document.TransformDocumentImpl;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
-import org.nuxeo.ecm.platform.transform.interfaces.Transformer;
+import org.nuxeo.ecm.platform.transform.interfaces.Plugin;
 import org.nuxeo.ecm.platform.transform.timer.SimpleTimer;
 
 /**
@@ -37,19 +37,19 @@ import org.nuxeo.ecm.platform.transform.timer.SimpleTimer;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
  */
-public class TestWordToTextTransformer extends AbstractPluginTestCase {
+public class TestWordToTextPlugin extends AbstractPluginTestCase {
 
-    private Transformer transformer;
+    private Plugin plugin;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        transformer = service.getTransformerByName("word2text_poi");
+        plugin = service.getPluginByName("word2text_poi");
     }
 
     @Override
     public void tearDown() throws Exception {
-        transformer = null;
+        plugin = null;
         super.tearDown();
     }
 
@@ -58,7 +58,7 @@ public class TestWordToTextTransformer extends AbstractPluginTestCase {
 
         SimpleTimer timer = new SimpleTimer();
         timer.start();
-        List<TransformDocument> results = transformer.transform(null,
+        List<TransformDocument> results = plugin.transform(null,
                 new TransformDocumentImpl(getBlobFromPath(path)));
         timer.stop();
         System.out.println(timer);
@@ -78,14 +78,14 @@ public class TestWordToTextTransformer extends AbstractPluginTestCase {
 
         SimpleTimer timer = new SimpleTimer();
         timer.start();
-        List<TransformDocument> results = transformer.transform(null,
+        List<TransformDocument> results = plugin.transform(null,
                 new TransformDocumentImpl(blob));
         timer.stop();
         System.out.println(timer);
 
         File textFile = getFileFromInputStream(
                 results.get(0).getBlob().getStream(), "txt");
-        assertTrue(textFile.length() > 1);
+        assertTrue(textFile.length() > 0);
 
         // Debug => see the output
         // File dst = File.createTempFile("poitest", ".txt");

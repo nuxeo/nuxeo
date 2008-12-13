@@ -17,7 +17,7 @@
  * $Id: TestWordToTextService.java 28924 2008-01-10 14:04:05Z sfermigier $
  */
 
-package org.nuxeo.ecm.platform.transform.poi;
+package org.nuxeo.ecm.platform.transform.plugin.poi;
 
 import java.io.File;
 import java.util.List;

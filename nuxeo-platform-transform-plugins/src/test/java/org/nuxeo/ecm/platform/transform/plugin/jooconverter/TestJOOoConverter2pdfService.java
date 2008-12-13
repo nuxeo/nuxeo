@@ -17,7 +17,7 @@
  * $Id: TestJOOoConverter2pdfService.java 28989 2008-01-12 23:08:51Z sfermigier $
  */
 
-package org.nuxeo.ecm.platform.transform.jooconverter;
+package org.nuxeo.ecm.platform.transform.plugin.jooconverter;
 
 import java.io.File;
 import java.util.List;

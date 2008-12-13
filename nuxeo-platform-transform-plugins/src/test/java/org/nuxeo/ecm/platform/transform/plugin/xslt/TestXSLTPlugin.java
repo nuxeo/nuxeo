@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.transform.xslt;
+package org.nuxeo.ecm.platform.transform.plugin.xslt;
 
 import java.io.File;
 import java.io.FileInputStream;

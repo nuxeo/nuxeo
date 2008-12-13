@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,35 +12,35 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     troger
  *
- * $Id: TestPDFBoxTransformer.java 18430 2007-05-09 13:48:36Z sfermigier $
+ * $Id$
  */
 
-package org.nuxeo.ecm.platform.transform.pdfbox;
+package org.nuxeo.ecm.platform.transform.plugin.html;
 
-import java.io.File;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.transform.AbstractPluginTestCase;
-import org.nuxeo.ecm.platform.transform.document.TransformDocumentImpl;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
 import org.nuxeo.ecm.platform.transform.interfaces.Transformer;
 
 /**
- * Test the PDFBoxplugin for pdf to text transformation.
- *
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  *
  */
-public class TestPD2ImageTransformer extends AbstractPluginTestCase {
+public class TestHtml2TextTransformer extends AbstractPluginTestCase {
+
+    private static final String TRANSFORMER_NAME = "html2text";
 
     private Transformer transformer;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        transformer = service.getTransformerByName("pdf2png");
+        transformer = service.getTransformerByName(TRANSFORMER_NAME);
     }
 
     @Override
@@ -49,16 +49,17 @@ public class TestPD2ImageTransformer extends AbstractPluginTestCase {
         super.tearDown();
     }
 
-    public void testPDF2ImageConversion() throws Exception {
-        String path = "test-data/hello.pdf";
+    public void testHtml2TextTransformation() throws Exception {
+        String html = "<em>this is</em> a     <strong>Test</strong>\n <em>test4</em>\n te4s4t\n 12345";
+        String expected = "this is a Test test4 te4s4t 12345";
 
         List<TransformDocument> results = transformer.transform(null,
-                new TransformDocumentImpl(getBlobFromPath(path),
-                        "application/pdf"));
+                new StringBlob(html));
 
-        File outFile = getFileFromInputStream(results.get(0).getBlob().getStream(), "png");
-        assertNotNull(outFile);
-        outFile.delete();
+        Blob result = results.get(0).getBlob();
+
+        assertEquals("text/plain", result.getMimeType());
+        assertEquals(expected, result.getString());
+        System.out.println("RESULT: " + result.getString());
     }
-
 }

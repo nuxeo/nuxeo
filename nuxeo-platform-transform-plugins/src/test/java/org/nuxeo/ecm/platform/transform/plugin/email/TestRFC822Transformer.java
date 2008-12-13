@@ -17,10 +17,9 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.transform.email;
+package org.nuxeo.ecm.platform.transform.plugin.email;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.nuxeo.common.utils.FileUtils;

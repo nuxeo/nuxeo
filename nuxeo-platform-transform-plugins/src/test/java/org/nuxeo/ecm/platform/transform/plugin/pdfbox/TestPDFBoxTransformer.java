@@ -14,10 +14,10 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: TestPDFBoxPlugin.java 28924 2008-01-10 14:04:05Z sfermigier $
+ * $Id: TestPDFBoxTransformer.java 28924 2008-01-10 14:04:05Z sfermigier $
  */
 
-package org.nuxeo.ecm.platform.transform.pdfbox;
+package org.nuxeo.ecm.platform.transform.plugin.pdfbox;
 
 import java.io.File;
 import java.util.List;
@@ -26,7 +26,7 @@ import org.nuxeo.ecm.platform.transform.AbstractPluginTestCase;
 import org.nuxeo.ecm.platform.transform.DocumentTestUtils;
 import org.nuxeo.ecm.platform.transform.document.TransformDocumentImpl;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
-import org.nuxeo.ecm.platform.transform.plugin.pdfbox.api.PDFBoxPlugin;
+import org.nuxeo.ecm.platform.transform.interfaces.Transformer;
 
 /**
  * Test the PDFBoxplugin for pdf to text transformation.
@@ -34,47 +34,36 @@ import org.nuxeo.ecm.platform.transform.plugin.pdfbox.api.PDFBoxPlugin;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
  */
-public class TestPDFBoxPlugin extends AbstractPluginTestCase {
+public class TestPDFBoxTransformer extends AbstractPluginTestCase {
 
-    private PDFBoxPlugin plugin;
+    private Transformer transformer;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        plugin = (PDFBoxPlugin) service.getPluginByName("pdf2text");
+        transformer = service.getTransformerByName("pdf2text");
     }
 
     @Override
     public void tearDown() throws Exception {
-        plugin = null;
+        transformer = null;
         super.tearDown();
     }
 
     public void testPDF2textConversion() throws Exception {
         String path = "test-data/hello.pdf";
 
-        List<TransformDocument> results = plugin.transform(null,
-                new TransformDocumentImpl(getBlobFromPath(path),
-                        "application/pdf"));
+        TransformDocumentImpl transformDocument = new TransformDocumentImpl(
+                getBlobFromPath(path), "application/pdf");
+        List<TransformDocument> results = transformer.transform(null,
+                transformDocument);
 
         File textFile = getFileFromInputStream(
                 results.get(0).getBlob().getStream(), "txt");
+        textFile.deleteOnExit();
         assertEquals("text content", "Hello  from  a PDF Document!",
                 DocumentTestUtils.readContent(textFile));
-    }
-
-    public void testPDFProtected2textConversion() throws Exception {
-        String path = "test-data/metro.pdf";
-
-        List<TransformDocument> results = plugin.transform(null,
-                new TransformDocumentImpl(getBlobFromPath(path),
-                        "application/pdf"));
-
-        // The file is protected and should therefore return an empty string
-        File textFile = getFileFromInputStream(
-                results.get(0).getBlob().getStream(), "txt");
-        assertEquals("text content", "",
-                DocumentTestUtils.readContent(textFile));
+        textFile.delete();
     }
 
 }

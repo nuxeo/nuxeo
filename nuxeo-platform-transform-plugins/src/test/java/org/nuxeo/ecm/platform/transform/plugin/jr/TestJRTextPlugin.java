@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.transform.jr;
+package org.nuxeo.ecm.platform.transform.plugin.jr;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,9 +27,6 @@ import org.nuxeo.ecm.platform.transform.AbstractPluginTestCase;
 import org.nuxeo.ecm.platform.transform.DocumentTestUtils;
 import org.nuxeo.ecm.platform.transform.document.TransformDocumentImpl;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
-import org.nuxeo.ecm.platform.transform.plugin.jr.ExcelToTextPlugin;
-import org.nuxeo.ecm.platform.transform.plugin.jr.HtmlToTextPlugin;
-import org.nuxeo.ecm.platform.transform.plugin.jr.OOoSimpleTextExtractor;
 import org.nuxeo.ecm.platform.transform.plugin.xml.Xml2TextPluginImpl;
 import org.nuxeo.ecm.platform.transform.timer.SimpleTimer;
 
