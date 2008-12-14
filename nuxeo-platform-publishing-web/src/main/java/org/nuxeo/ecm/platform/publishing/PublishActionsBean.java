@@ -237,9 +237,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
             DocumentModel doc = navigationContext.getCurrentDocument();
             this.currentDocRef = doc.getRef();
             this.currentParentRef = doc.getParentRef();
-            /*
-             * Get the available sections, using the base session.
-             */
+
+            //Get the available sections, using the base session.
             getSectionRootTypes();
             getSectionTypes();
             sections = new DocumentModelTreeImpl();

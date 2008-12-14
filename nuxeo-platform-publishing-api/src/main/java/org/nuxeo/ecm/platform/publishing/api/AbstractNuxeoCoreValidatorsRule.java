@@ -33,7 +33,6 @@ import org.nuxeo.runtime.api.Framework;
  * to compute validators.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public abstract class AbstractNuxeoCoreValidatorsRule implements ValidatorsRule {
 

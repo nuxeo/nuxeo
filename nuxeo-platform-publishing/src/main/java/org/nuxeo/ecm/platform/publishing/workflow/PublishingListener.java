@@ -132,7 +132,6 @@ public class PublishingListener implements MessageListener {
     }
 
     private void moderate(DocumentMessage msg) throws Exception {
-
         log.debug("Moderation will occur for dm=" + msg.getPathAsString());
 
         // Start actual publishing workflow.
