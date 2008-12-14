@@ -183,10 +183,10 @@ public class QueryConverter {
 
     /**
      * Direct query string for experts.
-     * 
+     *
      * @param query
      * @param principal
-     * @return The wrapped query, intersected with security query
+     * @return the wrapped query, intersected with security query
      * @throws QueryException if the list of permissions to query cannot be
      *             fetched
      */
@@ -280,10 +280,10 @@ public class QueryConverter {
      * <p>
      * Must not depend on searchEngine to stay unit testable without it.
      *
-     * @param op The operator
-     * @param right Right hand side of the clause
+     * @param op the operator
+     * @param right the right hand side of the clause
      * @param analyzer if necessary
-     * @param type the indexing type. Case insensitive.
+     * @param type the indexing type (case insensitive)
      * @return a compass Query or null to mean it's logically equivalent to a
      *         MatchAllDocQuery
      * @throws QueryException
@@ -430,9 +430,9 @@ public class QueryConverter {
             if (!isString) {
                 try {
                     return builder.term(name, rightOb);
+                // FIXME: wrong exception to catch
                 } catch (NullPointerException e) {
-                    log.error("Failed building query on property " + name);
-                    e.printStackTrace();
+                    log.error("Failed building query on property " + name, e);
                     throw new QueryException(e.getMessage(), e);
                 }
             }
@@ -509,9 +509,9 @@ public class QueryConverter {
                         "\\\\$0"), value.replaceAll(PER_PROP_ESCAPE, "\\\\$0")));
 
         if (session.getSettings().getSettingAsBoolean("useAndDefaultOperator",
-                false))
+                false)) {
             sBuilder.useAndDefaultOperator();
-
+        }
         if (analyzer != null) {
             sBuilder.setAnalyzer(analyzer);
         }

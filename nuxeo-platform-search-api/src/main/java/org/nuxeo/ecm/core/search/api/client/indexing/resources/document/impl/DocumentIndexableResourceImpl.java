@@ -104,7 +104,6 @@ public class DocumentIndexableResourceImpl extends
     public DocumentIndexableResourceImpl() {
     }
 
-    @SuppressWarnings("unchecked")
     public DocumentIndexableResourceImpl(DocumentModel dm,
             IndexableResourceConf conf, String sid) {
         super(conf != null ? conf.getName() : null, conf, sid,
@@ -143,7 +142,7 @@ public class DocumentIndexableResourceImpl extends
         if (dm.getDeclaredFacets() != null) {
             docFacets = new ArrayList<String>(dm.getDeclaredFacets());
         } else {
-            docFacets = Collections.EMPTY_LIST;
+            docFacets = Collections.emptyList();
         }
 
         // SCHEMAS (this could be more lazy: needed by getValueFor only
@@ -152,7 +151,7 @@ public class DocumentIndexableResourceImpl extends
             docSchemas = new HashSet<String>();
             docSchemas.addAll(Arrays.asList(schemas));
         } else {
-            docSchemas = Collections.EMPTY_SET;
+            docSchemas = Collections.emptySet();
         }
 
         if (dm instanceof DocumentModelImpl) {
@@ -326,12 +325,11 @@ public class DocumentIndexableResourceImpl extends
         return isDocProxy;
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getDocFacets() {
         if (docFacets != null) {
             return docFacets;
         }
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override

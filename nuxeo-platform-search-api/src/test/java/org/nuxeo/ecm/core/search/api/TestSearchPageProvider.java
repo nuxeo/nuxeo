@@ -82,15 +82,11 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
     private ResultItem resultItem;
 
     @Override
-    public void setUp() {
-        try {
-            super.setUp();
-            resultItem = new ResultItemImpl(buildResultItemMap(), "the_id");
-            deployBundle("org.nuxeo.ecm.core.schema");
-            deployBundle("org.nuxeo.ecm.core");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void setUp() throws Exception {
+        super.setUp();
+        resultItem = new ResultItemImpl(buildResultItemMap(), "the_id");
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core");
     }
 
     private static Map<String, Serializable> buildResultItemMap() {

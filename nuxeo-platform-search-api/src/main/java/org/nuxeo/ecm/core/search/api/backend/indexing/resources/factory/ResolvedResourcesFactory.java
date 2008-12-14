@@ -158,7 +158,7 @@ public class ResolvedResourcesFactory implements Serializable {
         try {
             ob = resource.getValueFor(resourceName + ':' + dataKeyName);
         } catch (IndexingException ie) {
-            log.info("Got an exception while retrieving " + field + "on "
+            log.warn("Got an exception while retrieving " + field + "on "
                     + resource.toString());
             return "";
         }
@@ -253,7 +253,7 @@ public class ResolvedResourcesFactory implements Serializable {
             try {
                 return blob.getString();
             } catch (IOException e) {
-                log.info("Couldn't convert to fulltext..." + e.getMessage());
+                log.warn("Couldn't convert to fulltext..." + e.getMessage());
                 return "";
             }
         }

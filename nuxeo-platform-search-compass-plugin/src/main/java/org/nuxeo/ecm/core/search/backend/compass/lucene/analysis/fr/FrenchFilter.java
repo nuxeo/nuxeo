@@ -33,10 +33,12 @@ public class FrenchFilter extends TokenFilter implements StandardTokenizerConsta
         super(in);
     }
 
+    @Override
     public Token next() throws IOException {
         Token token = input.next();
-        if( token == null ) return null;
-
+        if (token == null) {
+            return null;
+        }
 
         String text = token.termText();
         String type = token.type();

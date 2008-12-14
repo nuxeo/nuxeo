@@ -64,10 +64,6 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.R
  */
 public class SearchPageProvider implements PagedDocumentsProvider {
 
-    private static final long serialVersionUID = 4391326971391218440L;
-
-    private static final Log log = LogFactory.getLog(SearchPageProvider.class);
-
     // to be used by the blob filter to transform maps into blob instances
 
     public static final String BLOB_DATA_KEY = "data";
@@ -82,7 +78,13 @@ public class SearchPageProvider implements PagedDocumentsProvider {
 
     public static final String BLOB_LENGTH_KEY = "length";
 
+    private static final long serialVersionUID = 4391326971391218440L;
+
+    private static final Log log = LogFactory.getLog(SearchPageProvider.class);
+
     private static final DocumentModelList EMPTY = new DocumentModelListImpl();
+
+    private static final Map<String, String> prefix2SchemaNameCache = new HashMap<String, String>();
 
     private ResultSet searchResults;
 
@@ -108,8 +110,6 @@ public class SearchPageProvider implements PagedDocumentsProvider {
     private boolean pageChanged = false;
 
     private SchemaManager typeManager;
-
-    private static final Map<String, String> prefix2SchemaNameCache = new HashMap<String, String>();
 
     /**
      * Constructor to create a sortable provider. Note that a provider can be
@@ -367,7 +367,6 @@ public class SearchPageProvider implements PagedDocumentsProvider {
         return new DocumentModelListImpl(res);
     }
 
-    @SuppressWarnings("unchecked")
     private DocumentModel constructDocumentModel(ResultItem rItem)
             throws SearchException {
 
@@ -422,7 +421,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
 
         List<String> facetsList = (List<String>) rItem.get(BuiltinDocumentFields.FIELD_DOC_FACETS);
         if (facetsList == null) {
-            facetsList = Collections.EMPTY_LIST;
+            facetsList = Collections.emptyList();
         }
 
         Set<String> facets = new HashSet<String>(facetsList);

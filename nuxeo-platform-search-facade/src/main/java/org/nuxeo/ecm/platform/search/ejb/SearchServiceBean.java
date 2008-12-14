@@ -171,9 +171,8 @@ public class SearchServiceBean implements SearchService {
         return resultSet;
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getSupportedAnalyzersFor(String backendName) {
-        List<String> capabilities = Collections.EMPTY_LIST;
+        List<String> capabilities = Collections.emptyList();
         if (getSearchService() != null) {
             capabilities = getSearchService().getSupportedAnalyzersFor(
                     backendName);
@@ -183,9 +182,8 @@ public class SearchServiceBean implements SearchService {
         return capabilities;
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getSupportedFieldTypes(String backendName) {
-        List<String> capabilities = Collections.EMPTY_LIST;
+        List<String> capabilities = Collections.emptyList();
         if (getSearchService() != null) {
             capabilities = getSearchService().getSupportedFieldTypes(
                     backendName);

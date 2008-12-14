@@ -35,11 +35,13 @@ import org.nuxeo.ecm.core.search.api.client.indexing.resources.factory.Indexable
 
 /**
  * Absract Indexing Task.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- * 
+ *
  */
 abstract class AbstractIndexingTask implements Task {
+
+    protected static final SearchService searchService;
 
     private static final Log log = LogFactory.getLog(AbstractIndexingTask.class);
 
@@ -48,8 +50,6 @@ abstract class AbstractIndexingTask implements Task {
     protected final String repositoryName;
 
     protected final ResolvedResources resources;
-
-    protected final static SearchService searchService;
 
     static {
         // Initialize the SearchService, all the tasks will share the same one.

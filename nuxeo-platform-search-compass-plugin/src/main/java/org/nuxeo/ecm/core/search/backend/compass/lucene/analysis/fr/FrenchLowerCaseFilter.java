@@ -52,18 +52,20 @@ import org.nuxeo.common.utils.StringUtils;
  * @version $Id: LowerCaseFilter.java 150259 2004-03-29 22:48:07Z cutting $
  */
 public final class FrenchLowerCaseFilter extends TokenFilter {
-  public FrenchLowerCaseFilter(TokenStream in) {
-    super(in);
-  }
 
-  public final Token next() throws IOException {
-    Token token = input.next();
+    public FrenchLowerCaseFilter(TokenStream in) {
+        super(in);
+    }
 
-    if (token == null)
-      return null;
+    public final Token next() throws IOException {
+        Token token = input.next();
 
-    String term = StringUtils.toAscii(token.termText()).toLowerCase();
-    return new Token(term, token.startOffset(), token.endOffset(), token.type());
+        if (token == null) {
+            return null;
+        }
 
-  }
+        String term = StringUtils.toAscii(token.termText()).toLowerCase();
+        return new Token(term, token.startOffset(), token.endOffset(), token.type());
+    }
+
 }

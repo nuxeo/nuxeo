@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.search;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -224,11 +225,11 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         dm.setProperty("dublincore", "title", "Indexable data");
         dm.setProperty("dublincore", "description", "Indexable description");
         dm.setProperty("file", "filename", "foo.pdf");
-        String[] contributors = new String[] { "a", "b" };
+        String[] contributors = { "a", "b" };
         dm.setProperty("dublincore", "contributors", contributors);
 
         // add a blob
-        String pdfFile = FileUtils.getResourcePathFromContext("test-data/hello.pdf");
+        File pdfFile = FileUtils.getResourceFileFromContext("test-data/hello.pdf");
         InputStream stream = new FileInputStream(pdfFile);
         Blob blob = new LazyBlob(stream, "UTF-8", "application/pdf",
                 remote.getSessionId(), null, dm.getRepositoryName());
