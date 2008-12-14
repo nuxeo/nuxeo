@@ -74,12 +74,10 @@ import org.nuxeo.ecm.directory.Session;
  * This class represents a session against an LDAPDirectory.
  *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
- *
  */
 public class LDAPSession implements Session, EntrySource {
 
     protected static final String MISSING_ID_LOWER_CASE = "lower";
-
     protected static final String MISSING_ID_UPPER_CASE = "upper";
 
     // directory connection parameters

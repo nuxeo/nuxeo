@@ -57,6 +57,7 @@ import org.nuxeo.runtime.api.Framework;
 @Remote(DirectoryManager.class)
 @Local(DirectoryManager.class)
 public class DirectoryManagerBean implements DirectoryManager {
+
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(DirectoryManagerBean.class);
 

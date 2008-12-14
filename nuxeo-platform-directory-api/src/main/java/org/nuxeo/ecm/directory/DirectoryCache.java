@@ -28,16 +28,15 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Very simple cache system to cache directory entry lookups (not search
- * queries)
- *
+ * queries).
+ * <p>
  * Beware that this cache is not transaction aware (which is not a problem for
  * LDAP directories anyway).
- *
+ * <p>
  * If we want to implement a smarter caching strategy we might prefer to base it
  * on jboss-cache instead of reinventing the wheel.
  *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
- *
  */
 public class DirectoryCache {
 
@@ -68,7 +67,7 @@ public class DirectoryCache {
             return source.getEntryFromSource(entryId, fetchReferences);
         }
 
-        DocumentModel dm = null;
+        DocumentModel dm;
         if (fetchReferences) {
             CachedEntry entry = entryStore.get(entryId);
             if (entry == null || entry.isExpired()) {
@@ -157,4 +156,5 @@ public class DirectoryCache {
             return expirationDate.before(Calendar.getInstance());
         }
     }
+
 }

@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
  * directory.
  *
  * @see
- * @see org.nuxeo.ecm.directory.Directory#getSession()
+ * @see Directory#getSession()
  * @author glefter@nuxeo.com
  */
 
@@ -43,7 +43,6 @@ public interface Session {
      * Retrieves a directory entry using its id.
      * <p>
      * TODO what happens when the entry is not found? return null if not found?
-     * </p>
      *
      * @param id the entry id
      * @return a DocumentModel representing the entry

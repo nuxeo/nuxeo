@@ -98,7 +98,7 @@ public class MemoryDirectorySession implements Session {
         map = new HashMap<String, Object>();
         data.put(id, map);
         // put fields in map
-        for (Map.Entry<String, Object> e : fieldMap.entrySet()) {
+        for (Entry<String, Object> e : fieldMap.entrySet()) {
             String fieldName = e.getKey();
             if (!directory.schemaSet.contains(fieldName)) {
                 continue;

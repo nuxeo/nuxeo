@@ -31,7 +31,6 @@ import org.hibernate.dialect.Dialect;
  * A SQL table.
  *
  * @author Florent Guillaume
- *
  */
 public class Table implements Serializable {
 
@@ -65,10 +64,6 @@ public class Table implements Serializable {
         return dialect.openQuote() + name + dialect.closeQuote();
     }
 
-    /**
-     *
-     * @return
-     */
     public List<Column> getColumns() {
         return columns;
     }

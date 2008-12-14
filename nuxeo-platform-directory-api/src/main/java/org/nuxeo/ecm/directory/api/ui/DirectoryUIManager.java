@@ -25,7 +25,7 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * Manager for directories to be presented to the ui for management
+ * Manager for directories to be presented to the UI for management.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */

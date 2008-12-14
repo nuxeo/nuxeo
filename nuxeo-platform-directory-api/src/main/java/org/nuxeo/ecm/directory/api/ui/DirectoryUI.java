@@ -22,20 +22,19 @@ package org.nuxeo.ecm.directory.api.ui;
 import java.io.Serializable;
 
 /**
- * Interface for directory UI info
+ * Interface for directory UI info.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface DirectoryUI extends Serializable {
 
     /**
-     * Return the directory name
+     * Returns the directory name.
      */
     String getName();
 
     /**
-     * Returns the directory view
+     * Returns the directory view.
      */
     String getView();
 

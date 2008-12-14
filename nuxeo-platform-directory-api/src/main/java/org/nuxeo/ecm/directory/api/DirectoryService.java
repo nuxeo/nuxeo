@@ -42,8 +42,10 @@ public interface DirectoryService {
     String getDirectorySchema(String directoryName) throws DirectoryException;
 
     /**
-     * Open a session on specified directory.
+     * Opens a session on specified directory.
+     * <p>
      * This method prefers to throw rather than returning null.
+     *
      * @param directoryName
      * @return the session
      * @throws DirectoryException in case the session cannot be created
@@ -59,14 +61,15 @@ public interface DirectoryService {
     void unregisterDirectory(String directoryName,DirectoryFactory factory);
 
     String getDirectoryIdField(String directoryName)
-    throws DirectoryException;
+            throws DirectoryException;
 
     String getDirectoryPasswordField(String directoryName)
-    throws DirectoryException;
+            throws DirectoryException;
 
     /**
      * Returns the name of the parent directory of specified directory, if
-     * applicable
+     * applicable.
+     *
      * @param directoryName
      * @return the name, or null
      * @throws DirectoryException

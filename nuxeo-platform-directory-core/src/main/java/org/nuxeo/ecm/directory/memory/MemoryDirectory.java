@@ -69,11 +69,11 @@ public class MemoryDirectory extends AbstractDirectory {
     }
 
     public SchemaManager getSchemaManager() throws DirectoryException {
-        SchemaManager sm = null;
+        SchemaManager sm;
         try {
             sm = Framework.getService(SchemaManager.class);
         } catch (Exception e) {
-            throw new DirectoryException("Unable to look up Core Type Service");
+            throw new DirectoryException("Unable to look up Core Type Service", e);
         }
         if (sm == null) {
             throw new DirectoryException("Unable to look up type service");
