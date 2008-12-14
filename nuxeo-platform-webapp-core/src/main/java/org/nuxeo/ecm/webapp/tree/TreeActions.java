@@ -33,7 +33,7 @@ import org.richfaces.event.NodeExpandedEvent;
 /**
  * Local interface for the Seam component that manages the tree.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
+ * @author Razvan Caraghin
  * @author Anahide Tchertchian
  */
 @Local
@@ -51,7 +51,6 @@ public interface TreeActions {
      * Listener for node opening/closing events.
      * <p>
      * Used to not interfere with node state when manually changing open nodes.
-     * </p>
      */
     void changeExpandListener(NodeExpandedEvent event) throws ClientException;
 

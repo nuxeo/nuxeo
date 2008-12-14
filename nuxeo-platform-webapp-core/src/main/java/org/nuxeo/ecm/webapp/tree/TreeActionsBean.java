@@ -56,7 +56,7 @@ import org.richfaces.event.NodeExpandedEvent;
 /**
  * Manages the navigation tree.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
+ * @author Razvan Caraghin
  * @author Anahide Tchertchian
  */
 @Scope(CONVERSATION)

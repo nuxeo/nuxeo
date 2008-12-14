@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.api.Sorter;
  * Interface for document tree sorter
  *
  * @author Anahide Tchertchian
- *
  */
 public interface DocumentTreeSorter extends Sorter {
 

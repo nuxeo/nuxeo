@@ -64,7 +64,7 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
     protected final QueryModel queryModel;
 
-    protected Map<Object, DocumentTreeNodeImpl> children = null;
+    protected Map<Object, DocumentTreeNodeImpl> children;
 
     public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
             Filter leafFilter, Sorter sorter, QueryModel queryModel) {
@@ -115,7 +115,7 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
      * Resets children map
      */
     public void resetChildren() {
-        this.children = null;
+        children = null;
     }
 
     public void fetchChildren() {

@@ -69,7 +69,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  * Web action bean for document versioning. Used also by other seam components
  * through injection.
  *
- * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ * @author Dragos Mihalache
  */
 @Name("documentVersioning")
 @Scope(CONVERSATION)
@@ -144,12 +144,10 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return getIncRulesResult();
     }
 
-
-    @Factory(autoCreate=true, value="currentDocumentVersionInfo", scope=org.jboss.seam.ScopeType.EVENT)
-    public VersionInfo getCurrentDocumentVersionInfo() throws ClientException{
-            DocumentModel docModel = navigationContext.getCurrentDocument();
-            VersionInfo vInfo = new VersionInfo(getVersionLabel(docModel),getUidInfoAvailable());
-            return vInfo;
+    @Factory(autoCreate = true, value = "currentDocumentVersionInfo", scope = EVENT)
+    public VersionInfo getCurrentDocumentVersionInfo() throws ClientException {
+        DocumentModel docModel = navigationContext.getCurrentDocument();
+        return new VersionInfo(getVersionLabel(docModel), getUidInfoAvailable());
     }
 
     /**
@@ -164,7 +162,8 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         String editOptionsInfo = null;
 
         // make one call only => Factory
-        final VersionIncEditOptions options = getAvailableVersioningOptions(navigationContext.getCurrentDocument());
+        final VersionIncEditOptions options = getAvailableVersioningOptions(
+                navigationContext.getCurrentDocument());
 
         if (null == options) {
             editOptionsInfo = "Error retrieving inc options.";
@@ -265,8 +264,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         rendered = false;
     }
 
-    public Map<String, String> getVersioningOptionsMap(
-            final DocumentModel documentModel) {
+    public Map<String, String> getVersioningOptionsMap(DocumentModel documentModel) {
 
         if (documentModel == null) {
             throw new IllegalArgumentException("null documentModel");
@@ -303,7 +301,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
             final DocumentModel documentModel) {
 
         VersionIncEditOptions options = null;
-
         try {
             options = versioningManager.getVersionIncEditOptions(documentModel);
         } catch (VersioningException e) {
@@ -315,7 +312,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         }
 
         log.debug("Available options (retrieved from server): " + options);
-
         return options;
     }
 
@@ -404,10 +400,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
 
     /**
      * Set incrementation option for the given document.
-     *
-     * @param docModel
-     * @param option
-     * @throws ClientException
      */
     public void setVersioningOptionInstanceId(DocumentModel docModel,
             VersioningActions option) throws ClientException {
@@ -517,8 +509,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     /**
      * Tells whether or not the current object has uid schema (ie the versioning
      * info is available).
-     *
-     * @return
      */
     public Boolean getUidInfoAvailable() {
         DocumentModel docModel = navigationContext.getCurrentDocument();
@@ -540,8 +530,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
 
     /**
      * Tells wether or not the current object has versions.
-     *
-     * @return
      */
     public Boolean getUidDataAvailable() {
         DocumentModel docModel = navigationContext.getCurrentDocument();
@@ -558,9 +546,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
 
     /**
      * Direct action onto document.
-     *
-     * @param doc
-     * @throws DocumentException
      */
     @Deprecated
     public void incrementMajor(DocumentModel doc) throws ClientException {

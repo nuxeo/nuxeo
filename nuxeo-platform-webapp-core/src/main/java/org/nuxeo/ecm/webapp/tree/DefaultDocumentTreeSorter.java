@@ -31,10 +31,8 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
  * Default implementation for document tree sorter.
  * <p>
  * Filters on sort property, case insensitively.
- * </p>
  *
  * @author Anahide Tchertchian
- *
  */
 public class DefaultDocumentTreeSorter implements DocumentTreeSorter {
 
@@ -107,4 +105,5 @@ public class DefaultDocumentTreeSorter implements DocumentTreeSorter {
         }
         return cmp;
     }
+
 }

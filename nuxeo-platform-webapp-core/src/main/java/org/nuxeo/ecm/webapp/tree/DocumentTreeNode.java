@@ -25,7 +25,6 @@ import java.util.List;
  * Tree node of documents.
  *
  * @author Anahide Tchertchian
- *
  */
 public interface DocumentTreeNode extends Serializable {
 

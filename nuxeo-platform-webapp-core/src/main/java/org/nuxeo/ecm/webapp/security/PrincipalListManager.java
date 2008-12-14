@@ -49,9 +49,8 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 /**
  * POJO class that extracts and holds the list of the users from backend.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
+ * @author Razvan Caraghin
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
- *
  */
 @Name("principalListManager")
 @Scope(SESSION)

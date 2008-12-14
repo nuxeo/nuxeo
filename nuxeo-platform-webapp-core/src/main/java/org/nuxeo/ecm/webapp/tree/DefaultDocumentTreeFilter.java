@@ -26,11 +26,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Default filter for tree elements
- *
  * <p>
  * Filters using facets and types criteria. Also filters documents that are in
  * the "deleted" life cycle state.
- * </p>
  *
  * @author Anahide Tchertchian
  */

@@ -48,18 +48,11 @@ public class AnonymousLoginManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
     @Factory(autoCreate = true, value = "anonymousLoginEnabled", scope = ScopeType.APPLICATION)
     public boolean computeAnonymousLoginIsEnabled() throws Exception {
         UserManager um = Framework.getService(UserManager.class);
-
         String anonymous = um.getAnonymousUserId();
-
-        if (anonymous == null) {
-            return true;
-        } else {
-            return false;
-        }
+        return anonymous == null;
     }
 
     public String login() throws IOException {
@@ -67,7 +60,8 @@ public class AnonymousLoginManager implements Serializable {
         ExternalContext eContext = context.getExternalContext();
         Object req = eContext.getRequest();
         Object resp = eContext.getResponse();
-        if (req instanceof HttpServletRequest && resp instanceof HttpServletResponse && !context.getResponseComplete()) {
+        if (req instanceof HttpServletRequest
+                && resp instanceof HttpServletResponse && !context.getResponseComplete()) {
             HttpServletRequest request = (HttpServletRequest) req;
             HttpServletResponse response = (HttpServletResponse) resp;
             request.setAttribute(URLPolicyService.DISABLE_REDIRECT_REQUEST_KEY, Boolean.TRUE);

@@ -78,7 +78,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Provides security related methods.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
+ * @author Razvan Caraghin
  */
 @Name("securityActions")
 @Scope(CONVERSATION)

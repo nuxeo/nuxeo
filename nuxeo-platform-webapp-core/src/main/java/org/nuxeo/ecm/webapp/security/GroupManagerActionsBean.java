@@ -56,8 +56,7 @@ import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
+ * @author Razvan Caraghin
  */
 @Name("groupManagerActions")
 @Scope(CONVERSATION)
