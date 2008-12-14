@@ -65,7 +65,6 @@ public class TestXmlTransformer extends AbstractPluginTestCase {
     /**
      * Tests if the same data given as input is returned when no options are
      * specified.
-     * @throws Exception
      */
     public void testXMLSameTransformation() throws Exception {
         String path = "test-data/wordml/hello-simple.xml";
@@ -81,10 +80,6 @@ public class TestXmlTransformer extends AbstractPluginTestCase {
         compareXml(pathExpectedResult, results.get(0).getBlob().getStream());
     }
 
-    /**
-     *
-     * @throws Exception
-     */
     public void testXMLTransformationWithOptions() throws Exception {
         String path = "test-data/wordml/hello-simple.xml";
         String pathExpectedResult = "test-data/wordml/hello-simple-result.xml";

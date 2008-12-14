@@ -57,9 +57,7 @@ public class TestHtml2TextTransformer extends AbstractPluginTestCase {
                 new StringBlob(html));
 
         Blob result = results.get(0).getBlob();
-
         assertEquals("text/plain", result.getMimeType());
         assertEquals(expected, result.getString());
-        System.out.println("RESULT: " + result.getString());
     }
 }
