@@ -143,13 +143,9 @@ public class DocumentModelGhost implements DocumentModel {
                 documentModel = dm.getDocumentImpl(ref);
             }
         } catch (SecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             throw new CacheRuntimeException(
                     "Error loading DocumentModel from Ghost", e);
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             throw new CacheRuntimeException(
                     "Error loading DocumentModel from Ghost", e);
         }

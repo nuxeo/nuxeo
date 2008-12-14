@@ -54,7 +54,7 @@ import org.nuxeo.ecm.platform.cache.client.ClientCacheServiceFactory;
  * objects into the associated Seam context.
  * <p>
  * Bridge from Cache to Seam.
- * 
+ *
  * @author DM
  */
 @Stateful
@@ -160,7 +160,7 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier,
 
     /**
      * Registers a cache listener with the cache service.
-     * 
+     *
      * @param
      */
     public void addCacheListener(CacheListener listener) {
@@ -172,7 +172,7 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier,
 
     /**
      * Removes the given listener.
-     * 
+     *
      * @param listener
      */
     public void removeCacheListener(CacheListener listener) {
@@ -215,7 +215,7 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier,
      * Checks if the structure identified by the given name on the
      * sessionContext is a manageable structure which might contain the current
      * docModelOnNotification and removes it.
-     * 
+     *
      */
     private void removeDocumentFromContextStructure(Context ctx,
             final String contextVarName, DocumentModel docModelOnNotification) {
@@ -294,7 +294,7 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier,
      * private static boolean removeDocumnentFromTableModel( final DocumentModel
      * docModelOnNotification, final DocModelTableModel tableModel) { //final
      * String logPrefix = "<removeDocumnentFromTableModel> ";
-     * 
+     *
      * try { return tableModel.removeRow(docModelOnNotification); } catch
      * (ClientException e) { // TODO Auto-generated catch block
      * e.printStackTrace(); } return false; }
@@ -302,15 +302,15 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier,
 
     /**
      * Debug utility method.
-     * 
+     *
      * @param ctx
      */
     private void printVarsOnContext(Context ctx) {
         final String logPrefix = "VarOnCtx: ";
-        log.info(logPrefix + ctx);
+        log.debug(logPrefix + ctx);
         for (String varName : ctx.getNames()) {
             final Object objOnCtx = ctx.get(varName);
-            log.info(logPrefix + "var: " + varName + " = " + objOnCtx);
+            log.debug(logPrefix + "var: " + varName + " = " + objOnCtx);
         }
     }
 

@@ -25,9 +25,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Abstract CacheListener without any implementation
- * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ * Abstract CacheListener without any implementation.
  *
+ * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
 public abstract class AbstractCacheListener implements CacheListener {
 
@@ -47,7 +47,7 @@ public abstract class AbstractCacheListener implements CacheListener {
 
     private void debug(String msg) {
         Log log = LogFactory.getLog(getClass());
-        log.info(msg);
+        log.debug(msg);
     }
 
     private String getDocInfo(DocumentModel doc) {

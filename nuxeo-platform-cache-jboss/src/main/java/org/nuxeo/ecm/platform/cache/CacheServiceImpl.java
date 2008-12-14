@@ -72,9 +72,6 @@ public class CacheServiceImpl implements CacheService {
                         + pojoCacheServiceName);
             }
         } catch (Exception ex) {
-            // handle exception
-            ex.printStackTrace();
-
             throw new CacheServiceException("Error initializing pojoCache", ex);
         }
 
