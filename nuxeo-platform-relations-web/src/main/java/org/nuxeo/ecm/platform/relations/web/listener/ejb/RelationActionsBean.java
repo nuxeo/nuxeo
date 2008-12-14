@@ -548,7 +548,7 @@ public class RelationActionsBean  extends DocumentContextBoundActionBean impleme
             // search keywords
             String query = String.format("SELECT * FROM Document WHERE %s",
                     StringUtils.join(constraints.toArray(), " AND "));
-            log.info("query: " + query);
+            log.debug("query: " + query);
             SQLQuery nxqlQuery = SQLQueryParser.parse(query);
             ComposedNXQuery cQuery = new ComposedNXQueryImpl(nxqlQuery);
             SearchService searchService = SearchServiceDelegate.getRemoteSearchService();

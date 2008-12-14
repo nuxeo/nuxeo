@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.relations.jena;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -91,9 +92,9 @@ public class TestJenaGraphReification extends NXRuntimeTestCase {
         statements.add(st2);
     }
 
-    private static String getTestFile() {
+    private static File getTestFile() {
         String filePath = "test-reified.rdf";
-        return FileUtils.getResourcePathFromContext(filePath);
+        return FileUtils.getResourceFileFromContext(filePath);
     }
 
     private void compareStatements(List<Statement> first, List<Statement> second) {

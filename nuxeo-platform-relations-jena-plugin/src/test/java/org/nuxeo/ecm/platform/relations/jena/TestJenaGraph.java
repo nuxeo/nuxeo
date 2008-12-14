@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -97,14 +98,15 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         Collections.sort(statements);
     }
 
-    private static String getTestFile() {
+    private static String getTestFile() throws UnsupportedEncodingException {
         String filePath = "test.rdf";
         return FileUtils.getResourcePathFromContext(filePath);
     }
 
+    @SuppressWarnings({"unchecked"})
     public void testGetGraph() {
         Model jenaGraph = graph.openGraph().getGraph();
-        Map<?, ?> map = jenaGraph.getNsPrefixMap();
+        Map<String, String> map = jenaGraph.getNsPrefixMap();
         assertEquals("http://www.w3.org/1999/02/22-rdf-syntax-ns#",
                 map.get("rdf"));
         assertEquals("http://purl.org/dc/terms/", map.get("dcterms"));
@@ -140,13 +142,14 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         graph.setOptions(options);
     }
 
+    @SuppressWarnings({"unchecked"})
     public void testSetNamespaces() {
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("dummy", "http://dummy");
 
         boolean forceReload = false;
         Model jenaGraph = graph.openGraph(forceReload).getGraph();
-        Map<?, ?> map = jenaGraph.getNsPrefixMap();
+        Map<String, String> map = jenaGraph.getNsPrefixMap();
         // old namespaces are kept
         assertEquals("http://www.w3.org/1999/02/22-rdf-syntax-ns#",
                 map.get("rdf"));
@@ -397,8 +400,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
 
     public void testQuery() {
         graph.add(statements);
-        String queryString;
-        queryString = "SELECT ?subj ?pred ?obj " + "WHERE {"
+        String queryString = "SELECT ?subj ?pred ?obj " + "WHERE {"
                 + "      ?subj ?pred ?obj " + "       }";
         QueryResult res = graph.query(queryString, "sparql", null);
         assertSame(3, res.getCount());
@@ -467,6 +469,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
 
     // XXX AT: test serialization of the graph because the RelationServiceBean
     // will attempt to keep references to graphs it manages.
+    @SuppressWarnings({"unchecked"})
     public void testSerialization() throws Exception {
         graph.add(statements);
 
@@ -489,7 +492,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         // because they were stored in a memory graph
         assertSame(0L, newGraph.size());
         Model newModel = newGraph.openGraph().getGraph();
-        Map<?, ?> map = newModel.getNsPrefixMap();
+        Map<String, String> map = newModel.getNsPrefixMap();
         assertEquals("http://www.w3.org/1999/02/22-rdf-syntax-ns#",
                 map.get("rdf"));
         assertEquals("http://purl.org/dc/terms/", map.get("dcterms"));

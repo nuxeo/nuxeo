@@ -31,12 +31,11 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Graph extension.
- *
+ * <p>
  * A new type of graph can implement this class to set XMap annotations for
  * custom options (?).
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 @XObject("graph")
 public class GraphDescriptor implements GraphDescription, Serializable {
