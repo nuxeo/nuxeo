@@ -158,7 +158,6 @@ public class CommentManagerActionsBean extends InputController implements
 
     public DocumentModel addComment(DocumentModel comment)
             throws ClientException {
-
         try {
             comment = initializeComment(comment);
             UIComment parentComment = null;
@@ -184,7 +183,6 @@ public class CommentManagerActionsBean extends InputController implements
 
         } catch (Throwable t) {
             log.error("failed to add comment", t);
-            log.error(t.getStackTrace());
             throw ClientException.wrap(t);
         }
     }
@@ -450,4 +448,5 @@ public class CommentManagerActionsBean extends InputController implements
         savedReplyCommentId = null;
         newContent = null;
     }
+
 }

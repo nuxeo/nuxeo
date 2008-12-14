@@ -78,8 +78,7 @@ import org.nuxeo.runtime.api.Framework;
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class CommentEventListenerBean implements MessageListener {
 
-    private static final Log log = LogFactory
-            .getLog(CommentEventListenerBean.class);
+    private static final Log log = LogFactory.getLog(CommentEventListenerBean.class);
 
     public void onMessage(Message message) {
         DocumentMessage doc = null;
@@ -140,9 +139,7 @@ public class CommentEventListenerBean implements MessageListener {
             } catch (Throwable t) {
                 log.error("Error during cleanup",t);
             }
-
         }
-
     }
 
     private LoginContext loginCtx;
@@ -175,12 +172,10 @@ public class CommentEventListenerBean implements MessageListener {
 
         // remove comments
         for (Statement stmt : statementList) {
-
             QNameResource resource = (QNameResource) stmt.getSubject();
             String commentId = resource.getLocalName();
-            DocumentModel docModel = (DocumentModel) relationManager
-                    .getResourceRepresentation(config.commentNamespace,
-                            resource);
+            DocumentModel docModel = (DocumentModel) relationManager.getResourceRepresentation(
+                    config.commentNamespace, resource);
 
             if (docModel != null) {
                 try {
@@ -204,7 +199,7 @@ public class CommentEventListenerBean implements MessageListener {
         Resource commentRes = relationManager.getResource(
                 config.commentNamespace, docModel);
         if (commentRes == null) {
-            log.error("Could not adapt document model to relation resource ; "
+            log.error("Could not adapt document model to relation resource; "
                     + "check the service relation adapters configuration");
             return;
         }

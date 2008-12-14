@@ -77,15 +77,12 @@ public class CommentManagerImpl implements CommentManager {
     private static final Log log = LogFactory.getLog(CommentManagerImpl.class);
 
     final SimpleDateFormat timeFormat = new SimpleDateFormat("dd-HHmmss.S");
-
     final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
 
     final CommentServiceConfig config;
-
     final CommentConverter commentConverter;
 
     private CoreSession session;
-
     private String currentRepositoryName;
 
     public CommentManagerImpl(CommentServiceConfig config) {
@@ -210,8 +207,8 @@ public class CommentManagerImpl implements CommentManager {
             DocumentModel comment) throws ClientException {
         String author = updateAuthor(docModel, comment);
         DocumentModel createdComment;
-        try {
 
+        try {
             createdComment = createCommentDocModel(docModel, comment);
 
             RelationManager relationManager = getRelationManager();
@@ -236,7 +233,6 @@ public class CommentManagerImpl implements CommentManager {
             statementList.add(stmt);
             relationManager.add(config.graphName, statementList);
         } catch (Exception e) {
-            log.error("failed to create comment", e);
             throw new ClientException("failed to create comment", e);
         }
 
@@ -374,7 +370,6 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     /**
-     *
      * @deprecated if the caller is remote, we cannot obtain the session
      */
     @Deprecated
