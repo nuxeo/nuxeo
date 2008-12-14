@@ -357,8 +357,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
             workflowPath = wapi.startProcess(wdefId, processVariables, null);
         } catch (WMWorkflowException we) {
             workflowPath = null;
-            log.error("An error occurred while grabbing workflow definitions");
-            we.printStackTrace();
+            log.error("An error occurred while grabbing workflow definitions", we);
         }
 
         // Broadcast a message.
@@ -408,8 +407,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
             workflowInstance = wapi.terminateProcessInstance(wid);
         } catch (WMWorkflowException we) {
             workflowInstance = null;
-            log.error("An error occurred while grabbing workflow definitions");
-            we.printStackTrace();
+            log.error("An error occurred while grabbing workflow definitions", we);
         }
 
         // Broadcast events

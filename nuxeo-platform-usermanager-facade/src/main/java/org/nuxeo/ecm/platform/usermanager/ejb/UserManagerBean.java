@@ -61,7 +61,6 @@ public class UserManagerBean implements UserManager {
         if (userManager == null) {
             userManager = Framework.getLocalService(UserManager.class);
         }
-
         return userManager;
     }
 

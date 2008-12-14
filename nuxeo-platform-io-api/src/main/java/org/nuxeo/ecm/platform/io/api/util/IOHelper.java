@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
  * The copy method must be moved to IOManager.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class IOHelper {
 
@@ -40,12 +39,6 @@ public class IOHelper {
      * located on different hosts.
      * TODO: because of some methods not exposed in IOManager this method is not optimized
      * to avoid handling exports / imports from/to local repositories through remote streams.
-     *
-     * @param src
-     * @param dest
-     * @param ioAdapters
-     * @throws IOException
-     * @throws ClientException
      */
     public static void copy(IOConfiguration src, IOConfiguration dest,
             Collection<String> ioAdapters) throws IOException, ClientException {

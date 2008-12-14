@@ -30,7 +30,6 @@ import org.nuxeo.ecm.platform.workflow.jbpm.handlers.api.client.AbstractWorkflow
  * Deals with rights beside assignment.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class NuxeoAssignmentHandler extends
         AbstractWorkflowDocumentAssignmentHandler {

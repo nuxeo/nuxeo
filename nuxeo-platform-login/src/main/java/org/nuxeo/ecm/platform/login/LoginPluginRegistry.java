@@ -111,13 +111,11 @@ public class LoginPluginRegistry extends DefaultComponent {
                 newLoginPlugin = className.newInstance();
             } catch (InstantiationException e) {
                 log.error("Unable to create LoginPlugin for class "
-                        + className.getName() + ":" + e.getMessage());
-                e.printStackTrace();
+                        + className.getName() + ":" + e.getMessage(), e);
                 return;
             } catch (IllegalAccessException e) {
                 log.error("Unable to create LoginPlugin for class "
-                        + className.getName() + ":" + e.getMessage());
-                e.printStackTrace();
+                        + className.getName() + ":" + e.getMessage(), e);
                 return;
             }
             newLoginPlugin.setParameters(pluginExtension.getParameters());

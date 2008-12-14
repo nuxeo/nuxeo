@@ -57,4 +57,5 @@ public class RemoteConfiguration extends AbstractIOConfiguration {
     public boolean isLocal() {
         return false;
     }
+
 }

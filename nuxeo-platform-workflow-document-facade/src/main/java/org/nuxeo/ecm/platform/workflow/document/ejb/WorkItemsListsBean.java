@@ -166,7 +166,8 @@ public class WorkItemsListsBean implements WorkItemsListsManager {
             // :XXX: Hibernate bug
             // http://opensource.atlassian.com/projects/hibernate/browse/EJB-98
             // We will return null as it should
-            e.printStackTrace();
+            // TODO: more robust exception handling?
+            log.error(e);
         }
         return wiListEntry;
     }

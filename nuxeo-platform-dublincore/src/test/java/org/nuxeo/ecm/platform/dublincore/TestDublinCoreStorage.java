@@ -92,7 +92,7 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         CoreEventListenerService listenerService = getListenerService();
         EventListener dcListener = listenerService.getEventListenerByName("dclistener");
         assertNotNull(dcListener);
-        log.info("DCListener well registered");
+        log.info("DCListener registered");
     }
 
     public void testStorageService() {
@@ -105,12 +105,11 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
                 "file-007", "File");
         DocumentModel childFile2 = remote.createDocument(childFile);
 
-        DataModel dm;
-        dm = childFile2.getDataModel("dublincore");
+        DataModel dm = childFile2.getDataModel("dublincore");
         assertNotNull(dm.getData("created"));
 
-        dm = remote.getDataModel(childFile2.getRef(), "dublincore");
-        assertNotNull(dm.getData("created"));
+        DataModel dm2 = remote.getDataModel(childFile2.getRef(), "dublincore");
+        assertNotNull(dm2.getData("created"));
 
         // assertEquals("toto", (String)dm.getData("creator"));
     }
@@ -129,13 +128,12 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
 
         remote.saveDocument(childFile2);
 
-        DataModel dm;
-        dm = childFile2.getDataModel("dublincore");
+        DataModel dm = childFile2.getDataModel("dublincore");
         Calendar created = (Calendar) dm.getData("created");
         assertNotNull(created);
 
-        dm = remote.getDataModel(childFile2.getRef(), "dublincore");
-        Calendar modified = (Calendar) dm.getData("modified");
+        DataModel dm2 = remote.getDataModel(childFile2.getRef(), "dublincore");
+        Calendar modified = (Calendar) dm2.getData("modified");
         assertNotNull(modified);
 
         assertTrue(modified.getTime() + " !> " +created.getTime(), modified.after(created));

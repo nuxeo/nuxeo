@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 
 public abstract class AbstractPluginTestCase extends RepositoryTestCase {
 
-    final Log log = LogFactory.getLog(AbstractPluginTestCase.class);
+    private static final Log log = LogFactory.getLog(AbstractPluginTestCase.class);
 
     private Repository repository;
 
@@ -90,8 +90,7 @@ public abstract class AbstractPluginTestCase extends RepositoryTestCase {
     }
 
     /**
-     * Utility method to
-     * create a ByteArrayBlob with the content of the given file.
+     * Utility method to create a ByteArrayBlob with the content of the given file.
      */
     protected ByteArrayBlob getFileContent(String filePath, String mimeType) {
         File file;
@@ -116,4 +115,5 @@ public abstract class AbstractPluginTestCase extends RepositoryTestCase {
         // should not reach this point
         return null;
     }
+
 }

@@ -73,7 +73,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Message Driven Bean listening for events, responsible for notifications.
- * <p>
+ * <p/>
  * It does:
  * <ul>
  * <li>(1) Get the message from the topic/NXCoreMessages</li>
@@ -98,7 +98,7 @@ import org.nuxeo.runtime.api.Framework;
                 + " IN ('"
                 + JMSConstant.DOCUMENT_MESSAGE
                 + "','"
-                + JMSConstant.EVENT_MESSAGE + "')") })
+                + JMSConstant.EVENT_MESSAGE + "')")})
 @TransactionManagement(TransactionManagementType.BEAN)
 public class NotificationMessageListener implements MessageListener {
 
@@ -118,19 +118,18 @@ public class NotificationMessageListener implements MessageListener {
     private void logout() throws Exception {
         if (loginCtx != null) {
             loginCtx.logout();
-            loginCtx=null;
+            loginCtx = null;
         }
     }
 
     public void onMessage(Message message) {
         final UserTransaction transaction = sessionContext.getUserTransaction();
 
-        CoreSession session=null;
-        DocumentMessage docMsg=null;
-        String eventId=null;
+        CoreSession session = null;
+        DocumentMessage docMsg;
+        String eventId;
 
-        try
-        {
+        try {
             Object obj = ((ObjectMessage) message).getObject();
             if (!(obj instanceof DocumentMessage)) {
                 return;
@@ -138,7 +137,7 @@ public class NotificationMessageListener implements MessageListener {
             docMsg = (DocumentMessage) obj;
 
             eventId = docMsg.getEventId();
-            log.debug("Recieved a message for notification with eventId : "+ eventId);
+            log.debug("Recieved a message for notification with eventId : " + eventId);
         }
         catch (JMSException e) {
             log.error("Error getting message from topic", e);
@@ -146,8 +145,7 @@ public class NotificationMessageListener implements MessageListener {
         }
 
         NotificationService service = NotificationServiceHelper.getNotificationService();
-        if (service==null)
-        {
+        if (service == null) {
             log.error("Unable to get NotificationService, exiting");
             return;
         }
@@ -158,10 +156,7 @@ public class NotificationMessageListener implements MessageListener {
             return;
         }
 
-
-
         Map<Notification, List<String>> targetUsers = new HashMap<Notification, List<String>>();
-
 
         try {
             transaction.begin();
@@ -178,39 +173,35 @@ public class NotificationMessageListener implements MessageListener {
         }
 
         String repoName = docMsg.getRepositoryName();
-        Repository repo = null;
-        Boolean errDuringProcess=false;
-        CoreSession coreSession=null;
+        Boolean errDuringProcess = false;
+        CoreSession coreSession = null;
 
         try {
             RepositoryManager mgr = Framework.getService(RepositoryManager.class);
+            Repository repo;
             if (repoName != null) {
                 repo = mgr.getRepository(repoName);
-            }
-            else {
+            } else {
                 repo = mgr.getDefaultRepository();
             }
 
-            if (repo==null)
-            {
+            if (repo == null) {
                 log.error("can not find repository, existing");
-                errDuringProcess=true;
+                errDuringProcess = true;
                 return;
             }
 
             coreSession = repo.open();
             if (eventId.equals("documentPublicationApproved") || eventId.equals("documentPublished")) {
                 DocumentModel publishedDoc = getDocFromPath(coreSession, (String) docMsg.getEventInfo().get("sectionPath"), docMsg);
-                if (publishedDoc==null)
-                {
+                if (publishedDoc == null) {
                     log.error("unable to find published doc, existing");
                     return;
                 }
                 gatherConcernedUsersForDocument(coreSession, publishedDoc, notifs, targetUsers);
             } else {
-                gatherConcernedUsersForDocument(coreSession,docMsg, notifs, targetUsers);
+                gatherConcernedUsersForDocument(coreSession, docMsg, notifs, targetUsers);
             }
-
 
 
             for (Notification notif : targetUsers.keySet()) {
@@ -234,12 +225,10 @@ public class NotificationMessageListener implements MessageListener {
 
                 }
             }
-
-
         }
         catch (Exception e) {
             log.error("Error during message processing", e);
-            errDuringProcess=true;
+            errDuringProcess = true;
         }
         finally {
             if (errDuringProcess) {
@@ -248,8 +237,7 @@ public class NotificationMessageListener implements MessageListener {
                 } catch (Exception te) {
                     log.error("Error during transaction rollback", te);
                 }
-            }
-            else {
+            } else {
                 try {
                     transaction.commit();
                 }
@@ -258,15 +246,15 @@ public class NotificationMessageListener implements MessageListener {
                 }
             }
 
-            if(coreSession!=null) {
+            if (coreSession != null) {
                 CoreInstance.getInstance().close(coreSession);
-                coreSession=null;
+                coreSession = null;
             }
             try {
                 logout();
             }
             catch (Exception le) {
-                log.error("Error during logout",le);
+                log.error("Error during logout", le);
             }
         }
 
@@ -274,8 +262,9 @@ public class NotificationMessageListener implements MessageListener {
 
     private DocumentModel getDocFromPath(CoreSession coreSession, String path, DocumentMessage doc) throws ClientException {
         DocumentModel sectionDoc;
-        if (path==null)
+        if (path == null) {
             return null;
+        }
         sectionDoc = coreSession.getDocument(new PathRef(path));
         return sectionDoc;
     }
@@ -334,8 +323,7 @@ public class NotificationMessageListener implements MessageListener {
         if (doc == null) {
             return parentDoc;
         }
-        parentDoc = coreSession.getDocument(doc.getParentRef());
-        return parentDoc;
+        return coreSession.getDocument(doc.getParentRef());
     }
 
     private void getInterstedUsers(DocumentModel doc,
@@ -518,7 +506,6 @@ public class NotificationMessageListener implements MessageListener {
                 log.info("Could not get service for document view manager");
             }
         }
-
         return docLocator;
     }
 

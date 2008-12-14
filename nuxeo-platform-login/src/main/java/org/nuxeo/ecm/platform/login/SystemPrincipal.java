@@ -135,9 +135,6 @@ public class SystemPrincipal implements NuxeoPrincipal {
         computeHash();
     }
 
-    /**
-     * @return the model.
-     */
     public DocumentModel getModel() {
         return null;
     }
