@@ -29,6 +29,7 @@ import java.util.Map;
 import org.hibernate.HibernateException;
 import org.hibernate.dialect.DerbyDialect;
 import org.hibernate.dialect.DialectFactory;
+import org.hibernate.dialect.H2Dialect;
 import org.hibernate.dialect.MySQLDialect;
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.dialect.SQLServerDialect;
@@ -67,12 +68,21 @@ public class Dialect {
         } catch (SQLException e) {
             throw new StorageException(e);
         }
-        try {
-            dialect = DialectFactory.determineDialect(getDatabaseName(),
-                    databaseMajor);
-        } catch (HibernateException e) {
-            throw new StorageException("Cannot determine dialect for: " +
-                    connection, e);
+        if ("H2".equals(databaseName)) {
+            try {
+                dialect = new H2Dialect();
+            } catch (Exception e) {
+                throw new StorageException("Cannot instantiate dialect for: " +
+                        connection, e);
+            }
+        } else {
+            try {
+                dialect = DialectFactory.determineDialect(databaseName,
+                        databaseMajor);
+            } catch (HibernateException e) {
+                throw new StorageException("Cannot determine dialect for: " +
+                        connection, e);
+            }
         }
         dialectName = dialect.getClass().getSimpleName();
     }
@@ -215,19 +225,39 @@ public class Dialect {
     }
 
     public boolean needsOrderByKeysAfterDistinct() {
-        return dialect instanceof PostgreSQLDialect;
+        return dialect instanceof PostgreSQLDialect ||
+                dialect instanceof H2Dialect;
     }
 
     /**
-     * When doing a comparison between a text field and something else, is some
-     * casting required and with what pattern?
+     * When using a CLOB field in an expression, is some casting required and
+     * with what pattern?
      * <p>
-     * Needed for Derby where CLOB are not comparable by default.
+     * Needed for Derby and H2.
      *
      * @return a pattern for String.format with one parameter for the column
      *         name and one for the width
      */
-    public String textComparisonCasting() {
+    public String clobCasting() {
+        if (dialect instanceof DerbyDialect) {
+            return "CAST(%s AS VARCHAR(%d))";
+        }
+        if (dialect instanceof H2Dialect) {
+            return "CAST(%s AS VARCHAR)";
+        }
+        return null;
+    }
+
+    /**
+     * When using a CLOB field in ORDER BY, is some casting required and with
+     * what pattern?
+     * <p>
+     * Needed for Derby.
+     *
+     * @return a pattern for String.format with one parameter for the column
+     *         name and one for the width
+     */
+    public String clobCastingInOrderBy() {
         if (dialect instanceof DerbyDialect) {
             return "CAST(%s AS VARCHAR(%d))";
         }
@@ -240,7 +270,7 @@ public class Dialect {
      * <p>
      * If not, we'll simulate them using a string and a separator.
      *
-     * @return
+     * @return true if ARRAY values are supported
      */
     public boolean supportsArrays() {
         return dialect instanceof PostgreSQLDialect;

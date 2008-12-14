@@ -68,6 +68,13 @@
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
+      <version>10.4.2.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>1.1.104</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -89,8 +96,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <excludes>
-            <!-- Derby leaks memory in this one: -->
-            <exclude>**/TestSQLRepositoryAPI.java</exclude>
             <!--  Synthetic classes for switch() (surefire bug) -->
             <exclude>**/*$1.java</exclude>
           </excludes>

@@ -194,8 +194,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(Arrays.asList("3"), Arrays.asList(tags));
 
         // delete the node
-        session.removeNode(nodea);
-        session.save();
+        //session.removeNode(nodea);
+        //session.save();
     }
 
     public void testPropertiesSameName() throws Exception {

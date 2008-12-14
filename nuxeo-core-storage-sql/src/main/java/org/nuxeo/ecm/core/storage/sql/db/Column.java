@@ -219,7 +219,7 @@ public class Column implements Serializable {
             ps.setInt(index, ((Long) value).intValue());
             return;
         case Types.VARCHAR:
-        case Types.LONGVARCHAR:
+        case Types.LONGVARCHAR: // MySQL
             String v;
             if (type == PropertyType.BINARY) {
                 v = ((Binary) value).getDigest();
@@ -233,6 +233,7 @@ public class Column implements Serializable {
             return;
         case Types.BIT:
         case Types.SMALLINT: // Derby
+        case Types.BOOLEAN: // H2
             ps.setBoolean(index, ((Boolean) value).booleanValue());
             return;
         case Types.TIMESTAMP:
@@ -261,7 +262,7 @@ public class Column implements Serializable {
             result = rs.getLong(index);
             break;
         case Types.VARCHAR:
-        case Types.LONGVARCHAR:
+        case Types.LONGVARCHAR: // MySQL
             String string = rs.getString(index);
             if (type == PropertyType.BINARY && string != null) {
                 result = model.getBinary(string);
@@ -283,6 +284,7 @@ public class Column implements Serializable {
             break;
         case Types.BIT:
         case Types.SMALLINT: // Derby
+        case Types.BOOLEAN: // H2
             result = rs.getBoolean(index);
             break;
         default:

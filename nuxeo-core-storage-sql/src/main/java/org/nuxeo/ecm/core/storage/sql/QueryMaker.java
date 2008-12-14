@@ -531,9 +531,10 @@ public class QueryMaker {
                         throw new StorageException("Cannot use collection " +
                                 key + " in ORDER BY");
                     }
-                    what += ", " +
-                            database.getTable(propertyInfo.fragmentName).getColumn(
-                                    propertyInfo.fragmentKey).getFullQuotedName();
+                    Column column = database.getTable(propertyInfo.fragmentName).getColumn(
+                            propertyInfo.fragmentKey);
+                    String qname = column.getFullQuotedName();
+                    what += ", " + qname;
                 }
             }
         }
@@ -837,6 +838,8 @@ public class QueryMaker {
 
         public boolean allowArray;
 
+        private boolean inOrderBy;
+
         @Override
         public void visitMultiExpression(MultiExpression node) {
             // Don't add parentheses as for now this is always toplevel.
@@ -904,8 +907,8 @@ public class QueryMaker {
 
         protected void visitExpressionStartsWith(Expression node) {
             if (!(node.rvalue instanceof StringLiteral)) {
-                throw new QueryMakerException(
-                        "STARTSWITH requires literal path as right argument");
+                throw new QueryMakerException(Operator.STARTSWITH +
+                        " requires literal path as right argument");
             }
             String path = ((StringLiteral) node.rvalue).value;
             if (path.length() > 1 && path.endsWith("/")) {
@@ -1010,7 +1013,12 @@ public class QueryMaker {
             String qname = column.getFullQuotedName();
             // some databases (Derby) can't do comparisons on CLOB
             if (column.getSqlType() == Types.CLOB) {
-                String colFmt = dialect.textComparisonCasting();
+                String colFmt;
+                if (inOrderBy) {
+                    colFmt = dialect.clobCastingInOrderBy();
+                } else {
+                    colFmt = dialect.clobCasting();
+                }
                 if (colFmt != null) {
                     qname = String.format(colFmt, qname, Integer.valueOf(255));
                 }
@@ -1085,12 +1093,14 @@ public class QueryMaker {
 
         @Override
         public void visitOrderByList(OrderByList node) {
+            inOrderBy = true;
             for (Iterator<OrderByExpr> it = node.iterator(); it.hasNext();) {
                 it.next().accept(this);
                 if (it.hasNext()) {
                     buf.append(", ");
                 }
             }
+            inOrderBy = false;
         }
 
         @Override
