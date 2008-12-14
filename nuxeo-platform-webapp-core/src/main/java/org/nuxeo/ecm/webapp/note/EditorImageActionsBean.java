@@ -69,9 +69,8 @@ import org.nuxeo.ecm.webapp.base.InputController;
  * the appropriate method.
  * <p>
  * The search method retrieves only the Picture document of the repository.
- * 
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * 
  */
 @Name("editorImageActions")
 @Scope(CONVERSATION)

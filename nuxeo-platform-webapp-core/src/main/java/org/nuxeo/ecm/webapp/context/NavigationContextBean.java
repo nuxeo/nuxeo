@@ -410,8 +410,8 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             try {
                 setCurrentDocument(null);
             } catch (ClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                // TODO: more robust exception handling?
+                log.error(e);
             }
         }
 
@@ -422,8 +422,8 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             try {
                 setCurrentDocument(domainDocModel);
             } catch (ClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                // TODO: more robust exception handling?
+                log.error(e);
             }
         }
 
@@ -1041,8 +1041,8 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             try {
                 setCurrentDocument(null);
             } catch (ClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                // TODO: more robust exception handling?
+                log.error(e);
             }
             return;
         }
@@ -1054,8 +1054,8 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             try {
                 setCurrentDocument(crDocumentModel);
             } catch (ClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                // TODO: more robust exception handling?
+                log.error(e);
             }
         }
     }

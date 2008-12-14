@@ -35,8 +35,7 @@ public class DisplayExtensionPointHandler extends NXQueryDataExtensionPointHandl
             try {
                 unregisterOne(pluginExtension, extension);
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error(e);
             }
         }
     }
@@ -51,8 +50,7 @@ public class DisplayExtensionPointHandler extends NXQueryDataExtensionPointHandl
             try {
                 registerOne(pluginExtension, extension);
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error(e);
             }
         }
     }
@@ -60,16 +58,11 @@ public class DisplayExtensionPointHandler extends NXQueryDataExtensionPointHandl
     private void registerOne(DisplayPluginExtension pluginExtension,
             Extension extension) throws Exception {
         pluginExtension.setColumnsChain();
-        try {
-            QueryDataServiceCommon queryDataService = getNXQueryData();
-            if (queryDataService != null) {
-                getNXQueryData().registerDisplayPlugin(pluginExtension.getName(), pluginExtension);
-            } else {
-                log.error("No QueryDataServiceCommon service found impossible to register plugin");
-            }
-
-        } catch (Exception e) {
-            throw new Exception(e);
+        QueryDataServiceCommon queryDataService = getNXQueryData();
+        if (queryDataService != null) {
+            getNXQueryData().registerDisplayPlugin(pluginExtension.getName(), pluginExtension);
+        } else {
+            log.error("No QueryDataServiceCommon service found impossible to register plugin");
         }
     }
 

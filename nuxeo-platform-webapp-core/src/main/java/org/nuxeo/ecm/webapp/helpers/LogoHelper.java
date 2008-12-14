@@ -101,8 +101,7 @@ public class LogoHelper implements Serializable {
             return getLogoURL(doc);
 
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e);
             return DEFAULT_LOGO;
         }
     }
@@ -177,8 +176,8 @@ public class LogoHelper implements Serializable {
                 try {
                     ob = documentManager.getDocument(ref);
                 } catch (ClientException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    // TODO: more robust exception handling?
+                    log.error(e);
                 }
             }
             imgBlob = getBlob(ob);

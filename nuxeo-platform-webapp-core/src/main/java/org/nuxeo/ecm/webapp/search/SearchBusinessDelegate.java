@@ -292,9 +292,6 @@ public class SearchBusinessDelegate implements Serializable {
      * exception.
      *
      * TODO : maybe put it in NXCommon
-     *
-     * @param t
-     * @return
      */
     private static String tryToExtractMeaningfulCause(Throwable t) {
         if (t instanceof ClientException) {
@@ -322,9 +319,6 @@ public class SearchBusinessDelegate implements Serializable {
 
     /**
      * Creates a logical path for the given DocumentModel.
-     *
-     * @param doc
-     * @return
      */
     public String getDocLocation(DocumentModel doc) {
         assert doc != null;
@@ -334,8 +328,8 @@ public class SearchBusinessDelegate implements Serializable {
             titles = documentManager.getDataModelsFieldUp(parentRef,
                     "dublincore", "title");
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // TODO: more robust exception handling?
+            log.error(e);
             return null;
         }
 
@@ -354,4 +348,5 @@ public class SearchBusinessDelegate implements Serializable {
 
         return location.toString();
     }
+
 }

@@ -102,8 +102,8 @@ public class DocumentTemplatesActionsBean extends InputController implements
             try {
                 templates = getTemplates();
             } catch (ClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                // TODO: more robust exception handling?
+                log.error(e);
             }
         }
         return templates;

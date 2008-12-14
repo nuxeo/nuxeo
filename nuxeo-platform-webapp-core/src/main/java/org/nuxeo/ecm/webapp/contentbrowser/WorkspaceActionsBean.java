@@ -180,8 +180,8 @@ public class WorkspaceActionsBean extends InputController implements
             try {
                 tmpWorkspace = documentManager.createDocumentModel("Workspace");
             } catch (ClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                // TODO: more robust exception handling?
+                log.error(e);
             }
         }
         return tmpWorkspace;
@@ -212,8 +212,8 @@ public class WorkspaceActionsBean extends InputController implements
                 }
             }
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // TODO: more robust exception handling?
+            log.error(e);
         }
 
         return "";
@@ -234,8 +234,8 @@ public class WorkspaceActionsBean extends InputController implements
                 }
             }
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // TODO: more robust exception handling?
+            log.error(e);
         }
 
         return null;
