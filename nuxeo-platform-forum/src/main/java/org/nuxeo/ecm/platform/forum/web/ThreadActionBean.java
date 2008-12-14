@@ -59,7 +59,7 @@ import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 
 /**
  * This Action Listener represents a Thread inside a forum.
- * 
+ *
  * @author <a href="bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
  */
 @Name("threadAction")
@@ -126,10 +126,7 @@ public class ThreadActionBean extends InputController implements ThreadAction {
     }
 
     /**
-     * Get the Thread to create as a DocumentModel.
-     * 
-     * @return
-     * @throws ClientException
+     * Gets the Thread to create as a DocumentModel.
      */
     private DocumentModel getThreadModel() throws ClientException {
 
@@ -161,6 +158,7 @@ public class ThreadActionBean extends InputController implements ThreadAction {
         return docThread;
     }
 
+    @SuppressWarnings({"unchecked"})
     public List<String> getModerators() {
         DocumentModel currentThread = navigationContext.getCurrentDocument();
         try {
@@ -177,7 +175,7 @@ public class ThreadActionBean extends InputController implements ThreadAction {
 
         boolean moderator = false;
         if (isPrincipalGroupModerator()
-                || (moderators != null && moderators.contains(principal.getName()))) {
+                || moderators != null && moderators.contains(principal.getName())) {
             moderator = true;
         }
         return moderator;
@@ -197,7 +195,6 @@ public class ThreadActionBean extends InputController implements ThreadAction {
     }
 
     public boolean isCurrentThreadModerated() throws ClientException {
-
         DocumentModel currentThread = navigationContext.getCurrentDocument();
         return isThreadModerated(currentThread);
     }
@@ -360,7 +357,7 @@ public class ThreadActionBean extends InputController implements ThreadAction {
             Boolean moderation = (Boolean) thread.getProperty("thread",
                     "moderated");
             if (moderation != null) {
-                return moderation.booleanValue();
+                return moderation;
             }
         }
 
@@ -368,7 +365,6 @@ public class ThreadActionBean extends InputController implements ThreadAction {
     }
 
     public DocumentModel getParentPost(int post) throws ClientException {
-
         DocumentModel parentPost = null;
 
         List<ThreadEntry> posts = getPostsAsThread();
@@ -387,7 +383,6 @@ public class ThreadActionBean extends InputController implements ThreadAction {
         DocumentModel parent = getParentPost(post);
         if (parent == null) {
             return true;
-
         } else if (ForumConstants.PUBLISHED_STATE.equals(parent.getCurrentLifeCycleState())) {
             return true;
         }
@@ -395,10 +390,7 @@ public class ThreadActionBean extends InputController implements ThreadAction {
     }
 
     /**
-     * Get the thread for a given document reference
-     * 
-     * @param threadRef
-     * @return
+     * Gets the thread for a given document reference.
      */
     private DocumentModel getDocumentThreadModel(DocumentRef threadRef)
             throws ClientException {

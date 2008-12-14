@@ -79,10 +79,9 @@ import org.nuxeo.ecm.webapp.dashboard.DashboardActions;
 /**
  * This action listener is used to create a Post inside a Thread and also to
  * handle the moderation cycle on Post.
- * 
+ *
  * @author <a href="bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
  */
-
 @Name("postAction")
 @Scope(ScopeType.CONVERSATION)
 public class PostActionBean extends InputController implements PostAction {
@@ -165,14 +164,14 @@ public class PostActionBean extends InputController implements PostAction {
             allowed = documentManager.hasPermission(
                     navigationContext.getCurrentDocument().getRef(), WRITE);
         } catch (ClientException e) {
-            e.printStackTrace();
+            log.error(e);
             allowed = false;
         }
         return allowed;
     }
 
     /**
-     * Add the post to the thread and start the WF the moderation on the post
+     * Adds the post to the thread and starts the moderation WF on the post
      * created.
      */
     public String addPost() throws ClientException, WMWorkflowException {
@@ -195,7 +194,6 @@ public class PostActionBean extends InputController implements PostAction {
          * facesMessages.add(FacesMessage.SEVERITY_INFO,
          * resourcesAccessor.getMessages().get( "label.comment.added.sucess"));
          */
-
         boolean publish = false;
 
         // We start the moderation, only if the thread has the moderated
@@ -316,12 +314,7 @@ public class PostActionBean extends InputController implements PostAction {
     }
 
     /**
-     * Start the moderation on given Post.
-     * 
-     * @param post
-     * @return
-     * @throws WMWorkflowException
-     * @throws ClientException
+     * Starts the moderation on given Post.
      */
     public WMActivityInstance startModeration(DocumentModel post)
             throws WMWorkflowException, ClientException {
@@ -351,8 +344,8 @@ public class PostActionBean extends InputController implements PostAction {
                     post.getRepositoryName());
             workflowPath = wapi.startProcess(processId, vars, null);
         } catch (WMWorkflowException we) {
-            log.error("An error occurred while grabbing workflow definitions");
-            we.printStackTrace();
+            log.error("An error occurred while grabbing workflow definitions", we);
+            // XXX then what?
         }
         if (workflowPath != null) {
             WMProcessDefinition def = wapi.getProcessDefinitionById(processId);
@@ -375,9 +368,6 @@ public class PostActionBean extends InputController implements PostAction {
 
     /**
      * Gets the current task Id.
-     * 
-     * @return
-     * @throws WMWorkflowException
      */
     public Collection<WMWorkItemInstance> getCurrentTasksForPrincipal(
             String name) throws WMWorkflowException {
@@ -447,13 +437,6 @@ public class PostActionBean extends InputController implements PostAction {
 
     /**
      * Notify event to Core.
-     * 
-     * @param doc
-     * @param eventId
-     * @param comment
-     * @param category
-     * @throws WMWorkflowException
-     * @throws ClientException
      */
     protected void notifyEvent(DocumentModel doc, String eventId,
             String comment, String category) throws WMWorkflowException,
@@ -607,7 +590,7 @@ public class PostActionBean extends InputController implements PostAction {
             try {
                 dashboardActions.invalidateDashboardItems();
             } catch (ClientException e) {
-                throw new WMWorkflowException(e.getMessage());
+                throw new WMWorkflowException(e.getMessage(), e);
             }
         }
 

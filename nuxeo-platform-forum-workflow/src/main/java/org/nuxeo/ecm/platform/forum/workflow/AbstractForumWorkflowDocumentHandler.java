@@ -37,7 +37,6 @@ import org.nuxeo.ecm.platform.workflow.jbpm.util.IDConverter;
  * itself.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public abstract class AbstractForumWorkflowDocumentHandler extends
         AbstractWorkflowDocumentActionHandler {
