@@ -71,13 +71,13 @@ import org.nuxeo.runtime.api.Framework;
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class UploadFileListener implements MessageListener {
 
-    private static final Log log = LogFactory.getLog(UploadFileListener.class);
-
     public static final String DUPLICATED_FILE = "duplicatedFile";
 
-    private transient CoreSession session;
+    private static final Log log = LogFactory.getLog(UploadFileListener.class);
 
-    private transient FileManager fileManager;
+    private CoreSession session;
+
+    private FileManager fileManager;
 
     private LoginContext loginCtx;
 
@@ -128,12 +128,7 @@ public class UploadFileListener implements MessageListener {
         return session;
     }
 
-    /**
-     *
-     * @param message
-     */
     public void onMessage(Message message) {
-
         try {
             Object obj = ((ObjectMessage)message).getObject();
             if(!(obj instanceof DocumentMessage)) {
@@ -188,8 +183,7 @@ public class UploadFileListener implements MessageListener {
                 }
             }
         } catch (PropertyException pe) {
-            log.debug("Requested Field isn't on the Document.");
-            log.debug(pe.getClass().toString(), pe);
+            log.debug("Requested Field isn't on the Document.", pe);
         } catch (Exception e) {
             log.error(e.getClass().toString(), e);
 

@@ -70,7 +70,6 @@ public interface FileManager {
             Blob input, String path, boolean overwrite, String fullName)
             throws Exception;
 
-
     /**
      * Just applies the same actions as creation but does not changes the doc
      * type.

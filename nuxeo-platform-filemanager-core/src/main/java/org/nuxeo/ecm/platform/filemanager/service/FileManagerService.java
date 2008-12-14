@@ -89,7 +89,6 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             "org.nuxeo.ecm.platform.filemanager.service.FileManagerService");
 
     public static final String DEFAULT_TYPE_NAME = "File";
-
     public static final String DEFAULT_FOLDER_TYPE_NAME = "Folder";
 
     private static final Log log = LogFactory.getLog(FileManagerService.class);
@@ -157,8 +156,9 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             throws ClientException {
         final String mimeType = blob.getMimeType();
         if (mimeType != null
-                && mimeType.equals("application/octet-stream") == false)
+                && !mimeType.equals("application/octet-stream")) {
             return blob;
+        }
         String filename = FileManagerUtils.fetchFileName(fullname);
         try {
             blob = getMimeService().updateMimetype(blob, filename);

@@ -43,21 +43,15 @@ import org.nuxeo.ecm.platform.types.TypeManager;
  */
 public class NotePlugin extends AbstractPlugin {
 
-    private static final long serialVersionUID = 1073550562485540108L;
-
     private static final String ICON_FIELD = "icon";
-
     private static final String COMMON_SCHEMA = "common";
-
     private static final String NOTE_FIELD = "note";
-
     private static final String NOTE_SCHEMA = NOTE_FIELD;
-
     private static final String TITLE_FIELD = "title";
-
     private static final String DUBLINCORE_SCHEMA = "dublincore";
-
     private static final String NOTE_TYPE = "Note";
+
+    private static final long serialVersionUID = 1073550562485540108L;
 
     private static final Log log = LogFactory.getLog(NotePlugin.class);
 
@@ -74,7 +68,6 @@ public class NotePlugin extends AbstractPlugin {
                 documentManager, path, title);
 
         if (overwrite && docModel != null) {
-
             // Do a checkin / checkout of the current version first
             DocumentRef docRef = docModel.getRef();
             VersionModel newVersion = new VersionModelImpl();

@@ -39,13 +39,13 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Listener responsible for computing the mimetype of a new or edited blob and
  * the common:icon field if necessary.
- * 
+ *
  * The common:size is also maintained as the length of the main blob to
  * preserver backward compatibility
- * 
+ *
  * The logics of this event listener is divided into static public methods to
  * make it easy to override this event listener with a custom implementation.
- * 
+ *
  * @author ogrisel
  */
 public class MimetypeIconUpdater extends AbstractEventListener {
@@ -96,11 +96,6 @@ public class MimetypeIconUpdater extends AbstractEventListener {
     /**
      * Recursively call updateBlobProperty on every dirty blob embedded as
      * direct children or contained in one of the container children
-     * 
-     * @param doc
-     * @param mimetypeService
-     * @param dirtyChildren
-     * @throws Exception
      */
     public static void recursivelyUpdateBlobs(DocumentModel doc,
             MimetypeRegistry mimetypeService, Iterator<Property> dirtyChildren)
@@ -119,13 +114,6 @@ public class MimetypeIconUpdater extends AbstractEventListener {
     /**
      * Update the mimetype of a blob allong with the icon and size fields of the
      * document if the blob is the main blob of the document.
-     * 
-     * @param doc
-     * @param mimetypeService
-     * @param dirtyProperty
-     * @throws PropertyException
-     * @throws MimetypeDetectionException
-     * @throws Exception
      */
     public static void updateBlobProperty(DocumentModel doc,
             MimetypeRegistry mimetypeService, Property dirtyProperty)
@@ -160,9 +148,6 @@ public class MimetypeIconUpdater extends AbstractEventListener {
     /**
      * Backward compatibility for external filename field: if edited, it might
      * affect the main blob mimetype
-     * 
-     * @param doc
-     * @throws PropertyException
      */
     public static void updateFilename(DocumentModel doc)
             throws PropertyException {
@@ -192,9 +177,6 @@ public class MimetypeIconUpdater extends AbstractEventListener {
 
     /**
      * If the icon field is empty, initialize it to the document type icon
-     * 
-     * @param doc
-     * @throws Exception
      */
     public static void setDefaultIcon(DocumentModel doc) throws Exception {
         if (doc.getProperty(ICON_FIELD).getValue(String.class) == null) {
@@ -205,10 +187,6 @@ public class MimetypeIconUpdater extends AbstractEventListener {
     /**
      * Compute the main icon of a Nuxeo document based on the mimetype of the
      * main attached blob with of fallback on the document type generic icon.
-     * 
-     * @param mimetypeEntry
-     * @param doc
-     * @throws Exception
      */
     public static void updateIconField(MimetypeEntry mimetypeEntry,
             DocumentModel doc) throws Exception {
