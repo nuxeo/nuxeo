@@ -177,7 +177,7 @@ public abstract class AbstractTransformer implements Transformer {
         }
 
         timer.stop();
-        log.info("Global transformation chain terminated for transformer name="
+        log.debug("Global transformation chain terminated for transformer name="
                 + name + timer);
 
         return results;
