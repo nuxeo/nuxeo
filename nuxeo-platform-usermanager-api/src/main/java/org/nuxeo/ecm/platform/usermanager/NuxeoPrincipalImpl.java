@@ -47,10 +47,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
-    private static final String TYPE_NAME = "User";
-
-    private static final String SCHEMA_NAME = "user";
-
     // TODO: this should be moved to an extension point of the usermanager
     // service
 
@@ -67,6 +63,10 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     public static final String EMAIL_COLUMN = "email";
 
     public static final String GROUPS_COLUMN = "groups";
+
+    private static final String TYPE_NAME = "User";
+
+    private static final String SCHEMA_NAME = "user";
 
     private static final long serialVersionUID = 1791676740406045594L;
 

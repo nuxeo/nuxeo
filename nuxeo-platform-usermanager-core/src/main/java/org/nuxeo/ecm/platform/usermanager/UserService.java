@@ -133,4 +133,5 @@ public class UserService extends DefaultComponent {
         descriptors.remove(contribution);
         recomputeUserManager(true);
     }
+
 }

@@ -81,7 +81,6 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().validatePassword(password);
         } catch (Throwable e) {
-            log.error("getAvailablePrincipals failed", e);
             throw ClientException.wrap(e);
         }
     }
@@ -90,7 +89,6 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getAvailablePrincipals();
         } catch (Throwable e) {
-            log.error("getAvailablePrincipals failed", e);
             throw ClientException.wrap(e);
         }
     }

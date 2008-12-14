@@ -25,7 +25,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 /**
- * @deprecated unused
+ * @deprecated unused - will be removed in 5.2
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  *
  */

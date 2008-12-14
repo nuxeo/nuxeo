@@ -2,9 +2,9 @@
 <component name="org.nuxeo.ecm.platform.usermanager.test">
 
   <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
-    point="userManager">
+      point="userManager">
     <userManager
-      class="org.nuxeo.ecm.platform.usermanager.FakeUserManagerImpl">
+        class="org.nuxeo.ecm.platform.usermanager.FakeUserManagerImpl">
       <users>
         <directory>somedir</directory>
         <emailField>mail</emailField>

@@ -31,9 +31,9 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 public interface UserManager {
 
-    public static enum MatchType {
+    enum MatchType {
         EXACT, //
-        SUBSTRING;
+        SUBSTRING
     }
 
     boolean checkUsernamePassword(String username, String password)

@@ -39,4 +39,5 @@ public interface VirtualUser extends Serializable {
     List<String> getGroups();
 
     Map<String, Serializable> getProperties();
+
 }

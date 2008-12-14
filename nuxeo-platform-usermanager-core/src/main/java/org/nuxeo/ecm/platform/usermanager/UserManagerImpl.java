@@ -348,14 +348,13 @@ public class UserManagerImpl implements UserManager {
                 new String[] { userSchemaName }, null);
         userEntry.addDataModel(new DataModelImpl(userSchemaName,
                 Collections.<String, Object> emptyMap()));
-        for (Map.Entry<String, Serializable> prop : user.getProperties().entrySet()) {
+        for (Entry<String, Serializable> prop : user.getProperties().entrySet()) {
             try {
                 userEntry.setProperty(userSchemaName, prop.getKey(),
                         prop.getValue());
             } catch (ClientException ce) {
                 log.error(
-                        "Property: "
-                                + prop.getKey()
+                        "Property: " + prop.getKey()
                                 + " does not exists. Check your UserService configuration.",
                         ce);
             }
