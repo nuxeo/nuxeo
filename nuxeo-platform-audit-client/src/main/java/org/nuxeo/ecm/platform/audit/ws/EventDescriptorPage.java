@@ -29,21 +29,17 @@ public class EventDescriptorPage implements Serializable {
 
     private final boolean bHasMorePage;
 
-    private EventDescriptor[] events;
+    private final EventDescriptor[] events;
 
     public EventDescriptorPage() {
-        super();
-        pageIndex = 0;
-        bHasMorePage = false;
+        this(null, 0, false);
     }
 
-    public EventDescriptorPage(EventDescriptor[] data, int pageIndex,
+    public EventDescriptorPage(EventDescriptor[] events, int pageIndex,
             boolean bHasMorePage) {
-
         this.pageIndex = pageIndex;
         this.bHasMorePage = bHasMorePage;
-        this.events = data;
-
+        this.events = events;
     }
 
     public int getPageIndex() {

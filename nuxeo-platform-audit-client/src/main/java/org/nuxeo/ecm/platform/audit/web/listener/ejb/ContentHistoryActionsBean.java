@@ -63,7 +63,6 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-
 @Name("contentHistoryActions")
 @Scope(CONVERSATION)
 public class ContentHistoryActionsBean implements ContentHistoryActions {
@@ -222,9 +221,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
             sortAscending = true;
         }
         sortInfo = new SortInfo(sortColumn, sortAscending);
-
         logEntries = null;
-
         return null;
     }
 

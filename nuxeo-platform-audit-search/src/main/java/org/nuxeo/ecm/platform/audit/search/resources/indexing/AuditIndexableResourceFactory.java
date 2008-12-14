@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableR
  * Audit indexable resource factory.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class AuditIndexableResourceFactory extends
         AbstractIndexableResourceFactory {

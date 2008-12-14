@@ -43,7 +43,6 @@ public interface ContentHistoryActions extends Serializable {
      * Invalidates log entries.
      * <p>
      * The invalidation will be done lazily.
-     * </p>
      *
      * @throws AuditException
      */
@@ -81,7 +80,6 @@ public interface ContentHistoryActions extends Serializable {
      * <p>
      * This log may be filled automatically when dealing with copy/paste/move
      * log entries.
-     * </p>
      *
      * @throws AuditException
      */
@@ -92,7 +90,6 @@ public interface ContentHistoryActions extends Serializable {
      * <p>
      * The linked document is resolved from the log original comment, when
      * dealing with copy/paste/move log entries.
-     * </p>
      *
      * @throws AuditException
      */
