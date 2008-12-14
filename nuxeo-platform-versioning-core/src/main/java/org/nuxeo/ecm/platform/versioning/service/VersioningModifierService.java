@@ -103,7 +103,7 @@ public class VersioningModifierService extends DefaultComponent {
             List<VersioningModifierPropertyDescriptor> properties = modifications.get(document.getType());
 
             if (properties == null || properties.isEmpty()) {
-                log.info("No properties modifications for document type "
+                log.debug("No properties modifications for document type "
                         + document.getType());
             } else {
                 for (VersioningModifierPropertyDescriptor property : properties) {
@@ -132,7 +132,7 @@ public class VersioningModifierService extends DefaultComponent {
             } catch (ClientException e) {
                 throw new ClientRuntimeException(e);
             }
-            log.info(schema + ':' + fieldname + " resetted");
+            log.debug(schema + ':' + fieldname + " resetted");
         }
     }
 

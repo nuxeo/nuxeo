@@ -43,18 +43,18 @@ public class DocumentManagerBusinessDelegate implements Serializable {
 
     public CoreSession getDocumentManager(String repositoryUri,
             Map<String, Serializable> sessionContext) throws ClientException {
-        log.info("<getDocumentManager>");
+        log.debug("<getDocumentManager>");
 
         // first destroy if needed
         if (null != documentManager) {
-            log.info("Removing the documentManager first.");
+            log.debug("Removing the documentManager first.");
             remove();
         }
 
         documentManager = CoreInstance.getInstance().open(
                 repositoryUri, sessionContext);
 
-        log.info("DocumentManager bean found :"
+        log.debug("DocumentManager bean found :"
                 + documentManager.getClass().toString());
         return documentManager;
     }

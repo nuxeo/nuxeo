@@ -363,7 +363,7 @@ public class VersioningService extends DefaultComponent implements
                     if (evaluator != null) {
                         if (docModel != null) {
                             if (!evaluator.evaluate(docModel)) {
-                                log.info("option not added (evaluated to false) "
+                                log.debug("option not added (evaluated to false) "
                                         + opt);
                                 continue;
                             }
@@ -589,8 +589,7 @@ public class VersioningService extends DefaultComponent implements
                     // apply eventually specified lifecycle transition
                     String lsTrans = option.getLifecycleTransition();
                     if (lsTrans != null) {
-
-                        log.info("followTransition: " + lsTrans);
+                        log.debug("followTransition: " + lsTrans);
 
                         try {
                             doc.followTransition(lsTrans);
@@ -600,7 +599,7 @@ public class VersioningService extends DefaultComponent implements
                                             + lsTrans
                                             + " specified by versioning rule:option "
                                             + descriptor.getName() + ":"
-                                            + optionValue);
+                                            + optionValue, e);
                         }
                     }
                 }
