@@ -289,7 +289,7 @@ public class DefaultActionFilter implements ActionFilter {
     protected final boolean checkTypes(Action action, ActionContext context,
             String[] types) {
         DocumentModel doc = context.getCurrentDocument();
-        String docType = null;
+        String docType;
         if (doc == null) {
             // consider we're on the Server root
             docType = "Root";
