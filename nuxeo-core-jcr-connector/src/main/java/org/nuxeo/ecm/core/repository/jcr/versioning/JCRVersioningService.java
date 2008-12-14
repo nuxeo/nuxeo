@@ -262,7 +262,7 @@ public class JCRVersioningService implements VersioningService {
             throws RepositoryException {
         if (log.isDebugEnabled()) {
             try {
-                log.info("remove doc (" + doc.getPath()
+                log.debug("remove doc (" + doc.getPath()
                         + ") version with label: " + label);
             } catch (DocumentException e) {
                 log.error(e);

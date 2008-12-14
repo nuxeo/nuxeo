@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.ecm.core.listener.CoreEventListenerService">
 
   <documentation>
@@ -11,13 +10,12 @@
 
   <require>org.nuxeo.ecm.core.repository.RepositoryService</require>
 
-    <service>
-      <provide interface="org.nuxeo.ecm.core.listener.CoreEventListenerService"/>
-    </service>
-
+  <service>
+    <provide interface="org.nuxeo.ecm.core.listener.CoreEventListenerService"/>
+  </service>
 
   <implementation
-    class="org.nuxeo.ecm.core.listener.impl.EventManagerComponent" />
+      class="org.nuxeo.ecm.core.listener.impl.EventManagerComponent"/>
 
   <extension-point name="listener">
     <documentation>
@@ -61,7 +59,7 @@
 
     </documentation>
     <object
-      class="org.nuxeo.ecm.core.listener.extensions.CoreEventListenerDescriptor" />
+        class="org.nuxeo.ecm.core.listener.extensions.CoreEventListenerDescriptor"/>
   </extension-point>
 
   <!-- Disbaled for now since it is not used -->
@@ -88,5 +86,5 @@
       class="org.nuxeo.ecm.core.listener.impl.TestTransactedListener"
       order="1" />
   </extension-->
-  
+
 </component>
