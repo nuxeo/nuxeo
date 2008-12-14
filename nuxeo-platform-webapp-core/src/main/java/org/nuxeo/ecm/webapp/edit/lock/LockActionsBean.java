@@ -112,7 +112,7 @@ public class LockActionsBean implements LockActions {
                                     SecurityConstants.WRITE_PROPERTIES))
                             && !currentDocument.isVersion();
                 } catch (Exception e) {
-                    log.info("evaluation of document lock "
+                    log.debug("evaluation of document lock "
                             + currentDocument.getName() + " failed ("
                             + e.getMessage() + ": returning false");
                     canLock = false;
@@ -144,7 +144,7 @@ public class LockActionsBean implements LockActions {
                                 && !currentDocument.isVersion();
                     }
                 } catch (Exception e) {
-                    log.info("evaluation of document lock "
+                    log.debug("evaluation of document lock "
                             + currentDocument.getName() + " failed ("
                             + e.getMessage() + ": returning false");
                     canUnlock = false;
@@ -315,7 +315,7 @@ public class LockActionsBean implements LockActions {
                             && !currentDocument.isVersion();
                 }
             } catch (Exception e) {
-                log.info("evaluation of edit on line option for document "
+                log.debug("evaluation of edit on line option for document "
                         + currentDocument.getName() + " failed ("
                         + e.getMessage() + ": returning false");
                 isLiveEditable = false;

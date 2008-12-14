@@ -42,8 +42,7 @@ public class DisplayExtensionPointHandler extends NXQueryDataExtensionPointHandl
     }
 
     public void registerExtension(Extension extension) {
-
-        log.info("RegiterExtension.....................");
+        log.info("RegisterExtension.....................");
 
         Object[] contribs = extension.getContributions();
 

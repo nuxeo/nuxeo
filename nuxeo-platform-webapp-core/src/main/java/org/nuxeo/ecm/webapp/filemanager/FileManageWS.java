@@ -183,12 +183,12 @@ public class FileManageWS extends InputController implements
 
     /**
      * This method is called from a page action link to generate a file used by
-     * client IE plugin
+     * client IE plugin.
+     *
      * @deprecated use nxd:liveEditUrl function defined in DocumentModelFunctions instead
      */
     @Deprecated
     public String edit() throws ClientException {
-
         final String logPrefix = "<edit> ";
 
         DocumentModel currentDocument =navigationContext.getCurrentDocument();
@@ -248,7 +248,7 @@ public class FileManageWS extends InputController implements
                 contentType = blob.getEncoding();
             }
 
-            log.info(logPrefix + CONTENT_TYPE + ':' + contentType);
+            log.debug(logPrefix + CONTENT_TYPE + ':' + contentType);
             response.getWriter().write(
                     CONTENT_TYPE + " : " + contentType + NEW_LINE);
             String serverVersion = "Nuxeo5";
@@ -281,7 +281,7 @@ public class FileManageWS extends InputController implements
             response.getWriter().write(resultCookies + NEW_LINE);
 
             response.getWriter().write(NEW_LINE);
-            log.info("Editing with: " + contentType + ';');
+            log.debug("Editing with: " + contentType + ';');
             response.setContentType("application/nx5-edit");
             response.getWriter().flush();
             blob.transferTo(response.getOutputStream());
@@ -442,7 +442,7 @@ public class FileManageWS extends InputController implements
         // check versioning actions
         final VersioningActions selectedOption = VersioningActions.valueOf(actionID);
         if (selectedOption != null) {
-            log.info("Saving Document with versioning option: "
+            log.debug("Saving Document with versioning option: "
                     + selectedOption);
 
             // documentVersioning.incrementVersions(changeableDocument,
@@ -594,7 +594,7 @@ public class FileManageWS extends InputController implements
          * postEditActList.add("Save_in_new_Version");
          */
 
-        log.info(logPrefix + "postEditActList: " + postEditActList);
+        log.debug(logPrefix + "postEditActList: " + postEditActList);
 
         String[] postEditAct = new String[postEditActList.size()];
         postEditAct = postEditActList.toArray(postEditAct);

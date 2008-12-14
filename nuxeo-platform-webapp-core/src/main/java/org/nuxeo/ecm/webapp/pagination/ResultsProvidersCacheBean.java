@@ -154,7 +154,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache, Seriali
             } catch (Exception e) {
                 log.error("failed to obtain sorted resultProvider", e);
                 try {
-                    log.info("retrying search without sort parameters");
+                    log.debug("retrying search without sort parameters");
                     provider = getProviderFarmFor(name).getResultsProvider(
                             name, null);
                 } catch (Exception e2) {
@@ -205,7 +205,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache, Seriali
         } catch (SecurityException e) {
             return new EmptyResultsProvider();
         } catch (NoSuchMethodException e) {
-            log.info(farm.getClass().getName() +" will have to " +
+            log.warn(farm.getClass().getName() +" will have to " +
                     "implement getEmptyResultsProvider() for Nuxeo 5.2");
             return new EmptyResultsProvider();
         }

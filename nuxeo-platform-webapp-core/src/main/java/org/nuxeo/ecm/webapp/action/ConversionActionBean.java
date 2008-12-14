@@ -114,12 +114,11 @@ public class ConversionActionBean implements ConversionAction {
             }
         } catch (Exception e) {
             log.error("error asking the any2pdf plugin whether pdf conversion "
-                    + " is supported: " + e.getMessage());
+                    + " is supported: " + e.getMessage(), e);
         }
 
         return isSupported;
     }
-
 
     @WebRemote
     public boolean isFileExportableToPDF(String fieldName) {
@@ -129,20 +128,17 @@ public class ConversionActionBean implements ConversionAction {
             DocumentModel doc = getDocument();
 
             Boolean cacheResult = exportableToPDFCache.getFromCache(doc, fieldName);
-            if (cacheResult==null)
-            {
+            if (cacheResult == null) {
                 String mimetype = getMimetypeFromDocument(fieldName);
                 TransformServiceCommon nxt = TransformServiceDelegate.getRemoteTransformService();
                 isSupported = nxt.isMimetypeSupportedByPlugin("any2pdf", mimetype);
                 exportableToPDFCache.addToCache(doc, fieldName, isSupported);
-            }
-            else
-            {
-                isSupported=cacheResult.booleanValue();
+            } else {
+                isSupported = cacheResult;
             }
         } catch (TransformException e) {
             log.error("error asking the any2pdf plugin whether " + fieldName
-                    + " is supported: ",e);
+                    + " is supported: ", e);
         } catch (Exception e) {
             log.error(e);
         }
@@ -150,11 +146,9 @@ public class ConversionActionBean implements ConversionAction {
         return isSupported;
     }
 
-
     @WebRemote
     public String generatePdfFile() {
         try {
-
             if (fileFieldFullName == null) {
                 return null;
             }
@@ -228,7 +222,7 @@ public class ConversionActionBean implements ConversionAction {
             return isOnlineEditable;
         } catch (Exception e) {
             log.error("error getting the mimetype entry for " + fieldName
-                    + ": " + e.getMessage());
+                    + ": " + e.getMessage(), e);
             return false;
         }
     }

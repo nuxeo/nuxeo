@@ -92,7 +92,7 @@ public class EmailSenderActionsBean extends InputController implements
     // @Create
     public void initialize() {
         log.info("Initializing...");
-        log.info("Principal List Manager: " + principalListManager);
+        log.debug("Principal List Manager: " + principalListManager);
     }
 
     // @Destroy
@@ -148,12 +148,12 @@ public class EmailSenderActionsBean extends InputController implements
             }
             toEmail = listEmails;
             currentDocumentFullUrl = DocumentModelFunctions.documentUrl(navigationContext.getCurrentDocument());
-            log.info("URL : "
+            log.debug("URL : "
                     + DocumentModelFunctions.documentUrl(navigationContext.getCurrentDocument()));
 
             try {
-                log.info("Subject : " + mailSubject);
-                log.info("Content : " + mailContent);
+                log.debug("Subject : " + mailSubject);
+                log.debug("Content : " + mailContent);
                 renderer.render("/mail_template.xhtml");
                 facesMessages.add(FacesMessage.SEVERITY_INFO,
                         resourcesAccessor.getMessages().get(
@@ -167,73 +167,43 @@ public class EmailSenderActionsBean extends InputController implements
         }
     }
 
-    /**
-     * @return the mailContent.
-     */
     public String getMailContent() {
         return mailContent;
     }
 
-    /**
-     * @param mailContent the mailContent to set.
-     */
     public void setMailContent(String mailContent) {
         this.mailContent = mailContent;
     }
 
-    /**
-     * @return the mailSubject.
-     */
     public String getMailSubject() {
         return mailSubject;
     }
 
-    /**
-     * @param mailSubject the mailSubject to set.
-     */
     public void setMailSubject(String mailSubject) {
         this.mailSubject = mailSubject;
     }
 
-    /**
-     * @return the principalListManager.
-     */
     public PrincipalListManager getPrincipalListManager() {
         return principalListManager;
     }
 
-    /**
-     * @param principalListManager the principalListManager to set.
-     */
     public void setPrincipalListManager(
             PrincipalListManager principalListManager) {
         this.principalListManager = principalListManager;
     }
 
-    /**
-     * @return the fromEmail.
-     */
     public String getFromEmail() {
         return fromEmail;
     }
 
-    /**
-     * @param fromEmail the fromEmail to set.
-     */
     public void setFromEmail(String fromEmail) {
         this.fromEmail = fromEmail;
     }
 
-    /**
-     * @return the toEmail.
-     */
     public List<NuxeoPrincipal> getToEmail() {
         return toEmail;
     }
 
-    /**
-     * @param toEmail the toEmail to set.
-     */
     public void setToEmail(List<NuxeoPrincipal> toEmail) {
         this.toEmail = toEmail;
     }
