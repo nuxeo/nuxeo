@@ -96,7 +96,7 @@ public class FileService extends DefaultAdapter {
                 .type(blob.getMimeType())
                 .build();
         } catch (Exception e) {
-            throw new WebException("Failed to get the attached file", e);
+            throw WebException.wrap("Failed to get the attached file", e);
         }
     }
 
@@ -157,7 +157,7 @@ public class FileService extends DefaultAdapter {
         } catch (WebException e) {
             throw e;
         } catch (Exception e) {
-            throw new WebException("Failed to attach file", e);
+            throw WebException.wrap("Failed to attach file", e);
         }
     }
 
@@ -186,7 +186,7 @@ public class FileService extends DefaultAdapter {
             session.saveDocument(doc);
             session.save();
         } catch (Exception e) {
-            throw new WebException("Failed to delete attached file", e);
+            throw WebException.wrap("Failed to delete attached file", e);
         }
         return redirect(getTarget().getPath());
     }

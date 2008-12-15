@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.webengine.WebException;
 
 /**
@@ -115,11 +114,8 @@ public class JSonHelper {
                 }
             }
             return obj;
-        } catch (PropertyException e) {
-            throw new WebException("Failed to export document as json: "
-                    + doc.getPath(), e);
-        } catch (ClientException e) {
-            throw new WebException("Failed to export document as json: "
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to export document as json: "
                     + doc.getPath(), e);
         }
     }

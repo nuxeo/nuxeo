@@ -35,8 +35,8 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -143,7 +143,7 @@ public class FormData implements FormInstance {
                     list.add(item);
                 }
             } catch (FileUploadException e) {
-                throw new WebException("Failed to get uploaded files", e);
+                throw WebException.wrap("Failed to get uploaded files", e);
             }
         }
         return items;
@@ -202,7 +202,7 @@ public class FormData implements FormInstance {
             try {
                 src = new InputStreamSource(item.getInputStream());
             } catch (IOException e) {
-                throw new WebException("Failed to get blob data", e);
+                throw WebException.wrap("Failed to get blob data", e);
             }
         }
         String ctype  = item.getContentType();
@@ -326,7 +326,7 @@ public class FormData implements FormInstance {
                 fillDocumentFromForm(doc);
             }
         } catch (PropertyException e) {
-            throw new WebException("Failed to fill document properties from request properties", e);
+            throw WebException.wrap("Failed to fill document properties from request properties", e);
         }
     }
 

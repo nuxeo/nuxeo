@@ -55,20 +55,22 @@ public class WebException extends WebApplicationException {
         super(status);
     }
 
-    public WebException(Throwable cause, Response response) {
+    protected WebException(Throwable cause, Response response) {
         super(cause, response);
         byPassAppResponse = true;
     }
 
-    public WebException(Throwable cause, Response.Status status) {
+    /** use WebExeption.wrap() and not the constructor */
+    
+    protected WebException(Throwable cause, Response.Status status) {
         super(cause, status);
     }
 
-    public WebException(Throwable cause, int status) {
+    protected WebException(Throwable cause, int status) {
         super(cause, status);
     }
 
-    public WebException(Throwable cause) {
+    protected WebException(Throwable cause) {
         super(cause);
     }
 
@@ -81,12 +83,12 @@ public class WebException extends WebApplicationException {
         this.message = message;
     }
 
-    public WebException(String message, Throwable t) {
+    protected WebException(String message, Throwable t) {
         super(t);
         this.message = message;
     }
 
-    public WebException(String message, Throwable t, int code) {
+    protected WebException(String message, Throwable t, int code) {
         super(t, code);
         this.message = message;
     }

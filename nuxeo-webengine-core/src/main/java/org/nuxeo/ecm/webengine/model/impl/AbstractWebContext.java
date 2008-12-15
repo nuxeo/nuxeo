@@ -460,7 +460,7 @@ public abstract class AbstractWebContext implements WebContext {
             pushScriptFile(script.getFile());
             engine.getRendering().render(template, bindings, writer);
         } catch (Exception e) {
-            throw new WebException("Failed to render template: "
+            throw WebException.wrap("Failed to render template: "
                     + (script == null ? script : script.getAbsolutePath()), e);
         } finally {
             if (!scriptExecutionStack.isEmpty()) {
@@ -489,7 +489,7 @@ public abstract class AbstractWebContext implements WebContext {
         } catch (WebException e) {
             throw e;
         } catch (Exception e) {
-            throw new WebException("Failed to run script "+script, e);
+            throw WebException.wrap("Failed to run script "+script, e);
         } finally {
             if (!scriptExecutionStack.isEmpty()) {
                 popScriptFile();

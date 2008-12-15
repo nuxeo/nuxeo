@@ -90,7 +90,7 @@ public class DocumentHelper {
             session.save();
             return newDoc;
         } catch (Exception e) {
-            throw new WebException("Failed to create document: "+name, e);
+            throw WebException.wrap("Failed to create document: "+name, e);
         }
     }
 
@@ -119,7 +119,7 @@ public class DocumentHelper {
             ctx.getCoreSession().save();
             return doc;
         } catch (Exception e) {
-            throw new WebException("Failed to update document", e);
+            throw WebException.wrap("Failed to update document", e);
         }
     }
 

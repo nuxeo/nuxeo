@@ -145,7 +145,7 @@ public class ModuleImpl extends AbstractModule {
         TypeRegistry typeReg = null;
         // install types from super modules
         if (superModule != null) { //TODO add type reg listener on super modules to update types  when needed?
-            typeReg = new TypeRegistry(gtypes.getTypeRegistry(), engine, this);
+            typeReg = new TypeRegistry(superModule.getTypeRegistry(), engine, this);
         } else {
             typeReg = new TypeRegistry(gtypes.getTypeRegistry(), engine, this);
         }

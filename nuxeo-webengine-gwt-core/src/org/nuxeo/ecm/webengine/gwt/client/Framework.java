@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.GWT.UncaughtExceptionHandler;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Window;
 
 
 /**
@@ -65,10 +67,14 @@ public class Framework {
     }
 
     public static void handleError(Throwable t) {
-        if (errorHandler == null) {
-            GWT.log(t.getMessage(), t);
-        } else {
+        GWT.log(t.getMessage(), t);
+        if (!GWT.isScript()) {
+            t.printStackTrace();
+        }
+        if (errorHandler != null) {
             errorHandler.handleError(t);
+        } else {
+            Window.alert("Uncaught Ecxception: "+t.getMessage());
         }
     }
 
@@ -116,6 +122,11 @@ public class Framework {
         if (isStarted) {
             throw new IllegalStateException("Application already started!");
         }
+        GWT.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+            public void onUncaughtException(Throwable e) {
+                Framework.handleError(e);
+            }
+        });
 //        if (url != null && url.endsWith("/")) {
 //            basePath = url.substring(0, url.length()-1);
 //        } else {
