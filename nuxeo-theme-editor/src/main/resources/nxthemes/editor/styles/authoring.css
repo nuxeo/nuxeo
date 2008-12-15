@@ -328,7 +328,7 @@ html, body {
 }
 
 div.nxthemesButtonSelector {
-  font: italic 12px Arial, sans-serif;
+  font: italic 13px Arial, sans-serif;
   text-align: right;
   padding: 1px;
 }
@@ -520,7 +520,6 @@ div.nxthemesEditorFrame {
 .nxthemesEditTabs li {
   background-image: url(${basePath}/skin/nxthemes-editor/img/edit-tab.png);
   background-position: 0 -22px;
-  margin-right: 3px;
 }
 
 .nxthemesEditTabs li a {
@@ -873,18 +872,18 @@ td.nxthemesCellLayout input {
 
 div.nxthemesFragment {
   border-style: solid;
-  border-width: 1px;
+  border-width: 1px 2px 2px 1px;
   border-color: #999 #000 #000 #999;
-  background: #f9f7ef;
-  font: italic 13px Arial, sans-serif !important;
-  padding: 7px !important;
+  background: #ffe;
+  font: 11px Arial, sans-serif !important;
+  padding: 4px !important;
   margin: 3px !important;
   color: #333;
   cursor: default;
 }
 
 div.nxthemesFragment b {
-  font: bold italic 12px Arial, sans-serif !important;
+  font: bold normal 14px Arial, sans-serif !important;
 }
 
 /* style editor */
