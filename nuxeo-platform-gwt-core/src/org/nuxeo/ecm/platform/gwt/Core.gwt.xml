@@ -1,0 +1,28 @@
+<module>
+
+      <!-- Inherit the core Web Toolkit stuff.                        -->
+      <inherits name='com.google.gwt.user.User'/>
+	
+      <!-- Inherit the default GWT style sheet.  You can change       -->
+      <!-- the theme of your GWT application by uncommenting          -->
+      <!-- any one of the following lines.                            -->
+      <inherits name='com.google.gwt.user.theme.standard.Standard'/>
+      <inherits name="com.google.gwt.http.HTTP" />
+      <!-- <inherits name="com.google.gwt.user.theme.chrome.Chrome"/> -->
+      <!-- <inherits name="com.google.gwt.user.theme.dark.Dark"/>     -->
+
+      <!-- Other module inherits                                      -->
+      <inherits name="com.google.gwt.json.JSON" />
+
+      <!-- Specify the app entry point class.                         -->
+    
+      <!-- Specify the application specific style sheet.              -->
+      <stylesheet src='Core.css' />
+	
+	    <script src="js/nuxeo.js"/>
+	
+      <generate-with class="org.nuxeo.ecm.platform.gwt.rebind.ApplicationBundleGenerator">
+        <when-type-assignable class="org.nuxeo.ecm.platform.gwt.client.ApplicationBundle" />
+      </generate-with>     
+
+</module>
