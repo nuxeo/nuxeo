@@ -88,7 +88,7 @@ public class TestDocumentMessage extends RepositoryTestCase {
     }
 
     public void testMessageDocumentNoSource() throws DocumentException {
-        DocumentMessage msg = DocumentMessageFactory.createDocumentMessage(null);
+        DocumentMessage msg = DocumentMessageFactory.createDocumentMessage((DocumentModel)null);
 
         assertNull(msg.getCategory());
         assertNull(msg.getComment());

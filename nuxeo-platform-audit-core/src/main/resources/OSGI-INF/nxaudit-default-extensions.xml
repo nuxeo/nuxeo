@@ -39,5 +39,10 @@
     <event name="documentPublicationApproved"/>
     <event name="lifecycle_transition_event"/>
   </extension>
+  
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventService"
+    point="extendedInfo">
+    <extendedInfo key="id" expression="${document.id}"/>
+  </extension>
 
 </component>

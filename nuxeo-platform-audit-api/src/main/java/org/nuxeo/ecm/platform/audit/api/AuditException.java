@@ -19,12 +19,14 @@
 
 package org.nuxeo.ecm.platform.audit.api;
 
+import org.nuxeo.ecm.core.api.ClientException;
+
 /**
  * NXAudit-related exception.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class AuditException extends Exception {
+public class AuditException extends ClientException {
 
     private static final long serialVersionUID = 1L;
 
