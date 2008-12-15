@@ -144,7 +144,7 @@ public class UploadFileListener implements MessageListener {
             }
             Boolean duplicatedMessage = (Boolean) doc.getEventInfo().get(
                     EventMessage.DUPLICATED);
-            if (duplicatedMessage != null && duplicatedMessage == true) {
+            if (duplicatedMessage != null && duplicatedMessage) {
                 return;
             }
 
@@ -221,6 +221,7 @@ public class UploadFileListener implements MessageListener {
                 principal, category, null);
 
         DocumentMessage msg = new DocumentMessageImpl(newDoc, event);
+        // FIXME: is this really needed ?
         msg.feed(event);
         DocumentMessageProducer producer = null;
         try {

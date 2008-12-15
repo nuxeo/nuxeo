@@ -34,15 +34,11 @@ import org.nuxeo.ecm.core.api.event.CoreEvent;
  */
 public interface EventMessage extends Serializable {
 
-    public String DUPLICATED = "DUPLICATED";
-
-    public String BLOCK_JMS_PRODUCING = "BLOCK_JMS_PRODUCING";
-
-    public String BLOCK_SYNC_INDEXING = "BLOCK_SYNC_INDEXING";
-
-    public String BLOCK_ASYNC_INDEXING = "BLOCK_ASYNC_INDEXING";
-
-    public String PERFORM_FULL_SYNC_INDEXING = "PERFORM_FULL_SYNC_INDEXING";
+    String DUPLICATED = "DUPLICATED";
+    String BLOCK_JMS_PRODUCING = "BLOCK_JMS_PRODUCING";
+    String BLOCK_SYNC_INDEXING = "BLOCK_SYNC_INDEXING";
+    String BLOCK_ASYNC_INDEXING = "BLOCK_ASYNC_INDEXING";
+    String PERFORM_FULL_SYNC_INDEXING = "PERFORM_FULL_SYNC_INDEXING";
 
     Date getEventDate();
 

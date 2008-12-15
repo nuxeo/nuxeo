@@ -37,7 +37,6 @@ import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusines
  * Session facade for Document Message Producer service.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 @Stateless
 @Local(DocumentMessageProducer.class)

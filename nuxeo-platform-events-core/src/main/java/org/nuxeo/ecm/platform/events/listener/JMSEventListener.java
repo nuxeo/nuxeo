@@ -183,8 +183,7 @@ public class JMSEventListener extends AbstractEventListener implements
         } else if (source instanceof DocumentModel) {
             message = new DocumentMessageImpl((DocumentModel) source, coreEvent);
         } else {
-            message = new EventMessageImpl();
-            message.feed(coreEvent);
+            message = new EventMessageImpl(coreEvent);
         }
         return message;
     }

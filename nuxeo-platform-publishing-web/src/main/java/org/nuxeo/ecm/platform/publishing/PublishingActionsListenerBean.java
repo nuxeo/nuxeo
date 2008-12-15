@@ -182,9 +182,9 @@ public class PublishingActionsListenerBean extends InputController implements
         try {
             DocumentModel currentDocument = getCurrentDocument();
 
-            CoreSession session = null;
-            LoginContext context = null;
-            Repository repository = null;
+            CoreSession session;
+            LoginContext context;
+            Repository repository;
             try {
                 context = Framework.login();
                 RepositoryManager repositoryMgr = Framework.getService(RepositoryManager.class);
@@ -282,10 +282,9 @@ public class PublishingActionsListenerBean extends InputController implements
         // Notify reject event
         DocumentModel sourceDocument;
         try {
-
-            CoreSession session = null;
-            LoginContext context = null;
-            Repository repository = null;
+            CoreSession session;
+            LoginContext context;
+            Repository repository;
             try {
                 context = Framework.login();
                 RepositoryManager repositoryMgr = Framework.getService(RepositoryManager.class);
