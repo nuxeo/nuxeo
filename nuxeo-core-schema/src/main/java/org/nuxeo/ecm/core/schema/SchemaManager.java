@@ -53,7 +53,7 @@ public interface SchemaManager extends TypeProvider {
     Schema unregisterSchema(String name);
 
     /**
-     * Get the field given a prefixed name.
+     * Gets the field given a prefixed name.
      *
      * @param prefixedName
      * @return the field or null if none

@@ -58,7 +58,6 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
  * NOTE: to run these tests in Eclipse, make sure your test runner allocates at
@@ -306,10 +305,12 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 vignette.put("width", Long.valueOf(j));
                 vignette.put("height", Long.valueOf(j));
                 vignette.put("content",
-                        StreamingBlob.createFromString(String.format("document %d, vignette %d", i, j)));
+                        StreamingBlob.createFromString(String.format(
+                                "document %d, vignette %d", i, j)));
                 vignettes.add(vignette);
             }
-            doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
+            doc.setPropertyValue("cmpf:attachedFile",
+                    (Serializable) attachedFile);
             doc = session.createDocument(doc);
 
             session.save();
@@ -380,11 +381,13 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc = session.createDocument(doc);
         session.save();
 
-        doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").setValue(222L);
+        doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").setValue(
+                222L);
         session.saveDocument(doc);
         session.save();
 
-        doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").setValue(333L);
+        doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").setValue(
+                333L);
         session.saveDocument(doc);
         session.save();
 
@@ -393,7 +396,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         openSession();
         doc = session.getDocument(new PathRef("/doc"));
         assertEquals(333L, doc.getProperty(
-        "cmpf:attachedFile/vignettes/vignette[0]/width").getValue());
+                "cmpf:attachedFile/vignettes/vignette[0]/width").getValue());
     }
 
     //
@@ -2764,35 +2767,32 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 "proxy_test", "File");
 
         doc = session.createDocument(doc);
-        doc.setProperty("common", "title", "the title");
+        doc.setProperty("dublincore", "title", "the title");
         doc = session.saveDocument(doc);
-        // session.save();
 
         VersionModel version = new VersionModelImpl();
         version.setCreated(Calendar.getInstance());
         version.setLabel("v1");
         session.checkIn(doc.getRef(), version);
-        // session.save();
 
         // checkout the doc to modify it
         session.checkOut(doc.getRef());
-        doc.setProperty("common", "title", "the title modified");
+        doc.setProperty("dublincore", "title", "the title modified");
         doc = session.saveDocument(doc);
-        // session.save();
 
         DocumentModel proxy = session.createProxy(root.getRef(), doc.getRef(),
                 version, true);
-        // session.save();
-        // assertEquals("the title", proxy.getProperty("common", "title"));
-        // assertEquals("the title modified", doc.getProperty("common",
-        // "title"));
+        session.save();
+        assertEquals("the title", proxy.getProperty("dublincore", "title"));
+        assertEquals("the title modified", doc.getProperty("dublincore",
+                "title"));
 
         // make another new version
         VersionModel version2 = new VersionModelImpl();
         version2.setCreated(Calendar.getInstance());
         version2.setLabel("v2");
         session.checkIn(doc.getRef(), version2);
-        // session.save();
+        session.checkOut(doc.getRef());
 
         DocumentModelList list = session.getChildren(root.getRef());
         assertEquals(2, list.size());
@@ -2802,8 +2802,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         }
 
         session.removeDocument(proxy.getRef());
-        // session.save();
-
         list = session.getChildren(root.getRef());
         assertEquals(1, list.size());
 
@@ -2828,13 +2826,10 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(3, session.getChildrenRefs(root.getRef(), null).size());
 
         // a second time to check overwrite
-        // XXX this test fails for mysterious reasons (hasNode doesn't detect
-        // the child node that was added by the first copy -- XASession pb?)
-        // session.publishDocument(proxy, folder);
-        // session.save();
-        // assertEquals(1, session.getChildrenRefs(folder.getRef(),
-        // null).size());
-        // assertEquals(3, session.getChildrenRefs(root.getRef(), null).size());
+        session.publishDocument(proxy, folder);
+        session.save();
+        assertEquals(1, session.getChildrenRefs(folder.getRef(), null).size());
+        assertEquals(3, session.getChildrenRefs(root.getRef(), null).size());
 
         // and without overwrite
         session.publishDocument(proxy, folder, false);

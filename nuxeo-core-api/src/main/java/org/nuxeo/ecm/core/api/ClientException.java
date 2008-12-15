@@ -20,8 +20,9 @@
 package org.nuxeo.ecm.core.api;
 
 /**
- * @author bstefanescu
+ * The most generic exception thrown by the Nuxeo Core.
  *
+ * @author bstefanescu
  */
 public class ClientException extends Exception {
 
@@ -66,6 +67,5 @@ public class ClientException extends Exception {
         }
         return clientException;
     }
-
 
 }

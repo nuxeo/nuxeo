@@ -32,8 +32,12 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class XMLDocumentTreeWriter extends XMLDocumentWriter {
+
+    private static final Log log = LogFactory.getLog(XMLDocumentTreeWriter.class);
 
     private XMLWriter writer;
 
@@ -116,7 +120,7 @@ public class XMLDocumentTreeWriter extends XMLDocumentWriter {
             try {
                 out.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e);
             }
         }
     }

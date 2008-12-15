@@ -50,13 +50,13 @@ public interface DocumentType extends CompositeType {
     void setPrefetchInfo(PrefetchInfo prefetchInfo);
 
     /**
-     * Gets the prefetch info or null if no prefetch is defined.
+     * Gets the prefetch info, or null if no prefetch is defined.
      * <p>
      * If the prefetch info is not null, the caller should use it when
      * instantiating a document to preload the fields defined by the prefetch
      * info.
      * <p>
-     * If no prefetch is specified by the document type the caller is free to
+     * If no prefetch is specified by the document type, the caller is free to
      * use a default prefetch info or no prefetch at all.
      *
      * @return the prefetch info or null
@@ -66,7 +66,7 @@ public interface DocumentType extends CompositeType {
     /**
      * Tests whether this type describes a document (not a folder!) or not.
      *
-     * @return true if the type describes a document folder otherwise returns false
+     * @return true if the type describes a document folder, otherwise returns false
      */
     boolean isFile();
 

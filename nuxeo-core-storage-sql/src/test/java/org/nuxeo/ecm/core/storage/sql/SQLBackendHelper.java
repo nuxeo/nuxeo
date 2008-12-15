@@ -41,6 +41,7 @@ public class SQLBackendHelper {
 
     protected static enum Database {
         DERBY, //
+        H2, //
         MYSQL, //
         POSTGRESQL
     }
@@ -48,7 +49,7 @@ public class SQLBackendHelper {
     /**
      * Change this to use another SQL database for tests.
      */
-    public static final Database DATABASE = Database.DERBY;
+    public static final Database DATABASE = Database.H2;
 
     protected static String REPOSITORY_NAME = "test";
 
@@ -62,6 +63,19 @@ public class SQLBackendHelper {
     protected static final String DERBY_DIRECTORY = "target/test/derby";
 
     protected static final String DERBY_LOG = "target/test/derby.log";
+
+    /*
+     * ----- H2 configuration -----
+     */
+
+    /* Constants mentioned in the ...-h2-contrib.xml file: */
+
+    /** This directory will be deleted and recreated. */
+    protected static final String H2_PATH = "/tmp/nxsqltests-h2/nuxeo";
+
+    protected static final String H2_DATABASE_USER = "sa";
+
+    protected static final String H2_DATABASE_PASSWORD = "";
 
     /*
      * ----- MySQL configuration -----
@@ -128,6 +142,9 @@ public class SQLBackendHelper {
         case DERBY:
             setUpRepositoryDerby();
             return;
+        case H2:
+            setUpRepositoryH2();
+            return;
         case MYSQL:
             setUpRepositoryMySQL();
             return;
@@ -142,6 +159,9 @@ public class SQLBackendHelper {
         switch (DATABASE) {
         case DERBY:
             tearDownRepositoryDerby();
+            return;
+        case H2:
+            tearDownRepositoryH2();
             return;
         case MYSQL:
             tearDownRepositoryMySQL();
@@ -164,6 +184,8 @@ public class SQLBackendHelper {
         parent.mkdirs();
         System.setProperty("derby.stream.error.file",
                 new File(DERBY_LOG).getAbsolutePath());
+        // the following noticeably improves performance
+        System.setProperty("derby.system.durability", "test");
     }
 
     protected static void tearDownRepositoryDerby() throws Exception {
@@ -175,6 +197,27 @@ public class SQLBackendHelper {
             }
         }
         throw new RuntimeException("Expected Derby shutdown exception");
+    }
+
+    /*
+     * ----- H2 -----
+     */
+
+    protected static void setUpRepositoryH2() {
+        File parent = new File(H2_PATH).getParentFile();
+        FileUtils.deleteTree(parent);
+        parent.mkdirs();
+    }
+
+    protected static void tearDownRepositoryH2() throws Exception {
+        Connection connection = DriverManager.getConnection(String.format(
+                "jdbc:h2:%s", H2_PATH), H2_DATABASE_USER, H2_DATABASE_PASSWORD);
+        Statement st = connection.createStatement();
+        String sql = "SHUTDOWN";
+        log.debug(sql);
+        st.execute(sql);
+        st.close();
+        // no connection.close() as everything was shutdown
     }
 
     /*
@@ -218,7 +261,8 @@ public class SQLBackendHelper {
         Connection connection = DriverManager.getConnection(url, PG_SUPER_USER,
                 PG_SUPER_PASSWORD);
         Statement st = connection.createStatement();
-        String sql = String.format("DROP DATABASE IF EXISTS \"%s\"", PG_DATABASE);
+        String sql = String.format("DROP DATABASE IF EXISTS \"%s\"",
+                PG_DATABASE);
         log.debug(sql);
         st.execute(sql);
         sql = String.format("CREATE DATABASE \"%s\" OWNER \"%s\"", PG_DATABASE,

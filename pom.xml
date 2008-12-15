@@ -40,6 +40,7 @@
     <module>nuxeo-core-storage-sql-ra</module>
     <module>nuxeo-core-storage-sql-mbean</module>
   </modules>
+
   <profiles>
     <profile>
       <activation>
@@ -128,7 +129,7 @@
         <version>${nuxeo.runtime.version}</version>
       </dependency>
 
-      <!-- scope provided -->
+      <!-- scope: provided -->
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>jackrabbit-api</artifactId>
@@ -160,7 +161,7 @@
         <scope>provided</scope>
       </dependency>
 
-      <!-- scope test -->
+      <!-- scope: test -->
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-test</artifactId>
@@ -168,7 +169,7 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
+        <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-query-test</artifactId>
         <version>${nuxeo.core.version}</version>
         <scope>test</scope>
@@ -181,4 +182,5 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
 </project>

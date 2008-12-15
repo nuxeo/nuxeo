@@ -153,7 +153,8 @@ public interface Session extends Connection {
      * Gets the children of a node.
      *
      * @param parent the parent node
-     * @param name the children name to get (for lists of complex properties)
+     * @param name the children name to get (for lists of complex properties),
+     *            or {@code null} for all
      * @param complexProp whether to check complex properties or regular
      *            children
      * @return the collection of children

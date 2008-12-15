@@ -448,6 +448,10 @@ public class Model {
                 : sharedPropertyInfos.get(propertyName);
     }
 
+    public Map<String, PropertyInfo> getPropertyInfos(String typeName) {
+        return schemaPropertyInfos.get(typeName);
+    }
+
     public PropertyInfo getPropertyInfo(String propertyName) {
         return mergedPropertyInfos.get(propertyName);
     }

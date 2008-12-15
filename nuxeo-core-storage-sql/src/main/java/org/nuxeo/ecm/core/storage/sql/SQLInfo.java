@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Delete;
 import org.nuxeo.ecm.core.storage.sql.db.DerbyFunctions;
 import org.nuxeo.ecm.core.storage.sql.db.Dialect;
+import org.nuxeo.ecm.core.storage.sql.db.H2Functions;
 import org.nuxeo.ecm.core.storage.sql.db.Insert;
 import org.nuxeo.ecm.core.storage.sql.db.Select;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
@@ -1129,7 +1130,7 @@ public class SQLInfo {
 
         public final String methodSuffix;
 
-        public final String className;
+        public final String className = DerbyFunctions.class.getName();
 
         public DerbyStoredProcedureInfoMaker() {
             switch (model.idGenPolicy) {
@@ -1144,23 +1145,23 @@ public class SQLInfo {
             default:
                 throw new AssertionError(model.idGenPolicy);
             }
-            className = DerbyFunctions.class.getName();
         }
 
         public StoredProcedureInfo makeInTree() {
-            return make("NX_IN_TREE", "(ID %s, BASEID %<s) RETURNS SMALLINT",
-                    "isInTree");
+            return makeFunction("NX_IN_TREE",
+                    "(ID %s, BASEID %<s) RETURNS SMALLINT", "isInTree" +
+                            methodSuffix, "READS SQL DATA");
         }
 
         public StoredProcedureInfo makeAccessAllowed() {
-            return make(
+            return makeFunction(
                     "NX_ACCESS_ALLOWED",
                     "(ID %s, PRINCIPALS VARCHAR(10000), PERMISSIONS VARCHAR(10000)) RETURNS SMALLINT",
-                    "isAccessAllowed");
+                    "isAccessAllowed" + methodSuffix, "READS SQL DATA");
         }
 
-        protected StoredProcedureInfo make(String functionName, String proto,
-                String methodName) {
+        protected StoredProcedureInfo makeFunction(String functionName,
+                String proto, String methodName, String info) {
             proto = String.format(proto, idType);
             return new StoredProcedureInfo(
                     null, // do a drop check
@@ -1171,10 +1172,49 @@ public class SQLInfo {
                     String.format("CREATE FUNCTION %s%s " //
                             + "LANGUAGE JAVA " //
                             + "PARAMETER STYLE JAVA " //
-                            + "EXTERNAL NAME '%s.%s%s' " //
-                            + "READS SQL DATA", //
+                            + "EXTERNAL NAME '%s.%s' " //
+                            + "%s", //
                             functionName, proto, //
-                            className, methodName, methodSuffix));
+                            className, methodName, info));
+        }
+    }
+
+    public class H2StoredProcedureInfoMaker {
+
+        public final String methodSuffix;
+
+        public final String className = H2Functions.class.getName();
+
+        public H2StoredProcedureInfoMaker() {
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                methodSuffix = "String";
+                break;
+            case DB_IDENTITY:
+                methodSuffix = "Long";
+                break;
+            default:
+                throw new AssertionError(model.idGenPolicy);
+            }
+        }
+
+        public StoredProcedureInfo makeInTree() {
+            return makeFunction("NX_IN_TREE", "isInTree" + methodSuffix);
+        }
+
+        public StoredProcedureInfo makeAccessAllowed() {
+            return makeFunction("NX_ACCESS_ALLOWED", "isAccessAllowed" +
+                    methodSuffix);
+        }
+
+        protected StoredProcedureInfo makeFunction(String functionName,
+                String methodName) {
+            return new StoredProcedureInfo(//
+                    Boolean.TRUE, // always drop
+                    null, //
+                    String.format("DROP ALIAS IF EXISTS %s", functionName), //
+                    String.format("CREATE ALIAS %s FOR \"%s.%s\"",
+                            functionName, className, methodName));
         }
     }
 
@@ -1273,6 +1313,10 @@ public class SQLInfo {
         String databaseName = dialect.getDatabaseName();
         if ("Apache Derby".equals(databaseName)) {
             DerbyStoredProcedureInfoMaker maker = new DerbyStoredProcedureInfoMaker();
+            spis.add(maker.makeInTree());
+            spis.add(maker.makeAccessAllowed());
+        } else if ("H2".equals(databaseName)) {
+            H2StoredProcedureInfoMaker maker = new H2StoredProcedureInfoMaker();
             spis.add(maker.makeInTree());
             spis.add(maker.makeAccessAllowed());
         } else if ("PostgreSQL".equals(databaseName)) {

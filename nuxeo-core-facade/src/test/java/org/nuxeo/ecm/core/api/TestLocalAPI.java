@@ -360,7 +360,7 @@ public class TestLocalAPI extends TestAPI {
                 "proxy_test", "File");
 
         doc = remote.createDocument(doc);
-        doc.setProperty("common", "title", "the title");
+        doc.setProperty("dublincore", "title", "the title");
         doc = remote.saveDocument(doc);
         // remote.save();
 
@@ -368,13 +368,14 @@ public class TestLocalAPI extends TestAPI {
         version.setCreated(Calendar.getInstance());
         version.setLabel("v1");
         remote.checkIn(doc.getRef(), version);
-        // remote.save();
+        remote.save();
 
         // checkout the doc to modify it
         remote.checkOut(doc.getRef());
-        doc.setProperty("common", "title", "the title modified");
+        doc.setProperty("dublincore", "title", "the title modified");
         doc = remote.saveDocument(doc);
-        // remote.save();
+        remote.saveDocument(doc);
+        remote.save();
 
         DocumentModel proxy = remote.createProxy(root.getRef(), doc.getRef(),
                 version, true);
@@ -389,7 +390,7 @@ public class TestLocalAPI extends TestAPI {
         version2.setLabel("v2");
         remote.checkIn(doc.getRef(), version2);
         // remote.save();
-
+        remote.checkOut(doc.getRef());
         DocumentModelList list = remote.getChildren(root.getRef());
         assertEquals(2, list.size());
 
@@ -409,7 +410,7 @@ public class TestLocalAPI extends TestAPI {
         folder = remote.createDocument(folder);
         remote.save();
         folder = remote.getDocument(folder.getRef());
-
+        assertTrue(remote.isCheckedOut(doc.getRef()));
         // publishDocument API
         proxy = remote.publishDocument(doc, root);
         remote.save(); // needed for publish-by-copy to work

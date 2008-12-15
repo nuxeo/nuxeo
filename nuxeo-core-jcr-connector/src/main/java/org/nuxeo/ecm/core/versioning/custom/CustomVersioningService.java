@@ -408,7 +408,7 @@ public class CustomVersioningService implements VersioningService {
             throws RepositoryException {
         if (log.isDebugEnabled()) {
             try {
-                log.info("remove document (" + doc.getName() +
+                log.debug("remove document (" + doc.getName() +
                         ") version with label " + versionLabel);
             } catch (DocumentException e) {
                 log.error(e);

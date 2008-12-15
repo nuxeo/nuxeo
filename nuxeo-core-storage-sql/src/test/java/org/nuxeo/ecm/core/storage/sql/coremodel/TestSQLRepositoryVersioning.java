@@ -88,7 +88,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         session.checkIn(file.getRef(), version);
         session.checkOut(file.getRef());
 
-        DocumentModel newFileVersion = session.saveDocumentAsNewVersion(file);
+        session.saveDocumentAsNewVersion(file);
     }
 
     public void testSaveAsNewVersion2() throws Exception {
@@ -103,7 +103,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
                 "file#1", "File");
         file = session.createDocument(file);
 
-        DocumentModel newFileVersion = session.saveDocumentAsNewVersion(file);
+        session.saveDocumentAsNewVersion(file);
     }
 
     // SUPNXP-60: Suppression d'une version d'un document.
@@ -387,8 +387,8 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertTrue(session.isCheckedOut(docRef));
 
         doc.setProperty("file", "filename", "second name");
-        doc.setProperty("common", "title", "f1");
-        doc.setProperty("common", "description", "desc 1");
+        doc.setProperty("dc", "title", "f1");
+        doc.setProperty("dc", "description", "desc 1");
         session.saveDocument(doc);
         session.save();
 
@@ -436,8 +436,8 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         session.checkOut(childFile.getRef());
 
         childFile.setProperty("file", "filename", "second name");
-        childFile.setProperty("common", "title", "f1");
-        childFile.setProperty("common", "description", "desc 1");
+        childFile.setProperty("dc", "title", "f1");
+        childFile.setProperty("dc", "description", "desc 1");
         session.saveDocument(childFile);
         session.save();
         version = new VersionModelImpl();
