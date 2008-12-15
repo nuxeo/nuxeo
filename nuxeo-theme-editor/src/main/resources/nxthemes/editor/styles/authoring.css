@@ -328,20 +328,21 @@ html, body {
 }
 
 div.nxthemesButtonSelector {
-  font: italic 13px Arial, sans-serif;
+  font: 11px Arial, sans-serif;
   text-align: right;
   padding: 1px;
+  text-transform: uppercase;
 }
 
 div.nxthemesButtonSelector a {
   text-decoration: none;
-  padding: 0em 2px;
+  padding: 0px 7px;
   color: #000;
   background-color: #fff;
   border-style: solid;
   border-width: 1px;
-  border-color: #ddd #999 #999 #ddd;
-  background-image: url(${basePath}/skin/nxthemes-editor/img/button-bg.png);
+  border-color: #ccc #000 #000 #ccc;
+  background-image: url(/skin/nxthemes-editor/img/button-bg.png);
   background-repeat: repeat-x;
   background-position: 0 -15px;
 }
@@ -351,9 +352,9 @@ div.nxthemesButtonSelector a:hover {
 }
 
 div.nxthemesButtonSelector a.selected {
-  border-color: #666 #ddd #ddd #666;
-  color: #333;
-  background-image: url(${basePath}/skin/nxthemes-editor/img/button-bg.png);
+  border-color: #000 #ccc #ccc #000;
+  color: #444;
+  background-image: url(/skin/nxthemes-editor/img/button-bg.png);
   background-repeat: repeat-x;
   background-position: top center;
 }
@@ -393,8 +394,9 @@ div.nxthemesEditorFrame {
 }
 
 .nxthemesEmptyContainer {
-  height: 35px;
-  border: 1px dashed red;
+  height: 50px;
+  background-color: #eee;
+  background-image: url(/skin/nxthemes-editor/img/empty-container-bg.png);  
 }
 
 /* Toolbox */
@@ -876,7 +878,7 @@ div.nxthemesFragment {
   border-color: #999 #000 #000 #999;
   background: #ffe;
   font: 11px Arial, sans-serif !important;
-  padding: 4px !important;
+  padding: 6px !important;
   margin: 3px !important;
   color: #333;
   cursor: default;
