@@ -47,12 +47,13 @@ ins.model, ins.view, ins.controller {
 
 /* Contextual menu */
 .nxthemesContextMenu {
-  font: 12px arial;
+  font: 13px arial;
   border: 1px solid #333;
-  background: #eeeeec url(${basePath}/skin/nxthemes-editor/img/context-menu-bg.png) top left repeat-y;
+  background: #fff;
   color: #000;
   z-index: 10;
   width: 135px;
+  padding: 2px;
 }
 
 .nxthemesContextMenu a {
@@ -66,20 +67,12 @@ ins.model, ins.view, ins.controller {
 
 .nxthemesContextMenu a img {
   border: none;
-  padding-right: 9px;
+  padding-right: 5px;
   vertical-align: bottom;
 }
 
 .nxthemesContextMenu .title {
-  background: #aaa url(${basePath}/skin/nxthemes-editor/img/menu-title-bg.png) repeat-x top left;
-  font: bold 11px Arial, sans-serif;
-  text-transform: capitalize;
-  padding: 3px 0 3px 12px;
-  border-bottom: 1px solid #444;
-  cursor: default;
-  text-align: left;
-  margin-bottom: 2px;
-  color: #fff;
+  display: none;
 }
 
 .nxthemesContextMenu .separator {
@@ -97,12 +90,13 @@ ins.model, ins.view, ins.controller {
 }
 
 .nxthemesContextMenu a:hover {
-  background-color: #fc3;
-  color: #600 !important;
+  background-color: #333;
+  color: #fff !important;
+  cursor: pointer;
 }
 
 .nxthemesContextMenu .submenu {
-  background-color: #eeeeec;
+  background-color: #fff;
   border-width: 1px;
   border-style: solid;
   border-color: #333;
