@@ -283,7 +283,7 @@ NXThemesWebWidgets.ImageUploader.prototype = Object.extend(new NXThemesWebWidget
      var msg = src ? "Change image" : "Set image";
      var html = '<button type="button">' + msg + '<button>';
      if (src) {
-       html = '<div><img src="' + src + '" /></div>' + html;
+       html = '<div><img src="' + NXThemesWebWidgets.getWidgetDataUrl(src) + '" /></div>' + html;
      }
      controlEl.innerHTML = html;
      Event.observe(controlEl, "click", this.upload.bindAsEventListener(this));
