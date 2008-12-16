@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
@@ -39,10 +40,9 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.api.LogEntryBase;
-import org.nuxeo.ecm.platform.audit.ejb.LogEntryImpl;
 
 /**
  * Audit log entry importer/exporter.
@@ -132,7 +132,7 @@ public class IOLogEntryBase {
      * @param logEntryElement
      */
     protected static LogEntry readLogEntry(Element logEntryElement) {
-        LogEntryBase logEntry = new LogEntryBase();
+        LogEntry logEntry = new LogEntry();
 
         logEntry.setCategory(logEntryElement.attributeValue("category"));
         logEntry.setComment(logEntryElement.attributeValue("comment"));
@@ -203,22 +203,13 @@ public class IOLogEntryBase {
      * @return
      */
     private static LogEntry translate(LogEntry logEntry, DocumentRef newRef) {
-        LogEntryBase newLogEntry = new LogEntryImpl();
-
-        newLogEntry.setCategory(logEntry.getCategory());
-        newLogEntry.setComment(logEntry.getComment());
-        newLogEntry.setDocLifeCycle(logEntry.getDocLifeCycle());
-        // XXX ??? also the docPath?
-        newLogEntry.setDocPath(logEntry.getDocPath());
-        newLogEntry.setDocType(logEntry.getDocType());
-
-        // changed that
-        newLogEntry.setDocUUID(newRef.toString());
-
-        newLogEntry.setEventDate(logEntry.getEventDate());
-        newLogEntry.setEventId(logEntry.getEventId());
-        newLogEntry.setPrincipalName(logEntry.getPrincipalName());
-
+        LogEntry newLogEntry;
+        try {
+            newLogEntry = (LogEntry)BeanUtils.cloneBean(logEntry);
+        } catch (Exception e) {
+            throw new ClientRuntimeException("cannot clone bean " + logEntry, e);
+        }
+        newLogEntry.setDocUUID(newRef);
         return newLogEntry;
     }
 
