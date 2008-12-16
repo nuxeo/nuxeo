@@ -292,8 +292,8 @@ NXThemesWebWidgets.ImageUploader.prototype = Object.extend(new NXThemesWebWidget
      var boxEl = this.boxEl = document.createElement("div");
      var frameName = 'f' + this.widgetUid + '_' + this.name;
      boxEl.innerHTML = '<form style="padding: 0; margin: 0" action="' + nxthemesBasePath + '/nxthemes-webwidgets/upload_file?widget_uid=' + encodeURIComponent(this.widgetUid) + '&data=' + encodeURIComponent(this.name) + '&provider=' + encodeURIComponent(this.providerName) + '"' +
-       ' method="post" enctype="multipart/form-data" target="' + frameName + '">' +
-       '<div><input type="file" name="file" /><input type="submit" value="Upload" /></div></form>';
+       ' method="post" enctype="multipart/form-data" target="' + frameName + '">' +             
+       '<div><input type="file" name="file" size="8" onchange="submit()" /></div></form>';
      boxEl.hide();
 
      var iframeEl = this.iframeEl = document.createElement('iframe');
@@ -353,7 +353,7 @@ NXThemesWebWidgets.FileUploader.prototype = Object.extend(new NXThemesWebWidgets
      var frameName = 'f' + this.widgetUid + '_' + this.name;
      boxEl.innerHTML = '<form style="padding: 0; margin: 0" action="' + nxthemesBasePath + '/nxthemes-webwidgets/upload_file?widget_uid=' + encodeURIComponent(this.widgetUid) + '&data=' + encodeURIComponent(this.name) + '&provider=' + encodeURIComponent(this.providerName) + '"' +
        ' method="post" enctype="multipart/form-data" target="' + frameName + '">' +
-       '<div><input type="file" name="file" /><input type="submit" value="Upload" /></div></form>';
+       '<div><input type="file" name="file" size="8" onchange="submit()" /></div></form>';
      boxEl.hide();
 
      var iframeEl = this.iframeEl = document.createElement('iframe');

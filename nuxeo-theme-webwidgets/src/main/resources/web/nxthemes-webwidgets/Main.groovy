@@ -106,17 +106,13 @@ public class Main extends DefaultModule {
     
     @GET
     @Path("get_widget_data_info")
-    public String getWidgetDataInfo( @QueryParam("widget_uid") String widgetUid, @QueryParam("name") String dataName) {   
+    public String getWidgetDataInfo(@QueryParam("provider") String providerName, @QueryParam("widget_uid") String widgetUid, @QueryParam("name") String dataName) {   
         return org.nuxeo.theme.webwidgets.Manager.getWidgetDataInfo(providerName,  widgetUid, dataName)
     }
     
     @POST
     @Path("upload_file")
-    public String uploadFile() {
-        FormData form = ctx.getForm()
-        String providerName = form.getString("provider")
-        String widgetUid = form.getString("widget_uid")
-        String dataName = form.getString("data")
+    public String uploadFile(@QueryParam("provider") String providerName, @QueryParam("widget_uid") String widgetUid, @QueryParam("data") String dataName) {
         def req = ctx.getRequest()
         String res = org.nuxeo.theme.webwidgets.Manager.uploadFile(req, providerName, widgetUid, dataName)
         String src = 'nxwebwidgets://data/' + providerName + '/' + widgetUid + '/' + dataName;
