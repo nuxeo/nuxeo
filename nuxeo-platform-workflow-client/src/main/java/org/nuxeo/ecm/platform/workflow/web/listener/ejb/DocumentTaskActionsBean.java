@@ -42,11 +42,11 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -206,11 +206,13 @@ public class DocumentTaskActionsBean extends InputController implements
                 EventNames.WORKFLOW_USER_ASSIGNMENT_CHANGED);
         StringBuilder comment = new StringBuilder();
         if (isGroup) {
-            comment.append(resourcesAccessor.getMessages().get("label.log.comment.assignedToGroup"));
+            comment.append(resourcesAccessor.getMessages().get(
+                    "label.log.comment.assignedToGroup"));
             comment.append(" ");
             comment.append(principalName);
         } else {
-            comment.append(resourcesAccessor.getMessages().get("label.log.comment.assignedToUser"));
+            comment.append(resourcesAccessor.getMessages().get(
+                    "label.log.comment.assignedToUser"));
             comment.append(" ");
             NuxeoPrincipal user;
             try {
@@ -242,8 +244,9 @@ public class DocumentTaskActionsBean extends InputController implements
         eventInfo.put("directive", taskInstance.getDirective());
         eventInfo.put("dueDate", taskInstance.getDueDate());
 
-        notifyEvent(WorkflowEventTypes.WORKFLOW_TASK_ASSIGNED, comment.toString(),
-                reviewModel.getProcessInstanceName(), eventInfo);
+        notifyEvent(WorkflowEventTypes.WORKFLOW_TASK_ASSIGNED,
+                comment.toString(), reviewModel.getProcessInstanceName(),
+                eventInfo);
         Events.instance().raiseEvent(AuditEventTypes.HISTORY_CHANGED);
 
         return destination;
@@ -444,8 +447,8 @@ public class DocumentTaskActionsBean extends InputController implements
                 + taskActionComment + " )";
 
         Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
-        eventInfo.put(WorkflowConstants.WORKFLOW_CREATOR,
-                wapi.getWorkItemById(taskId).getProcessInstance().getAuthorName());
+        eventInfo.put(WorkflowConstants.WORKFLOW_CREATOR, wapi.getWorkItemById(
+                taskId).getProcessInstance().getAuthorName());
         notifyEvent(WorkflowEventTypes.WORKFLOW_TASK_ENDED, comment,
                 reviewModel.getProcessInstanceName(), eventInfo);
 
@@ -503,7 +506,7 @@ public class DocumentTaskActionsBean extends InputController implements
                     }
                 }
             } catch (ClientException ce) {
-                ce.printStackTrace();
+                log.error(ce);
             }
         }
 
@@ -649,8 +652,10 @@ public class DocumentTaskActionsBean extends InputController implements
                 + taskActionComment + " )";
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         String initiator = workflowTaskInstance.getProcessInstance().getAuthorName();
-        NuxeoPrincipal principal = Framework.getService(UserManager.class).getPrincipal(initiator);
-        props.put(WorkflowConstants.WORKFLOW_PARTICIPANT, workflowTaskInstance.getParticipantName());
+        NuxeoPrincipal principal = Framework.getService(UserManager.class).getPrincipal(
+                initiator);
+        props.put(WorkflowConstants.WORKFLOW_PARTICIPANT,
+                workflowTaskInstance.getParticipantName());
         props.put(WorkflowConstants.WORKFLOW_CREATOR, initiator);
         props.put(WORKFLOW_CREATOR, principal);
 
@@ -661,7 +666,6 @@ public class DocumentTaskActionsBean extends InputController implements
         Events.instance().raiseEvent(EventNames.DOCUMENT_SELECTION_CHANGED);
         Events.instance().raiseEvent(
                 EventNames.CURRENT_DOCUMENT_LIFE_CYCLE_CHANGED);
-
     }
 
     public String removeOneTask(ActionEvent event) {
@@ -744,8 +748,7 @@ public class DocumentTaskActionsBean extends InputController implements
                     participantName = (isUser ? "user:" : "group:")
                             + participantName;
                 } catch (ClientException e) {
-                    // TODO Auto-generated catch block
-                    // e.printStackTrace(); }
+                    log.error(e);
                 }
                 int nextReviewLevel = reviewModel.getReviewCurrentLevel() + 1;
                 if (nextReviewLevel == instance.getOrder()) {
@@ -827,8 +830,10 @@ public class DocumentTaskActionsBean extends InputController implements
 
         WMWorkItemInstance workflowTaskInstance = wapi.getWorkItemById(taskId);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(WorkflowConstants.WORKFLOW_PARTICIPANT, workflowTaskInstance.getParticipantName());
-        props.put(WorkflowConstants.WORKFLOW_CREATOR, workflowTaskInstance.getProcessInstance().getAuthorName());
+        props.put(WorkflowConstants.WORKFLOW_PARTICIPANT,
+                workflowTaskInstance.getParticipantName());
+        props.put(WorkflowConstants.WORKFLOW_CREATOR,
+                workflowTaskInstance.getProcessInstance().getAuthorName());
 
         notifyEvent(WorkflowEventTypes.WORKFLOW_TASK_REJECTED, comment,
                 reviewModel.getProcessInstanceName(), props);
@@ -839,7 +844,6 @@ public class DocumentTaskActionsBean extends InputController implements
         Events.instance().raiseEvent(EventNames.DOCUMENT_SELECTION_CHANGED);
         Events.instance().raiseEvent(
                 EventNames.CURRENT_DOCUMENT_LIFE_CYCLE_CHANGED);
-
     }
 
     public String rejectOneTask() {
@@ -849,16 +853,15 @@ public class DocumentTaskActionsBean extends InputController implements
         // Therefore, we can simply use the jsf control...
         // Of course it remains a temporary solution.
         if (taskActionComment == null || taskActionComment.trim().length() <= 0) {
-            // :XXX: Should be error but the error severity is not yet well
-            // integrated Nuxeo5 side.
             FacesMessage message = FacesMessages.createFacesMessage(
                     FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.review.user.comment.mandatory"));
 
-            FacesMessages.instance().add("taskActionCommentSerial", message);
-            FacesMessages.instance().add("taskActionCommentParallel", message);
-            /* Rux NXP-1374: added the blue message visible in top */
+            facesMessages.addToControl("taskActionCommentSerial", message);
+            facesMessages.addToControl("taskActionCommentParallel", message);
+
+            // Rux NXP-1374: added the blue message visible in top
             FacesMessage message1 = FacesMessages.createFacesMessage(
                     FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
@@ -873,8 +876,7 @@ public class DocumentTaskActionsBean extends InputController implements
                 cleanContext();
                 invalidateContextVariables();
             } catch (WMWorkflowException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error(e);
             }
         }
 

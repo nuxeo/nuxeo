@@ -74,7 +74,7 @@ public interface WorkflowDocumentSecurityManager extends
      * Grants a participant.
      *
      * @param docRef the document holding the WF ACP
-     * @param participantName the participant username
+     * @param principalName the participant username
      * @param perm the permission to grant to username
      * @param pid the process instance identifier (used to compute the ACL name)
      */
@@ -85,7 +85,7 @@ public interface WorkflowDocumentSecurityManager extends
      * Denies a participant.
      *
      * @param docRef the document holding the WF ACP
-     * @param participantName the participant username
+     * @param principalName the participant username
      * @param perm the permission to be removed to the participant
      * @param pid the process instance identifier (used to compute the ACL name)
      */
@@ -101,4 +101,5 @@ public interface WorkflowDocumentSecurityManager extends
      */
     void setRules(DocumentRef docRef, List<UserEntry> userEntries, String pid)
             throws WorkflowDocumentSecurityException;
+
 }

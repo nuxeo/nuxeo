@@ -25,17 +25,16 @@ import java.util.Arrays;
  * Helper class to contribute CreationContainerListProvider implementation to
  * the FileManagerService
  *
- * @author Olivier Grisel <ogrisel@nuxeo.com>
- *
+ * @author Olivier Grisel (ogrisel@nuxeo.com)
  */
 public abstract class AbstractCreationContainerListProvider implements
         CreationContainerListProvider {
 
-    String name = "";
+    private String name = "";
 
-    String[] docTypes;
+    private String[] docTypes;
 
-    public boolean accept(String docType) throws Exception {
+    public boolean accept(String docType) {
         if (docTypes == null || docTypes.length == 0) {
             return true;
         } else {
@@ -69,6 +68,11 @@ public abstract class AbstractCreationContainerListProvider implements
             return name != null && name.equals(provider.getName());
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
     }
 
 }

@@ -35,13 +35,12 @@ import org.nuxeo.ecm.webapp.table.row.UserPermissionsTableRow;
  */
 @Deprecated
 public interface UserPermissionsTableModelVisitor {
+
     /**
      * Visit method.
      * <p>
      * Creates a table row that can be added to the table model.
-     *
-     * @param doc
-     * @return
      */
     UserPermissionsTableRow createDocModelTableModelRow(String user);
+
 }

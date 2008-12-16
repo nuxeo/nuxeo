@@ -53,12 +53,10 @@ public class IndexableDocTypeDescriptor implements IndexableDocType {
     protected boolean allFieldsSortable = true;
 
     @XNodeList(value = "excludedSchema", type = ArrayList.class, componentType = String.class)
-    @SuppressWarnings("unchecked")
-    protected List<String> excludedSchemas = Collections.EMPTY_LIST;
+    protected List<String> excludedSchemas = Collections.emptyList();
 
     @XNodeList(value = "resource", type = ArrayList.class, componentType = String.class)
-    @SuppressWarnings("unchecked")
-    protected List<String> resources = Collections.EMPTY_LIST;
+    protected List<String> resources = Collections.emptyList();
 
 
     public String getType() {

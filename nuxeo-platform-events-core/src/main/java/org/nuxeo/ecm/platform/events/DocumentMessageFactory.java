@@ -43,6 +43,10 @@ public final class DocumentMessageFactory {
     private DocumentMessageFactory() {
     }
 
+    /**
+     * @deprecacted not used - will be removed in 5.2
+     */
+    @Deprecated
     public static DocumentMessage createDocumentMessage(Document doc)
             throws DocumentException {
         DocumentMessage documentMessage;

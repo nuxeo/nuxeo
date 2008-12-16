@@ -146,7 +146,7 @@ public interface Plugin extends Serializable {
     /**
      * Is a given transform document a candidate for this plugin.
      *
-     * @param doc :
+     * @param doc
      *            a transform document instance.
      * @return true if candidate / false if not.
      */
@@ -155,7 +155,7 @@ public interface Plugin extends Serializable {
     /**
      * Is a given streaming blob instance a candidate for this plugin.
      *
-     * @param blob :
+     * @param blob
      *            a streaming blob instance
      * @return true if candidate / false if not.
      */

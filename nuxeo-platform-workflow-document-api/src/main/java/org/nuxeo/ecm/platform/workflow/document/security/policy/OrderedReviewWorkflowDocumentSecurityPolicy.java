@@ -180,6 +180,7 @@ public class OrderedReviewWorkflowDocumentSecurityPolicy extends
         return hasAction;
     }
 
+    @Override
     public boolean selectThisItem(WMWorkItemInstance item) throws WMWorkflowException {
         return item.getOrder() == getCurrentReviewLevel(item.getProcessInstance().getId());
     }

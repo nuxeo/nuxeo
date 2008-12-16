@@ -35,11 +35,10 @@ public class QueryExtensionPointHandler extends NXQueryDataExtensionPointHandler
             try {
                 unregisterOne(pluginExtension, extension);
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                // TODO: more robust exception handling?
+                log.error(e);
             }
         }
-
     }
 
     public void registerExtension(Extension extension) {
@@ -53,8 +52,8 @@ public class QueryExtensionPointHandler extends NXQueryDataExtensionPointHandler
             try {
                 registerOne(pluginExtension, extension);
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                // TODO: more robust exception handling?
+                log.error(e);
             }
         }
     }

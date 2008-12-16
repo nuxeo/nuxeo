@@ -5,13 +5,6 @@
   <require>org.nuxeo.ecm.core.lifecycle.LifeCycleService</require>
 
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
-         point="lifecyclemanager">
-    <lifecyclemanager name="jcrlifecyclemanager"
-              class="org.nuxeo.ecm.core.repository.jcr.JCRLifeCycleManager"
-              />
-  </extension>
-
-   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
     point="lifecycle">
     <lifecycle name="default" initial="project">
       <transitions>

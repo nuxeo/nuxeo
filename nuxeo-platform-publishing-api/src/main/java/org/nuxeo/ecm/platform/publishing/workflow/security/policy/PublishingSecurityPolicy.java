@@ -40,7 +40,6 @@ import org.nuxeo.ecm.platform.workflow.document.api.security.policy.AbstractWork
  * Publishing workflow security policy.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class PublishingSecurityPolicy extends
         AbstractWorkflowDocumentSecurityPolicy {
@@ -154,7 +153,6 @@ public class PublishingSecurityPolicy extends
 
     /**
      * Dashboard uses this to display the task.
-     *
      */
     public boolean hasParticipantImmediateAction(String pid, Principal principal)
             throws WMWorkflowException {
@@ -169,6 +167,7 @@ public class PublishingSecurityPolicy extends
         return hasAction;
     }
 
+    @Override
     public boolean selectThisItem(WMWorkItemInstance item) {
         return true;
     }

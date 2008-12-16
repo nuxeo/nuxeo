@@ -26,7 +26,6 @@ import org.nuxeo.runtime.api.Framework;
  * Implementation of common Reference logic.
  *
  * @author ogrisel
- *
  */
 public abstract class AbstractReference implements Reference {
 

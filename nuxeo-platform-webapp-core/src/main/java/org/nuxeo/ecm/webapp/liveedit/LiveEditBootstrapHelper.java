@@ -45,7 +45,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -56,7 +56,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -99,21 +98,19 @@ import org.nuxeo.runtime.api.Framework;
 public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants {
 
     protected static final String IMMUTABLE_FACET = "Immutable";
-
-    protected static final long serialVersionUID = 876879071L;
-
     protected static final String MODIFIED_FIELD = "modified";
-
     protected static final String DUBLINCORE_SCHEMA = "dublincore";
 
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(LiveEditBootstrapHelper.class);
 
-    @In(required = true, create = true)
-    protected NavigationContext navigationContext;
+    private static final long serialVersionUID = 876879071L;
+
+    @In(create = true)
+    protected transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @RequestParameter
     protected String action;
@@ -338,7 +335,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             addTextElement(docInfo, docMimetypeTag, mimetype);
             addTextElement(docInfo, docFileExtensionTag,
                     getFileExtension(mimetype));
-            
+
             Element docFileAuthorizedExtensions = docInfo.addElement(docFileAuthorizedExtensionsTag);
             List<String> authorizedExtensions = getFileExtensions(mimetype);
             if (authorizedExtensions != null) {
@@ -378,7 +375,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             addTextElement(templateDocInfo, docMimetypeTag, mimetype);
             addTextElement(templateDocInfo, docFileExtensionTag,
                     getFileExtension(mimetype));
-            
+
             Element templateFileAuthorizedExtensions = templateDocInfo.addElement(docFileAuthorizedExtensionsTag);
             if (authorizedExtensions != null) {
                 for (String extension : authorizedExtensions) {
@@ -480,7 +477,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         List<String> extensions = mimetypeRegistry.getExtensionsFromMimetypeName(mimetype);
         return extensions;
     }
-    
+
     protected static Element addTextElement(Element parent,
             QName newElementName, String value) {
         Element element = parent.addElement(newElementName);
@@ -492,7 +489,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
 
     // TODO: please explain what is the use of the "editId" tag here
     protected static String getEditId(DocumentModel doc, CoreSession session,
-            String userName) throws ClientException {
+            String userName) {
         StringBuilder sb = new StringBuilder();
 
         if (doc != null) {
@@ -506,8 +503,12 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         sb.append(userName);
         Calendar modified = null;
         if (doc != null) {
-            modified = (Calendar) doc.getProperty(DUBLINCORE_SCHEMA,
-                    MODIFIED_FIELD);
+            try {
+                modified = (Calendar) doc.getProperty(DUBLINCORE_SCHEMA,
+                        MODIFIED_FIELD);
+            } catch (ClientException e) {
+                modified = null;
+            }
         }
         if (modified == null) {
             modified = Calendar.getInstance();
@@ -550,7 +551,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                     isEditable = Boolean.valueOf(mimetypeEntry.isOnlineEditable());
                 }
             } catch (Throwable t) {
-                throw EJBExceptionHandler.wrapException(t);
+                throw ClientException.wrap(t);
             }
 
             if (liveEditClientConfig.getLiveEditConfigurationPolicy().equals(LiveEditClientConfig.LE_CONFIG_BOTHSIDES)){

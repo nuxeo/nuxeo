@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
  * incrementation options are available. If the versioningAction is
  * ACTION_CASE_DEPENDENT then options should be presented to the user.
  *
- * @see org.nuxeo.ecm.platform.versioning.VersioningActions
+ * @see org.nuxeo.ecm.platform.versioning.api.VersioningActions
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  *
@@ -57,8 +57,6 @@ public class VersionIncEditOptions implements Serializable {
     /**
      * Explanatory information derived from rules logic (could be used in
      * debugging).
-     *
-     * @return
      */
     public String getInfo() {
         return info.toString();

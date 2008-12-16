@@ -27,8 +27,9 @@ import org.nuxeo.runtime.api.Framework;
  * NXMimeType helper.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
+ * @deprecated just call directly Framework.getxxx
  */
+@Deprecated
 public final class NXMimeTypeHelper {
 
     private NXMimeTypeHelper() {

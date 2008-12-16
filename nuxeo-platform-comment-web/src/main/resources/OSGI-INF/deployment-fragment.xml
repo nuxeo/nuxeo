@@ -1,15 +1,11 @@
 <?xml version="1.0"?>
-
 <fragment>
 
-
-    <extension target="application#MODULE">
-
-	<module>
-    	<java>${bundle.fileName}</java>
-	</module>
-
-	</extension>
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
 
   <install>
     <!--  unzip the war template -->
@@ -18,36 +14,34 @@
     </unzip>
     <!--  create a temp dir -->
     <!--  be sure no directory with that name exists -->
-    <delete path="nxcomment.tmp" />
-    <mkdir path="nxcomment.tmp" />
+    <delete path="nxcomment.tmp"/>
+    <mkdir path="nxcomment.tmp"/>
 
     <unzip from="${bundle.fileName}" to="nxcomment.tmp">
       <include>OSGI-INF/l10n/**</include>
     </unzip>
 
     <append from="nxcomment.tmp/OSGI-INF/l10n/messages.properties"
-      to="nuxeo.war/WEB-INF/classes/messages.properties"
-      addNewLine="true" />
+        to="nuxeo.war/WEB-INF/classes/messages.properties"
+        addNewLine="true"/>
     <append
-      from="nxcomment.tmp/OSGI-INF/l10n/messages_en.properties"
-      to="nuxeo.war/WEB-INF/classes/messages_en.properties"
-      addNewLine="true" />
+        from="nxcomment.tmp/OSGI-INF/l10n/messages_en.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_en.properties"
+        addNewLine="true"/>
     <append
-      from="nxcomment.tmp/OSGI-INF/l10n/messages_fr.properties"
-      to="nuxeo.war/WEB-INF/classes/messages_fr.properties"
-      addNewLine="true" />
+        from="nxcomment.tmp/OSGI-INF/l10n/messages_fr.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_fr.properties"
+        addNewLine="true"/>
     <append
-      from="nxcomment.tmp/OSGI-INF/l10n/messages_de.properties"
-      to="nuxeo.war/WEB-INF/classes/messages_de.properties"
-      addNewLine="true" />
-   <append
-      from="nxcomment.tmp/OSGI-INF/l10n/messages_cn.properties"
-      to="nuxeo.war/WEB-INF/classes/messages_cn.properties"
-      addNewLine="true" />
+        from="nxcomment.tmp/OSGI-INF/l10n/messages_de.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_de.properties"
+        addNewLine="true"/>
+    <append
+        from="nxcomment.tmp/OSGI-INF/l10n/messages_cn.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_cn.properties"
+        addNewLine="true"/>
 
-    <delete path="nxcomment.tmp" />
+    <delete path="nxcomment.tmp"/>
   </install>
 
-
 </fragment>
-

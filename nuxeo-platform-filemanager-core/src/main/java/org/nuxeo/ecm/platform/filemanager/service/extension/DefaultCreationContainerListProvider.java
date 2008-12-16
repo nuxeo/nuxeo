@@ -34,11 +34,10 @@ import org.nuxeo.runtime.api.Framework;
  * Default contribution to the CreationContainerListProvider extension point
  * that find the list of Workspaces the user has the right to create new
  * document into.
- *
+ * <p>
  * The filtered list is sorted
  *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
- *
  */
 public class DefaultCreationContainerListProvider extends
         AbstractCreationContainerListProvider {
@@ -47,7 +46,7 @@ public class DefaultCreationContainerListProvider extends
 
     protected QueryModelService qmService;
 
-    protected QueryModelService getQueryModelService() throws Exception {
+    protected QueryModelService getQueryModelService() {
         if (qmService == null) {
             // TODO: update this to a service lookup NXP-2132
             qmService = (QueryModelService) Framework.getRuntime().getComponent(

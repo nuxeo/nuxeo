@@ -25,6 +25,7 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.restlet.Restlet;
 
 /**
  * Descriptor for a Restlet
@@ -50,13 +51,13 @@ public class RestletPluginDescriptor {
     private Boolean useConversation=false;
 
     @XNode("@class")
-    private Class className;
+    private Class<Restlet> className;
 
-    public Class getClassName() {
+    public Class<Restlet> getClassName() {
         return className;
     }
 
-    public void setClassName(Class className) {
+    public void setClassName(Class<Restlet> className) {
         this.className = className;
     }
 

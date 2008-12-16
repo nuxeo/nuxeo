@@ -40,8 +40,6 @@ public abstract class AbstractDirectory implements Directory {
 
     /**
      * Invalidate my cache and the caches of linked directories by references.
-     *
-     * @throws DirectoryException
      */
     public void invalidateCaches() throws DirectoryException {
         cache.invalidateAll();
@@ -88,7 +86,6 @@ public abstract class AbstractDirectory implements Directory {
      *
      * @param entries the list of entries.
      * @param orderBy an ordered map of field name -> "asc" or "desc".
-     * @throws DirectoryException
      */
     public void orderEntries(List<DocumentModel> entries,
             Map<String, String> orderBy) throws DirectoryException {
@@ -99,4 +96,5 @@ public abstract class AbstractDirectory implements Directory {
     public DirectoryCache getCache() {
         return cache;
     }
+
 }

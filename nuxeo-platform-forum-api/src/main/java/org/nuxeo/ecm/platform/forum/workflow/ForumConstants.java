@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.forum.workflow;
 
 /**
  * @author <a href="bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
- *
  */
 public final class ForumConstants {
 

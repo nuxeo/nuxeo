@@ -32,7 +32,7 @@ import org.nuxeo.ecm.webapp.table.model.UserPermissionsTableModel;
 /**
  * Provides security related operations on the current document.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
+ * @author Razvan Caraghin
  */
 public interface SecurityActions extends StatefulBaseLifeCycle {
 

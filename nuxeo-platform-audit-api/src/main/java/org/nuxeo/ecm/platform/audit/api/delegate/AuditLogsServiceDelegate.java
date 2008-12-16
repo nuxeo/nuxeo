@@ -43,21 +43,16 @@ public final class AuditLogsServiceDelegate implements Serializable {
     }
 
     /**
-     * Returns the search service.
+     * Returns the audit logs service, or null if an exception occurs.
      *
-     * <p>
-     * Returns null if an exception occurs.
-     * </p>
-     *
-     * @return the search service.
+     * @return the audit logs service.
      */
     public static Logs getRemoteAuditLogsService() {
         Logs service = null;
         try {
             service = Framework.getService(Logs.class);
         } catch (Exception e) {
-            log.error("Cannot find distant audit logs service... ");
-            log.error(e.getMessage());
+            log.error("Cannot find remote audit logs service... ", e);
         }
         return service;
     }

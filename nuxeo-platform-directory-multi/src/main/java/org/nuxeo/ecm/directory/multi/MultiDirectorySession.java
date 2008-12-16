@@ -410,12 +410,18 @@ public class MultiDirectorySession implements Session {
     }
 
     public DocumentModel getEntry(String id) throws DirectoryException {
+        return getEntry(id, true);
+    }
+
+    public DocumentModel getEntry(String id, boolean fetchReferences)
+            throws DirectoryException {
         init();
         source_loop: for (SourceInfo sourceInfo : sourceInfos) {
             final Map<String, Object> map = new HashMap<String, Object>();
 
             for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {
-                final DocumentModel entry = dirInfo.getSession().getEntry(id);
+                final DocumentModel entry = dirInfo.getSession().getEntry(id,
+                        fetchReferences);
                 boolean isOptional = dirInfo.isOptional;
                 if (entry == null && !isOptional) {
                     // not in this source
@@ -423,8 +429,12 @@ public class MultiDirectorySession implements Session {
                 }
                 for (Entry<String, String> e : dirInfo.toSource.entrySet()) {
                     if (entry != null) {
-                        map.put(e.getValue(), entry.getProperty(
-                                dirInfo.dirSchemaName, e.getKey()));
+                        try {
+                            map.put(e.getValue(), entry.getProperty(
+                                    dirInfo.dirSchemaName, e.getKey()));
+                        } catch (ClientException e1) {
+                            throw new DirectoryException(e1);
+                        }
                     } else {
                         // fill with default values for this directory
                         if (!map.containsKey(e.getValue())) {
@@ -480,7 +490,7 @@ public class MultiDirectorySession implements Session {
             }
             for (SubDirectoryInfo dirInfo : sourceInfo.optionalSubDirectoryInfos) {
                 final DocumentModelList entries = dirInfo.getSession().getEntries();
-                HashSet<String> existingIds = new HashSet<String>();
+                Set<String> existingIds = new HashSet<String>();
                 for (DocumentModel entry : entries) {
                     final String id = entry.getId();
                     final Map<String, Object> map = maps.get(id);
@@ -591,13 +601,10 @@ public class MultiDirectorySession implements Session {
         log.warn("Calling deleteEntry extended on multi directory");
         try {
             deleteEntry(id);
+        } catch (DirectoryException e) {
+            throw e;
         } catch (ClientException e) {
-            // XXX doh
-            if (e instanceof DirectoryException) {
-                throw (DirectoryException) e;
-            } else {
-                throw new DirectoryException(e);
-            }
+            throw new DirectoryException(e);
         }
     }
 
@@ -661,9 +668,14 @@ public class MultiDirectorySession implements Session {
     public DocumentModelList query(Map<String, Object> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws ClientException {
+        return query(filter, fulltext, orderBy, false);
+    }
 
+    @SuppressWarnings("boxing")
+    public DocumentModelList query(Map<String, Object> filter,
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences) throws ClientException {
         init();
-
         // list of entries
         final DocumentModelList results = new DocumentModelListImpl();
         // entry ids already seen (mapped to the source name)
@@ -714,7 +726,7 @@ public class MultiDirectorySession implements Session {
                 }
                 // make query to subdirectory
                 DocumentModelList l = dirInfo.getSession().query(dirFilter,
-                        dirFulltext);
+                        dirFulltext, null, fetchReferences);
                 for (DocumentModel entry : l) {
                     final String id = entry.getId();
                     Map<String, Object> map = maps.get(id);
