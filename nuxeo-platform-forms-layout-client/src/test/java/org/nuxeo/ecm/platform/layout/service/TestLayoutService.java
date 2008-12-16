@@ -62,7 +62,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         // test rows
         assertEquals(1, layout.getColumns());
         LayoutRow[] rows = layout.getRows();
-        assertEquals(2, rows.length);
+        assertEquals(3, rows.length);
         LayoutRow row = rows[0];
 
         // test widgets
@@ -89,6 +89,12 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertEquals("label.widget.testLayout.testWidgetWithoutLabel",
                 widget.getLabel());
         assertTrue(widget.isTranslated());
+
+        // test widget defined globally
+        widget = rows[2].getWidgets()[0];
+        assertNotNull(widget);
+        assertEquals("globalTestWidget", widget.getName());
+        assertEquals("test", widget.getType());
     }
 
 }

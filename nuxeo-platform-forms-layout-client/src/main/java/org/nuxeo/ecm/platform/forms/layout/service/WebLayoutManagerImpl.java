@@ -73,6 +73,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
 
     public static final String WIDGET_TYPES_EP_NAME = "widgettypes";
 
+    public static final String WIDGETS_EP_NAME = "widgets";
+
     public static final String LAYOUTS_EP_NAME = "layouts";
 
     private static final long serialVersionUID = -4778456059717447736L;
@@ -83,9 +85,12 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
 
     private final Map<String, LayoutDefinition> layoutRegistry;
 
+    private final Map<String, WidgetDefinition> widgetRegistry;
+
     public WebLayoutManagerImpl() {
         widgetTypeRegistry = new HashMap<String, WidgetType>();
         layoutRegistry = new HashMap<String, LayoutDefinition>();
+        widgetRegistry = new HashMap<String, WidgetDefinition>();
     }
 
     @Override
@@ -95,6 +100,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
             registerWidgetType(contribution);
         } else if (extensionPoint.equals(LAYOUTS_EP_NAME)) {
             registerLayout(contribution);
+        } else if (extensionPoint.equals(WIDGETS_EP_NAME)) {
+            registerWidget(contribution);
         } else {
             log.error(String.format(
                     "Unknown extension point %s, can't register !",
@@ -109,6 +116,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
             unregisterWidgetType(contribution);
         } else if (extensionPoint.equals(LAYOUTS_EP_NAME)) {
             unregisterLayout(contribution);
+        } else if (extensionPoint.equals(WIDGETS_EP_NAME)) {
+            unregisterWidget(contribution);
         } else {
             log.error(String.format(
                     "Unknown extension point %s, can't unregister !",
@@ -186,6 +195,28 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         }
     }
 
+    // layouts
+
+    private void registerWidget(Object contribution) {
+        WidgetDefinition widgetDef = (WidgetDefinition) contribution;
+        String name = widgetDef.getName();
+        if (widgetRegistry.containsKey(name)) {
+            // TODO: implement merge
+            widgetRegistry.remove(name);
+        }
+        widgetRegistry.put(name, widgetDef);
+        log.info("Registered widget: " + name);
+    }
+
+    private void unregisterWidget(Object contribution) {
+        WidgetDefinition widgetDef = (WidgetDefinition) contribution;
+        String name = widgetDef.getName();
+        if (widgetRegistry.containsKey(name)) {
+            widgetRegistry.remove(name);
+            log.debug("Unregistered widget: " + name);
+        }
+    }
+
     // service api
 
     public WidgetType getWidgetType(String typeName) {
@@ -194,6 +225,10 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
 
     public LayoutDefinition getLayoutDefinition(String layoutName) {
         return layoutRegistry.get(layoutName);
+    }
+
+    public WidgetDefinition getWidgetDefinition(String widgetName) {
+        return widgetRegistry.get(widgetName);
     }
 
     public WidgetTypeHandler getWidgetTypeHandler(String typeName)
@@ -372,6 +407,10 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
                     continue;
                 }
                 WidgetDefinition wDef = lDef.getWidgetDefinition(widgetName);
+                if (wDef == null) {
+                    // try in global registry
+                    wDef = getWidgetDefinition(widgetName);
+                }
                 if (wDef == null) {
                     log.error(String.format("Widget %s not found in layout %s",
                             widgetName, layoutName));
