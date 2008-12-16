@@ -309,7 +309,7 @@
     </navigation-handler>
 
     <el-resolver>
-      org.nuxeo.ecm.platform.ui.web.resolver.DocumentModelResolver
+      org.nuxeo.ecm.platform.el.DocumentModelResolver
     </el-resolver>
 
     <!-- This line should not strictly speaking be necessary, but it works

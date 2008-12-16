@@ -32,13 +32,18 @@
     <event name="logout"/>
   </extension-point>
 
-  <extension-point name="logEntryFactory">
+  <extension-point name="extendedInfo">
+
     <documentation>
-      This service registered loge entry factory XXX
+      This service registered extended info mappings.
+      
+      <p/>
+      This service is used to evaluate EL expression using document as context
+      registering results into a map indexed by names.
     </documentation>
 
     <object
-        class="org.nuxeo.ecm.platform.audit.service.extension.LogEntryFactoryDescriptor"/>
+      class="org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor" />
   </extension-point>
 
 </component>

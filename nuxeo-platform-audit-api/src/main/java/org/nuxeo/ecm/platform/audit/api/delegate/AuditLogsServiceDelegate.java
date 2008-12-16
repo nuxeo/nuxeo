@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.Logs;
 import org.nuxeo.runtime.api.Framework;
 
@@ -36,6 +37,7 @@ public final class AuditLogsServiceDelegate implements Serializable {
 
     private static final long serialVersionUID = -8140952341564417509L;
 
+    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(AuditLogsServiceDelegate.class);
 
     // Utility class.
@@ -52,9 +54,10 @@ public final class AuditLogsServiceDelegate implements Serializable {
         try {
             service = Framework.getService(Logs.class);
         } catch (Exception e) {
-            log.error("Cannot find remote audit logs service... ", e);
+            throw new AuditRuntimeException("Cannot locate remote logs audit", e);
         }
         return service;
     }
+
 
 }
