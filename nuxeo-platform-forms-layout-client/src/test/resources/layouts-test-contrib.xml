@@ -17,6 +17,17 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="globalTestWidget" type="test">
+      <fields>
+        <field schema="foo">bar</field>
+      </fields>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
 
     <layout name="testLayout">
@@ -26,6 +37,9 @@
         </row>
         <row>
           <widget>testWidgetWithoutLabel</widget>
+        </row>
+        <row>
+          <widget>globalTestWidget</widget>
         </row>
       </rows>
       <widget name="testWidget" type="test">
