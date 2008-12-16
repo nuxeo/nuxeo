@@ -8,6 +8,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 import net.sf.json.JSONObject
 import org.nuxeo.ecm.core.rest.*
+import org.nuxeo.ecm.webengine.forms.*
 import org.nuxeo.ecm.webengine.model.*
 import org.nuxeo.ecm.webengine.model.impl.*
 import org.nuxeo.ecm.webengine.model.exceptions.*
@@ -171,8 +172,27 @@ public class Main extends DefaultModule {
             "selected_view_name", getViewNameOfSelectedElement()).arg(                    
             "element_style_properties", getElementStyleProperties())
   }
+
+  @GET
+  @Path("render_view_icon")
+  public Response renderViewIcon(@QueryParam("name") String viewTypeName) {
+      byte[] content = org.nuxeo.theme.editor.Editor.getViewIconContent(viewTypeName)
+      ResponseBuilder builder = Response.ok(content)
+      // builder.type(???)
+      return builder.build();
+   }
+
+  @GET
+  @Path("render_css_preview")
+  public String renderCssPreview() {
+      String selectedElementId = getSelectedElementId()
+      Style selectedStyleLayer = getSelectedStyleLayer()
+      String selectedViewName = getViewNameOfSelectedElement()
+      Element selectedElement = getSelectedElement()
+      return Editor.renderCssPreview(selectedElement, selectedStyleLayer, selectedViewName)
+  }
   
-  @GET @POST
+  @POST
   @Path("clear_selections")
   public void clearSelections() {
     SessionManager.setElementId(null);
@@ -185,136 +205,185 @@ public class Main extends DefaultModule {
     SessionManager.setClipboardElementId(null);
   }
   
-  @GET @POST
+  @POST
   @Path("select_element")
-  public void selectElement(@QueryParam("id") String id) {
+  public void selectElement() {
+    String id = ctx.getForm().getString("id")
     SessionManager.setElementId(id)
   }
   
-  @GET @POST
+  @POST
   @Path("add_page")
-  public String addPage(@QueryParam("path") String path) {
-      return Editor.addPage(path)
+  public String addPage() {
+      String pagePath = ctx.getForm().getString("path")
+      return Editor.addPage(pagePath)
   }
   
-  @GET @POST
+  @POST
   @Path("add_theme")
-  public String addTheme(@QueryParam("name") String name) {
+  public String addTheme() {
+      String name = ctx.getForm().getString("name")
       return Editor.addTheme(name)
   }
   
-  @GET @POST
+  @POST
   @Path("align_element")
-  public void alignElement(@QueryParam("id") String id, @QueryParam("position") String position) {
+  public void alignElement() {
+      FormData form = ctx.getForm()
+      String id = form.getString("id")
+      String position = form.getString("position")
       Element element = ThemeManager.getElementById(id)
       Editor.alignElement(element, position)
   }
   
-  @GET @POST
+  @POST
   @Path("assign_style_property")
-  public void assignStyleProperty(@QueryParam("element_id") String id, @QueryParam("property") String propertyName, @QueryParam("value") String value) {
+  public void assignStyleProperty() {
+      FormData form = ctx.getForm()
+      String id = form.getString("element_id")
+      String propertyName = form.getString("property")
+      String value = form.getString("value")          
       Element element = ThemeManager.getElementById(id)
       Editor.assignStyleProperty(element, propertyName, value)
   }
   
-  @GET @POST
+  @POST
   @Path("copy_element")
-  public void copyElement(@QueryParam("id") String id) {
+  public void copyElement() {
+      String id = ctx.getForm().getString("id")
       SessionManager.setClipboardElementId(id)
   }
   
-  @GET @POST
+  @POST
   @Path("create_named_style")
-  public void createNamedStyle(@QueryParam("id") String id, @QueryParam("theme_name") String themeName, @QueryParam("style_name") String styleName) {
+  public void createNamedStyle() {
+      FormData form = ctx.getForm()
+      String id = form.getString("id")
+      String themeName = form.getString("theme_name")
+      String styleName = form.getString("style_name")
       Element element = ThemeManager.getElementById(id)
       Editor.createNamedStyle(element, styleName, themeName)
   }
   
-  @GET @POST
+  @POST
   @Path("create_style")
   public void createStyle() {
       Element element = getSelectedElement()
       Editor.createStyle(element)
   }
   
-  @GET @POST
+  @POST
   @Path("delete_element")
-  public void deleteElement(@QueryParam("id") String id) {
+  public void deleteElement() {
+      FormData form = ctx.getForm()
+      String id = form.getString("id")      
       Element element = ThemeManager.getElementById(id)
       Editor.deleteElement(element)
   }
   
-  @GET @POST
+  @POST
   @Path("delete_named_style")
-  public void deleteNamedStyle(@QueryParam("id") String id, @QueryParam("theme_name") String themeName, @QueryParam("style_name") String styleName) {
+  public void deleteNamedStyle() {
+      FormData form = ctx.getForm()
+      String id = form.getString("id")        
+      String themeName = form.getString("theme_name")
+      String styleName = form.getString("style_name")
       Element element = ThemeManager.getElementById(id)
       Editor.deleteNamedStyle(element, styleName, themeName)
   }
   
-  @GET @POST
+  @POST
   @Path("duplicate_element")
-  public String duplicateElement(@QueryParam("id") String id) {
+  public String duplicateElement() {
+      FormData form = ctx.getForm()
+      String id = form.getString("id")        
       Element element = ThemeManager.getElementById(id)
       return Editor.duplicateElement(element)
   }
   
-  @GET @POST
+  @POST
   @Path("expire_themes")
   public void expireThemes() {
       Editor.expireThemes()
   }
   
-  @GET @POST
+  @POST
   @Path("insert_fragment")
-  public void insertFragment(@QueryParam("dest_id") String destId, @QueryParam("type_name") String typeName) {
+  public void insertFragment() {
+      FormData form = ctx.getForm()
+      String destId = form.getString("dest_id")        
+      String typeName = form.getString("type_name")             
       Element destElement = ThemeManager.getElementById(destId)
       Editor.insertFragment(destElement, typeName)
   }
   
-  @GET @POST
+  @POST
   @Path("insert_section_after")
-  public void insertSectionAfter(@QueryParam("id") String id) {
+  public void insertSectionAfter() {
+      FormData form = ctx.getForm()
+      String id = form.getString("id")           
       Element element = ThemeManager.getElementById(id)
       Editor.insertSectionAfter(element)    
   }
 
-  @GET @POST
+  @POST
   @Path("add_preset")
-  public String addPreset(@QueryParam("theme_name") String themeName, @QueryParam("preset_name") String presetName, @QueryParam("category") String category) {
+  public String addPreset() {
+      FormData form = ctx.getForm()
+      String themeName = form.getString("theme_name")
+      String presetName = form.getString("preset_name")      
+      String category = form.getString("category")        
       return Editor.addPreset(themeName, presetName, category);
   }
   
-  @GET @POST
+  @POST
   @Path("edit_preset")
-  public void addPreset(@QueryParam("theme_name") String themeName, @QueryParam("preset_name") String presetName, @QueryParam("value") String value) {
+  public void editPreset() {
+      FormData form = ctx.getForm()
+      String themeName = form.getString("theme_name")
+      String presetName = form.getString("preset_name")      
+      String category = form.getString("category")     
+      String value = form.getString("value")           
       Editor.editPreset(themeName, presetName, value);
   }
   
   
-  @GET @POST
+  @POST
   @Path("load_theme")
-  public String loadTheme(@QueryParam("src") String src) {
+  public String loadTheme() {
+      FormData form = ctx.getForm()
+      String src = form.getString("src")      
       return Editor.loadTheme(src)
   }
   
-  @GET @POST
+  @POST
   @Path("make_element_use_named_style")
-  public void makeElementUseNamedStyle(@QueryParam("id") String id, @QueryParam("style_name") String styleName, @QueryParam("theme_name") String themeName) {
+  public void makeElementUseNamedStyle() {
+      FormData form = ctx.getForm()
+      String id = form.getString("id")
+      String styleName = form.getString("style_name")
+      String themeName = form.getString("theme_name")
       Element element = ThemeManager.getElementById(id)
       Editor.makeElementUseNamedStyle(element, styleName, themeName)
   }
   
-  @GET @POST
+  @POST
   @Path("move_element")
-  public void moveElement(@QueryParam("src_id") String srcId, @QueryParam("dest_id") String destId, @QueryParam("order") Integer order) {
+  public void moveElement() {
+      FormData form = ctx.getForm()
+      String srcId = form.getString("src_id")
+      String destId = form.getString("dest_id")
+      def order = form.getString("order") as Integer
       Element srcElement = ThemeManager.getElementById(srcId)
       Element destElement = ThemeManager.getElementById(destId)
       Editor.moveElement(srcElement, destElement, order)
   }
   
-  @GET @POST
+  @POST
   @Path("paste_element")
-  public void pasteElement(@QueryParam("dest_id") String destId) {
+  public void pasteElement() {
+      FormData form = ctx.getForm()
+      String destId = form.getString("dest_id")      
       String id = getClipboardElement()
       if (id == null) {
           return
@@ -323,143 +392,172 @@ public class Main extends DefaultModule {
       Editor.pasteElement(element, destId)
   }
   
-  @GET @POST
-  @Path("render_css_preview")
-  public String renderCssPreview() {
-      String selectedElementId = getSelectedElementId()
-      Style selectedStyleLayer = getSelectedStyleLayer()
-      String selectedViewName = getViewNameOfSelectedElement()
-      Element selectedElement = getSelectedElement()
-      return Editor.renderCssPreview(selectedElement, selectedStyleLayer, selectedViewName)
-  }
-  
-  @GET @POST
+  @POST
   @Path("repair_theme")
-  public String repairTheme(@QueryParam("name") String themeName) {
+  public String repairTheme() {
+		FormData form = ctx.getForm()
+		String themeName = form.getString("name")
       return Editor.repairTheme(themeName)
   }
   
-  @GET @POST
+  @POST
   @Path("save_theme")
-  public int saveTheme(@QueryParam("src") String src, @QueryParam("indent") int indent ) {
+  public int saveTheme() {
+      FormData form = ctx.getForm()
+      String src = form.getString("src")
+      def indent = form.getString("indent") as Integer
       return Editor.saveTheme(src, indent)
   }
   
-  @GET @POST
+  @POST
   @Path("select_preset_group")
-  public void selectPresetGroup(@QueryParam("group") String group) {
+  public void selectPresetGroup() {
+      FormData form = ctx.getForm()
+      String group = form.getString("group")        
       SessionManager.setPresetGroup(group)
   }
   
-  @GET @POST
+  @POST
   @Path("select_style_category")
-  public void selectStyleCategory(@QueryParam("category") String category) {
+  public void selectStyleCategory() {
+      FormData form = ctx.getForm()
+      String category = form.getString("category")      
       SessionManager.setStyleCategory(category)
   }
   
-  @GET @POST
+  @POST
   @Path("select_style_edit_mode")
-  public void selectStyleEditMode(@QueryParam("mode") String mode) {
+  public void selectStyleEditMode() {
+      FormData form = ctx.getForm()
+      String mode = form.getString("mode")        
       SessionManager.setStyleEditMode(mode)
   }
   
-  @GET @POST
+  @POST
   @Path("select_style_layer")
-  public void selectStyleLayer(@QueryParam("uid") String uid) {
+  public void selectStyleLayer() {
+      FormData form = ctx.getForm()
+      String uid = form.getString("uid")      
       Style layer = (Style) ThemeManager.getFormatById(uid)
       if (layer != null) {
           SessionManager.setStyleLayerId(uid)
       }
   }
   
-  @GET @POST
+  @POST
   @Path("select_style_property_category")
-  public void selectStylePropertyCategory(@QueryParam("category") String category) {
+  public void selectStylePropertyCategory() {
+      FormData form = ctx.getForm()
+      String category = form.getString("category")           
       SessionManager.setStylePropertyCategory(category)
   }
   
-  @GET @POST
+  @POST
   @Path("select_style_selector")
-  public void selectStyleSelector(@QueryParam("selector") String selector) {
+  public void selectStyleSelector() {
+      FormData form = ctx.getForm()
+      String selector = form.getString("selector")      
       SessionManager.setStyleSelector(selector)      
   }
   
-  @GET @POST
+  @POST
   @Path("update_element_description")
-  public void updateElementDescription(@QueryParam("id") String id, @QueryParam("description") String description) {
+  public void updateElementDescription() {
+      FormData form = ctx.getForm()
+      String id = form.getString("id")
+      String description = form.getString("description")
       Element element = ThemeManager.getElementById(id)
       Editor.updateElementDescription(element, description)
   }
   
-  @GET @POST
+  @POST
   @Path("update_element_properties")
-  public void updateElementProperties(@QueryParam("id") String id, @QueryParam("property_map") String property_map) {
+  public void updateElementProperties() {
+      FormData form = ctx.getForm()
+      String id = form.getString("id")
+      String property_map = form.getString("property_map")
       Map propertyMap = JSONObject.fromObject(property_map)
       Element element = ThemeManager.getElementById(id)
       Editor.updateElementProperties(element, propertyMap)
   }
 
-  @GET @POST
+  @POST
   @Path("update_element_width")
-  public void updateElementWidth(@QueryParam("id") String id, @QueryParam("width") String width) {
+  public void updateElementWidth() {
+      FormData form = ctx.getForm()
+      String id = form.getString("id")
+      String width = form.getString("width")         
       Format layout = ThemeManager.getFormatById(id)
       Editor.updateElementWidth(layout, width)
   }
 
-  @GET @POST
+  @POST
   @Path("update_element_style_css")
-  public void updateElementStyleCss(@QueryParam("id") String id, @QueryParam("view_name") String viewName, @QueryParam("css_source") String cssSource) {
+  public void updateElementStyleCss() {
+      FormData form = ctx.getForm()
+      String id = form.getString("id")
+      String viewName = form.getString("view_name")
+      String cssSource = form.getString("css_source")      
       Element element = ThemeManager.getElementById(id)
       Style selectedStyleLayer = getSelectedStyleLayer()
       Editor.updateElementStyleCss(element, selectedStyleLayer, viewName, cssSource) 
   }
 
-  @GET @POST
+  @POST
   @Path("split_element")
-  public void splitElement(@QueryParam("id") String id) {
+  public void splitElement() {
+      FormData form = ctx.getForm()
+      String id = form.getString("id")      
       Element element = ThemeManager.getElementById(id)
       Editor.splitElement(element)
    }
 
-  @GET @POST
+  @POST
   @Path("update_element_style")
-  public void updateElementStyle(@QueryParam("id") String id, @QueryParam("view_name") String viewName, @QueryParam("path") String path, @QueryParam("property_map") String property_map) {
+  public void updateElementStyle() {
+      FormData form = ctx.getForm()
+      String id = form.getString("id")
+      String path = form.getString("path")           
+      String viewName = form.getString("view_name")      
+      String property_map = form.getString("property_map")      
       Map propertyMap = JSONObject.fromObject(property_map)
       Element element = ThemeManager.getElementById(id)
       Style currentStyleLayer = getSelectedStyleLayer()
       Editor.updateElementStyle(element, currentStyleLayer, path, viewName, propertyMap)
   }
 
-  @GET @POST
+  @POST
   @Path("update_element_visibility")
-  public String updateElementVisibility(@QueryParam("id") String id, @QueryParam("perspectives") List<String> perspectives, @QueryParam("always_visible") boolean alwaysVisible) {
+  public String updateElementVisibility() {
+      FormData form = ctx.getForm()
+      String id = form.getString("id")
+      List<String> perspectives = form.getList("perspectives")
+      boolean alwaysVisible = Boolean.valueOf(form.getString("always_visible"))
+      System.out.println(alwaysVisible);
       Element element = ThemeManager.getElementById(id)
       Editor.updateElementVisibility(element, perspectives, alwaysVisible)
   }
   
-  @GET @POST
+  @POST
   @Path("update_element_layout")
-  public void updateElementPadding(@QueryParam("property_map") String property_map) {
+  public void updateElementPadding() {
+      FormData form = ctx.getForm()
+      String property_map = form.getString("property_map")      
       Map propertyMap = JSONObject.fromObject(property_map)
       Element element = getSelectedElement()
       Editor.updateElementLayout(element, propertyMap)
   }
   
-  @GET @POST
+  @POST
   @Path("update_element_widget")
-  public void updateElementWidget(@QueryParam("id") String id, @QueryParam("view_name") String viewName) {
+  public void updateElementWidget() {
+      FormData form = ctx.getForm()
+      String id = form.getString("id")
+      String viewName = form.getString("view_name")
       Element element = ThemeManager.getElementById(id)
       Editor.updateElementWidget(element, viewName)
   }
-  
-  @GET @POST
-  @Path("render_view_icon")
-  public Response renderViewIcon(@QueryParam("name") String viewTypeName) {
-      byte[] content = org.nuxeo.theme.editor.Editor.getViewIconContent(viewTypeName)
-      ResponseBuilder builder = Response.ok(content)
-      // builder.type(???)
-      return builder.build();
-    }
+
   
   /* API */
    

@@ -66,9 +66,12 @@ NXThemesStyleEditor.chooseStyleSelector = function(select) {
 
 NXThemesStyleEditor.setPresetGroup = function(select) {
     var group = select.value;
-    var url = nxthemesBasePath + "/nxthemes-editor/select_preset_group?group=" + encodeURIComponent(group); 
+    var url = nxthemesBasePath + "/nxthemes-editor/select_preset_group"; 
     new Ajax.Request(url, {
-         method: 'get',
+         method: 'post',
+         parameters: {
+             group: group
+         },
          onComplete: function(r) {
            NXThemesStyleEditor.refreshStylePicker();
          }
@@ -76,9 +79,12 @@ NXThemesStyleEditor.setPresetGroup = function(select) {
 };
 
 NXThemesStyleEditor.setStyleSelector = function(selector) {
-    var url = nxthemesBasePath + "/nxthemes-editor/select_style_selector?selector=" + encodeURIComponent(selector); 
+    var url = nxthemesBasePath + "/nxthemes-editor/select_style_selector"; 
     new Ajax.Request(url, {
-         method: 'get',
+         method: 'post',
+         parameters: {
+             selector: selector
+         },
          onComplete: function(r) {
              NXThemes.getControllerById("style editor perspectives").switchTo("style properties");
              NXThemes.getViewById("style properties").refresh();
@@ -89,7 +95,7 @@ NXThemesStyleEditor.setStyleSelector = function(selector) {
 NXThemesStyleEditor.createStyle = function() {
     var url = nxthemesBasePath + "/nxthemes-editor/create_style"; 
     new Ajax.Request(url, {
-         method: 'get',
+         method: 'post',
          onComplete: function(r) {
              NXThemes.getViewById("element style").refresh();
              NXThemesEditor.writeMessage("New style created.");
@@ -154,9 +160,12 @@ NXThemesStyleEditor.selectTag = function(info) {
 };
 
 NXThemesStyleEditor.setCurrentStyleLayer = function(uid) {
-    var url = nxthemesBasePath + "/nxthemes-editor/select_style_layer?uid=" + encodeURIComponent(uid); 
+    var url = nxthemesBasePath + "/nxthemes-editor/select_style_layer"; 
       new Ajax.Request(url, {
-         method: 'get',
+         method: 'post',
+         parameters: {
+             uid: uid
+         },
          onComplete: function(r) {
              NXThemes.getControllerById('style editor perspectives').switchTo('default');
              NXThemes.getViewById("element style").refresh();
@@ -168,9 +177,12 @@ NXThemesStyleEditor.pickPropertyValue = function(info) {
     var target = info.target;
     var category = target.getAttribute('category');
     NXThemesStyleEditor.currentProperty = target.getAttribute('property');
-    var url = nxthemesBasePath + "/nxthemes-editor/select_style_category?category=" + encodeURIComponent(category); 
+    var url = nxthemesBasePath + "/nxthemes-editor/select_style_category"; 
       new Ajax.Request(url, {
-         method: 'get',
+         method: 'post',
+         parameters: {
+             category: category
+         },
          onComplete: function(r) {
            NXThemes.getControllerById('style editor perspectives').switchTo('style picker');
          }
@@ -184,9 +196,12 @@ NXThemesStyleEditor.setStyleEditMode = function(mode, fromMode) {
     if (fromMode == 'css') {
       NXThemesEditor.updateElementStyleCss();
     }
-    var url = nxthemesBasePath + "/nxthemes-editor/select_style_edit_mode?mode=" + encodeURIComponent(mode); 
+    var url = nxthemesBasePath + "/nxthemes-editor/select_style_edit_mode"; 
     new Ajax.Request(url, {
-         method: 'get',
+         method: 'post',
+         parameters: {
+             mode: mode
+         },
          onComplete: function(req) {
            NXThemes.getViewById("style properties").refresh();
          }
@@ -194,9 +209,12 @@ NXThemesStyleEditor.setStyleEditMode = function(mode, fromMode) {
 };
 
 NXThemesStyleEditor.setStylePropertyCategory = function(category) {
-    var url = nxthemesBasePath + "/nxthemes-editor/select_style_property_category?category=" + encodeURIComponent(category); 
+    var url = nxthemesBasePath + "/nxthemes-editor/select_style_property_category"; 
     new Ajax.Request(url, {
-         method: 'get',
+         method: 'post',
+         parameters: {
+             category: category
+         },
          onComplete: function(req) {
            NXThemes.getViewById("style properties").refresh();
          }
@@ -210,14 +228,19 @@ NXThemesStyleEditor.makeElementUseNamedStyle = function(select) {
     }
     var form = $(select).up("form");
     var id = form.getAttribute("element");
-    var theme_name = form.getAttribute("currentThemeName");
-    var style_name = value;
-    var url = nxthemesBasePath + "/nxthemes-editor/make_element_use_named_style?id=" + encodeURIComponent(id) + "&theme_name=" + encodeURIComponent(theme_name);
-    if (style_name) { 
-        url += "&style_name=" + encodeURIComponent(style_name);
+    var themeName = form.getAttribute("currentThemeName");
+    var styleName = value;
+    var url = nxthemesBasePath + "/nxthemes-editor/make_element_use_named_style";
+    var parameters = {
+        id: id,
+        theme_name: themeName
+    }    
+    if (style_name) {
+        parameters['style_name'] = styleName;
     }
     new Ajax.Request(url, {
-         method: 'get',
+         method: 'post',
+         parameters: parameters,
          onComplete: function(req) {
              NXThemes.getViewById("element style").refresh();
          }
@@ -233,9 +256,14 @@ NXThemesStyleEditor.createNamedStyle = function(id, currentThemeName) {
         window.alert("Style names cannot be empty.");
         return;
     }
-    var url = nxthemesBasePath + "/nxthemes-editor/create_named_style?id=" + encodeURIComponent(id) + "&style_name=" + encodeURIComponent(styleName) + "&theme_name=" + encodeURIComponent(currentThemeName); 
+    var url = nxthemesBasePath + "/nxthemes-editor/create_named_style"; 
     new Ajax.Request(url, {
-         method: 'get',
+         method: 'post',
+         parameters: {
+             id: id,
+             style_name: styleName,
+             theme_name: currentThemeName
+         },
          onComplete: function(req) {
              NXThemes.getViewById("element style").refresh();
          }
@@ -247,9 +275,14 @@ NXThemesStyleEditor.deleteNamedStyle = function(id, currentThemeName, styleName)
     if (!ok) {
         return;
     }
-    var url = nxthemesBasePath + "/nxthemes-editor/delete_named_style?id=" + encodeURIComponent(id) + "&style_name=" + encodeURIComponent(styleName) + "&theme_name=" + encodeURIComponent(currentThemeName); 
+    var url = nxthemesBasePath + "/nxthemes-editor/delete_named_style"; 
     new Ajax.Request(url, {
-         method: 'get',
+         method: 'post',
+         parameters: {
+             id: id,
+             style_name: styleName,
+             theme_name: currentThemeName
+         },
          onComplete: function(req) {
              NXThemes.getViewById("element style").refresh();
          }

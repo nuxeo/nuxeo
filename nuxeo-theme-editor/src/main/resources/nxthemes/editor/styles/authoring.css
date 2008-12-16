@@ -875,7 +875,7 @@ div.nxthemesFragment {
   padding: 6px !important;
   margin: 3px !important;
   color: #333;
-  cursor: default;
+  cursor: pointer;
 }
 
 div.nxthemesFragment b {
