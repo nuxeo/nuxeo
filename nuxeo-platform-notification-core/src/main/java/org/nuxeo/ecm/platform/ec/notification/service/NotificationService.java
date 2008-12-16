@@ -73,6 +73,7 @@ public class NotificationService extends DefaultComponent implements
 
     private static final String SUBSCRIPTION_NAME = "UserSubscription";
 
+    // FIXME: performance issue when putting URLs in a Map.
     private static final Map<String, URL> TEMPLATES_MAP = new HashMap<String, URL>();
 
     private GeneralSettingsDescriptor generalSettings;

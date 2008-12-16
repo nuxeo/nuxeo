@@ -42,7 +42,7 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableF
  * Generates default schema field descriptors. This is invoked when <strong>no</strong>
  * explicit indexing schema and / or field configurations are contributed.
  *
- * @see org.nuxeo.ecm.core.search.document.IndexableResourcesFactory
+ * @see org.nuxeo.ecm.core.search.api.client.indexing.resources.factory.IndexableResourcesFactory
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */

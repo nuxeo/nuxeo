@@ -39,7 +39,7 @@ import org.nuxeo.ecm.platform.workflow.document.api.workitem.WorkItemsListExcept
 /**
  * Work items list factory.
  *
- * @see org.nuxeo.platform.workflow.ejb.WorkItemsListsBean
+ * @see org.nuxeo.ecm.platform.workflow.document.ejb.WorkItemsListsBean
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */

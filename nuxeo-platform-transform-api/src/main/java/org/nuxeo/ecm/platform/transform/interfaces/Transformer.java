@@ -88,7 +88,7 @@ public interface Transformer extends Serializable {
      * The map keys are plugin names. The map values are maps which
      * have string as keys and serializable objects as values.
      *
-     * @param a map holding the default configuration
+     * @param defaultOptions a map holding the default configuration
      */
     void setDefaultOptions(Map<String, Map<String, Serializable>> defaultOptions);
 

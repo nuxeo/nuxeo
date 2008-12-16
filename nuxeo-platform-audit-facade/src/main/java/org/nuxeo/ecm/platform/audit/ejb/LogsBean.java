@@ -239,7 +239,7 @@ public class LogsBean implements Logs {
 
         List<LogEntry> results = new ArrayList<LogEntry>();
 
-        StringBuffer queryString = new StringBuffer();
+        StringBuilder queryString = new StringBuilder();
 
         queryString.append("from " + klass.getSimpleName() + " log where ");
 

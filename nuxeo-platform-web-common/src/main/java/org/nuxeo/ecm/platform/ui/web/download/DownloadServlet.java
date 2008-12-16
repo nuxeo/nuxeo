@@ -78,7 +78,7 @@ public class DownloadServlet extends HttpServlet {
         String fileName = pathParts[3];
 
         String completePath = filePath.split(docId)[1];
-        int idx = completePath.lastIndexOf("/");
+        int idx = completePath.lastIndexOf('/');
         if (idx > 0) {
             fieldPath = completePath.substring(0, idx);
             fileName = completePath.substring(idx + 1);

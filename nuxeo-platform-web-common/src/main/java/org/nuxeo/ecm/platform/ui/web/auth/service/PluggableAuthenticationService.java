@@ -264,7 +264,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
     public void invalidateSession(ServletRequest request) {
-        if (sessionManagers.size() > 0) {
+        if (!sessionManagers.isEmpty()) {
             for (String smName : sessionManagers.keySet()) {
                 NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
                 sm.onBeforeSessionInvalidate(request);
@@ -279,7 +279,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     public HttpSession reinitSession(HttpServletRequest httpRequest) {
 
-        if (sessionManagers.size() > 0) {
+        if (!sessionManagers.isEmpty()) {
             for (String smName : sessionManagers.keySet()) {
                 NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
                 sm.onBeforeSessionReinit(httpRequest);
@@ -288,7 +288,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
         HttpSession session = httpRequest.getSession(true);
 
-        if (sessionManagers.size() > 0) {
+        if (!sessionManagers.isEmpty()) {
             for (String smName : sessionManagers.keySet()) {
                 NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
                 sm.onAfterSessionReinit(httpRequest);
@@ -298,7 +298,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
     public boolean canBypassRequest(ServletRequest request) {
-        if (sessionManagers.size() > 0) {
+        if (!sessionManagers.isEmpty()) {
             for (String smName : sessionManagers.keySet()) {
                 NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
                 if (sm.canBypassRequest(request)){
@@ -310,7 +310,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
     public boolean needResetLogin(ServletRequest request) {
-        if (sessionManagers.size() > 0) {
+        if (!sessionManagers.isEmpty()) {
             for (NuxeoAuthenticationSessionManager sm : sessionManagers.values()) {
                 if (sm.needResetLogin(request)) {
                     return true;
@@ -325,7 +325,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
     public void onAuthenticatedSessionCreated(ServletRequest request, HttpSession session, CachableUserIdentificationInfo cachebleUserInfo) {
-        if (sessionManagers.size() > 0) {
+        if (!sessionManagers.isEmpty()) {
             for (String smName : sessionManagers.keySet()) {
                 NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
                 sm.onAuthenticatedSessionCreated(request, session, cachebleUserInfo);

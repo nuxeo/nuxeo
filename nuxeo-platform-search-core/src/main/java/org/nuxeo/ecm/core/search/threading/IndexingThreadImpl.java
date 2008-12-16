@@ -39,9 +39,8 @@ import org.nuxeo.runtime.api.Framework;
  * Maintains a Nuxeo core session along with a JAAS session which can be shared
  * in between app code executed within this thread. As well, the thread
  * maintains a search service session.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- * 
  */
 public class IndexingThreadImpl extends Thread implements IndexingThread {
 
@@ -120,7 +119,7 @@ public class IndexingThreadImpl extends Thread implements IndexingThread {
 
     /**
      * Initialize a new JAAS login.
-     * 
+     *
      * @throws Exception
      */
     private void login() throws Exception {
@@ -154,13 +153,13 @@ public class IndexingThreadImpl extends Thread implements IndexingThread {
     }
 
     // NXP-2107s
-    /*@Override 
-    protected void finalize() { 
+    /*@Override
+    protected void finalize() {
         closeSearchServiceSession();
-        closeCoreSession(); 
-        logout(); 
+        closeCoreSession();
+        logout();
     }*/
-     
+
 
     public SearchServiceSession getSearchServiceSession() throws Exception {
         if (searchServiceSession == null) {
@@ -188,7 +187,7 @@ public class IndexingThreadImpl extends Thread implements IndexingThread {
             try {
                 getSearchService().closeSession(
                         searchServiceSession.getSessionId());
-                // set it to null so that a new session will be open with 
+                // set it to null so that a new session will be open with
                 // the next call to getSearchServiceSession()
                 searchServiceSession = null;
             } catch (Throwable t) {

@@ -96,7 +96,7 @@ public class DirectoryEntryOutputComponent extends DirectoryAwareComponent {
     }
 
     /**
-     * @deprecated use {@link #setLocalize()} instead
+     * @deprecated use {@link #setLocalize(Boolean)} instead
      */
     @Deprecated
     public void setTranslate(Boolean translate) {

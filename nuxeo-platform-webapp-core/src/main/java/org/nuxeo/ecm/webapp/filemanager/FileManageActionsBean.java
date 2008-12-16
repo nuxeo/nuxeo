@@ -206,7 +206,7 @@ public class FileManageActionsBean extends InputController implements
 
         // compute the path of the target container
         if (!currentDocument.isFolder()) {
-            curPath = curPath.substring(0, curPath.lastIndexOf("/"));
+            curPath = curPath.substring(0, curPath.lastIndexOf('/'));
         }
         String path = curPath + morePath;
         return createDocumentFromBlob(blob, fullName, path);
@@ -290,7 +290,7 @@ public class FileManageActionsBean extends InputController implements
 
             String curPath = currentDocument.getPathAsString();
             if (!currentDocument.isFolder()) {
-                curPath = curPath.substring(0, curPath.lastIndexOf("/"));
+                curPath = curPath.substring(0, curPath.lastIndexOf('/'));
             }
             String path = curPath + morePath;
 

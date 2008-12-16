@@ -55,7 +55,7 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
 /**
  * Editable table component.
  * <p>
- * Allows to add/remove elements from an {@link EditableList}, inspired from
+ * Allows to add/remove elements from an {@link UIEditableList}, inspired from
  * Trinidad UIXCollection component.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
@@ -66,7 +66,6 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
 public class UIEditableList extends UIInput implements NamingContainer {
 
     public static final String COMPONENT_TYPE = UIEditableList.class.getName();
-
     public static final String COMPONENT_FAMILY = UIEditableList.class.getName();
 
     private static final Log log = LogFactory.getLog(UIEditableList.class);

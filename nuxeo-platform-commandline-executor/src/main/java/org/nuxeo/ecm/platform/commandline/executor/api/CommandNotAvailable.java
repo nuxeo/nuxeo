@@ -34,7 +34,7 @@ public class CommandNotAvailable extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    protected CommandAvailability availability;
+    protected final CommandAvailability availability;
 
     public CommandNotAvailable(CommandAvailability availability) {
         this.availability = availability;

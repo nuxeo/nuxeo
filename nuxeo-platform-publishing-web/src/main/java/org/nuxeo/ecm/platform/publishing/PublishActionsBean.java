@@ -99,7 +99,6 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
  * @author Florent Guillaume
  * @author Thierry Martins
  */
-
 @Name("publishActions")
 @Scope(ScopeType.CONVERSATION)
 @Transactional
@@ -554,7 +553,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
         /** Returned proxy. */
         public DocumentRef proxyRef;
 
-        public DocumentPublisher(DocumentModel doc, DocumentModel section)
+        protected DocumentPublisher(DocumentModel doc, DocumentModel section)
                 throws ClientException {
             super(documentManager);
             docRef = doc.getRef();

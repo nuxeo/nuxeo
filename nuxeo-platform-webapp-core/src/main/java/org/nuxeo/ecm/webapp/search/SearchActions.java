@@ -58,7 +58,6 @@ public interface SearchActions extends StatefulBaseLifeCycle,
     void setSimpleSearchKeywords(String k);
 
     /**
-     *
      * @return the nxql query text if the option for nxql is selected
      */
     String getNxql();
@@ -104,7 +103,6 @@ public interface SearchActions extends StatefulBaseLifeCycle,
             throws ClientException;
 
     SelectDataModel getResultsSelectModel(String providerName) throws ClientException;
-
 
     /**
      * @return the Document Model backing the advanced search form up
@@ -159,4 +157,5 @@ public interface SearchActions extends StatefulBaseLifeCycle,
      * @return bool flag
      */
     boolean isReindexingAll();
+
 }

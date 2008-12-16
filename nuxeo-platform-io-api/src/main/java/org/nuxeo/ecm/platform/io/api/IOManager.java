@@ -216,7 +216,7 @@ public interface IOManager extends Serializable {
 
     /**
      * Should be called by client code after using the export created by
-     * calling the {@link #externalizeExport(...)}.
+     * calling the {@link #externalizeExport}.
      *
      * @param uri
      * @throws ClientException

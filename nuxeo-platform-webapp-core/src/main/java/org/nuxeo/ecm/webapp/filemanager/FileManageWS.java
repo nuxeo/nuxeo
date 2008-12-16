@@ -286,12 +286,12 @@ public class FileManageWS extends InputController implements
         log.info("Initializing...");
     }
 
-    public DocumentModel _getChangeableDocument() {
+    private DocumentModel _getChangeableDocument() {
         // return navigationContext.getChangeableDocument();
         return navigationContext.getCurrentDocument();
     }
 
-    public void _setChangeableDocument(DocumentModel documentModel) {
+    private void _setChangeableDocument(DocumentModel documentModel) {
         navigationContext.setChangeableDocument(documentModel);
         // navigationContext.setCurrentDocument(documentModel);
     }
@@ -455,7 +455,7 @@ public class FileManageWS extends InputController implements
      * @deprecated use UploadFileRestlet instead
      */
     @Deprecated
-    public String updateDocument(DocumentModel docModel) throws ClientException {
+    private String updateDocument(DocumentModel docModel) throws ClientException {
         try {
             // DocumentModel changeableDocument = getChangeableDocument();
 
@@ -485,7 +485,7 @@ public class FileManageWS extends InputController implements
      *             directly
      */
     @Deprecated
-    public String updateDocumentAsNewVersion(DocumentModel docModel)
+    private String updateDocumentAsNewVersion(DocumentModel docModel)
             throws ClientException {
         try {
             // save the changed data to the current working version
@@ -612,7 +612,7 @@ public class FileManageWS extends InputController implements
         return preEditActList.toArray(new String[0]);
     }
 
-    public Map<String, Object> createDataMap(String[] propertiesArray) {
+    private Map<String, Object> createDataMap(String[] propertiesArray) {
         Map<String, Object> map = new HashMap<String, Object>();
 
         for (int i = 0; i < propertiesArray.length; i += 2) {

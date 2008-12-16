@@ -115,9 +115,6 @@ public abstract class InputController {
 
     /**
      * Logs a {@link DocumentModel} title and the passed string (info).
-     *
-     * @param someLogString
-     * @param document
      */
     public void logDocumentWithTitle(String someLogString,
             DocumentModel document) {
@@ -134,9 +131,6 @@ public abstract class InputController {
 
     /**
      * Logs a {@link DocumentModel} name and the passed string (info).
-     *
-     * @param someLogString
-     * @param document
      */
     public void logDocumentWithName(String someLogString, DocumentModel document) {
         if (null != document) {
@@ -150,9 +144,6 @@ public abstract class InputController {
 
     /**
      * Extracts references from a list of document models.
-     *
-     * @param documents
-     * @return
      */
     protected List<DocumentRef> extractReferences(List<DocumentModel> documents) {
         List<DocumentRef> references = new ArrayList<DocumentRef>();
@@ -171,8 +162,6 @@ public abstract class InputController {
 
     /**
      * Is the current logged user an administrator?
-     *
-     * @return
      */
     public boolean getAdministrator() {
         boolean administrator = false;

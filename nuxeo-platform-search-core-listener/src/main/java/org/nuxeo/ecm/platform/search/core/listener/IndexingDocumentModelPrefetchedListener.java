@@ -63,32 +63,25 @@ import org.nuxeo.ecm.core.search.api.indexingwrapper.DocumentModelIndexingWrappe
 import org.nuxeo.ecm.platform.events.api.EventMessage;
 
 /**
- * Indexing document model prefetched core event istener.
- *
+ * Indexing document model prefetched core event listener.
  * <p>
  * Core event listener that takes care of document model prefetched data
  * indexing. This listener is useful to index in a synchronous way minimum
  * document model data so that document updates can show up directly after one
  * request
- * </p>
- *
  * <p>
  * Perform and generate partial schema resolved resource generation in a
  * programatic way. Usually, this is performed search service side using XML
  * based contributions. The prefetch data are the minimum data needed for the
  * search based virtualn navigation tree can be displayed. As well, it will
  * compute search engine mandatory builtins.
- * </p>
- *
  * <p>
  * The rest of the indexing will be done in an async way by a message driven
  * bean.
- * </p>
  *
- * @see org.nuxeo.ecm.platform.search.ejb.SearchMessageListener
+ * @see SearchMessageListener
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class IndexingDocumentModelPrefetchedListener extends
         AbstractEventListener {
@@ -244,7 +237,6 @@ public class IndexingDocumentModelPrefetchedListener extends
                 service.index(computePrefetchedResourcesFor(dm, prefetch));
             }
         }
-
     }
 
     protected void indexFirstLevelChildren(DocumentModel doc) throws Exception {

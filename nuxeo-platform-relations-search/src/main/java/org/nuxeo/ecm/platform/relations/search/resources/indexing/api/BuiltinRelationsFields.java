@@ -54,11 +54,11 @@ public final class BuiltinRelationsFields {
      */
     public static final String SUBJECT_URI_LOCAL = "subjectUriLocal";
 
-    /** @see {@link SUBJECT_URI_LOCAL} for meaning & use-cases
+    /** @see {@link #SUBJECT_URI_LOCAL} for meaning & use-cases
      */
     public static final String SUBJECT_URI_NAMESPACE = "subjectUriNs";
 
-    /** @see {@link SUBJECT_URI_LOCAL} for meaning & use-cases
+    /** @see {@link #SUBJECT_URI_LOCAL} for meaning & use-cases
      */
     public static final String OBJECT_URI_LOCAL = "objectUriLocal";
 

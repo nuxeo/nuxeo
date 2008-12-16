@@ -454,7 +454,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             } else {
                 Plugin plugin = fileImporters.get(name);
 
-                if (filters != null && filters.size() > 0) {
+                if (filters != null && !filters.isEmpty()) {
                     plugin.setFilters(filters);
                 }
                 plugin.setEnabled(enabled);

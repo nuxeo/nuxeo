@@ -47,6 +47,7 @@ import org.nuxeo.runtime.model.RegistrationInfo;
  *
  */
 public class ErrorPageForwarder {
+
     private static Log nuxeoErrorLog = LogFactory.getLog("nuxeo-error-log");
     private static Log log = LogFactory.getLog(ErrorPageForwarder.class);
 
@@ -113,12 +114,12 @@ public class ErrorPageForwarder {
         builder.append("\nParameter:\n");
         Map<String, String[]> m = request.getParameterMap();
         for (Map.Entry<String, String[]> entry : m.entrySet()) {
-            builder.append(entry.getKey() + ":");
+            builder.append(entry.getKey()).append(":");
             if (entry.getValue() == null) {
                 continue;
             }
             for (String s : entry.getValue()) {
-                builder.append(s + ",");
+                builder.append(s).append(",");
             }
             builder.deleteCharAt(builder.length() - 1);
             builder.append("\n");
@@ -132,15 +133,14 @@ public class ErrorPageForwarder {
                 continue;
             }
             Object obj = request.getAttribute(name);
-            builder.append(name + ": " + obj.toString() + "\n");
+            builder.append(name).append(": ").append(obj.toString()).append("\n");
         }
         builder.append("\n");
         Collection<RegistrationInfo> infos = Framework.getRuntime().getComponentManager().getRegistrations();
         builder.append("Components:\n");
         for (RegistrationInfo info : infos) {
-            builder.append(info.getComponent().getName() + ","
-                    + (info.isActivated() ? "activated" : "not activated")
-                    + "\n");
+            builder.append(info.getComponent().getName()).append(",")
+                    .append(info.isActivated() ? "activated" : "not activated").append("\n");
         }
         nuxeoErrorLog.trace("User Principal: " + request.getUserPrincipal() + "\n" + builder.toString());
         return builder.toString();
@@ -161,4 +161,5 @@ public class ErrorPageForwarder {
         t.printStackTrace(pwriter);
         return swriter.getBuffer().toString();
     }
+
 }

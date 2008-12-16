@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.api.ClientException;
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  * @deprecated will be removed in 5.2,
- *             use {@link ClientException.wrap} instead
+ *             use {@link ClientException.wrap(Throwable)} instead
  */
 @Deprecated
 public class EJBExceptionHandler {

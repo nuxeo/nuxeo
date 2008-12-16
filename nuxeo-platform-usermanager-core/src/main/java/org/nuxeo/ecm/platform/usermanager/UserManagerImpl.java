@@ -67,11 +67,8 @@ public class UserManagerImpl implements UserManager {
     private static final Log log = LogFactory.getLog(UserManagerImpl.class);
 
     public static final String USERMANAGER_TOPIC = "usermanager";
-
     public static final String USERCHANGED_EVENT_ID = "user_changed";
-
     public static final String GROUPCHANGED_EVENT_ID = "group_changed";
-
     public static final String DEFAULT_ANONYMOUS_USER_ID = "Anonymous";
 
     private final DirectoryService dirService;
@@ -116,21 +113,20 @@ public class UserManagerImpl implements UserManager {
     }
 
     public void setConfiguration(UserManagerDescriptor descriptor) {
-        setDefaultGroup(descriptor.defaultGroup);
-        setRootLogin(descriptor.rootLogin);
-        setUserSortField(descriptor.userSortField);
-        setGroupSortField(descriptor.groupSortField);
-        setUserListingMode(descriptor.userListingMode);
-        setGroupListingMode(descriptor.groupListingMode);
+        defaultGroup = descriptor.defaultGroup;
+        defaultRootLogin = descriptor.rootLogin;
+        userSortField = descriptor.userSortField;
+        userListingMode = descriptor.userListingMode;
+        groupListingMode = descriptor.groupListingMode;
+        userEmailField = descriptor.userEmailField;
+        userSearchFields = descriptor.userSearchFields;
+        userPasswordPattern = descriptor.userPasswordPattern;
+        groupMembersField = descriptor.groupMembersField;
+        groupSubGroupsField = descriptor.groupSubGroupsField;
+        groupParentGroupsField = descriptor.groupParentGroupsField;
+        anonymousUser = descriptor.anonymousUser;
         setUserDirectoryName(descriptor.userDirectoryName);
-        setUserEmailField(descriptor.userEmailField);
-        setUserSearchFields(descriptor.userSearchFields);
-        setUserPasswordPattern(descriptor.userPasswordPattern);
         setGroupDirectoryName(descriptor.groupDirectoryName);
-        setGroupMembersField(descriptor.groupMembersField);
-        setGroupSubGroupsField(descriptor.groupSubGroupsField);
-        setGroupParentGroupsField(descriptor.groupParentGroupsField);
-        setAnonymousUser(descriptor.anonymousUser);
         setVirtualUsers(descriptor.virtualUsers);
     }
 

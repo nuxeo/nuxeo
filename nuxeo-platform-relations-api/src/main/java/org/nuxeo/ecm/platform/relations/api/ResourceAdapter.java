@@ -44,7 +44,7 @@ public interface ResourceAdapter {
      *
      * @param object TODO Serializable
      * @return the resource
-     * @deprecated use {@link #getResource(Object, Map)}
+     * @deprecated use {@link #getResource(Serializable, Map)}
      */
     @Deprecated
     Resource getResource(Object object);

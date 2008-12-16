@@ -674,8 +674,8 @@ public class LDAPReference extends AbstractReference {
                     if (targetSession.rdnMatchesIdField()) {
                         // optim: do not fetch the entry to get its true id but
                         // guess it by reading the targetDn
-                        final int beginIndex = targetDn.indexOf("=") + 1;
-                        final int endIndex = targetDn.indexOf(",");
+                        final int beginIndex = targetDn.indexOf('=') + 1;
+                        final int endIndex = targetDn.indexOf(',');
                         id = targetDn.substring(beginIndex, endIndex).trim();
                     } else {
                         // the entry id is not based on the rdn, we thus need to

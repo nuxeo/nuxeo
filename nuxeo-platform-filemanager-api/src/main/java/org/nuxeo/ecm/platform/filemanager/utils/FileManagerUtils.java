@@ -100,8 +100,8 @@ public final class FileManagerUtils {
     public static String fetchFileName(String fullName) {
         // Fetching filename
         String ret = fullName;
-        int lastWinSeparator = fullName.lastIndexOf("\\");
-        int lastUnixSeparator = fullName.lastIndexOf("/");
+        int lastWinSeparator = fullName.lastIndexOf('\\');
+        int lastUnixSeparator = fullName.lastIndexOf('/');
         int lastSeparator = Math.max(lastWinSeparator, lastUnixSeparator);
         if (lastSeparator != -1) {
             ret = fullName.substring(lastSeparator + 1, fullName.length());
@@ -120,10 +120,10 @@ public final class FileManagerUtils {
             return filename;
         }
         // Fetching title
-        int dot = filename.lastIndexOf(".");
+        int dot = filename.lastIndexOf('.');
         String title = filename;
         if (dot != -1) {
-            title = filename.substring(0, filename.lastIndexOf("."));
+            title = filename.substring(0, filename.lastIndexOf('.'));
         }
         return title;
     }

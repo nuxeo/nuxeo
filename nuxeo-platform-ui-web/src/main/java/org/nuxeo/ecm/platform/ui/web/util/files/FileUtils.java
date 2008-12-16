@@ -98,8 +98,8 @@ public class FileUtils {
      */
     public static String getCleanFileName(String filename) {
         String res = null;
-        int lastWinSeparator = filename.lastIndexOf("\\");
-        int lastUnixSeparator = filename.lastIndexOf("/");
+        int lastWinSeparator = filename.lastIndexOf('\\');
+        int lastUnixSeparator = filename.lastIndexOf('/');
         int lastSeparator = Math.max(lastWinSeparator, lastUnixSeparator);
         if (lastSeparator != -1) {
             res = filename.substring(lastSeparator + 1, filename.length());

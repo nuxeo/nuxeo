@@ -72,7 +72,7 @@ public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
         String auth = httpRequest.getHeader("authorization");
 
         if (auth != null && auth.toLowerCase().startsWith("basic")) {
-            int idx = auth.indexOf(" ");
+            int idx = auth.indexOf(' ');
             String b64userpassword = auth.substring(idx + 1);
             BASE64Decoder decoder = new BASE64Decoder();
             try {

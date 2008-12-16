@@ -167,7 +167,7 @@ public class ConversionActionBean implements ConversionAction {
             }
 
             // add pdf extension
-            int pos = name.lastIndexOf(".");
+            int pos = name.lastIndexOf('.');
             if (pos <= 0) {
                 name += ".pdf";
             } else {
@@ -175,7 +175,7 @@ public class ConversionActionBean implements ConversionAction {
                 name = name.replace(sub, "pdf");
             }
 
-            if (resultingDocs.size() == 0) {
+            if (resultingDocs.isEmpty()) {
                 log.error("Transform service didn't return any resulting documents which is not normal.");
                 return "pdf_generation_error";
             }

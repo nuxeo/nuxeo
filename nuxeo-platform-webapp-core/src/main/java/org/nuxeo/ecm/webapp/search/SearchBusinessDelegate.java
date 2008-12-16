@@ -179,10 +179,10 @@ public class SearchBusinessDelegate implements Serializable {
      *
      * @throws SearchException
      *
-     * @see org.nuxeo.ecm.webapp.search.SearchActions#searchForText(java.lang.String)
+     * @see org.nuxeo.ecm.webapp.search.SearchActions#searchForText(String)
      */
     public DocumentModelList searchForText(String keywords)
-    throws ClientException, SearchException {
+            throws ClientException, SearchException {
         return searchForText(keywords, null);
     }
 

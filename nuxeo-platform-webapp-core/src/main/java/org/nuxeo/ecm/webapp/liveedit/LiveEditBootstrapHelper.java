@@ -98,15 +98,13 @@ import org.nuxeo.runtime.api.Framework;
 public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants {
 
     protected static final String IMMUTABLE_FACET = "Immutable";
-
-    protected static final long serialVersionUID = 876879071L;
-
     protected static final String MODIFIED_FIELD = "modified";
-
     protected static final String DUBLINCORE_SCHEMA = "dublincore";
 
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(LiveEditBootstrapHelper.class);
+
+    private static final long serialVersionUID = 876879071L;
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
@@ -337,7 +335,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             addTextElement(docInfo, docMimetypeTag, mimetype);
             addTextElement(docInfo, docFileExtensionTag,
                     getFileExtension(mimetype));
-            
+
             Element docFileAuthorizedExtensions = docInfo.addElement(docFileAuthorizedExtensionsTag);
             List<String> authorizedExtensions = getFileExtensions(mimetype);
             if (authorizedExtensions != null) {
@@ -377,7 +375,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             addTextElement(templateDocInfo, docMimetypeTag, mimetype);
             addTextElement(templateDocInfo, docFileExtensionTag,
                     getFileExtension(mimetype));
-            
+
             Element templateFileAuthorizedExtensions = templateDocInfo.addElement(docFileAuthorizedExtensionsTag);
             if (authorizedExtensions != null) {
                 for (String extension : authorizedExtensions) {
@@ -479,7 +477,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         List<String> extensions = mimetypeRegistry.getExtensionsFromMimetypeName(mimetype);
         return extensions;
     }
-    
+
     protected static Element addTextElement(Element parent,
             QName newElementName, String value) {
         Element element = parent.addElement(newElementName);

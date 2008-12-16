@@ -174,7 +174,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
      * Return the current list of document models
      *
      * @return the list
-     * @deprecated use {@link getCurrentPage} (see in interface) instead. will
+     * @deprecated use {@link #getCurrentPage} (see in interface) instead. will
      *             be removed in 5.2
      */
     @Deprecated

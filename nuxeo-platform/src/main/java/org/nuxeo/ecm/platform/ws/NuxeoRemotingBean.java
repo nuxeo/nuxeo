@@ -473,7 +473,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         //String downloadUrl = "/nxbigfile/default/1f4f31c4-9b07-4709-9563-7d60a96f63ed/file:content/preview.pdf";
         schemaName = getSchemaPrefix(schemaName);
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         //if (xPath.startsWith(schemaName + "/"))
         //    xPath = xPath.replace(schemaName + "/", "");
         sb.append("/nxbigfile/");
@@ -543,7 +543,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         }
     }
 
-    public Map<String, Object> createDataMap(String[] propertiesArray) {
+    private Map<String, Object> createDataMap(String[] propertiesArray) {
         Map<String, Object> map = new HashMap<String, Object>();
 
         for (int i = 0; i < propertiesArray.length; i += 2) {

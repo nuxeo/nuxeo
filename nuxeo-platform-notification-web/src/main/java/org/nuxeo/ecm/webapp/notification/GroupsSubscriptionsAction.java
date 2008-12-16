@@ -241,7 +241,7 @@ public class GroupsSubscriptionsAction extends InputController implements
             List<String> principals = new ArrayList<String>();
             for (String usr : userGroups) {
                 if (usr != null) {
-                    principals.add(usr.substring(usr.indexOf(":") + 1));
+                    principals.add(usr.substring(usr.indexOf(':') + 1));
                 }
             }
             result.put(notification.getLabel(), principals);

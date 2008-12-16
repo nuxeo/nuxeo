@@ -37,7 +37,7 @@ import org.nuxeo.ecm.core.search.threading.task.TaskFactory;
  * <p>
  * Control the amount of indexing threads that will run in a concurrent way.
  *
- * @see IndexingSingleDocumentTask
+ * @see org.nuxeo.ecm.core.search.threading.task.IndexingSingleDocumentTask
  * @see IndexingThreadImpl
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>

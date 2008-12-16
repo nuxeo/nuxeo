@@ -54,9 +54,9 @@ public final class ComponentTagUtils {
         boolean isValue = isValueReference(value);
         if (isValue) {
             if (value.contains("(")
-                    && value.indexOf("(") < value.indexOf(')')
+                    && value.indexOf('(') < value.indexOf(')')
                     // make sure it's not a function
-                    && (!value.contains(":") || value.indexOf(":") > value.indexOf("("))) {
+                    && (!value.contains(":") || value.indexOf(':') > value.indexOf('('))) {
                 return true;
             }
         }
