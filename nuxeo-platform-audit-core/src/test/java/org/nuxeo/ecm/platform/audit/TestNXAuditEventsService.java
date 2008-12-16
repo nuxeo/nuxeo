@@ -69,6 +69,7 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
 
     }
 
+    protected DocumentModel rootDocument;
     protected DocumentModel source;
     
     protected DocumentMessage message;
@@ -92,10 +93,12 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
 
         openRepository();
         CoreSession session = getCoreSession();
+        rootDocument = getCoreSession().getRootDocument();
+        
         DocumentModel model = session.createDocumentModel(
-                session.getRootDocument().getPathAsString(), "toto", "File");
+                rootDocument.getPathAsString(), "toto", "File");
         source = session.createDocument(model);
-
+        session.save();
         event = new CoreEventImpl("documentCreated", source, null, session.getPrincipal(),
                 null, null);
         message = DocumentMessageFactory.createDocumentMessage(source,
@@ -110,6 +113,8 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
     }
     
     public void testsyncLogCreation() throws AuditException, ClientException {
-        serviceUnderTest.syncLogCreationEntries(getRepository().getName(),getCoreSession().getRootDocument().getPathAsString(), true);
+        serviceUnderTest.syncLogCreationEntries(getRepository().getName(),rootDocument.getPathAsString(), true);
+        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(rootDocument.getId());
+        assertTrue(entries.size() >= 1);
     }
 }

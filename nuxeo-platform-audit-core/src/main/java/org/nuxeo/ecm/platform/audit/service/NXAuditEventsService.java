@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,7 +52,6 @@ import org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
-import org.nuxeo.ecm.platform.events.DocumentMessageFactory;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -205,12 +203,12 @@ public class NXAuditEventsService extends DefaultComponent implements
     }
 
     protected DocumentModel guardedDocument(CoreSession session,
-            DocumentMessage message)  {
+            DocumentMessage message) {
         return guardedDocument(session, message.getRef());
     }
 
     protected DocumentModel guardedDocument(CoreSession session,
-            DocumentRef reference)  {
+            DocumentRef reference) {
         if (session == null)
             return null;
         if (reference == null)
@@ -218,7 +216,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         try {
             return session.getDocument(reference);
         } catch (ClientException e) {
-           return null;
+            return null;
         }
     }
 
@@ -265,7 +263,6 @@ public class NXAuditEventsService extends DefaultComponent implements
         DocumentModel source = guardedDocument(session, message);
         NuxeoPrincipal principal = guardedPrincipal(session, message);
 
-        
         LogEntry entry = new LogEntry();
         entry.setEventId(message.getEventId());
         entry.setDocUUID(message.getId());
@@ -294,26 +291,29 @@ public class NXAuditEventsService extends DefaultComponent implements
     }
 
     protected LogEntry doCreateAndFillEntryFromDocument(CoreSession session,
-            DocumentModel model) throws AuditException {
-        DocumentMessage message = DocumentMessageFactory.createDocumentMessage(model);
-        return doCreateAndFillEntryFromMessage(session, message);
-    }
-
-    protected void doCommitTransaction(EntityTransaction et) {
-        if (et.isActive())
-            et.commit();
-    }
-
-    protected void doReleaseEntityManager(EntityManager em) {
-        if (em.isOpen() == false) {
-            throw new AuditRuntimeException(em
-                    + " entity manager already closed");
-        }
+            DocumentModel doc) throws AuditException {
+        LogEntry entry = new LogEntry();
+        entry.setDocPath(doc.getPathAsString());
+        entry.setDocType(doc.getType());
+        entry.setDocUUID(doc.getId());
+        entry.setPrincipalName("system");
+        entry.setCategory("eventDocumentCategory");
+        entry.setEventId("documentCreated");
+        entry.setDocLifeCycle("project");
+        Calendar creationDate;
         try {
-            doCommitTransaction(em.getTransaction());
-        } finally {
-            em.close();
+            creationDate = (Calendar) doc.getProperty("dublincore", "created");
+        } catch (ClientException e) {
+            throw new AuditRuntimeException(
+                    "Cannot fetch date from dublin core for " + doc);
         }
+        if (creationDate != null) {
+            entry.setEventDate(creationDate.getTime());
+        }
+
+        doPutExtendedInfos(entry, (DocumentMessage) null, doc, null);
+
+        return entry;
     }
 
     public void logMessage(CoreSession session, DocumentMessage message)
@@ -322,7 +322,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         try {
             logMessage(em, session, message);
         } finally {
-            doReleaseEntityManager(em);
+            persistenceProvider.releaseEntityManager(em);
         }
     }
 
@@ -340,7 +340,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         try {
             addLogEntries(em, entries);
         } finally {
-            doReleaseEntityManager(em);
+            persistenceProvider.releaseEntityManager(em);
         }
     }
 
@@ -353,7 +353,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         try {
             return getLogEntriesFor(em, uuid);
         } finally {
-            doReleaseEntityManager(em);
+            persistenceProvider.releaseEntityManager(em);
         }
     }
 
@@ -367,7 +367,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         try {
             return getLogEntriesFor(em, uuid, filterMap, doDefaultSort);
         } finally {
-            doReleaseEntityManager(em);
+            persistenceProvider.releaseEntityManager(em);
         }
     }
 
@@ -382,7 +382,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         try {
             return getLogEntryByID(em, id);
         } finally {
-            doReleaseEntityManager(em);
+            persistenceProvider.releaseEntityManager(em);
         }
     }
 
@@ -396,7 +396,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         try {
             return nativeQueryLogs(em, whereClause, pageNb, pageSize);
         } finally {
-            doReleaseEntityManager(em);
+            persistenceProvider.releaseEntityManager(em);
         }
     }
 
@@ -411,7 +411,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         try {
             return queryLogs(em, eventIds, dateRange);
         } finally {
-            doReleaseEntityManager(em);
+            persistenceProvider.releaseEntityManager(em);
         }
     }
 
@@ -429,7 +429,7 @@ public class NXAuditEventsService extends DefaultComponent implements
             return queryLogsByPage(em, eventIds, dateRange, category, path,
                     pageNb, pageSize);
         } finally {
-            doReleaseEntityManager(em);
+            persistenceProvider.releaseEntityManager(em);
         }
     }
 
@@ -448,7 +448,7 @@ public class NXAuditEventsService extends DefaultComponent implements
             return queryLogsByPage(em, eventIds, limit, category, path, pageNb,
                     pageSize);
         } finally {
-            doReleaseEntityManager(em);
+            persistenceProvider.releaseEntityManager(em);
         }
     }
 
@@ -470,28 +470,24 @@ public class NXAuditEventsService extends DefaultComponent implements
 
     public long syncLogCreationEntries(EntityManager em, String repoId,
             String path, Boolean recurs) throws AuditException {
-        try {
-            LogEntryProvider provider = LogEntryProvider.createProvider(em);
-            provider.removeEntries("documentCreated", path);
-            CoreSession session = guardedCoreSession(repoId);
-            DocumentRef rootRef = new PathRef(path);
-            DocumentModel root = guardedDocument(session, rootRef);
-            long nbAddedEntries = doSyncNode(provider, session, root, recurs);
 
-            log.debug("synched " + nbAddedEntries + " entries on " + path);
+        LogEntryProvider provider = LogEntryProvider.createProvider(em);
+  //      provider.removeEntries("documentCreated", path);
+        CoreSession session = guardedCoreSession(repoId);
+        DocumentRef rootRef = new PathRef(path);
+        DocumentModel root = guardedDocument(session, rootRef);
+        long nbAddedEntries = doSyncNode(provider, session, root, recurs);
 
-            return nbAddedEntries;
-        } finally {
-            persistenceProvider.releaseEntityManager(em);
-        }
+        log.debug("synched " + nbAddedEntries + " entries on " + path);
+
+        return nbAddedEntries;
     }
 
     protected long doSyncNode(LogEntryProvider provider, CoreSession session,
             DocumentModel node, boolean recurs) throws AuditException {
 
-        long nbSynchedEntries = 0;
+        long nbSynchedEntries = 1;
 
-        List<LogEntry> entries = new ArrayList<LogEntry>();
         List<DocumentModel> folderishChildren = new ArrayList<DocumentModel>();
 
         provider.addLogEntry(doCreateAndFillEntryFromDocument(session, node));
@@ -503,10 +499,9 @@ public class NXAuditEventsService extends DefaultComponent implements
             } else {
                 provider.addLogEntry(doCreateAndFillEntryFromDocument(session,
                         child));
+                nbSynchedEntries += 1;
             }
         }
-
-        nbSynchedEntries += entries.size();
 
         if (recurs) {
             for (DocumentModel folderChild : folderishChildren) {

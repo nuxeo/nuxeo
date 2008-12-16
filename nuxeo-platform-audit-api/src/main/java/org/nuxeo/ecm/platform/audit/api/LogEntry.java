@@ -277,7 +277,7 @@ public class LogEntry {
     }
 
     @Deprecated
-    public static LogEntry createEntryFromDocument(DocumentMessage message) {
+    public static LogEntry createEntryFromMessage(DocumentMessage message) {
         LogEntry entry = new LogEntry();
         entry.setEventId(message.getEventId());
         entry.setDocUUID(message.getId());
