@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.AbstractIndexableResource;
@@ -92,12 +91,8 @@ public class AuditIndexableResourceImpl extends AbstractIndexableResource
     }
 
     protected Logs getAuditLogsService() {
-        if (auditLogsService == null) {
-            try {
-                auditLogsService = AuditLogsServiceDelegate.getRemoteAuditLogsService();
-            } catch (AuditException e) {
-                throw new ClientRuntimeException("cannot proceed without service", e);
-            }
+        if (auditLogsService == null) {        
+                auditLogsService = AuditLogsServiceDelegate.getRemoteAuditLogsService();        
         }
         return auditLogsService;
     }

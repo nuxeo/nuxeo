@@ -3,7 +3,6 @@ package org.nuxeo.ecm.platform.audit;
 import javax.persistence.EntityManager;
 
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;

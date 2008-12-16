@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Stephane Lacoin (Nuxeo EP Software Engineer)
+ */
+
 package org.nuxeo.ecm.platform.audit.service;
 
 import java.util.Date;
@@ -62,6 +79,8 @@ public class LogEntryProvider  {
         }
     }
 
+    
+    @SuppressWarnings("unchecked")
     public List<LogEntry> getLogEntriesFor(String uuid) {
         log.debug("getLogEntriesFor() UUID=" + uuid);
         Query query = em.createNamedQuery("LogEntry.findByDocument");
@@ -70,6 +89,7 @@ public class LogEntryProvider  {
     }
    
 
+    @SuppressWarnings("unchecked")
     public List<LogEntry> getLogEntriesFor(String uuid,
             Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
         log.debug("getLogEntriesFor() UUID=" + uuid);
@@ -129,6 +149,7 @@ public class LogEntryProvider  {
         return doPublish(em.find(LogEntry.class, id));
     }
 
+    @SuppressWarnings("unchecked")
     public List<LogEntry> nativeQueryLogs(String whereClause, int pageNb,
             int pageSize) {
         Query query = em.createQuery("from LogEntry log where " + whereClause);
@@ -139,6 +160,7 @@ public class LogEntryProvider  {
         return doPublish(query.getResultList());
     }
 
+    @SuppressWarnings("unchecked")
     public List<LogEntry> queryLogs(String[] eventIds, String dateRange) {
         if (eventIds == null || eventIds.length == 0) {
             throw new IllegalArgumentException("You must give a not null eventId");
@@ -182,6 +204,7 @@ public class LogEntryProvider  {
                 pageSize);
     }
 
+    @SuppressWarnings("unchecked")
     public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit,
             String category, String path, int pageNb, int pageSize) {
         if (eventIds == null) {
@@ -230,6 +253,7 @@ public class LogEntryProvider  {
         return doPublish(query.getResultList());
     }
     
+    @SuppressWarnings("unchecked")
     public void removeEntries(String eventId, String pathPattern) {
         Query query = em.createNamedQuery("LogEntry.findByEventIdAndPath");
         query.setParameter("eventId", eventId);

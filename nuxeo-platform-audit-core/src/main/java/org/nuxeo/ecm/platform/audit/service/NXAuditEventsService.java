@@ -31,7 +31,6 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import javax.swing.event.DocumentEvent.EventType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
