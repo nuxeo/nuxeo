@@ -62,12 +62,11 @@ public class ShellExecutor extends AbstractExecutor implements Executor {
             return new ExecResult(e);
         }
 
-        int exitCode = 0;
         if (cmdDesc.getReadOutput()) {
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(
                     p1.getInputStream()));
-            String strLine;
             try {
+                String strLine;
                 while ((strLine = stdInput.readLine()) != null) {
                     output.add(strLine);
                 }
@@ -76,6 +75,7 @@ public class ShellExecutor extends AbstractExecutor implements Executor {
             }
         }
 
+        int exitCode = 0;
         try {
             exitCode = p1.waitFor();
         } catch (InterruptedException e) {

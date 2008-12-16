@@ -71,7 +71,7 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
             String msgId = helper.generateMessageId(widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(msgId,
                     widgetId, null);
-            FaceletHandler[] handlers = new FaceletHandler[] { input, message };
+            FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
             // default on text for other modes

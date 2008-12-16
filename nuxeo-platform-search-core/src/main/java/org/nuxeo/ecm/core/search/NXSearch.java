@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.search;
 
 import org.nuxeo.ecm.core.search.api.client.SearchService;
-import org.nuxeo.ecm.core.search.service.SearchServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -43,7 +42,7 @@ public final class NXSearch {
      * @return the search service
      */
     public static SearchService getSearchService() {
-        return (SearchService) Framework.getLocalService(SearchService.class);
+        return Framework.getLocalService(SearchService.class);
     }
 
 }

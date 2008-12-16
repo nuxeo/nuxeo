@@ -226,8 +226,7 @@ public class JOOoConvertPluginImpl extends AbstractPlugin implements
                 }
             } catch (ConnectException e) {
                 log.error("Could not connect to the remote OpenOffice server @"
-                        + getOOoHostURL() + ':'
-                        + String.valueOf(getOOoHostPort()));
+                        + getOOoHostURL() + ':' + getOOoHostPort());
             }
 
             if (connection != null && connection.isConnected()) {

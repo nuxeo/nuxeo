@@ -30,6 +30,9 @@ public final class BaseURL {
 
     private static final Log log = LogFactory.getLog(BaseURL.class);
 
+    private BaseURL() {
+    }
+
     static ServletRequest getRequest() {
         final FacesContext facesContext = FacesContext.getCurrentInstance();
         if (facesContext == null) {

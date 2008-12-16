@@ -83,7 +83,6 @@ public interface Session {
      *             creation of new entries
      * @throws DirectoryException if a communication exception occurs
      */
-
     DocumentModel createEntry(Map<String, Object> fieldMap)
             throws ClientException, DirectoryException;
 

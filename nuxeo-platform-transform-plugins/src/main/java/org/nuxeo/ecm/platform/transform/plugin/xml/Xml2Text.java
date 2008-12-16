@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.transform.plugin.xml;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

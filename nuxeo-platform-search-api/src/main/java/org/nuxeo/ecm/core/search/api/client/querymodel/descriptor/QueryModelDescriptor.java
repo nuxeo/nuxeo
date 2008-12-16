@@ -186,11 +186,11 @@ public class QueryModelDescriptor {
     }
 
     private static void appendQuotedStringList(StringBuilder queryBuilder,
-            List<? extends Object> listParam) {
+            List<?> listParam) {
         queryBuilder.append('(');
         List<String> quotedParam = new ArrayList<String>(listParam.size());
-        for (int j = 0; j < listParam.size(); j++) {
-            quotedParam.add(prepareStringLiteral(listParam.get(j).toString()));
+        for (Object param : listParam) {
+            quotedParam.add(prepareStringLiteral(param.toString()));
         }
         queryBuilder.append(StringUtils.join(quotedParam, ", "));
         queryBuilder.append(')');
@@ -219,7 +219,7 @@ public class QueryModelDescriptor {
                             Arrays.asList((String[]) params[i]));
                 } else if (params[i] instanceof List) {
                     appendQuotedStringList(queryBuilder,
-                            (List<? extends Object>) params[i]);
+                            (List<?>) params[i]);
                 } else if (params[i] instanceof Boolean) {
                     boolean b = (Boolean) params[i];
                     queryBuilder.append(b ? 1 : 0);

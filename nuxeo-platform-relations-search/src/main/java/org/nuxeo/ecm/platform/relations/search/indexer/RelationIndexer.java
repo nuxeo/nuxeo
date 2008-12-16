@@ -111,8 +111,7 @@ public class RelationIndexer {
         // Each possible relations for all possible
         // (rdf) Resource representation of incoming object
         List<IndexableResources> allIndexableResources = new LinkedList<IndexableResources>();
-        List<IndexableResource> iResources;
-        Set<Resource> allResources = null;
+        Set<Resource> allResources;
         try {
             allResources = relationManager.getAllResources(object);
         } catch (ClientException e) {
@@ -124,7 +123,7 @@ public class RelationIndexer {
                     try {
                         for (Statement statement : getStatements(
                                 conf.getName(), r)) {
-                            iResources = new LinkedList<IndexableResource>();
+                            List<IndexableResource> iResources = new LinkedList<IndexableResource>();
                             // iResources.add(getOpenAcp()); TODO
                             iResources.add(factory.createIndexableResourceFrom(
                                     statement, conf, coreSessionId));
@@ -148,7 +147,7 @@ public class RelationIndexer {
             throws ClientException {
         RelationManager relationManager = RelationSearchBusinessDelegate.getRelationManager();
 
-        HashSet<Statement> res = new HashSet<Statement>();
+        Set<Statement> res = new HashSet<Statement>();
         res.addAll(relationManager.getStatements(graphName, new StatementImpl(
                 r, null, null)));
         res.addAll(relationManager.getStatements(graphName, new StatementImpl(
@@ -198,4 +197,5 @@ public class RelationIndexer {
                     statement, null, iResources), iResources), false);
         }
     }
+
 }

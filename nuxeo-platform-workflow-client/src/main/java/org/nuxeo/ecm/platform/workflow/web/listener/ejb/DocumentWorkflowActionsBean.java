@@ -989,17 +989,14 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
 
     private String getRecipientsFromList(List<String> participants) {
         StringBuffer recipients = new StringBuffer();
-        UserManager userManager;
         try {
-            userManager = Framework.getService(UserManager.class);
+            UserManager userManager = Framework.getService(UserManager.class);
             if (participants != null && participants.size() > 0) {
                 for (String participantName : participants) {
-                    boolean isUser = false;
-                    isUser = userManager.getGroup(participantName) == null;
+                    boolean isUser = userManager.getGroup(participantName) == null;
                     participantName = (isUser ? "user:" : "group:")
                             + participantName;
-                    recipients.append(participantName + "|");
-
+                    recipients.append(participantName).append("|");
                 }
                 String recipient = null;
                 if (recipients.toString().trim().length() > 0) {
@@ -1013,4 +1010,5 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
         }
         return "";
     }
+
 }

@@ -27,11 +27,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
-import javax.ejb.EJBException;
 import javax.ejb.MessageDriven;
 import javax.ejb.SessionContext;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.jms.JMSException;
@@ -41,8 +38,6 @@ import javax.jms.ObjectMessage;
 import javax.mail.MessagingException;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import org.apache.commons.logging.Log;
@@ -73,7 +68,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Message Driven Bean listening for events, responsible for notifications.
- * <p/>
+ * <p>
  * It does:
  * <ul>
  * <li>(1) Get the message from the topic/NXCoreMessages</li>
@@ -124,8 +119,6 @@ public class NotificationMessageListener implements MessageListener {
 
     public void onMessage(Message message) {
         final UserTransaction transaction = sessionContext.getUserTransaction();
-
-        CoreSession session = null;
         DocumentMessage docMsg;
         String eventId;
 
@@ -257,16 +250,13 @@ public class NotificationMessageListener implements MessageListener {
                 log.error("Error during logout", le);
             }
         }
-
     }
 
     private DocumentModel getDocFromPath(CoreSession coreSession, String path, DocumentMessage doc) throws ClientException {
-        DocumentModel sectionDoc;
         if (path == null) {
             return null;
         }
-        sectionDoc = coreSession.getDocument(new PathRef(path));
-        return sectionDoc;
+        return coreSession.getDocument(new PathRef(path));
     }
 
     private List<String> getUsersForMultiRecipients(String recipient)
@@ -300,11 +290,6 @@ public class NotificationMessageListener implements MessageListener {
     /**
      * Adds the concerned users to the list of targeted users for these
      * notifications.
-     *
-     * @param doc
-     * @param notifs
-     * @param targetUsers
-     * @throws Exception
      */
     private void gatherConcernedUsersForDocument(CoreSession coreSession, DocumentModel doc,
             List<Notification> notifs,
@@ -319,9 +304,8 @@ public class NotificationMessageListener implements MessageListener {
 
     private DocumentModel getDocumentParent(CoreSession coreSession, DocumentModel doc)
             throws ClientException {
-        DocumentModel parentDoc = null;
         if (doc == null) {
-            return parentDoc;
+            return null;
         }
         return coreSession.getDocument(doc.getParentRef());
     }

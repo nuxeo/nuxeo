@@ -71,12 +71,9 @@ public class LoginPluginRegistry extends DefaultComponent {
     }
 
     private void registerCBFactory(CallbackFactoryDescriptor cbfExtension) {
-        CallbackFactory factory = null;
         try {
-            factory = (CallbackFactory) cbfExtension.getClassName().newInstance();
-            callbackFactory = factory;
-        }
-        catch (Exception e) {
+            callbackFactory = (CallbackFactory) cbfExtension.getClassName().newInstance();
+        } catch (Exception e) {
             log.error("Unable to create Factory", e);
         }
     }

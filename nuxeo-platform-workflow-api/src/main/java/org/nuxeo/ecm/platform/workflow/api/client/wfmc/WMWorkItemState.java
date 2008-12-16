@@ -68,12 +68,12 @@ public final class WMWorkItemState {
 
     public static final String WORKFLOW_TASK_STATE_REJECTED = "WORKFLOW_TASK_STATE_REJECTED";
 
-    private static final String[] WORKFLOW_TASK_STATE_ACTIVE = new String[] {
+    private static final String[] WORKFLOW_TASK_STATE_ACTIVE = {
             WORKFLOW_TASK_STATE_CREATED, WORKFLOW_TASK_STATE_ALL,
             WORKFLOW_TASK_STATE_SUSPENDED, WORKFLOW_TASK_STATE_REJECTED, };
 
-    private static final String[] WORKFLOW_TASK_STATE_NOT_ACTIVE = new String[] {
-        WORKFLOW_TASK_STATE_CLOSED, WORKFLOW_TASK_STATE_CANCELLED, };
+    private static final String[] WORKFLOW_TASK_STATE_NOT_ACTIVE = {
+            WORKFLOW_TASK_STATE_CLOSED, WORKFLOW_TASK_STATE_CANCELLED, };
 
     // This is an utility class.
     private WMWorkItemState() { }

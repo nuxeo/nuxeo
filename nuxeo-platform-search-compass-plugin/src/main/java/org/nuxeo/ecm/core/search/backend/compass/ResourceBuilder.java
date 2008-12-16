@@ -245,7 +245,7 @@ public class ResourceBuilder {
                             true, false);
                 } else {
 
-                    // :FIXME: Pluggable String Formatter, Have to fix QueryConverter issues before using it 
+                    // :FIXME: Pluggable String Formatter, Have to fix QueryConverter issues before using it
                     // String alias = resource.getAlias(); ResourceMapping
                     // resourceMapping =
                     // session.getMapping().getResourceMappingByAlias( alias);
@@ -266,10 +266,10 @@ public class ResourceBuilder {
                     // = converter.toString(value, propertyMapping);
 
                     final String sname = name + Util.SORTABLE_FIELD_SUFFIX;
-                    String sortValue;
                     if (sortOption != null) {
                         sortOption = sortOption.toLowerCase();
                     }
+                    String sortValue;
                     if ("case-insensitive".equals(sortOption)) {
                         sortValue = StringUtils.toAscii(sValue).toLowerCase();
                     } else {
@@ -320,10 +320,10 @@ public class ResourceBuilder {
             // Sortable configuration.
             if (sortable && sValue != null) {
                 final String sname = name + Util.SORTABLE_FIELD_SUFFIX;
-                String sortValue;
                 if (sortOption != null) {
                     sortOption = sortOption.toLowerCase();
                 }
+                String sortValue;
                 if ("case-insensitive".equals(sortOption)) {
                     sortValue = StringUtils.toAscii(sValue).toLowerCase();
                 } else {

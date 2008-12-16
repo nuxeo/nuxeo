@@ -127,7 +127,7 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
      * @throws ClientException if currentDocRef is not a valid document
      */
     @WebRemote
-    public String checkCurrentDocAndProcessSelectPage(String providerName, String listName,
+    String checkCurrentDocAndProcessSelectPage(String providerName, String listName,
             Boolean selection, String currentDocRef) throws ClientException;
 
     @WebRemote

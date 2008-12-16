@@ -101,14 +101,12 @@ public class CommentEventListenerBean implements MessageListener {
         }
 
         String repoName = doc.getRepositoryName();
-        Repository repo = null;
         CoreSession coreSession = null;
-        RelationManager relationManager = null;
-        CommentServiceConfig config = null;
 
         try {
             RepositoryManager mgr = Framework
                     .getService(RepositoryManager.class);
+            Repository repo;
             if (repoName != null) {
                 repo = mgr.getRepository(repoName);
             } else {
@@ -122,8 +120,8 @@ public class CommentEventListenerBean implements MessageListener {
 
             coreSession = repo.open();
 
-            config = CommentServiceHelper.getCommentService().getConfig();
-            relationManager = Framework.getService(RelationManager.class);
+            CommentServiceConfig config = CommentServiceHelper.getCommentService().getConfig();
+            RelationManager relationManager = Framework.getService(RelationManager.class);
 
             onDocumentRemoved(coreSession, relationManager, config, doc);
             onCommentRemoved(relationManager, config, doc);

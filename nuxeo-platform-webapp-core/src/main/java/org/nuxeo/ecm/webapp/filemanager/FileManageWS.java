@@ -118,27 +118,16 @@ public class FileManageWS extends InputController implements
 
     private static final String CURRENT_EDITED_DOCUMENT = "liveEditEditedDocument";
     private static final String CURRENT_EDITED_REPOSITORY_LOCATION = "liveEditEditedRepositoryLocation";
-
     private static final String DOC_URL = "doc_url";
-
     private static final String DOC_UUID = "doc_uuid";
-
     private static final String FIELD_NAME = "field_name";
-
     private static final String FILE_NAME = "file_name";
-
     private static final String META_TYPE = "meta_type";
-
     private static final String CONTENT_TYPE = "content_type";
-
     private static final String SERVER_VERSION = "ServerVersion";
-
     private static final String WS_ADRESS = "wsaddress";
-
     private static final String JSESSION_ID = "JSESSIONID";
-
     private static final String NEW_LINE = "\n";
-
     private static final String COOKIE = "Cookie";
 
     // XXX need to use accessors from navigationContext instead
@@ -150,7 +139,7 @@ public class FileManageWS extends InputController implements
     protected CoreSession documentManager;
 
     @In(required = false, create = true)
-    protected transient TypesTool typesTool;
+    protected TypesTool typesTool;
 
     @In(create = true, required=false)
     protected DocumentVersioning documentVersioning;

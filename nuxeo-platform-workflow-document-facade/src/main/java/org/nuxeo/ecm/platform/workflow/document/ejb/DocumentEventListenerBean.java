@@ -89,7 +89,7 @@ public class DocumentEventListenerBean implements MessageListener {
 
             // When a document is removed lets cleanup the references.
             if (eventId.equals(DocumentEventTypes.ABOUT_TO_REMOVE)
-                    || (eventId.equals(LIFECYCLE_TRANSITION_EVENT) && "deleted".equals(doc.getEventInfo().get(LIFECYCLE_OPTION_NAME_TO)))) {
+                    || eventId.equals(LIFECYCLE_TRANSITION_EVENT) && "deleted".equals(doc.getEventInfo().get(LIFECYCLE_OPTION_NAME_TO))) {
 
                 for (String pid : wDoc.getWorkflowInstanceIdsFor(docRef)) {
                     log.debug("Remove id=" + docRef + "and pid=" + pid

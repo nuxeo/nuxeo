@@ -1,21 +1,16 @@
 <?xml version="1.0"?>
-
 <fragment>
 
   <extension target="application#MODULE">
-
     <module>
       <ejb>${bundle.fileName}</ejb>
     </module>
-
   </extension>
 
   <extension target="web#LISTENER">
-
     <listener>
       <listener-class>org.jboss.seam.servlet.SeamListener</listener-class>
     </listener>
-
   </extension>
 
 
@@ -141,7 +136,7 @@
       <filter-name>Seam Context Filter</filter-name>
       <filter-class>org.jboss.seam.web.ContextFilter</filter-class>
     </filter>
-    
+
     <!-- simple cache filter configuration, filter is defined in web-common -->
 
     <filter-mapping>
@@ -266,10 +261,10 @@
     <!-- When a page is requested, what interval in seconds should the compiler
       check for changes. If you don't want the compiler to check for changes
       once the page is compiled, then use a value of -1.
-      
+
       Setting a low refresh period helps during development to be able to edit
       pages in a running application but slows down page rendering.
-      
+
       Default: 2 seconds.
     -->
     <context-param>

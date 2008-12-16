@@ -51,12 +51,11 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 /**
  * This is the action listener that knows to decide if an user has the right to
  * take the lock or release the lock of a document.
- *
- * Most of the logics of this bean should either be moved into a DocumentModel
- * adapter or directly into the core API
+ * <p>
+ * Most of the logic of this bean should either be moved into a DocumentModel
+ * adapter or directly into the core API.
  *
  * @author <a href="mailto:bt@nuxeo.com">Bogdan Tatar</a>
- *
  */
 @Name("lockActions")
 @Scope(ScopeType.EVENT)
@@ -179,17 +178,17 @@ public class LockActionsBean implements LockActions {
         return unlockDocument(navigationContext.getCurrentDocument());
     }
 
-
     // helper inner class to do the unrestricted unlock
     protected class unrestrictedUnlocker extends UnrestrictedSessionRunner {
 
         private DocumentRef docRefToUnlock;
 
-         public unrestrictedUnlocker(DocumentRef docRef) throws ClientException {
-             super(documentManager);
-             this.docRefToUnlock=docRef;
-         }
-         /*
+        public unrestrictedUnlocker(DocumentRef docRef) {
+            super(documentManager);
+            docRefToUnlock = docRef;
+        }
+
+        /*
          * Use an unrestricted session to unlock the document.
          */
         @Override

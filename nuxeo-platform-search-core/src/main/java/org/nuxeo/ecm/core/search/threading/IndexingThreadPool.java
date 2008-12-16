@@ -36,10 +36,10 @@ import org.nuxeo.ecm.core.search.threading.task.TaskFactory;
  * Indexing thread pool.
  * <p>
  * Control the amount of indexing threads that will run in a concurrent way.
- * 
+ *
  * @see IndexingSingleDocumentTask
  * @see IndexingThreadImpl
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public final class IndexingThreadPool {
@@ -107,8 +107,7 @@ public final class IndexingThreadPool {
         }
     }
 
-    public static void index(ResolvedResources resources)
-            throws IndexingException {
+    public static void index(ResolvedResources resources) {
         executeIndexingTask(TaskFactory.createIndexingTask(resources));
     }
 
@@ -161,7 +160,7 @@ public final class IndexingThreadPool {
         super.finalize();
     }
 
-    public static void reindexAll(DocumentModel dm) throws IndexingException {
+    public static void reindexAll(DocumentModel dm) {
         executeReindexingTask(TaskFactory.createReindexingAllTask(dm.getRef(),
                 dm.getRepositoryName()));
     }

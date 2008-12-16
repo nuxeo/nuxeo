@@ -9,11 +9,9 @@ import javax.servlet.http.HttpSession;
 import org.jboss.seam.Seam;
 import org.jboss.seam.contexts.ServletLifecycle;
 import org.jboss.seam.core.Manager;
-import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationSessionManager;
 import org.nuxeo.ecm.platform.ui.web.rest.FancyURLRequestWrapper;
 
-public class SeamJsfSessionManager extends DefaultSessionManager implements
-        NuxeoAuthenticationSessionManager {
+public class SeamJsfSessionManager extends DefaultSessionManager {
 
     @Override
     public boolean canBypassRequest(ServletRequest request) {

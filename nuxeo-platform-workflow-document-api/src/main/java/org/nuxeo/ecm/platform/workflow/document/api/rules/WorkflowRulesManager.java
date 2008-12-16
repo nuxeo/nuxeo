@@ -31,7 +31,7 @@ import org.nuxeo.runtime.model.ComponentName;
  */
 public interface WorkflowRulesManager extends Serializable {
 
-    static final ComponentName NAME = new ComponentName(
+    ComponentName NAME = new ComponentName(
                 "org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService");
 
     /**

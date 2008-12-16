@@ -31,8 +31,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.faces.application.FacesMessage;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -66,8 +64,6 @@ import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeNodeComparator;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.TypeService;
@@ -302,7 +298,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
             String sectionRootPath, String sectionNameType)
             throws ClientException {
 
-        Object[] params = new Object[] { sectionRootPath, sectionNameType };
+        Object[] params = { sectionRootPath, sectionNameType };
 
         PagedDocumentsProvider sectionsProvider = null;
         try {

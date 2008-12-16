@@ -490,7 +490,7 @@ public class MultiDirectorySession implements Session {
             }
             for (SubDirectoryInfo dirInfo : sourceInfo.optionalSubDirectoryInfos) {
                 final DocumentModelList entries = dirInfo.getSession().getEntries();
-                HashSet<String> existingIds = new HashSet<String>();
+                Set<String> existingIds = new HashSet<String>();
                 for (DocumentModel entry : entries) {
                     final String id = entry.getId();
                     final Map<String, Object> map = maps.get(id);

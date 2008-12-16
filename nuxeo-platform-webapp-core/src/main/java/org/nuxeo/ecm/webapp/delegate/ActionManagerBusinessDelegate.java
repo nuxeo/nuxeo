@@ -59,12 +59,9 @@ public class ActionManagerBusinessDelegate implements Serializable {
     /**
      * Acquires a new {@link ActionManager} reference. The related EJB may be
      * deployed on a local or remote AppServer.
-     *
-     * @return
-     * @throws ClientException
      */
     @Unwrap
-    public ActionManager getActionManager() throws ClientException {
+    public ActionManager getActionManager() {
         if (null == actionManager) {
 
             // Access directly the Runtime Service !!!

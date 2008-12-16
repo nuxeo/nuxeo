@@ -20,8 +20,6 @@
 
 package org.nuxeo.ecm.platform.commandline.executor.api;
 
-import java.io.Serializable;
-
 /**
  * Exception indicating that the target command is not available:
  * <ul>
@@ -32,7 +30,7 @@ import java.io.Serializable;
  *
  * @author tiry
  */
-public class CommandNotAvailable extends Exception implements Serializable {
+public class CommandNotAvailable extends Exception {
 
     private static final long serialVersionUID = 1L;
 

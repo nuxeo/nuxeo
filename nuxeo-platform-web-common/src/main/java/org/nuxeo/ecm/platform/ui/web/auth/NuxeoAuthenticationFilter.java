@@ -248,8 +248,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     }
 
     private boolean switchUser(ServletRequest request,
-            ServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
+            ServletResponse response, FilterChain chain) throws IOException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         String deputyLogin = (String) httpRequest.getAttribute(NXAuthConstants.SWITCH_USER_KEY);
@@ -322,7 +321,6 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
 
         String targetPageURL = null;
-        CachableUserIdentificationInfo cachableUserIdent = null;
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         Principal principal = httpRequest.getUserPrincipal();
@@ -332,6 +330,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             // need to authenticate !
 
             // retrieve user & password
+            CachableUserIdentificationInfo cachableUserIdent;
             if (avoidReauthenticate) {
                 log.debug("Try getting authentication from cache");
                 cachableUserIdent = retrieveIdentityFromCache(httpRequest);

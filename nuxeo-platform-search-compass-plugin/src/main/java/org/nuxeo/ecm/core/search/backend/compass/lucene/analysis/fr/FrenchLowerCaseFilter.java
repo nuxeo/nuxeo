@@ -51,6 +51,7 @@ import org.nuxeo.common.utils.StringUtils;
  *
  * @version $Id: LowerCaseFilter.java 150259 2004-03-29 22:48:07Z cutting $
  */
+@SuppressWarnings({"ALL"})
 public final class FrenchLowerCaseFilter extends TokenFilter {
 
     public FrenchLowerCaseFilter(TokenStream in) {

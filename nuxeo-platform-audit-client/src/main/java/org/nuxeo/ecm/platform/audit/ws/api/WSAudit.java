@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.audit.ws.api;
 
-import javax.jws.WebMethod;
 import javax.jws.WebParam;
 
 import org.nuxeo.ecm.platform.api.ws.BaseNuxeoWebService;
@@ -33,7 +32,6 @@ import org.nuxeo.ecm.platform.audit.ws.ModifiedDocumentDescriptorPage;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public interface WSAudit extends BaseNuxeoWebService {
 

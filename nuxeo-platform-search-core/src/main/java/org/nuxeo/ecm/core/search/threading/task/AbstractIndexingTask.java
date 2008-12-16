@@ -109,8 +109,7 @@ abstract class AbstractIndexingTask implements Task {
         }
     }
 
-    protected static IndexableResources computeResourcesFor(DocumentModel dm)
-            throws IndexingException {
+    protected static IndexableResources computeResourcesFor(DocumentModel dm) {
         return IndexableResourcesFactory.computeResourcesFor(dm);
     }
 

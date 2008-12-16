@@ -58,12 +58,10 @@ public class SimpleRestletWithSeam extends Restlet implements Serializable {
         String repo = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");
 
-        DocumentModel dm = null;
-
         try {
             navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
             documentManager = navigationContext.getOrCreateDocumentManager();
-            dm = documentManager.getDocument(new IdRef(docid));
+            DocumentModel dm = documentManager.getDocument(new IdRef(docid));
             String title = (String) dm.getProperty("dublincore", "title");
             res.setEntity("doc =>" + title, MediaType.TEXT_PLAIN);
         } catch (ClientException e) {

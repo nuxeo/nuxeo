@@ -44,6 +44,7 @@ package org.nuxeo.ecm.core.search.backend.compass.lucene.analysis.fr;
  * @author    Patrick Talbot
  */
 
+@SuppressWarnings({"ALL"})
 public class FrenchStemmer {
 
     /**

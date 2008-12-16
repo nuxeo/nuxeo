@@ -25,8 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.NamingException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.graph.exe.ExecutionContext;
@@ -57,7 +55,6 @@ import org.nuxeo.ecm.platform.workflow.document.api.relation.WorkflowDocumentRel
 import org.nuxeo.ecm.platform.workflow.document.api.security.WorkflowDocumentSecurityManager;
 import org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicy;
 import org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicyManager;
-import org.nuxeo.ecm.platform.workflow.jbpm.handlers.api.client.AbstractWorkflowDocumentActionHandler;
 import org.nuxeo.ecm.platform.workflow.jbpm.util.IDConverter;
 
 /**
@@ -65,7 +62,7 @@ import org.nuxeo.ecm.platform.workflow.jbpm.util.IDConverter;
  * <p>
  * Defines an API to interact with NXWorkflow and NXWorkflowDocument from jBPM
  * handlers.
- *
+ * <p>
  * Expected to be used and extended to define custom business rules around
  * process dealing with documents.
  * <p>

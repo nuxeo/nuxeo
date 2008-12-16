@@ -54,6 +54,7 @@ public class HtmlParser extends AbstractSAXParser {
         }
     }
 
+    @Override
     public void startDocument(XMLLocator arg0, String arg1,
             NamespaceContext arg2, Augmentations arg3) throws XNIException {
 
@@ -62,6 +63,7 @@ public class HtmlParser extends AbstractSAXParser {
         buffer = new StringBuffer();
     }
 
+    @Override
     public void characters(XMLString xmlString, Augmentations augmentations)
             throws XNIException {
 
@@ -71,7 +73,6 @@ public class HtmlParser extends AbstractSAXParser {
     }
 
     private String filterAndJoin(String text) {
-
         boolean space = false;
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < text.length(); i++) {
@@ -107,9 +108,7 @@ public class HtmlParser extends AbstractSAXParser {
      * @return String Parsed content
      */
     public String getContents() {
-
-        String text = filterAndJoin(buffer.toString());
-        return text;
+        return filterAndJoin(buffer.toString());
     }
 
 }

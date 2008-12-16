@@ -172,8 +172,7 @@ public class PopupHelper implements Serializable {
     }
 
     @WebRemote
-    public String getNavigationURLOnContainer(String tabId)
-            throws ClientException {
+    public String getNavigationURLOnContainer(String tabId) {
         Map<String, String> params = new HashMap<String, String>();
 
         if (tabId != null) {
@@ -185,8 +184,7 @@ public class PopupHelper implements Serializable {
     }
 
     @WebRemote
-    public String getNavigationURLOnPopupdoc(String tabId)
-            throws ClientException {
+    public String getNavigationURLOnPopupdoc(String tabId) {
         Map<String, String> params = new HashMap<String, String>();
 
         if (tabId != null) {
@@ -198,7 +196,7 @@ public class PopupHelper implements Serializable {
     }
 
     @WebRemote
-    public String getCurrentURL() throws ClientException {
+    public String getCurrentURL() {
         Map<String, String> params = new HashMap<String, String>();
 
         String tabId = webActions.getCurrentTabId();

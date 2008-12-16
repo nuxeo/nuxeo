@@ -58,9 +58,6 @@ public class DocumentVersioningBusinessDelegate implements Serializable {
     /**
      * Acquires a new {@link VersioningManager} reference. The related EJB may
      * be deployed on a local or remote AppServer.
-     *
-     * @return
-     * @throws ClientException
      */
     @Unwrap
     public VersioningManager getVersioningManager() throws ClientException {
@@ -83,7 +80,7 @@ public class DocumentVersioningBusinessDelegate implements Serializable {
 
     @Destroy
     @PermitAll
-    public void destroy() throws ClientException {
+    public void destroy() {
         log.debug("Destroyed the seam component...");
     }
 

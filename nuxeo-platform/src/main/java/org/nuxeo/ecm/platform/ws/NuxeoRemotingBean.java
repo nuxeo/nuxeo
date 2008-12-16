@@ -20,13 +20,11 @@
 package org.nuxeo.ecm.platform.ws;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ejb.Local;
 import javax.ejb.Remote;
@@ -52,8 +50,6 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.core.api.model.DocumentPart;
-import org.nuxeo.ecm.core.api.model.ValueExporter;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -107,30 +103,27 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
     }
 
     @WebMethod
-    public DocumentSnapshot getDocumentSnapshot(String sid, String uuid) throws ClientException
-    {
+    public DocumentSnapshot getDocumentSnapshot(String sid, String uuid) throws ClientException {
         return getDocumentSnapshotExt(sid, uuid, false);
     }
 
-    public DocumentSnapshot getDocumentSnapshotExt(String sid, String uuid, boolean useDownloadUrl) throws ClientException
-    {
+    public DocumentSnapshot getDocumentSnapshotExt(String sid, String uuid, boolean useDownloadUrl) throws ClientException {
         WSRemotingSession rs = initSession(sid);
         DocumentModel doc = rs.getDocumentManager().getDocument(new IdRef(uuid));
 
         DocumentProperty[] props = getDocumentNoBlobProperties(doc, rs);
         DocumentBlob[] blobs = getDocumentBlobs(doc, rs, useDownloadUrl);
 
-        ACE[] resACP=null;
+        ACE[] resACP = null;
 
         ACP acp = doc.getACP();
         if (acp != null) {
             ACL acl = acp.getMergedACLs("MergedACL");
-            resACP= acl.toArray(new ACE[acl.size()]);
+            resACP = acl.toArray(new ACE[acl.size()]);
         }
-        DocumentSnapshot ds = new DocumentSnapshot(props,blobs,doc.getPathAsString(),resACP);
+        DocumentSnapshot ds = new DocumentSnapshot(props, blobs, doc.getPathAsString(), resACP);
         return ds;
     }
-
 
     @WebMethod
     public ACE[] getDocumentLocalACL(String sid, String uuid) throws ClientException {
@@ -175,21 +168,19 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return getDocumentBlobs(doc, rs, useDownloadUrl);
     }
 
-    protected DocumentBlob[] getDocumentBlobs(DocumentModel doc,  WSRemotingSession rs, boolean useDownloadUrl) throws ClientException
-    {
+    protected DocumentBlob[] getDocumentBlobs(DocumentModel doc, WSRemotingSession rs, boolean useDownloadUrl) throws ClientException {
         List<DocumentBlob> blobs = new ArrayList<DocumentBlob>();
         String[] schemas = doc.getDeclaredSchemas();
         for (String schema : schemas) {
             DataModel dm = doc.getDataModel(schema);
             Map<String, Object> map = dm.getMap();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
-                collectBlobs(doc.getId(),schema, rs, "", map, entry.getKey(), entry.getValue(),
+                collectBlobs(doc.getId(), schema, rs, "", map, entry.getKey(), entry.getValue(),
                         blobs, useDownloadUrl);
             }
         }
         return blobs.toArray(new DocumentBlob[blobs.size()]);
     }
-
 
     @WebMethod
     public String[] listUsers(String sid, int from, int to)
@@ -473,15 +464,12 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         }
     }
 
-
-    protected String getSchemaPrefix(String schemaName)
-    {
+    protected String getSchemaPrefix(String schemaName) {
         // XXX : no API to get the prefix from the schemaName !
         return schemaName;
     }
 
-    protected String getDownloadUrl(String repoName, String docId, String schemaName, String xPath, String fileName)
-    {
+    protected String getDownloadUrl(String repoName, String docId, String schemaName, String xPath, String fileName) {
         //String downloadUrl = "/nxbigfile/default/1f4f31c4-9b07-4709-9563-7d60a96f63ed/file:content/preview.pdf";
         schemaName = getSchemaPrefix(schemaName);
 

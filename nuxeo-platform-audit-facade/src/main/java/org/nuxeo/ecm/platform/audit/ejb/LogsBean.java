@@ -239,22 +239,19 @@ public class LogsBean implements Logs {
 
         List<LogEntry> results = new ArrayList<LogEntry>();
 
-        String inClause = null;
-
         StringBuffer queryString = new StringBuffer();
 
         queryString.append("from " + klass.getSimpleName() + " log where ");
 
-        Query query = null;
         if (eventIds != null) {
-            inClause = "(";
+            String inClause = "(";
             for (String eventId : eventIds) {
                 inClause += "'" + eventId + "',";
             }
             inClause = inClause.substring(0, inClause.length() - 1);
             inClause += ")";
 
-            queryString.append(" log.eventId IN " + inClause);
+            queryString.append(" log.eventId IN ").append(inClause);
             queryString.append(" AND ");
         }
         if (category != null && !"".equals(category.trim())) {
@@ -263,14 +260,14 @@ public class LogsBean implements Logs {
         }
 
         if (path != null && !"".equals(path.trim())) {
-            queryString.append(" log.docPath LIKE '" + path + "%'");
+            queryString.append(" log.docPath LIKE '").append(path).append("%'");
             queryString.append(" AND ");
         }
 
         queryString.append(" log.eventDate >= :limit");
         queryString.append(" ORDER BY log.eventDate DESC");
 
-        query = em.createQuery(queryString.toString());
+        Query query = em.createQuery(queryString.toString());
 
         if (category != null) {
             query.setParameter("category", category);
@@ -321,7 +318,7 @@ public class LogsBean implements Logs {
 
         List<LogEntry> results = new ArrayList<LogEntry>();
 
-        Date limit = null;
+        Date limit;
         try {
             limit = DateRangeParser.parseDateRangeQuery(new Date(), dateRange);
         } catch (AuditQueryException aqe) {
@@ -377,7 +374,6 @@ public class LogsBean implements Logs {
         // XXX : TODO
         removeOldEntriesBeforeSync("documentCreated", path);
         // now fetch from the core
-        CoreSession session;
         RepositoryManager rm;
         try {
             rm = Framework.getService(RepositoryManager.class);
@@ -390,6 +386,7 @@ public class LogsBean implements Logs {
             throw new AuditException("Can not find repository");
         }
 
+        CoreSession session;
         try {
             session = repo.open();
         } catch (Exception e1) {

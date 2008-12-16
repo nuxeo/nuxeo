@@ -64,8 +64,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
 
     protected static Map<String, Executor> executors = new HashMap<String, Executor>();
 
-    private static final Log log = LogFactory
-            .getLog(CommandLineExecutorComponent.class);
+    private static final Log log = LogFactory.getLog(CommandLineExecutorComponent.class);
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -84,6 +83,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
         executors = null;
     }
 
+    @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
@@ -93,7 +93,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
         } else if (EP_CMD.equals(extensionPoint)) {
             CommandLineDescriptor desc = (CommandLineDescriptor) contribution;
 
-            log.debug("Registring command " + desc.getName());
+            log.debug("Registering command " + desc.getName());
 
             if (!desc.isEnabled()) {
                 commandDescriptors.remove(desc.getName());
@@ -133,9 +133,9 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
                     .newInstance();
             testers.put(desc.getName(), tester);
         }
-
     }
 
+    @Override
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {

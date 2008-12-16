@@ -780,7 +780,7 @@ public class DeleteActionsBean extends InputController implements
         PagedDocumentsProvider provider = null;
 
         if (BOARD_USER_DELETED.equals(name)) {
-            Object[] params = new Object[] { currentUser.getName() };
+            Object[] params = { currentUser.getName() };
             try {
                 provider = getQmDocuments(name, params, sortInfo);
             } catch (Exception e) {
@@ -823,21 +823,13 @@ public class DeleteActionsBean extends InputController implements
 
     /**
      * Usable with a queryModel that defines a pattern NXQL.
-     *
-     * @param queryModelName
-     * @param parent
-     * @param sortInfo
-     * @return
-     * @throws ClientException
      */
     private PagedDocumentsProvider getChildrenResultsProviderQMPattern(
             String queryModelName, DocumentModel parent, SortInfo sortInfo)
             throws ClientException {
 
         final String parentId = parent.getId();
-
-        Object[] params = new Object[] { parentId };
-
+        Object[] params = { parentId };
         return getResultsProvider(queryModelName, params, sortInfo);
     }
 

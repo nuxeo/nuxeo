@@ -120,11 +120,9 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
 
             documentManager.saveDocument(dm);
             documentManager.save();
-
         } catch (Exception e) {
             handleError(res, e);
         }
-
     }
 
 }

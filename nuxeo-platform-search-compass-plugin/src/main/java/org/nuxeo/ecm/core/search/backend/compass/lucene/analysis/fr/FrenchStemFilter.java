@@ -50,6 +50,7 @@ import java.util.Set;
  *
  * @author    Patrick Talbot (based on Gerhard Schwarz work for German)
  */
+@SuppressWarnings({"ALL"})
 public final class FrenchStemFilter extends TokenFilter {
 
     /**

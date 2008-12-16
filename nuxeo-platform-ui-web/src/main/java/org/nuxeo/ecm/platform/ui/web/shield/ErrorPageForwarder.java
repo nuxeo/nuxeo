@@ -26,7 +26,6 @@ import java.util.Map;
 import javax.faces.component.UIViewRoot;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -45,7 +44,7 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 
 /**
  * @author arussel
- * 
+ *
  */
 public class ErrorPageForwarder {
     private static Log nuxeoErrorLog = LogFactory.getLog("nuxeo-error-log");
@@ -72,8 +71,7 @@ public class ErrorPageForwarder {
         this.servletContext = servletContext;
         // cut/paste from seam Exception filter.
         // we recreate the seam context to be able to use the messages.
-        MockFacesContext facesContext = createFacesContext(
-                (HttpServletRequest) request, (HttpServletResponse) response);
+        MockFacesContext facesContext = createFacesContext(request, response);
         facesContext.setCurrent();
 
         // if the event context was cleaned up, fish the conversation id

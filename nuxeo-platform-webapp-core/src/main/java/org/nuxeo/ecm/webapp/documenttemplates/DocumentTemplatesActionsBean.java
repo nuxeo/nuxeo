@@ -96,9 +96,9 @@ public class DocumentTemplatesActionsBean extends InputController implements
 
     @Factory(value = "availableTemplates", scope = EVENT)
     public DocumentModelList templatesListFactory() {
-        if ((templates == null)
-                || (templates.isEmpty())
-                || ((targetTypeUsedFromTemplates != null) && (!targetTypeUsedFromTemplates.equals(targetType)))) {
+        if (templates == null
+                || templates.isEmpty()
+                || targetTypeUsedFromTemplates != null && !targetTypeUsedFromTemplates.equals(targetType)) {
             try {
                 templates = getTemplates();
             } catch (ClientException e) {
@@ -115,7 +115,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
             log.error("Unable to access documentManager");
             return null;
         }
-        if ((templates == null) || (templates.isEmpty())) {
+        if (templates == null || templates.isEmpty()) {
             DocumentModelList tl = documentManager.getChildren(
                     navigationContext.getCurrentDomain().getRef(), TemplateRoot);
             if (tl.isEmpty()) {
@@ -130,7 +130,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
     }
 
     public DocumentModelList getTemplates() throws ClientException {
-        if ((targetType == null) || targetType.equals("")) {
+        if (targetType == null || targetType.equals("")) {
             targetType = typesTool.getSelectedType().getId();
         }
         return getTemplates(targetType);
@@ -195,7 +195,8 @@ public class DocumentTemplatesActionsBean extends InputController implements
 
             logDocumentWithTitle("Created the document: ", created);
             facesMessages.add(FacesMessage.SEVERITY_INFO,
-                    resourcesAccessor.getMessages().get("document_saved"), resourcesAccessor.getMessages().get(created.getType()));
+                    resourcesAccessor.getMessages().get("document_saved"),
+                    resourcesAccessor.getMessages().get(created.getType()));
             return navigationContext.navigateToDocument(created, "after-create");
         } catch (Throwable t) {
             throw ClientException.wrap(t);
@@ -226,8 +227,8 @@ public class DocumentTemplatesActionsBean extends InputController implements
     @BypassInterceptors
     public void documentChildrenChanged(DocumentModel targetDoc) {
         // refresh if a child was added to template root
-        if ((targetDoc != null) && targetDoc.getType().equals(TemplateRoot)
-                && (templates != null)) {
+        if (targetDoc != null && targetDoc.getType().equals(TemplateRoot)
+                && templates != null) {
             templates.clear();
         }
     }

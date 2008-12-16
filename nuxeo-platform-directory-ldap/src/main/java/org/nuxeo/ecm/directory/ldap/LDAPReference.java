@@ -461,7 +461,7 @@ public class LDAPReference extends AbstractReference {
 
             String filterExpr = String.format("(&(%s={0})%s)",
                     staticAttributeId, sourceDirectory.getBaseFilter());
-            String[] filterArgs = new String[] { targetDn };
+            String[] filterArgs = { targetDn };
 
             String searchBaseDn = sourceDirectory.getConfig().getSearchBaseDn();
             LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
@@ -654,7 +654,7 @@ public class LDAPReference extends AbstractReference {
             }
             if (staticAttribute != null) {
                 NamingEnumeration<?> targetDns = staticAttribute.getAll();
-                String[] attributeIdsToCollect = new String[] { targetSession.idAttribute };
+                String[] attributeIdsToCollect = { targetSession.idAttribute };
 
                 while (targetDns.hasMore()) {
                     String targetDn = targetDns.next().toString();

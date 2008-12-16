@@ -31,11 +31,11 @@ import org.nuxeo.runtime.model.ComponentName;
  */
 public interface WorkflowDocumentSecurityPolicyManager extends Serializable {
 
-    static final ComponentName NAME = new ComponentName(
+    ComponentName NAME = new ComponentName(
                 "org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService");
 
     /**
-     * Returns the workflow document security policy given it's name.
+     * Returns the workflow document security policy given its name.
      *
      * @param name the name of the workflow document rights policy
      * @return the corresponding WorkflowDocumentSecurityPolicy instance or null

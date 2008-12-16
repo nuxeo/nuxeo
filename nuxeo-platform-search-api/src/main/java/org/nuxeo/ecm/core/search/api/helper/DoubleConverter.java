@@ -5,18 +5,19 @@ import java.text.DecimalFormat;
 public class DoubleConverter {
 
     private static final char NEGATIVE_PREFIX = '-';
-
     private static final char POSITIVE_PREFIX = '0';
 
     private static final Double MAX_ALLOWED = 99999999999999.00;
-
     private static final Double MIN_ALLOWED = -100000000000000.00;
 
     private static final String FORMAT = "000000000000000.00";
 
+    private DoubleConverter() {
+    }
+
     public static String format(Object value) {
         Double i = (Double) value;
-        if ((i < MIN_ALLOWED) || (i > MAX_ALLOWED)) {
+        if (i < MIN_ALLOWED || i > MAX_ALLOWED) {
             throw new IllegalArgumentException("out of allowed range");
         }
         char prefix;
@@ -29,4 +30,5 @@ public class DoubleConverter {
         DecimalFormat fmt = new DecimalFormat(FORMAT);
         return prefix + fmt.format(i);
     }
+
 }

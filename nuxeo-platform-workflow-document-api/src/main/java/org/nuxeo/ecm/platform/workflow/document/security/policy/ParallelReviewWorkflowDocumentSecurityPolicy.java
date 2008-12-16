@@ -179,6 +179,7 @@ public class ParallelReviewWorkflowDocumentSecurityPolicy extends
         return hasAction;
     }
 
+    @Override
     public boolean selectThisItem(WMWorkItemInstance item) {
         return true;
     }
@@ -226,6 +227,5 @@ public class ParallelReviewWorkflowDocumentSecurityPolicy extends
             throws WMWorkflowException {
         return false;
     }
-
 
 }

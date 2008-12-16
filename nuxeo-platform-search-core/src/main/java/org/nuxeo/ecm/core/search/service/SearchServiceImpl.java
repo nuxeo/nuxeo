@@ -1081,11 +1081,10 @@ public class SearchServiceImpl extends DefaultComponent implements
     public void reindexAll(String repoName, String path, boolean fulltext)
             throws IndexingException {
 
-        DocumentModel dm = null;
-
         try {
             CoreSession core = getCoreSession(repoName);
 
+            DocumentModel dm;
             if (path == null || path.length() == 0) {
                 dm = core.getRootDocument();
             } else {

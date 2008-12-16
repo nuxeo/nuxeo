@@ -97,7 +97,7 @@ public abstract class DirectoryAwareComponent extends UIInput {
         ValueExpression ve = getValueExpression(name);
         if (ve != null) {
             try {
-                return (!Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext())));
+                return !Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext()));
             } catch (ELException e) {
                 throw new FacesException(e);
             }

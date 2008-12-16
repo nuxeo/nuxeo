@@ -262,13 +262,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (document == null) {
             return false;
         }
-        CoreSession session;
+
+        CoreSession session = (CoreSession) Component.getInstance("documentManager", ScopeType.CONVERSATION);
+
         boolean sessionOpened = false;
-
-        session = (CoreSession) Component.getInstance("documentManager", ScopeType.CONVERSATION);
-
         if (session == null) {
-
             String sid = document.getSessionId();
             if (sid != null) {
                 session = CoreInstance.getInstance().getSession(sid);
@@ -290,7 +288,6 @@ public final class DocumentModelFunctions implements LiveEditConstants {
                         + document.getTitle() + " with sid=" + sid);
                 return false;
             }
-
         }
 
         boolean granted = session.hasPermission(document.getRef(), permission);

@@ -251,7 +251,7 @@ public class LDAPSession implements Session, EntrySource {
             filterExpr = String.format("(&(%s={0})(%s))", idAttribute,
                     directory.getBaseFilter());
         }
-        String[] filterArgs = new String[] { id };
+        String[] filterArgs = { id };
         SearchControls scts = directory.getSearchControls(fetchAllAttributes);
 
         if (log.isDebugEnabled()) {
@@ -711,10 +711,9 @@ public class LDAPSession implements Session, EntrySource {
             NamingEnumeration<SearchResult> results, boolean fetchReferences)
             throws DirectoryException, NamingException {
         DocumentModelList list = new DocumentModelListImpl();
-        DocumentModel entry;
         while (results.hasMore()) {
             SearchResult result = results.next();
-            entry = ldapResultToDocumentModel(result, null, fetchReferences);
+            DocumentModel entry = ldapResultToDocumentModel(result, null, fetchReferences);
             if (entry != null) {
                 list.add(entry);
             }

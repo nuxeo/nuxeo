@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.listener.AbstractEventListener;
-import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.types.Type;
@@ -39,10 +38,10 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Listener responsible for computing the mimetype of a new or edited blob and
  * the common:icon field if necessary.
- *
+ * <p>
  * The common:size is also maintained as the length of the main blob to
- * preserver backward compatibility
- *
+ * preserve backward compatibility.
+ * <p>
  * The logics of this event listener is divided into static public methods to
  * make it easy to override this event listener with a custom implementation.
  *
@@ -95,7 +94,7 @@ public class MimetypeIconUpdater extends AbstractEventListener {
 
     /**
      * Recursively call updateBlobProperty on every dirty blob embedded as
-     * direct children or contained in one of the container children
+     * direct children or contained in one of the container children.
      */
     public static void recursivelyUpdateBlobs(DocumentModel doc,
             MimetypeRegistry mimetypeService, Iterator<Property> dirtyChildren)

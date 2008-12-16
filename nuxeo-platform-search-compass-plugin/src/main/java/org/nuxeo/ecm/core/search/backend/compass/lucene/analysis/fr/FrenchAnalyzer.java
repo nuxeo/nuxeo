@@ -58,6 +58,7 @@ import org.apache.lucene.analysis.WordlistLoader;
  * @author Patrick Talbot (based on Gerhard Schwarz's work for German)
  * @version $Id: FrenchAnalyzer.java 178832 2005-05-28 02:00:49 +0300 (Sat, 28 May 2005) dnaber $
  */
+@SuppressWarnings({"ALL"})
 public final class FrenchAnalyzer extends Analyzer {
 
   /**

@@ -256,13 +256,13 @@ public class PublishingActionsListenerBean extends InputController implements
         // Compute parent before deleting the document.
         DocumentModel currentDocument = getCurrentDocument();
         DocumentModel parent;
-        WMParticipant creator;
         try {
             parent = documentManager.getDocument(currentDocument.getParentRef());
         } catch (ClientException ce) {
             throw new PublishingException(ce);
         }
 
+        WMParticipant creator;
         try {
             PublishingTasks tasks = new PublishingTasks(
                     navigationContext.getCurrentDocument(), currentUser);
