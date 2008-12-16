@@ -8,7 +8,7 @@ NXThemesWebWidgets.addWidget = function(info) {
     var order = info.order;
     var url = nxthemesBasePath + "/nxthemes-webwidgets/add_widget";
     new Ajax.Request(url, {
-         method: 'get',
+         method: 'post',
          parameters: {
              'provider': provider,
              'widget_name': widgetName,
@@ -32,7 +32,7 @@ NXThemesWebWidgets.moveWidget = function(info) {
     
     var url = nxthemesBasePath + "/nxthemes-webwidgets/move_widget";
     new Ajax.Request(url, {
-         method: 'get',
+         method: 'post',
          parameters: {
              'src_provider': srcProvider,
              'dest_provider': destProvider,
@@ -60,7 +60,7 @@ NXThemesWebWidgets.deleteWidget = function(widgetUid) {
       var provider = widgetEl.up('.nxthemesWebWidgetContainer').getAttribute('provider');
       var url = nxthemesBasePath + "/nxthemes-webwidgets/remove_widget";
       new Ajax.Request(url, {
-         method: 'get',
+         method: 'post',
          parameters: {
              'provider': provider,
              'widget_uid': widgetUid
@@ -78,7 +78,7 @@ NXThemesWebWidgets.setWidgetState = function(widgetUid, mode, state) {
     var widget = NXThemesWebWidgets.getWidgetById(widgetUid);
     var url = nxthemesBasePath + "/nxthemes-webwidgets/set_widget_state";
     new Ajax.Request(url, {
-         method: 'get',
+         method: 'post',
          parameters: {
              'provider': provider,
              'widget_uid': widgetUid,
@@ -102,7 +102,7 @@ NXThemesWebWidgets.setWidgetCategory = function(select) {
     }
     var url = nxthemesBasePath + "/nxthemes-webwidgets/set_widget_category";
     new Ajax.Request(url, {
-         method: 'get',
+         method: 'post',
          parameters: {
              'category': category
          },
@@ -416,7 +416,7 @@ NXThemesWebWidgets.changePreferences = function(info) {
 
   var url = nxthemesBasePath + "/nxthemes-webwidgets/update_widget_preferences";
   new Ajax.Request(url, {
-         method: 'get',
+         method: 'post',
          parameters: {
              'provider': providerName,
              'widget_uid': widgetUid,

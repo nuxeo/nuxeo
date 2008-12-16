@@ -8,6 +8,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 import net.sf.json.JSONObject
 import org.nuxeo.ecm.core.rest.*
+import org.nuxeo.ecm.webengine.forms.*
 import org.nuxeo.ecm.webengine.model.*
 import org.nuxeo.ecm.webengine.model.impl.*
 import org.nuxeo.ecm.webengine.model.exceptions.*
@@ -46,59 +47,84 @@ public class Main extends DefaultModule {
               "selected_category", getSelectedWidgetCategory())
      }
     
-    @GET @POST
+    @GET
     @Path("get_panel_data")
     public String getPanelData(@QueryParam("provider") String providerName, @QueryParam("region") String regionName, @QueryParam("mode") String mode) {
        return org.nuxeo.theme.webwidgets.Manager.getPanelData(providerName, regionName, mode)
     }
     
-    @GET @POST
+    @POST
     @Path("add_widget")
-    public void addWidget(@QueryParam("provider") String providerName, @QueryParam("widget_name") String widgetName, @QueryParam("region") String regionName, @QueryParam("order") int order) {
+    public void addWidget() {
+        FormData form = ctx.getForm()
+        String providerName = form.getString("provider")
+        String widgetName = form.getString("widget_name")
+        String regionName = form.getString("region")
+        int order = form.getString("order") as Integer
         org.nuxeo.theme.webwidgets.Manager.addWidget(providerName, widgetName, regionName, order)
     }
     
-    @GET @POST
+    @POST
     @Path("move_widget")
-    public void moveWidget(@QueryParam("src_provider") String srcProviderName, @QueryParam("dest_provider") String destProviderName, @QueryParam("src_uid") String srcUid, @QueryParam("src_region") String srcRegionName, @QueryParam("dest_region") String destRegionName, @QueryParam("dest_order") int destOrder) {
+    public void moveWidget() {
+        FormData form = ctx.getForm()
+        String srcProviderName = form.getString("src_provider")
+        String destProviderName = form.getString("dest_provider")
+        String srcUid = form.getString("src_uid")
+        String srcRegionName = form.getString("src_region")
+        String destRegionName = form.getString("dest_region")
+        int destOrder = form.getString("dest_order") as Integer        
         org.nuxeo.theme.webwidgets.Manager.moveWidget(srcProviderName, destProviderName, srcUid, srcRegionName, destRegionName, destOrder)
     }
 
-    @GET @POST
+    @POST
     @Path("remove_widget")
-    public void removeWidget(@QueryParam("provider") String providerName, @QueryParam("widget_uid") String widgetUid) {
+    public void removeWidget() {
+        FormData form = ctx.getForm()
+        String providerName = form.getString("provider")
+        String widgetUid = form.getString("widget_uid")
         org.nuxeo.theme.webwidgets.Manager.removeWidget(providerName, widgetUid)
     }
     
-    @GET @POST
+    @POST
     @Path("set_widget_state")
-    public void setWidgetState(@QueryParam("provider") String providerName, @QueryParam("widget_uid") String widgetUid, @QueryParam("state") String state) {
+    public void setWidgetState() {
+        FormData form = ctx.getForm()
+        String providerName = form.getString("provider")
+        String widgetUid = form.getString("widget_uid")
+        String state = form.getString("state")
         org.nuxeo.theme.webwidgets.Manager.setWidgetState(providerName, widgetUid, state)
     }
     
-    @GET @POST
+    @POST
     @Path("set_widget_category")
-    public void setWidgetCategory(@QueryParam("category") String category) {
+    public void setWidgetCategory() {
+        FormData form = ctx.getForm()
+        String category = form.getString("category")        
         SessionManager.setWidgetCategory(category)
     }
     
-    @GET @POST
+    @GET
     @Path("get_widget_data_info")
-    public String getWidgetDataInfo(@QueryParam("provider") String providerName, @QueryParam("widget_uid") String widgetUid, @QueryParam("name") String dataName) {
+    public String getWidgetDataInfo( @QueryParam("widget_uid") String widgetUid, @QueryParam("name") String dataName) {   
         return org.nuxeo.theme.webwidgets.Manager.getWidgetDataInfo(providerName,  widgetUid, dataName)
     }
     
-    @GET @POST
+    @POST
     @Path("upload_file")
-    public String uploadFile(@QueryParam("widget_uid") String widgetUid, @QueryParam("data") String dataName, @QueryParam("provider") String providerName) {
-        def req = WebEngine.getActiveContext().getRequest()
+    public String uploadFile() {
+        FormData form = ctx.getForm()
+        String providerName = form.getString("provider")
+        String widgetUid = form.getString("widget_uid")
+        String dataName = form.getString("data")
+        def req = ctx.getRequest()
         String res = org.nuxeo.theme.webwidgets.Manager.uploadFile(req, providerName, widgetUid, dataName)
         String src = 'nxwebwidgets://data/' + providerName + '/' + widgetUid + '/' + dataName;
         org.nuxeo.theme.webwidgets.Manager.setWidgetPreference(providerName, widgetUid, dataName, src)
         return res
     }
     
-    @GET @POST
+    @GET
     @Path("render_widget_data")
     public Response renderWidgetData(@QueryParam("widget_uid") String widgetUid, @QueryParam("data") String dataName, @QueryParam("provider") String providerName) {
         WidgetData data = org.nuxeo.theme.webwidgets.Manager.getWidgetData(providerName, widgetUid, dataName)
@@ -107,20 +133,24 @@ public class Main extends DefaultModule {
         return builder.build();
     }
     
-    @GET @POST
+    @POST
     @Path("update_widget_preferences")
-    public void updateWidgetPreferences(@QueryParam("provider") String providerName, @QueryParam("widget_uid") String widgetUid, @QueryParam("preferences") String preferences_map) {
+    public void updateWidgetPreferences() {
+        FormData form = ctx.getForm()
+        String providerName = form.getString("provider")
+        String widgetUid = form.getString("widget_uid")
+        String preferences_map = form.getString("preferences_map")
         Map preferencesMap = JSONObject.fromObject(preferences_map)
         org.nuxeo.theme.webwidgets.Manager.updateWidgetPreferences(providerName, widgetUid, preferencesMap)
     }
         
-    @GET @POST
+    @GET
     @Path("get_widget_decoration")
     public String getWidgetDecoration(@QueryParam("decoration") String decorationName) {
         return org.nuxeo.theme.webwidgets.Manager.getWidgetDecoration(decorationName)
     }
     
-    @GET @POST
+    @GET
     @Path("render_widget_icon")
     public Response renderWidgetIcon(@QueryParam("name") String widgetTypeName) {
         byte[] content = org.nuxeo.theme.webwidgets.Manager.getWidgetIconContent(widgetTypeName)
