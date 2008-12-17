@@ -136,7 +136,7 @@ public class Main extends DefaultModule {
         FormData form = ctx.getForm()
         String providerName = form.getString("provider")
         String widgetUid = form.getString("widget_uid")
-        String preferences_map = form.getString("preferences_map")
+        String preferences_map = form.getString("preferences")
         Map preferencesMap = JSONObject.fromObject(preferences_map)
         org.nuxeo.theme.webwidgets.Manager.updateWidgetPreferences(providerName, widgetUid, preferencesMap)
     }
