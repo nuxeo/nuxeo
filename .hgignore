@@ -6,5 +6,3 @@ bin
 target
 *~
 *.orig
-nuxeo-platform-ear/nuxeo.ear.org
-nuxeo-platform-ear/target-resources
