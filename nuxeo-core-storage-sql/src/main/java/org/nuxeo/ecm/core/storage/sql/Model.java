@@ -192,6 +192,16 @@ public class Model {
 
     public static final String LOCK_KEY = "lock";
 
+    public static final String FULLTEXT_TABLE_NAME = "fulltext";
+
+    public static final String FULLTEXT_FULLTEXT_PROP = "ecm:fulltext";
+
+    public static final String FULLTEXT_FULLTEXT_KEY = "fulltext";
+
+    public static final String FULLTEXT_SIMPLETEXT_PROP = "ecm:simpleText";
+
+    public static final String FULLTEXT_SIMPLETEXT_KEY = "simpletext";
+
     public static class PropertyInfo {
 
         public final PropertyType propertyType;
@@ -202,12 +212,26 @@ public class Model {
 
         public final boolean readonly;
 
+        public final boolean fulltext;
+
         public PropertyInfo(PropertyType propertyType, String fragmentName,
                 String fragmentKey, boolean readonly) {
             this.propertyType = propertyType;
             this.fragmentName = fragmentName;
             this.fragmentKey = fragmentKey;
             this.readonly = readonly;
+            // TODO use some config to decide this
+            fulltext = (propertyType.equals(PropertyType.STRING) || propertyType.equals(PropertyType.ARRAY_STRING)) &&
+                    fragmentKey != null &&
+                    !fragmentKey.equals(MAIN_KEY) &&
+                    !fragmentName.equals(HIER_TABLE_NAME) &&
+                    !fragmentName.equals(MAIN_TABLE_NAME) &&
+                    !fragmentName.equals(VERSION_TABLE_NAME) &&
+                    !fragmentName.equals(PROXY_TABLE_NAME) &&
+                    !fragmentName.equals(FULLTEXT_TABLE_NAME) &&
+                    !fragmentName.equals(LOCK_TABLE_NAME) &&
+                    !fragmentName.equals(UID_SCHEMA_NAME) &&
+                    !fragmentName.equals(MISC_TABLE_NAME);
         }
     }
 
@@ -304,6 +328,7 @@ public class Model {
         initLocksModel();
         initAclModel();
         initMiscModel();
+        initFullTextModel();
         initModels(schemaManager);
     }
 
@@ -747,6 +772,18 @@ public class Model {
     private void initLocksModel() {
         addPropertyInfo(null, LOCK_PROP, PropertyType.STRING, LOCK_TABLE_NAME,
                 LOCK_KEY, false, StringType.INSTANCE);
+    }
+
+    /**
+     * Special model for the fulltext table.
+     */
+    private void initFullTextModel() {
+        addPropertyInfo(null, FULLTEXT_FULLTEXT_PROP, PropertyType.STRING,
+                FULLTEXT_TABLE_NAME, FULLTEXT_FULLTEXT_KEY, false,
+                StringType.INSTANCE);
+        addPropertyInfo(null, FULLTEXT_SIMPLETEXT_PROP, PropertyType.STRING,
+                FULLTEXT_TABLE_NAME, FULLTEXT_SIMPLETEXT_KEY, false,
+                StringType.INSTANCE);
     }
 
     /**

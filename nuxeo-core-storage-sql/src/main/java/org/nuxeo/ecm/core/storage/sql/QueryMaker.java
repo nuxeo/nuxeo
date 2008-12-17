@@ -337,7 +337,7 @@ public class QueryMaker {
          * Build the FROM / JOIN criteria.
          */
 
-        List<String> joins = new ArrayList<String>(fragmentNames.size() + 1);
+        List<String> joins = new LinkedList<String>();
         Table hier = database.getTable(model.hierTableName);
         if (considerProxies) {
             // complex case where we have to add a left joins to link to the
@@ -379,7 +379,6 @@ public class QueryMaker {
                     useHier ? hierId : joinedHierId, table.getColumn(
                             model.MAIN_KEY).getFullQuotedName()));
         }
-        String from = StringUtils.join(joins, " LEFT JOIN ");
 
         /*
          * Filter on facets and mixin types, and create the structural WHERE
@@ -453,8 +452,8 @@ public class QueryMaker {
         }
 
         /*
-         * Create the part of the WHERE clause that comes from the original
-         * query.
+         * Parse the WHERE clause from the original query, and deduce from it
+         * actual WHERE clauses and potential JOINs.
          */
 
         WhereBuilder whereBuilder;
@@ -465,10 +464,14 @@ public class QueryMaker {
         }
         if (info.wherePredicate != null) {
             info.wherePredicate.accept(whereBuilder);
+            // JOINs added by fulltext queries
+            joins.addAll(whereBuilder.joins);
+            selectParams.addAll(0, whereBuilder.joinParams);
+            // WHERE clause
             String where = whereBuilder.buf.toString();
             if (where.length() != 0) {
                 whereClauses.add(where);
-                selectParams.addAll(whereBuilder.params);
+                selectParams.addAll(whereBuilder.whereParams);
             }
         }
 
@@ -477,8 +480,7 @@ public class QueryMaker {
          */
 
         if (queryFilter.getPrincipals() != null) {
-            whereClauses.add(String.format("NX_ACCESS_ALLOWED(%s, ?, ?) = %s",
-                    hierId, dialect.toBooleanValueString(true)));
+            whereClauses.add(dialect.getSecurityCheckSql(hierId));
             Serializable principals;
             Serializable permissions;
             if (dialect.supportsArrays()) {
@@ -512,14 +514,11 @@ public class QueryMaker {
 
         String what = hierId;
         if (considerProxies) {
-            // We do LEFT JOINs with collection tables, so we could get
-            // identical results.
-            // For proxies, there's also a LEFT JOIN with a non equi-join
+            // For proxies we do a LEFT JOIN with a non equi-join
             // condition that can return two rows.
             what = "DISTINCT " + what;
             // Some dialects need any ORDER BY expressions to appear in the
             // SELECT list when using DISTINCT.
-            // This is needed at least by PostgreSQL.
             if (dialect.needsOrderByKeysAfterDistinct()) {
                 for (String key : info.orderKeys) {
                     PropertyInfo propertyInfo = model.getPropertyInfo(key);
@@ -545,13 +544,12 @@ public class QueryMaker {
          */
         Select select = new Select(null);
         select.setWhat(what);
-        select.setFrom(from);
+        select.setFrom(StringUtils.join(joins, " LEFT JOIN "));
         select.setWhere(StringUtils.join(whereClauses, " AND "));
         select.setOrderBy(orderBy);
 
         List<Column> whatColumns = Collections.singletonList(hierTable.getColumn(model.MAIN_KEY));
-        selectInfo = new SQLInfoSelect(select.getStatement(), whatColumns,
-                Collections.<Column> emptyList());
+        selectInfo = new SQLInfoSelect(select.getStatement(), whatColumns, null);
     }
 
     /**
@@ -614,7 +612,7 @@ public class QueryMaker {
         }
 
         /**
-         * Checks tolevel ANDed operands, and extracts those that directly
+         * Checks toplevel ANDed operands, and extracts those that directly
          * impact the types restictions:
          * <ul>
          * <li>ecm:primaryType OP literal</li>
@@ -793,6 +791,12 @@ public class QueryMaker {
                 props.add(model.VERSION_LABEL_PROP);
                 return;
             }
+            if (ECM_FULLTEXT.equals(name)) {
+                if (sqlInfo.dialect.isFulltextTableNeeded()) {
+                    props.add(model.FULLTEXT_FULLTEXT_PROP);
+                }
+                return;
+            }
             if (name.startsWith(ECM_PREFIX)) {
                 throw new QueryMakerException("Unknown field: " + name);
             }
@@ -834,11 +838,17 @@ public class QueryMaker {
 
         public final StringBuilder buf = new StringBuilder();
 
-        public final List<Serializable> params = new LinkedList<Serializable>();
+        public final List<String> joins = new LinkedList<String>();
+
+        public final List<String> joinParams = new LinkedList<String>();
+
+        public final List<Serializable> whereParams = new LinkedList<Serializable>();
 
         public boolean allowArray;
 
         private boolean inOrderBy;
+
+        private int ftJoinNumber;
 
         @Override
         public void visitMultiExpression(MultiExpression node) {
@@ -869,6 +879,8 @@ public class QueryMaker {
                 visitExpressionIsProxy(node);
             } else if (ECM_ISVERSION.equals(name)) {
                 visitExpressionIsVersion(node);
+            } else if (ECM_FULLTEXT.equals(name)) {
+                visitExpressionFulltext(node);
             } else if ((op == Operator.EQ || op == Operator.NOTEQ ||
                     op == Operator.IN || op == Operator.NOTIN) &&
                     name != null && !name.startsWith(ECM_PREFIX)) {
@@ -929,7 +941,7 @@ public class QueryMaker {
                 buf.append("0 = 1");
             } else {
                 buf.append("NX_IN_TREE(").append(hierId).append(", ?) = ");
-                params.add(id);
+                whereParams.add(id);
                 buf.append(dialect.toBooleanValueString(true));
             }
         }
@@ -979,6 +991,54 @@ public class QueryMaker {
             buf.append(bool ? " IS NOT NULL" : " IS NULL");
         }
 
+        protected void visitExpressionFulltext(Expression node) {
+            if (node.operator != Operator.EQ && node.operator != Operator.LIKE) {
+                throw new QueryMakerException(ECM_FULLTEXT +
+                        " requires = or LIKE operator");
+            }
+            if (!(node.rvalue instanceof StringLiteral)) {
+                throw new QueryMakerException(ECM_FULLTEXT +
+                        " requires literal string as right argument");
+            }
+            String fulltextQuery = ((StringLiteral) node.rvalue).value;
+            // TODO parse query language for fulltext
+            // for now just a sequence of words
+            Column ftColumn = database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
+                    model.FULLTEXT_FULLTEXT_KEY);
+            Column mainColumn = joinedHierTable.getColumn(model.MAIN_KEY);
+            String[] info = sqlInfo.dialect.getFulltextMatch(ftColumn,
+                    mainColumn, fulltextQuery);
+            String joinExpr = info[0];
+            String joinParam = info[1];
+            String whereExpr = info[2];
+            String whereParam = info[3];
+            String joinAlias = getFtJoinAlias();
+            if (joinExpr != null) {
+                // specific join table (H2)
+                joins.add(String.format(joinExpr, joinAlias));
+                if (joinParam != null) {
+                    joinParams.add(joinParam);
+                }
+            }
+            if (whereExpr != null) {
+                buf.append(String.format(whereExpr, joinAlias));
+                if (whereParam != null) {
+                    whereParams.add(whereParam);
+                }
+            } else {
+                buf.append("1=1"); // we still need an expression in the tree
+            }
+        }
+
+        private String getFtJoinAlias() {
+            ftJoinNumber++;
+            if (ftJoinNumber == 1) {
+                return "_FT";
+            } else {
+                return "_FT" + ftJoinNumber;
+            }
+        }
+
         @Override
         public void visitOperator(Operator node) {
             buf.append(' ');
@@ -1013,12 +1073,7 @@ public class QueryMaker {
             String qname = column.getFullQuotedName();
             // some databases (Derby) can't do comparisons on CLOB
             if (column.getSqlType() == Types.CLOB) {
-                String colFmt;
-                if (inOrderBy) {
-                    colFmt = dialect.clobCastingInOrderBy();
-                } else {
-                    colFmt = dialect.clobCasting();
-                }
+                String colFmt = dialect.getClobCast(inOrderBy);
                 if (colFmt != null) {
                     qname = String.format(colFmt, qname, Integer.valueOf(255));
                 }
@@ -1048,6 +1103,10 @@ public class QueryMaker {
                 return database.getTable(model.MISC_TABLE_NAME).getColumn(
                         model.MISC_LIFECYCLE_STATE_KEY);
             }
+            if (ECM_FULLTEXT.equals(name)) {
+                throw new QueryMakerException(ECM_FULLTEXT +
+                        " must be used as left-hand operand");
+            }
             if (ECM_VERSIONLABEL.equals(name)) {
                 return database.getTable(model.VERSION_TABLE_NAME).getColumn(
                         model.VERSION_LABEL_KEY);
@@ -1070,25 +1129,25 @@ public class QueryMaker {
         @Override
         public void visitDateLiteral(DateLiteral node) {
             buf.append('?');
-            params.add(node.toCalendar());
+            whereParams.add(node.toCalendar());
         }
 
         @Override
         public void visitStringLiteral(StringLiteral node) {
             buf.append('?');
-            params.add(node.value);
+            whereParams.add(node.value);
         }
 
         @Override
         public void visitDoubleLiteral(DoubleLiteral node) {
             buf.append('?');
-            params.add(Double.valueOf(node.value));
+            whereParams.add(Double.valueOf(node.value));
         }
 
         @Override
         public void visitIntegerLiteral(IntegerLiteral node) {
             buf.append('?');
-            params.add(Long.valueOf(node.value));
+            whereParams.add(Long.valueOf(node.value));
         }
 
         @Override

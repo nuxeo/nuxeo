@@ -18,9 +18,9 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +71,12 @@ public class PersistenceContext {
      */
     private final HashMap<Serializable, Serializable> oldIdMap;
 
+    /**
+     * The ids of documents modified (for which the fulltext has to be
+     * recomputed).
+     */
+    private final Set<Serializable> modifiedDocumentIds;
+
     PersistenceContext(Mapper mapper, RepositoryImpl.Invalidators invalidators) {
         this.mapper = mapper;
         this.invalidators = invalidators;
@@ -86,6 +92,8 @@ public class PersistenceContext {
         // are used and need this
         createdIds = new LinkedHashSet<Serializable>();
         oldIdMap = new HashMap<Serializable, Serializable>();
+
+        modifiedDocumentIds = new HashSet<Serializable>();
     }
 
     /**
@@ -145,6 +153,14 @@ public class PersistenceContext {
             context.close();
         }
         // don't clean the contexts, we keep the pristine cache around
+    }
+
+    protected Set<Serializable> getModifiedDocumentIds() {
+        return modifiedDocumentIds;
+    }
+
+    protected void clearModifiedDocumentIds() {
+        modifiedDocumentIds.clear();
     }
 
     /**
@@ -512,6 +528,25 @@ public class PersistenceContext {
         }
         Context proxiesContext = getContext(model.PROXY_TABLE_NAME);
         return mapper.getProxies(searchId, byTarget, parentId, proxiesContext);
+    }
+
+    /**
+     * Marks the enclosing document as modified. Called when a fragment is
+     * modified.
+     *
+     * @param id the id
+     */
+    protected void markModified(Serializable id) {
+        try {
+            id = hierContext.getContainingDocument(id);
+            // may be null if parent doc has been removed
+            if (id != null) {
+                modifiedDocumentIds.add(id);
+            }
+        } catch (StorageException e) {
+            // cannot happen
+            log.error("Error marking a node modified", e);
+        }
     }
 
 }

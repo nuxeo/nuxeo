@@ -345,6 +345,16 @@ public class Context {
     }
 
     /**
+     * Marks the enclosing document as modified. Called when a fragment is
+     * modified.
+     *
+     * @param id the id
+     */
+    protected void markModified(Serializable id) {
+        persistenceContext.markModified(id);
+    }
+
+    /**
      * Called by the mapper when a fragment has been updated in the database.
      *
      * @param id the id

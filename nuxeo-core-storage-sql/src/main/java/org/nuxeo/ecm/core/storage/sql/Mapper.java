@@ -265,6 +265,7 @@ public class Mapper {
         try {
             executeConditionalStatements(sqlInfo.getStoredProceduresSqls());
             createTables();
+            executeConditionalStatements(sqlInfo.getTriggersSqls());
         } catch (SQLException e) {
             throw new StorageException(e);
         }

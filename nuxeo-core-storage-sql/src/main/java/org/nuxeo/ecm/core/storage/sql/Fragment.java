@@ -236,6 +236,9 @@ public abstract class Fragment implements Serializable {
      * Marks the fragment modified. Called internally after a put/set.
      */
     protected void markModified() {
+        if (context != null) {
+            context.markModified(id);
+        }
         switch (state) {
         case ABSENT:
             context.pristine.remove(id);
@@ -265,6 +268,9 @@ public abstract class Fragment implements Serializable {
      * Marks the fragment deleted. Called after a remove.
      */
     protected void markDeleted() {
+        if (context != null) {
+            context.markModified(id);
+        }
         switch (state) {
         case DETACHED:
             break;
@@ -300,6 +306,9 @@ public abstract class Fragment implements Serializable {
      * that on access a refetch will be needed.
      */
     protected void markInvalidatedModified() {
+        if (context != null) {
+            context.markModified(id);
+        }
         switch (state) {
         case CREATED:
         case MODIFIED:
@@ -325,6 +334,9 @@ public abstract class Fragment implements Serializable {
      * Called when a database operation does a delete.
      */
     protected void markInvalidatedDeleted() {
+        if (context != null) {
+            context.markModified(id);
+        }
         switch (state) {
         case CREATED:
         case MODIFIED:
