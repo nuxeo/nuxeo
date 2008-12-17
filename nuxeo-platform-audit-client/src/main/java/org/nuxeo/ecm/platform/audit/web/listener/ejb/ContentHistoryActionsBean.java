@@ -109,7 +109,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
 
     @Destroy
     public void destroy() {
-        log.debug("Removing Audit Seam component...");
+        if (log.isDebugEnabled()) log.debug("Removing Audit Seam component...");
     }
 
     @Observer(value = { EventNames.CONTENT_ROOT_SELECTION_CHANGED,
@@ -119,7 +119,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
             AuditEventTypes.HISTORY_CHANGED }, create = false, inject = false)
    @BypassInterceptors
     public void invalidateLogEntries() {
-        log.debug("Invalidate log entries.................");
+        if (log.isDebugEnabled()) log.debug("Invalidate log entries.................");
         logEntries = null;
         latestLogEntries = null;
         logEntriesComments = null;
@@ -197,11 +197,10 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
                             filterMap, doDefaultSort);
                 }
 
-                log.debug("logEntries computed .................!");
+                if (log.isDebugEnabled()) log.debug("logEntries computed .................!");
             } catch (Exception e) {
-                log.error("An error occurred while grabbing log entries for "
-                        + document.getId());
-                throw new AuditException(e);
+                String message = "An error occurred while grabbing log entries for " + document.getId();
+                throw new AuditException(message, e);
             }
             return logEntries;
         }

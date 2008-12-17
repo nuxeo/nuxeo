@@ -81,7 +81,6 @@ public class PersistenceProvider {
 
     protected EntityManager guardedEntityManager() {
         if (emf == null) {
-            log.error("Unable to get EntityManager, there is no factory");
             throw new AuditRuntimeException(
                     "Cannot get entity manager, no factory available");
         }

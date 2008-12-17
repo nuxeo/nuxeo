@@ -90,6 +90,7 @@ public class LogEntryProvider  {
    
 
     @SuppressWarnings("unchecked")
+    @Deprecated
     public List<LogEntry> getLogEntriesFor(String uuid,
             Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
         log.debug("getLogEntriesFor() UUID=" + uuid);

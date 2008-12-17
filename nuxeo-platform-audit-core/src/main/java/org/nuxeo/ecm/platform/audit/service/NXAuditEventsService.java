@@ -77,7 +77,6 @@ public class NXAuditEventsService extends DefaultComponent implements
     private static final long serialVersionUID = -7945111177284985820L;
 
     private static final Log log = LogFactory.getLog(NXAuditEventsService.class);
-
     // Default.
 
     private static final String EVENT_EXT_POINT = "event";
@@ -117,10 +116,10 @@ public class NXAuditEventsService extends DefaultComponent implements
                     }
                     if (eventEnabled) {
                         eventNames.add(eventName);
-                        log.debug("Registered event: " + eventName);
+                        if (log.isDebugEnabled()) log.debug("Registered event: " + eventName);
                     } else if (eventNames.contains(eventName) && !eventEnabled) {
                         eventNames.remove(eventName);
-                        log.debug("Unregistered event: " + eventName);
+                        if (log.isDebugEnabled()) log.debug("Unregistered event: " + eventName);
                     }
                 }
             }
@@ -129,7 +128,7 @@ public class NXAuditEventsService extends DefaultComponent implements
             if (extension.getExtensionPoint().equals(EXTENDED_INFO_EXT_POINT)) {
                 for (Object contribution : contributions) {
                     ExtendedInfoDescriptor desc = (ExtendedInfoDescriptor) contribution;
-                    log.debug("Registered extended info mapping : "
+                    if (log.isDebugEnabled()) log.debug("Registered extended info mapping : "
                             + desc.getKey());
 
                     extendedInfoDescriptors.add(desc);
@@ -147,14 +146,14 @@ public class NXAuditEventsService extends DefaultComponent implements
                 for (Object contribution : contributions) {
                     EventDescriptor desc = (EventDescriptor) contribution;
                     eventNames.remove(desc.getName());
-                    log.debug("Unregistered event: " + desc.getName());
+                    if (log.isDebugEnabled()) log.debug("Unregistered event: " + desc.getName());
                 }
             }
             if (extension.getExtensionPoint().equals(EXTENDED_INFO_EXT_POINT)) {
                 for (Object contribution : contributions) {
                     ExtendedInfoDescriptor desc = (ExtendedInfoDescriptor) contribution;
                     extendedInfoDescriptors.remove(desc.getKey());
-                    log.debug("Unregistered extended info: " + desc.getKey());
+                    if (log.isDebugEnabled()) log.debug("Unregistered extended info: " + desc.getKey());
                 }
             }
         }
@@ -193,7 +192,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         try {
             Principal principal = message.getPrincipal();
             if (!(principal instanceof NuxeoPrincipal)) {
-                log.warn("not a nuxeo principal " + principal);
+                if (log.isWarnEnabled()) log.warn("not a nuxeo principal " + principal);
                 return null;
             }
             return (NuxeoPrincipal) principal;
@@ -478,7 +477,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         DocumentModel root = guardedDocument(session, rootRef);
         long nbAddedEntries = doSyncNode(provider, session, root, recurs);
 
-        log.debug("synched " + nbAddedEntries + " entries on " + path);
+        if (log.isDebugEnabled()) log.debug("synched " + nbAddedEntries + " entries on " + path);
 
         return nbAddedEntries;
     }
