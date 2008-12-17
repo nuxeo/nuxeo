@@ -113,8 +113,9 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
     }
     
     public void testsyncLogCreation() throws AuditException, ClientException {
-        serviceUnderTest.syncLogCreationEntries(getRepository().getName(),rootDocument.getPathAsString(), true);
+        long count = serviceUnderTest.syncLogCreationEntries(getRepository().getName(),rootDocument.getPathAsString(), true);
+        assertEquals(count, 2);
         List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(rootDocument.getId());
-        assertTrue(entries.size() >= 1);
+        assertEquals(entries.size(), 1);
     }
 }
