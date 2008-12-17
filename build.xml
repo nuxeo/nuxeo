@@ -6,7 +6,7 @@
   <property name="mvn.opts" value="" />
   <property name="jboss.config" value="default" />
   <property name="jboss.dir" value="/opt/jboss" />
-  <property name="nuxeo.ear.root" value="nuxeo-platform/nuxeo-platform-ear/" />
+  <property name="nuxeo.ear.root" value="nuxeo-distribution/nuxeo-platform-ear/" />
   <!--the default pom file to use for jboss-patch  -->
   <property name="pom.file" value="jboss-patch/pom.xml" />
 
@@ -250,7 +250,7 @@
     <echo message="Copying Nuxeo libs to ${jboss.lib}" />
     <exec executable="mvn" failonerror="true">
       <arg value="-f" />
-      <arg value="nuxeo-platform/nuxeo-platform-ear/pom.xml" />
+      <arg value="${nuxeo.ear.root}/pom.xml" />
       <arg value="-Djboss.lib=${jboss.lib}" />
       <arg value="dependency:copy" />
       <arg value="-N" />
@@ -263,7 +263,7 @@
       <arg value="/c" />
       <arg value="mvn.bat" />
       <arg value="-f" />
-      <arg value="nuxeo-platform/nuxeo-platform-ear/pom.xml" />
+      <arg value="${nuxeo.ear.root}/pom.xml" />
       <arg value="-Djboss.lib=${jboss.lib}" />
       <arg value="dependency:copy" />
       <arg value="-N" />
@@ -272,7 +272,7 @@
   </target>
 
   <target name="copy-postgresql" depends="setproperties" description="Deploy default postresql config">
-    <property name="postgresql.config" value="nuxeo-platform/nuxeo-platform-ear/postgresql-setup" />
+    <property name="postgresql.config" value="${nuxeo.ear.root}/postgresql-setup" />
     <copy todir="${jboss.nuxeo.ear}/config" failonerror="false" overwrite="true">
       <fileset file="${basedir}/${postgresql.config}/config/*.xml" />
       <fileset file="${basedir}/${postgresql.config}/config/*.properties" />
@@ -281,7 +281,7 @@
       <fileset file="${basedir}/${postgresql.config}/datasources/*.xml" />
     </copy>
     <copy todir="${jboss.lib}" failonerror="false" overwrite="true">
-      <fileset file="nuxeo-platform/nuxeo-platform-ear/target/postgresql-jdbc-lib/*.jar" />
+      <fileset file="${nuxeo.ear.root}/target/postgresql-jdbc-lib/*.jar" />
     </copy>
     <!-- XXX: find a way not to depend on the version number of nxsearch compass -->
     <copy todir="${jboss.nuxeo.ear}/system/nuxeo-platform-search-compass-plugin-5.1.7-SNAPSHOT.jar" failonerror="false" overwrite="true">
@@ -290,7 +290,7 @@
   </target>
 
   <target name="copy-oracle" depends="setproperties">
-    <property name="oracle.config" value="nuxeo-platform/nuxeo-platform-ear/oracle-setup" />
+    <property name="oracle.config" value="${nuxeo.ear.root}/oracle-setup" />
     <copy todir="${jboss.nuxeo.ear}/config" failonerror="false" overwrite="true">
       <fileset file="${basedir}/${oracle.config}/config/*.xml" />
       <fileset file="${basedir}/${oracle.config}/config/*.properties" />
@@ -309,7 +309,7 @@
   </target>
 
   <target name="copy-derby" depends="setproperties" description="Deploy default derby config">
-    <property name="derby.config" value="nuxeo-platform/nuxeo-platform-ear/derby-setup" />
+    <property name="derby.config" value="${nuxeo.ear.root}/derby-setup" />
     <copy todir="${jboss.nuxeo.ear}/config" failonerror="false" overwrite="true">
       <fileset file="${basedir}/${derby.config}/config/*.xml" />
       <fileset file="${basedir}/${derby.config}/config/*.properties" />
@@ -324,7 +324,7 @@
     <!-- TODO: maven config to get derby lib -->
     <!--
     <copy todir="${jboss.deploy}/lib" failonerror="false" overwrite="true">
-      <fileset file="nuxeo-platform/nuxeo-platform-ear/target/derby-jdbc-lib/*.jar" />
+      <fileset file="${nuxeo.ear.root}/target/derby-jdbc-lib/*.jar" />
     </copy>
     -->
     <echo></echo>
