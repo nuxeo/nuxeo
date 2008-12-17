@@ -82,7 +82,7 @@ public class LogEntryProvider  {
     
     @SuppressWarnings("unchecked")
     public List<LogEntry> getLogEntriesFor(String uuid) {
-        log.debug("getLogEntriesFor() UUID=" + uuid);
+        if (log.isDebugEnabled()) log.debug("getLogEntriesFor() UUID=" + uuid);
         Query query = em.createNamedQuery("LogEntry.findByDocument");
         query.setParameter("docUUID", uuid);
         return doPublish(query.getResultList());
@@ -93,10 +93,10 @@ public class LogEntryProvider  {
     @Deprecated
     public List<LogEntry> getLogEntriesFor(String uuid,
             Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
-        log.debug("getLogEntriesFor() UUID=" + uuid);
+        if (log.isDebugEnabled()) log.debug("getLogEntriesFor() UUID=" + uuid);
 
         if (filterMap == null) {
-            log.warn("filter map is empty");
+            if (log.isWarnEnabled()) log.warn("filter map is null");
             filterMap = new HashMap<String,FilterMapEntry>();
         }
 
@@ -146,7 +146,7 @@ public class LogEntryProvider  {
     }
 
     public LogEntry getLogEntryByID(long id)  {
-        log.debug("getLogEntriesFor() logID=" + id);
+        if (log.isDebugEnabled()) log.debug("getLogEntriesFor() logID=" + id);
         return doPublish(em.find(LogEntry.class, id));
     }
 
@@ -155,7 +155,7 @@ public class LogEntryProvider  {
             int pageSize) {
         Query query = em.createQuery("from LogEntry log where " + whereClause);
         if (pageNb > 1) {
-            query.setFirstResult((pageNb - 1) * pageSize + 1);
+            query.setFirstResult((pageNb - 1) * pageSize);
         }
         query.setMaxResults(pageSize);
         return doPublish(query.getResultList());
@@ -166,7 +166,7 @@ public class LogEntryProvider  {
         if (eventIds == null || eventIds.length == 0) {
             throw new IllegalArgumentException("You must give a not null eventId");
         }
-        log.debug("queryLogs() whereClause=" + eventIds);
+        if (log.isDebugEnabled()) log.debug("queryLogs() whereClause=" + eventIds);
 
         Date limit;
         try {
@@ -183,7 +183,7 @@ public class LogEntryProvider  {
         inClause = inClause.substring(0, inClause.length() - 1);
         inClause += ")";
         Query query = em.createQuery("from LogEntry log"
-                + " log where log.eventId in " + inClause
+                + " where log.eventId in " + inClause
                 + " AND log.eventDate >= :limit"
                 + " ORDER BY log.eventDate DESC");
         query.setParameter("limit", limit);
@@ -255,7 +255,9 @@ public class LogEntryProvider  {
     }
     
     @SuppressWarnings("unchecked")
-    public void removeEntries(String eventId, String pathPattern) {
+    public int removeEntries(String eventId, String pathPattern) {
+        // TODO extended infos cascade delete does not work using HQL, so we have to delete each 
+        // entry by hand. 
         Query query = em.createNamedQuery("LogEntry.findByEventIdAndPath");
         query.setParameter("eventId", eventId);
         query.setParameter("pathPattern", pathPattern + "%");
@@ -264,8 +266,9 @@ public class LogEntryProvider  {
             em.remove(entry);
             count += 1;
         }
-        log.debug("removed " + count + " entries from "
+        if (log.isDebugEnabled()) log.debug("removed " + count + " entries from "
                 + pathPattern);
+        return count;
     }
 
 }
