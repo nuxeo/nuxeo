@@ -142,7 +142,8 @@ NXThemesWebWidgets.getWidgetDataUrl = function(url) {
   var providerName = path[0];
   var widgetUid = path[1];
   var dataName = path[2];
-  return nxthemesBasePath + '/nxthemes-webwidgets/render_widget_data?widget_uid=' + widgetUid + '&data=' + dataName + '&provider=' + providerName; 
+  var timestamp = path[3];
+  return nxthemesBasePath + '/nxthemes-webwidgets/render_widget_data?widget_uid=' + widgetUid + '&data=' + dataName + '&provider=' + providerName + '&timestamp=' + timestamp; 
 };
 
 Object.extend(NXThemesWebWidgets.WebWidget.prototype, UWA.Widget.prototype);

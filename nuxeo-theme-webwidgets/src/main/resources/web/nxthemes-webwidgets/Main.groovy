@@ -115,7 +115,8 @@ public class Main extends DefaultModule {
     public String uploadFile(@QueryParam("provider") String providerName, @QueryParam("widget_uid") String widgetUid, @QueryParam("data") String dataName) {
         def req = ctx.getRequest()
         String res = org.nuxeo.theme.webwidgets.Manager.uploadFile(req, providerName, widgetUid, dataName)
-        String src = 'nxwebwidgets://data/' + providerName + '/' + widgetUid + '/' + dataName;
+        String timestamp = new Date().getTime()
+        String src = 'nxwebwidgets://data/' + providerName + '/' + widgetUid + '/' + dataName + '/' + timestamp;
         org.nuxeo.theme.webwidgets.Manager.setWidgetPreference(providerName, widgetUid, dataName, src)
         return res
     }
