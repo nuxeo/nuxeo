@@ -23,8 +23,8 @@ NXThemesWebWidgets.addWidget = function(info) {
 
 NXThemesWebWidgets.moveWidget = function(info) {
     var srcContainer = info.sourceContainer;
-    var srcUid = info.source.getAttribute('id').replace("webwidget_", "");
-    var srcProvider = srcContainer.getAttribute('provider');
+    var srcProvider = srcContainer.getAttribute('provider');    
+    var srcUid = info.source.getAttribute('id').replace("webwidget_" + srcProvider + "_", "");
     var srcRegionName = srcContainer.getAttribute('region');
     var destProvider = info.target.getAttribute('provider');
     var destRegionName = info.target.getAttribute('region');
@@ -42,23 +42,20 @@ NXThemesWebWidgets.moveWidget = function(info) {
              'dest_order': destOrder
          },
          onComplete: function(r) {
-           var uid = r.responseText;
-           if (srcRegionName != destRegionName) {
-             NXThemesWebWidgets.changeWidgetId(srcUid, uid);
-           }
-           var widget = NXThemesWebWidgets.getWidgetById(uid);
+           var destUid = r.responseText;
+           NXThemesWebWidgets.changeWidgetId(srcProvider, destProvider, srcUid, destUid);
+           var widget = NXThemesWebWidgets.getWidget(destProvider, destUid);
            widget.setHtml();
          }
     });
 };
 
-NXThemesWebWidgets.deleteWidget = function(widgetUid) {
+NXThemesWebWidgets.deleteWidget = function(provider, widgetUid) {
       var answer = confirm("Deleting, are you sure?")
       if (!answer) {
           return;
       }
-      var widgetEl = $('webwidget_' + widgetUid);
-      var provider = widgetEl.up('.nxthemesWebWidgetContainer').getAttribute('provider');
+      var widgetEl = NXThemesWebWidgets.getWidgetElement(provider, widgetUid);
       var url = nxthemesBasePath + "/nxthemes-webwidgets/remove_widget";
       new Ajax.Request(url, {
          method: 'post',
@@ -72,11 +69,9 @@ NXThemesWebWidgets.deleteWidget = function(widgetUid) {
       });
 };
 
-NXThemesWebWidgets.setWidgetState = function(widgetUid, mode, state) {
-    var widgetEl = $('webwidget_' + widgetUid);
-    var container = widgetEl.up('.nxthemesWebWidgetContainer');
-    var provider = container.getAttribute('provider');
-    var widget = NXThemesWebWidgets.getWidgetById(widgetUid);
+NXThemesWebWidgets.setWidgetState = function(provider, widgetUid, mode, state) {
+    var widgetEl = NXThemesWebWidgets.getWidgetElement(provider, widgetUid);
+    var widget = NXThemesWebWidgets.getWidget(provider, widgetUid);
     var url = nxthemesBasePath + "/nxthemes-webwidgets/set_widget_state";
     new Ajax.Request(url, {
          method: 'post',
@@ -113,15 +108,16 @@ NXThemesWebWidgets.setWidgetCategory = function(select) {
     });
 };
 
-NXThemesWebWidgets.editPreferences = function(widgetUid) {
-  var widget = NXThemesWebWidgets.getWidgetById(widgetUid);
+NXThemesWebWidgets.editPreferences = function(provider, widgetUid) {
+  var widget = NXThemesWebWidgets.getWidget(provider, widgetUid);
   var frame = widget.createElement("div");
   var form = NXThemesWebWidgets.renderPreferenceEditForm(widget);
   form.addClassName('nxthemesWebWidgetsEditForm');
   form.action = "";
   form.onsubmit = NXThemesWebWidgets.changePreferences.bindAsEventListener(this);
   form.setAttribute("widget_uid", widgetUid);
-
+  form.setAttribute("widget_provider", provider);
+  
   var uploadBox = widget.createElement("div");
   uploadBox.setAttribute("id", 'webwidget_upload_' + widgetUid);
   uploadBox.setAttribute("class", 'nxthemesWebWidgetsUploadBox');
@@ -399,8 +395,8 @@ NXThemesWebWidgets.changePreferences = function(info) {
   var form = Event.findElement(info, "form");
   var preferencesMap = $H();
   var widgetUid = form.getAttribute("widget_uid");
-  var widget = NXThemesWebWidgets.getWidgetById(widgetUid);
-  var providerName = widget.getProviderName();
+  var providerName = form.getAttribute("widget_provider");
+  var widget = NXThemesWebWidgets.getWidget(providerName, widgetUid);
 
   $A(Form.getElements(form)).each(function(i) {
      var type = i.type;

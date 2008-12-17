@@ -4,26 +4,43 @@ NXThemesWebWidgets.modules = new Hash();
 NXThemesWebWidgets.widgets = new Hash();
 NXThemesWebWidgets.decorations = new Hash();
 
-NXThemesWebWidgets.getWidgetById = function(uid) {
-  return NXThemesWebWidgets.widgets.get(uid);
+NXThemesWebWidgets.getWidget = function(provider, uid) {
+  return NXThemesWebWidgets.widgets.get(provider + '_' + uid);
 };
 
-NXThemesWebWidgets.changeWidgetId = function(oldUid, newUid) {
-  var widget = NXThemesWebWidgets.widgets.get(oldUid);
-  var widgetEl = $('webwidget_' + oldUid);
+NXThemesWebWidgets.getWidgetElement = function(provider, uid) {
+  return $('webwidget_' + provider + '_' + uid); 
+};
+
+NXThemesWebWidgets.getWidgetElementTitle = function(provider, uid) {
+  return $('webwidget_' + provider + '_' + uid + '_title'); 
+};
+
+NXThemesWebWidgets.getWidgetElementBody = function(provider, uid) {
+  return $('webwidget_' + provider + '_' + uid + '_body'); 
+}; 
+
+NXThemesWebWidgets.getWidgetElementIcon = function(provider, uid) {
+  return $('webwidget_' + provider + '_' + uid + '_icon'); 
+}; 
+
+NXThemesWebWidgets.changeWidgetId = function(oldProvider, newProvider, oldUid, newUid) {
+  var widget = NXThemesWebWidgets.widgets.get(oldProvider + '_' + oldUid);
+  var widgetEl = NXThemesWebWidgets.getWidgetElement(oldProvider, oldUid);
   if (widgetEl) {
-    widgetEl.setAttribute('id', 'webwidget_' + newUid);
+    widgetEl.setAttribute('id', 'webwidget_' + newProvider + '_' + newUid);
   }
   widget.id = newUid;
-  NXThemesWebWidgets.widgets.set(newUid, widget);
-  NXThemesWebWidgets.widgets.unset(oldUid);
+  NXThemesWebWidgets.widgets.set(newProvider + '_' + newUid, widget);
+  NXThemesWebWidgets.widgets.unset(oldProvider + '_' + oldUid);
 };
 
 NXThemesWebWidgets.WebWidget = Class.create();
 NXThemesWebWidgets.WebWidget.prototype = {
 
-  initialize: function(uid) {
+  initialize: function(provider, uid) {
     this.id = uid;
+    this._provider = provider;    
     this.elements = {}; // HTML elements
     this.preferences = []; // preference schema
     this.metas = {}; // metadata
@@ -38,9 +55,9 @@ NXThemesWebWidgets.WebWidget.prototype = {
     this._html = '';
     this._icon = '';
     this._body = '';
-    this._provider = '';
     this._decoration = '';
     this._mode = '';
+    NXThemesWebWidgets.widgets.set(provider + '_' + uid, this);
   },
 
   getProviderName: function() {
@@ -49,11 +66,12 @@ NXThemesWebWidgets.WebWidget.prototype = {
 
   draw: function() {
     var uid = this.id;
-    $('webwidget_' + uid).innerHTML = this._html;
+    var provider = this._provider;
+    NXThemesWebWidgets.getWidgetElement(provider, uid).innerHTML = this._html;
 
-    this.elements['title'] = UWA.$element($('webwidget_' + uid + '_title'));
-    this.elements['body'] = UWA.$element($('webwidget_' + uid + '_body'));
-    this.elements['icon'] = UWA.$element($('webwidget_' + uid + '_icon'));
+    this.elements['title'] = UWA.$element(NXThemesWebWidgets.getWidgetElementTitle(provider, uid));
+    this.elements['body'] = UWA.$element(NXThemesWebWidgets.getWidgetElementBody(provider, uid));
+    this.elements['icon'] = UWA.$element(NXThemesWebWidgets.getWidgetElementIcon(provider, uid));
 
     this.body = this.elements['body'];
     this.setIcon(this._icon);
@@ -111,24 +129,25 @@ NXThemesWebWidgets.WebWidget.prototype = {
      var uid = this.id;
      var metas = this.metas;
      var mode = widget_mode.split('/')[0];
+     var provider = this._provider;
      
      html = html.replace(/%BASE_PATH%/g, nxthemesBasePath);
      html = html.replace(/%WIDGET_BODY%/g, this._body);
-     html = html.replace(/%ICON_AREA%/g, 'webwidget_' + uid + '_icon');
-     html = html.replace(/%TITLE_AREA%/g, 'webwidget_' + uid + '_title');
-     html = html.replace(/%BODY_AREA%/g, 'webwidget_' + uid + '_body');
+     html = html.replace(/%ICON_AREA%/g, 'webwidget_' + provider + '_' + uid + '_icon');
+     html = html.replace(/%TITLE_AREA%/g, 'webwidget_' + provider + '_' + uid + '_title');
+     html = html.replace(/%BODY_AREA%/g, 'webwidget_' + provider + '_' + uid + '_body');
      html = html.replace(/%DRAG_AREA%/g, "nxthemesWebWidgetDragHandle");
      html = html.replace(/%WIDGET_NAME%/g, this._name);
      html = html.replace(/%WIDGET_AUTHOR%/g, metas['author'] || '');
      html = html.replace(/%WIDGET_DESCRIPTION%/g, metas['description'] || '');
      html = html.replace(/%ACTION_EDIT_PREFERENCES%/g,
-                                 "NXThemesWebWidgets.editPreferences('" + uid + "');");
+                         "NXThemesWebWidgets.editPreferences('" + provider + "', '" + uid + "');");
      html = html.replace(/%ACTION_SHADE_WINDOW%/g,
-                                 "NXThemesWebWidgets.setWidgetState('" + uid + "', '" + mode + "', 'shaded');");
+                         "NXThemesWebWidgets.setWidgetState('" + provider + "', '" + uid + "', '" + mode + "', 'shaded');");
      html = html.replace(/%ACTION_UNSHADE_WINDOW%/g,
-                                 "NXThemesWebWidgets.setWidgetState('" + uid + "', '" + mode + "', '*');");
+                         "NXThemesWebWidgets.setWidgetState('" + provider + "', '" + uid + "', '" + mode + "', '*');");
      html = html.replace(/%ACTION_DELETE_WIDGET%/g,
-                                 "NXThemesWebWidgets.deleteWidget('" + uid + "');");
+                         "NXThemesWebWidgets.deleteWidget('" + provider + "', '" + uid + "');");
      this._html = html;
   }
 
@@ -157,9 +176,8 @@ NXThemesWebWidgets.renderPanel = function(provider, decoration, panel, data) {
     var name = item.name;
     var widget_type = widget_types[name];
 
-    var widget = new NXThemesWebWidgets.WebWidget(uid);
-    NXThemesWebWidgets.widgets.set(uid, widget);
-
+    var widget = new NXThemesWebWidgets.WebWidget(provider, uid);
+    
     // Set name
     widget._name = name;
     widget._provider = provider;
@@ -202,7 +220,7 @@ NXThemesWebWidgets.renderPanel = function(provider, decoration, panel, data) {
     // HTML
     var el = document.createElement('div');
     $(el).addClassName("nxthemesWebWidget");
-    $(el).setAttribute('id', 'webwidget_' + uid);
+    $(el).setAttribute('id', 'webwidget_' + provider + '_' + uid);
     panel.appendChild(el);
 
     // Set icon
