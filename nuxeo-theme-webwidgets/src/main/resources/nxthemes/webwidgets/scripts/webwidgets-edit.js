@@ -42,11 +42,12 @@ NXThemesWebWidgets.moveWidget = function(info) {
              'dest_order': destOrder
          },
          onComplete: function(r) {
+           var uid = r.responseText;
            if (srcRegionName != destRegionName) {
-             NXThemesWebWidgets.changeWidgetId(srcUid, newUid);
-             var widget = NXThemesWebWidgets.getWidgetById(newUid);
-             widget.setHtml();
+             NXThemesWebWidgets.changeWidgetId(srcUid, uid);
            }
+           var widget = NXThemesWebWidgets.getWidgetById(uid);
+           widget.setHtml();
          }
     });
 };
@@ -128,7 +129,7 @@ NXThemesWebWidgets.editPreferences = function(widgetUid) {
 
   frame.appendChild(form);
   frame.appendChild(uploadBox);
-
+  
   widget.setBody(frame);
 };
 

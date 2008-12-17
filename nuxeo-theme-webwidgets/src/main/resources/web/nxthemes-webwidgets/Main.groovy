@@ -66,7 +66,7 @@ public class Main extends DefaultModule {
     
     @POST
     @Path("move_widget")
-    public void moveWidget() {
+    public String moveWidget() {
         FormData form = ctx.getForm()
         String srcProviderName = form.getString("src_provider")
         String destProviderName = form.getString("dest_provider")
@@ -74,7 +74,7 @@ public class Main extends DefaultModule {
         String srcRegionName = form.getString("src_region")
         String destRegionName = form.getString("dest_region")
         int destOrder = form.getString("dest_order") as Integer        
-        org.nuxeo.theme.webwidgets.Manager.moveWidget(srcProviderName, destProviderName, srcUid, srcRegionName, destRegionName, destOrder)
+        return org.nuxeo.theme.webwidgets.Manager.moveWidget(srcProviderName, destProviderName, srcUid, srcRegionName, destRegionName, destOrder)
     }
 
     @POST
@@ -116,7 +116,7 @@ public class Main extends DefaultModule {
         def req = ctx.getRequest()
         String res = org.nuxeo.theme.webwidgets.Manager.uploadFile(req, providerName, widgetUid, dataName)
         String timestamp = new Date().getTime()
-        String src = 'nxwebwidgets://data/' + providerName + '/' + widgetUid + '/' + dataName + '/' + timestamp;
+        String src = String.format("nxwebwidgets://data/%s/%s/%s/%s", providerName, widgetUid, dataName, timestamp);
         org.nuxeo.theme.webwidgets.Manager.setWidgetPreference(providerName, widgetUid, dataName, src)
         return res
     }
