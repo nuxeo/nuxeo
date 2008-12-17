@@ -247,7 +247,7 @@ public class LogEntryProvider  {
         query.setParameter("limit", limit);
 
         if (pageNb > 1) {
-            query.setFirstResult((pageNb - 1) * pageSize + 1);
+            query.setFirstResult((pageNb - 1) * pageSize);
         }
         query.setMaxResults(pageSize);
 
