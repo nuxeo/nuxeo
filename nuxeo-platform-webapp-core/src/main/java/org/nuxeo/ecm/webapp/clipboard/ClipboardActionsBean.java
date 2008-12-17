@@ -51,12 +51,12 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.core.FacesMessages;
-import org.jboss.seam.core.LocaleSelector;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -68,7 +68,6 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -128,9 +127,9 @@ public class ClipboardActionsBean extends InputController implements
 
     private transient List<DocumentsListDescriptor> descriptorsForAvailableLists;
 
-    private Boolean canEditSelectedDocs = null;
+    private Boolean canEditSelectedDocs;
 
-    private transient Map<String, List<Action>> actionCache = null;
+    private transient Map<String, List<Action>> actionCache;
 
     // @Observer({EventNames.DOCUMENT_SELECTION_CHANGED})
     public void releaseClipboardableDocuments() {
@@ -582,8 +581,9 @@ public class ClipboardActionsBean extends InputController implements
                 }
 
                 // NXP-2334 : skip deleted docs
-                if (doc.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE))
+                if (doc.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE)) {
                     continue;
+                }
 
                 if (doc.isFolder() && !isEmptyFolder(doc, documentManager)) {
 
@@ -623,7 +623,7 @@ public class ClipboardActionsBean extends InputController implements
             context.responseComplete();
             return null;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -786,8 +786,9 @@ public class ClipboardActionsBean extends InputController implements
         for (DocumentModel docChild : docList) {
 
             // NXP-2334 : skip deleted docs
-            if (docChild.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE))
+            if (docChild.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE)) {
                 continue;
+            }
 
             if (docChild.isFolder()
                     && !isEmptyFolder(docChild, documentManager)) {
@@ -872,8 +873,18 @@ public class ClipboardActionsBean extends InputController implements
             DocumentModel doc, byte[] data, SummaryEntry parent,
             SummaryImpl summary) throws IOException {
 
-        String note = (String) doc.getProperty("note", "note");
-        String fileName = doc.getProperty("dublincore", "title") + ".html";
+        String note;
+        try {
+            note = (String) doc.getProperty("note", "note");
+        } catch (ClientException e1) {
+            note = null;
+        }
+        String fileName;
+        try {
+            fileName = doc.getProperty("dublincore", "title") + ".html";
+        } catch (ClientException e1) {
+            fileName = null;
+        }
         Blob content = new StringBlob(note);
 
         SummaryEntry summaryLeaf = new SummaryEntry(doc);

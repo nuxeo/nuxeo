@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory">
   <documentation>
     The LDAPDirectoryFactory component provides implementation of the
@@ -11,13 +10,13 @@
   </documentation>
 
   <implementation
-    class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory" />
+      class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"/>
   <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
 
   <extension target="org.nuxeo.ecm.directory.DirectoryServiceImpl"
-    point="factoryDescriptor">
+      point="factoryDescriptor">
     <factoryDescriptor
-      component="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory" />
+        component="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"/>
   </extension>
 
   <extension-point name="servers">
@@ -54,40 +53,40 @@
 
       <code>
         access to attrs="userPassword"
-                by dn="cn=ldapadmin,dc=example,dc=com" write
-                by dn="cn=nuxeo5,ou=applications,dc=example,dc=com" write
-                by anonymous auth
-                by self write
-                by * none
+        by dn="cn=ldapadmin,dc=example,dc=com" write
+        by dn="cn=nuxeo5,ou=applications,dc=example,dc=com" write
+        by anonymous auth
+        by self write
+        by * none
 
         access to dn.base="" by * read
 
         # nuxeo5 can manage the ou=people branch
         access to dn.subtree="ou=people,dc=example,dc=com"
-                by dn="cn=nuxeo5,ou=applications,dc=example,dc=com" write
-                by users read
-                by self write
-                by * none
+        by dn="cn=nuxeo5,ou=applications,dc=example,dc=com" write
+        by users read
+        by self write
+        by * none
 
         access to dn.subtree="ou=groups,dc=example,dc=com"
-                by dn="cn=nuxeo5,ou=applications,dc=example,dc=com" write
-                by users read
-                by self write
-                by * none
+        by dn="cn=nuxeo5,ou=applications,dc=example,dc=com" write
+        by users read
+        by self write
+        by * none
 
         # The admin dn has full write access
         # other
         access to *
-                by dn="cn=ldapadmin,dc=example,dc=com" write
-                by users read
-                by * none
+        by dn="cn=ldapadmin,dc=example,dc=com" write
+        by users read
+        by * none
       </code>
 
       User authentication is done using a bind method against the user
       provided login and password from the login form and not the bindDn
       / bindPassword credentials.
     </documentation>
-    <object class="org.nuxeo.ecm.directory.ldap.LDAPServerDescriptor" />
+    <object class="org.nuxeo.ecm.directory.ldap.LDAPServerDescriptor"/>
   </extension-point>
 
   <extension-point name="directories">
@@ -120,7 +119,7 @@
           <creationClass>organizationalPerson</creationClass>
           <creationClass>inetOrgPerson</creationClass>
           <rdnAttribute>uid</rdnAttribute>
-          
+
           <querySizeLimit>200</querySizeLimit>
           <queryTimeLimit>0</queryTimeLimit>
 
@@ -133,7 +132,7 @@
 
           <references>
             <inverseReference field="groups" directory="groupDirectory"
-              dualReferenceField="members" />
+                dualReferenceField="members"/>
           </references>
         </directory>
 
@@ -154,7 +153,7 @@
           <creationClass>top</creationClass>
           <creationClass>groupOfUniqueNames</creationClass>
           <rdnAttribute>cn</rdnAttribute>
-          
+
           <querySizeLimit>200</querySizeLimit>
           <queryTimeLimit>0</queryTimeLimit>
 
@@ -170,17 +169,17 @@
               existence in the target directory.
             -->
             <ldapReference field="members" directory="userDirectory"
-              forceDnConsistencyCheck="false"
-              staticAttributeId="uniqueMember"
-              dynamicAttributeId="memberURL" />
+                forceDnConsistencyCheck="false"
+                staticAttributeId="uniqueMember"
+                dynamicAttributeId="memberURL"/>
 
             <ldapReference field="subGroups" directory="groupDirectory"
-              forceDnConsistencyCheck="false"
-              staticAttributeId="uniqueMember"
-              dynamicAttributeId="memberURL" />
+                forceDnConsistencyCheck="false"
+                staticAttributeId="uniqueMember"
+                dynamicAttributeId="memberURL"/>
 
             <inverseReference field="parentGroups"
-              directory="groupDirectory" dualReferenceField="subGroups" />
+                directory="groupDirectory" dualReferenceField="subGroups"/>
           </references>
 
         </directory>
@@ -204,7 +203,7 @@
       group resolution can be expensive.
     </documentation>
     <object
-      class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor" />
+        class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor"/>
   </extension-point>
 
 </component>

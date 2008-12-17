@@ -41,6 +41,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.directory.AbstractReference;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -172,7 +173,6 @@ public class LDAPReference extends AbstractReference {
         Directory sourceDir = super.getSourceDirectory();
         if (sourceDir instanceof LDAPDirectoryProxy) {
             return ((LDAPDirectoryProxy) sourceDir).getDirectory();
-
         } else {
             throw new DirectoryException(
                     sourceDirectoryName
@@ -186,7 +186,6 @@ public class LDAPReference extends AbstractReference {
         Directory targetDir = super.getTargetDirectory();
         if (targetDir instanceof LDAPDirectoryProxy) {
             return ((LDAPDirectoryProxy) targetDir).getDirectory();
-
         } else {
             throw new DirectoryException(
                     targetDirectoryName
@@ -214,8 +213,7 @@ public class LDAPReference extends AbstractReference {
     /**
      * Store new links using the LDAP staticAttributeId strategy.
      *
-     * @see org.nuxeo.ecm.directory.Reference#addLinks(java.lang.String,
-     *      java.util.List)
+     * @see org.nuxeo.ecm.directory.Reference#addLinks(String, List)
      */
     public void addLinks(String sourceId, List<String> targetIds)
             throws DirectoryException {
@@ -330,8 +328,7 @@ public class LDAPReference extends AbstractReference {
     /**
      * Store new links using the LDAP staticAttributeId strategy.
      *
-     * @see org.nuxeo.ecm.directory.Reference#addLinks(java.util.List,
-     *      java.lang.String)
+     * @see org.nuxeo.ecm.directory.Reference#addLinks(List, String)
      */
     public void addLinks(List<String> sourceIds, String targetId)
             throws DirectoryException {
@@ -428,7 +425,7 @@ public class LDAPReference extends AbstractReference {
      * Fetch both statically and dynamically defined references and merge the
      * results.
      *
-     * @see org.nuxeo.ecm.directory.Reference#getSourceIdsForTarget(java.lang.String)
+     * @see org.nuxeo.ecm.directory.Reference#getSourceIdsForTarget(String)
      */
     public List<String> getSourceIdsForTarget(String targetId)
             throws DirectoryException {
@@ -464,7 +461,7 @@ public class LDAPReference extends AbstractReference {
 
             String filterExpr = String.format("(&(%s={0})%s)",
                     staticAttributeId, sourceDirectory.getBaseFilter());
-            String[] filterArgs = new String[] { targetDn };
+            String[] filterArgs = { targetDn };
 
             String searchBaseDn = sourceDirectory.getConfig().getSearchBaseDn();
             LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
@@ -481,14 +478,12 @@ public class LDAPReference extends AbstractReference {
                 NamingEnumeration<SearchResult> results = sourceSession.dirContext.search(
                         searchBaseDn, filterExpr, filterArgs, sctls);
 
-                Attributes attributes;
-                Object value;
                 while (results.hasMore()) {
-                    attributes = results.next().getAttributes();
+                    Attributes attributes = results.next().getAttributes();
                     // NXP-2461: check that id field is filled
                     Attribute attr = attributes.get(sourceSession.idAttribute);
                     if (attr != null) {
-                        value = attr.get();
+                        Object value = attr.get();
                         if (value != null) {
                             sourceIds.add(value.toString());
                         }
@@ -520,10 +515,8 @@ public class LDAPReference extends AbstractReference {
                     targetLdapEntry = targetSession.getLdapEntry(targetId, true);
                 }
                 if (targetLdapEntry == null) {
-                    if (targetLdapEntry == null) {
-                        throw new DirectoryException(targetId
-                                + " does not exist in " + targetDirectoryName);
-                    }
+                    throw new DirectoryException(targetId
+                            + " does not exist in " + targetDirectoryName);
                 }
                 targetDn = pseudoNormalizeDn(targetLdapEntry.getNameInNamespace());
                 Attributes targetAttributes = targetLdapEntry.getAttributes();
@@ -579,7 +572,6 @@ public class LDAPReference extends AbstractReference {
                                     sourceSession.idAttribute).get().toString());
                         }
                     }
-
                 }
             } catch (Exception e) {
                 throw new DirectoryException(
@@ -593,10 +585,10 @@ public class LDAPReference extends AbstractReference {
     }
 
     /**
-     * Fetch both statically and dynamically defined references and merge the
+     * Fetches both statically and dynamically defined references and merges the
      * results.
      *
-     * @see org.nuxeo.ecm.directory.Reference#getSourceIdsForTarget(java.lang.String)
+     * @see org.nuxeo.ecm.directory.Reference#getSourceIdsForTarget(String)
      */
     @SuppressWarnings("unchecked")
     public List<String> getTargetIdsForSource(String sourceId)
@@ -607,15 +599,19 @@ public class LDAPReference extends AbstractReference {
         String schemaName = getSourceDirectory().getSchema();
         try {
             // XXX: looks broken
-            return (List<String>) session.getEntry(sourceId).getProperty(
-                    schemaName, fieldName);
+            try {
+                return (List<String>) session.getEntry(sourceId).getProperty(
+                        schemaName, fieldName);
+            } catch (ClientException e) {
+                throw new DirectoryException(e);
+            }
         } finally {
             session.close();
         }
     }
 
     /**
-     * Simple helper that replace ", " by "," in the provided dn and return the
+     * Simple helper that replaces ", " by "," in the provided dn and returns the
      * lower case version of the result for comparison purpose.
      *
      * @param dn the raw unnormalized dn
@@ -629,15 +625,12 @@ public class LDAPReference extends AbstractReference {
     }
 
     /**
-     * Optim method to spare a LDAP request when the caller is a LDAPSession
+     * Optimized method to spare a LDAP request when the caller is a LDAPSession
      * object that has already fetched the LDAP Attribute instances.
      * <p>
      * This method should return the same results as the sister method:
      * org.nuxeo.ecm.directory.Reference#getTargetIdsForSource(java.lang.String)
      *
-     * @param staticAttribute the LDAP attribute with explicit dn references
-     * @param dynamicAttribute the LDAP attribute with implicit ldap url
-     *            references
      * @return target reference ids
      * @throws DirectoryException
      */
@@ -661,7 +654,7 @@ public class LDAPReference extends AbstractReference {
             }
             if (staticAttribute != null) {
                 NamingEnumeration<?> targetDns = staticAttribute.getAll();
-                String[] attributeIdsToCollect = new String[] { targetSession.idAttribute };
+                String[] attributeIdsToCollect = { targetSession.idAttribute };
 
                 while (targetDns.hasMore()) {
                     String targetDn = targetDns.next().toString();
@@ -681,8 +674,8 @@ public class LDAPReference extends AbstractReference {
                     if (targetSession.rdnMatchesIdField()) {
                         // optim: do not fetch the entry to get its true id but
                         // guess it by reading the targetDn
-                        final int beginIndex = targetDn.indexOf("=") + 1;
-                        final int endIndex = targetDn.indexOf(",");
+                        final int beginIndex = targetDn.indexOf('=') + 1;
+                        final int endIndex = targetDn.indexOf(',');
                         id = targetDn.substring(beginIndex, endIndex).trim();
                     } else {
                         // the entry id is not based on the rdn, we thus need to
@@ -826,7 +819,7 @@ public class LDAPReference extends AbstractReference {
      * Remove existing statically defined links for the given source id (dynamic
      * references remain unaltered)
      *
-     * @see org.nuxeo.ecm.directory.Reference#removeLinksForSource(java.lang.String)
+     * @see org.nuxeo.ecm.directory.Reference#removeLinksForSource(String)
      */
     public void removeLinksForSource(String sourceId) throws DirectoryException {
         LDAPDirectory targetDirectory = (LDAPDirectory) getTargetDirectory();
@@ -857,7 +850,7 @@ public class LDAPReference extends AbstractReference {
             }
             Attribute attrToRemove = new BasicAttribute(attributeId);
 
-            NamingEnumeration<? extends Object> oldAttrs = oldAttr.getAll();
+            NamingEnumeration<?> oldAttrs = oldAttr.getAll();
             String targetBaseDn = pseudoNormalizeDn(targetDirectory.getConfig().getSearchBaseDn());
             while (oldAttrs.hasMore()) {
                 String dn = pseudoNormalizeDn(oldAttrs.next().toString());
@@ -917,7 +910,7 @@ public class LDAPReference extends AbstractReference {
      * Remove existing statically defined links for the given target id (dynamic
      * references remain unaltered)
      *
-     * @see org.nuxeo.ecm.directory.Reference#removeLinksForTarget(java.lang.String)
+     * @see org.nuxeo.ecm.directory.Reference#removeLinksForTarget(String)
      */
     public void removeLinksForTarget(String targetId) throws DirectoryException {
         LDAPDirectory targetDirectory = (LDAPDirectory) getTargetDirectory();
@@ -1041,8 +1034,8 @@ public class LDAPReference extends AbstractReference {
      * Edit the list of statically defined references for a given target
      * (dynamic references remain unaltered)
      *
-     * @see org.nuxeo.ecm.directory.Reference#setSourceIdsForTarget(java.lang.String,
-     *      java.util.List)
+     * @see org.nuxeo.ecm.directory.Reference#setSourceIdsForTarget(String,
+     *      List)
      */
     public void setSourceIdsForTarget(String targetId, List<String> sourceIds)
             throws DirectoryException {
@@ -1054,8 +1047,8 @@ public class LDAPReference extends AbstractReference {
      * Set the list of statically defined references for a given source (dynamic
      * references remain unaltered)
      *
-     * @see org.nuxeo.ecm.directory.Reference#setTargetIdsForSource(java.lang.String,
-     *      java.util.List)
+     * @see org.nuxeo.ecm.directory.Reference#setTargetIdsForSource(String,
+     *      List)
      */
     public void setTargetIdsForSource(String sourceId, List<String> targetIds)
             throws DirectoryException {

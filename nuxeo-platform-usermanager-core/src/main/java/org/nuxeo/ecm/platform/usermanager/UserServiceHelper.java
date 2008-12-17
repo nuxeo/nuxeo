@@ -26,7 +26,7 @@ import org.nuxeo.runtime.api.Framework;
  *   <code>UserManager userManager = Framework.getService(UserManager.class);<code>
  *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
+ * FIXME: to remove in 5.2
  */
 @Deprecated
 public final class UserServiceHelper {

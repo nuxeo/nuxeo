@@ -42,22 +42,23 @@ public final class BuiltinRelationsFields {
 
     /**
      * Used for the local part of the subject's URI.
-     *
-     * <p>This applies to {@link org.nuxeo.ecm.platform.relations.api.QNameResource} only.</p>
-     * <p>In some applications, the local part of URI can be more meaningful
+     * <p>
+     * This applies to {@link org.nuxeo.ecm.platform.relations.api.QNameResource} only.
+     * <p>
+     * In some applications, the local part of URI can be more meaningful
      * that document qid, and easier to compare with document resources than
      * the full uri, not even to mention that a document can be associated
-     * to several resources.</p>
-     * <p>Of course, this is intrinsically more general than document resources
-     * </p>
+     * to several resources.
+     * <p>
+     * Of course, this is intrinsically more general than document resources.
      */
     public static final String SUBJECT_URI_LOCAL = "subjectUriLocal";
 
-    /** @see {@link SUBJECT_URI_LOCAL} for meaning & use-cases
+    /** @see {@link #SUBJECT_URI_LOCAL} for meaning & use-cases
      */
     public static final String SUBJECT_URI_NAMESPACE = "subjectUriNs";
 
-    /** @see {@link SUBJECT_URI_LOCAL} for meaning & use-cases
+    /** @see {@link #SUBJECT_URI_LOCAL} for meaning & use-cases
      */
     public static final String OBJECT_URI_LOCAL = "objectUriLocal";
 
@@ -67,9 +68,9 @@ public final class BuiltinRelationsFields {
      * used to store a resolved value corresponding to the resource URI.
      * <p>
      * in case of document resources, this *must* be directly comparable
-     * to {@Link BuiltinDocumentFields.FIELD_DOC_QID}
-     * </p>
-     * <p>This is not filled if resolution failed</p>
+     * to {@Link BuiltinDocumentFields.FIELD_DOC_QID}.
+     * <p>
+     * This is not filled if resolution failed.
      */
     public static final String OBJECT = "object";
 
@@ -77,9 +78,9 @@ public final class BuiltinRelationsFields {
      * used to store a resolved value corresponding to the resource URI.
      * <p>
      * in case of document resources, this *must* be directly comparable
-     * to {@Link BuiltinDocumentFields.FIELD_DOC_QID}
-     * </p>
-     * <p>This is not filled if resolution failed</p>
+     * to {@Link BuiltinDocumentFields.FIELD_DOC_QID}.
+     * <p>
+     * This is not filled if resolution failed.
      */
     public static final String SUBJECT = "subject";
 
@@ -136,7 +137,6 @@ public final class BuiltinRelationsFields {
                 PREDICATE_URI,
                 null, "keyword", true, true,
                 false, false, false, null, null, null));
-
 
         return indexableFields;
     }

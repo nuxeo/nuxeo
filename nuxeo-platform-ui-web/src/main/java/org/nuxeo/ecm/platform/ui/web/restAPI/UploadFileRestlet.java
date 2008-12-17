@@ -49,7 +49,9 @@ import org.restlet.data.Response;
 @Name("uploadFileRestlet")
 @Scope(EVENT)
 public class UploadFileRestlet extends BaseNuxeoRestlet implements
-        LiveEditConstants {
+        LiveEditConstants, Serializable {
+
+    private static final long serialVersionUID = -6167207806181917456L;
 
     @In(create = true)
     protected NavigationContext navigationContext;
@@ -118,11 +120,9 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
 
             documentManager.saveDocument(dm);
             documentManager.save();
-
         } catch (Exception e) {
             handleError(res, e);
         }
-
     }
 
 }

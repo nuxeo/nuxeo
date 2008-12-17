@@ -147,8 +147,7 @@ public class StatementImpl implements Statement {
     }
 
     public Node[] getProperties(Resource property) {
-        Node[] values;
-        values = properties.get(property);
+        Node[] values = properties.get(property);
         return values;
     }
 
@@ -164,7 +163,7 @@ public class StatementImpl implements Statement {
 
     public void setProperty(Resource property, Node value) {
         if (property != null && value != null) {
-            Node[] values = new Node[] { value };
+            Node[] values = { value };
             properties.put(property, values);
         }
     }
@@ -228,7 +227,7 @@ public class StatementImpl implements Statement {
                     properties.put(property, valuesList.toArray(new Node[] {}));
                 }
             } else {
-                Node[] values = new Node[] { value };
+                Node[] values = { value };
                 properties.put(property, values);
             }
         }

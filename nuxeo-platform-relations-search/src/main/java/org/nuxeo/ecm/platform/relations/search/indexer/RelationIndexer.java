@@ -54,7 +54,6 @@ import org.nuxeo.ecm.platform.relations.search.resources.indexing.api.ResourceTy
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
  *
  */
-
 public class RelationIndexer {
 
     private static final Log log = LogFactory.getLog(RelationIndexer.class);
@@ -112,8 +111,7 @@ public class RelationIndexer {
         // Each possible relations for all possible
         // (rdf) Resource representation of incoming object
         List<IndexableResources> allIndexableResources = new LinkedList<IndexableResources>();
-        List<IndexableResource> iResources;
-        Set<Resource> allResources = null;
+        Set<Resource> allResources;
         try {
             allResources = relationManager.getAllResources(object);
         } catch (ClientException e) {
@@ -125,7 +123,7 @@ public class RelationIndexer {
                     try {
                         for (Statement statement : getStatements(
                                 conf.getName(), r)) {
-                            iResources = new LinkedList<IndexableResource>();
+                            List<IndexableResource> iResources = new LinkedList<IndexableResource>();
                             // iResources.add(getOpenAcp()); TODO
                             iResources.add(factory.createIndexableResourceFrom(
                                     statement, conf, coreSessionId));
@@ -145,11 +143,11 @@ public class RelationIndexer {
         return allIndexableResources;
     }
 
-    private Set<Statement> getStatements(String graphName, Resource r)
+    private static Set<Statement> getStatements(String graphName, Resource r)
             throws ClientException {
         RelationManager relationManager = RelationSearchBusinessDelegate.getRelationManager();
 
-        HashSet<Statement> res = new HashSet<Statement>();
+        Set<Statement> res = new HashSet<Statement>();
         res.addAll(relationManager.getStatements(graphName, new StatementImpl(
                 r, null, null)));
         res.addAll(relationManager.getStatements(graphName, new StatementImpl(
@@ -165,7 +163,7 @@ public class RelationIndexer {
         }
     }
 
-    private String computeResourcesGlobalKey(Statement statement,
+    private static String computeResourcesGlobalKey(Statement statement,
             Serializable object, List<IndexableResource> resources) {
         // TODO good enough ?
         return String.format("%d", statement.hashCode());
@@ -199,4 +197,5 @@ public class RelationIndexer {
                     statement, null, iResources), iResources), false);
         }
     }
+
 }

@@ -1,14 +1,15 @@
 <?xml version="1.0"?>
-
 <component
-  name="org.nuxeo.ecm.platform.filemanager.service.FileManagerService">
+    name="org.nuxeo.ecm.platform.filemanager.service.FileManagerService">
 
   <implementation
-    class="org.nuxeo.ecm.platform.filemanager.service.FileManagerService" />
+      class="org.nuxeo.ecm.platform.filemanager.service.FileManagerService"/>
+
   <service>
     <provide
-      interface="org.nuxeo.ecm.platform.filemanager.api.FileManager" />
+        interface="org.nuxeo.ecm.platform.filemanager.api.FileManager"/>
   </service>
+
   <documentation>
     The FileManager service provide a generic service for building
     Documents form a simple File.
@@ -25,15 +26,15 @@
 
       <code>
         <plugin name="myCustomFileImporter"
-          class="com.example.MyFileImporterImplementationClass"
-          enabled="true">
+            class="com.example.MyFileImporterImplementationClass"
+            enabled="true">
           <filter>text/plain</filter>
         </plugin>
       </code>
 
       The filter tag is used to know what mime-types can be used with
       the plugin.
-      
+
       A plugin can override an existing plugin by reusing the same name,
       in this case the previous filters will be ignored. A plugin can
       be completely disabled by setting enabled="false".
@@ -43,7 +44,7 @@
 
       <code>
         <folderImporter name="myCustomFolderImporter"
-          class="com.example.MyFolderImporterImplementationClass" />
+            class="com.example.MyFolderImporterImplementationClass"/>
       </code>
 
       The latest registered folder importer will be used in place of any
@@ -63,20 +64,20 @@
 
       <code>
         <creationContainerListProvider
-          name="myCustomContainerListProvider"
-          class="com.example.MyCustomContainerListImplementationClass">
+            name="myCustomContainerListProvider"
+            class="com.example.MyCustomContainerListImplementationClass">
           <docType>File</docType>
           <docType>Note</docType>
         </creationContainerListProvider>
       </code>
-
     </documentation>
+
     <object
-      class="org.nuxeo.ecm.platform.filemanager.service.extension.PluginExtension" />
+        class="org.nuxeo.ecm.platform.filemanager.service.extension.PluginExtension"/>
     <object
-      class="org.nuxeo.ecm.platform.filemanager.service.extension.FolderImporterDescriptor" />
+        class="org.nuxeo.ecm.platform.filemanager.service.extension.FolderImporterDescriptor"/>
     <object
-      class="org.nuxeo.ecm.platform.filemanager.service.extension.CreationContainerListProviderDescriptor" />
+        class="org.nuxeo.ecm.platform.filemanager.service.extension.CreationContainerListProviderDescriptor"/>
   </extension-point>
 
   <extension-point name="unicity">
@@ -94,9 +95,9 @@
         </unicitySettings>
       </code>
     </documentation>
+
     <object
-      class="org.nuxeo.ecm.platform.filemanager.service.extension.UnicityExtension" />
+        class="org.nuxeo.ecm.platform.filemanager.service.extension.UnicityExtension"/>
   </extension-point>
 
 </component>
-

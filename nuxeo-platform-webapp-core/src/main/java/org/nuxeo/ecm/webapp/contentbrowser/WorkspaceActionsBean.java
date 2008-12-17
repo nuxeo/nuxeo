@@ -61,11 +61,10 @@ import org.nuxeo.ecm.webapp.security.SecurityActions;
 /**
  * Action listener that deals with operations with the workspaces.
  * <p>
- * This action listener handles the Workspace creation wizard.
+ * This action listener handles the workspace creation wizard.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
-
 @Name("workspaceActions")
 @Scope(CONVERSATION)
 public class WorkspaceActionsBean extends InputController implements
@@ -74,8 +73,6 @@ public class WorkspaceActionsBean extends InputController implements
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(WorkspaceActionsBean.class);
-
-    protected static final String ADMIN_GROUP = "administrators";
 
     @In(create = true, required = false)
     private transient CoreSession documentManager;
@@ -183,8 +180,8 @@ public class WorkspaceActionsBean extends InputController implements
             try {
                 tmpWorkspace = documentManager.createDocumentModel("Workspace");
             } catch (ClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                // TODO: more robust exception handling?
+                log.error(e);
             }
         }
         return tmpWorkspace;
@@ -215,8 +212,8 @@ public class WorkspaceActionsBean extends InputController implements
                 }
             }
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // TODO: more robust exception handling?
+            log.error(e);
         }
 
         return "";
@@ -237,8 +234,8 @@ public class WorkspaceActionsBean extends InputController implements
                 }
             }
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // TODO: more robust exception handling?
+            log.error(e);
         }
 
         return null;
@@ -273,7 +270,7 @@ public class WorkspaceActionsBean extends InputController implements
             }
 
             // Force addition of administrators group
-            principalsName.add("administrators");
+            principalsName.add(SecurityConstants.ADMINISTRATORS);
 
             // Grant to principalList
             for (String principalName : principalsName) {
@@ -355,7 +352,7 @@ public class WorkspaceActionsBean extends InputController implements
             }
 
             // Add Admin group
-            securityActions.addPermission(ADMIN_GROUP,
+            securityActions.addPermission(SecurityConstants.ADMINISTRATORS,
                     SecurityConstants.EVERYTHING, true);
 
             // DENY at root

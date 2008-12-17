@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.core.search.backend.compass.lucene.analysis.fr;
 
 /**
@@ -31,77 +50,76 @@ import java.util.Set;
  *
  * @author    Patrick Talbot (based on Gerhard Schwarz work for German)
  */
+@SuppressWarnings({"ALL"})
 public final class FrenchStemFilter extends TokenFilter {
 
-	/**
-	 * The actual token in the input stream.
-	 */
-	private Token token = null;
-	private FrenchStemmer stemmer = null;
-	private Set exclusions = null;
-	private boolean caseSensitive = false;
+    /**
+     * The actual token in the input stream.
+     */
+    private Token token = null;
+    private FrenchStemmer stemmer = null;
+    private Set exclusions = null;
+    private boolean caseSensitive = false;
 
-	public FrenchStemFilter( TokenStream in ) {
+    public FrenchStemFilter( TokenStream in ) {
     super(in);
-		stemmer = new FrenchStemmer();
-	}
+        stemmer = new FrenchStemmer();
+    }
 
-	/**
-	 * Builds a FrenchStemFilter that uses an exclusiontable.
+    /**
+     * Builds a FrenchStemFilter that uses an exclusiontable.
    *
    * @deprecated
-	 */
-	public FrenchStemFilter( TokenStream in, Hashtable exclusiontable ) {
-		this( in );
-		exclusions = new HashSet(exclusiontable.keySet());
-	}
+     */
+    public FrenchStemFilter( TokenStream in, Hashtable exclusiontable ) {
+        this( in );
+        exclusions = new HashSet(exclusiontable.keySet());
+    }
 
-	public FrenchStemFilter( TokenStream in, Set exclusiontable ) {
-		this( in );
-		exclusions = exclusiontable;
-	}
-	
-	public FrenchStemFilter( TokenStream in, Set exclusiontable, boolean caseSens ) {
-		this( in );
-		exclusions = exclusiontable;
-		caseSensitive = caseSens;
-	}
+    public FrenchStemFilter( TokenStream in, Set exclusiontable ) {
+        this( in );
+        exclusions = exclusiontable;
+    }
 
-	/**
-	 * @return  Returns the next token in the stream, or null at EOS
-	 */
-	public final Token next()
-		throws IOException {
-		if ( ( token = input.next() ) == null ) {
-			return null;
-		}
-		// Check the exclusiontable
-		else if ( exclusions != null && exclusions.contains( caseSensitive?token.termText().toLowerCase():token.termText() ) ) {
-			return token;
-		}
-		else {
-			String s = stemmer.stem( caseSensitive?token.termText().toLowerCase():token.termText() );
-			// If not stemmed, dont waste the time creating a new token
-			if ( !s.equals( caseSensitive?token.termText().toLowerCase():token.termText() ) ) {
-			   return new Token( s, token.startOffset(), token.endOffset(), token.type());
-			}
-			return token;
-		}
-	}
-	/**
-	 * Set a alternative/custom FrenchStemmer for this filter.
-	 */
-	public void setStemmer( FrenchStemmer stemmer ) {
-		if ( stemmer != null ) {
-			this.stemmer = stemmer;
-		}
-	}
-	/**
-	 * Set an alternative exclusion list for this filter.
-	 */
-	public void setExclusionTable( Hashtable exclusiontable ) {
-		exclusions = new HashSet(exclusiontable.keySet());
-	}
+    public FrenchStemFilter( TokenStream in, Set exclusiontable, boolean caseSens ) {
+        this( in );
+        exclusions = exclusiontable;
+        caseSensitive = caseSens;
+    }
+
+    /**
+     * @return  Returns the next token in the stream, or null at EOS
+     */
+    public final Token next()
+        throws IOException {
+        if ( ( token = input.next() ) == null ) {
+            return null;
+        }
+        // Check the exclusiontable
+        else if ( exclusions != null && exclusions.contains( caseSensitive?token.termText().toLowerCase():token.termText() ) ) {
+            return token;
+        }
+        else {
+            String s = stemmer.stem( caseSensitive?token.termText().toLowerCase():token.termText() );
+            // If not stemmed, dont waste the time creating a new token
+            if ( !s.equals( caseSensitive?token.termText().toLowerCase():token.termText() ) ) {
+               return new Token( s, token.startOffset(), token.endOffset(), token.type());
+            }
+            return token;
+        }
+    }
+    /**
+     * Set a alternative/custom FrenchStemmer for this filter.
+     */
+    public void setStemmer( FrenchStemmer stemmer ) {
+        if ( stemmer != null ) {
+            this.stemmer = stemmer;
+        }
+    }
+    /**
+     * Set an alternative exclusion list for this filter.
+     */
+    public void setExclusionTable( Hashtable exclusiontable ) {
+        exclusions = new HashSet(exclusiontable.keySet());
+    }
 }
-
-

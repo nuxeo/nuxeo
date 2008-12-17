@@ -8,7 +8,7 @@
   <require>org.nuxeo.ecm.platform.types</require>
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService"
-    point="types">
+      point="types">
 
     <type id="Domain" coretype="Domain">
       <subtypes>

@@ -39,8 +39,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * POJO class that extracts and holds the list of the available permissions from
  * backend.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
+ * @author Razvan Caraghin
  */
 @Name("permissionListManager")
 @Scope(SESSION)

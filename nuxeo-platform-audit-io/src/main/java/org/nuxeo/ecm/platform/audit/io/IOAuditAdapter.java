@@ -83,7 +83,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         // }
     }
 
-    protected static CoreSession getCoreSession(String repo) throws Exception {
+    protected static CoreSession getCoreSession(String repo) throws ClientException {
         CoreSession coreSession;
         try {
             Framework.login();
@@ -99,7 +99,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         return coreSession;
     }
 
-    protected static Logs getLogService() throws Exception {
+    protected static Logs getLogService() throws AuditException {
         Logs logService;
         try {
             logService = Framework.getService(Logs.class);
@@ -183,7 +183,6 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
 
     @Override
     public IOResources loadResourcesFromXML(InputStream stream) {
-
         IOLogEntryBase logEntriesHelper = getLogEntryHelper();
         List<LogEntry> allEntries;
         try {
@@ -272,4 +271,5 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
 
         return new IOAuditResources(newResourcesMap);
     }
+
 }

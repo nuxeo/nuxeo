@@ -52,7 +52,7 @@ public interface WMWorkItemDefinition extends Serializable {
     /**
      * Returns the work item definition type.
      *
-     * @see org.nuxeo.ecm.platform.workflow.mode.WorkflowConstants
+     * @see org.nuxeo.ecm.platform.workflow.api.common.WorkflowConstants
      *
      * @return the work item definition type
      */

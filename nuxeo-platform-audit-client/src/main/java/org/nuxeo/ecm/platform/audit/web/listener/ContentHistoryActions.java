@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.ejb.Remove;
 
 import org.jboss.seam.annotations.Destroy;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -48,26 +49,51 @@ public interface ContentHistoryActions extends Serializable {
     void invalidateLogEntries() throws AuditException;
 
     /**
-     * Computes all log entries.
-     *
-     * @see @factory
+     * Computes all log entries for current document.
      *
      * @throws AuditException
      */
     List<LogEntry> computeLogEntries() throws AuditException;
 
     /**
-     * Computes latest logs only.
+     * Computes all log entries for given document.
      *
-     * @see @factory
+     * @throws AuditException
+     */
+    List<LogEntry> computeLogEntries(DocumentModel document)
+            throws AuditException;
+
+    /**
+     * Computes latest logs only.
      *
      * @throws AuditException
      */
     List<LogEntry> computeLatestLogEntries() throws AuditException;
 
-    Map<Long, String> computeLogEntriesComments();
+    Map<Long, String> computeLogEntriesComments() throws AuditException;
 
-    Map<Long, LinkedDocument> computeLogEntrieslinkedDocs();
+    Map<Long, LinkedDocument> computeLogEntrieslinkedDocs()
+            throws AuditException;
+
+    /**
+     * Returns the log comment.
+     * <p>
+     * This log may be filled automatically when dealing with copy/paste/move
+     * log entries.
+     *
+     * @throws AuditException
+     */
+    String getLogComment(LogEntry entry) throws AuditException;
+
+    /**
+     * Returns the log linked document.
+     * <p>
+     * The linked document is resolved from the log original comment, when
+     * dealing with copy/paste/move log entries.
+     *
+     * @throws AuditException
+     */
+    LinkedDocument getLogLinkedDocument(LogEntry entry) throws AuditException;
 
     String doSearch() throws AuditException;
 

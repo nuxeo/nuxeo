@@ -43,12 +43,13 @@ public class DocumentLocationImpl extends
         super(serverLocationName, docRef);
     }
 
+    @Override
     public DocumentRef getDocRef() {
         return super.getDocRef();
     }
 
     public String getServerLocationName() {
-        return super.getServerName();
+        return getServerName();
     }
 
 }

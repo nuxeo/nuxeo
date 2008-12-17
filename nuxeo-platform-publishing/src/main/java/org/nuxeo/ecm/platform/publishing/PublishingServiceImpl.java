@@ -34,7 +34,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * Publishing service implementation.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class PublishingServiceImpl extends DefaultComponent implements
         PublishingService {
@@ -69,7 +68,6 @@ public class PublishingServiceImpl extends DefaultComponent implements
         } catch (IllegalAccessException e) {
             throw new PublishingValidatorException(e);
         }
-
     }
 
     public String getValidDateFieldName() {
@@ -105,7 +103,6 @@ public class PublishingServiceImpl extends DefaultComponent implements
         } else {
             log.error("Extension point name is unknown... => " + extensionPoint);
         }
-
     }
 
     @Override

@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-parent</artifactId>
-    <version>5.1.7-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-transform-plugins</artifactId>
@@ -34,6 +34,7 @@
       <artifactId>nuxeo-platform-transform-core</artifactId>
       <type>ejb</type>
     </dependency>
+
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-mimetype-api</artifactId>
@@ -59,6 +60,7 @@
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-text-extractors</artifactId>
     </dependency>
+
     <dependency>
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>

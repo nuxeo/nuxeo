@@ -31,7 +31,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -42,7 +41,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("versioningManager")
 @Scope(ScopeType.CONVERSATION)
-@NuxeoJavaBeanErrorHandler
 public class DocumentVersioningBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = -3782178155516634239L;
@@ -60,9 +58,6 @@ public class DocumentVersioningBusinessDelegate implements Serializable {
     /**
      * Acquires a new {@link VersioningManager} reference. The related EJB may
      * be deployed on a local or remote AppServer.
-     *
-     * @return
-     * @throws ClientException
      */
     @Unwrap
     public VersioningManager getVersioningManager() throws ClientException {
@@ -85,7 +80,7 @@ public class DocumentVersioningBusinessDelegate implements Serializable {
 
     @Destroy
     @PermitAll
-    public void destroy() throws ClientException {
+    public void destroy() {
         log.debug("Destroyed the seam component...");
     }
 
