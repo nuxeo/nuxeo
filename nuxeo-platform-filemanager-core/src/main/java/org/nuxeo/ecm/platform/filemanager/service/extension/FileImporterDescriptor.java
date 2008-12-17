@@ -28,9 +28,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author akalogeropoulos
  */
 @XObject("plugin")
-public class PluginExtension implements Serializable {
-
-    // XXX: this is a badly named class, to be renamed as FileImporterDescriptor
+public class FileImporterDescriptor implements Serializable {
 
     public static final List<String> DEFAULT_FILTER = new ArrayList<String>();
 
@@ -50,6 +48,9 @@ public class PluginExtension implements Serializable {
 
     @XNode("@filter")
     protected String filter;
+
+    @XNode("@order")
+    private Integer order;
 
     public String getName() {
         return name;
@@ -87,4 +88,7 @@ public class PluginExtension implements Serializable {
         return enabled;
     }
 
+    public Integer getOrder() {
+        return order;
+    }
 }

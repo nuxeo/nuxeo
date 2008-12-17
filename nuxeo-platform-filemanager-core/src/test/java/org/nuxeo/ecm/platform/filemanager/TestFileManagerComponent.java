@@ -19,38 +19,49 @@
 
 package org.nuxeo.ecm.platform.filemanager;
 
-
 import java.util.List;
 
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
-import org.nuxeo.ecm.platform.filemanager.service.extension.Plugin;
+import org.nuxeo.ecm.platform.filemanager.service.extension.FileImporter;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public abstract class TestPluginExtension extends TestFake {
+public class TestFileManagerComponent extends NXRuntimeTestCase {
 
     private FileManagerService filemanagerService;
 
-    @ Override
+    @Override
     public void setUp() throws Exception {
         super.setUp();
-        filemanagerService = getNXFileManager();
+
+        deployBundle(TestConstants.MIMETYPE_BUNDLE);
+        deployContrib(TestConstants.FILEMANAGER_BUNDLE,
+                "OSGI-INF/nxfilemanager-service.xml");
+
+        deployContrib(TestConstants.FILEMANAGER_TEST_BUNDLE,
+                "nxfilemanager-test-contribs.xml");
+
+        filemanagerService = (FileManagerService) Framework.getRuntime().getComponent(
+                FileManagerService.NAME);
     }
 
-    @ Override
+    @Override
     public void tearDown() throws Exception {
         filemanagerService = null;
+
+        undeployContrib(TestConstants.FILEMANAGER_TEST_BUNDLE,
+                "nxfilemanager-test-contribs.xml");
+
+        undeployContrib(TestConstants.FILEMANAGER_BUNDLE,
+                "OSGI-INF/nxfilemanager-service.xml");
+
         super.tearDown();
     }
 
     public void testPlugins() {
-        Plugin testPlu = filemanagerService.getPluginByName("plug");
+        FileImporter testPlu = filemanagerService.getPluginByName("plug");
         List<String> filters = testPlu.getFilters();
         assertEquals(2, filters.size());
-    }
-
-    protected static FileManagerService getNXFileManager() {
-        return (FileManagerService) Framework.getRuntime().getComponent(
-                FileManagerService.NAME);
     }
 
 }

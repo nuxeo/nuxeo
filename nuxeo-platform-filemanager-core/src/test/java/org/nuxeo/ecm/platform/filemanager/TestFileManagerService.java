@@ -20,125 +20,186 @@
 package org.nuxeo.ecm.platform.filemanager;
 
 import java.io.File;
-import java.net.URL;
+import java.util.List;
 
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
+import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
+import org.nuxeo.runtime.api.Framework;
 
-public class TestFileManagerService extends TestFake {
+public class TestFileManagerService extends RepositoryOSGITestCase {
 
-    private static final String FILE_PATH = "test-data/hello.doc";
+    protected FileManager service;
 
-    private FileManagerService filemanagerService;
+    protected DocumentModel root;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        filemanagerService = new FileManagerService();
+
+        deployBundle(TestConstants.TYPESERVICE_BUNDLE);
+        deployContrib(TestConstants.FILEMANAGER_TEST_BUNDLE,
+                "ecm-types-test-contrib.xml");
+        deployBundle(TestConstants.MIMETYPE_BUNDLE);
+
+        deployContrib(TestConstants.FILEMANAGER_BUNDLE,
+                "OSGI-INF/nxfilemanager-service.xml");
+        deployContrib(TestConstants.FILEMANAGER_BUNDLE,
+                "OSGI-INF/nxfilemanager-plugins-contrib.xml");
+
+        deployContrib(TestConstants.FILEMANAGER_TEST_BUNDLE,
+                "nxfilemanager-test-contribs.xml");
+
+        openRepository();
+        service = Framework.getService(FileManager.class);
+        root = coreSession.getRootDocument();
     }
 
     @Override
-    public void tearDown() throws Exception {
-        filemanagerService = null;
+    protected void tearDown() throws Exception {
+        service = null;
+        root = null;
+
+        undeployContrib(TestConstants.FILEMANAGER_TEST_BUNDLE,
+                "nxfilemanager-test-contribs.xml");
+
+        undeployContrib(TestConstants.FILEMANAGER_BUNDLE,
+                "OSGI-INF/nxfilemanager-plugins-contrib.xml");
+        undeployContrib(TestConstants.FILEMANAGER_BUNDLE,
+                "OSGI-INF/nxfilemanager-service.xml");
+        // undeployBundle(TestConstants.MIMETYPE_BUNDLE);
+        undeployContrib(TestConstants.FILEMANAGER_TEST_BUNDLE,
+                "ecm-types-test-contrib.xml");
+        // undeployBundle(TestConstants.TYPESERVICE_BUNDLE);
+
         super.tearDown();
     }
 
-    public void testCreateFromBlob() throws Exception {
-        URL url = Thread.currentThread().getContextClassLoader().getResource(FILE_PATH);
-        File file = new File(url.toURI());
-
-        DocumentModel root = remote.getRootDocument();
-
-        byte[] content = FileManagerUtils.getBytesFromFile(file);
-        ByteArrayBlob input = new ByteArrayBlob(content, "application/pdf");
-
-        DocumentModel doc = filemanagerService.createDocumentFromBlob(
-                remote, input, root.getPathAsString(), true, FILE_PATH);
-        assertNotNull(doc);
+    protected File getTestFile(String relativePath) {
+        return new File(FileUtils.getResourcePathFromContext(relativePath));
     }
 
-/*
-    public void testCreateDocumentFromFiles() throws Exception {
-
-        List<File> files = new ArrayList<File>();
-        for (Object o :
-                properties.keySet()) {
-            String key = (String) o;
-            if (key != null &&
-                    key.startsWith("test.crea.file")) {
-                String filePath =
-                        properties.getProperty(key);
-                File file = new File(filePath);
-                files.add(file);
-            }
-        }
-
-        DocumentModel root = remote.getRootDocument();
-        List<DocumentModel>
-                docList =
-                filemanagerService.createDocumentFromFiles(remote, files, root.getPathAsString(),
-                        true);
-    }
-*/
-
-    public void testUpdateDocumentFromBlob() throws Exception {
-        DocumentModel root = remote.getRootDocument();
-
-        URL url = Thread.currentThread().getContextClassLoader().getResource(FILE_PATH);
-        File file = new File(url.toURI());
+    public void testDefaultCreateFromBlob() throws Exception {
+        File file = getTestFile("test-data/hello.doc");
 
         byte[] content = FileManagerUtils.getBytesFromFile(file);
         ByteArrayBlob input = new ByteArrayBlob(content, "application/msword");
 
-        DocumentModel updateDoc = filemanagerService.updateDocumentFromBlob(remote, input,
-                        root.getPathAsString(), FILE_PATH);
-        // TODO: fix this
-        // assertNotNull(updateDoc);
-        //updateDoc = filemanagerService.updateDocumentFromBlob(remote, input,
-        //                root.getPathAsString(), filePath);
-        //assertNotNull(updateDoc);
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
+                root.getPathAsString(), true, "test-data/hello.doc");
+        assertNotNull(doc);
+        assertEquals("hello", doc.getProperty("dublincore", "title"));
+        assertEquals("hello.doc", doc.getProperty("file", "filename"));
+        assertNotNull(doc.getProperty("file", "content"));
     }
 
-
-/*
-    public void testUpdateDocumentFromFiles() throws Exception {
-
-        Map<String, File> pathFiles = new HashMap<String, File>();
-        DocumentModel
-                root = remote.getRootDocument();
-        for (Object o : properties.keySet()) {
-            String key = (String) o;
-            if (key != null &&
-                    key.startsWith("test.upda.file")) {
-                String filePath =
-                        properties.getProperty(key);
-                File file = new File(filePath);
-                pathFiles.put(root.getPathAsString(), file);
-            }
-        }
-
-
-        List<DocumentModel> docList =
-                filemanagerService.updateDocumentFromFiles(remote, pathFiles);
-    }
-*/
-
-
-/*    public void testCreateDocumentFromFolder() throws Exception {
-        String filePath = properties.getProperty("test.folder");
-        DocumentModel root = remote.getRootDocument();
-
-        File file = new File(filePath);
+    public void testDefaultCreateTwiceFromSameBlob() throws Exception {
+        // create doc
+        File file = getTestFile("test-data/hello.doc");
 
         byte[] content = FileManagerUtils.getBytesFromFile(file);
-        ByteArrayBlob input = new ByteArrayBlob(content, null);
+        ByteArrayBlob input = new ByteArrayBlob(content, "application/msword");
 
-        DocumentModel doc = filemanagerService.createDocumentFromBlob(
-                remote, input, root.getPathAsString(), true, filePath);
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
+                root.getPathAsString(), true, "test-data/hello.doc");
+        DocumentRef docRef = doc.getRef();
+
         assertNotNull(doc);
-    }
-*/
+        assertEquals("hello", doc.getProperty("dublincore", "title"));
+        assertEquals("hello.doc", doc.getProperty("file", "filename"));
+        assertNotNull(doc.getProperty("file", "content"));
 
+        List<DocumentModel> versions = coreSession.getVersions(docRef);
+        assertEquals(0, versions.size());
+
+        // create again with same file
+        doc = service.createDocumentFromBlob(coreSession, input,
+                root.getPathAsString(), true, "test-data/hello.doc");
+        assertNotNull(doc);
+        DocumentRef newDocRef = doc.getRef();
+        assertEquals(docRef, newDocRef);
+        assertEquals("hello", doc.getProperty("dublincore", "title"));
+        assertEquals("hello.doc", doc.getProperty("file", "filename"));
+        assertNotNull(doc.getProperty("file", "content"));
+
+        versions = coreSession.getVersions(docRef);
+        assertEquals(1, versions.size());
+    }
+
+    public void testDefaultUpdateFromBlob() throws Exception {
+        // create doc
+        File file = getTestFile("test-data/hello.doc");
+
+        byte[] content = FileManagerUtils.getBytesFromFile(file);
+        ByteArrayBlob input = new ByteArrayBlob(content, "application/msword");
+
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
+                root.getPathAsString(), true, "test-data/hello.doc");
+        DocumentRef docRef = doc.getRef();
+
+        assertNotNull(doc);
+        assertEquals("hello", doc.getProperty("dublincore", "title"));
+        assertEquals("hello.doc", doc.getProperty("file", "filename"));
+        assertNotNull(doc.getProperty("file", "content"));
+
+        // update it with another file with same name
+        doc = service.updateDocumentFromBlob(coreSession, input,
+                root.getPathAsString(), "test-data/update/hello.doc");
+        assertNotNull(doc);
+        DocumentRef newDocRef = doc.getRef();
+        assertEquals(docRef, newDocRef);
+        assertEquals("hello", doc.getProperty("dublincore", "title"));
+        assertEquals("hello.doc", doc.getProperty("file", "filename"));
+        assertNotNull(doc.getProperty("file", "content"));
+    }
+
+    protected static String NOTE_XML_CONTENT = "<?xml version=\"1.0\"?>\n<foo>\n  <bar>Hello from XML document</bar>\n</foo>";
+
+    public void testCreateNote() throws Exception {
+        File file = getTestFile("test-data/hello.xml");
+
+        byte[] content = FileManagerUtils.getBytesFromFile(file);
+        ByteArrayBlob input = new ByteArrayBlob(content, "application/xml");
+
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
+                root.getPathAsString(), true, "test-data/hello.xml");
+        assertNotNull(doc);
+        assertEquals("hello", doc.getProperty("dublincore", "title"));
+        assertEquals(NOTE_XML_CONTENT, doc.getProperty("note", "note"));
+    }
+
+    public void testCreateNoteTwiceFromSameBlob() throws Exception {
+        // create doc
+        File file = getTestFile("test-data/hello.xml");
+
+        byte[] content = FileManagerUtils.getBytesFromFile(file);
+        ByteArrayBlob input = new ByteArrayBlob(content, "application/xml");
+
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
+                root.getPathAsString(), true, "test-data/hello.xml");
+        DocumentRef docRef = doc.getRef();
+
+        assertNotNull(doc);
+        assertEquals("hello", doc.getProperty("dublincore", "title"));
+        assertEquals(NOTE_XML_CONTENT, doc.getProperty("note", "note"));
+
+        List<DocumentModel> versions = coreSession.getVersions(docRef);
+        assertEquals(0, versions.size());
+
+        // create again with same file
+        doc = service.createDocumentFromBlob(coreSession, input,
+                root.getPathAsString(), true, "test-data/hello.xml");
+        assertNotNull(doc);
+        DocumentRef newDocRef = doc.getRef();
+        assertEquals(docRef, newDocRef);
+        assertEquals("hello", doc.getProperty("dublincore", "title"));
+        assertEquals(NOTE_XML_CONTENT, doc.getProperty("note", "note"));
+
+        versions = coreSession.getVersions(docRef);
+        assertEquals(1, versions.size());
+    }
 }

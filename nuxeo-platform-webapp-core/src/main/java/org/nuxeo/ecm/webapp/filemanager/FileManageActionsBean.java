@@ -73,19 +73,19 @@ public class FileManageActionsBean extends InputController implements
 
     private static final Log log = LogFactory.getLog(FileManageActionsBean.class);
 
-    private static final String TRANSF_ERROR = "TRANSF_ERROR";
+    public static final String TRANSF_ERROR = "TRANSF_ERROR";
 
-    private static final String MOVE_ERROR = "MOVE_ERROR";
+    public static final String MOVE_ERROR = "MOVE_ERROR";
 
-    private static final String COPY_ERROR = "COPY_ERROR";
+    public static final String COPY_ERROR = "COPY_ERROR";
 
-    private static final String PASTE_ERROR = "PASTE_ERROR";
+    public static final String PASTE_ERROR = "PASTE_ERROR";
 
-    private static final String MOVE_IMPOSSIBLE = "MOVE_IMPOSSIBLE";
+    public static final String MOVE_IMPOSSIBLE = "MOVE_IMPOSSIBLE";
 
-    private static final String MOVE_PUBLISH = "MOVE_PUBLISH";
+    public static final String MOVE_PUBLISH = "MOVE_PUBLISH";
 
-    private static final String MOVE_OK = "MOVE_OK";
+    public static final String MOVE_OK = "MOVE_OK";
 
     protected InputStream fileUpload;
 
@@ -204,10 +204,6 @@ public class FileManageActionsBean extends InputController implements
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String curPath = currentDocument.getPathAsString();
 
-        // compute the path of the target container
-        if (!currentDocument.isFolder()) {
-            curPath = curPath.substring(0, curPath.lastIndexOf('/'));
-        }
         String path = curPath + morePath;
         return createDocumentFromBlob(blob, fullName, path);
     }
