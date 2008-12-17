@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-ecm</artifactId>
+    <version>5.1.7-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-distribution</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo Applications Distribution</name>
+  <description>Build package distributions of nuxeo applications</description>
+
+  <properties>
+    <!--
+      <application.name>nuxeo-app</application.name>
+      <nuxeo.shell.version>5.1.7-SNAPSHOT</nuxeo.shell.version>
+      <nuxeo.webengine.version>5.1.7-SNAPSHOT</nuxeo.webengine.version>
+      <nuxeo.common.version>1.4.4-SNAPSHOT</nuxeo.common.version>
+      <nuxeo.runtime.version>1.4.4-SNAPSHOT</nuxeo.runtime.version>
+      <nuxeo.core.version>1.4.4-SNAPSHOT</nuxeo.core.version>
+      <nuxeo.theme.version>5.1.7-SNAPSHOT</nuxeo.theme.version>
+      <nuxeo.ear.assembly>nuxeo</nuxeo.ear.assembly>
+      <nuxeo.platform.version>5.1.7-SNAPSHOT</nuxeo.platform.version>
+    -->
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>nuxeo-jboss</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>nuxeo-platform-ear</module>
+      </modules>
+    </profile>
+  </profiles>
+
+</project>
