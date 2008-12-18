@@ -6,7 +6,9 @@
     <outputFile>/</outputFile>
   </assemble>
   <zipEntrySet id="resources">
-    <artifact>org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-mono</artifact>
+    <artifact>
+      org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-mono
+    </artifact>
   </zipEntrySet>
 
   <!-- ARTIFACTS -->
@@ -39,7 +41,8 @@
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-core" />
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-admin" />
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-wiki" />
-      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-resteasy-adapter" />
+      <artifact group="org.nuxeo.ecm.webengine"
+        name="nuxeo-webengine-resteasy-adapter" />
       <!-- nuxeo-addons -->
     </includes>
     <excludes>
@@ -97,7 +100,8 @@
       <artifact group="org.hibernate" name="hibernate-entitymanager"
         version="3.2.0.ga" />
       <artifact group="jboss" name="jboss-cache-jdk50" version="1.4.0.SP1" />
-      <artifact group="org.jboss.seam" name="jboss-seam" version="2.0.3.CR1-NX2" />
+      <artifact group="org.jboss.seam" name="jboss-seam"
+        version="2.0.3.CR1-NX2" />
       <artifact group="org.jboss.seam" name="jboss-seam-remoting"
         version="2.0.3.CR1" />
       <artifact group="org.jboss.seam" name="jboss-seam-ui" version="2.0.3.CR1" />
@@ -105,6 +109,7 @@
         version="2.0.3.CR1" />
       <artifact group="org.jboss.seam" name="jboss-seam-debug"
         version="2.0.3.CR1" />
+      <artifact group="javax.el" name="el-ri" version="unknown" />
       <artifact group="org.jboss.el" name="jboss-el" version="2.0.1.GA" />
       <artifact group="jboss" name="jbpm" version="3.1.4" />
       <artifact group="jboss" name="jgroups" version="2.2.9" />
@@ -127,7 +132,8 @@
         version="4.0.5.GA" />
       <!-- Nuxeo-WebEngine fixed libs -->
       <artifact group="org.codehaus.groovy" name="groovy-all" version="1.5.7" />
-      <artifact group="org.resteasy" name="resteasy-jaxrs" version="1.0-beta-8-nx" />
+      <artifact group="org.resteasy" name="resteasy-jaxrs"
+        version="1.0-beta-8-nx" />
       <artifact group="org.resteasy" name="jaxrs-api" version="1.0-beta-8" />
       <artifact group="javax.script" name="script-api" version="1.0" />
     </artifacts>
