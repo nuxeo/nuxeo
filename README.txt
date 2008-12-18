@@ -1,25 +1,28 @@
 About
 -----
 
-This module should be used to build Nuxeo products.
-
-The created artifact are not suitable to be published online since a build
-project may generate different ZIP artifacts depending on the profile used.
+This module builds Nuxeo products: Nuxeo-EP, Nuxeo-WebEngine, Nuxeo-Shell, ...
 
 Building predefined applications
 --------------------------------
-
 Using this project you can build the following applications:
 
-1. Nuxeo Shell 
+1. Nuxeo EP
+
+  Previously built by nuxeo-platform/nuxeo-platform-ear/, Nuxeo EP EAR is now built here.
+  From this directory, build syntax: "mvn package" or "mvn package -Pnuxeo-jboss"
+  From nuxeo-platform-ear, run "mvn package" or see in package.sh for available packages.
+  Built EAR is in nuxeo-platform-ear/target/ and its name depends on chosen package: default is nuxeo.ear
+
+2. Nuxeo Shell 
 
   A client application suitable to connect on remote nuxeo servers.
   This application can be used to connect to remote nuxeo servers for debugging,
   browsing or administration stuff.
 
-  Build syntax: `mvn install package` or `mvn install package -P shell`
+  Build syntax: "mvn install package -Pshell"
     
-2. Nuxeo Core Server 
+3. Nuxeo Core Server 
 
   A minimal server application. An embedded repository will be started. No other
   platform services are available.
@@ -29,9 +32,9 @@ Using this project you can build the following applications:
   
   Remoting will be also available in the future via Nuxeo Runtime.
   
-  Build syntax: `mvn install package -P core`
+  Build syntax: "mvn install package -Pcore"
     
-3. Nuxeo Jetty Server
+4. Nuxeo Jetty Server
   
   A Nuxeo server application embedding a Jetty server. 
   
@@ -39,9 +42,9 @@ Using this project you can build the following applications:
   
   This is also known as Nuxeo WebEngine (based on Jetty).
 
-  Build syntax: `mvn install package -P jetty`
+  Build syntax: "mvn install package -Pjetty"
    
-4. Nuxeo GF3 Server
+5. Nuxeo GF3 Server
   
   A Nuxeo server application embedding a GlassFish v3 server. 
   
@@ -52,15 +55,16 @@ Using this project you can build the following applications:
   In the future, this application will provide a full installation of Nuxeo
   (including EJBs, JMS, etc).
 
-  Build syntax: `mvn install package -P gf3`
+  Build syntax: "mvn install package -Pgf3"
   
-5. Nuxeo Tomcat WebApp
+6. Nuxeo Tomcat WebApp
   
-  mvn install package -P tomcat
- 
   A Nuxeo Server packaged as an exploded WAR for tomcat v6.
-  This build will generated a zip containing a 'tomcat' directory. You need to copy the content of tomcat directory
-  inside your installed tomcat. Then restart tomcat. Nuxeo WebEngine will be available at htpp://localhost:8080/nuxeo
+  This build will generated a zip containing a 'tomcat' directory. You need to copy the content of 
+  tomcat directory inside your installed tomcat. Then restart tomcat. Nuxeo WebEngine will be 
+  available at htpp://localhost:8080/nuxeo
+
+  Build syntax: "mvn install package -Ptomcat"
 
 
 Extending
@@ -105,9 +109,7 @@ This way, the build is reused more easily than by using assembly inheritance,
 since any modification on an intermediate artifact (ZIP) is automatically
 visible in the projects that are overriding the artifact.
 
-NB: we are not using for now categories since the projects are not so complex to
-manage by using explicit dependencies in assembly files. Also, existing
-categories may not fit well with the kind of build done for nxshell or
-webengine.
-
+NB: we are not using for now categories on Nuxeo-Shell and Nuxeo-WebEngine since the projects are not
+so complex to manage by using explicit dependencies in assembly files. Also, existing
+categories may not fit well with the kind of build done for nxshell or webengine. 
 Maybe in the future we will use categories too, if projects become too complex.
