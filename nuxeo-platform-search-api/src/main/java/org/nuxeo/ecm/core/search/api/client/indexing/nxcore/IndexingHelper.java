@@ -41,9 +41,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * This class provides helpers for (re)(un)indexing processes
- * 
+ *
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
- * 
+ *
  */
 public final class IndexingHelper {
 
@@ -54,7 +54,7 @@ public final class IndexingHelper {
     }
 
     private static void index(DocumentModel docModel, CoreSession session,
-            SearchService service) throws IndexingException, ClientException {
+            SearchService service) throws IndexingException {
         if (log.isDebugEnabled()) {
             log.debug("indexing: " + docModel.getPath() + " docRef: "
                     + docModel.getRef());
@@ -67,7 +67,6 @@ public final class IndexingHelper {
     private static void recursiveIndex(DocumentModel docModel,
             CoreSession session, SearchService service)
             throws IndexingException, ClientException {
-
         try {
             index(docModel, session, service);
         } catch (Throwable t) {
@@ -107,7 +106,8 @@ public final class IndexingHelper {
             // exception here.
             // TODO Not enough protection. Rebuild a session.
             // Trying to index a proxy in the section space.
-            log.error("An error occured trying to index versions...", t);
+            log.error("An error occured trying to index versions for doc: "
+                    + ref, t);
         }
     }
 
@@ -168,7 +168,7 @@ public final class IndexingHelper {
      * closed. This method is useful for synchronous indexing, when we want to
      * index a newly created document as part as the same transaction that
      * created the document.
-     * 
+     *
      * @param docModel
      * @param managedSessionId
      * @throws Exception
@@ -188,7 +188,7 @@ public final class IndexingHelper {
     /**
      * Start a recursive indexing process using a new CoreSession instance that
      * will automatically be closed at the end og the indexing process.
-     * 
+     *
      * @param docModel
      * @param service
      * @throws Exception

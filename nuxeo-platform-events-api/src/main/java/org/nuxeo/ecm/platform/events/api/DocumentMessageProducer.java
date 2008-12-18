@@ -52,8 +52,8 @@ public interface DocumentMessageProducer {
     void produce(NXCoreEvent event);
 
 
-    public void produceEventMessages(List<EventMessage> messages);
+    void produceEventMessages(List<EventMessage> messages);
 
 
-    public void produceCoreEvents(List<NXCoreEvent> events);
+    void produceCoreEvents(List<NXCoreEvent> events);
 }

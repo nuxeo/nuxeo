@@ -32,7 +32,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
 import org.apache.commons.lang.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.nuxeo.ecm.platform.ui.web.htmleditor.api.HtmlEditorPluginService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -51,8 +50,7 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
     private static Map<String, String> pluginsOptions;
 
     @Override
-    public void encodeBegin(@NotNull FacesContext context, @NotNull UIComponent component)
-            throws IOException {
+    public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
         if (!component.isRendered()) {
             return;
         }
@@ -80,10 +78,10 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
 
         // plugins registration
         if (pluginsOptions == null) {
-            final HtmlEditorPluginService pluginService = Framework.getLocalService(
-                    HtmlEditorPluginService.class);
+            final HtmlEditorPluginService pluginService = Framework.getLocalService(HtmlEditorPluginService.class);
             pluginsOptions = new HashMap<String, String>();
-            pluginsOptions.put("plugins", pluginService.getFormattedPluginsNames());
+            pluginsOptions.put("plugins",
+                    pluginService.getFormattedPluginsNames());
             pluginsOptions.putAll(pluginService.getToolbarsButtons());
         }
         options.putAll(pluginsOptions);
@@ -100,7 +98,11 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         writer.writeAttribute("name", clientId, null);
         writer.writeAttribute("class", editorSelector, null);
         Object currentValue = getCurrentValue(editorComp);
-        writer.writeText(currentValue, null);
+        if (currentValue != null) {
+            writer.writeText(currentValue, null);
+        } else {
+            writer.writeText("", null);
+        }
         writer.endElement("textarea");
 
         writer.flush();

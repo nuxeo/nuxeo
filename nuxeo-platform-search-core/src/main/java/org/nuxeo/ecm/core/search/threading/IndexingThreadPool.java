@@ -36,10 +36,10 @@ import org.nuxeo.ecm.core.search.threading.task.TaskFactory;
  * Indexing thread pool.
  * <p>
  * Control the amount of indexing threads that will run in a concurrent way.
- * 
- * @see IndexingSingleDocumentTask
+ *
+ * @see org.nuxeo.ecm.core.search.threading.task.IndexingSingleDocumentTask
  * @see IndexingThreadImpl
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public final class IndexingThreadPool {
@@ -48,9 +48,7 @@ public final class IndexingThreadPool {
 
     private static final Log log = LogFactory.getLog(IndexingThreadPool.class);
 
-    private static int MAX_POOL_SIZE = 10;
-
-    private static int MIN_POOL_SIZE = 5;
+    private static final int MIN_POOL_SIZE = 5;
 
     private static int BROWSING_TASK_QUEUE_SIZE = 100;
 
@@ -67,17 +65,17 @@ public final class IndexingThreadPool {
 
     static {
         // Thread pool aught to be on the node which holds the search service.
-        MAX_POOL_SIZE = NXSearch.getSearchService().getNumberOfIndexingThreads();
+        int maxPoolSize = NXSearch.getSearchService().getNumberOfIndexingThreads();
         log.info("Indexing thread pool will be initialized with a size pool @ "
-                + MAX_POOL_SIZE);
+                + maxPoolSize);
 
         indexingTpExec = IndexingThreadPoolExecutor.newInstance(MIN_POOL_SIZE,
-                MAX_POOL_SIZE, THREAD_KEEP_ALIVE, TimeUnit.MILLISECONDS);
+                maxPoolSize, THREAD_KEEP_ALIVE, TimeUnit.MILLISECONDS);
         // tpExec.prestartAllCoreThreads();
         log.info("Indexing Thread Pool initialized...");
 
-        browsingTpExec = new ThreadPoolExecutor(MIN_POOL_SIZE, MAX_POOL_SIZE,
-                0, TimeUnit.MICROSECONDS, new LinkedBlockingQueue<Runnable>(
+        browsingTpExec = new ThreadPoolExecutor(MIN_POOL_SIZE, maxPoolSize, 0,
+                TimeUnit.MICROSECONDS, new LinkedBlockingQueue<Runnable>(
                         BROWSING_TASK_QUEUE_SIZE), new IndexingThreadFactory(),
                 new IndexingRejectedExecutionHandler());
 
@@ -109,8 +107,7 @@ public final class IndexingThreadPool {
         }
     }
 
-    public static void index(ResolvedResources resources)
-            throws IndexingException {
+    public static void index(ResolvedResources resources) {
         executeIndexingTask(TaskFactory.createIndexingTask(resources));
     }
 
@@ -163,7 +160,7 @@ public final class IndexingThreadPool {
         super.finalize();
     }
 
-    public static void reindexAll(DocumentModel dm) throws IndexingException {
+    public static void reindexAll(DocumentModel dm) {
         executeReindexingTask(TaskFactory.createReindexingAllTask(dm.getRef(),
                 dm.getRepositoryName()));
     }

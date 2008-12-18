@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -103,7 +104,6 @@ public class DocumentIndexableResourceImpl extends
     public DocumentIndexableResourceImpl() {
     }
 
-    @SuppressWarnings("unchecked")
     public DocumentIndexableResourceImpl(DocumentModel dm,
             IndexableResourceConf conf, String sid) {
         super(conf != null ? conf.getName() : null, conf, sid,
@@ -131,14 +131,18 @@ public class DocumentIndexableResourceImpl extends
                 log.warn("Cannot get additionial document model properties.");
             }
         }
-        docAcp = dm.getACP();
+        try {
+            docAcp = dm.getACP();
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
 
         // FACETS
 
         if (dm.getDeclaredFacets() != null) {
             docFacets = new ArrayList<String>(dm.getDeclaredFacets());
         } else {
-            docFacets = Collections.EMPTY_LIST;
+            docFacets = Collections.emptyList();
         }
 
         // SCHEMAS (this could be more lazy: needed by getValueFor only
@@ -147,19 +151,19 @@ public class DocumentIndexableResourceImpl extends
             docSchemas = new HashSet<String>();
             docSchemas.addAll(Arrays.asList(schemas));
         } else {
-            docSchemas = Collections.EMPTY_SET;
+            docSchemas = Collections.emptySet();
         }
 
         if (dm instanceof DocumentModelImpl) {
             flags = dm.getFlags();
         }
-
     }
 
     public DocumentRef getDocRef() {
         return docRef;
     }
 
+    @SuppressWarnings("unchecked")
     protected Serializable extractComplexProperty(Serializable complex,
             String subField) {
         if (complex == null) {
@@ -229,14 +233,11 @@ public class DocumentIndexableResourceImpl extends
 
             if (docRef != null) {
                 try {
-                    if (targetDoc!=null)
-                    {
+                    if (targetDoc != null) {
                         res = (Serializable) targetDoc.getProperty(schemaPrefix, fieldName);
-                    }
-                    else
-                    {
+                    } else {
                         res = (Serializable) getCoreSession().getDataModelField(
-                            docRef, schemaPrefix, fieldName);
+                                docRef, schemaPrefix, fieldName);
                     }
                     if (split.length > 2) {
                         res = extractComplexProperty(res, split[2]);
@@ -324,12 +325,11 @@ public class DocumentIndexableResourceImpl extends
         return isDocProxy;
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getDocFacets() {
         if (docFacets != null) {
             return docFacets;
         }
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override

@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
  */
 public interface MimetypeRegistry {
 
-    public final static String DEFAULT_MIMETYPE = "application/octet-stream";
+    String DEFAULT_MIMETYPE = "application/octet-stream";
 
     /**
      * Returns the mime type from a given stream.

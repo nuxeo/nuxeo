@@ -39,9 +39,9 @@ public class QNameResourceImpl extends ResourceImpl implements QNameResource {
 
 
     public QNameResourceImpl(String namespace, String localName) {
+        super(namespace + localName);
         this.namespace = namespace;
         this.localName = localName;
-        this.uri = namespace + localName;
     }
 
     @Override

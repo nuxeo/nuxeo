@@ -36,7 +36,6 @@ import org.nuxeo.ecm.directory.sql.repository.Table;
  * then it returns.
  *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class SimpleIdGenerator implements IdGenerator {
 
@@ -71,4 +70,5 @@ public class SimpleIdGenerator implements IdGenerator {
         }
         return nextId++;
     }
+
 }

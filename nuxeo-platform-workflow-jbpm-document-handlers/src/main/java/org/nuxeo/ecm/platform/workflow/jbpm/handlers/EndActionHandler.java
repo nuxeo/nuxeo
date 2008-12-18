@@ -33,11 +33,8 @@ public class EndActionHandler extends AbstractWorkflowDocumentActionHandler {
 
     private static final long serialVersionUID = 857122897383857609L;
 
-
     public void execute(ExecutionContext ec) throws Exception {
-
         log.debug("Ending process");
-
         try {
             ProcessInstance pi = getProcessInstance(ec);
 

@@ -28,7 +28,7 @@ import org.nuxeo.ecm.platform.mimetype.service.ExtensionDescriptor;
 /**
  * MimetypeEntry registry local interface.
  *
- * @see org.nuxeo.ecm.platform.transform.interfaces.MimetypeRegistry
+ * @see MimetypeRegistry
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
@@ -42,4 +42,5 @@ public interface MimetypeRegistryLocal extends MimetypeRegistry {
     void registerFileExtension(ExtensionDescriptor extension);
 
     void unregisterFileExtension(ExtensionDescriptor extension);
+
 }

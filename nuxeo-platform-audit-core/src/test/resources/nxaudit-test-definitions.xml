@@ -2,19 +2,31 @@
 <component name="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService">
 
   <implementation
-    class="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"/>
+      class="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"/>
 
   <extension-point name="event">
     <object
-      class="org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor"/>
+        class="org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor"/>
   </extension-point>
 
+  <extension-point name="extendedInfo">
+    <object
+      class="org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor"/>
+  </extension-point>
+  
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
-    point="event">
+      point="event">
     <event name="documentCreated"/>
     <event name="documentRemoved"/>
     <event name="documentModified"/>
     <event name="lifecycle_transition_event"/>
+  </extension>
+  
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+    point="extendedInfo">
+    <extendedInfo key="title" expression="${source.dublincore.title}"/>
+    <extendedInfo key="message" expression="${message.cacheKey}"/>
+    <extendedInfo key="user" expression="${principal.name}"/>
   </extension>
 
 </component>

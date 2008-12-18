@@ -36,9 +36,7 @@ public interface AuditIndexableResource extends IndexableResource {
     /**
      * Returns the log entry data map for a log entry given its id.
      *
-     * @see
-     *
-     * @param id : the log entry identifier.
+     * @param id the log entry identifier.
      * @return a map from string to serializable.
      * @throws IndexingException
      */

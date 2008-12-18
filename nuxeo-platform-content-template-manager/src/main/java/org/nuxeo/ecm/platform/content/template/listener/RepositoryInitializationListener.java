@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.content.template.listener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -30,12 +28,10 @@ import org.nuxeo.runtime.api.Framework;
 
 public class RepositoryInitializationListener  extends RepositoryInitializationHandler{
 
-    private static final Log log = LogFactory.getLog(RepositoryInitializationListener.class);
-
     private ContentTemplateService service;
 
     @Override
-    public void initializeRepository(CoreSession session) throws ClientException {
+    public void doInitializeRepository(CoreSession session) throws ClientException {
         // This method gets called as a system user
         // so we have all needed rights to do the check and the creation
         DocumentModel root = session.getRootDocument();

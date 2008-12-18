@@ -101,8 +101,6 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
             // cacheService.init();
             //cacheServer.startService();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             final String errMsg = "In " + this.getClass().getSimpleName()
                     + ": " + e.getMessage();
             log.error(errMsg, e);
@@ -178,8 +176,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
 
         final DocumentModelGhost ghost = createDocGhost(dm);
 
-        log.info("Returning : " + ghost);
-
+        log.debug("Returning: " + ghost);
         return ghost;
     }
 
@@ -191,7 +188,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
     @Interceptors(DocumentManagerCacheStatInterceptor.class)
     @Override
     public DocumentModel getDocument(DocumentRef docRef) throws ClientException {
-        log.info("Caching DocumentModel for docRef : " + docRef);
+        log.debug("Caching DocumentModel for docRef : " + docRef);
         final DocumentModel dm = super.getDocument(docRef);
 
         final String dmPath = CacheableObjectKeys.getCacheKey(docRef);
@@ -203,8 +200,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
                 dm.getSessionId(), dm.getType(), dm.getDeclaredSchemas(),
                 dm.getId(), dm.getPath(), dm.getParentRef());
 
-        log.info("Returning : " + ghost);
-
+        log.debug("Returning: " + ghost);
         //return dm;
         return ghost;
     }
@@ -220,7 +216,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
     @Override
     public DocumentModel getDocument(DocumentRef docRef, String[] schemas)
             throws ClientException {
-        log.info("Caching DocumentModel for docRef : " + docRef
+        log.debug("Caching DocumentModel for docRef : " + docRef
                 + " and schemas: " + schemas);
         final DocumentModel dm = super.getDocument(docRef, schemas);
 
@@ -233,8 +229,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
                 dm.getSessionId(), dm.getType(), dm.getDeclaredSchemas(),
                 dm.getId(), dm.getPath(), dm.getParentRef());
 
-        log.info("Returning : " + ghost);
-
+        log.debug("Returning: " + ghost);
         //return dm;
         return ghost;
     }
@@ -249,7 +244,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
     @Override
     public DocumentModel getChild(DocumentRef parent, String name)
             throws ClientException {
-        log.info("Caching child DocumentModel " + name
+        log.debug("Caching child DocumentModel " + name
                 + " for parent docRef : " + parent);
         final DocumentModel dm = super.getChild(parent, name);
 
@@ -258,8 +253,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
 
         final DocumentModelGhost ghost = createDocGhost(dm);
 
-        log.info("Returning : " + ghost);
-
+        log.debug("Returning: " + ghost);
         return ghost;
     }
 
@@ -272,7 +266,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
     @Override
     public DocumentModel getDocumentWithVersion(final DocumentRef docRef,
             VersionModel version) throws ClientException {
-        log.info("Caching version " + version + " of DocumentModel " + docRef);
+        log.debug("Caching version " + version + " of DocumentModel " + docRef);
         final DocumentModel dm = super.getDocumentWithVersion(docRef, version);
 
         final String dmPath = CacheableObjectKeys.getCacheKey(docRef, version);
@@ -280,8 +274,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
 
         final DocumentModelGhost ghost = createDocGhost(dm);
 
-        log.info("Returning : " + ghost);
-
+        log.debug("Returning: " + ghost);
         return ghost;
     }
 
@@ -293,7 +286,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
     @Interceptors(DocumentManagerCacheStatInterceptor.class)
     @Override
     public DocumentModel createDocument(final DocumentModel model) throws ClientException {
-        log.info("Caching new Document " + model);
+        log.debug("Caching new Document " + model);
         final DocumentModel dm =  super.createDocument(model);
 
         final String dmPath = CacheableObjectKeys.getCacheKey(dm.getRef());
@@ -303,8 +296,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
 
         final DocumentModelGhost ghost = createDocGhost(dm);
 
-        log.info("Returning : " + ghost);
-
+        log.debug("Returning: " + ghost);
         return ghost;
     }
 
@@ -318,7 +310,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
     @Override
     public DocumentModel getParentDocument(final DocumentRef docRef)
             throws ClientException {
-        log.info("Caching parent for " + docRef);
+        log.debug("Caching parent for " + docRef);
         final DocumentModel dm = super.getParentDocument(docRef);
 
         if (null == dm) {
@@ -331,8 +323,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
 
         final DocumentModelGhost ghost = createDocGhost(dm);
 
-        log.info("Returning : " + ghost);
-
+        log.debug("Returning : " + ghost);
         return ghost;
     }
 
@@ -354,8 +345,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
             ghosts[i] = ghost;
         }
 
-        log.info("Returning : " + ghosts);
-
+        log.debug("Returning: " + ghosts);
         return ghosts;
     }
 
@@ -373,7 +363,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
     @Override
     public DocumentModelList getChildren(DocumentRef parent)
             throws ClientException {
-        log.info("Caching children for parent Ref : " + parent);
+        log.debug("Caching children for parent Ref : " + parent);
         final List<DocumentModel> documents = super.getChildren(parent);
 
         // obtain the parent to be able to build a path
@@ -400,8 +390,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
         }
         */
 
-        log.info("Returning : " + ghostDocuments);
-
+        log.debug("Returning: " + ghostDocuments);
         //return documents;
         return ghostDocuments;
     }
@@ -416,14 +405,13 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
     @Override
     public DocumentModelList getChildren(DocumentRef parent, String type)
             throws ClientException {
-        log.info("Caching children for parent Ref : " + parent + " and type: "
+        log.debug("Caching children for parent Ref : " + parent + " and type: "
                 + type);
         final List<DocumentModel> documents = super.getChildren(parent, type);
 
         final DocumentModelList ghostDocuments = prepareGhostDocumentsList(documents);
 
-        log.info("Returning : " + ghostDocuments);
-
+        log.debug("Returning: " + ghostDocuments);
         return ghostDocuments;
     }
 
@@ -437,15 +425,14 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
     @Override
     public DocumentModelList getChildren(DocumentRef parent, String type, String perm,
             Filter filter, Sorter sorter) throws ClientException {
-        log.info("Caching children for parent Ref : " + parent + " and type: "
+        log.debug("Caching children for parent Ref : " + parent + " and type: "
                 + type + ", with filter: " + filter + " and sorter: " + sorter);
         final List<DocumentModel> documents = super.getChildren(parent, type, perm,
                 filter, sorter);
 
         final DocumentModelList ghostDocuments = prepareGhostDocumentsList(documents);
 
-        log.info("Returning : " + ghostDocuments);
-
+        log.debug("Returning: " + ghostDocuments);
         return ghostDocuments;
     }
 
@@ -464,52 +451,48 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
     @Interceptors(DocumentManagerCacheStatInterceptor.class)
     @Override
     public DocumentModelList query(String query) throws ClientException {
-        log.info("Caching documents from query : " + query);
+        log.debug("Caching documents from query : " + query);
         final List<DocumentModel> documents = super.query(query);
 
         final DocumentModelList ghostDocuments = prepareGhostDocumentsList(documents);
 
-        log.info("Returning : " + ghostDocuments);
-
+        log.debug("Returning: " + ghostDocuments);
         return ghostDocuments;
     }
 
     @Interceptors(DocumentManagerCacheStatInterceptor.class)
     @Override
     public DocumentModelList query(String query, Filter filter) throws ClientException {
-        log.info("Caching filtered documents from query : " + query);
+        log.debug("Caching filtered documents from query : " + query);
         final List<DocumentModel> documents = super.query(query, filter);
 
         final DocumentModelList ghostDocuments = prepareGhostDocumentsList(documents);
 
-        log.info("Returning : " + ghostDocuments);
-
+        log.debug("Returning: " + ghostDocuments);
         return ghostDocuments;
     }
 
     @Interceptors(DocumentManagerCacheStatInterceptor.class)
     @Override
     public DocumentModelList querySimpleFts(String keywords) throws ClientException {
-        log.info("Caching documents from querySimpleFts, keywords : " + keywords);
+        log.debug("Caching documents from querySimpleFts, keywords : " + keywords);
         final List<DocumentModel> documents = super.querySimpleFts(keywords);
 
         final DocumentModelList ghostDocuments = prepareGhostDocumentsList(documents);
 
-        log.info("Returning : " + ghostDocuments);
-
+        log.debug("Returning: " + ghostDocuments);
         return ghostDocuments;
     }
 
     @Interceptors(DocumentManagerCacheStatInterceptor.class)
     @Override
     public DocumentModelList querySimpleFts(String keywords, Filter filter) throws ClientException {
-        log.info("Caching filtered documents from querySimpleFts, keywords : " + keywords);
+        log.debug("Caching filtered documents from querySimpleFts, keywords : " + keywords);
         final List<DocumentModel> documents = super.querySimpleFts(keywords, filter);
 
         final DocumentModelList ghostDocuments = prepareGhostDocumentsList(documents);
 
-        log.info("Returning : " + ghostDocuments);
-
+        log.debug("Returning: " + ghostDocuments);
         return ghostDocuments;
     }
 
@@ -522,11 +505,9 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
     private DocumentModelGhost createDocGhost(DocumentModel dm) {
         assert null != dm;
 
-        final DocumentModelGhost ghost = new DocumentModelGhost(dm.getRef(),
+        return new DocumentModelGhost(dm.getRef(),
                 dm.getSessionId(), dm.getType(), dm.getDeclaredSchemas(),
                 dm.getId(), dm.getPath(), dm.getParentRef());
-
-        return ghost;
     }
 
     /**
@@ -544,7 +525,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
         if (cacheService.exists(dmPath)) {
             return;
         }
-        log.info("<putDocumentInCache> " + documentModel);
+        log.debug("<putDocumentInCache> " + documentModel);
         try {
             cacheService.putObject(dmPath, documentModel);
         } catch (CacheServiceException e) {
@@ -619,7 +600,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
     //@Override
     public DataModel __getDataModel(DocumentRef docRef, String schema)
             throws ClientException {
-        log.info("Caching DataModel for docRef: " + docRef + ", schema: "
+        log.debug("Caching DataModel for docRef: " + docRef + ", schema: "
                 + schema);
         final DataModel dm = super.getDataModel(docRef, schema);
 
@@ -641,7 +622,6 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
      * @see org.nuxeo.ecm.platform.cache.server.bd.CacheableDocumentManager#getDocumentImpl(org.nuxeo.ecm.core.api.DocumentRef)
      */
     public DocumentModel getDocumentImpl(DocumentRef ref) throws ClientException {
-
         // just get the object from parent impl.
         return super.getDocument(ref);
     }

@@ -37,6 +37,7 @@ import org.nuxeo.ecm.webapp.table.row.UserPermissionsTableRow;
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
  *
  */
+@SuppressWarnings({"ALL"})
 @Deprecated
 public class UserPermissionsTableModel extends TableModel {
 

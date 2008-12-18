@@ -37,17 +37,17 @@ import org.nuxeo.ecm.platform.workflow.document.api.ejb.delegate.WorkflowDocumen
 
 /**
  * @author Alexandre Russel
- *
  */
 public class PublishingTasks {
-    private final DocumentModel currentDocument;
+
     private final WorkflowDocumentRelationBusinessDelegate wrbd = new WorkflowDocumentRelationBusinessDelegate();
+    private final DocumentModel currentDocument;
     private final WAPI wapi;
     private final Principal currentUser;
 
     public PublishingTasks(DocumentModel doc, Principal cu) throws PublishingException {
-        this.currentDocument = doc;
-        this.currentUser = cu;
+        currentDocument = doc;
+        currentUser = cu;
         try {
             wapi =  WAPIBusinessDelegate.getWAPI();
         } catch (WMWorkflowException e) {
@@ -110,4 +110,5 @@ public class PublishingTasks {
         }
         return workItem;
     }
+
 }

@@ -31,6 +31,7 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DataModelMap;
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -62,29 +63,24 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
     private String type;
 
     public boolean followTransition(String transition) throws ClientException {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public ACP getACP() {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public <T> T getAdapter(Class<T> itf) {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public Collection<String> getAllowedStateTransitions()
             throws ClientException {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public String getCurrentLifeCycleState() throws ClientException {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public DataModel getDataModel(String schema) {
@@ -114,33 +110,27 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
     }
 
     public Collection<DataModel> getDataModelsCollection() {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public Set<String> getDeclaredFacets() {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public String[] getDeclaredSchemas() {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public String getId() {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public String getLifeCyclePolicy() throws ClientException {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public String getLock() {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public String getName() {
@@ -148,28 +138,33 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
     }
 
     public DocumentRef getParentRef() {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public Path getPath() {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public String getPathAsString() {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public Map<String, Object> getProperties(String schemaName) {
         DataModel dm = getDataModel(schemaName);
-        return dm == null ? null : dm.getMap();
+        try {
+            return dm == null ? null : dm.getMap();
+        } catch (PropertyException e) {
+            return null;
+        }
     }
 
     public Object getProperty(String schemaName, String name) {
         DataModel dm = getDataModel(schemaName);
-        return dm == null ? null : dm.getData(name);
+        try {
+            return dm == null ? null : dm.getData(name);
+        } catch (PropertyException e) {
+            return null;
+        }
     }
 
     public String getTitle() {
@@ -177,13 +172,11 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
     }
 
     public DocumentRef getRef() {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public String getSessionId() {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public String getType() {
@@ -195,7 +188,6 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
     }
 
     public boolean hasFacet(String facet) {
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -208,103 +200,91 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
     }
 
     public boolean isDownloadable() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public boolean isFolder() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public boolean isLocked() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public boolean isVersionable() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public void setACP(ACP acp, boolean overwrite) {
-        // TODO Auto-generated method stub
     }
 
     public void setLock(String key) throws ClientException {
-        // TODO Auto-generated method stub
     }
 
     public void setPathInfo(String parentPath, String name) {
-        // TODO Auto-generated method stub
     }
 
     public void setProperties(String schemaName, Map<String, Object> data) {
-        getDataModel(schemaName, true).setMap(data);
+        try {
+            getDataModel(schemaName, true).setMap(data);
+        } catch (PropertyException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public void setProperty(String schemaName, String name, Object value) {
-        getDataModel(schemaName, true).setData(name, value);
+        try {
+            getDataModel(schemaName, true).setData(name, value);
+        } catch (PropertyException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public void unlock() throws ClientException {
-        // TODO Auto-generated method stub
     }
 
     public boolean isVersion() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public ScopedMap getContextData() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public Serializable getContextData(ScopeType scope, String key) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public void putContextData(ScopeType scope, String key, Serializable value) {
-        // TODO Auto-generated method stub
     }
 
     public Serializable getContextData(String key) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public void putContextData(String key, Serializable value) {
-        // TODO Auto-generated method stub
     }
 
     public void copyContextData(DocumentModel otherDocument) {
-        // TODO Auto-generated method stub
     }
 
     public void copyContent(DocumentModel sourceDoc) {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public String getCacheKey() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public String getRepositoryName() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public String getSourceId() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public String getVersionLabel() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -336,49 +316,43 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
     }
 
     public <T> T getAdapter(Class<T> itf, boolean refreshCache) {
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public Map<String, Serializable> getPrefetch() {
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public void prefetchProperty(String id, Object value) {
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public <T extends Serializable> T getSystemProp(String systemProperty,
             Class<T> type) throws ClientException, DocumentException {
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public void prefetchCurrentLifecycleState(String lifecycle) {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public void prefetchLifeCyclePolicy(String lifeCyclePolicy) {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public boolean isLifeCycleLoaded() {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public DocumentPart getPart(String schema) {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public DocumentPart[] getParts() {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public Property getProperty(String xpath) throws PropertyException {
-
         // tmp hack : use xpath as schemaName:property
         String schemaName = xpath.split(":")[0];
         DocumentPart dp = DefaultPropertyFactory.newDocumentPart(schemaName);
@@ -420,8 +394,7 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
     }
 
     public long getFlags() {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
@@ -430,12 +403,11 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
     }
 
     public void reset() {
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public void refresh() throws ClientException {
-        throw new java.lang.UnsupportedOperationException("not implemented");
-
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public void refresh(int refreshFlags, String[] schemas)

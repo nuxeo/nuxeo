@@ -44,7 +44,7 @@ public class TransformerExtension {
     @XNode("plugins")
     Element plugins;
 
-    Map<String, Map<String, Serializable>> options = new HashMap<String, Map<String, Serializable>>();
+    protected Map<String, Map<String, Serializable>> options = new HashMap<String, Map<String, Serializable>>();
 
     public TransformerExtensionPluginsConfiguration getPluginsChain() {
         TransformerExtensionPluginsConfiguration conf = new TransformerExtensionPluginsConfiguration();

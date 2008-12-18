@@ -31,10 +31,8 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.actions.ActionService;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -43,7 +41,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("actionManager")
 @Scope(CONVERSATION)
-@NuxeoJavaBeanErrorHandler
 public class ActionManagerBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = -4778456059717447736L;
@@ -61,12 +58,9 @@ public class ActionManagerBusinessDelegate implements Serializable {
     /**
      * Acquires a new {@link ActionManager} reference. The related EJB may be
      * deployed on a local or remote AppServer.
-     *
-     * @return
-     * @throws ClientException
      */
     @Unwrap
-    public ActionManager getActionManager() throws ClientException {
+    public ActionManager getActionManager() {
         if (null == actionManager) {
 
             // Access directly the Runtime Service !!!
@@ -86,7 +80,7 @@ public class ActionManagerBusinessDelegate implements Serializable {
 
     @Destroy
     @PermitAll
-    public void destroy() throws ClientException {
+    public void destroy() {
         if (null != actionManager) {
             actionManager.remove();
             actionManager = null;
