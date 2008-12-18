@@ -25,7 +25,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import java_cup.emit;
 
@@ -39,7 +38,6 @@ import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
 import org.nuxeo.ecm.platform.audit.api.query.DateRangeParser;
-import org.nuxeo.ecm.platform.audit.service.HibernateConfiguration;
 import org.nuxeo.ecm.platform.audit.service.LogEntryProvider;
 import org.nuxeo.ecm.platform.audit.service.PersistenceProvider;
 
@@ -49,28 +47,6 @@ import org.nuxeo.ecm.platform.audit.service.PersistenceProvider;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
 public class TestLogEntryProvider extends TestCase {
-
-    public static class TestHibernateConfiguration implements
-            HibernateConfiguration {
-
-        public Properties getProperties() {
-            Properties properties = new Properties();
-            properties.put("hibernate.connection.url",
-                    "jdbc:hsqldb:mem:.;sql.enforce_strict_size=true");
-            properties.put("hibernate.connection.driver_class",
-                    "org.hsqldb.jdbcDriver");
-            properties.put("hibernate.connection.auto_commit", "true");
-            properties.put("hibernate.connection.pool_size", "1");
-            properties.put("hibernate.dialect",
-                    "org.hibernate.dialect.HSQLDialect");
-            properties.put("hibernate.hbm2ddl.auto", "update");
-            properties.put("hibernate.show_sql", "true");
-            properties.put("hibernate.format_sql", "true");
-
-            return properties;
-        }
-
-    }
 
     protected PersistenceProvider persistenceProvider;
 

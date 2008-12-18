@@ -53,28 +53,6 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
 
     private NXAuditEventsService serviceUnderTest;
 
-    public static class TestHibernateConfiguration implements
-            HibernateConfiguration {
-
-        public Properties getProperties() {
-            Properties properties = new Properties();
-            properties.put("hibernate.connection.url",
-                    "jdbc:derby://localhost:1527/sample;create=true");
-            properties.put("hibernate.connection.driver_class",
-                    "org.apache.derby.jdbc.ClientDriver");
-            properties.put("hibernate.connection.auto_commit", "true");
-            properties.put("hibernate.connection.pool_size", "1");
-            properties.put("hibernate.dialect",
-                    "org.hibernate.dialect.DerbyDialect");
-            properties.put("hibernate.hbm2ddl.auto", "update");
-            properties.put("hibernate.show_sql", "true");
-            properties.put("hibernate.format_sql", "true");
-
-            return properties;
-        }
-
-    }
-
     protected DocumentModel rootDocument;
     protected DocumentModel source;
     
