@@ -44,26 +44,12 @@ import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 public interface FileManager {
 
     /**
-     * Returns an initialized doc based on a given file.
-     *
-     * @param file
-     *            the uploading file
-     * @param path
-     *            the path were to create the document
-     * @param overwrite
-     *            boolean how decide to overwrite or not
-     * @return the created Document
-     */
-//   DocumentModel createDocumentFromFile(CoreSession documentManager,
-//           UploadedFile file, String path, boolean overwrite) throws Exception;
-
-    /**
      * Returns an initialized doc based on a given blob.
      *
-     * @param input     the blob containing the content and the mime type
-     * @param path      the path were to create the document
+     * @param input the blob containing the content and the mime type
+     * @param path the path were to create the document
      * @param overwrite boolean how decide to overwrite or not
-     * @param fullName  the fullname that contains the filename
+     * @param fullName the fullname that contains the filename
      * @return the created Document
      */
     DocumentModel createDocumentFromBlob(CoreSession documentManager,
@@ -74,8 +60,8 @@ public interface FileManager {
      * Just applies the same actions as creation but does not changes the doc
      * type.
      *
-     * @param input    the blob containing the content and the mime type
-     * @param path     the path to the file to update
+     * @param input the blob containing the content and the mime type
+     * @param path the path to the file to update
      * @param fullName the full name that contains the filename
      * @return the updated Document
      */
@@ -86,11 +72,11 @@ public interface FileManager {
      * Creates a Folder.
      *
      * @param fullname the full name of the folder
-     * @param path     the path were to create the folder
+     * @param path the path were to create the folder
      * @return the Folder Created
      */
-    DocumentModel createFolder(CoreSession documentManager,
-            String fullname, String path) throws Exception;
+    DocumentModel createFolder(CoreSession documentManager, String fullname,
+            String path) throws Exception;
 
     /**
      * Returns the list of document that are to be suggested to principalName as
@@ -110,29 +96,26 @@ public interface FileManager {
      * @return the list of candidate containers
      */
     DocumentModelList getCreationContainers(CoreSession documentManager,
-            String docType)
-            throws Exception;
+            String docType) throws Exception;
 
-    String computeDigest(Blob blob)
-            throws ClientException, NoSuchAlgorithmException, IOException;
-
+    String computeDigest(Blob blob) throws ClientException,
+            NoSuchAlgorithmException, IOException;
 
     List<DocumentLocation> findExistingDocumentWithFile(String path,
-            String digest, Principal principal)
-            throws ClientException, SearchException, QueryException;
+            String digest, Principal principal) throws ClientException,
+            SearchException, QueryException;
 
-    List<DocumentLocation> findExistingDocumentWithFile(String path,
-            Blob blob, Principal principal) throws ClientException;
+    List<DocumentLocation> findExistingDocumentWithFile(String path, Blob blob,
+            Principal principal) throws ClientException;
 
     boolean isFileAlreadyPresentInPath(String path, String digest,
-            Principal principal)
-            throws ClientException, SearchException, QueryException;
+            Principal principal) throws ClientException, SearchException,
+            QueryException;
 
     boolean isFileAlreadyPresentInPath(String path, Blob blob,
             Principal principal) throws ClientException;
 
     boolean isUnicityEnabled() throws ClientException;
-
 
     List<String> getFields() throws ClientException;
 
