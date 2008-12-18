@@ -144,8 +144,11 @@
     <module>nuxeo-platform-io-client</module>
     <module>nuxeo-platform-audit-io</module>
     <module>nuxeo-platform-relations-io</module>
+<<<<<<< local
     <module>nuxeo-platform-ear</module>
     <module>nuxeo-platform-el</module>
+=======
+>>>>>>> other
   </modules>
 
   <dependencyManagement>
@@ -912,13 +915,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-login-jboss</artifactId>
         <version>${nuxeo.platform.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-ear</artifactId>
-        <version>${nuxeo.platform.version}</version>
-        <type>pom</type>
       </dependency>
 
       <!-- scope test -->
