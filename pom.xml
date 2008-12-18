@@ -13,20 +13,6 @@
   <name>Nuxeo Applications Distribution</name>
   <description>Build package distributions of nuxeo applications</description>
 
-  <properties>
-    <!--
-      <application.name>nuxeo-app</application.name>
-      <nuxeo.shell.version>5.1.7-SNAPSHOT</nuxeo.shell.version>
-      <nuxeo.webengine.version>5.1.7-SNAPSHOT</nuxeo.webengine.version>
-      <nuxeo.common.version>1.4.4-SNAPSHOT</nuxeo.common.version>
-      <nuxeo.runtime.version>1.4.4-SNAPSHOT</nuxeo.runtime.version>
-      <nuxeo.core.version>1.4.4-SNAPSHOT</nuxeo.core.version>
-      <nuxeo.theme.version>5.1.7-SNAPSHOT</nuxeo.theme.version>
-      <nuxeo.ear.assembly>nuxeo</nuxeo.ear.assembly>
-      <nuxeo.platform.version>5.1.7-SNAPSHOT</nuxeo.platform.version>
-    -->
-  </properties>
-
   <profiles>
     <profile>
       <id>nuxeo-jboss</id>
