@@ -35,6 +35,7 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -60,7 +61,7 @@ public class SubscriptionsAction extends InputController implements
 
     private static final Log log = LogFactory.getLog(SubscriptionsAction.class);
 
-    @In(required = true)
+    @In
     private transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
@@ -75,7 +76,7 @@ public class SubscriptionsAction extends InputController implements
     @DataModelSelection(value="notificationList")
     private SelectableSubscription currentSubscription;
 
-    @In(required = true, create = true)
+    @In(create = true)
     private transient NotificationManager notificationManager;
 
     /**
@@ -149,8 +150,9 @@ public class SubscriptionsAction extends InputController implements
         getNotificationsList();
     }
 
-    @Observer(EventNames.DOCUMENT_SELECTION_CHANGED)
-    public void invalidateNotificationsSelection() throws Exception {
+    @Observer(value=EventNames.DOCUMENT_SELECTION_CHANGED, create=false)
+    @BypassInterceptors
+    public void invalidateNotificationsSelection() {
         log.debug("Invalidate archive records.................");
         notificationList = null;
         currentSubscription = null;

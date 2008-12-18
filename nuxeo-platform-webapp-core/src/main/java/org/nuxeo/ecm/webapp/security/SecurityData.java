@@ -48,16 +48,13 @@ import org.nuxeo.common.utils.i18n.Labeler;
  *
  * parent doc denies:<br>
  * ...<br>
- *
- *
  * <p>
  * Also has methods that allow manipulation of the contained data, such as
  * add/remove security privileges. The end result after add/remove has been
  * called will be converted to a backend security DTO and then submitted on
  * backend.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
+ * @author Razvan Caraghin
  */
 public class SecurityData implements Serializable {
 
@@ -256,14 +253,13 @@ public class SecurityData implements Serializable {
     public boolean removeModifiablePrivilege(String principalName,
             String permissionName, boolean grant) {
 
-        boolean removed=false;
-
         if (null == principalName || null == permissionName) {
             log.error("Null params received, returning...");
             return false;
         }
 
         needSave=true;
+        boolean removed = false;
         if (grant) {
             if (null != currentDocGrant.get(principalName)) {
                 // we have the specified user, check if we have the right

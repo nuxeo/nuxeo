@@ -20,7 +20,7 @@
 package org.nuxeo.ecm.platform.audit.api;
 
 /**
- * Log entry builtin data
+ * Log entry builtin constants.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
@@ -28,23 +28,14 @@ package org.nuxeo.ecm.platform.audit.api;
 public final class BuiltinLogEntryData {
 
     public static final String LOG_ID = "id";
-
     public static final String LOG_EVENT_ID = "eventId";
-
     public static final String LOG_EVENT_DATE = "eventDate";
-
     public static final String LOG_DOC_UUID = "docUUID";
-
     public static final String LOG_DOC_PATH = "docPath";
-
     public static final String LOG_DOC_TYPE = "docType";
-
     public static final String LOG_PRINCIPAL_NAME = "principalName";
-
     public static final String LOG_COMMENT = "comment";
-
     public static final String LOG_CATEGORY = "category";
-
     public static final String LOG_DOC_LIFE_CYCLE = "docLifeCycle";
 
     private BuiltinLogEntryData() {

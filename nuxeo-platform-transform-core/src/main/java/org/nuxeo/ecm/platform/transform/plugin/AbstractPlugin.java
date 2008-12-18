@@ -138,7 +138,6 @@ public abstract class AbstractPlugin implements Plugin {
     }
 
     public boolean isSourceCandidate(TransformDocument doc) {
-
         String smtype;
         try {
             smtype = doc.getMimetype();
@@ -155,7 +154,6 @@ public abstract class AbstractPlugin implements Plugin {
     }
 
     public boolean isSourceCandidate(Blob blob) {
-
         String smtype;
         try {
             smtype = blob.getMimeType();

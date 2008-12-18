@@ -37,8 +37,8 @@ import org.nuxeo.ecm.platform.transform.api.TransformException;
  * <li>Plugins registry</li>
  * </ul>
  *
- * @see org.nuxeo.ecm.platform.transform.interfaces.Plugin
- * @see org.nuxeo.ecm.platform.transform.interfaces.Transformer
+ * @see Plugin
+ * @see Transformer
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public interface TransformServiceCommon extends Serializable {

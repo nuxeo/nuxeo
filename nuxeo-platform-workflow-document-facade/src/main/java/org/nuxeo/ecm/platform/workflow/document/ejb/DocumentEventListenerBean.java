@@ -75,8 +75,9 @@ public class DocumentEventListenerBean implements MessageListener {
 
         try {
             Object obj = ((ObjectMessage)message).getObject();
-            if(!(obj instanceof DocumentMessage))
+            if (!(obj instanceof DocumentMessage)) {
                 return;
+            }
             DocumentMessage doc = (DocumentMessage) obj;
             DocumentRef docRef = doc.getRef();
 
@@ -87,7 +88,8 @@ public class DocumentEventListenerBean implements MessageListener {
             WAPI wapi = getWAPIBean();
 
             // When a document is removed lets cleanup the references.
-            if (eventId.equals(DocumentEventTypes.ABOUT_TO_REMOVE) || (eventId.equals(LIFECYCLE_TRANSITION_EVENT) && "deleted".equals(doc.getEventInfo().get(LIFECYCLE_OPTION_NAME_TO)))) {
+            if (eventId.equals(DocumentEventTypes.ABOUT_TO_REMOVE)
+                    || eventId.equals(LIFECYCLE_TRANSITION_EVENT) && "deleted".equals(doc.getEventInfo().get(LIFECYCLE_OPTION_NAME_TO))) {
 
                 for (String pid : wDoc.getWorkflowInstanceIdsFor(docRef)) {
                     log.debug("Remove id=" + docRef + "and pid=" + pid
@@ -142,7 +144,7 @@ public class DocumentEventListenerBean implements MessageListener {
         return wDocBusinessDelegate.getWorkflowDocument();
     }
 
-    private WAPI getWAPIBean() throws Exception {
+    private static WAPI getWAPIBean() throws Exception {
         return WAPIBusinessDelegate.getWAPI();
     }
 

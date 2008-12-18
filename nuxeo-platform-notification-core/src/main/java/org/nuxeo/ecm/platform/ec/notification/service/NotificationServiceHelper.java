@@ -45,7 +45,7 @@ public final class NotificationServiceHelper {
                 NotificationService.NAME);
     }
 
-    public static PlacefulService getPlacefulService() throws Exception {
+    public static PlacefulService getPlacefulService() {
         return (PlacefulService) Framework.getRuntime().getComponent(
                 PlacefulService.ID);
 //        return Framework.getService(PlacefulService.class);

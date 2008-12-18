@@ -83,10 +83,8 @@ public final class FancyURLMapper {
 
                 final DocumentLocation docLoc = new DocumentLocationImpl(
                         server, docRef);
-                final DocumentView docView = new DocumentViewImpl(docLoc,
-                        viewId, tab, subURI);
 
-                return docView;
+                return new DocumentViewImpl(docLoc, viewId, tab, subURI);
             }
         }
 
@@ -95,9 +93,6 @@ public final class FancyURLMapper {
 
     /**
      * Generates a Zope-like URL from a DocumentView.
-     *
-     * @param docView
-     * @return
      */
     public static String getFancyURL(DocumentView docView) {
         String url = FancyURLConfig.FANCY_URL_PREFIX + "/"
@@ -105,7 +100,7 @@ public final class FancyURLMapper {
                 + docView.getDocumentLocation().getDocRef().toString() + "/"
                 + docView.getViewId() + "/" + docView.getTabId() + "/";
         String subURI = docView.getSubURI();
-        if ((subURI != null) && (subURI.length() > 0)) {
+        if (subURI != null && subURI.length() > 0) {
             if (subURI.endsWith("&")) {
                 subURI = subURI.substring(0, subURI.length() - 1);
             }
@@ -122,11 +117,7 @@ public final class FancyURLMapper {
     }
 
     /**
-     *
      * Converts a GET URL to a Zope-like URL.
-     *
-     * @param url
-     * @return
      */
     public static String convertToFancyURL(String url) {
         String serverName = "";

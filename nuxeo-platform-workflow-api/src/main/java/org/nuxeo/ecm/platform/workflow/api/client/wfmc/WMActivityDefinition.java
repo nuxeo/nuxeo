@@ -59,7 +59,7 @@ public interface WMActivityDefinition extends Serializable {
     /**
      * Returns the activityDefinition type.
      *
-     * @see org.nuxeo.ecm.platform.workflow.WMActivityDefinition
+     * @see WMActivityDefinition
      *
      * @return the activityDefinition type
      */

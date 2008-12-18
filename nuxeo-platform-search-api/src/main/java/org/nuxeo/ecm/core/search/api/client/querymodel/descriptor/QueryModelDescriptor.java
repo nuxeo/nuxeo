@@ -120,8 +120,7 @@ public class QueryModelDescriptor {
         return getQuery(model, null);
     }
 
-    public SortInfo getDefaultSortInfo(DocumentModel model)
-            throws ClientException {
+    public SortInfo getDefaultSortInfo(DocumentModel model) {
         if (isStateful()) {
             if (sortColumnField == null || sortAscendingField == null) {
                 return null;
@@ -181,19 +180,20 @@ public class QueryModelDescriptor {
      * @param s
      * @return
      */
+    // TODO remove this once we work on org.nuxeo.core, v 1.4
     public static String prepareStringLiteral(String s) {
         return "'" + s.replaceAll("'", "\\\\'") + "'";
     }
 
     private static void appendQuotedStringList(StringBuilder queryBuilder,
-            List<? extends Object> listParam) {
-        queryBuilder.append("(");
+            List<?> listParam) {
+        queryBuilder.append('(');
         List<String> quotedParam = new ArrayList<String>(listParam.size());
-        for (int j = 0; j < listParam.size(); j++) {
-            quotedParam.add(prepareStringLiteral(listParam.get(j).toString()));
+        for (Object param : listParam) {
+            quotedParam.add(prepareStringLiteral(param.toString()));
         }
         queryBuilder.append(StringUtils.join(quotedParam, ", "));
-        queryBuilder.append(")");
+        queryBuilder.append(')');
     }
 
     @SuppressWarnings("unchecked")
@@ -219,7 +219,7 @@ public class QueryModelDescriptor {
                             Arrays.asList((String[]) params[i]));
                 } else if (params[i] instanceof List) {
                     appendQuotedStringList(queryBuilder,
-                            (List<? extends Object>) params[i]);
+                            (List<?>) params[i]);
                 } else if (params[i] instanceof Boolean) {
                     boolean b = (Boolean) params[i];
                     queryBuilder.append(b ? 1 : 0);
@@ -298,7 +298,7 @@ public class QueryModelDescriptor {
      * Init the escaper object for stateful query models.
      * <p>
      * This is meant to be called at extension point contribution registration
-     * time
+     * time.
      * </p>
      *
      * @param context surrounding context, used to load the correct class.

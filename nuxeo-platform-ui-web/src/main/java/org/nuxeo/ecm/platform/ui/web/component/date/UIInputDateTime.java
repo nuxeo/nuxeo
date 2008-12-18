@@ -135,7 +135,7 @@ public class UIInputDateTime extends UIInput {
         ValueExpression ve = getValueExpression("showsTime");
         if (ve != null) {
             try {
-                return (!Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext())));
+                return !Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext()));
             } catch (ELException e) {
                 throw new FacesException(e);
             }
@@ -194,9 +194,8 @@ public class UIInputDateTime extends UIInput {
 
     @Override
     public Object saveState(FacesContext context) {
-        Object[] values = new Object[] { super.saveState(context), format,
-                showsTime, locale, timeZone, triggerLabel, };
-        return values;
+        return new Object[] { super.saveState(context), format,
+                showsTime, locale, timeZone, triggerLabel };
     }
 
     @Override
@@ -209,4 +208,5 @@ public class UIInputDateTime extends UIInput {
         timeZone = (String) values[4];
         triggerLabel = (String) values[5];
     }
+
 }

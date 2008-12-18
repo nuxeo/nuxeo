@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
+import java.io.Serializable;
+
 import static org.jboss.seam.ScopeType.EVENT;
 
 import org.jboss.seam.annotations.In;
@@ -36,38 +38,36 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Sample code for a Seam aware Restlet
+ * Sample code for a Seam-aware restlet.
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
-
 @Name("testSeamRestlet")
 @Scope(EVENT)
-public class SimpleRestletWithSeam extends Restlet {
+public class SimpleRestletWithSeam extends Restlet implements Serializable {
+
+    private static final long serialVersionUID = -5264946092445282305L;
 
     @In(create = true)
     NavigationContext navigationContext;
 
     CoreSession documentManager;
 
+    @Override
     public void handle(Request req, Response res) {
         String repo = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");
 
-        DocumentModel dm = null;
-
         try {
             navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
             documentManager = navigationContext.getOrCreateDocumentManager();
-            dm = documentManager.getDocument(new IdRef(docid));
+            DocumentModel dm = documentManager.getDocument(new IdRef(docid));
+            String title = (String) dm.getProperty("dublincore", "title");
+            res.setEntity("doc =>" + title, MediaType.TEXT_PLAIN);
         } catch (ClientException e) {
             // TODO Auto-generated catch block
             res.setEntity(e.getMessage(), MediaType.TEXT_PLAIN);
         }
-
-        String title = (String) dm.getProperty("dublincore", "title");
-
-        res.setEntity("doc =>" + title, MediaType.TEXT_PLAIN);
     }
 
 }

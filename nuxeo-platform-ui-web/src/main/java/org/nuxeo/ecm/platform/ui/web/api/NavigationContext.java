@@ -367,7 +367,6 @@ public interface NavigationContext extends ResultsProviderFarm {
      * Gets current document for edition.
      *
      * @return
-     * @throws ClientException
      */
     DocumentModel factoryChangeableDocument();
 

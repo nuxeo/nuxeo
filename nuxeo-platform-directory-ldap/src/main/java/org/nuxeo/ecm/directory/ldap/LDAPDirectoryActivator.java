@@ -32,6 +32,7 @@ public class LDAPDirectoryActivator implements BundleActivator {
 
     private static final Log log = LogFactory.getLog(LDAPDirectoryActivator.class);
 
+    // FIXME: should be named "org.nuxeo.ecm.directory.ldap"
     public static final String NAME = "org.nuxeo.ecm.directory.sql";
 
     public void start(BundleContext context) {

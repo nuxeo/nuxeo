@@ -23,12 +23,10 @@ package org.nuxeo.ecm.platform.audit.api.query;
  * Date range query constants.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class DateRangeQueryConstants {
 
     public static final String MIN = "m";
-
     public static final String HOUR = "h";
 
     // Constant utility class

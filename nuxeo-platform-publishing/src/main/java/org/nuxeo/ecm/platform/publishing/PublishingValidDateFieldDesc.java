@@ -28,7 +28,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Publishing valid date descriptor.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 @XObject("publishingValidDateField")
 public class PublishingValidDateFieldDesc implements Serializable {

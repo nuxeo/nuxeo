@@ -22,10 +22,13 @@ package org.nuxeo.ecm.platform.events;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.HashMap;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
+import org.nuxeo.ecm.core.api.event.CoreEvent;
+import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
@@ -35,32 +38,35 @@ import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
 /**
  * JMSDocumentMessageProducer test case.
  *
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @author Julien Anguenot
  */
 public class TestDocumentMessage extends RepositoryTestCase {
 
     private Document root;
+    private Document doc;
+    private CoreEvent event;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         Session session = getRepository().getSession(null);
         root = session.getRootDocument();
+        Map <String, Object> info = new HashMap<String, Object>();
+        event = new CoreEventImpl("event_id", null, info, null, "category", "comment");
     }
 
     public void testMessageDocument() throws DocumentException {
-        Document doc = root.addChild("doc", "File");
+        doc = root.addChild("doc", "File");
+        DocumentMessage msg = DocumentMessageFactory.createDocumentMessage(doc, event);
 
-        DocumentMessage msg = DocumentMessageFactory.createDocumentMessage(doc);
-
-        assertNull(msg.getCategory());
-        assertNull(msg.getComment());
+        assertEquals("category", msg.getCategory());
+        assertEquals("comment", msg.getComment());
+        assertEquals("event_id", msg.getEventId());
         assertNull(msg.getDocCurrentLifeCycle());
-        assertNull(msg.getEventDate());
-        assertNull(msg.getEventId());
+        assertNotNull(msg.getEventDate());
         Map<String, Serializable> info = msg.getEventInfo();
         assertNotNull(info);
-        assertEquals(0, info.size());
+        assertEquals(2, info.size());
         assertNull(msg.getPrincipal());
         assertNull(msg.getPrincipalName());
 
@@ -68,34 +74,21 @@ public class TestDocumentMessage extends RepositoryTestCase {
     }
 
     public void testMessageDeletedDocModel() throws DocumentException {
-        Document doc = root.addChild("doc", "File");
+        doc = root.addChild("doc", "File");
         DocumentModel docModel = DocumentModelFactory.createDocumentModel(doc,
                 new String[] {"file"});
         root.removeChild("doc");
 
-        DocumentMessage msg = new DocumentMessageImpl(docModel);
+        DocumentMessage msg = new DocumentMessageImpl(docModel, event);
 
-        assertNull(msg.getCategory());
-        assertNull(msg.getComment());
+        assertEquals("category", msg.getCategory());
+        assertEquals("comment", msg.getComment());
+        assertEquals("event_id", msg.getEventId());
         assertNull(msg.getDocCurrentLifeCycle());
-        assertNull(msg.getEventDate());
-        assertNull(msg.getEventId());
+        assertNotNull(msg.getEventDate());
         Map<String, Serializable> info = msg.getEventInfo();
         assertNotNull(info);
-        assertEquals(0, info.size());
-        assertNull(msg.getPrincipal());
-        assertNull(msg.getPrincipalName());
-    }
-
-    public void testMessageDocumentNoSource() throws DocumentException {
-        DocumentMessage msg = DocumentMessageFactory.createDocumentMessage(null);
-
-        assertNull(msg.getCategory());
-        assertNull(msg.getComment());
-        assertNull(msg.getDocCurrentLifeCycle());
-        assertNull(msg.getEventDate());
-        assertNull(msg.getEventId());
-        assertNull(msg.getEventInfo());
+        assertEquals(2, info.size());
         assertNull(msg.getPrincipal());
         assertNull(msg.getPrincipalName());
     }

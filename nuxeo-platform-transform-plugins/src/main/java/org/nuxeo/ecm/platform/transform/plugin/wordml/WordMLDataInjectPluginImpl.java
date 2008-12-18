@@ -201,7 +201,7 @@ public class WordMLDataInjectPluginImpl extends AbstractPlugin implements
 
             tmpFile = createTmpFile();
 
-            log.info(logPrefix + "created tmpFile: " + tmpFile);
+            log.debug(logPrefix + "created tmpFile: " + tmpFile);
 
             ostream = new FileOutputStream(tmpFile);
 

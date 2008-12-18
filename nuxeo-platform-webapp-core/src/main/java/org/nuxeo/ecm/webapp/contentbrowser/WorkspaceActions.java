@@ -26,18 +26,15 @@ import org.jboss.seam.annotations.Destroy;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.platform.ui.web.resolver.ContextStringWrapper;
+import org.nuxeo.ecm.platform.el.ContextStringWrapper;
 import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 
 /**
  * Provides contentRoot-specific actions.
  *
- * XXX AT: content roots should be handled like documents => deprecated, use
- * document actions instead
- *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
-
+// XXX AT: content roots should be handled like documents => deprecated, use
 public interface WorkspaceActions extends StatefulBaseLifeCycle {
     void initialize() throws ClientException;
 
