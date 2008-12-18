@@ -895,6 +895,13 @@
         <version>${nuxeo.platform.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-ear</artifactId>
+        <version>${nuxeo.platform.version}</version>
+        <type>pom</type>
+      </dependency>
+
       <!-- scope test -->
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
