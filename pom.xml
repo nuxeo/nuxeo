@@ -28,7 +28,7 @@
       <modules>
         <module>nuxeo-application-base</module>
         <module>nuxeo-shell-template</module>
-      </modules>      
+      </modules>
     </profile>
     <profile>
       <id>jetty</id>

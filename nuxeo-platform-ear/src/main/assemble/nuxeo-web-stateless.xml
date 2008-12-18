@@ -34,6 +34,12 @@
       <artifact group="org.nuxeo.*" category="runtime,jboss4"
         includeDependsOnCategory="false" />
       <artifact group="org.nuxeo.*" category="stateless" />
+      <!-- Nuxeo-WebEngine -->
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-rendering" />
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-core" />
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-admin" />
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-wiki" />
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-resteasy-adapter" />
       <!-- add here web and stateless nuxeo-addons -->
     </includes>
     <excludes>
@@ -100,6 +106,11 @@
       <artifact group="com.sun.facelets" name="jsf-facelets" version="1.1.11" />
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-jbossws-wrapper"
         version="4.0.5.GA" />
+      <!-- Nuxeo-WebEngine fixed libs -->
+      <artifact group="org.codehaus.groovy" name="groovy-all" version="1.5.7" />
+      <artifact group="org.resteasy" name="resteasy-jaxrs" version="1.0-beta-8-nx" />
+      <artifact group="org.resteasy" name="jaxrs-api" version="1.0-beta-8" />
+      <artifact group="javax.script" name="script-api" version="1.0" />
     </artifacts>
   </artifactSet>
 
