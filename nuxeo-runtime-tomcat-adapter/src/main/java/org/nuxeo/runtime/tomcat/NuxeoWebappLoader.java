@@ -22,10 +22,13 @@ package org.nuxeo.runtime.tomcat;
 
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.catalina.Container;
@@ -34,11 +37,13 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.loader.WebappLoader;
 import org.nuxeo.osgi.application.SharedClassLoader;
 
+
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class NuxeoWebappLoader extends WebappLoader implements Constants {
+public class NuxeoWebappLoader extends WebappLoader implements Constants {   
 
     protected boolean isStarted = false;
     protected String home = "nuxeo";
@@ -151,13 +156,25 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         File home = resolveHomeDirectory();
         if (home == null) {
             return;
-        }
+        }        
         if (systemBundle == null) {
             System.err.println("The attribute 'systemBundle' is not defined, Check your context.xml file. Nuxeo will not be started.");
             return; // systemBundle is required
         }
 
+        // We need to set the nuxeo home as a system property so external tools like log4j can use it.
+        // For example log4j can use variable expansion in log4j.properties like ${org.nuxeo.app.home}/log/server.log
+        // to correctly setup the log files.
+        // The create environment will also register env properties as system properties
         Properties env = createEnvironment(home);
+
+        // load other system properties from the ${org.nuxeo.app.home}/system.properties if any is defined.
+        // The properties in system.properties dir supports variable expansion of existing system properties and 
+        // of nuxeo environment properties.
+        // these can be used in the same manner as ${org.nuxeo.app.home} by external libs. 
+        // An example is derby that needs to know where in the filesystem to create its databases.
+        loadSystemProperties(home);
+        
         try {
             File systemBundleFile = newFile(home, (String)env.get(SYSTEM_BUNDLE));
             SharedClassLoader loader = (SharedClassLoader)getClassLoader().getParent();
@@ -220,6 +237,11 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         return result;
     }
 
+    /**
+     * This will also install env. properties as java system properties.
+     * @param homeDir
+     * @return
+     */
     protected Properties createEnvironment(File homeDir) {
         Properties env = new Properties();
         env.put(SYSTEM_BUNDLE, systemBundle);
@@ -247,6 +269,7 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         if (args != null) {
             env.put(COMMAND_LINE_ARGS, args.split("\\s+"));
         }
+        System.getProperties().putAll(env);
         return env;
     }
 
@@ -274,4 +297,95 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         return new File(path);
     }
 
+    
+    protected void loadSystemProperties(File home) {
+        File file = new File(home, "system.properties");
+        if (!file.isFile()) { // no system properties to load
+            return;
+        }        
+        Properties props = new Properties();
+        InputStream in = null;
+        try {
+            Properties sysProps = System.getProperties();
+            in = new FileInputStream(file);
+            props.load(in);
+            for (Map.Entry<Object,Object> entry : props.entrySet()) {
+                String key = entry.getKey().toString();
+                String value = expandVars(entry.getValue().toString(), sysProps);
+                sysProps.put(key, value);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (in != null) {
+                try { in.close(); } catch (Exception ee) { ee.printStackTrace(); }
+            }
+        }
+    }
+    
+    /**
+     * Copied from org.nuxeo.runtime.api.Framework
+     * 
+     * Expands any variable found in the given expression with the value
+     * of the corresponding framework property.
+     * <p>
+     * The variable format is ${property_key}.
+     * <p>
+     * System properties are also expanded.
+     *
+     * @param expression
+     * @return
+     */
+    public static String expandVars(String expression, Map<Object,Object> vars) {
+        int p = expression.indexOf("${");
+        if (p == -1) {
+            return expression; // do not expand if not needed
+        }
+
+        char[] buf = expression.toCharArray();
+        StringBuilder result = new StringBuilder(buf.length);
+        if (p > 0) {
+            result.append(expression.substring(0, p));
+        }
+        StringBuilder varBuf = new StringBuilder();
+        boolean dollar = false;
+        boolean var = false;
+        for (int i = p; i < buf.length; i++) {
+            char c = buf[i];
+            switch (c) {
+            case '$' :
+                dollar = true;
+                break;
+            case '{' :
+                if (dollar) {
+                    dollar = false;
+                    var = true;
+                }
+                break;
+            case '}':
+                if (var) {
+                  var = false;
+                  String varName = varBuf.toString();
+                  varBuf.setLength(0);
+                  Object varValue = vars.get(varName); // get the variable value
+                  if (varValue != null) {
+                      result.append(varValue.toString());
+                  } else { // let the variable as is
+                      result.append("${").append(varName).append('}');
+                  }
+                }
+                break;
+            default:
+                if (var) {
+                  varBuf.append(c);
+                } else {
+                    result.append(c);
+                }
+                break;
+            }
+        }
+        return result.toString();
+    }
+
+    
 }

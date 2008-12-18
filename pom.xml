@@ -27,7 +27,8 @@
     <module>nuxeo-runtime-launcher</module>
     <module>nuxeo-runtime-test</module>
     <module>nuxeo-runtime-jetty-adapter</module>
-    <module>nuxeo-runtime-gf3-adapter</module>    
+    <module>nuxeo-runtime-gf3-adapter</module>
+    <module>nuxeo-runtime-tomcat-adapter</module>    
     <module>nuxeo-runtime-scripting</module>
   </modules>
 
