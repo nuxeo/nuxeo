@@ -144,11 +144,7 @@
     <module>nuxeo-platform-io-client</module>
     <module>nuxeo-platform-audit-io</module>
     <module>nuxeo-platform-relations-io</module>
-<<<<<<< local
-    <module>nuxeo-platform-ear</module>
     <module>nuxeo-platform-el</module>
-=======
->>>>>>> other
   </modules>
 
   <dependencyManagement>
