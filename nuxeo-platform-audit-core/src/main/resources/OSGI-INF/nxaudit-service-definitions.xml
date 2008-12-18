@@ -14,7 +14,7 @@
 
   <implementation class="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" />
 
-  <extension-point name=T>
+  <extension-point name="event">
     <documentation>
       This service registers auditable events.
       <p />
