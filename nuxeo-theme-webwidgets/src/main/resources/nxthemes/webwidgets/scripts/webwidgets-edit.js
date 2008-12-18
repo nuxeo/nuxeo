@@ -43,7 +43,7 @@ NXThemesWebWidgets.moveWidget = function(info) {
          },
          onComplete: function(r) {
            var destUid = r.responseText;
-           NXThemesWebWidgets.changeWidgetId(srcProvider, destProvider, srcUid, destUid);
+           NXThemesWebWidgets.changeWidgetId(srcProvider, destProvider, srcUid, destUid);               
            var widget = NXThemesWebWidgets.getWidget(destProvider, destUid);
            widget.setHtml();
          }

@@ -25,6 +25,9 @@ NXThemesWebWidgets.getWidgetElementIcon = function(provider, uid) {
 }; 
 
 NXThemesWebWidgets.changeWidgetId = function(oldProvider, newProvider, oldUid, newUid) {
+  if (oldProvider == newProvider && oldUid == newUid) {
+      return;
+  }
   var widget = NXThemesWebWidgets.widgets.get(oldProvider + '_' + oldUid);
   var widgetEl = NXThemesWebWidgets.getWidgetElement(oldProvider, oldUid);
   if (widgetEl) {
