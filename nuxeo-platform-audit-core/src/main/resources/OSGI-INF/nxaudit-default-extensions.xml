@@ -35,5 +35,5 @@
     <event name="documentPublicationApproved"/>
     <event name="lifecycle_transition_event"/>
   </extension>
-
+  
 </component>

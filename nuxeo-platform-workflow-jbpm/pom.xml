@@ -35,12 +35,10 @@
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jbpm</artifactId>
-      <version>3.1.4</version>
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jbpm-identity</artifactId>
-      <version>3.1.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>

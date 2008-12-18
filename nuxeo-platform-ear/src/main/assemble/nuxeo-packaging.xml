@@ -7,7 +7,7 @@
       <artifacts group="org.nuxeo.*" category="core,search,web" />
     </includes>
     <excludes>
-      <artifacts group="org.nuxeo.common" />
+      <artifacts name="nuxeo-common" />
       <artifacts name="nuxeo-runtime-jboss-extensions" />
     </excludes>
     <assembly type="directory" name="nuxeo.ear">
@@ -45,7 +45,7 @@
       <artifacts group="org.nuxeo.*" category="core" />
     </includes>
     <excludes>
-      <artifacts group="org.nuxeo.common" />
+      <artifacts name="nuxeo-common" />
       <artifacts name="nuxeo-runtime-jboss-extensions" />
     </excludes>
     <assembly type="directory" name="nuxeo-core.ear">
@@ -68,7 +68,7 @@
       <artifacts group="org.nuxeo.*" category="search" />
     </includes>
     <excludes>
-      <artifacts group="org.nuxeo.common" />
+      <artifacts name="nuxeo-common" />
       <artifacts name="nuxeo-runtime-jboss-extensions" />
     </excludes>
     <assembly type="directory" name="nuxeo-indexing.ear">
@@ -93,7 +93,7 @@
       <artifacts group="org.nuxeo.*" category="web" />
     </includes>
     <excludes>
-      <artifacts group="org.nuxeo.common" />
+      <artifacts name="nuxeo-common" />
       <artifacts name="nuxeo-runtime-jboss-extensions" />
     </excludes>
     <assembly type="directory" name="nuxeo-webplatform.ear">

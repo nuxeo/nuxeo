@@ -5,6 +5,9 @@
     <module>
       <ejb>${bundle.fileName}</ejb>
     </module>
+   <module>
+      <java>datasources/nxaudit-logs-ds.xml</java>
+    </module>
   </extension>
 
 </fragment>

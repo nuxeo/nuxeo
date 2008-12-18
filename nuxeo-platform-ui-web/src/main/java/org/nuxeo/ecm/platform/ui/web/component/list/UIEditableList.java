@@ -44,11 +44,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
+import org.nuxeo.ecm.platform.el.FieldAdapterManager;
 import org.nuxeo.ecm.platform.ui.web.model.EditableModel;
 import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelImpl;
 import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelRowEvent;
 import org.nuxeo.ecm.platform.ui.web.model.impl.ProtectedEditableModelImpl;
-import org.nuxeo.ecm.platform.ui.web.resolver.FieldAdapterManager;
 
 import com.sun.facelets.tag.jsf.ComponentSupport;
 

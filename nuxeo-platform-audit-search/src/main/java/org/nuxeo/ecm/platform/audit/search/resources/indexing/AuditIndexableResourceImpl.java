@@ -91,8 +91,8 @@ public class AuditIndexableResourceImpl extends AbstractIndexableResource
     }
 
     protected Logs getAuditLogsService() {
-        if (auditLogsService == null) {
-            auditLogsService = AuditLogsServiceDelegate.getRemoteAuditLogsService();
+        if (auditLogsService == null) {        
+                auditLogsService = AuditLogsServiceDelegate.getRemoteAuditLogsService();        
         }
         return auditLogsService;
     }
