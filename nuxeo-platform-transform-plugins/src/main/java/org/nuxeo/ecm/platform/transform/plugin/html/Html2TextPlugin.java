@@ -37,7 +37,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * 
+ *
  */
 public class Html2TextPlugin extends AbstractPlugin {
 

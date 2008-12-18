@@ -24,7 +24,6 @@ import org.jbpm.graph.exe.ProcessInstance;
 
 /**
  * @author <a href="bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
- *
  */
 public class ForumEndPublishActionHandler extends
         AbstractForumWorkflowDocumentHandler {
@@ -34,8 +33,8 @@ public class ForumEndPublishActionHandler extends
     public void execute(ExecutionContext executionContext) throws Exception {
 
         log.debug("Moderation process end");
+        // FIXME: get rid of these two try/except blocks?
         try {
-
             // Here we change the lifeCycleState of the post
             documentFollowTransition(executionContext,
                     ForumConstants.TRANSITION_TO_PUBLISHED_STATE);

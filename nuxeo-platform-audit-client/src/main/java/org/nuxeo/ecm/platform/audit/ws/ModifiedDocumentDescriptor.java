@@ -28,7 +28,7 @@ import java.util.Date;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
  */
-public class ModifiedDocumentDescriptor implements Serializable{
+public class ModifiedDocumentDescriptor implements Serializable {
 
     private static final long serialVersionUID = 17654654654L;
 
@@ -38,8 +38,11 @@ public class ModifiedDocumentDescriptor implements Serializable{
 
     private final String uuid;
 
-    public ModifiedDocumentDescriptor(Date modified, String type,
-            String uuid) {
+    public ModifiedDocumentDescriptor() {
+        this(null, null, null);
+    }
+
+    public ModifiedDocumentDescriptor(Date modified, String type, String uuid) {
         this.modified = modified.toString();
         this.type = type;
         this.uuid = uuid;

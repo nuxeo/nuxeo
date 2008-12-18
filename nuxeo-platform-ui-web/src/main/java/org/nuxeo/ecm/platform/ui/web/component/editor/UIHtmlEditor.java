@@ -124,9 +124,7 @@ public class UIHtmlEditor extends UIInput {
 
     @Override
     public Object saveState(FacesContext context) {
-        Object[] values = new Object[]{ super.saveState(context), width,
-                height, editorSelector };
-        return values;
+        return new Object[] { super.saveState(context), width, height, editorSelector };
     }
 
     @Override

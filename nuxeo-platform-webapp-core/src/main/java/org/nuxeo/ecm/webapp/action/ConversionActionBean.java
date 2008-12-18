@@ -29,11 +29,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -47,22 +49,24 @@ import org.nuxeo.ecm.platform.transform.api.TransformServiceDelegate;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformServiceCommon;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.cache.ThreadSafeCacheHolder;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:florent.bonnet@nuxeo.com">Florent BONNET</a>
  */
 @Name("conversionActions")
+@Scope(ScopeType.EVENT)
 @Transactional
 public class ConversionActionBean implements ConversionAction {
 
     private static final Log log = LogFactory.getLog(ConversionActionBean.class);
 
     @In(create = true, required = false)
-    transient CoreSession documentManager;
+    CoreSession documentManager;
 
     @In(create = true)
-    transient NavigationContext navigationContext;
+    NavigationContext navigationContext;
 
     @RequestParameter
     private String docRef;
@@ -72,6 +76,8 @@ public class ConversionActionBean implements ConversionAction {
 
     @RequestParameter
     private String filename;
+
+    protected static ThreadSafeCacheHolder<Boolean> exportableToPDFCache = new ThreadSafeCacheHolder<Boolean>(20);
 
     @Remove
     public void destroy() {
@@ -108,7 +114,7 @@ public class ConversionActionBean implements ConversionAction {
             }
         } catch (Exception e) {
             log.error("error asking the any2pdf plugin whether pdf conversion "
-                    + " is supported: " + e.getMessage());
+                    + " is supported: " + e.getMessage(), e);
         }
 
         return isSupported;
@@ -119,12 +125,20 @@ public class ConversionActionBean implements ConversionAction {
         boolean isSupported = false;
 
         try {
-            String mimetype = getMimetypeFromDocument(fieldName);
-            TransformServiceCommon nxt = TransformServiceDelegate.getRemoteTransformService();
-            isSupported = nxt.isMimetypeSupportedByPlugin("any2pdf", mimetype);
+            DocumentModel doc = getDocument();
+
+            Boolean cacheResult = exportableToPDFCache.getFromCache(doc, fieldName);
+            if (cacheResult == null) {
+                String mimetype = getMimetypeFromDocument(fieldName);
+                TransformServiceCommon nxt = TransformServiceDelegate.getRemoteTransformService();
+                isSupported = nxt.isMimetypeSupportedByPlugin("any2pdf", mimetype);
+                exportableToPDFCache.addToCache(doc, fieldName, isSupported);
+            } else {
+                isSupported = cacheResult;
+            }
         } catch (TransformException e) {
             log.error("error asking the any2pdf plugin whether " + fieldName
-                    + " is supported: ",e);
+                    + " is supported: ", e);
         } catch (Exception e) {
             log.error(e);
         }
@@ -135,7 +149,6 @@ public class ConversionActionBean implements ConversionAction {
     @WebRemote
     public String generatePdfFile() {
         try {
-
             if (fileFieldFullName == null) {
                 return null;
             }
@@ -154,7 +167,7 @@ public class ConversionActionBean implements ConversionAction {
             }
 
             // add pdf extension
-            int pos = name.lastIndexOf(".");
+            int pos = name.lastIndexOf('.');
             if (pos <= 0) {
                 name += ".pdf";
             } else {
@@ -162,7 +175,7 @@ public class ConversionActionBean implements ConversionAction {
                 name = name.replace(sub, "pdf");
             }
 
-            if (resultingDocs.size() == 0) {
+            if (resultingDocs.isEmpty()) {
                 log.error("Transform service didn't return any resulting documents which is not normal.");
                 return "pdf_generation_error";
             }
@@ -209,7 +222,7 @@ public class ConversionActionBean implements ConversionAction {
             return isOnlineEditable;
         } catch (Exception e) {
             log.error("error getting the mimetype entry for " + fieldName
-                    + ": " + e.getMessage());
+                    + ": " + e.getMessage(), e);
             return false;
         }
     }

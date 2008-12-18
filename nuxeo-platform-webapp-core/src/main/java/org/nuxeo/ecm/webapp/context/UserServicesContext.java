@@ -29,9 +29,9 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
@@ -45,16 +45,15 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 @Name("userServicesContext")
 @Scope(SESSION)
 @Startup
-@NuxeoJavaBeanErrorHandler
 public class UserServicesContext implements Serializable {
 
     private static final long serialVersionUID = -4938620211123775744L;
 
-    @In(required = true, create = true)
+    @In(create = true)
     private transient NavigationContext navigationContext;
 
     @In(required = false, create = true)
-    private Principal currentUser;
+    private transient Principal currentUser;
 
     private transient RepositoryLocation repoLocation;
 
@@ -70,6 +69,7 @@ public class UserServicesContext implements Serializable {
     }
 
     @Observer(value={EventNames.LOCATION_SELECTION_CHANGED}, create=false, inject=false)
+    @BypassInterceptors
     public void invalidate() {
         repoLocation = null;
         serverLocationRetrieved = false;

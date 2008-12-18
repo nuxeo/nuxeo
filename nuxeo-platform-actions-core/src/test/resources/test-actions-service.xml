@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.ecm.platform.actions.ActionService">
 
   <implementation class="org.nuxeo.ecm.platform.actions.ActionService" />
@@ -14,4 +13,3 @@
   </extension-point>
 
 </component>
-

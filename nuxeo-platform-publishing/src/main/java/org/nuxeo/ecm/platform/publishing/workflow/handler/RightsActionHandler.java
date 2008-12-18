@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.workflow.jbpm.handlers.api.client.AbstractWorkflow
  * Setup document rights.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class RightsActionHandler extends AbstractWorkflowDocumentActionHandler {
 

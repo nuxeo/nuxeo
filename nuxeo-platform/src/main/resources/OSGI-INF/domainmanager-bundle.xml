@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <component name="DomainManagerService">
 
   <documentation>Handles domain creation.</documentation>

@@ -20,26 +20,20 @@
 package org.nuxeo.ecm.platform.usermanager;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.commons.collections.MultiHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
 
-@XObject(value = "userManager", order = { "users/anonymousUser",
-        "users/anonymousUser@id", "users/anonymousUser/property" })
+@XObject(value = "userManager")
 public class UserManagerDescriptor implements Serializable {
 
     private static final Log log = LogFactory.getLog(UserManagerDescriptor.class);
@@ -120,39 +114,11 @@ public class UserManagerDescriptor implements Serializable {
         userPasswordPattern = Pattern.compile(pattern);
     }
 
-    protected boolean anonymousUserSpecified;
-
     @XNode("users/anonymousUser")
-    protected void setAnonymousUserSpecified(@SuppressWarnings("unused")
-    String text) {
-        anonymousUserSpecified = true;
-    }
+    protected VirtualUserDescriptor anonymousUser;
 
-    @XNode("users/anonymousUser@remove")
-    protected boolean anonymousUserRemove;
-
-    @XNode("users/anonymousUser@id")
-    protected String anonymousUserId;
-
-    protected Map<String, String> anonymousUser;
-
-    @XNodeMap(value = "users/anonymousUser/property", key = "@name", type = HashMap.class, componentType = String.class)
-    protected void setAnonymousUser(Map<String, String> properties) {
-        // anonymousUserSpecified is already initialized because of the order
-        // parameter in @XObject
-        if (anonymousUserSpecified) {
-            anonymousUser = properties;
-            if (anonymousUserId != null) {
-                // we should really use a dedicated class and not map
-                anonymousUser.put(UserManager.ANONYMOUS_USER_ID_KEY,
-                        anonymousUserId);
-            }
-        } else {
-            // we have to do this hack because a XNodeMap is initialized to an
-            // empty map even if the XML is not present
-            anonymousUser = null;
-        }
-    }
+    @XNodeMap(value = "users/virtualUser", key = "@id", type = HashMap.class, componentType = VirtualUserDescriptor.class)
+    protected Map<String, VirtualUserDescriptor> virtualUsers;
 
     @XNode("groups/directory")
     protected String groupDirectoryName;
@@ -223,10 +189,24 @@ public class UserManagerDescriptor implements Serializable {
             groupParentGroupsField = other.groupParentGroupsField;
         }
         if (other.anonymousUser != null) {
-            if (other.anonymousUserRemove) {
+            if (other.anonymousUser.remove) {
                 anonymousUser = null;
             } else {
                 anonymousUser = other.anonymousUser;
+            }
+        }
+        if (other.virtualUsers != null) {
+            if (virtualUsers == null) {
+                virtualUsers = other.virtualUsers;
+            } else {
+                for (VirtualUserDescriptor otherVirtualUser : other.virtualUsers.values()) {
+                    if (virtualUsers.containsKey(otherVirtualUser.id)
+                            && otherVirtualUser.remove) {
+                        virtualUsers.remove(otherVirtualUser.id);
+                    } else {
+                        virtualUsers.put(otherVirtualUser.id, otherVirtualUser);
+                    }
+                }
             }
         }
     }

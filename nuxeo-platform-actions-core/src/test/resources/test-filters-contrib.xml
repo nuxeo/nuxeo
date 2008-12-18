@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.ecm.platform.actions.filters.test">
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
@@ -88,4 +87,3 @@
   </extension>
 
 </component>
-

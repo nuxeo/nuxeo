@@ -38,8 +38,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 /**
  * Lists the available permission actions. Hardcoded. ATM Grant/Deny supported.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
+ * @author Razvan Caraghin
  */
 @Name("permissionActionListManager")
 @Scope(SESSION)

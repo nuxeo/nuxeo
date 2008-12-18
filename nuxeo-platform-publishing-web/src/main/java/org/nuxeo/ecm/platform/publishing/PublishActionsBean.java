@@ -14,6 +14,7 @@
  * Contributors:
  *     Narcis Paslaru
  *     Florent Guillaume
+ *     Thierry Martins
  */
 
 package org.nuxeo.ecm.platform.publishing;
@@ -30,22 +31,21 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.faces.application.FacesMessage;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
-import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -64,8 +64,6 @@ import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeNodeComparator;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.TypeService;
@@ -92,6 +90,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 import org.nuxeo.runtime.api.Framework;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 
 /**
  * This Seam bean manages the publishing tab.
@@ -100,7 +99,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author Florent Guillaume
  * @author Thierry Martins
  */
-
 @Name("publishActions")
 @Scope(ScopeType.CONVERSATION)
 @Transactional
@@ -125,7 +123,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
     @In(create = true)
     protected transient VersioningManager versioningManager;
 
-    @In(create = true, required = true)
+    @In(create = true)
     protected transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
@@ -185,7 +183,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
             }
         }
         return sectionTypes;
-
     }
 
     private DocumentMessageProducer getDocumentMessageProducer()
@@ -235,9 +232,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
             DocumentModel doc = navigationContext.getCurrentDocument();
             this.currentDocRef = doc.getRef();
             this.currentParentRef = doc.getParentRef();
-            /*
-             * Get the available sections, using the base session.
-             */
+
+            //Get the available sections, using the base session.
             getSectionRootTypes();
             getSectionTypes();
             sections = new DocumentModelTreeImpl();
@@ -301,7 +297,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
             String sectionRootPath, String sectionNameType)
             throws ClientException {
 
-        Object[] params = new Object[] { sectionRootPath, sectionNameType };
+        Object[] params = { sectionRootPath, sectionNameType };
 
         PagedDocumentsProvider sectionsProvider = null;
         try {
@@ -557,7 +553,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
         /** Returned proxy. */
         public DocumentRef proxyRef;
 
-        public DocumentPublisher(DocumentModel doc, DocumentModel section)
+        protected DocumentPublisher(DocumentModel doc, DocumentModel section)
                 throws ClientException {
             super(documentManager);
             docRef = doc.getRef();
@@ -691,6 +687,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
     /*
      * Called by document_publish.xhtml
      */
+    @Factory(autoCreate=true,scope=ScopeType.EVENT, value="currentPublishingSectionsModel")
     public SelectDataModel getSectionsModel() throws ClientException {
         if (sectionsModel == null) {
             getSectionsSelectModel();
@@ -703,6 +700,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
     }
 
     @Observer(value = EventNames.DOCUMENT_SELECTION_CHANGED, create = false, inject = false)
+    @BypassInterceptors
     public void cancelTheSections() {
         setSectionsModel(null);
         setSelectedSections(null);
@@ -778,7 +776,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
         } catch (Exception e) {
             throw new ClientException(e);
         }
-
     }
 
     // TODO move to protected

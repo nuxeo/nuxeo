@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
@@ -40,23 +41,23 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.api.LogEntryBase;
-import org.nuxeo.ecm.platform.audit.ejb.LogEntryImpl;
 
 /**
  * Audit log entry importer/exporter.
  * <p>
- * Could be overriden to externalize additional information of a redefined
+ * Could be overridden to externalize additional information of a redefined
  * LogEntry.
  *
  * @author DM
  */
+// FIXME: design issue - this is a util class (only static methods) with no subclasses (misleading name).
 public class IOLogEntryBase {
 
-    public final static String DOCUMENT_TAG = "documentLogs";
+    public static final String DOCUMENT_TAG = "documentLogs";
 
-    public final static String LOGENTRY_TAG = "logEntry";
+    public static final String LOGENTRY_TAG = "logEntry";
 
 
     public static void write(List<LogEntry> logEntries, OutputStream out)
@@ -79,7 +80,7 @@ public class IOLogEntryBase {
     }
 
     /**
-     * Could be overriden to put other (additional) data.
+     * Could be overridden to put other (additional) data.
      *
      * @param logEntryElement
      * @param logEntry
@@ -126,12 +127,12 @@ public class IOLogEntryBase {
     }
 
     /**
-     * Could be overriden to get other (additional) data.
+     * Could be overridden to get other (additional) data.
      *
      * @param logEntryElement
      */
     protected static LogEntry readLogEntry(Element logEntryElement) {
-        LogEntryBase logEntry = new LogEntryBase();
+        LogEntry logEntry = new LogEntry();
 
         logEntry.setCategory(logEntryElement.attributeValue("category"));
         logEntry.setComment(logEntryElement.attributeValue("comment"));
@@ -202,22 +203,14 @@ public class IOLogEntryBase {
      * @return
      */
     private static LogEntry translate(LogEntry logEntry, DocumentRef newRef) {
-        LogEntryBase newLogEntry = new LogEntryImpl();
-
-        newLogEntry.setCategory(logEntry.getCategory());
-        newLogEntry.setComment(logEntry.getComment());
-        newLogEntry.setDocLifeCycle(logEntry.getDocLifeCycle());
-        // XXX ??? also the docPath?
-        newLogEntry.setDocPath(logEntry.getDocPath());
-        newLogEntry.setDocType(logEntry.getDocType());
-
-        // changed that
-        newLogEntry.setDocUUID(newRef.toString());
-
-        newLogEntry.setEventDate(logEntry.getEventDate());
-        newLogEntry.setEventId(logEntry.getEventId());
-        newLogEntry.setPrincipalName(logEntry.getPrincipalName());
-
+        LogEntry newLogEntry;
+        try {
+            newLogEntry = (LogEntry)BeanUtils.cloneBean(logEntry);
+        } catch (Exception e) {
+            throw new AuditRuntimeException("cannot clone bean " + logEntry, e);
+        }
+        newLogEntry.setDocUUID(newRef);
         return newLogEntry;
     }
+
 }

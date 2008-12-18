@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.ecm.platform.actions.ActionService">
   <documentation>
     The action service provides extension points for pluggable actions and
@@ -170,13 +169,10 @@
     <object class="org.nuxeo.ecm.platform.actions.Action" />
   </extension-point>
 
-
-    <extension target="org.nuxeo.runtime.api.ServiceManagement" point="services">
-
-	<service class="org.nuxeo.ecm.platform.actions.ejb.ActionManager" group="platform/web/actions">
-		<locator>%ActionManagerBean</locator>
-	</service>
-
+  <extension target="org.nuxeo.runtime.api.ServiceManagement" point="services">
+    <service class="org.nuxeo.ecm.platform.actions.ejb.ActionManager" group="platform/web/actions">
+      <locator>%ActionManagerBean</locator>
+    </service>
   </extension>
 
 </component>

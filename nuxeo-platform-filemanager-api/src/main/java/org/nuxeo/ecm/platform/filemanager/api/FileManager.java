@@ -34,121 +34,93 @@ import org.nuxeo.ecm.core.search.api.client.SearchException;
 import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 
 /**
-* File Manager.
-* <p>
-* File Manager to handle file
-*
-* @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
-*         Kalogeropoulos</a>
-*/
+ * File Manager.
+ * <p>
+ * File Manager to handle file
+ *
+ * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
+ *         Kalogeropoulos</a>
+ */
 public interface FileManager {
 
-   /**
-    * Returns an initialized doc based on a given file.
-    *
-    * @param file
-    *            the uploading file
-    * @param path
-    *            the path were to create the document
-    * @param overwrite
-    *            boolean how decide to overwrite or not
-    * @return the created Document
-    */
-//   DocumentModel createDocumentFromFile(CoreSession documentManager,
-//           UploadedFile file, String path, boolean overwrite) throws Exception;
-
-   /**
-    * Returns an initialized doc based on a given blob.
-    *
-    * @return the created Document
-    * @param input
-    *            the blob containing the content and the mime/type
-    * @param path
-    *            the path were to create the document
-    * @param overwrite
-    *            boolean how decide to overwrite or not
-    * @param fullName
-    *            the fullname that containes the filename
-    */
-   DocumentModel createDocumentFromBlob(CoreSession documentManager,
-           Blob input, String path, boolean overwrite, String fullName)
-           throws Exception;
-
-
-   /**
-    * Just applies the same actions as creation but does not changes the doc
-    * type.
-    *
-    * @param input
-    *            the blob containing the content and the mime/type
-    * @param path
-    *            the path to the file to update
-    * @param fullName
-    *            the fullname that containes the filename
-    * @return the updated Document
-    */
-   DocumentModel updateDocumentFromBlob(CoreSession documentManager,
-           Blob input, String path, String fullName) throws Exception;
-
-   /**
-    * Creates a Folder.
-    *
-    * @return teh Folder Created
-    * @param fullname
-    *            teh full Name of the folder
-    * @param path
-    *            the path were to create the folder
-    */
-   DocumentModel createFolder(CoreSession documentManager,
-           String fullname, String path) throws Exception;
+    /**
+     * Returns an initialized doc based on a given blob.
+     *
+     * @param input the blob containing the content and the mime type
+     * @param path the path were to create the document
+     * @param overwrite boolean how decide to overwrite or not
+     * @param fullName the fullname that contains the filename
+     * @return the created Document
+     */
+    DocumentModel createDocumentFromBlob(CoreSession documentManager,
+            Blob input, String path, boolean overwrite, String fullName)
+            throws Exception;
 
     /**
-     * Return the list of document that are to be suggested to principalName as
+     * Just applies the same actions as creation but does not changes the doc
+     * type.
+     *
+     * @param input the blob containing the content and the mime type
+     * @param path the path to the file to update
+     * @param fullName the full name that contains the filename
+     * @return the updated Document
+     */
+    DocumentModel updateDocumentFromBlob(CoreSession documentManager,
+            Blob input, String path, String fullName) throws Exception;
+
+    /**
+     * Creates a Folder.
+     *
+     * @param fullname the full name of the folder
+     * @param path the path were to create the folder
+     * @return the Folder Created
+     */
+    DocumentModel createFolder(CoreSession documentManager, String fullname,
+            String path) throws Exception;
+
+    /**
+     * Returns the list of document that are to be suggested to principalName as
      * a candidate container for a new document of type docType on all
      * registered repositories.
      *
-     * @param principal
-     * @param docType
      * @return the list of candidate containers
-     * @throws Exception
      */
     DocumentModelList getCreationContainers(Principal principal, String docType)
             throws Exception;
 
     /**
-     * Return the list of document that are to be suggested to the principal of
+     * Returns the list of document that are to be suggested to the principal of
      * documentManager as a candidate container for a new document of type
      * docType.
      *
-     * @param documentManager
-     * @param docType
      * @return the list of candidate containers
-     * @throws Exception
      */
-    DocumentModelList getCreationContainers(CoreSession documentManager, String docType)
-            throws Exception;
+    DocumentModelList getCreationContainers(CoreSession documentManager,
+            String docType) throws Exception;
 
-   String computeDigest(Blob blob) throws ClientException, NoSuchAlgorithmException, IOException;
+    String computeDigest(Blob blob) throws ClientException,
+            NoSuchAlgorithmException, IOException;
 
+    List<DocumentLocation> findExistingDocumentWithFile(String path,
+            String digest, Principal principal) throws ClientException,
+            SearchException, QueryException;
 
-   List<DocumentLocation> findExistingDocumentWithFile(String path,
-           String digest, Principal principal) throws ClientException, SearchException, QueryException;
+    List<DocumentLocation> findExistingDocumentWithFile(String path, Blob blob,
+            Principal principal) throws ClientException;
 
-   List<DocumentLocation> findExistingDocumentWithFile(String path,
-           Blob blob, Principal principal) throws ClientException;
+    boolean isFileAlreadyPresentInPath(String path, String digest,
+            Principal principal) throws ClientException, SearchException,
+            QueryException;
 
-   boolean  isFileAlreadyPresentInPath(String path, String digest,
-            Principal principal) throws ClientException, SearchException, QueryException;
+    boolean isFileAlreadyPresentInPath(String path, Blob blob,
+            Principal principal) throws ClientException;
 
-   boolean isFileAlreadyPresentInPath(String path, Blob blob,
-                   Principal principal) throws ClientException;
+    boolean isUnicityEnabled() throws ClientException;
 
-   public boolean isUnicityEnabled() throws ClientException;
+    List<String> getFields() throws ClientException;
 
+    String getDigestAlgorithm();
 
-   public List<String> getFields() throws ClientException;
+    boolean isDigestComputingEnabled();
 
-   public String getDigestAlgorithm();
-
-   public boolean isDigestComputingEnabled();
 }
