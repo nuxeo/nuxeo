@@ -155,7 +155,18 @@ public class DocumentViewCodecService extends DefaultComponent implements
     public String getUrlFromDocumentView(DocumentView docView,
             boolean needBaseUrl, String baseUrl) {
         String codecName = getDefaultCodecName();
-        return getUrlFromDocumentView(codecName, docView, needBaseUrl, baseUrl);
+        String url = getUrlFromDocumentView(codecName, docView, needBaseUrl,
+                baseUrl);
+        if (url == null) {
+            for (String name : descriptors.keySet()) {
+                url = getUrlFromDocumentView(name, docView, needBaseUrl,
+                        baseUrl);
+                if (url != null) {
+                    break;
+                }
+            }
+        }
+        return url;
     }
 
     public String getUrlFromDocumentView(String codecName,
@@ -175,7 +186,17 @@ public class DocumentViewCodecService extends DefaultComponent implements
     public DocumentView getDocumentViewFromUrl(String url, boolean hasBaseUrl,
             String baseUrl) {
         String codecName = getDefaultCodecName();
-        return getDocumentViewFromUrl(codecName, url, hasBaseUrl, baseUrl);
+        DocumentView docView = getDocumentViewFromUrl(codecName, url,
+                hasBaseUrl, baseUrl);
+        if (docView == null) {
+            for (String name : descriptors.keySet()) {
+                docView = getDocumentViewFromUrl(name, url, hasBaseUrl, baseUrl);
+                if (docView != null) {
+                    break;
+                }
+            }
+        }
+        return docView;
     }
 
     public DocumentView getDocumentViewFromUrl(String codecName, String url,
