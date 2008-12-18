@@ -332,7 +332,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             digestAlgorithm = unicityExtension.getAlgo();
         }
         if (unicityExtension.getEnabled() != null) {
-            unicityEnabled = unicityExtension.getEnabled().booleanValue();
+            unicityEnabled = unicityExtension.getEnabled();
         }
         if (unicityExtension.getFields() != null) {
             fieldsXPath = unicityExtension.getFields();
@@ -340,7 +340,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             fieldsXPath.add("file:content");
         }
         if (unicityExtension.getComputeDigest() != null) {
-            computeDigest = unicityExtension.getComputeDigest().booleanValue();
+            computeDigest = unicityExtension.getComputeDigest();
         }
     }
 

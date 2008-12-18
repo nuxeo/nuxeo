@@ -157,7 +157,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         assertNotNull(doc.getProperty("file", "content"));
     }
 
-    protected static String NOTE_XML_CONTENT = "<?xml version=\"1.0\"?>\n<foo>\n  <bar>Hello from XML document</bar>\n</foo>";
+    protected static final String NOTE_XML_CONTENT = "<?xml version=\"1.0\"?>\n<foo>\n  <bar>Hello from XML document</bar>\n</foo>";
 
     public void testCreateNote() throws Exception {
         File file = getTestFile("test-data/hello.xml");

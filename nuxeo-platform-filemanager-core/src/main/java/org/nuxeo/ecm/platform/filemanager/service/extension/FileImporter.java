@@ -73,9 +73,9 @@ public interface FileImporter extends Serializable, Comparable<FileImporter> {
     void setFilters(List<String> filters);
 
     /**
-     * Embed a reference to the holding FileManagerService instance to be able
+     * Embeds a reference to the holding FileManagerService instance to be able
      * to reuse generic file creation utility methods in specific plugin
-     * implementations
+     * implementations.
      *
      * @param fileManagerService instance where the Plugin is registered as a
      *            contribution
@@ -108,12 +108,12 @@ public interface FileImporter extends Serializable, Comparable<FileImporter> {
     void setEnabled(boolean enabled);
 
     /**
-     * Returns the plugin order for sorting
+     * Returns the plugin order for sorting.
      */
     Integer getOrder();
 
     /**
-     * Returns the plugin order for sorting
+     * Sets the plugin order for sorting.
      */
     void setOrder(Integer order);
 

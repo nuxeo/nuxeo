@@ -29,11 +29,11 @@ import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Plugin abstract class.
+ * File importer abstract class.
  * <p>
- * Default plugin behavior.
+ * Default file importer behavior.
  *
- * @see org.nuxeo.ecm.platform.filemanager.service.extension.Plugin
+ * @see FileImporter
  *
  * @author <a href="mailto:akalogeropoulos@nuxeo.com">Andreas Kalogeropolos</a>
  */
@@ -138,7 +138,7 @@ public abstract class AbstractFileImporter implements FileImporter {
      * Returns nearest container path
      * <p>
      * If given path points to a folderish document, return it. Else, return
-     * parent path.F
+     * parent path.
      */
     protected String getNearestContainerPath(CoreSession documentManager,
             String path) throws ClientException {
