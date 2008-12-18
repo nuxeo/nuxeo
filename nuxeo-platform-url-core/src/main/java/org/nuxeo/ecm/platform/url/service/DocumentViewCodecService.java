@@ -154,15 +154,17 @@ public class DocumentViewCodecService extends DefaultComponent implements
 
     public String getUrlFromDocumentView(DocumentView docView,
             boolean needBaseUrl, String baseUrl) {
-        String codecName = getDefaultCodecName();
-        String url = getUrlFromDocumentView(codecName, docView, needBaseUrl,
-                baseUrl);
+        String defaultCodecName = getDefaultCodecName();
+        String url = getUrlFromDocumentView(defaultCodecName, docView,
+                needBaseUrl, baseUrl);
         if (url == null) {
-            for (String name : descriptors.keySet()) {
-                url = getUrlFromDocumentView(name, docView, needBaseUrl,
-                        baseUrl);
-                if (url != null) {
-                    break;
+            for (String codecName : descriptors.keySet()) {
+                if (!codecName.equals(defaultCodecName)) {
+                    url = getUrlFromDocumentView(codecName, docView, needBaseUrl,
+                            baseUrl);
+                    if (url != null) {
+                        break;
+                    }
                 }
             }
         }
@@ -185,14 +187,17 @@ public class DocumentViewCodecService extends DefaultComponent implements
 
     public DocumentView getDocumentViewFromUrl(String url, boolean hasBaseUrl,
             String baseUrl) {
-        String codecName = getDefaultCodecName();
-        DocumentView docView = getDocumentViewFromUrl(codecName, url,
+        String defaultCodecName = getDefaultCodecName();
+        DocumentView docView = getDocumentViewFromUrl(defaultCodecName, url,
                 hasBaseUrl, baseUrl);
         if (docView == null) {
-            for (String name : descriptors.keySet()) {
-                docView = getDocumentViewFromUrl(name, url, hasBaseUrl, baseUrl);
-                if (docView != null) {
-                    break;
+            for (String codecName : descriptors.keySet()) {
+                if (!codecName.equals(defaultCodecName)) {
+                    docView = getDocumentViewFromUrl(codecName, url, hasBaseUrl,
+                            baseUrl);
+                    if (docView != null) {
+                        break;
+                    }
                 }
             }
         }
