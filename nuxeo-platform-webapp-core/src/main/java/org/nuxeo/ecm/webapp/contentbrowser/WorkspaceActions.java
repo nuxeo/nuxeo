@@ -26,7 +26,7 @@ import org.jboss.seam.annotations.Destroy;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.platform.ui.web.resolver.ContextStringWrapper;
+import org.nuxeo.ecm.platform.el.ContextStringWrapper;
 import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 
 /**
