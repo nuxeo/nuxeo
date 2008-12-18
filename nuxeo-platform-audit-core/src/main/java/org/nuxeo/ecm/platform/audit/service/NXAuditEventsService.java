@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
@@ -297,7 +298,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         entry.setDocUUID(doc.getId());
         entry.setPrincipalName("system");
         entry.setCategory("eventDocumentCategory");
-        entry.setEventId("documentCreated");
+        entry.setEventId(DocumentEventTypes.DOCUMENT_CREATED);
         entry.setDocLifeCycle("project");
         Calendar creationDate;
         try {
@@ -471,7 +472,7 @@ public class NXAuditEventsService extends DefaultComponent implements
             String path, Boolean recurs) throws AuditException {
 
         LogEntryProvider provider = LogEntryProvider.createProvider(em);
-  //      provider.removeEntries("documentCreated", path);
+        provider.removeEntries(DocumentEventTypes.DOCUMENT_CREATED, path);
         CoreSession session = guardedCoreSession(repoId);
         DocumentRef rootRef = new PathRef(path);
         DocumentModel root = guardedDocument(session, rootRef);

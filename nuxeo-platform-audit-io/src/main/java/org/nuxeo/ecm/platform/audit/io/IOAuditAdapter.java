@@ -169,8 +169,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         try {
             IOLogEntryBase.write(logEntries, out);
         } catch (IOException e) {
-            // TODO use a package exception
-            throw new RuntimeException("Cannot write logs", e);
+            throw new AuditRuntimeException("Cannot write logs", e);
         }
     }
 
@@ -245,7 +244,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
             DocumentRef oldRef = entry.getKey();
             DocumentRef newRef = map.getDocRefMap().get(oldRef);
             if (newRef == null) {
-                log.error("newRef does not exist in translation map for "
+                if (log.isErrorEnabled()) log.error("newRef does not exist in translation map for "
                         + oldRef);
                 continue;
             }

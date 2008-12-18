@@ -22,6 +22,8 @@ package org.nuxeo.ecm.platform.audit;
 import java.util.List;
 import java.util.Properties;
 
+import javax.el.ExpressionFactory;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -34,9 +36,13 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.service.HibernateConfiguration;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.audit.service.PersistenceProvider;
+import org.nuxeo.ecm.platform.el.ExpressionContext;
+import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 import org.nuxeo.ecm.platform.events.DocumentMessageFactory;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.runtime.api.Framework;
+
+import com.sun.el.ExpressionFactoryImpl;
 
 /**
  * Test the event conf service.
@@ -96,7 +102,8 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         rootDocument = getCoreSession().getRootDocument();
         
         DocumentModel model = session.createDocumentModel(
-                rootDocument.getPathAsString(), "toto", "File");
+                rootDocument.getPathAsString(), "youps", "File");
+        model.setProperty("dublincore", "title", "huum");
         source = session.createDocument(model);
         session.save();
         event = new CoreEventImpl("documentCreated", source, null, session.getPrincipal(),
@@ -105,6 +112,14 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
                 event);
     }
 
+    public void testTitle() throws ClientException {
+        ExpressionFactory factory = new ExpressionFactoryImpl();
+        ExpressionEvaluator evaluator = new ExpressionEvaluator(factory);
+        ExpressionContext context = new ExpressionContext();
+        evaluator.bindValue(context, "source", source);
+        String title = evaluator.evaluateExpression(context, "${source.dublincore.title}",String.class);
+        assertEquals("huum",title);
+    }
 
     public void testLogMessage() throws AuditException, DocumentException {
         serviceUnderTest.logMessage(getCoreSession(), message);

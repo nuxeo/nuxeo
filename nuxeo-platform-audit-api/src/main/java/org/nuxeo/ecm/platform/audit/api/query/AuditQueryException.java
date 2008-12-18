@@ -19,12 +19,14 @@
 
 package org.nuxeo.ecm.platform.audit.api.query;
 
+import org.nuxeo.ecm.platform.audit.api.AuditException;
+
 /**
  * NXAudit-Query related exception.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class AuditQueryException extends Exception {
+public class AuditQueryException extends AuditException {
 
     private static final long serialVersionUID = 1L;
 

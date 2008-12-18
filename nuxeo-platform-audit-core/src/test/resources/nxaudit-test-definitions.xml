@@ -24,8 +24,8 @@
   
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
     point="extendedInfo">
-    <extendedInfo key="create" expression="${source.dublincore.created}"/>
-    <extendedInfo key="message" expression="${message.id}"/>
+    <extendedInfo key="title" expression="${source.dublincore.title}"/>
+    <extendedInfo key="message" expression="${message.cacheKey}"/>
     <extendedInfo key="user" expression="${principal.name}"/>
   </extension>
 
