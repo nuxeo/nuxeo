@@ -1,9 +1,9 @@
 <assembly>
 
   <zipEntrySet id="base-template">
-    <artifact>org.nuxeo.ecm.platform:nuxeo-distribution-server:${project.version}:zip</artifact>
+    <artifact>org.nuxeo.ecm.distribution:nuxeo-distribution-server:${project.version}:zip</artifact>
   </zipEntrySet>
-  
+
   <zipEntrySet id="jdbc-template">
     <file>${basedir}/target/dependency/jdbc-ra-${gf3.version}.zip</file>
       <excludes>
@@ -41,7 +41,7 @@
     <file>/META-INF</file>
     <delete>true</delete>
   </assemble>
-  
+
   <assemble>
     <set>third-party-libs</set>
     <outputFile>lib</outputFile>

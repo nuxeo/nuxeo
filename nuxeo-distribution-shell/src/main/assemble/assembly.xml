@@ -1,7 +1,7 @@
 <assembly>
 
   <zipEntrySet id="base-template">
-    <artifact>org.nuxeo.ecm.platform:nuxeo-distribution-base:${project.version}:zip</artifact>
+    <artifact>org.nuxeo.ecm.distribution:nuxeo-distribution-base:${project.version}:zip</artifact>
   </zipEntrySet>
 
   <fileSet id="template">
@@ -22,7 +22,7 @@
       <artifact group="jboss" />
     </includes>
   </artifactSet>
-  
+
   <assemble>
     <set>base-template</set>
     <set>template</set>
@@ -35,6 +35,6 @@
     <outputFile>bundles</outputFile>
   </assemble>
 
-  
+
 </assembly>
 
