@@ -25,7 +25,6 @@ package org.nuxeo.ecm.platform.el;
  * == changing value without changing reference.
  *
  * @author tiry
- *
  */
 public class ContextStringWrapper {
 

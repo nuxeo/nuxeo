@@ -34,16 +34,16 @@ import org.apache.commons.logging.LogFactory;
  * structures.
  * <p>
  * The Display representation of a DataModel is a set of JSF Beans There are
- * mainly 3 cases :
+ * mainly 3 cases:
  * <p>
- * 1 - Perfect match : the JSF components generate a bean that can be directly
- * stored ie : String ...
+ * 1 - Perfect match: the JSF components generate a bean that can be directly
+ * stored ie: String ...
  * <p>
- * 2 - Type Mismatch : The JSF component generate a bean that is not of the
- * right type ie : The JSF generate a Date whereas the Core expect a Calendar
- * type
+ * 2 - Type Mismatch: The JSF component generate a bean that is not of the
+ * right type ie: The JSF generate a Date whereas the Core expect a Calendar
+ * type.
  * <p>
- * 3 - Structure Mismatch : The JSF bean must be split in several fields ie :
+ * 3 - Structure Mismatch: The JSF bean must be split in several fields ie:
  * The updloaded file is one object, but the core expect at least 2 separate
  * fields (filename and content)
  *
