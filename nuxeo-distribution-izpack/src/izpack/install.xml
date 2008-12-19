@@ -115,6 +115,8 @@
       <executable targetfile="$INSTALL_PATH/bin/run.sh" stage="never"/>
       <executable targetfile="$INSTALL_PATH/bin/jbossctl" stage="never"/>
       <executable targetfile="$INSTALL_PATH/bin/nxshell" stage="never"/>
+      <executable targetfile="$INSTALL_PATH/nuxeo-shell/nxshell.sh" stage="never"/>
+      <executable targetfile="$INSTALL_PATH/nuxeo-shell/nxclient.sh" stage="never"/>
     </pack>
   </packs>
 
