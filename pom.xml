@@ -7,7 +7,7 @@
     <artifactId>nuxeo-ecm</artifactId>
     <version>5.2-SNAPSHOT</version>
   </parent>
-  
+
   <groupId>org.nuxeo.ecm.distribution</groupId>
   <artifactId>nuxeo-distribution</artifactId>
   <packaging>pom</packaging>
@@ -36,7 +36,7 @@
       <modules>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-server-template</module>
-        <module>nuxeo-jetty-template</module>
+        <module>nuxeo-distribution-jetty</module>
       </modules>
     </profile>
     <profile>
