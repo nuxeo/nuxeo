@@ -11,7 +11,7 @@ opts, args = getopt.getopt(sys.argv[1:], "v")
 for k, v in opts:
     if k == '-v':
         VERBOSE = True
-        
+
 # Some utility methods
 
 def flush():
@@ -53,7 +53,7 @@ def consoleTest(p):
     p.expect("workspaces")
     p.sendline("quit")
     p.close(force=True)
-    
+
 def waitForServer(timeout=60):
     t0 = time.time()
     while True:
@@ -72,7 +72,7 @@ def waitForServer(timeout=60):
     # Just in case...
     time.sleep(5)
 
-# Test scripts 
+# Test scripts
 
 def testCore():
     print "## Testing 'core' packaging"
@@ -80,11 +80,11 @@ def testCore():
 
     clean()
     mvn("install package -P core")
-    assert fileExists("nuxeo-server-template/target/nuxeo-app.zip")
+    assert fileExists("nuxeo-distribution-server/target/nuxeo-app.zip")
 
     os.mkdir("test")
     os.chdir("test")
-    system("unzip -q ../nuxeo-server-template/target/nuxeo-app.zip")
+    system("unzip -q ../nuxeo-distribution-server/target/nuxeo-app.zip")
 
     print "Starting server, and running short tests"
     flush()
@@ -100,11 +100,11 @@ def testShell():
 
     clean()
     mvn("install package -P nxshell")
-    assert fileExists("nuxeo-shell-template/target/nuxeo-app.zip")
+    assert fileExists("nuxeo-distribution-shell/target/nuxeo-app.zip")
 
     os.mkdir("test")
     os.chdir("test")
-    system("unzip -q ../nuxeo-shell-template/target/nuxeo-app.zip")
+    system("unzip -q ../nuxeo-distribution-shell/target/nuxeo-app.zip")
     os.chdir("nxshell")
 
     p = pexpect.spawn("sh nxclient.sh", timeout=120)
@@ -122,11 +122,11 @@ def testJetty():
 
     clean()
     mvn("install package -P jetty")
-    assert fileExists("nuxeo-jetty-template/target/nuxeo-app.zip")
+    assert fileExists("nuxeo-distribution-jetty/target/nuxeo-app.zip")
 
     os.mkdir("test")
     os.chdir("test")
-    system("unzip -q ../nuxeo-jetty-template/target/nuxeo-app.zip")
+    system("unzip -q ../nuxeo-distribution-jetty/target/nuxeo-app.zip")
     os.chdir("nxserver")
 
     p = pexpect.spawn("sh nxserver.sh -console", timeout=120)
@@ -134,11 +134,11 @@ def testJetty():
 
     print "Starting server"
     flush()
-    
+
     cmd = "sh nxserver.sh -console > server.log 2>&1"
     p = pexpect.spawn("sh", ["-c", cmd], timeout=120)
     waitForServer(timeout=120)
-    
+
     print "Browsing a few pages"
     flush()
 
@@ -155,7 +155,7 @@ def testJetty():
     assert "License:" in data
     assert "Team:" in data
     assert "Modules:" in data
-    
+
     p.sendline("quit")
     p.close(force=True)
 
@@ -167,11 +167,11 @@ def testGF3():
 
     clean()
     mvn("install package -P gf3")
-    assert fileExists("nuxeo-gf3-template/target/nuxeo-app.zip")
+    assert fileExists("nuxeo-distribution-gf3/target/nuxeo-app.zip")
 
     os.mkdir("test")
     os.chdir("test")
-    system("unzip -q ../nuxeo-gf3-template/target/nuxeo-app.zip")
+    system("unzip -q ../nuxeo-distribution-gf3/target/nuxeo-app.zip")
     os.chdir("nxserver")
 
     p = pexpect.spawn("sh nxserver.sh -console", timeout=120)
@@ -183,7 +183,7 @@ def testGF3():
     cmd = "sh nxserver.sh -console > server.log 2>&1"
     p = pexpect.spawn("sh", ["-c", cmd], timeout=120)
     waitForServer(timeout=120)
-    
+
     print "Browsing a few pages"
     flush()
 
@@ -200,7 +200,7 @@ def testGF3():
     assert "License:" in data
     assert "Team:" in data
     assert "Modules:" in data
-    
+
     p.sendline("quit")
     p.close(force=True)
     os.chdir("../..")
