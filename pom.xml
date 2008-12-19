@@ -35,7 +35,7 @@
       <id>jetty</id>
       <modules>
         <module>nuxeo-distribution-base</module>
-        <module>nuxeo-server-template</module>
+        <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-jetty</module>
       </modules>
     </profile>
@@ -43,7 +43,7 @@
       <id>gf3</id>
       <modules>
         <module>nuxeo-distribution-base</module>
-        <module>nuxeo-server-template</module>
+        <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-gf3</module>
       </modules>
     </profile>
@@ -51,7 +51,7 @@
       <id>tomcat</id>
       <modules>
         <module>nuxeo-distribution-base</module>
-        <module>nuxeo-server-template</module>
+        <module>nuxeo-distribution-server</module>
         <module>nuxeo-tomcat-template</module>
       </modules>
     </profile>
@@ -59,7 +59,7 @@
       <id>core</id>
       <modules>
         <module>nuxeo-distribution-base</module>
-        <module>nuxeo-server-template</module>
+        <module>nuxeo-distribution-server</module>
       </modules>
     </profile>
   </profiles>

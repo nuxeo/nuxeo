@@ -1,7 +1,7 @@
 <assembly>
 
   <zipEntrySet id="base-template">
-    <artifact>org.nuxeo.ecm.platform:nuxeo-server-template:${project.version}:zip</artifact>
+    <artifact>org.nuxeo.ecm.platform:nuxeo-distribution-server:${project.version}:zip</artifact>
   </zipEntrySet>
 
   <fileSet id="template">

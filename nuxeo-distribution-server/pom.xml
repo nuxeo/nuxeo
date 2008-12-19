@@ -7,7 +7,7 @@
     <version>5.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-server-template</artifactId>
+  <artifactId>nuxeo-distribution-server</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo Server Template</name>
   <description>Defines the skeleton of a standalone nuxeo server</description>
