@@ -28,7 +28,7 @@
       <id>shell</id>
       <modules>
         <module>nuxeo-distribution-base</module>
-        <module>nuxeo-shell-template</module>
+        <module>nuxeo-distribution-shell</module>
       </modules>
     </profile>
     <profile>
