@@ -7,7 +7,8 @@
     <artifactId>nuxeo-ecm</artifactId>
     <version>5.2-SNAPSHOT</version>
   </parent>
-
+  
+  <groupId>org.nuxeo.ecm.distribution</groupId>
   <artifactId>nuxeo-distribution</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo Applications Distribution</name>
