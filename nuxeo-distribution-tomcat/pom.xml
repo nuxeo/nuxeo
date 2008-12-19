@@ -7,7 +7,7 @@
     <version>5.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-server-tomcat</artifactId>
+  <artifactId>nuxeo-distribution-tomcat</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo Tomcat Template</name>
   <description>Builds a Nuxeo as a WAR for a Tomcat server</description>
