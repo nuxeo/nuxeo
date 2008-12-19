@@ -8,7 +8,7 @@
     <version>5.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-server-gf3-test</artifactId>
+  <artifactId>nuxeo-distribution-gf3</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo GF3 template</name>
   <description>Defines the skeleton of a glassfish3 nuxeo application</description>

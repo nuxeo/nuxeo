@@ -44,7 +44,7 @@
       <modules>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-server-template</module>
-        <module>nuxeo-gf3-template</module>
+        <module>nuxeo-distribution-gf3</module>
       </modules>
     </profile>
     <profile>
