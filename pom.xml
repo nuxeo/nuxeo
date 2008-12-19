@@ -48,6 +48,8 @@
     <module>nuxeo-core</module>
     <module>nuxeo-theme</module>
     <module>nuxeo-platform</module>
+    <module>nuxeo-shell</module>
+    <module>nuxeo-webengine</module>
     <module>nuxeo-distribution</module>
   </modules>
 
