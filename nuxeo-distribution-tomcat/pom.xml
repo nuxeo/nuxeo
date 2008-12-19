@@ -13,6 +13,9 @@
   <name>Nuxeo Tomcat Template</name>
   <description>Builds a Nuxeo as a WAR for a Tomcat server</description>
 
+  <properties>
+    <application.name>${project.artifactId}-${project.version}</application.name>
+  </properties>
 
   <build>
     <plugins>

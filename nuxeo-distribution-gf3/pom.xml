@@ -16,6 +16,7 @@
 
   <properties>
     <gf3.version>3.0-nx</gf3.version>
+    <application.name>${project.artifactId}-${project.version}</application.name>
   </properties>
 
   <repositories>

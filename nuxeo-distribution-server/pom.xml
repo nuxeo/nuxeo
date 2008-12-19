@@ -13,6 +13,10 @@
   <name>Nuxeo Server Template</name>
   <description>Defines the skeleton of a standalone nuxeo server</description>
 
+  <properties>
+    <application.name>${project.artifactId}-${project.version}</application.name>
+  </properties>
+
   <profiles>
     <profile>
       <id>core</id>

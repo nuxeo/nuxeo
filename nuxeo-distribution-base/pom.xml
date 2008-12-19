@@ -12,6 +12,9 @@
   <packaging>pom</packaging>
   <name>Nuxeo Base Template</name>
   <description>Defines the skeleton of a standalone nuxeo application</description>
+  <properties>
+    <application.name>${project.artifactId}-${project.version}</application.name>
+  </properties>
 
   <build>
     <plugins>

@@ -6,12 +6,16 @@
     <artifactId>nuxeo-platform-parent</artifactId>
     <version>5.2-SNAPSHOT</version>
   </parent>
+
   <groupId>org.nuxeo.ecm.distribution</groupId>
   <artifactId>nuxeo-distribution-jetty</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo Jetty Template</name>
   <description>Defines the skeleton of a jetty nuxeo application</description>
 
+  <properties>
+    <application.name>${project.artifactId}-${project.version}</application.name>
+  </properties>
 
   <build>
     <plugins>

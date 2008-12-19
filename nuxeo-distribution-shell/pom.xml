@@ -13,6 +13,9 @@
   <name>Nuxeo Shell Template</name>
   <description>The distribution template for nuxeo shell</description>
 
+  <properties>
+    <application.name>${project.artifactId}-${project.version}</application.name>
+  </properties>
 
   <build>
     <plugins>
