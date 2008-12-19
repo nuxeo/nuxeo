@@ -37,7 +37,6 @@
     <module>nuxeo-platform-preview</module>
     <module>nuxeo-platform-restpack</module>
     <module>nuxeo-platform-seam-pdf</module>
-    <module>nuxeo-platform-shell</module>
     <module>nuxeo-platform-spellchecker</module>
     <module>nuxeo-platform-transform-plugins</module>
     <module>nuxeo-platform-userworkspace</module>
