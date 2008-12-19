@@ -1,0 +1,40 @@
+<assembly>
+
+  <zipEntrySet id="base-template">
+    <artifact>org.nuxeo.ecm.distribution:nuxeo-distribution-base:${project.version}:zip</artifact>
+  </zipEntrySet>
+
+  <fileSet id="template">
+    <directory>src/main/resources</directory>
+  </fileSet>
+
+
+  <artifactSet id="bundles">
+    <artifacts>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-audit-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-search-api"/>
+    </artifacts>
+  </artifactSet>
+
+  <artifactSet id="third-party-libs">
+    <import>*</import>
+    <includes>
+      <artifact group="jboss" />
+    </includes>
+  </artifactSet>
+
+  <assemble>
+    <set>base-template</set>
+    <set>template</set>
+    <outputFile>/</outputFile>
+  </assemble>
+
+
+  <assemble>
+    <set>bundles</set>
+    <outputFile>bundles</outputFile>
+  </assemble>
+
+
+</assembly>
+

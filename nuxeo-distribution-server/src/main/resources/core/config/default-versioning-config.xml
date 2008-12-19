@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.repository.jcr.versioning.Versioning" version="1.0">
+
+   <documentation>
+      The Versioning component defines the VersioningService implementation by using
+      the string property versioningService
+
+      @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+    </documentation>
+
+ 	<implementation class="org.nuxeo.ecm.core.repository.jcr.versioning.Versioning"/>
+
+	<!--property name="versioningService" value="org.nuxeo.ecm.core.repository.jcr.versioning.JCRVersioningService"/-->
+	<property name="versioningService" value="org.nuxeo.ecm.core.versioning.custom.CustomVersioningService"/>
+
+</component>
