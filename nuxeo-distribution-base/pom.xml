@@ -9,7 +9,7 @@
 
   <artifactId>nuxeo-distribution-base</artifactId>
   <packaging>pom</packaging>
-  <name>Nuxeo Application Base</name>
+  <name>Nuxeo Base Template</name>
   <description>Defines the skeleton of a standalone nuxeo application</description>
 
   <build>

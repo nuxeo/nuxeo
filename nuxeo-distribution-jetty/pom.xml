@@ -9,7 +9,7 @@
 
   <artifactId>nuxeo-distribution-jetty</artifactId>
   <packaging>pom</packaging>
-  <name>Nuxeo Application Template</name>
+  <name>Nuxeo Jetty Template</name>
   <description>Defines the skeleton of a jetty nuxeo application</description>
 
 
