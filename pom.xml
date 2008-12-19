@@ -11,7 +11,7 @@
   <groupId>org.nuxeo.ecm.distribution</groupId>
   <artifactId>nuxeo-distribution</artifactId>
   <packaging>pom</packaging>
-  <name>Nuxeo Applications Distribution</name>
+  <name>Nuxeo Distribution Parent</name>
   <description>Build package distributions of nuxeo applications</description>
 
   <profiles>
@@ -27,14 +27,14 @@
     <profile>
       <id>shell</id>
       <modules>
-        <module>nuxeo-application-base</module>
+        <module>nuxeo-distribution-base</module>
         <module>nuxeo-shell-template</module>
       </modules>
     </profile>
     <profile>
       <id>jetty</id>
       <modules>
-        <module>nuxeo-application-base</module>
+        <module>nuxeo-distribution-base</module>
         <module>nuxeo-server-template</module>
         <module>nuxeo-jetty-template</module>
       </modules>
@@ -42,7 +42,7 @@
     <profile>
       <id>gf3</id>
       <modules>
-        <module>nuxeo-application-base</module>
+        <module>nuxeo-distribution-base</module>
         <module>nuxeo-server-template</module>
         <module>nuxeo-gf3-template</module>
       </modules>
@@ -50,7 +50,7 @@
     <profile>
       <id>tomcat</id>
       <modules>
-        <module>nuxeo-application-base</module>
+        <module>nuxeo-distribution-base</module>
         <module>nuxeo-server-template</module>
         <module>nuxeo-tomcat-template</module>
       </modules>
@@ -58,7 +58,7 @@
     <profile>
       <id>core</id>
       <modules>
-        <module>nuxeo-application-base</module>
+        <module>nuxeo-distribution-base</module>
         <module>nuxeo-server-template</module>
       </modules>
     </profile>

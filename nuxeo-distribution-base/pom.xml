@@ -7,7 +7,7 @@
     <version>5.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-application-base</artifactId>
+  <artifactId>nuxeo-distribution-base</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo Application Base</name>
   <description>Defines the skeleton of a standalone nuxeo application</description>
