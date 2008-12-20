@@ -6,17 +6,9 @@
   <extension target="application#MODULE">
 
     <module>
-      <ejb>${bundle.fileName}</ejb>
+      <java>${bundle.fileName}</java>
     </module>
 
   </extension>
-
-  <install>
-
-    <unzip from="${bundle.fileName}" to="/">
-      <include>nuxeo.war/**</include>
-    </unzip>
-
-  </install>
 
 </fragment>
