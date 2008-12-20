@@ -479,12 +479,15 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
+      <artifactId>nuxeo-theme-webengine</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-jsf</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-editor</artifactId>
-      <type>ejb</type>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
