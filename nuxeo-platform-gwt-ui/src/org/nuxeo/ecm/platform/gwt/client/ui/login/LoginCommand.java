@@ -38,7 +38,7 @@ public class LoginCommand extends HttpCommand {
         this (null, username, password);
     }
 
-    public LoginCommand(View<?> view, String username, String password) {
+    public LoginCommand(View view, String username, String password) {
         super(view, 100);
         this.username = username;
         this.password = password;

@@ -110,6 +110,7 @@ public class Framework {
     
     public static void start(String url) {
         try {
+            showLoading("Starting ...");
             doStart(url);
         } catch (Throwable t) {
             GWT.log(t.getMessage(), t);
@@ -199,6 +200,10 @@ public class Framework {
         return JSContext.getCurrent().getUserName();
     }
     
+    public static String getAnonymousUserName() {
+        return JSContext.getCurrent().getAnonymousUserName();
+    }    
+    
     public static Map<String, String> getRepositoryRoots() {
         return JSContext.getCurrent().getRepositoryRoots();
     }    
@@ -227,5 +232,6 @@ public class Framework {
             }
         }                
     }
+    
 
 }

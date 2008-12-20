@@ -26,6 +26,10 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.smartgwt.client.widgets.Canvas;
+import com.smartgwt.client.widgets.layout.SectionStack;
+import com.smartgwt.client.widgets.tab.Tab;
+import com.smartgwt.client.widgets.tab.TabSet;
+import com.smartgwt.client.widgets.tab.events.TabCloseClickEvent;
 import com.smartgwt.client.widgets.tree.Tree;
 import com.smartgwt.client.widgets.tree.TreeGrid;
 import com.smartgwt.client.widgets.tree.TreeNode;
@@ -50,7 +54,7 @@ public class SmartClient implements EntryPoint {
         bundle.start();
     }
     
-    public static Canvas getCanvas(Widget widget) {
+    public static Canvas toCanvas(Widget widget) {
         if (widget instanceof Canvas) {
             return (Canvas)widget;
         } else {
@@ -101,5 +105,64 @@ public class SmartClient implements EntryPoint {
     theTree.unloadChildren(node);
     }-*/;
     
+    /**
+     * TODO workaround for a smartgwt bug
+     * Hack to get the tab id - event.getTab() is not working - throws a ClassCastExcpetion
+     * @param event
+     * @return
+     */
+    public static native String getTabId(TabCloseClickEvent event) /*-{
+        var jsObj = event.@com.smartgwt.client.event.AbstractSmartEvent::jsObj;
+        return jsObj.tab.ID;
+    }-*/;
+
+    
+    /**
+     * TODO workaround for a smartgwt bug
+     * Hack to set the icon - this method is missing from the API 
+     * @param tabs
+     * @param tab
+     * @param icon
+     */
+    public static native void setTabIcon(TabSet tabs, Tab tab, String icon) /*-{
+        var self = tabs.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
+        var tabJS = tab.@com.smartgwt.client.widgets.tab.Tab::getJsObj()();
+        self.setTabIcon(tabJS, icon);
+    }-*/;
+
+    public static native void setTabIcon(TabSet tabs, String tab, String icon) /*-{
+    var self = tabs.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
+    self.setTabIcon(tab, icon);
+}-*/;
+    
+    public static native void setTabTitle(TabSet tabs, Tab tab, String title) /*-{
+        var self = tabs.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
+        var tabJS = tab.@com.smartgwt.client.widgets.tab.Tab::getJsObj()();
+        self.setTabTitle(tabJS, title);
+    }-*/;
+
+    
+    public static native void setSectionTitle(SectionStack stack, String id, String title) /*-{
+    var self = stack.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
+    self.setSectionTitle(id, title);
+}-*/;
+
+    //TODO
+    public static native void setSectionIcon(SectionStack stack, String id, String icon) /*-{
+    var self = stack.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
+    //self.setSectionIcon(id, icon);
+}-*/;
+
+    public static native int getSectionsCount(SectionStack stack) /*-{
+    var self = stack.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
+    //var sectionJS = tab.@com.smartgwt.client.widgets.layout.SectionStackSection::getJsObj()();
+    return self.getSections().length;
+}-*/;
+
+    public static native void addSectionItem(SectionStack stack, String id, Canvas widget) /*-{
+    var self = stack.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
+    var jsWidget = widget.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
+    self.addItem(id, jsWidget);
+}-*/;
     
 }

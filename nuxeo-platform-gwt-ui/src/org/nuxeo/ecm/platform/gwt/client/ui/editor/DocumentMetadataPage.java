@@ -19,29 +19,21 @@
 
 package org.nuxeo.ecm.platform.gwt.client.ui.editor;
 
-import org.nuxeo.ecm.platform.gwt.client.ui.SmartView;
+import org.nuxeo.ecm.platform.gwt.client.ui.View;
 
-import com.smartgwt.client.widgets.Canvas;
-import com.smartgwt.client.widgets.Label;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DocumentMetadataPage extends SmartView<Canvas> {
+public class DocumentMetadataPage implements EditorPage {
 
-    public DocumentMetadataPage() {
-        super ("metadata");
-        setTitle("Metadata");
-    }
-
-    @Override
-    public boolean acceptInput(Object input) {
-        return true;
+    public String getName() {
+        return "metadata";
     }
     
-    @Override
-    protected Canvas createWidget() {
-        return new Label("Document Metadata Editor");
+    public View getView() {
+        return new DocumentMetadataView();
     }
+    
 }

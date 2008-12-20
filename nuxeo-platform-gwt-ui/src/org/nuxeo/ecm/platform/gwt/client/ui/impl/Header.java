@@ -33,7 +33,7 @@ import com.smartgwt.client.widgets.layout.VLayout;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Header extends SmartView<Canvas> {
+public class Header extends SmartView {
 
     public Header() {
         super ("header");

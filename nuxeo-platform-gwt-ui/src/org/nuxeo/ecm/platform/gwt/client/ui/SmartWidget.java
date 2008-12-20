@@ -35,6 +35,7 @@ public class SmartWidget extends Canvas {
 
     protected Widget  widget;
     
+    
     public SmartWidget(Widget widget) {
         this.widget = widget;
         init();

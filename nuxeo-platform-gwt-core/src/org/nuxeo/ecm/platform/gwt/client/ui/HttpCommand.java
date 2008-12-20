@@ -40,7 +40,7 @@ import com.google.gwt.user.client.Command;
  */
 public abstract class HttpCommand extends HttpCallback implements Command {
 
-    protected View<?> view;
+    protected View view;
     /**
      *  the timeout to wait before starting busy state.
      *  If -1 busy state is disabled.
@@ -56,20 +56,20 @@ public abstract class HttpCommand extends HttpCallback implements Command {
         this (null, -1);
     }
     
-    public HttpCommand(View<?> view) {
+    public HttpCommand(View view) {
         this (view, -1);
     }
 
-    public HttpCommand(View<?> view, int busyTimeout) {
+    public HttpCommand(View view, int busyTimeout) {
         this.view = view;
         this.busyTimeout = busyTimeout;
     }
 
-    public View<?> getView() {
+    public View getView() {
         return view;
     }
     
-    public HttpCommand setView(View<?> view) {
+    public HttpCommand setView(View view) {
         this.view = view;
         return this;
     }

@@ -31,5 +31,4 @@ public interface DefaultBundle extends ApplicationBundle {
     @Extension(targets=Framework.HISTORY_LISTENER_XP)
     DocumentHistoryListener docHistoryListener();
 
-    
 }

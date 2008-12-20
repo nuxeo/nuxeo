@@ -2,6 +2,7 @@ package org.nuxeo.ecm.platform.gwt.client.ui;
 
 import org.nuxeo.ecm.platform.gwt.client.Framework;
 import org.nuxeo.ecm.platform.gwt.client.model.Context;
+import org.nuxeo.ecm.platform.gwt.client.model.Document;
 
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
@@ -26,8 +27,12 @@ public class UI {
         ((UIApplication)Framework.getApplication()).openInEditor(input);
     }
 
-    public static View<?> getView(String name) {
+    public static View getView(String name) {
         return ((UIApplication)Framework.getApplication()).getView(name); 
+    }
+    
+    public static View getActiveEditor() {
+        return ((UIApplication)Framework.getApplication()).getActiveEditor();
     }
     
     public static void showView(String name) {
@@ -48,6 +53,15 @@ public class UI {
 
     public static void openDocument(String ref) {
         History.newItem("doc_"+ref);
+    }
+
+    
+    public static void openDocumentInActiveEditor(Document doc) {
+        History.newItem("doc_"+doc.getId(), false);
+        View view = getActiveEditor();
+        if (view != null) {
+            view.setInput(doc);
+        }
     }
 
 }

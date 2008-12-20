@@ -113,7 +113,7 @@ public class NavigatorTree extends Tree{
         public void onTreeItemStateChanged(TreeItem item) {
             if ( item.getState()) {
                 // check if node has been expanded
-                if ( item.getChildCount() == 1 && "fake".equals(item.getChild(0).getText())) {
+                if ( item.getChildCount() == 1 && "Loading ...".equals(item.getChild(0).getText())) {
                     DocumentRef obj = (DocumentRef) item.getUserObject();
                     if ( obj != null ){
                         updateTree(item);

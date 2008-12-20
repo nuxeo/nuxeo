@@ -23,9 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.platform.gwt.client.Extensible;
-import org.nuxeo.ecm.platform.gwt.client.Framework;
 import org.nuxeo.ecm.platform.gwt.client.model.Document;
-import org.nuxeo.ecm.platform.gwt.client.ui.Editor;
 import org.nuxeo.ecm.platform.gwt.client.ui.ExtensionPoints;
 import org.nuxeo.ecm.platform.gwt.client.ui.View;
 
@@ -35,31 +33,23 @@ import org.nuxeo.ecm.platform.gwt.client.ui.View;
  */
 public class DocumentEditor implements Editor, Extensible {
 
-    protected List<View<?>> pageViews = new ArrayList<View<?>>();
+    protected List<EditorPage> pageViews = new ArrayList<EditorPage>();
     
     public boolean acceptInput(Object input) {
         return input instanceof Document;
     }
 
-    public boolean canReuseViews() {
-        return true;
-    }
-
-    public View<?> open(Object input) {
-        Document doc = (Document)input;
+    public View getView() {
         MultiPageDocView mpview = new MultiPageDocView();
-        for (View<?> view : pageViews) {
-            mpview.addPage(view);
+        for (EditorPage page : pageViews) {
+            mpview.addPage(page.getName(), page.getView());
         }
-        mpview.setInput(input);        
-        mpview.setTitle(doc.getTitle());
-        mpview.setIcon(Framework.getSkinPath("images/document.png"));
         return mpview;
     }
-
+    
     public void registerExtension(String target, Object extension) {
         if (ExtensionPoints.EDITOR_PAGES_XP.equals(target)) {
-            pageViews.add((View<?>)extension);
+            pageViews.add((EditorPage)extension);
         }
     }
 

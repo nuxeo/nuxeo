@@ -48,4 +48,10 @@ public @interface Bundle {
      */
     Class<?>[] value() default {};
     
+    /**
+     * The XML descriptor file for the extensions 
+     * @return
+     */
+    String descriptor() default "";
+    
 }

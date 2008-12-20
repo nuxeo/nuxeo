@@ -19,81 +19,47 @@
 
 package org.nuxeo.ecm.platform.gwt.client.ui.impl;
 
-import java.util.ArrayList;
-
 import org.nuxeo.ecm.platform.gwt.client.Extensible;
-import org.nuxeo.ecm.platform.gwt.client.Framework;
-import org.nuxeo.ecm.platform.gwt.client.ui.ControlContainer;
 import org.nuxeo.ecm.platform.gwt.client.ui.ExtensionPoints;
-import org.nuxeo.ecm.platform.gwt.client.ui.SmartViewContainer;
+import org.nuxeo.ecm.platform.gwt.client.ui.SmartView;
 import org.nuxeo.ecm.platform.gwt.client.ui.View;
+import org.nuxeo.ecm.platform.gwt.client.ui.view.DefaultViewManager;
 
 import com.google.gwt.core.client.GWT;
-import com.smartgwt.client.types.Overflow;
-import com.smartgwt.client.types.VisibilityMode;
-import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.layout.SectionStack;
-import com.smartgwt.client.widgets.layout.SectionStackSection;
-import com.smartgwt.client.widgets.layout.VLayout;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ViewStack extends SmartViewContainer<SectionStack> implements Extensible {
+public class ViewStack extends SmartView implements Extensible {
 
+    protected DefaultViewManager mgr;
+    
     public ViewStack() {
-        super ("views");
-        views = new ArrayList<View<?>>();
+        super("views");
+        mgr = new DefaultViewManager(new StackContainer());
     }
     
-        
-    protected SectionStack createWidget() {
-        SectionStack stack = new SectionStack();        
-        if (!views.isEmpty()) {
-            View<?> view = views.get(0); 
-            SectionStackSection section = new SectionStackSection(view.getTitle());
-            VLayout vl =new VLayout();
-            vl.addMember(view.getWidget());
-            section.setExpanded(true);
-            section.setCanCollapse(true);
-            section.addItem(vl);
-            if (view instanceof ControlContainer) {
-                section.setControls(((ControlContainer)view).getControls());
-            }
-            stack.addSection(section);
-            for (int i=1, len=views.size(); i<len; i++) {
-                view = views.get(i);
-                section = new SectionStackSection(view.getTitle());
-                section.setExpanded(false);
-                section.setCanCollapse(true);
-                section.addItem((Canvas)view.getWidget());
-                if (view instanceof ControlContainer) {
-                    section.setControls(((ControlContainer)view).getControls());
-                }
-                stack.addSection(section);
-            }        
-        }
-        stack.setVisibilityMode(VisibilityMode.MULTIPLE);
-        stack.setOverflow(Overflow.HIDDEN);
-        stack.setAnimateSections(Boolean.parseBoolean(Framework.getSetting("animations", "false")));
-        stack.setHeight100();
-        return stack;
+    @Override
+    protected void inputChanged() {
+        mgr.open(input); 
     }
-    
+
+    public SectionStack createWidget() { 
+        setInput(null); // force sections creation
+        return ((StackContainer)mgr.getContainer()).getWidget();
+    }
+
     public void registerExtension(String target, Object extension) {
         if (ExtensionPoints.VIEWS_XP.equals(target)) {
             try {
-                views.add((View<?>)extension);
+                View v = (View)extension;
+                mgr.addView(v.getName(), v);
             } catch (ClassCastException e) {
                 GWT.log("Invalid contribution to extension point: "+ExtensionPoints.VIEWS_XP, e);
             }
         }
-    }    
-
-    
-    public void selectView(int i) {
-        widget.expandSection(i);
     }
-        
+
 }

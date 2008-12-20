@@ -40,14 +40,19 @@ import com.smartgwt.client.widgets.layout.VStack;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class AdministrationView extends SmartView<VStack> {
+public class AdministrationView extends SmartView {
 
 
     public AdministrationView() {
         super("admin");
-        setTitle("Administration");
     }
 
+    
+    @Override
+    public String getTitle() {
+        return "Administration";
+    }
+    
     static boolean _show = false;
     @Override
     protected VStack createWidget() {

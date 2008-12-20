@@ -41,13 +41,17 @@ import com.smartgwt.client.widgets.tree.TreeNode;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class NavigatorView extends SmartView<TreeGrid> implements ControlContainer {
+public class NavigatorView extends SmartView implements ControlContainer {
 
     protected TreeNode[] roots;
 
     public NavigatorView() {
         super("navigator");
-        setTitle("Navigator");
+    }
+    
+    @Override
+    public String getTitle() {
+        return "Navigator";
     }
 
     @Override
@@ -76,11 +80,16 @@ public class NavigatorView extends SmartView<TreeGrid> implements ControlContain
         return tree;
     }
     
+    public TreeGrid getTree() {
+        return (TreeGrid)getWidget();
+    }
+    
+
     @Override
     public void refresh() {
         if (widget != null) {
             for (TreeNode root : roots) {
-                SmartClient.unloadChildren(widget.getData(), root);
+                SmartClient.unloadChildren(getTree().getData(), root);
             }
         }
     }

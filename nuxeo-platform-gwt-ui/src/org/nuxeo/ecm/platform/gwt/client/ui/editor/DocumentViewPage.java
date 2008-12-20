@@ -19,30 +19,20 @@
 
 package org.nuxeo.ecm.platform.gwt.client.ui.editor;
 
-import org.nuxeo.ecm.platform.gwt.client.model.Document;
-import org.nuxeo.ecm.platform.gwt.client.ui.SmartView;
-
-import com.smartgwt.client.widgets.Canvas;
-import com.smartgwt.client.widgets.Label;
+import org.nuxeo.ecm.platform.gwt.client.ui.View;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DocumentViewPage extends SmartView<Canvas> {
-
-    public DocumentViewPage() {
-        super ("view");
-        setTitle("View");
-    }
-
-    @Override
-    public boolean acceptInput(Object input) {
-        return !((Document)input).isFolder();
+public class DocumentViewPage implements EditorPage {
+    
+    public String getName() {
+        return "view";
     }
     
-    @Override
-    protected Canvas createWidget() {
-        return new Label("Document View");
+    public View getView() {
+        return new DocumentView();
     }
+    
 }

@@ -28,7 +28,7 @@ import com.smartgwt.client.widgets.Label;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Right extends SmartView<Canvas> {
+public class Right extends SmartView {
 
 
     public Right() {

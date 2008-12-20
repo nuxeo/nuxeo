@@ -19,39 +19,75 @@
 
 package org.nuxeo.ecm.platform.gwt.client.ui.editor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.nuxeo.ecm.platform.gwt.client.model.Document;
+import org.nuxeo.ecm.platform.gwt.client.ui.SmartView;
+import org.nuxeo.ecm.platform.gwt.client.ui.View;
+import org.nuxeo.ecm.platform.gwt.client.ui.view.MultiPageViewManager;
 
 import com.smartgwt.client.widgets.Canvas;
+import com.smartgwt.client.widgets.layout.VLayout;
+import com.smartgwt.client.widgets.tab.TabSet;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class MultiPageDocView extends MultiPageView {
-
-    protected List<Page> pages;
+public class MultiPageDocView extends SmartView {
+ 
+    protected MultiPageViewManager mgr;
     protected DocumentHeader header;
     
     public MultiPageDocView() {
         super ("mpe");
-        this.pages = new ArrayList<Page>();
+        this.mgr = new MultiPageViewManager(new TabsContainer());
+    }
+    
+    public Document getDocument() {
+        return (Document)input;
     }
 
     @Override
-    public void setInput(Object input) {
-        Document doc = (Document)input; 
-        setTitle(doc.getTitle());
-        createHeader(); // be sure header is created
-        header.update(doc);
-        super.setInput(input);
+    protected void inputChanged() {
+        site.updateTitle();
+        refresh();
+    }
+    
+    @Override
+    public void refresh() {
+        header.update(getDocument());
+        mgr.open(input);
+    }
+
+//    @Override
+//    public String getIcon() {
+//        return Framework.getSkinPath("images/document.png");
+//    }
+    
+    @Override
+    public String getTitle() {
+        return getDocument().getTitle();
+    }
+
+    public void addPage(String key, View view) {
+        mgr.addView(key, view);
+    }
+    
+    @Override
+    protected Canvas createWidget() {
+        VLayout panel = new VLayout();
+        Canvas header = createHeader();        
+        if (header != null) {
+            panel.addMember(header);
+        }
+        TabSet tabs = ((TabsContainer)mgr.getContainer()).getWidget();
+        tabs.setHeight100();
+        panel.addMember(tabs);
+        return panel;
     }
     
     public Canvas createHeader() {
         if (header == null) {
-            header = new DocumentHeader();
+            header = new DocumentHeader(this);
         }
         return header; 
     }

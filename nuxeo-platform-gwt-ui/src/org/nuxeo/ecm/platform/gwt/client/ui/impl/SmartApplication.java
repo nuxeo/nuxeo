@@ -23,11 +23,14 @@ import org.nuxeo.ecm.platform.gwt.client.ErrorHandler;
 import org.nuxeo.ecm.platform.gwt.client.Extensible;
 import org.nuxeo.ecm.platform.gwt.client.Framework;
 import org.nuxeo.ecm.platform.gwt.client.SmartClient;
+import org.nuxeo.ecm.platform.gwt.client.ui.Drawable;
 import org.nuxeo.ecm.platform.gwt.client.ui.ExtensionPoints;
 import org.nuxeo.ecm.platform.gwt.client.ui.UI;
 import org.nuxeo.ecm.platform.gwt.client.ui.UIApplication;
 import org.nuxeo.ecm.platform.gwt.client.ui.View;
-import org.nuxeo.ecm.platform.gwt.client.ui.ViewContainer;
+import org.nuxeo.ecm.platform.gwt.client.ui.editor.EditorManager;
+import org.nuxeo.ecm.platform.gwt.client.ui.editor.EditorSite;
+import org.nuxeo.ecm.platform.gwt.client.ui.view.ViewManager;
 
 import com.google.gwt.user.client.ui.RootPanel;
 import com.smartgwt.client.widgets.Canvas;
@@ -42,11 +45,11 @@ public class SmartApplication implements UIApplication, Extensible, ExtensionPoi
 
     protected VLayout layout;
     
-    protected View<Canvas> header;
-    protected View<Canvas> footer;
-    protected View<Canvas> content;
-    protected View<Canvas> left;
-    protected View<Canvas> right;
+    protected Drawable header;
+    protected Drawable footer;
+    protected EditorManager content;
+    protected View left;
+    protected ViewManager right;
 
 
     
@@ -66,25 +69,25 @@ public class SmartApplication implements UIApplication, Extensible, ExtensionPoi
         layout.setSize("100%", "100%");
         layout.setLayoutMargin(4);
         if (header != null) {
-            Canvas canvas = header.getWidget();
+            Canvas canvas = SmartClient.toCanvas(header.getWidget());
             canvas.setHeight("80");            
             layout.addMember(canvas);            
         }
         HLayout main = new HLayout();
         if (left != null) {
-            Canvas canvas = SmartClient.getCanvas(left.getWidget());
+            left.install(null, null); // trick to refresh view stack TODO: must implement a site. 
+            Canvas canvas = SmartClient.toCanvas(left.getWidget());
             canvas.setSize("25%", "100%");
-            canvas.setShowResizeBar(true);
             main.addMember(canvas);
         }
         if (content != null) {
             String width = right == null ? "75%" : "50%";
-            Canvas canvas = SmartClient.getCanvas(content.getWidget());
+            Canvas canvas = SmartClient.toCanvas(((Drawable)content).getWidget());
             canvas.setSize(width, "100%");
             main.addMember(canvas);            
         }
         if (right != null) {
-            Canvas canvas = SmartClient.getCanvas(right.getWidget());
+            Canvas canvas = SmartClient.toCanvas(((Drawable)right).getWidget());
             canvas.setSize("25%", "100%");
             canvas.setShowResizeBar(true);
             main.addMember(canvas);
@@ -96,7 +99,7 @@ public class SmartApplication implements UIApplication, Extensible, ExtensionPoi
 //main.setBorder("1px solid red");
         layout.addMember(main);
         if (footer != null) {
-            Canvas canvas = SmartClient.getCanvas(footer.getWidget());
+            Canvas canvas = SmartClient.toCanvas(footer.getWidget());
             canvas.setHeight("4%");
             layout.addMember(canvas);
         }             
@@ -105,66 +108,37 @@ public class SmartApplication implements UIApplication, Extensible, ExtensionPoi
         RootPanel.get().add(layout);       
     }
 
-    public View<?> getLeftArea() {
+    public Drawable getLeftArea() {
         return left;
     }
 
-    public View<?> getRightArea() {
+    public ViewManager getRightArea() {
         return right;
     }
     
-    public View<?> getContentArea() {
+    public EditorManager getEditorManager() {
         return content;
     }
     
-    public View<?> getHeader() {
+    public Drawable getHeader() {
         return header;
     }
     
-    public View<?> getFooter() {
+    public Drawable getFooter() {
         return footer;
     }
     
-    public View<?> getArea(String name) {
-        if (left != null && name.equals(left.getName())) {
-            return left;
-        }
-        if (content != null && name.equals(content.getName())) {
-            return content;
-        }
-        if (right != null && name.equals(right.getName())) {
-            return right;
-        }
-        if (header != null && name.equals(header.getName())) {
-            return header;
-        }
-        if (footer != null && name.equals(footer.getName())) {
-            return footer;
-        }
-        return null;
-    }
+
     
-    public View<?> getView(String[] segments) {
+    public View getView(String[] segments) {
         return getView(segments, segments.length);
     }
     
-    public View<?> getView(String[] segments, int length) {
-        int start = 0;
-        if (segments[0].length() == 0) { // an absolute path
-             start = 1;
-        }
-        View<?> view = getArea(segments[start]);
-        for (int i=start+1; i<length; i++) {
-            if (view instanceof ViewContainer) {
-                view = ((ViewContainer<?>)view).getView(segments[i]);
-            } else {
-                return null;
-            }
-        }            
-        return view;        
+    public View getView(String[] segments, int length) {
+        return null;
     }
 
-    public View<?> getView(String path) {
+    public View getView(String path) {
         String[] segments = path.split("/");
         if (segments.length == 0) {
             return null;
@@ -173,30 +147,48 @@ public class SmartApplication implements UIApplication, Extensible, ExtensionPoi
     }
 
 
-    public void showView(String path) {
-        String[] segments = path.split("/");
-        if (segments.length == 0) {
-            return;
-        }         
-        ViewContainer<?> vc = (ViewContainer<?>)getView(segments, segments.length-1);
-        if (vc != null) {
-            vc.select(segments[segments.length-1]);
-        }
+    public void showView(String id) {
+//        if (left != null) {
+//            View v = left.getView(id);
+//            if (v != null) {
+//                left.showView(id);
+//                return;
+//            }
+//        }
+//        if (right != null) {
+//            View v = right.getView(id);
+//            if (v != null) {
+//                right.showView(id);
+//            }
+//        }
     }
     
     public void openInEditor(Object input) {
-        content.setInput(input);
+        content.openEditor(input);
     }
-        
 
-    @SuppressWarnings("unchecked")
+    public void openInNewEditor(Object input) {
+        content.openEditor(input, true);
+    }
+
+    public View getActiveEditor() {
+        EditorSite esite = content.getActiveEditor();
+        if (esite != null) {
+            View view = esite.getView();
+            if (view.isInstalled()) {
+                return view;
+            }
+        }
+        return null;
+    }
+
     public void registerExtension(String target, Object extension) {
         if (LEFT_AREA_XP.equals(target) ) {
             left = (View)extension;
         } else if (CONTENT_AREA_XP.equals(target)) {
-            content = (View)extension;
+            content = (EditorManager)extension;
         } else if (RIGHT_AREA_XP.equals(target)) {
-            right = (View)extension;
+            right = (ViewManager)extension;
         } else if (HEADER_AREA_XP.equals(target)) {
             header = (View)extension;
         } else if (FOOTER_AREA_XP.equals(target)) {

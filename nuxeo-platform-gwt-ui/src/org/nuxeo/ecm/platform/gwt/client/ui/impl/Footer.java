@@ -29,7 +29,7 @@ import com.smartgwt.client.widgets.Label;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class Footer extends SmartView<Canvas> {
+public class Footer extends SmartView {
 
     public Footer() {
         super("footer");

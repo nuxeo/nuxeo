@@ -75,6 +75,10 @@ public class JSContext extends JavaScriptObject {
         return this.userName;
     }-*/;
 
+    public final native String getAnonymousUserName() /*-{
+        return this.anonymousUserName;
+    }-*/;
+    
     public final native String getProperty(String key) /*-{
         return this.settings[key];
     }-*/;

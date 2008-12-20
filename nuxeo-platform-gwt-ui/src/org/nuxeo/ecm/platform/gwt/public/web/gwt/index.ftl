@@ -29,6 +29,7 @@
         skinPath : "${skinPath}",
         modulePath : "${This.path}",
         userName : "${username}",
+        anonymousUserName : "Guest",
         repositoryRoots : { "/" : "Repository", "/default-domain/workspaces" : "Workspaces" },
 
         settings : { animations: "false" },

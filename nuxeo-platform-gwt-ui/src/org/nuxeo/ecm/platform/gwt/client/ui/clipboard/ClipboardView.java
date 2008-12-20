@@ -29,12 +29,17 @@ import com.smartgwt.client.widgets.Canvas;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ClipboardView extends SmartView<Canvas> {
+public class ClipboardView extends SmartView {
 
 
     public ClipboardView() {
         super("clipboard");
-        setTitle("Clipboard");
+    }
+    
+    
+    @Override
+    public String getTitle() {
+        return "Clipboard";
     }
 
     @Override

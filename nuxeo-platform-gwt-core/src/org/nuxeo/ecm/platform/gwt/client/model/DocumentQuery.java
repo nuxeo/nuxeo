@@ -44,4 +44,9 @@ public class DocumentQuery {
         this.query = query;
     }
         
+    
+    @Override
+    public String toString() {
+        return query;
+    }
 }

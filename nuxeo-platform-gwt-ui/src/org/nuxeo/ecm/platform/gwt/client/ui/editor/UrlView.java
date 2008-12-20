@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.gwt.client.ui.editor;
 
 import org.nuxeo.ecm.platform.gwt.client.model.Url;
-import org.nuxeo.ecm.platform.gwt.client.ui.Editor;
 import org.nuxeo.ecm.platform.gwt.client.ui.SmartView;
 import org.nuxeo.ecm.platform.gwt.client.ui.View;
 
@@ -38,23 +37,16 @@ public class UrlView implements Editor {
         return input instanceof Url;
     }
     
-    public View<?> open(Object input) {
+    public View getView() {
         EditorView view = new EditorView();
-        view.setInput(input);
         return view;
     }
     
-    public boolean canReuseViews() {
-        return true;
-    }
-    
-    
-    static class EditorView extends SmartView<Canvas> {
+    static class EditorView extends SmartView {
         private static int cnt = 0;
         
             public EditorView() {
             super("iframe#"+(cnt++));
-            setTitle("URL View");
         }
 
         @Override
@@ -67,15 +59,24 @@ public class UrlView implements Editor {
             return html;
         }
 
+        @Override
+        protected void inputChanged() {
+            refresh();
+        }
        
         @Override
-        public void setInput(Object input) { // using HTMLPane is not working -  on resize is not working
+        public void refresh() { // using HTMLPane is not working -  on resize is not working
             if (input == null) {
                 return;
             }
             ((HTMLPane)getWidget()).setContentsURL(input.toString());
         }
 
+        @Override
+        public String getTitle() {
+            return "URL View";
+        }
+        
         @Override
         public Object getInput() {
             return ((HTMLPane)getWidget()).getContentsURL();

@@ -130,12 +130,13 @@ public class Navbar extends HLayout implements HistoryListener {
         username = Framework.getUserName();
         String loginCode = null;
         if (username == null) {
-            username = "Guest";
+            username = Framework.getAnonymousUserName();
+            loginCode = "<a href=\"#\" onCLick=\"nx.fire('login'); return false;\">Login</a>";
+        } else if (username.equals(Framework.getAnonymousUserName())) {
             loginCode = "<a href=\"#\" onCLick=\"nx.fire('login'); return false;\">Login</a>";
         } else {
             loginCode = "<a href=\"#\" onCLick=\"nx.fire('logout'); return false;\">Logout</a>";
         }
-        System.out.println(loginCode);
         return "<span class=\"navbarSpan\"><b>"+username+"</b> | " + loginCode + 
         " | <a href=\"#settings\">Settings</a>" +
         " | <a href=\"#help\">Help</a>" +

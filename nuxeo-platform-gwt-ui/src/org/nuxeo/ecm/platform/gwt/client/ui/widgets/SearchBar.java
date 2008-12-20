@@ -19,7 +19,9 @@
 
 package org.nuxeo.ecm.platform.gwt.client.ui.widgets;
 
-import com.google.gwt.user.client.Window;
+import org.nuxeo.ecm.platform.gwt.client.model.DocumentQuery;
+import org.nuxeo.ecm.platform.gwt.client.ui.UI;
+
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.TextItem;
@@ -72,7 +74,7 @@ public class SearchBar extends HLayout {
                     if (query == null) {
                         query = "";
                     }
-                    Window.alert("TODO - search: "+query);
+                    UI.openInEditor(new DocumentQuery(query));
                 }
             }
         });

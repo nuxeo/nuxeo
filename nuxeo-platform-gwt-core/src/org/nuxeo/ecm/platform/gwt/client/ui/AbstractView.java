@@ -19,45 +19,63 @@
 
 package org.nuxeo.ecm.platform.gwt.client.ui;
 
-
 import com.google.gwt.user.client.ui.Widget;
+
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class AbstractView<W extends Widget> implements View<W> {
+public abstract class AbstractView implements View {
 
+    protected Object input; 
+    protected Site site;
     protected String name;
-    protected String title;
-    protected String icon;
-    protected W widget;
+    protected Widget widget;
     
     
     public AbstractView(String name) {
         this.name = name;
+    }   
+    
+    public void install(Site site, Object input) {
+        this.site = site;
+        this.input = input;
+        getWidget(); // create the widget
+        initInput();        
+    }
+    
+    protected void initInput() {
+        inputChanged();
+    }
+    
+    public void uninstall() {
+        widget = null;
+        input = null;
+        site = null;
+    }
+    
+    public boolean isInstalled() {
+        return site != null;
+    }    
+    
+    public boolean hasWidget() {
+        return widget != null;
     }
     
     public String getName() {
         return name;
     }
-
-    public String getTitle() {
-        return title == null ? name : title;
-    }
     
-    public void setTitle(String title) {
-        this.title = title;
+    public String getTitle() {
+        return null;
     }
     
     public String getIcon() {
-        return icon;
+        return null;
     }
 
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-    
     public void refresh() {
         // do nothing
     }
@@ -70,83 +88,42 @@ public abstract class AbstractView<W extends Widget> implements View<W> {
         UI.hideBusy();
     }
     
-    public W getWidget() {
+    public Widget getWidget() {
         if (widget == null) {
             widget = createWidget();
-            onAttach();
         }
         return widget;
     }
-    
-    public boolean isAttached() {
-        return widget != null;
-    }
-    
-    public boolean isVisible() {
-        return widget != null && widget.isVisible();
-    }
 
-    public void destroy() {
-        if (widget != null) {
-            onDetach();
-            if (destroyWidget(widget)) {
-                widget = null;
-            }
-        }        
-    }
-      
     /**
      * Create a widget to be bound to this view
      * @return the new widget. must be never null.
      */
-    protected abstract W createWidget();
+    protected abstract Widget createWidget();
     
-    /**
-     * Destroy the given widget.
-     * If widget cannot be destroyed (e.g. destroy not supported) return false, otherwise destroy it and return true.
-     * If true is returned the widget will be unbound from the view.
-     * @param widget the widget to destroy.
-     * @return whether or not the widget was destroyed
-     */
-    protected boolean destroyWidget(W widget) {
-        // don't know how to destroy a GWT widget - this method will do the same as detachWidget
-        widget.removeFromParent(); 
+    
+    public boolean acceptInput(Object input) {
         return true;
     }
     
-    public void detachWidget() {
-        if (widget != null) {
-            widget.removeFromParent();
+    public void setInput(Object input) {
+        if (this.input != input) {
+            this.input = input; 
+            inputChanged();
         }
     }
     
     /**
-     * This view was attached to a widget. 
-     * Override this to add custom initialization after attaching to an widget
+     * May override this to notify the site about title or icon updates.
      */
-    protected void onAttach() {
-        // do nothing
-    }
-    
-    /**
-     * This view is about to detach from a widget.
-     *  Override this to add custom disposal code before the view is detached
-     */
-    protected void onDetach() {
-        // do nothing
-    }
-    
-    public boolean acceptInput(Object input) {
-        return false;
-    }
-    
-    public void setInput(Object input) {
+    protected void inputChanged() {
         
     }
     
     public Object getInput() {
-        return null;
+        return input;
     }
+    
 
     @Override
     public String toString() {

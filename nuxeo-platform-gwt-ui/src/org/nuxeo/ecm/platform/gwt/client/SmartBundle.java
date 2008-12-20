@@ -25,15 +25,16 @@ import org.nuxeo.ecm.platform.gwt.client.ui.clipboard.ClipboardView;
 import org.nuxeo.ecm.platform.gwt.client.ui.editor.DocumentEditor;
 import org.nuxeo.ecm.platform.gwt.client.ui.editor.DocumentMetadataPage;
 import org.nuxeo.ecm.platform.gwt.client.ui.editor.DocumentViewPage;
-import org.nuxeo.ecm.platform.gwt.client.ui.editor.EditorContainer;
 import org.nuxeo.ecm.platform.gwt.client.ui.editor.FolderViewPage;
 import org.nuxeo.ecm.platform.gwt.client.ui.editor.HtmlView;
+import org.nuxeo.ecm.platform.gwt.client.ui.editor.SmartEditorManager;
 import org.nuxeo.ecm.platform.gwt.client.ui.editor.UrlView;
 import org.nuxeo.ecm.platform.gwt.client.ui.impl.Footer;
 import org.nuxeo.ecm.platform.gwt.client.ui.impl.Header;
 import org.nuxeo.ecm.platform.gwt.client.ui.impl.SmartApplication;
 import org.nuxeo.ecm.platform.gwt.client.ui.impl.ViewStack;
 import org.nuxeo.ecm.platform.gwt.client.ui.navigator.NavigatorView;
+import org.nuxeo.ecm.platform.gwt.client.ui.search.SearchEditor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -53,7 +54,7 @@ public interface SmartBundle extends ApplicationBundle {
 
     @Extension(targets=ExtensionPoints.CONTENT_AREA_XP)
     @ExtensionPoint(ExtensionPoints.EDITORS_XP)
-    EditorContainer editorContainer();
+    SmartEditorManager editorManager();
 
     @Extension(targets=ExtensionPoints.LEFT_AREA_XP)
     @ExtensionPoint(ExtensionPoints.VIEWS_XP)
@@ -87,6 +88,9 @@ public interface SmartBundle extends ApplicationBundle {
     @Extension(targets=ExtensionPoints.EDITORS_XP)
     DocumentEditor documentEditor();
 
+    @Extension(targets=ExtensionPoints.EDITORS_XP)
+    SearchEditor searchEditor();
+    
     @Extension(targets=ExtensionPoints.EDITOR_PAGES_XP)
     FolderViewPage folderViewPage();
 

@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.gwt.client.ui.editor;
 
-import org.nuxeo.ecm.platform.gwt.client.ui.Editor;
 import org.nuxeo.ecm.platform.gwt.client.ui.SmartView;
 import org.nuxeo.ecm.platform.gwt.client.ui.View;
 
@@ -36,18 +35,12 @@ public class HtmlView implements Editor {
         return input instanceof String;
     }
     
-    public View<?> open(Object input) {
-        View<?> view = new EditorView();
-        view.setInput(input);
+    public View getView() {
+        View view = new EditorView();
         return view;
     }   
 
-    public boolean canReuseViews() {
-        return true;
-    }
-    
-    
-    static class EditorView extends SmartView<HTMLFlow> {
+    static class EditorView extends SmartView {
         private static int cnt = 0;
         
         public EditorView() {
@@ -58,10 +51,14 @@ public class HtmlView implements Editor {
         protected HTMLFlow createWidget() {
             return new HTMLFlow();
         }
-
+        
+        @Override
+        protected void inputChanged() {
+            refresh();
+        }
 
         @Override
-        public void setInput(Object input) {
+        public void refresh() {
             getWidget().setContents(input.toString());
         }
 

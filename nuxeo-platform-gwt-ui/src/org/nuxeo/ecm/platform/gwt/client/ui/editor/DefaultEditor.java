@@ -20,10 +20,10 @@
 package org.nuxeo.ecm.platform.gwt.client.ui.editor;
 
 import org.nuxeo.ecm.platform.gwt.client.Framework;
-import org.nuxeo.ecm.platform.gwt.client.ui.Editor;
-import org.nuxeo.ecm.platform.gwt.client.ui.SmartView;
+import org.nuxeo.ecm.platform.gwt.client.ui.AbstractView;
 import org.nuxeo.ecm.platform.gwt.client.ui.View;
 
+import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.HTMLFlow;
 
 /**
@@ -37,41 +37,44 @@ public class DefaultEditor implements Editor {
         return true;
     }
     
-    public View<?> open(Object input) {
+    public View getView() {
         EditorView view = new EditorView();
-        view.setInput(input);
-        view.setIcon(Framework.getSkinPath("images/document.png"));
         return view;
     }
     
-    public boolean canReuseViews() {
-        return true;
-    }
     
-    static class EditorView extends SmartView<HTMLFlow> {
+    static class EditorView extends AbstractView {
         private static int cnt = 0;
-        
-        protected Object input;
 
         public EditorView() {
             super("default#"+(cnt++));
-            setTitle("Error");
         }
 
         @Override
         protected HTMLFlow createWidget() {
             return  new HTMLFlow();
         }
-
-        @Override
-        public void setInput(Object input) {
-            this.input = input;
-            getWidget().setContents("<h3>Unknown input type - There is no editor installed for this input.</h3>"+input);
+        
+        public Canvas getCanvas() {
+            return (Canvas)getWidget();
         }
-
+        
         @Override
-        public Object getInput() {
-            return input;
+        protected void inputChanged() {
+            refresh();
+        }
+        
+        @Override
+        public void refresh() {
+            getCanvas().setContents("<h3>Unknown input type - There is no editor installed for this input.</h3>"+input);
+        }
+        
+        public String getTitle() {
+            return "Error";
+        }
+        
+        public String getIcon() {
+            return Framework.getSkinPath("images/document.png");
         }
 
     }

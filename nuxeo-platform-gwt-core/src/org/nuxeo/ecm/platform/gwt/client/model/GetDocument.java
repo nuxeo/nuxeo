@@ -56,7 +56,11 @@ public class GetDocument extends HttpCommand {
              json = ar.get(0);            
          }
          Document doc = new Document(json.isObject());
-         UI.openInEditor(doc);
+         openDocument(doc);
+    }
+    
+    protected void openDocument(Document doc) {
+        UI.openInEditor(doc);
     }
     
     @Override

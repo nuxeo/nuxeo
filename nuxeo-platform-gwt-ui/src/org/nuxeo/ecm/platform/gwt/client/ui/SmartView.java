@@ -20,50 +20,20 @@
 package org.nuxeo.ecm.platform.gwt.client.ui;
 
 import com.smartgwt.client.widgets.Canvas;
-import com.smartgwt.client.widgets.events.DrawEvent;
-import com.smartgwt.client.widgets.events.DrawHandler;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class SmartView<W extends Canvas> extends AbstractView<W> implements DrawHandler {
+public abstract class SmartView extends AbstractView {
 
     public SmartView(String name) {
-        super (name);
+        super(name);
+    }
+    
+    @Override
+    public Canvas getWidget() {
+        return (Canvas)super.getWidget();
     }
 
-    protected boolean destroyWidget(W widget) {
-        widget.destroy();
-        return true;
-    }
-    
-    @Override
-    public void detachWidget() {
-        if (widget != null) {
-            Canvas parent = widget.getParentElement();
-            if (parent != null) {
-                parent.removeChild(widget);
-            }
-        }
-    }
-    
-    @Override
-    public boolean isVisible() {
-        return widget != null && widget.isDrawn() && widget.isVisible();
-    }
-    
-    @Override
-    protected void onAttach() {
-        //widget.setProperty("nuxeo_viewId", name);
-        widget.addDrawHandler(this);
-    }
-  
-    /**
-     * Widget was drawn 
-     */
-    public void onDraw(DrawEvent event) {
-//        System.out.println("on draw "+name);
-    }
-    
 }

@@ -19,14 +19,40 @@
 
 package org.nuxeo.ecm.platform.gwt.client.ui;
 
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface View<W extends Widget> {
-
+public interface View extends Drawable {
+    
+    /**
+     * Install the view into a site and sets is input to the given one.
+     * The view widget will be created at this point after setting the input.
+     * @param site the site to host the view
+     * @param input the input object
+     */
+    public void install(Site site, Object input);
+    
+    /**
+     * Uninstall the view from its site. 
+     * All cached data should be removed such as the view widget etc.
+     * The view itself should not be destroyed to be able to re-install it later if needed. 
+     */
+    public void uninstall();
+    
+    /**
+     * Whether or not this view is installed into a site (its widget was created).
+     * @return true if installed, false otherwise.
+     */
+    public boolean isInstalled();
+   
+    /**
+     * Whether or not the view widget was created.
+     * @return
+     */
+   boolean hasWidget();
+   
     /**
      * Get the view name the view an can be used to find out a view from its container
      * @return
@@ -34,35 +60,22 @@ public interface View<W extends Widget> {
     public String getName();
 
     /**
-     * Get the view icon path if any.
-     * @return the icon path or null if none.
-     */
-    public String getIcon();
-
-    /**
-     * Set a icon for this view
-     * @param icon the icon path
-     */
-    public void setIcon(String icon);
-    
-    /**
-     * Get the view title. The title will be show in the UI by the container
-     * if the container support this.
-     * If null the view name will be used 
-     * @return the title. can be null.
+     * Get a title suitable for this view. This is a hint to the site view ad should 
+     * reflect the current view input. 
+     * @return the title or null if none
      */
     public String getTitle();
-
     
     /**
-     * Set a title for this view
-     * @param title
+     * Get a icon suitable for this view. This is a hint to the view site and should 
+     * reflect the current view input. 
+     * @return the icon or null if none
      */
-    public void setTitle(String title);
-
+    public String getIcon();    
+    
     /**
-     * Called by the container (if container supports refresh)
-     * when application context change
+     * Refresh this view using current input. This should be called by a setInput after setting the input.
+     * Optional operation - if container doesn't supports refresh do nothing
      */
     public void refresh();
 
@@ -94,43 +107,8 @@ public interface View<W extends Widget> {
 
     /**
      * Get the current input if the view if any
-     * @return the current input or null if none
+     * @return the input if any input or null if none
      */
     public Object getInput();
-    
-    /**
-     * Get the widget bound to this view.
-     * If no one is already bound a new one should be created 
-     * @return
-     */
-    public W getWidget();
-
-    /**
-     * Check whether this view is attached to an widget
-     * @return true if attached, false otherwise
-     */
-    public boolean isAttached();
-    
-    /**
-     * Whether the widget attached to this view is visible.
-     * If not yet attached then return false;
-     * @return
-     */
-    public boolean isVisible();
-    
-    /**
-     * Destroy the widget bound to this view. 
-     * A destroyed widget cannot be used anymore and will be eligible for garbage collection..
-     * If you want to reuse later the widget then just disconect it using detach and then reconnect using an attach 
-     * The next time {@link #getWidget()} is called a new widget should be created. 
-     */
-    public void destroy();
-    
-    /**
-     * This method should be called to remove the view widget from its parent.
-     * This is not destroying the widget. 
-     * You can reuse it later by putting it in the same or another container.  
-     */
-    public void detachWidget();
-    
+        
 }
