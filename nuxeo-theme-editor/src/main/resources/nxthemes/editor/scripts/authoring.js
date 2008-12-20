@@ -760,6 +760,7 @@ NXThemesEditor.refresh = function() {
 NXThemesEditor.exit = function() {
   NXThemes.expireCookie("nxthemes.theme");
   NXThemes.expireCookie("nxthemes.engine");
+  NXThemes.expireCookie("nxthemes.mode");
   NXThemes.expireCookie("nxthemes.perspective");
   var url = nxthemesBasePath + "/nxthemes-editor/clear_selections"; 
   new Ajax.Request(url, {

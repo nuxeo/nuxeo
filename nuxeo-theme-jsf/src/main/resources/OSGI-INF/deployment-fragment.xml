@@ -83,10 +83,6 @@
 
 
   <install>
-    <unzip from="${bundle.fileName}" to="/">
-      <include>nuxeo.war/**</include>
-    </unzip>
-
     <delete path="nxthemes-jsf.tmp" />
     <mkdir path="nxthemes-jsf.tmp" />
 

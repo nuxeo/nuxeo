@@ -21,14 +21,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public final class NegotiationSelector extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-
-    private static final Log log = LogFactory.getLog(NegotiationSelector.class);
 
     @Override
     protected void doGet(final HttpServletRequest request,
@@ -40,10 +35,9 @@ public final class NegotiationSelector extends HttpServlet {
     protected void doPost(final HttpServletRequest request,
             final HttpServletResponse response) throws IOException {
 
-        final String referer = request.getHeader("referer");
-        if (referer == null) {
-            log.error("No referer found.");
-            response.sendRedirect("/nuxeo/nxthemes/error/negotiationSelectorMissingReferer.faces");
+        final String referrer = request.getHeader("referer");
+        if (referrer == null) {
+            response.getWriter().write("no referrer found");
             return;
         }
 
@@ -67,7 +61,7 @@ public final class NegotiationSelector extends HttpServlet {
             response.addCookie(createCookie("nxthemes.perspective", perspective));
         }
 
-        response.sendRedirect(referer);
+        response.sendRedirect(referrer);
     }
 
     private Cookie createCookie(final String name, final String value) {

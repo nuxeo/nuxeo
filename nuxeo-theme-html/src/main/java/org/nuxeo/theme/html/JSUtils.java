@@ -25,7 +25,7 @@ import org.mozilla.javascript.tools.shell.Main;
 
 public final class JSUtils {
 
-    private static final Log log = LogFactory.getLog(JSUtils.class);
+    static final Log log = LogFactory.getLog(JSUtils.class);
 
     private static final Global global = Main.getGlobal();
 

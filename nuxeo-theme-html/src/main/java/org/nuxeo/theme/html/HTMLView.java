@@ -68,12 +68,12 @@ public class HTMLView extends TemplateView {
         return result;
     }
 
-    public String replaceModelExpressions(final RenderingInfo info,
+    public String replaceModelExpressions(@SuppressWarnings("unused") final RenderingInfo info,
             final String html) {
         return html;
     }
 
-    public String getFragmentInsertionMarkup(final RenderingInfo info) {
+    public String getFragmentInsertionMarkup(@SuppressWarnings("unused") final RenderingInfo info) {
         return "";
     }
 
