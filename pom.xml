@@ -820,9 +820,13 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-webengine</artifactId>
+        <version>${nuxeo.theme.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-editor</artifactId>
         <version>${nuxeo.theme.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
