@@ -37,7 +37,6 @@ public class PersistenceProvider {
     protected EntityManagerFactory emf;
 
     public PersistenceProvider() {
-        super();
     }
 
     public static Class<? extends HibernateConfiguration> hibernateConfigurationClass = DefaultHibernateConfiguration.class;
@@ -50,7 +49,7 @@ public class PersistenceProvider {
         if (persistenceStream != null) {
             cfg.addInputStream(persistenceStream);
         }
-        
+
         try {
             cfg.addProperties(hibernateConfigurationClass.newInstance().getProperties());
         } catch (Exception error) {
@@ -100,23 +99,26 @@ public class PersistenceProvider {
 
     protected void doCommit(EntityManager em) {
         EntityTransaction et = em.getTransaction();
-        if (et.isActive() == false)
+        if (!et.isActive()) {
             return;
+        }
         em.flush();
         et.commit();
     }
 
     protected void doRollback(EntityManager em) {
         EntityTransaction et = em.getTransaction();
-        if (et.isActive() == false)
+        if (!et.isActive()) {
             return;
+        }
         em.flush();
         et.rollback();
     }
 
     public void releaseEntityManager(EntityManager em) {
-        if (em.isOpen() == false)
+        if (!em.isOpen()) {
             return;
+        }
         try {
             doCommit(em);
         } finally {
@@ -128,8 +130,9 @@ public class PersistenceProvider {
     }
 
     public void releaseEntityManagerWithRollback(EntityManager em) {
-        if (em.isOpen() == false)
+        if (!em.isOpen()) {
             return;
+        }
         try {
             doRollback(em);
         } finally {

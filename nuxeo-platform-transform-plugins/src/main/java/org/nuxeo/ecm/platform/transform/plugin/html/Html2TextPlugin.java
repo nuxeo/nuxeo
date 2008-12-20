@@ -42,6 +42,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class Html2TextPlugin extends AbstractPlugin {
 
     private static final String TEXT_MIME_TYPE = "text/plain";
+    private static final long serialVersionUID = 1L;
 
     @Override
     public List<TransformDocument> transform(Map<String, Serializable> options,

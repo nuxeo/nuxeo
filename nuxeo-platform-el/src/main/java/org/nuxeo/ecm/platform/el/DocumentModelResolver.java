@@ -95,7 +95,7 @@ public class DocumentModelResolver extends BeanELResolver {
             try {
                 DocumentPropertyContext ctx = (DocumentPropertyContext) base;
                 Property docProperty = ctx.doc.getProperty(ctx.schema + ":"
-                        + (String) property);
+                        + property);
                 value = getDocumentPropertyValue(docProperty);
                 context.setPropertyResolved(true);
             } catch (ClientException pe) {

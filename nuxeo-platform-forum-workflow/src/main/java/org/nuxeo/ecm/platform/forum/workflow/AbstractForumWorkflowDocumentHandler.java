@@ -71,7 +71,7 @@ public abstract class AbstractForumWorkflowDocumentHandler extends
         }
     }
 
-    protected DocumentRef getThreadRef(ExecutionContext ec) {
+    protected static DocumentRef getThreadRef(ExecutionContext ec) {
         return (DocumentRef) ec.getVariable(ForumConstants.THREAD_REF);
     }
 

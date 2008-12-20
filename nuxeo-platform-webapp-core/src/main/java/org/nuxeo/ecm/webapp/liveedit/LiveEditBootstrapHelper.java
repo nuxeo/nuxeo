@@ -548,7 +548,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 if (mimetypeEntry == null) {
                     isEditable = Boolean.FALSE;
                 } else {
-                    isEditable = Boolean.valueOf(mimetypeEntry.isOnlineEditable());
+                    isEditable = mimetypeEntry.isOnlineEditable();
                 }
             } catch (Throwable t) {
                 throw ClientException.wrap(t);
@@ -560,49 +560,38 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             }
             cachedEditableStates.put(mimetype, isEditable);
         }
-        return isEditable.booleanValue();
-
+        return isEditable;
     }
 
-
-    @Factory(value="msword_liveeditable", scope=ScopeType.SESSION)
-    public boolean isMSWordLiveEdititable() throws ClientException
-    {
+    @Factory(value = "msword_liveeditable", scope = ScopeType.SESSION)
+    public boolean isMSWordLiveEdititable() throws ClientException {
         return isMimeTypeLiveEditable("application/msword");
     }
 
-    @Factory(value="msexcel_liveeditable", scope=ScopeType.SESSION)
-    public boolean isMSExcelLiveEdititable() throws ClientException
-    {
+    @Factory(value = "msexcel_liveeditable", scope = ScopeType.SESSION)
+    public boolean isMSExcelLiveEdititable() throws ClientException {
         return isMimeTypeLiveEditable("application/vnd.ms-excel");
     }
 
-    @Factory(value="mspowerpoint_liveeditable", scope=ScopeType.SESSION)
-    public boolean isMSPowerpointLiveEdititable() throws ClientException
-    {
+    @Factory(value = "mspowerpoint_liveeditable", scope = ScopeType.SESSION)
+    public boolean isMSPowerpointLiveEdititable() throws ClientException {
         return isMimeTypeLiveEditable("application/vnd.ms-powerpoint");
     }
 
-    @Factory(value="ootext_liveeditable", scope=ScopeType.SESSION)
-    public boolean isOOTextLiveEdititable() throws ClientException
-    {
+    @Factory(value = "ootext_liveeditable", scope = ScopeType.SESSION)
+    public boolean isOOTextLiveEdititable() throws ClientException {
         return isMimeTypeLiveEditable("application/vnd.oasis.opendocument.text");
     }
 
-    @Factory(value="oocalc_liveeditable", scope=ScopeType.SESSION)
-    public boolean isOOCalcLiveEdititable() throws ClientException
-    {
+    @Factory(value = "oocalc_liveeditable", scope = ScopeType.SESSION)
+    public boolean isOOCalcLiveEdititable() throws ClientException {
         return isMimeTypeLiveEditable("application/vnd.oasis.opendocument.spreadsheet");
     }
 
-    @Factory(value="oopresentation_liveeditable", scope=ScopeType.SESSION)
-    public boolean isOOPresentationLiveEdititable() throws ClientException
-    {
+    @Factory(value = "oopresentation_liveeditable", scope = ScopeType.SESSION)
+    public boolean isOOPresentationLiveEdititable() throws ClientException {
         return isMimeTypeLiveEditable("application/vnd.oasis.opendocument.presentation");
     }
-
-
-
 
     public boolean isCurrentDocumentLiveEditable() throws ClientException {
         return isDocumentLiveEditable(navigationContext.getCurrentDocument(),
@@ -663,7 +652,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 return cacheBlobToFalse(cacheKey);
             }
 
-            Blob blob = null;
+            Blob blob;
             try {
                 blob = documentModel.getProperty(propertyName).getValue(
                         Blob.class);
@@ -675,7 +664,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             cachedEditableBlob = isLiveEditable(blob);
             cachedEditableBlobs.put(cacheKey, cachedEditableBlob);
         }
-        return cachedEditableBlob.booleanValue();
+        return cachedEditableBlob;
     }
 
     protected boolean cacheBlobToFalse(String cacheKey) {

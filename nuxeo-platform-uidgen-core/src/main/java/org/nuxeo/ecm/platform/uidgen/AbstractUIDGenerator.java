@@ -128,7 +128,7 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
     }
 
     // helper method to deprecate
-    private String getSchemaName(String propertyName) {
+    private static String getSchemaName(String propertyName) {
         String[] s = propertyName.split(":");
         String prefix = s[0];
         Schema schema = null;
@@ -146,7 +146,7 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
     }
 
     // helper method to deprecate
-    private String getFieldName(String propertyName) {
+    private static String getFieldName(String propertyName) {
         String[] s = propertyName.split(":");
         return s[1];
     }
