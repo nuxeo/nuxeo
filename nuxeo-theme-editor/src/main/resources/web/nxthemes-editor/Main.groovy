@@ -192,6 +192,37 @@ public class Main extends DefaultModule {
       return Editor.renderCssPreview(selectedElement, selectedStyleLayer, selectedViewName)
   }
   
+  
+  @GET
+  @Path("xml_export")
+  public Response xmlExport(@QueryParam("theme") String themeName, @QueryParam("download") Integer download, @QueryParam("indent") Integer indent) {
+      if (themeName == null) {
+          return
+      }
+      ThemeElement theme = Manager.getThemeManager().getThemeByName(themeName)
+      if (theme == null) {
+          return;
+      }
+
+      ThemeSerializer serializer = new ThemeSerializer();
+      if (indent == null) {
+          indent = 0
+      }
+      
+      String xml = serializer.serializeToXml(theme, indent);
+      if (xml == null) {
+          return
+      }
+
+      ResponseBuilder builder = Response.ok(xml)
+      if (download != null) {
+          builder.header("Content-disposition", String.format(
+                  "attachment; filename=theme-%s.xml", theme.getName()))
+      }
+      builder.type("text/xml")
+      return builder.build()
+  }  
+  
   @POST
   @Path("clear_selections")
   public void clearSelections() {
@@ -408,6 +439,7 @@ public class Main extends DefaultModule {
       def indent = form.getString("indent") as Integer
       return Editor.saveTheme(src, indent)
   }
+
   
   @POST
   @Path("select_preset_group")

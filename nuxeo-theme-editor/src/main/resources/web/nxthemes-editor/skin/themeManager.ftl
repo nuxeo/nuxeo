@@ -22,7 +22,7 @@ window.scrollTo(0,0);
     <tr>
       <td>
         <#if theme.exportable>
-          <a href="/nuxeo/nxthemes-xml-export?theme=${theme.name}">${theme.name}</a>
+          <a href="${basePath}/nxthemes-editor/xml_export?theme=${theme.name}">${theme.name}</a>
         <#else>
           &nbsp;
         </#if>
@@ -60,7 +60,7 @@ window.scrollTo(0,0);
         </#if>
       </td>
       <td class="action">
-        <a href="/nuxeo/nxthemes-xml-export?theme=${theme.name}&amp;download=1&amp;indent=2">
+        <a href="${basePath}/nxthemes-editor/xml_export?theme=${theme.name}&amp;download=1&amp;indent=2">
           <#if theme.exportable>
             <img src="${skinPath}/img/theme-download.png" width="16" height="16" />
             <span>download</span>
