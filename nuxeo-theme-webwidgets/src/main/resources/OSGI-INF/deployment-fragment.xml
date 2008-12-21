@@ -10,25 +10,5 @@
 
   </extension>
 
-  <extension target="web#SERVLET">
-
-    <servlet>
-      <servlet-name>NXThemes Web Widgets Ajax Proxy</servlet-name>
-      <servlet-class>
-        org.nuxeo.theme.webwidgets.AjaxProxy
-      </servlet-class>
-    </servlet>
-
-  </extension>
-
-  <extension target="web#SERVLET-MAPPING">
-
-    <servlet-mapping>
-      <servlet-name>NXThemes Web Widgets Ajax Proxy</servlet-name>
-      <url-pattern>/nxthemes-webwidgets-ajax-proxy/*</url-pattern>
-    </servlet-mapping>
-
-  </extension>
-
 </fragment>
 

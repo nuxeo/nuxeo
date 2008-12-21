@@ -18,16 +18,8 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="resources">
 
-    <resource name="nxthemes-webwidgets-feedparser.js">
-      <path>nxthemes/webwidgets/scripts/feedparser.js</path>
-      <require>objtree.js</require>
-      <require>prototype.js</require>
-    </resource>
-
     <resource name="nxthemes-webwidgets-uwa.js">
       <path>nxthemes/webwidgets/scripts/uwa.js</path>
-      <require>nxthemes-webwidgets-feedparser.js</require>
-      <require>objtree.js</require>
       <require>prototype.js</require>
       <shrinkable>false</shrinkable>
     </resource>

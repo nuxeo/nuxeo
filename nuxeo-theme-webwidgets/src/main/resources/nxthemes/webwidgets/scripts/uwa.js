@@ -217,75 +217,24 @@ UWA.proxies = {};
 
 UWA.Data = {
 
-  AJAX_PROXY_URL:  '/nuxeo/nxthemes-webwidgets-ajax-proxy/',
-
   getText: function(url, callback) {
-    var onComplete = function(req) {
-      if (typeof callback == "function") {
-        callback(req.responseText);
-      }
-    };
-    this.request(this.AJAX_PROXY_URL,
-      {parameters: "?url=" + encodeURIComponent(url), onComplete: onComplete});
+    alert('UWA.Data.getText not implemented');
   },
 
   getXml: function(url, callback) {
-    var onComplete = function(req) {
-      if (typeof callback == "function") {
-        var xml = req.responseText;
-        var xotree = new XML.ObjTree();
-        var tree = xotree.parseXML(xml);
-        callback(tree);
-      }
-    };
-    this.request(this.AJAX_PROXY_URL,
-      {parameters: "?url=" + encodeURIComponent(url), onComplete: onComplete});
+    alert('UWA.Data.getXml not implemented');
   },
 
   getFeed: function(url, callback) {
-    var onComplete = function(req) {
-      if (typeof callback == "function") {
-       var xml = req.responseText;
-       var feed = new FeedParser(xml);
-       feed.parse();
-       callback(feed);
-      }
-    };
-    this.request(this.AJAX_PROXY_URL,
-      {parameters: "?url=" + encodeURIComponent(url), onComplete: onComplete});
+    alert('UWA.Data.getFeed not implemented');
   },
 
   getJson: function(url, callback) {
-    var onComplete = function(req) {
-      try {
-        eval("var j = " + req.responseText);
-        if (typeof callback == "function") {
-          callback(j);
-        }
-      } catch(e) {
-        UWA.log(e);
-      }
-    }
-    this.request(this.AJAX_PROXY_URL,
-      {parameters: "?url=" + encodeURIComponent(url), onComplete: onComplete});
+    alert('UWA.Data.getJson not implemented');
   },
 
   request: function(url, request) {
-    var method = request.method || 'GET';
-    var parameters = request.parameters;
-    var cache = request.cache;
-    if (cache) {
-      if (parameters) {
-        parameters += '&cache=' + encodeURIComponent(cache);
-      } else {
-        parameters = '?cache=' + encodeURIComponent(cache);
-      }
-    }
-    new Ajax.Request(url, {
-      parameters: parameters,
-      method: method.toLowerCase(),
-      onComplete: request.onComplete || function(req) {}
-    });
+    alert('UWA.Data.request not implemented');
   }
 
 };
