@@ -53,7 +53,7 @@ public class Node {
      */
     private final Map<String, BaseProperty> propertyCache;
 
-    private transient Boolean isVersion;
+    private Boolean isVersion;
 
     /**
      * Creates a Node.

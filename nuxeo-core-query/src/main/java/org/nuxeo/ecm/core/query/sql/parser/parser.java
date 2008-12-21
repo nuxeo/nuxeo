@@ -14,6 +14,7 @@ import org.nuxeo.ecm.core.query.*;
 /** CUP v0.10k TUM Edition 20050516 generated parser.
   * @version Tue Oct 28 00:40:27 CET 2008
   */
+@SuppressWarnings({"ALL"})
 public class parser extends java_cup.runtime.lr_parser {
 
   /** Default constructor. */

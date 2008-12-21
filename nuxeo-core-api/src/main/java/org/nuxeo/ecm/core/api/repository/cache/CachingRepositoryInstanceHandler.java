@@ -299,15 +299,12 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
     }
 
     /**
-     * This will modify the given list and replace documents with the cached versions
-     * @param parent
-     * @param children
-     * @throws ClientException
+     * This will modify the given list and replace documents with the cached versions.
      */
     public void cacheChildren(DocumentRef parent, DocumentModelList children) throws ClientException {
         String id = getDocumentId(parent);
         if (id != null) {
-            ArrayList<DocumentRef> cache = new ArrayList<DocumentRef>();
+            List<DocumentRef> cache = new ArrayList<DocumentRef>();
             for (int i=0, len=children.size(); i<len; i++) {
                 DocumentModel child = children.get(i);
                 child = cacheDocument(child);

@@ -168,7 +168,7 @@ public class QueryMaker {
 
     public SQLInfoSelect selectInfo;
 
-    public List<Serializable> selectParams = new LinkedList<Serializable>();;
+    public final List<Serializable> selectParams = new LinkedList<Serializable>();;
 
     /**
      * The hierarchy table, which may be an alias table.

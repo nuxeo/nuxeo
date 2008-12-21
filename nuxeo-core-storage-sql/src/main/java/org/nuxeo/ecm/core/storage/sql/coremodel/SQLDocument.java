@@ -57,7 +57,7 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     private static final Log log = LogFactory.getLog(SQLDocument.class);
 
     // cache of the lock state, for efficiency
-    protected transient String lock;
+    protected String lock;
 
     protected SQLDocument(Node node, ComplexType type, SQLSession session,
             boolean readonly) {

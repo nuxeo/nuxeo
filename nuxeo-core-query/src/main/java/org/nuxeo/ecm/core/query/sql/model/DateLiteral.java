@@ -77,6 +77,7 @@ public class DateLiteral extends Literal {
         }
     }
 
+    @Override
     public String asString() {
         if (onlyDate) {
             return dateFormatter.print(value);

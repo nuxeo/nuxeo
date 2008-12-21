@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.Collection;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -499,8 +500,8 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
 
     private void assertIdSet(DocumentModelList dml, String... ids) {
         assertEquals(ids.length, dml.size());
-        HashSet<String> expected = new HashSet<String>(Arrays.asList(ids));
-        HashSet<String> actual = new HashSet<String>();
+        Collection<String> expected = new HashSet<String>(Arrays.asList(ids));
+        Collection<String> actual = new HashSet<String>();
         for (DocumentModel d : dml) {
             actual.add(d.getId());
         }

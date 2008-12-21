@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.query.*;
  */
 
 
+@SuppressWarnings({"ALL"})
 public class Scanner implements java_cup.runtime.Scanner {
 
   /** This character denotes the end of file */

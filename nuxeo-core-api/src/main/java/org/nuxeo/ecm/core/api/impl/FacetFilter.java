@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Collection;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
@@ -36,7 +37,7 @@ public class FacetFilter implements Filter {
 
     private static final long serialVersionUID = 1L;
 
-    public static FacetFilter ALLOW = new FacetFilter((List<String>) null,
+    public static final FacetFilter ALLOW = new FacetFilter((List<String>) null,
             (List<String>) null);
 
     /** Set of required facets. Never {@code null}. */
@@ -113,7 +114,7 @@ public class FacetFilter implements Filter {
             // no condition, always matches
             return Boolean.TRUE;
         }
-        HashSet<String> intersection = new HashSet<String>(required);
+        Collection<String> intersection = new HashSet<String>(required);
         intersection.retainAll(excluded);
         if (!intersection.isEmpty()) {
             // non-empty intersection, filter can never match
@@ -124,7 +125,7 @@ public class FacetFilter implements Filter {
 
     public boolean accept(DocumentModel docModel) {
         if (shortcut != null) {
-            return shortcut.booleanValue();
+            return shortcut;
         }
         for (String exc : excluded) {
             if (docModel.hasFacet(exc)) {

@@ -794,8 +794,8 @@ public class SQLInfo {
         // children ids and types
         protected void postProcessSelectChildrenIdsAndTypes() {
             assert !model.separateMainTable; // otherwise join needed
-            ArrayList<Column> whatColumns = new ArrayList<Column>(2);
-            ArrayList<String> whats = new ArrayList<String>(2);
+            List<Column> whatColumns = new ArrayList<Column>(2);
+            List<String> whats = new ArrayList<String>(2);
             Column column = table.getColumn(model.MAIN_KEY);
             whatColumns.add(column);
             whats.add(column.getQuotedName());
