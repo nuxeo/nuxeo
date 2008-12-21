@@ -54,7 +54,7 @@ import org.nuxeo.runtime.api.Framework;
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class MassLifeCycleTransitionListener implements MessageListener {
 
-    protected transient CoreSession documentManager;
+    protected CoreSession documentManager;
 
     private static final Log log = LogFactory
             .getLog(MassLifeCycleTransitionListener.class);

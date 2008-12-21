@@ -38,7 +38,7 @@ public class CommandAvailability implements Serializable {
 
     protected String errorMessage;
 
-    protected boolean available;
+    protected final boolean available;
 
 
     public CommandAvailability() {

@@ -12,9 +12,10 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class IndexingWrapperManagerComponent extends DefaultComponent implements IndexingWrapperManagerService {
 
     public static final String INDEXINGWRAPPER_FACTORY_EP = "IndexingWrapperFactories";
-    protected Map<String, DocumentIndexingWrapperFactory> wrapperFactories = new HashMap<String, DocumentIndexingWrapperFactory>();
 
     private static final Log log = LogFactory.getLog(IndexingWrapperManagerComponent.class);
+
+    protected final Map<String, DocumentIndexingWrapperFactory> wrapperFactories = new HashMap<String, DocumentIndexingWrapperFactory>();
 
     // EP management
     @Override

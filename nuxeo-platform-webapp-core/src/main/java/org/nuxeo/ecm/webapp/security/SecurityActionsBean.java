@@ -132,7 +132,7 @@ public class SecurityActionsBean extends InputController implements
 
     private Boolean blockRightInheritance;
 
-    protected static Map<String, List<UserVisiblePermission>> visibleUserPermissions = new HashMap<String, List<UserVisiblePermission>>();
+    protected static final Map<String, List<UserVisiblePermission>> visibleUserPermissions = new HashMap<String, List<UserVisiblePermission>>();
 
 
     @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false, inject = false)

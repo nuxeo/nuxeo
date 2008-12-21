@@ -86,7 +86,7 @@ public class NXAuditEventsService extends DefaultComponent implements
 
     protected static final Set<ExtendedInfoDescriptor> extendedInfoDescriptors = new HashSet<ExtendedInfoDescriptor>();
 
-    public static PersistenceProvider persistenceProvider = new PersistenceProvider();
+    public static final PersistenceProvider persistenceProvider = new PersistenceProvider();
 
     private static final ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(
             new ExpressionFactoryImpl());

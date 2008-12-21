@@ -33,7 +33,7 @@ public class ExpressionContext extends ELContext {
 
     private static class MyVariableMapper extends VariableMapper {
 
-        protected Map<String, ValueExpression> map = new HashMap<String, ValueExpression>();
+        protected final Map<String, ValueExpression> map = new HashMap<String, ValueExpression>();
 
         @Override
         public ValueExpression resolveVariable(String variable) {

@@ -87,7 +87,7 @@ public abstract class InputController {
     protected TypesTool typesTool;
 
     @In(create = true)
-    protected transient Principal currentUser;
+    protected Principal currentUser;
 
     /**
      * Utility method that helps remove a {@link DocumentModel} from a list. The

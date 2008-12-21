@@ -37,13 +37,13 @@ public class ExecResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected List<String> output;
+    protected final List<String> output;
 
-    protected long execTime;
+    protected final long execTime;
 
     protected boolean success;
 
-    protected Exception error;
+    protected final Exception error;
 
     protected int returnCode;
 

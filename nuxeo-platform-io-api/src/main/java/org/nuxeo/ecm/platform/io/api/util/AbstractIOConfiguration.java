@@ -36,9 +36,9 @@ public abstract class AbstractIOConfiguration implements IOConfiguration, Serial
 
     private static final long serialVersionUID = 1L;
 
-    protected List<DocumentRef> docRefs;
+    protected final List<DocumentRef> docRefs;
     protected String repositoryName;
-    protected Map<String,Object> properties;
+    protected final Map<String,Object> properties;
 
     protected AbstractIOConfiguration() {
         docRefs = new ArrayList<DocumentRef>();

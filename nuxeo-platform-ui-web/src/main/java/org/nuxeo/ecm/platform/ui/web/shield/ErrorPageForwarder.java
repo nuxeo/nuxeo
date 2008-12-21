@@ -48,10 +48,10 @@ import org.nuxeo.runtime.model.RegistrationInfo;
  */
 public class ErrorPageForwarder {
 
-    private static Log nuxeoErrorLog = LogFactory.getLog("nuxeo-error-log");
-    private static Log log = LogFactory.getLog(ErrorPageForwarder.class);
+    private static final Log nuxeoErrorLog = LogFactory.getLog("nuxeo-error-log");
+    private static final Log log = LogFactory.getLog(ErrorPageForwarder.class);
 
-    private static String SEAM_MESSAGES = "org.jboss.seam.international.messages";
+    private static final String SEAM_MESSAGES = "org.jboss.seam.international.messages";
 
     private ServletContext servletContext;
 

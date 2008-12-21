@@ -181,9 +181,9 @@ public class LockActionsBean implements LockActions {
     // helper inner class to do the unrestricted unlock
     protected class unrestrictedUnlocker extends UnrestrictedSessionRunner {
 
-        private DocumentRef docRefToUnlock;
+        private final DocumentRef docRefToUnlock;
 
-        public unrestrictedUnlocker(DocumentRef docRef) {
+        protected unrestrictedUnlocker(DocumentRef docRef) {
             super(documentManager);
             docRefToUnlock = docRef;
         }

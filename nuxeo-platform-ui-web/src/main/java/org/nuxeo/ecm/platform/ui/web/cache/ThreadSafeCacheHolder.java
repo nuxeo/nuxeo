@@ -16,9 +16,9 @@ public class ThreadSafeCacheHolder<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected Map<String, T> cacheMap;
+    protected final Map<String, T> cacheMap;
 
-    protected ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
+    protected final ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
 
     public ThreadSafeCacheHolder() {
         this(DEFAULT_SIZE);

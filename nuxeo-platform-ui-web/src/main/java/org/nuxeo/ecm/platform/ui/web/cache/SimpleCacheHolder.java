@@ -15,7 +15,7 @@ public class SimpleCacheHolder<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected Map<String, T> cacheMap;
+    protected final Map<String, T> cacheMap;
 
     public SimpleCacheHolder() {
         this(DEFAULT_SIZE);

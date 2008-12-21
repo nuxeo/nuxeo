@@ -26,7 +26,7 @@ import org.nuxeo.runtime.expression.JexlExpression;
 
 public class CachedJEXLManager {
 
-    private static Map<String, JexlExpression> expCache = new ConcurrentHashMap<String, JexlExpression>();
+    private static final Map<String, JexlExpression> expCache = new ConcurrentHashMap<String, JexlExpression>();
 
     public static boolean enforceThreadSafe = false;
 

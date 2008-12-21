@@ -33,7 +33,7 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
 
     private static final long serialVersionUID = 1876878787587L;
 
-    private DocumentModel threadDoc;
+    private final DocumentModel threadDoc;
 
     private List<DocumentModel> posts;
 

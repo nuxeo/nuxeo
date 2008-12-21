@@ -76,12 +76,12 @@ public class AuditMessageListener implements MessageListener {
 
     protected class MessageLogger extends UnrestrictedSessionRunner {
 
+        protected final DocumentMessage message;
+
         MessageLogger(DocumentMessage message) {
             super(repositoryName(message));
             this.message = message;
         }
-
-        protected DocumentMessage message;
 
         @Override
         public void run() throws ClientException {
