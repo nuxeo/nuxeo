@@ -24,6 +24,7 @@ public class LRUCachingMap<K, V> extends LinkedHashMap<K, V> {
 
     @Override
     protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-        return (size() > maxCachedItems);
+        return size() > maxCachedItems;
     }
+
 }
