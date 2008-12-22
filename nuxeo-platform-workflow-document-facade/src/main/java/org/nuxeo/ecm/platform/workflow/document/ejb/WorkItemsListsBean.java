@@ -71,7 +71,7 @@ public class WorkItemsListsBean implements WorkItemsListsManager {
     protected EntityManager em;
 
     @PersistenceUnit(unitName = "NXWorkflowDocument")
-    protected EntityManagerFactory emf;
+    protected transient EntityManagerFactory emf;
 
     protected final WorkItemsListFactory factory = new WorkItemsListFactory();
 

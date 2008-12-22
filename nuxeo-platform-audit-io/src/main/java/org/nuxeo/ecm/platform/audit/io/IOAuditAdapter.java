@@ -59,7 +59,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
 
     private static final long serialVersionUID = -3661302796286246086L;
 
-    Map<String, Serializable> properties;
+    private Map<String, Serializable> properties;
 
     /**
      * Should be overridden if IOLogEntryBase is subclassed.

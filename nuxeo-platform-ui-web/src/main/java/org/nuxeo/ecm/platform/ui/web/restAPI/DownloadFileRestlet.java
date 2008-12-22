@@ -78,7 +78,7 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements
     private static final long serialVersionUID = -2163290273836947871L;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     protected CoreSession documentManager;
 

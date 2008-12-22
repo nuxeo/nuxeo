@@ -72,7 +72,6 @@ public class RestfulPhaseListener implements PhaseListener {
     }
 
     public void beforePhase(PhaseEvent event) {
-
         FacesContext context = event.getFacesContext();
         HttpServletRequest httpRequest = (HttpServletRequest) context.getExternalContext().getRequest();
         try {

@@ -59,7 +59,7 @@ public class ServerActionsBean implements ServerActions, Serializable {
     private static final Log log = LogFactory.getLog(ServerActionsBean.class);
 
     @In(required = true, create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     private transient RepositoryManager repositoryManager;
 

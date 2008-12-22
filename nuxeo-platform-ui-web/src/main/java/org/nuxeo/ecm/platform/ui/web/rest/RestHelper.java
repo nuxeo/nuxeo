@@ -59,10 +59,10 @@ public class RestHelper implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @In(create = true)
-    NavigationContext navigationContext;
+    transient NavigationContext navigationContext;
 
     @In(create = true)
-    WebActions webActions;
+    transient WebActions webActions;
 
     private DocumentView docView;
 

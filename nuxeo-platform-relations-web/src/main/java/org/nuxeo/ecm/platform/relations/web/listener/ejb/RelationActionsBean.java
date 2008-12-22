@@ -122,7 +122,7 @@ public class RelationActionsBean  extends DocumentContextBoundActionBean impleme
     protected RelationManager relationManager;
 
     @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
+    protected transient ResourcesAccessor resourcesAccessor;
 
     @In(create = true, required = false)
     protected FacesMessages facesMessages;

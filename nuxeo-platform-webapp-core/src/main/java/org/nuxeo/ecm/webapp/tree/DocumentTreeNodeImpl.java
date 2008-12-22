@@ -38,13 +38,10 @@ import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 
 /**
  * Tree node of documents.
- *
  * <p>
  * Children are lazy-loaded from backend only when needed.
- * </p>
  *
  * @author Anahide Tchertchian
- *
  */
 public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
@@ -68,7 +65,6 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
     public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
             Filter leafFilter, Sorter sorter, QueryModel queryModel) {
-        super();
         this.document = document;
         this.sessionId = document.getSessionId();
         this.filter = filter;

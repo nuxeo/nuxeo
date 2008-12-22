@@ -48,12 +48,12 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet implements
     private static final long serialVersionUID = 1L;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     protected CoreSession documentManager;
 
     @In(create = true)
-    protected SimpleFileManager FileManageActions;
+    protected transient SimpleFileManager FileManageActions;
 
     @Override
     public void handle(Request req, Response res) {
@@ -94,7 +94,7 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet implements
         }
 
         if (currentDocument != null) {
-            List<Blob> blobs = null;
+            List<Blob> blobs;
             try {
                 blobs = FileUploadHelper.parseRequest(req);
 

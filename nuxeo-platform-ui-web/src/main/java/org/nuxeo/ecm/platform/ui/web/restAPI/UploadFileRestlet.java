@@ -54,13 +54,12 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
     private static final long serialVersionUID = -6167207806181917456L;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     protected CoreSession documentManager;
 
     @Override
     public void handle(Request req, Response res) {
-
         String repo = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");
         String filename = (String) req.getAttributes().get("filename");

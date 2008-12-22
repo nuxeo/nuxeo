@@ -58,7 +58,7 @@ public class WorkflowDocumentRelationBean implements
     private static final Log log = LogFactory.getLog(WorkflowDocumentRelationBean.class);
 
     @PersistenceContext(unitName = "NXWorkflowDocument")
-    protected EntityManager em;
+    protected transient EntityManager em;
 
     public DocumentRef[] getDocumentRefsFor(String pid) {
 

@@ -47,9 +47,9 @@ import org.nuxeo.runtime.api.Framework;
  * Stateless bean allowing to query the logs.
  * <p>
  * This class takes advantage of EJBQL.
- * 
+ *
  * :XXX: http://jira.nuxeo.org/browse/NXP-514
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
@@ -64,10 +64,9 @@ public class LogsBean implements Logs {
     private static final Log log = LogFactory.getLog(LogsBean.class);
 
     @PersistenceContext(unitName = "NXAudit")
-    private EntityManager em;
+    private transient EntityManager em;
 
-    
-   
+
     protected NXAuditEventsService service() {
         return (NXAuditEventsService) Framework.getRuntime().getComponent(
                 NXAuditEventsService.NAME);
@@ -79,8 +78,7 @@ public class LogsBean implements Logs {
 
     public List<LogEntry> getLogEntriesFor(String uuid)
             throws AuditException {
-        List<LogEntry> entries = service().getLogEntriesFor(em,
-                uuid);
+        List<LogEntry> entries = service().getLogEntriesFor(em, uuid);
         return entries;
     }
 

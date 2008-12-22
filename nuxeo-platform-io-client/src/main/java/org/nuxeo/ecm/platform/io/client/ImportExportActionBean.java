@@ -59,10 +59,10 @@ public class ImportExportActionBean implements Serializable {
     private static final long serialVersionUID = 1770386525984671333L;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected ClipboardActions clipboardActions;
+    protected transient ClipboardActions clipboardActions;
 
     private static StringBuffer getRestletBaseURL(DocumentModel doc) {
         StringBuffer urlb = new StringBuffer();
@@ -107,7 +107,6 @@ public class ImportExportActionBean implements Serializable {
 
     private static void handleRedirect(HttpServletResponse response, String url)
             throws IOException {
-
         response.resetBuffer();
         response.sendRedirect(url);
         response.flushBuffer();
@@ -172,7 +171,6 @@ public class ImportExportActionBean implements Serializable {
         DocumentReader reader = null;
         DocumentWriter writer = null;
         try {
-
             reader = new DocumentModelListReader(docList);
 
             response.reset();
@@ -184,18 +182,17 @@ public class ImportExportActionBean implements Serializable {
 
             pipe.run();
 
-            String filename="export.zip";
+            String filename = "export.zip";
             response.setHeader("Content-Disposition",
                     "attachment; filename=\"" + filename + "\";");
-            response.setHeader("Content-Type","application/zip");
+            response.setHeader("Content-Type", "application/zip");
             FacesContext.getCurrentInstance().responseComplete();
-
         } catch (ClientException e) {
-            log.error("Error durinh XML export " + e.getMessage());
+            log.error("Error during XML export " + e.getMessage());
         } catch (IOException e) {
-            log.error("Error durinh XML export " + e.getMessage());
+            log.error("Error during XML export " + e.getMessage());
         } catch (Exception e) {
-            log.error("Error durinh XML export " + e.getMessage());
+            log.error("Error during XML export " + e.getMessage());
         } finally {
             if (reader != null) {
                 reader.close();
