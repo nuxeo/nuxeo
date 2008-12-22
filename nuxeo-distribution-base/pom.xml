@@ -16,6 +16,16 @@
     <application.name>${project.artifactId}-${project.version}</application.name>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-shell-commands-base</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <build>
     <plugins>
       <plugin>
