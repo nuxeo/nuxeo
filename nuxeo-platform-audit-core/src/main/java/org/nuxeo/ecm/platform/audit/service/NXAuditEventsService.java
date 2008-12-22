@@ -165,8 +165,7 @@ public class NXAuditEventsService extends DefaultComponent implements
     }
 
     protected void doPutExtendedInfos(LogEntry entry, DocumentMessage message,
-            DocumentModel source, NuxeoPrincipal principal)
-            throws AuditException {
+            DocumentModel source, NuxeoPrincipal principal) {
         ExpressionContext context = new ExpressionContext();
         if (message != null) {
             expressionEvaluator.bindValue(context, "message", message);
@@ -181,8 +180,9 @@ public class NXAuditEventsService extends DefaultComponent implements
         for (ExtendedInfoDescriptor descriptor : extendedInfoDescriptors) {
             Serializable value = expressionEvaluator.evaluateExpression(
                     context, descriptor.getExpression(), Serializable.class);
-            if (value == null)
+            if (value == null) {
                 continue;
+            }
             extendedInfos.put(descriptor.getKey(),
                     ExtendedInfo.createExtendedInfo(value));
         }
@@ -209,10 +209,12 @@ public class NXAuditEventsService extends DefaultComponent implements
 
     protected DocumentModel guardedDocument(CoreSession session,
             DocumentRef reference) {
-        if (session == null)
+        if (session == null) {
             return null;
-        if (reference == null)
+        }
+        if (reference == null) {
             return null;
+        }
         try {
             return session.getDocument(reference);
         } catch (ClientException e) {
@@ -225,16 +227,16 @@ public class NXAuditEventsService extends DefaultComponent implements
         try {
             return session.getChildren(reference);
         } catch (ClientException e) {
-            throw new AuditException("Cannot get children of " + reference);
+            throw new AuditException("Cannot get children of " + reference, e);
         }
     }
 
     protected RepositoryManager guardedRepositoryManager() {
         try {
             return Framework.getService(RepositoryManager.class);
-        } catch (Exception e1) {
+        } catch (Exception e) {
             throw new AuditRuntimeException("Unable to get RepositoryManager",
-                    e1);
+                    e);
         }
     }
 
@@ -304,7 +306,7 @@ public class NXAuditEventsService extends DefaultComponent implements
             creationDate = (Calendar) doc.getProperty("dublincore", "created");
         } catch (ClientException e) {
             throw new AuditRuntimeException(
-                    "Cannot fetch date from dublin core for " + doc);
+                    "Cannot fetch date from dublin core for " + doc, e);
         }
         if (creationDate != null) {
             entry.setEventDate(creationDate.getTime());
@@ -328,8 +330,9 @@ public class NXAuditEventsService extends DefaultComponent implements
     public void logMessage(EntityManager em, CoreSession session,
             DocumentMessage message) throws AuditException {
         String eventId = message.getEventId();
-        if (eventId != null && eventNames.contains(eventId) == false)
+        if (eventId != null && !eventNames.contains(eventId)) {
             return;
+        }
         LogEntry entry = doCreateAndFillEntryFromMessage(session, message);
         addLogEntry(em, entry);
     }
@@ -524,4 +527,5 @@ public class NXAuditEventsService extends DefaultComponent implements
     public void addLogEntry(EntityManager em, LogEntry entry) {
         LogEntryProvider.createProvider(em).addLogEntry(entry);
     }
+
 }

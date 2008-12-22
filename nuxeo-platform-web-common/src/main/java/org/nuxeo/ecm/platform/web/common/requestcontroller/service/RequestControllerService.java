@@ -22,14 +22,15 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class RequestControllerService extends DefaultComponent implements
         RequestControllerManager {
 
-    public static String FILTER_CONFIG_EP ="filterConfig";
+    public static final String FILTER_CONFIG_EP ="filterConfig";
+
     private static final Log log = LogFactory.getLog(RequestControllerService.class);
 
-    protected static Map<String, FilterConfigDescriptor> grantPatterns = new HashMap<String, FilterConfigDescriptor>();
-    protected static Map<String, FilterConfigDescriptor> denyPatterns = new HashMap<String, FilterConfigDescriptor>();
+    protected static final Map<String, FilterConfigDescriptor> grantPatterns = new HashMap<String, FilterConfigDescriptor>();
+    protected static final Map<String, FilterConfigDescriptor> denyPatterns = new HashMap<String, FilterConfigDescriptor>();
 
-    protected static Map<String, RequestFilterConfig> configCache = new LRUCachingMap<String, RequestFilterConfig>(250);
-    protected static ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
+    protected static final Map<String, RequestFilterConfig> configCache = new LRUCachingMap<String, RequestFilterConfig>(250);
+    protected static final ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
 
     @Override
     public void registerContribution(Object contribution,

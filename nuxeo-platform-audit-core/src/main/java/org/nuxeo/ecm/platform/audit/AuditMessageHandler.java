@@ -12,16 +12,15 @@ import org.nuxeo.runtime.api.Framework;
  * Should implement the future interface needed for handling locally routed
  * message. The MessageHandler should be replaced by the final one at this time.
  * Ask me, alex russel or thierry delprat for more information about that work.
- * 
+ *
  * @author Stephane Lacoin (Nuxeo EP software engineer)
- * 
  */
 public class AuditMessageHandler implements MessageHandler {
 
     public void onDocumentMessage(EntityManager em, CoreSession session, DocumentMessage message) throws AuditException {
-       NXAuditEventsService service =
-           (NXAuditEventsService)Framework.getRuntime().getComponent(NXAuditEventsService.NAME);
-       service.logMessage(em,session, message);
+        NXAuditEventsService service =
+                (NXAuditEventsService) Framework.getRuntime().getComponent(NXAuditEventsService.NAME);
+        service.logMessage(em, session, message);
     }
 
 }

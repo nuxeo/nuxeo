@@ -24,21 +24,20 @@ import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 
 public class ExtendedInfoContext extends ExpressionContext {
 
+    private final DocumentMessage message;
+    private final DocumentModel model;
+    private final NuxeoPrincipal principal;
+
     ExtendedInfoContext(DocumentMessage message, DocumentModel model, NuxeoPrincipal principal) {
-        super();
         this.message = message;
         this.model = model;
         this.principal = principal;
     }
- 
-    private final DocumentMessage message;
-    private final DocumentModel model;
-    private final NuxeoPrincipal principal;
-    
+
     public void bindVariables(ExpressionEvaluator evaluator) {
         evaluator.bindValue(this, "document", model);
         evaluator.bindValue(this, "message", message);
         evaluator.bindValue(this, "principal", principal);
     }
-    
+
 }

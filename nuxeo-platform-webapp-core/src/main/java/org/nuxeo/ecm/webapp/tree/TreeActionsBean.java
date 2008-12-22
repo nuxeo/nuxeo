@@ -147,7 +147,7 @@ public class TreeActionsBean implements TreeActions {
         return false;
     }
 
-    protected String getCurrentDocumentPath() throws ClientException {
+    protected String getCurrentDocumentPath() {
         if (currentDocumentPath == null) {
             DocumentModel currentDoc = navigationContext.getCurrentDocument();
             if (currentDoc != null) {
@@ -159,22 +159,18 @@ public class TreeActionsBean implements TreeActions {
 
     public Boolean adviseNodeOpened(UITree treeComponent) {
         if (!isNodeExpandEvent()) {
-            try {
-                Object value = treeComponent.getRowData();
-                if (value instanceof DocumentTreeNode) {
-                    DocumentTreeNode treeNode = (DocumentTreeNode) value;
-                    String nodePath = treeNode.getPath();
-                    String currentDocPath = getCurrentDocumentPath();
-                    if (currentDocPath != null && nodePath != null &&
-                            currentDocPath.startsWith(nodePath)) {
-                        // additional slower check for strict path prefix
-                        if ((currentDocPath + '/').startsWith(nodePath + '/')) {
-                            return true;
-                        }
+            Object value = treeComponent.getRowData();
+            if (value instanceof DocumentTreeNode) {
+                DocumentTreeNode treeNode = (DocumentTreeNode) value;
+                String nodePath = treeNode.getPath();
+                String currentDocPath = getCurrentDocumentPath();
+                if (currentDocPath != null && nodePath != null &&
+                        currentDocPath.startsWith(nodePath)) {
+                    // additional slower check for strict path prefix
+                    if ((currentDocPath + '/').startsWith(nodePath + '/')) {
+                        return true;
                     }
                 }
-            } catch (ClientException e) {
-                log.error(e);
             }
         }
         return null;

@@ -56,6 +56,7 @@ public class ECServerBean implements ECServer, ECServerLocal {
             LocationManagerService lms = getLocationManagerService();
             returningLocations.addAll(lms.getAvailableLocations().values());
         } catch (Throwable t) {
+            // FIXME: exception not thrown
             ClientException.wrap(t);
         }
         return returningLocations;
@@ -67,6 +68,7 @@ public class ECServerBean implements ECServer, ECServerLocal {
             principals.add(new UserPrincipal("q"));
             principals.add(new UserPrincipal("useradmin"));
         } catch (Throwable t) {
+            // FIXME: exception not thrown
             ClientException.wrap(t);
         }
         return principals;

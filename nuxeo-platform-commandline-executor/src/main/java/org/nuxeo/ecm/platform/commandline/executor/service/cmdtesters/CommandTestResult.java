@@ -31,7 +31,7 @@ public class CommandTestResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected boolean testSucces;
+    protected final boolean testSucces;
 
     protected String errorMessage;
 
