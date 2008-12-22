@@ -125,12 +125,13 @@ public class UserManagerImpl implements UserManager {
         groupSubGroupsField = descriptor.groupSubGroupsField;
         groupParentGroupsField = descriptor.groupParentGroupsField;
         anonymousUser = descriptor.anonymousUser;
+
         setUserDirectoryName(descriptor.userDirectoryName);
         setGroupDirectoryName(descriptor.groupDirectoryName);
         setVirtualUsers(descriptor.virtualUsers);
     }
 
-    public void setUserDirectoryName(String userDirectoryName) {
+    private void setUserDirectoryName(String userDirectoryName) {
         this.userDirectoryName = userDirectoryName;
         try {
             userSchemaName = dirService.getDirectorySchema(userDirectoryName);
@@ -144,30 +145,23 @@ public class UserManagerImpl implements UserManager {
         return userDirectoryName;
     }
 
-    public void setUserEmailField(String userEmailField) {
-        this.userEmailField = userEmailField;
-    }
-
     public String getUserEmailField() {
         return userEmailField;
     }
 
-    public void setUserSearchFields(Set<String> userSearchFields) {
+    // Not used.
+    private void setUserSearchFields(Set<String> userSearchFields) {
         this.userSearchFields = new LinkedHashMap<String, MatchType>();
         for (String searchField : userSearchFields) {
             this.userSearchFields.put(searchField, MatchType.SUBSTRING);
         }
     }
 
-    public void setUserSearchFields(Map<String, MatchType> userSearchFields) {
-        this.userSearchFields = userSearchFields;
-    }
-
     public Set<String> getUserSearchFields() {
         return Collections.unmodifiableSet(userSearchFields.keySet());
     }
 
-    public void setGroupDirectoryName(String groupDirectoryName) {
+    private void setGroupDirectoryName(String groupDirectoryName) {
         this.groupDirectoryName = groupDirectoryName;
         try {
             groupSchemaName = dirService.getDirectorySchema(groupDirectoryName);
@@ -181,24 +175,12 @@ public class UserManagerImpl implements UserManager {
         return groupDirectoryName;
     }
 
-    public void setGroupMembersField(String groupMembersField) {
-        this.groupMembersField = groupMembersField;
-    }
-
     public String getGroupMembersField() {
         return groupMembersField;
     }
 
-    public void setGroupSubGroupsField(String groupSubGroupsField) {
-        this.groupSubGroupsField = groupSubGroupsField;
-    }
-
     public String getGroupSubGroupsField() {
         return groupSubGroupsField;
-    }
-
-    public void setGroupParentGroupsField(String groupParentGroupsField) {
-        this.groupParentGroupsField = groupParentGroupsField;
     }
 
     public String getGroupParentGroupsField() {
@@ -209,36 +191,16 @@ public class UserManagerImpl implements UserManager {
         return userListingMode;
     }
 
-    public void setUserListingMode(String userListingMode) {
-        this.userListingMode = userListingMode;
-    }
-
     public String getGroupListingMode() {
         return groupListingMode;
-    }
-
-    public void setGroupListingMode(String groupListingMode) {
-        this.groupListingMode = groupListingMode;
     }
 
     public String getDefaultGroup() {
         return defaultGroup;
     }
 
-    public void setDefaultGroup(String defaultGroup) {
-        this.defaultGroup = defaultGroup;
-    }
-
     public Pattern getUserPasswordPattern() {
         return userPasswordPattern;
-    }
-
-    public void setUserPasswordPattern(Pattern userPasswordPattern) {
-        this.userPasswordPattern = userPasswordPattern;
-    }
-
-    public void setAnonymousUser(VirtualUser anonymousUser) {
-        this.anonymousUser = anonymousUser;
     }
 
     public String getAnonymousUserId() {
@@ -998,19 +960,8 @@ public class UserManagerImpl implements UserManager {
         }
     }
 
-    public void setRootLogin(String defaultRootLogin) {
-        this.defaultRootLogin = defaultRootLogin;
-    }
-
-    public void setUserSortField(String sortField) {
-        userSortField = sortField;
-    }
-
     public String getUserSortField() {
         return userSortField;
-    }
-
-    public void setGroupSortField(String sortField) {
     }
 
     /**
