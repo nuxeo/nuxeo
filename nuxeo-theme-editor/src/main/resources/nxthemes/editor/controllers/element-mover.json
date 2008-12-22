@@ -20,5 +20,6 @@
      "zoomto": {
        "duration": 200
      }
-   }
+   },
+   "frame": true
  }

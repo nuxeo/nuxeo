@@ -1237,3 +1237,14 @@ option.locked {
 .nxthemesAddSection:hover div {
   background-image: url(${basePath}/skin/nxthemes-editor/img/add-hover.png);
 }
+
+div.nxthemesSelectorVertical {
+  background: transparent url(${basePath}/skin/nxthemes-editor/img/select-v.png) repeat-y;
+  width: 1px;
+}
+
+div.nxthemesSelectorHorizontal {
+  background: transparent url(${basePath}/skin/nxthemes-editor/img/select-h.png) repeat-x;
+  height: 1px;
+}
+

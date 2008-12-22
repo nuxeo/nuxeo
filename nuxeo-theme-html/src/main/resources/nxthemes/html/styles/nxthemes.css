@@ -30,3 +30,16 @@ div.nxthemesRegionNotSet {
   border-style: solid;
   border-color: #333;
 }
+
+div.nxthemesSelectorVertical {
+  background-color: #ff0;
+  width: 1px;
+  position: absolute;
+}
+
+div.nxthemesSelectorHorizontal {
+  background-color: #ff0;
+  height: 1px;
+  position: absolute;
+}
+

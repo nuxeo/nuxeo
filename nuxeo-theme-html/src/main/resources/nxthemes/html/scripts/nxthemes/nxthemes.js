@@ -686,6 +686,37 @@ Object.extend(NXThemes.Canvas, {
     if (script) {
       $(script).remove();
     }
+  },
+
+  createFrameAround: function(element) {
+    var frame = $("nxthemesSelector");
+    if (frame == null) {
+      frame = this.createNode({tag: 'div', attributes: {id: 'nxthemesSelector'}});
+    }
+    var dim = $(element).getDimensions();
+    var position = Position.cumulativeOffset(element);
+    var zIndex = parseInt(element.getStyle('z-index') || 0) +1;
+    var top = position[1];
+    var left = position[0];
+
+    var borders = [];
+    borders[0] = this.createNode({tag: 'div',
+      classes: ['nxthemesSelectorHorizontal'],
+      style: {width: dim.width + 'px', top: top + 'px', left: left + 'px'} });
+    borders[1] = this.createNode({tag: 'div',
+      classes: ['nxthemesSelectorHorizontal'],
+      style: {width: dim.width +'px', top: top + dim.height - 1 + 'px', left: left + 'px'} });
+    borders[2] = this.createNode({tag: 'div',
+      classes: ['nxthemesSelectorVertical'],
+      style: {height: dim.height + 'px', top: top + 'px', left: left + 'px'} });
+    borders[3] = this.createNode({tag: 'div',
+      classes: ['nxthemesSelectorVertical'],
+      style: {height: dim.height + 'px', top: top + 'px', left: left + dim.width - 1 + 'px'}});
+    borders.each(function(b) {
+      b.setStyle({zIndex: zIndex});
+      frame.appendChild(b)
+    });
+    return frame;
   }
 
 });
@@ -719,7 +750,10 @@ Element.addMethods({
 
   getBackgroundColor: function(element) {
     var regExp = new RegExp("^rgb\\((\\d+),(\\d+),(\\d+)\\)$");
-    var bgColor = element.getStyle('backgroundColor') || 'rgb(255,255,255)';
+    var bgColor = element.getStyle('backgroundColor');
+    if (bgColor == "transparent") {
+      return null;
+    }
     var match = regExp.exec(bgColor.replace(/\s+/g,''));
     if (!match) {
       return {r: 1, g: 1, b: 1};
