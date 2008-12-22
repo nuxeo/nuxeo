@@ -4,13 +4,10 @@ import os, sys, pexpect, urllib, time, getopt
 
 # Use a local copy as it is not included in Debian
 import curl
+from optparse import OptionParser
 
 VERBOSE = False
-
-opts, args = getopt.getopt(sys.argv[1:], "v")
-for k, v in opts:
-    if k == '-v':
-        VERBOSE = True
+USAGE = """%prog [options]"""
 
 # Some utility methods
 
@@ -40,6 +37,13 @@ def fileExists(path):
        return True
    except:
        return False
+
+def getZipFileFrom(path):
+    """Return a zip file in the path or raise."""
+    files = os.listdir(path)
+    zipfiles = [f for f in files if f.endswith('.zip')]
+    assert zipfiles, "No zip file found in %s." % path
+    return zipfiles[0]
 
 def consoleTest(p):
     print "Running basic console tests"
@@ -80,11 +84,11 @@ def testCore():
 
     clean()
     mvn("install package -P core")
-    assert fileExists("nuxeo-distribution-server/target/nuxeo-app.zip")
+    zipfile = getZipFileFrom('nuxeo-distribution-server/target/')
 
     os.mkdir("test")
     os.chdir("test")
-    system("unzip -q ../nuxeo-distribution-server/target/nuxeo-app.zip")
+    system("unzip -q ../nuxeo-distribution-server/target/" + zipfile)
 
     print "Starting server, and running short tests"
     flush()
@@ -100,11 +104,11 @@ def testShell():
 
     clean()
     mvn("install package -P nxshell")
-    assert fileExists("nuxeo-distribution-shell/target/nuxeo-app.zip")
+    zipfile = getZipFileFrom("nuxeo-distribution-shell/target/")
 
     os.mkdir("test")
     os.chdir("test")
-    system("unzip -q ../nuxeo-distribution-shell/target/nuxeo-app.zip")
+    system("unzip -q ../nuxeo-distribution-shell/target/" + zipfile)
     os.chdir("nxshell")
 
     p = pexpect.spawn("sh nxclient.sh", timeout=120)
@@ -122,11 +126,11 @@ def testJetty():
 
     clean()
     mvn("install package -P jetty")
-    assert fileExists("nuxeo-distribution-jetty/target/nuxeo-app.zip")
+    zipfile = getZipFileFrom("nuxeo-distribution-jetty/target/")
 
     os.mkdir("test")
     os.chdir("test")
-    system("unzip -q ../nuxeo-distribution-jetty/target/nuxeo-app.zip")
+    system("unzip -q ../nuxeo-distribution-jetty/target/" + zipfile)
     os.chdir("nxserver")
 
     p = pexpect.spawn("sh nxserver.sh -console", timeout=120)
@@ -167,11 +171,11 @@ def testGF3():
 
     clean()
     mvn("install package -P gf3")
-    assert fileExists("nuxeo-distribution-gf3/target/nuxeo-app.zip")
+    zipfile = getZipFileFrom("nuxeo-distribution-gf3/target/")
 
     os.mkdir("test")
     os.chdir("test")
-    system("unzip -q ../nuxeo-distribution-gf3/target/nuxeo-app.zip")
+    system("unzip -q ../nuxeo-distribution-gf3/target/" + zipfile)
     os.chdir("nxserver")
 
     p = pexpect.spawn("sh nxserver.sh -console", timeout=120)
@@ -205,11 +209,26 @@ def testGF3():
     p.close(force=True)
     os.chdir("../..")
 
-#
 
-testCore()
-testShell()
-testJetty()
-testGF3()
-print "The end"
-flush()
+
+def main(argv):
+    parser = OptionParser(USAGE)
+    parser.add_option("-v", "--verbose", action="store_true",
+                      help="Verbose output", default=False)
+    parser.add_option("-P", "--profile", type="string",
+                      help="Test mvn profile.", default=None)
+    options, args = parser.parse_args(argv)
+    if options.verbose:
+        VERBOSE = True
+    if options.profile:
+        method_name = 'test' + options.profile.capitalize()
+        if globals().has_key(method_name):
+            ret = globals()[method_name]()
+        else:
+            print "Profile %s(%s) not found." % (options.profile,
+                                                method_name)
+
+    flush()
+
+if __name__ == '__main__':
+    main(sys.argv)
