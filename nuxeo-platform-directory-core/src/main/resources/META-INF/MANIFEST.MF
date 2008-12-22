@@ -14,4 +14,3 @@ Nuxeo-Component: OSGI-INF/DirectoryService.xml,
  OSGI-INF/directory-ui-framework.xml
 Require-Bundle: org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.directory.api
-Bundle-Activator: org.nuxeo.ecm.directory.DirectoryActivator

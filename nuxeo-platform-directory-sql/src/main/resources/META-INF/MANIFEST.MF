@@ -4,7 +4,6 @@ Bundle-Name: Nuxeo ECM SQL Directory
 Bundle-SymbolicName: org.nuxeo.ecm.directory.sql;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Localization: bundle
-Bundle-Activator: org.nuxeo.ecm.directory.sql.SQLDirectoryActivator
 Bundle-ClassPath: .
 Export-Package: org.nuxeo.ecm.directory.sql
 Eclipse-LazyStart: true
