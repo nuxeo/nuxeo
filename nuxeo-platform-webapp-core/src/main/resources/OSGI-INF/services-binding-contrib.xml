@@ -18,8 +18,7 @@
 		<!-- service class="org.nuxeo.ecm.platform.versioning.api.VersioningManager" jndiName="%VersioningManagerBean" /-->
 
 		<!-- service class="org.nuxeo.ecm.platform.interfaces.ejb.ECContentRoot" jndiName="%ECContentRootBean" />
-		<service class="org.nuxeo.ecm.platform.interfaces.ejb.ECDomain" jndiName="%ECDomainBean" />
-		<service class="org.nuxeo.ecm.platform.interfaces.ejb.ECServer" jndiName="%ECServerBean" / -->
+		<service class="org.nuxeo.ecm.platform.interfaces.ejb.ECDomain" jndiName="%ECDomainBean" / -->
     </server>
 
   </extension>
