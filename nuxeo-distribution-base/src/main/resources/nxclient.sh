@@ -73,8 +73,11 @@ if [ "x$1" = "x-debug" ] ; then
     JAVA_OPTS="$JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=127.0.0.1:8788,server=y,suspend=y"
 fi 
 
-java $JAVA_OPTS -jar nuxeo-runtime-launcher-1.5-SNAPSHOT.jar \
-    bundles/nuxeo-runtime-osgi-1.5-SNAPSHOT.jar/org.nuxeo.osgi.application.Main \
+NXC_VERSION=`ls nuxeo-runtime-launcher-*|cut -d"-" -f4- `
+NXP_VERSION=`ls bundles/nuxeo-shell-commands-base-* |cut -d"-" -f5-`
+
+java $JAVA_OPTS -jar nuxeo-runtime-launcher-${NXC_VERSION} \
+    bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
     bundles/.:lib/.:config -bundles:\
-    -bundles=bundles/nuxeo-shell-commands-base.jar@3\
+    -bundles=bundles/nuxeo-shell-commands-base-${NXP_VERSION}@3\
     -home . -console "$@"
