@@ -15,6 +15,7 @@
 
   <properties>
     <application.name>${project.artifactId}-${project.version}</application.name>
+    <nuxeo.webengine.version>${project.version}</nuxeo.webengine.version>
   </properties>
 
   <profiles>
