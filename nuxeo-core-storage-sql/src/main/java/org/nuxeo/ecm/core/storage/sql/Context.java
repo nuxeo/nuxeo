@@ -18,6 +18,8 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -121,6 +123,11 @@ public class Context {
         deletedInvalidations = new HashSet<Serializable>();
 
         isCollection = model.isCollectionFragment(tableName);
+    }
+
+    @Override
+    public String toString() {
+        return "Context(" + tableName + ')';
     }
 
     public String getTableName() {
@@ -284,6 +291,52 @@ public class Context {
     }
 
     /**
+     * Finds the documents having dirty text or dirty binaries that have to be
+     * reindexed as fulltext.
+     *
+     * @param dirtyStrings set of ids that will be modified
+     * @param dirtyBinaries set of ids that will be modified
+     * @throws StorageException
+     */
+    public void findDirtyDocuments(Set<Serializable> dirtyStrings,
+            Set<Serializable> dirtyBinaries) throws StorageException {
+        for (Fragment fragment : modified.values()) {
+            Serializable docId = null;
+            switch (fragment.getState()) {
+            case CREATED:
+                docId = persistenceContext.getContainingDocument(fragment.getId());
+                dirtyStrings.add(docId);
+                dirtyBinaries.add(docId);
+                break;
+            case MODIFIED:
+                Collection<String> dirty;
+                if (isCollection) {
+                    dirty = Collections.singleton(null);
+                } else {
+                    dirty = ((SimpleFragment) fragment).getDirty();
+                }
+                for (String key : dirty) {
+                    PropertyType type = model.getFulltextFieldType(tableName,
+                            key);
+                    if (type == null) {
+                        continue;
+                    }
+                    if (docId == null) {
+                        docId = persistenceContext.getContainingDocument(fragment.getId());
+                    }
+                    if (type == PropertyType.STRING) {
+                        dirtyStrings.add(docId);
+                    } else if (type == PropertyType.BINARY) {
+                        dirtyBinaries.add(docId);
+                    }
+                }
+                break;
+            default:
+            }
+        }
+    }
+
+    /**
      * Saves all the created, modified or deleted rows, except for the created
      * main rows which have already been done.
      *
@@ -342,16 +395,6 @@ public class Context {
             }
         }
         modified.clear();
-    }
-
-    /**
-     * Marks the enclosing document as modified. Called when a fragment is
-     * modified.
-     *
-     * @param id the id
-     */
-    protected void markModified(Serializable id) {
-        persistenceContext.markModified(id);
     }
 
     /**

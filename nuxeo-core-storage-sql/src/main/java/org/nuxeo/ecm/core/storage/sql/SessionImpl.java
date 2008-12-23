@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.security.AccessControlException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,10 +28,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-import java.util.Map.Entry;
-import java.security.AccessControlException;
 
 import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionMetaData;
@@ -49,7 +46,6 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
 
 /**
  * The session is the main high level access point to data from the underlying
@@ -166,68 +162,9 @@ public class SessionImpl implements Session {
         }
     }
 
-    /**
-     * Does pre-save operations (update fulltext).
-     */
-    protected void preSave() throws StorageException {
-        Set<Serializable> ids = context.getModifiedDocumentIds();
-        if (ids.isEmpty()) {
-            return;
-        }
-        log.debug("Computing simple fulltext for modified documents");
-        for (Serializable id : ids) {
-
-            Queue<Node> queue = new LinkedList<Node>();
-            Node document = getNodeById(id);
-            if (document == null) {
-                // cannot happen
-                continue;
-            }
-            queue.add(document);
-
-            // collect strings on all the document's nodes recursively
-            List<String> strings = new LinkedList<String>();
-            while (!queue.isEmpty()) {
-                Node node = queue.remove();
-                Map<String, PropertyInfo> infos = model.getPropertyInfos(node.getPrimaryType());
-                if (infos != null) {
-                    for (Entry<String, PropertyInfo> entry : infos.entrySet()) {
-                        PropertyInfo info = entry.getValue();
-                        if (!info.fulltext) {
-                            continue;
-                        }
-                        String name = entry.getKey();
-                        if (info.propertyType == PropertyType.STRING) {
-                            String v = node.getSimpleProperty(name).getString();
-                            if (v != null) {
-                                strings.add(v);
-                            }
-                        } else if (info.propertyType == PropertyType.ARRAY_STRING) {
-                            for (Serializable v : node.getCollectionProperty(
-                                    name).getValue()) {
-                                if (v != null) {
-                                    strings.add((String) v);
-                                }
-                            }
-                        }
-                    }
-                }
-                // recurse into complex properties
-                queue.addAll(getChildren(node, null, true));
-            }
-
-            // set the computed full text
-            // on INSERT/UPDATE a trigger will change the actual fulltext
-            document.setSingleProperty(model.FULLTEXT_SIMPLETEXT_PROP,
-                    StringUtils.join(strings, " "));
-        }
-        context.clearModifiedDocumentIds();
-        log.debug("End of fulltext");
-    }
-
     public void save() throws StorageException {
         checkLive();
-        preSave();
+        context.updateFulltext(this);
         context.save();
         if (!transactionalSession.isInTransaction()) {
             context.notifyInvalidations();

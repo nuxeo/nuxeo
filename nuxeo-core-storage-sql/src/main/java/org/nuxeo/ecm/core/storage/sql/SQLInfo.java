@@ -316,7 +316,7 @@ public class SQLInfo {
 
     // ----- update -----
 
-    public SQLInfoSelect getUpdateById(String tableName, List<String> keys) {
+    public SQLInfoSelect getUpdateById(String tableName, Collection<String> keys) {
         Table table = database.getTable(tableName);
         List<String> values = new LinkedList<String>();
         List<Column> columns = new LinkedList<Column>();
