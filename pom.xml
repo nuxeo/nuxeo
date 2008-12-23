@@ -59,6 +59,7 @@
     <module>nuxeo-platform-filemanager-core-listener</module>
     <module>nuxeo-platform-filemanager-api</module>
     <module>nuxeo-platform-filemanager-facade</module>
+    <module>nuxeo-platform-lang</module>
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-login-jboss</module>
     <module>nuxeo-platform-auth-web-jboss</module>
@@ -432,6 +433,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-login</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-lang</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>
