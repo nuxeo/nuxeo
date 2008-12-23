@@ -56,6 +56,8 @@
     <jboss.version>4.0.4.GA</jboss.version>
     <jboss.ejb.version>3.0-RC8</jboss.ejb.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <apacheds.version>1.5.1</apacheds.version>
+    <apachedshared.version>0.9.7</apachedshared.version>
   </properties>
 
   <dependencyManagement>
@@ -429,7 +431,7 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>net.sf</groupId>
+        <groupId>net.sf.ehcache</groupId>
         <artifactId>ehcache</artifactId>
         <version>1.2.3</version>
         <scope>provided</scope>
@@ -447,6 +449,12 @@
         <version>0.9</version>
         <scope>provided</scope>
       </dependency>
+      <dependency>
+        <groupId>net.sf.opencsv</groupId>
+        <artifactId>opencsv</artifactId>
+        <version>1.7</version>
+        <scope>provided</scope>
+      </dependency> 
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>osgi-core</artifactId>
@@ -487,13 +495,43 @@
       <dependency>
         <groupId>org.apache.directory.shared</groupId>
         <artifactId>shared-asn1</artifactId>
-        <version>0.9.7</version>
+        <version>${apachedshared.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.shared</groupId>
         <artifactId>shared-ldap-constants</artifactId>
-        <version>0.9.7</version>
+        <version>${apachedshared.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.shared</groupId>
+        <artifactId>shared-ldap</artifactId>
+        <version>${apachedshared.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-protocol-shared</artifactId>
+        <version>${apacheds.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-core</artifactId>
+        <version>${apacheds.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-core-shared</artifactId>
+        <version>${apacheds.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-bootstrap-partition</artifactId>
+        <version>${apacheds.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -610,6 +648,12 @@
         <version>1.0.1</version>
         <scope>provided</scope>
       </dependency>
+      
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-jbossws-wrapper</artifactId>
+        <version>4.0.5.GA</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -639,7 +683,10 @@
 
   <build>
     <extensions>
-      <!-- This extension is used for the artifacts upload to the repository with the deploy plugin -->
+      <!--
+        This extension is used for the artifacts upload to the repository with the
+        deploy plugin
+      -->
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-webdav</artifactId>
@@ -734,7 +781,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jboss-packaging-maven-plugin</artifactId>
-	<extensions>true</extensions>
+      	<extensions>true</extensions>
       </plugin>
     </plugins>
     <pluginManagement>
