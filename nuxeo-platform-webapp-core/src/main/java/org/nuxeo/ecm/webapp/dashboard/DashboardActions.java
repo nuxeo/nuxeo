@@ -116,7 +116,6 @@ public interface DashboardActions extends Serializable, ResultsProviderFarm {
      * Navigates to the a given tab.
      *
      * @param dm document model
-     * @param tabId the tab id.
      * @return a navigation id.
      */
     String navigateToDocumentTab(DocumentModel dm) throws ClientException;

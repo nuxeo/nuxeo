@@ -60,7 +60,7 @@ public class SecretWidgetTypeHandler extends AbstractWidgetTypeHandler {
             String msgId = helper.generateMessageId(widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(msgId,
                     widgetId, null);
-            FaceletHandler[] handlers = new FaceletHandler[]{ input, message };
+            FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         }
         // do not render anything for other modes

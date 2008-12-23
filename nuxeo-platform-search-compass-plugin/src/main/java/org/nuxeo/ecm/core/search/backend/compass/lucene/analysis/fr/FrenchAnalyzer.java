@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.core.search.backend.compass.lucene.analysis.fr;
 
 /**
@@ -39,6 +58,7 @@ import org.apache.lucene.analysis.WordlistLoader;
  * @author Patrick Talbot (based on Gerhard Schwarz's work for German)
  * @version $Id: FrenchAnalyzer.java 178832 2005-05-28 02:00:49 +0300 (Sat, 28 May 2005) dnaber $
  */
+@SuppressWarnings({"ALL"})
 public final class FrenchAnalyzer extends Analyzer {
 
   /**
@@ -152,4 +172,3 @@ public final class FrenchAnalyzer extends Analyzer {
     return result;
   }
 }
-

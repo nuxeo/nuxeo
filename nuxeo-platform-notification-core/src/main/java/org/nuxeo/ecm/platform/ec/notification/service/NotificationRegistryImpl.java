@@ -34,7 +34,6 @@ import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
- *
  */
 public class NotificationRegistryImpl implements NotificationRegistry {
 
@@ -82,9 +81,6 @@ public class NotificationRegistryImpl implements NotificationRegistry {
 
     /**
      * Gets the list of possible notifications for an event.
-     *
-     * @param eventId
-     * @return
      */
     public List<Notification> getNotificationsForEvent(String eventId) {
         if (notificationRegistry.get(eventId) == null) {
@@ -98,8 +94,7 @@ public class NotificationRegistryImpl implements NotificationRegistry {
         return notificationList;
     }
 
-    public Map<String, List<Notification>> getNotificationRegistry()
-    {
+    public Map<String, List<Notification>> getNotificationRegistry() {
         return notificationRegistry;
     }
 

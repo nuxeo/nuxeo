@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.io.client;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
@@ -49,17 +50,19 @@ import org.nuxeo.ecm.webapp.clipboard.ClipboardActions;
 
 @Name("importExportAction")
 @Scope(ScopeType.EVENT)
-public class ImportExportActionBean {
+public class ImportExportActionBean implements Serializable {
 
     private static final String RESTLET_PREFIX = "restAPI";
 
     private static final Log log = LogFactory.getLog(ImportExportActionBean.class);
 
-    @In(create = true)
-    protected NavigationContext navigationContext;
+    private static final long serialVersionUID = 1770386525984671333L;
 
     @In(create = true)
-    protected ClipboardActions clipboardActions;
+    protected transient NavigationContext navigationContext;
+
+    @In(create = true)
+    protected transient ClipboardActions clipboardActions;
 
     private static StringBuffer getRestletBaseURL(DocumentModel doc) {
         StringBuffer urlb = new StringBuffer();
@@ -104,7 +107,6 @@ public class ImportExportActionBean {
 
     private static void handleRedirect(HttpServletResponse response, String url)
             throws IOException {
-
         response.resetBuffer();
         response.sendRedirect(url);
         response.flushBuffer();
@@ -169,7 +171,6 @@ public class ImportExportActionBean {
         DocumentReader reader = null;
         DocumentWriter writer = null;
         try {
-
             reader = new DocumentModelListReader(docList);
 
             response.reset();
@@ -181,18 +182,17 @@ public class ImportExportActionBean {
 
             pipe.run();
 
-            String filename="export.zip";
+            String filename = "export.zip";
             response.setHeader("Content-Disposition",
                     "attachment; filename=\"" + filename + "\";");
-            response.setHeader("Content-Type","application/zip");
+            response.setHeader("Content-Type", "application/zip");
             FacesContext.getCurrentInstance().responseComplete();
-
         } catch (ClientException e) {
-            log.error("Error durinh XML export " + e.getMessage());
+            log.error("Error during XML export " + e.getMessage());
         } catch (IOException e) {
-            log.error("Error durinh XML export " + e.getMessage());
+            log.error("Error during XML export " + e.getMessage());
         } catch (Exception e) {
-            log.error("Error durinh XML export " + e.getMessage());
+            log.error("Error during XML export " + e.getMessage());
         } finally {
             if (reader != null) {
                 reader.close();

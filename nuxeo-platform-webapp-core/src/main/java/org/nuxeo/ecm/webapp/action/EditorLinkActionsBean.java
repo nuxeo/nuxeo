@@ -43,16 +43,13 @@ import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.core.search.api.client.search.results.document.SearchPageProvider;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.webapp.base.InputController;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  *
  */
-//@Stateful
 @Name("editorLinkActions")
-//@SerializedConcurrentAccess
 public class EditorLinkActionsBean extends InputController implements EditorLinkActions {
 
     private static final Log log = LogFactory.getLog(EditorLinkActionsBean.class);
@@ -94,7 +91,7 @@ public class EditorLinkActionsBean extends InputController implements EditorLink
         // search keywords
         final String query = String.format("SELECT * FROM Document WHERE %s",
                 StringUtils.join(constraints.toArray(), " AND "));
-        log.info("Query: " + query);
+        log.debug("Query: " + query);
 
         final SQLQuery nxqlQuery = SQLQueryParser.parse(query);
         final ComposedNXQuery composedQuery = new ComposedNXQueryImpl(nxqlQuery);
@@ -122,7 +119,7 @@ public class EditorLinkActionsBean extends InputController implements EditorLink
                             "label.search.service.wrong.query"));
             log.error("QueryParseException in search popup : " + e.getMessage());
         } catch (SearchException e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
         return "test_popup";
     }

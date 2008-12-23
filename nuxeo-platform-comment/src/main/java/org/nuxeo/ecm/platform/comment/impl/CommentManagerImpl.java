@@ -32,6 +32,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -76,15 +77,12 @@ public class CommentManagerImpl implements CommentManager {
     private static final Log log = LogFactory.getLog(CommentManagerImpl.class);
 
     final SimpleDateFormat timeFormat = new SimpleDateFormat("dd-HHmmss.S");
-
     final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
 
     final CommentServiceConfig config;
-
     final CommentConverter commentConverter;
 
     private CoreSession session;
-
     private String currentRepositoryName;
 
     public CommentManagerImpl(CommentServiceConfig config) {
@@ -118,7 +116,6 @@ public class CommentManagerImpl implements CommentManager {
         return Framework.getService(RelationManager.class);
     }
 
-    @SuppressWarnings("unchecked")
     public List<DocumentModel> getComments(DocumentModel docModel)
             throws ClientException {
         RelationManager relationManager;
@@ -210,8 +207,8 @@ public class CommentManagerImpl implements CommentManager {
             DocumentModel comment) throws ClientException {
         String author = updateAuthor(docModel, comment);
         DocumentModel createdComment;
-        try {
 
+        try {
             createdComment = createCommentDocModel(docModel, comment);
 
             RelationManager relationManager = getRelationManager();
@@ -236,7 +233,6 @@ public class CommentManagerImpl implements CommentManager {
             statementList.add(stmt);
             relationManager.add(config.graphName, statementList);
         } catch (Exception e) {
-            log.error("failed to create comment", e);
             throw new ClientException("failed to create comment", e);
         }
 
@@ -321,7 +317,9 @@ public class CommentManagerImpl implements CommentManager {
                 principal, CommentConstants.EVENT_COMMENT_CATEGORY, eventType);
 
         DocumentMessage msg = new DocumentMessageImpl(docModel, event);
-        producer.produce(msg);
+        if (producer != null) { // do not send if JMS not present
+            producer.produce(msg);
+        }
 
         // send also a synchronous Seam message so the CommentManagerActionBean
         // can rebuild its list
@@ -339,7 +337,11 @@ public class CommentManagerImpl implements CommentManager {
         acl.setACEs(new ACE[] { grantAddChildren, grantRemoveChildren,
                 grantRemove });
         acp.addACL(acl);
-        dm.setACP(acp, true);
+        try {
+            dm.setACP(acp, true);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     private static void setCommentPermissions(DocumentModel dm) {
@@ -349,7 +351,11 @@ public class CommentManagerImpl implements CommentManager {
         ACL acl = new ACLImpl();
         acl.setACEs(new ACE[] { grantRead,grantRemove });
         acp.addACL(acl);
-        dm.setACP(acp, true);
+        try {
+            dm.setACP(acp, true);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     private String[] getCommentPathList(DocumentModel comment) {
@@ -364,7 +370,6 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     /**
-     *
      * @deprecated if the caller is remote, we cannot obtain the session
      */
     @Deprecated
@@ -390,8 +395,13 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     private static Date getCommentTimeStamp(DocumentModel comment) {
-        Calendar creationDate = (Calendar) comment.getProperty("dublincore",
-                "created");
+        Calendar creationDate;
+        try {
+            creationDate = (Calendar) comment.getProperty("dublincore",
+                    "created");
+        } catch (ClientException e) {
+            creationDate = null;
+        }
         if (creationDate == null) {
             creationDate = Calendar.getInstance();
         }

@@ -29,6 +29,7 @@ package org.nuxeo.ecm.platform.versioning.api;
  *             erase me when my time comes.
  */
 // TODO : will replace defs from VersioningAction
+// Not used -> remove in 5.2
 @Deprecated
 public enum VersioningActionTypes {
 

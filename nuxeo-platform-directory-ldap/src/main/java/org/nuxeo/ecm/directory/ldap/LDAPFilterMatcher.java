@@ -40,16 +40,15 @@ import org.nuxeo.ecm.directory.DirectoryException;
 /**
  * Helper class to parse and evaluate if a LDAP filter expression matches a
  * fetched LDAP entry.
- *
+ * <p>
  * This is done by recursively evaluating the abstract syntax tree of the
  * expression as parsed by an apache directory shared method.
  *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
- *
  */
 public class LDAPFilterMatcher {
 
-    private FilterParser parser;
+    private final FilterParser parser;
 
     // lazily initialized normalizer for the substring match
     private Normalizer normalizer;
@@ -184,7 +183,7 @@ public class LDAPFilterMatcher {
         if (normalizer == null) {
             normalizer = new DefaultStringNormalizer();
         }
-        return (Normalizer) normalizer;
+        return normalizer;
     }
 
     /**

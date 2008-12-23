@@ -15,16 +15,6 @@
 
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.List;
-
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
-import org.nuxeo.ecm.platform.types.TypeManager;
 
 /**
  * FileManagerServiceCommon plugin default interface.
@@ -34,79 +24,10 @@ import org.nuxeo.ecm.platform.types.TypeManager;
  *
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
  *         Kalogeropoulos</a>
+ *
+ * @deprecated use {@link FileImporter} instead
  */
-public interface Plugin extends Serializable {
-
-    // XXX: OG: this is a really badly named class, everything is a Plugin in
-    // Nuxeo EP, this should be name FileImporter instead
-    // XXX: OG: why make plugin serializable?
-
-    /**
-     * Gets the plugin name.
-     *
-     * @return a string holding the plugin name
-     */
-    String getName();
-
-    /**
-     * Gets filters.
-     * <p>
-     * The filters are all the mime/type this plugin can deal with.
-     *
-     * @return list of string holding each filters.
-     */
-    List<String> getFilters();
-
-    /**
-     * Sets plugin name.
-     *
-     * @param name a string holding the name
-     */
-    void setName(String name);
-
-    /**
-     * Sets filters.
-     * <p>
-     * The filters are all the mime/types this plugin can deal with.
-     *
-     * @param filters a list of strings representing each filter
-     */
-    void setFilters(List<String> filters);
-
-    /**
-     * Embed a reference to the holding FileManagerService instance to be able
-     * to reuse generic file creation utility methods in specific plugin
-     * implementations
-     *
-     * @param fileManagerService instance where the Plugin is registered as a
-     *            contribution
-     */
-    void setFileManagerService(FileManagerService fileManagerService);
-
-    /**
-     * Tests whether plugin is suitable for the given mimetype.
-     *
-     * @param mimeType the mimetype to test
-     */
-    boolean matches(String mimeType);
-
-    /**
-     * Creates the document.
-     *
-     * @param documentManager the manager used to create the Document
-     * @param content the content of the File
-     * @param path the path were to create the document
-     * @param overwrite a boolean deciding whether to create or update if we
-     *            find a document with the same fileName
-     * @param filename the filename of the File
-     */
-    DocumentModel create(CoreSession documentManager, Blob content,
-            String path, boolean overwrite, String filename,
-            TypeManager typeService) throws ClientException, IOException;
-
-
-    boolean isEnabled();
-
-    void setEnabled(boolean enabled);
+@Deprecated
+public interface Plugin extends FileImporter {
 
 }

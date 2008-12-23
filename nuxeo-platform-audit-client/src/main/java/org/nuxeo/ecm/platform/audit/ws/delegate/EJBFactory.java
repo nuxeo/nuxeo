@@ -45,7 +45,7 @@ public class EJBFactory implements Serializable {
 
     public WSAudit getWSAuditRemote() throws NamingException {
         String beanRemoteLocation = JNDILocations.nxauditWsAuditRemoteLocation;
-        log.debug("Trying to get the remote EJB with JNDI location :"
+        if (log.isDebugEnabled()) log.debug("Trying to get the remote EJB with JNDI location :"
                 + beanRemoteLocation);
         InitialContext ctx = getInitialContext();
         return (WSAudit) ctx.lookup(beanRemoteLocation);

@@ -26,8 +26,8 @@ import org.nuxeo.ecm.platform.workflow.jbpm.handlers.api.client.AbstractWorkflow
 import org.nuxeo.ecm.platform.workflow.jbpm.util.IDConverter;
 
 /**
- * This abc overrides the process to document ref binding for the post
- * moderation workflow.
+ * This abstract base class overrides the process to document ref binding for
+ * the post moderation workflow.
  * <p>
  * Here, we'd like to bind the process not with the post itself but with the
  * thread since the post is right now an hidden object (i.e : comment). Like
@@ -37,7 +37,6 @@ import org.nuxeo.ecm.platform.workflow.jbpm.util.IDConverter;
  * itself.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public abstract class AbstractForumWorkflowDocumentHandler extends
         AbstractWorkflowDocumentActionHandler {
@@ -72,7 +71,7 @@ public abstract class AbstractForumWorkflowDocumentHandler extends
         }
     }
 
-    protected DocumentRef getThreadRef(ExecutionContext ec) {
+    protected static DocumentRef getThreadRef(ExecutionContext ec) {
         return (DocumentRef) ec.getVariable(ForumConstants.THREAD_REF);
     }
 

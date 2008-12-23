@@ -28,20 +28,21 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Very simple cache system to cache directory entry lookups (not search
- * queries)
- *
+ * queries).
+ * <p>
  * Beware that this cache is not transaction aware (which is not a problem for
  * LDAP directories anyway).
- *
+ * <p>
  * If we want to implement a smarter caching strategy we might prefer to base it
  * on jboss-cache instead of reinventing the wheel.
  *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
- *
  */
 public class DirectoryCache {
 
     protected final Map<String, CachedEntry> entryStore = new HashMap<String, CachedEntry>();
+
+    protected final Map<String, CachedEntry> entryStoreWithoutReferences = new HashMap<String, CachedEntry>();
 
     // time out in seconds an entry is kept in cache, entryCacheTimeout <= 0
     // means entries are kept in cache till manual invalidation
@@ -57,23 +58,48 @@ public class DirectoryCache {
 
     public DocumentModel getEntry(String entryId, EntrySource source)
             throws DirectoryException {
+        return getEntry(entryId, source, true);
+    }
+
+    public DocumentModel getEntry(String entryId, EntrySource source,
+            boolean fetchReferences) throws DirectoryException {
         if (!isCacheEnabled()) {
-            return source.getEntryFromSource(entryId);
+            return source.getEntryFromSource(entryId, fetchReferences);
         }
-        CachedEntry entry = entryStore.get(entryId);
-        DocumentModel dm = null;
-        if (entry == null || entry.isExpired()) {
-            // fetch the entry from the backend and cache it for later reuse
-            dm = source.getEntryFromSource(entryId);
-            synchronized (this) {
-                // check that the cache limit has not yet been reached
-                if (maxSize > 0 && entryStore.size() >= maxSize) {
-                    entryStore.clear();
+
+        DocumentModel dm;
+        if (fetchReferences) {
+            CachedEntry entry = entryStore.get(entryId);
+            if (entry == null || entry.isExpired()) {
+                // fetch the entry from the backend and cache it for later reuse
+                dm = source.getEntryFromSource(entryId, fetchReferences);
+                synchronized (this) {
+                    // check that the cache limit has not yet been reached
+                    if (maxSize > 0 && entryStore.size() >= maxSize) {
+                        entryStore.clear();
+                    }
+                    entryStore.put(entryId, new CachedEntry(dm, timeout));
                 }
-                entryStore.put(entryId, new CachedEntry(dm, timeout));
+            } else {
+                dm = entry.getDocumentModel();
             }
         } else {
-            dm = entry.getDocumentModel();
+            CachedEntry entry = entryStoreWithoutReferences.get(entryId);
+            if (entry == null || entry.isExpired()) {
+                // fetch the entry from the backend and cache it for later reuse
+                dm = source.getEntryFromSource(entryId, fetchReferences);
+                synchronized (this) {
+                    // check that the cache limit has not yet been reached
+                    if (maxSize > 0
+                            && entryStoreWithoutReferences.size() >= maxSize) {
+                        entryStoreWithoutReferences.clear();
+                    }
+                    entryStoreWithoutReferences.put(entryId, new CachedEntry(
+                            dm, timeout));
+                }
+            } else {
+                dm = entry.getDocumentModel();
+            }
         }
         return dm;
     }
@@ -83,6 +109,7 @@ public class DirectoryCache {
             synchronized (this) {
                 for (String entryId : entryIds) {
                     entryStore.remove(entryId);
+                    entryStoreWithoutReferences.remove(entryId);
                 }
             }
         }
@@ -96,6 +123,7 @@ public class DirectoryCache {
         if (isCacheEnabled()) {
             synchronized (this) {
                 entryStore.clear();
+                entryStoreWithoutReferences.clear();
             }
         }
     }
@@ -128,4 +156,5 @@ public class DirectoryCache {
             return expirationDate.before(Calendar.getInstance());
         }
     }
+
 }

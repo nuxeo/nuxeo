@@ -22,12 +22,11 @@ package org.nuxeo.ecm.platform.ui.web.model;
 import java.util.List;
 
 /**
- * Interface for select model
- *
+ * Interface for select model.
+ * <p>
  * Add here needed methods for (multi) selection purposes.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface SelectDataModel {
 
@@ -48,4 +47,5 @@ public interface SelectDataModel {
     List<SelectDataModelRow> getRows();
 
     void setRows(List<SelectDataModelRow> rows);
+
 }

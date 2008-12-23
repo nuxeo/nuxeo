@@ -36,27 +36,28 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Util functions.
- * 
+ *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- * 
+ *
  */
 public final class Functions {
-    public static enum BytePrefix {
-        SI(1000, new String[] { "", "k", "M", "G", "T", "P", "E", "Z", "Y" },
-                new String[] { "", "kilo", "mega", "giga", "tera", "exa",
-                        "zetta", "yotta" }), IEC(1024, new String[] { "", "Ki",
-                "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi" }, new String[] { "",
-                "kibi", "mebi", "tebi", "pebi", "exbi", "zebi", "yobi" }), JEDEC(
-                1024, new String[] { "", "K", "M", "G" }, new String[] { "",
-                        "kilo", "mega", "giga" });
-        private int base;
 
-        private String[] shortSuffixes;
+    public enum BytePrefix {
 
-        private String[] longSuffixes;
+        SI(1000, new String[]{"", "k", "M", "G", "T", "P", "E", "Z", "Y"},
+                new String[]{"", "kilo", "mega", "giga", "tera", "exa", "zetta", "yotta"}),
+        IEC(1024, new String[]{"", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi"},
+                new String[]{"", "kibi", "mebi", "tebi", "pebi", "exbi", "zebi", "yobi"}),
+        JEDEC(1024, new String[]{"", "K", "M", "G"},
+                new String[]{"", "kilo", "mega", "giga"});
 
-        private BytePrefix(int base, String[] shortSuffixes,
-                String[] longSuffixes) {
+        private final int base;
+
+        private final String[] shortSuffixes;
+
+        private final String[] longSuffixes;
+
+        BytePrefix(int base, String[] shortSuffixes, String[] longSuffixes) {
             this.base = base;
             this.shortSuffixes = shortSuffixes;
             this.longSuffixes = longSuffixes;
@@ -86,13 +87,15 @@ public final class Functions {
     private static final String FULLNAMES_MAP_KEY = Functions.class.getName()
             + ".FULLNAMES_MAP";
 
-    static Map<String, String> mapOfDateLength = new HashMap<String, String>() {
+    static final Map<String, String> mapOfDateLength = new HashMap<String, String>() {
         {
             put("short", String.valueOf(DateFormat.SHORT));
             put("medium", String.valueOf(DateFormat.MEDIUM));
             put("long", String.valueOf(DateFormat.LONG));
             put("full", String.valueOf(DateFormat.FULL));
         }
+
+        private static final long serialVersionUID = 8465772256977862352L;
     };
 
     // Utility class.
@@ -140,10 +143,11 @@ public final class Functions {
 
     /**
      * Returns the full name of a user.
-     * 
+     *
      * @param username the user id, or null or empty for the current user.
      * @return the full user name.
      */
+    @SuppressWarnings("unchecked")
     public static String userFullName(String username) {
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
         // empty user name is current user
@@ -196,8 +200,7 @@ public final class Functions {
         }
     }
 
-    public static String dateFormater(String formatLength)
-            throws ClientException {
+    public static String dateFormater(String formatLength) {
 
         // A map to store temporary available date format
 
@@ -216,13 +219,12 @@ public final class Functions {
     }
 
     // method to format date in the standard short format
-    public static String basicDateFormater() throws ClientException {
+    public static String basicDateFormater() {
         return dateFormater("short");
     }
 
     // method to format date and time considering user's local
-    public static String dateAndTimeFormater(String formatLength)
-            throws ClientException {
+    public static String dateAndTimeFormater(String formatLength) {
 
         // A map to store temporary available date format
 
@@ -239,13 +241,11 @@ public final class Functions {
 
         // return the date pattern
         return format.toPattern();
-
     }
 
     // method to format date and time in the standard short format
-    public static String basicDateAndTimeFormater() throws ClientException {
+    public static String basicDateAndTimeFormater() {
         return dateAndTimeFormater("short");
-
     }
 
     public static String printFileSize(String size) {

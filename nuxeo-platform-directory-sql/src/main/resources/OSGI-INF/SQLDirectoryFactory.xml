@@ -1,18 +1,19 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory">
+
   <implementation
-    class="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"/>
+      class="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"/>
+
   <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
+
   <documentation>
     SQL-based implementation for NXDirectory
   </documentation>
 
-
   <extension target="org.nuxeo.ecm.directory.DirectoryServiceImpl"
-    point="factoryDescriptor">
+      point="factoryDescriptor">
     <factoryDescriptor
-      component="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"/>
+        component="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"/>
   </extension>
 
   <extension-point name="directories">
@@ -37,9 +38,9 @@
           </init-dependencies>
           <references>
             <tableReference field="groups" directory="groupDirectory"
-              table="user2group" sourceColumn="userId"
-              targetColumn="groupId" schema="user2group"
-              dataFile="user2group.csv" />
+                table="user2group" sourceColumn="userId"
+                targetColumn="groupId" schema="user2group"
+                dataFile="user2group.csv"/>
           </references>
 
         </directory>
@@ -97,6 +98,7 @@
       The references tag is used to define relations between
       directories. (TODO: describe the references types.)
     </documentation>
+
     <object class="org.nuxeo.ecm.directory.sql.SQLDirectoryDescriptor"/>
   </extension-point>
 

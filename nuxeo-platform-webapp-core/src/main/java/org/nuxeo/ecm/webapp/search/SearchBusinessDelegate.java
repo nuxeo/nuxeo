@@ -24,8 +24,6 @@ import static org.jboss.seam.ScopeType.SESSION;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.interceptor.Interceptors;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
@@ -39,8 +37,6 @@ import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Filter;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
-import org.nuxeo.ecm.webapp.shield.ErrorHandlingInterceptor;
 
 /**
  * This business delegate is available on session instance as a SEAM component
@@ -54,7 +50,6 @@ import org.nuxeo.ecm.webapp.shield.ErrorHandlingInterceptor;
  */
 @Name("searchDelegate")
 @Scope(SESSION)
-@Interceptors(ErrorHandlingInterceptor.class)
 public class SearchBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = 786391027463892L;
@@ -103,7 +98,7 @@ public class SearchBusinessDelegate implements Serializable {
                 throw new SearchException(cause);
             }
 
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -138,9 +133,8 @@ public class SearchBusinessDelegate implements Serializable {
                 throw new SearchException(cause);
             }
 
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
-
     }
 
     /**
@@ -174,9 +168,8 @@ public class SearchBusinessDelegate implements Serializable {
                 throw new SearchException(cause);
             }
 
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
-
     }
 
     /**
@@ -186,10 +179,10 @@ public class SearchBusinessDelegate implements Serializable {
      *
      * @throws SearchException
      *
-     * @see org.nuxeo.ecm.webapp.search.SearchActions#searchForText(java.lang.String)
+     * @see org.nuxeo.ecm.webapp.search.SearchActions#searchForText(String)
      */
     public DocumentModelList searchForText(String keywords)
-    throws ClientException, SearchException {
+            throws ClientException, SearchException {
         return searchForText(keywords, null);
     }
 
@@ -226,7 +219,7 @@ public class SearchBusinessDelegate implements Serializable {
                 throw new SearchException(cause);
             }
 
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -261,7 +254,7 @@ public class SearchBusinessDelegate implements Serializable {
                 throw new SearchException(cause);
             }
 
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -290,7 +283,7 @@ public class SearchBusinessDelegate implements Serializable {
                 throw new SearchException(cause);
             }
 
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -299,9 +292,6 @@ public class SearchBusinessDelegate implements Serializable {
      * exception.
      *
      * TODO : maybe put it in NXCommon
-     *
-     * @param t
-     * @return
      */
     private static String tryToExtractMeaningfulCause(Throwable t) {
         if (t instanceof ClientException) {
@@ -329,9 +319,6 @@ public class SearchBusinessDelegate implements Serializable {
 
     /**
      * Creates a logical path for the given DocumentModel.
-     *
-     * @param doc
-     * @return
      */
     public String getDocLocation(DocumentModel doc) {
         assert doc != null;
@@ -341,8 +328,8 @@ public class SearchBusinessDelegate implements Serializable {
             titles = documentManager.getDataModelsFieldUp(parentRef,
                     "dublincore", "title");
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // TODO: more robust exception handling?
+            log.error(e);
             return null;
         }
 
@@ -361,4 +348,5 @@ public class SearchBusinessDelegate implements Serializable {
 
         return location.toString();
     }
+
 }

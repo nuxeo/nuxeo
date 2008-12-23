@@ -23,6 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,12 +40,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -59,10 +57,10 @@ import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.api.FileManagerPermissionException;
 import org.nuxeo.ecm.platform.filemanager.service.extension.CreationContainerListProvider;
 import org.nuxeo.ecm.platform.filemanager.service.extension.CreationContainerListProviderDescriptor;
+import org.nuxeo.ecm.platform.filemanager.service.extension.FileImporter;
+import org.nuxeo.ecm.platform.filemanager.service.extension.FileImporterDescriptor;
 import org.nuxeo.ecm.platform.filemanager.service.extension.FolderImporter;
 import org.nuxeo.ecm.platform.filemanager.service.extension.FolderImporterDescriptor;
-import org.nuxeo.ecm.platform.filemanager.service.extension.Plugin;
-import org.nuxeo.ecm.platform.filemanager.service.extension.PluginExtension;
 import org.nuxeo.ecm.platform.filemanager.service.extension.UnicityExtension;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
@@ -88,13 +86,11 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.filemanager.service.FileManagerService");
 
-    public static final String DEFAULT_TYPE_NAME = "File";
-
     public static final String DEFAULT_FOLDER_TYPE_NAME = "Folder";
 
     private static final Log log = LogFactory.getLog(FileManagerService.class);
 
-    private final Map<String, Plugin> fileImporters;
+    private final Map<String, FileImporter> fileImporters;
 
     private final List<FolderImporter> folderImporters;
 
@@ -115,7 +111,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     private RepositoryManager repositoryManager;
 
     public FileManagerService() {
-        fileImporters = new HashMap<String, Plugin>();
+        fileImporters = new HashMap<String, FileImporter>();
         folderImporters = new LinkedList<FolderImporter>();
         creationContainerListProviders = new LinkedList<CreationContainerListProvider>();
     }
@@ -156,9 +152,9 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     private Blob checkMimeType(Blob blob, String fullname)
             throws ClientException {
         final String mimeType = blob.getMimeType();
-        if (mimeType != null
-                && mimeType.equals("application/octet-stream") == false)
+        if (mimeType != null && !mimeType.equals("application/octet-stream")) {
             return blob;
+        }
         String filename = FileManagerUtils.fetchFileName(fullname);
         try {
             blob = getMimeService().updateMimetype(blob, filename);
@@ -244,102 +240,16 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         // check mime type to be able to select the best importer plugin
         input = checkMimeType(input, fullName);
 
-        for (String namePlug : fileImporters.keySet()) {
-            Plugin importer = fileImporters.get(namePlug);
+        List<FileImporter> importers = new ArrayList<FileImporter>(
+                fileImporters.values());
+        Collections.sort(importers);
+        for (FileImporter importer : importers) {
             if (importer.isEnabled() && importer.matches(input.getMimeType())) {
                 return importer.create(documentManager, input, path, overwrite,
                         fullName, getTypeService());
             }
         }
-        return defaultCreate(documentManager, input, path, overwrite, fullName);
-    }
-
-    public DocumentModel defaultCreate(CoreSession documentManager, Blob input,
-            String path, boolean overwrite, String fullname, String typeName)
-            throws IOException, ClientException {
-        return defaultCreate(documentManager, input, path, overwrite, fullname,
-                typeName, true);
-    }
-
-    public DocumentModel defaultCreate(CoreSession documentManager, Blob input,
-            String path, boolean overwrite, String fullname, String typeName,
-            boolean checkAllowedSubTypes) throws IOException, ClientException {
-
-        // perform the security checks
-        PathRef containerRef = new PathRef(path);
-        if (!documentManager.hasPermission(containerRef,
-                SecurityConstants.READ_PROPERTIES)
-                || !documentManager.hasPermission(containerRef,
-                        SecurityConstants.ADD_CHILDREN)) {
-            throw new FileManagerPermissionException();
-        }
-        DocumentModel container = documentManager.getDocument(containerRef);
-
-        Type containerType = getTypeService().getType(container.getType());
-        List<String> sybTypes = Arrays.asList(containerType.getAllowedSubTypes());
-        if (checkAllowedSubTypes && !sybTypes.contains(typeName)) {
-            // cannot create document file here
-            // TODO: we should better raise a dedicated exception to be catched
-            // by the FileManageActionsBean instead of returning null
-            return null;
-        }
-
-        String filename = FileManagerUtils.fetchFileName(fullname);
-        input.setFilename(filename);
-
-        // Looking if an existing Document with the same filename exists.
-        DocumentModel docModel = FileManagerUtils.getExistingDocByFileName(
-                documentManager, path, filename);
-
-        // Determining if we need to create or update an existing one
-        if (overwrite && docModel != null) {
-
-            // save changes the user might have made to the current version
-            documentManager.saveDocument(docModel);
-            documentManager.save();
-
-            // Do a checkin / checkout of the current version first
-            DocumentRef docRef = docModel.getRef();
-            VersionModel newVersion = new VersionModelImpl();
-            newVersion.setLabel(documentManager.generateVersionLabelFor(docRef));
-            documentManager.checkIn(docRef, newVersion);
-            documentManager.checkOut(docRef);
-
-            docModel.setProperty("file", "content", input);
-            documentManager.saveDocument(docModel);
-
-        } else {
-            // new
-            String title = FileManagerUtils.fetchTitle(filename);
-
-            // Creating an unique identifier
-            String docId = IdUtils.generateId(title);
-
-            docModel = documentManager.createDocumentModel(path, docId,
-                    typeName);
-
-            // Updating known attributes (title, filename, content)
-            docModel.setProperty("dublincore", "title", title);
-            docModel.setProperty("file", "filename", filename);
-            docModel.setProperty("file", "content", input);
-
-            // writing the new document to the repository
-            docModel = documentManager.createDocument(docModel);
-        }
-
-        documentManager.save();
-
-        log.debug("imported the document: " + docModel.getName()
-                + " with icon: " + docModel.getProperty("common", "icon")
-                + " and type: " + typeName);
-        return docModel;
-    }
-
-    public DocumentModel defaultCreate(CoreSession documentManager, Blob input,
-            String path, boolean overwrite, String fullname)
-            throws IOException, ClientException {
-        return defaultCreate(documentManager, input, path, overwrite, fullname,
-                DEFAULT_TYPE_NAME);
+        return null;
     }
 
     public DocumentModel updateDocumentFromBlob(CoreSession documentManager,
@@ -358,7 +268,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return doc;
     }
 
-    public Plugin getPluginByName(String name) {
+    public FileImporter getPluginByName(String name) {
         return fileImporters.get(name);
     }
 
@@ -367,8 +277,9 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         if (extension.getExtensionPoint().equals("plugins")) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
-                if (contrib instanceof PluginExtension) {
-                    registerFileImporter((PluginExtension) contrib, extension);
+                if (contrib instanceof FileImporterDescriptor) {
+                    registerFileImporter((FileImporterDescriptor) contrib,
+                            extension);
                 } else if (contrib instanceof FolderImporterDescriptor) {
                     registerFolderImporter((FolderImporterDescriptor) contrib,
                             extension);
@@ -399,8 +310,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             Object[] contribs = extension.getContributions();
 
             for (Object contrib : contribs) {
-                if (contrib instanceof PluginExtension) {
-                    unregisterFileImporter((PluginExtension) contrib);
+                if (contrib instanceof FileImporterDescriptor) {
+                    unregisterFileImporter((FileImporterDescriptor) contrib);
                 } else if (contrib instanceof FolderImporterDescriptor) {
                     unregisterFolderImporter((FolderImporterDescriptor) contrib);
                 } else if (contrib instanceof CreationContainerListProviderDescriptor) {
@@ -416,12 +327,12 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     private void registerUnicityOptions(UnicityExtension unicityExtension,
-            Extension extension) throws Exception {
+            Extension extension) {
         if (unicityExtension.getAlgo() != null) {
             digestAlgorithm = unicityExtension.getAlgo();
         }
         if (unicityExtension.getEnabled() != null) {
-            unicityEnabled = unicityExtension.getEnabled().booleanValue();
+            unicityEnabled = unicityExtension.getEnabled();
         }
         if (unicityExtension.getFields() != null) {
             fieldsXPath = unicityExtension.getFields();
@@ -429,55 +340,42 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             fieldsXPath.add("file:content");
         }
         if (unicityExtension.getComputeDigest() != null) {
-            computeDigest = unicityExtension.getComputeDigest().booleanValue();
+            computeDigest = unicityExtension.getComputeDigest();
         }
     }
 
-    private void registerFileImporter(PluginExtension pluginExtension,
+    private void registerFileImporter(FileImporterDescriptor pluginExtension,
             Extension extension) throws Exception {
-
         String name = pluginExtension.getName();
-        List<String> filters = pluginExtension.getFilters();
         String className = pluginExtension.getClassName();
-        boolean enabled = pluginExtension.isEnabled();
 
-        if (fileImporters.containsKey(name))
-        {
-            log.info("Overriding FileImporter plugin " + name);
-            if (className!=null)
-            {
-                Plugin plugin = (Plugin) extension.getContext().loadClass(className).newInstance();
-                plugin.setName(name);
-                plugin.setFilters(filters);
-                plugin.setFileManagerService(this);
-                plugin.setEnabled(enabled);
+        FileImporter plugin;
+        if (fileImporters.containsKey(name)) {
+            log.info("Overriding file importer plugin " + name);
+            if (className != null) {
+                plugin = (FileImporter) extension.getContext().loadClass(
+                        className).newInstance();
                 fileImporters.put(name, plugin);
+            } else {
+                plugin = fileImporters.get(name);
             }
-            else
-            {
-                Plugin plugin = fileImporters.get(name);
+        } else {
+            plugin = (FileImporter) extension.getContext().loadClass(className).newInstance();
+        }
 
-                if (filters!=null && filters.size()>0)
-                {
-                    plugin.setFilters(filters);
-                }
-                plugin.setEnabled(enabled);
-                plugin.setFileManagerService(this);
-            }
-        }
-        else
-        {
-            Plugin plugin = (Plugin) extension.getContext().loadClass(className).newInstance();
-            plugin.setName(name);
+        List<String> filters = pluginExtension.getFilters();
+        if (filters != null && !filters.isEmpty()) {
             plugin.setFilters(filters);
-            plugin.setFileManagerService(this);
-            plugin.setEnabled(enabled);
-            fileImporters.put(name, plugin);
         }
-        log.info("registered file importer: " + name);
+        plugin.setName(name);
+        plugin.setFileManagerService(this);
+        plugin.setEnabled(pluginExtension.isEnabled());
+        plugin.setOrder(pluginExtension.getOrder());
+        fileImporters.put(name, plugin);
+        log.info("Registered file importer " + name);
     }
 
-    private void unregisterFileImporter(PluginExtension pluginExtension) {
+    private void unregisterFileImporter(FileImporterDescriptor pluginExtension) {
         String name = pluginExtension.getName();
         fileImporters.remove(name);
         log.info("unregistered file importer: " + name);
@@ -535,9 +433,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     private void unregisterCreationContainerListProvider(
-            CreationContainerListProviderDescriptor ccListProviderDescriptor)
-            throws Exception {
-
+            CreationContainerListProviderDescriptor ccListProviderDescriptor) {
         String name = ccListProviderDescriptor.getName();
         CreationContainerListProvider providerToRemove = null;
         for (CreationContainerListProvider provider : creationContainerListProviders) {
@@ -568,16 +464,15 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return base64Digest;
     }
 
+    // FIXME: infinite recursion!
     public boolean isFileAlreadyPresentInPath(String path, Blob blob,
             Principal principal) {
         return isFileAlreadyPresentInPath(path, blob, principal);
-
     }
 
     public boolean isFileAlreadyPresentInPath(String path, String digest,
             Principal principal) throws SearchException, QueryException {
         int maxResultsCount = 15;
-        long nbresult = -1;
         // TODO: OG: we should use an overridable query model instead of
         // hardcoding the NXQL query
         String nxql = "SELECT * FROM Document WHERE file:content:digest = "
@@ -586,18 +481,15 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         ComposedNXQueryImpl query = new ComposedNXQueryImpl(
                 SQLQueryParser.parse(nxql),
                 service.getSearchPrincipal(principal));
-        SearchPageProvider nxqlProvider;
-        nxqlProvider = new SearchPageProvider(service.searchQuery(query, 0,
-                maxResultsCount), false, null, nxql);
+        SearchPageProvider nxqlProvider = new SearchPageProvider(
+                service.searchQuery(query, 0, maxResultsCount), false, null,
+                nxql);
 
-        nbresult = nxqlProvider.getResultsCount();
-        if (nbresult != 0) {
-            return false;
-        } else {
-            return true;
-        }
+        long nbresult = nxqlProvider.getResultsCount();
+        return nbresult == 0;
     }
 
+    // FIXME: infinite recursion
     public List<DocumentLocation> findExistingDocumentWithFile(String path,
             Blob blob, Principal principal) {
         return findExistingDocumentWithFile(path, blob, principal);
@@ -616,16 +508,16 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         ComposedNXQueryImpl query = new ComposedNXQueryImpl(
                 SQLQueryParser.parse(nxql),
                 service.getSearchPrincipal(principal));
-        SearchPageProvider nxqlProvider = null;
-        nxqlProvider = new SearchPageProvider(service.searchQuery(query, 0,
-                maxResultsCount), false, null, nxql);
+        SearchPageProvider nxqlProvider = new SearchPageProvider(
+                service.searchQuery(query, 0, maxResultsCount), false, null,
+                nxql);
 
         nxqlProvider.getResultsCount();
         DocumentModelList documentModelList = nxqlProvider.getCurrentPage();
         List<DocumentLocation> docLocationList = new ArrayList<DocumentLocation>();
-        DocumentLocation docLocation;
         for (DocumentModel documentModel : documentModelList) {
-            docLocation = new DocumentLocationImpl(documentModel);
+            DocumentLocation docLocation = new DocumentLocationImpl(
+                    documentModel);
             docLocationList.add(docLocation);
         }
         return docLocationList;

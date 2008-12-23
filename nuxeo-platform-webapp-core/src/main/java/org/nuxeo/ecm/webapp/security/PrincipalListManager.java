@@ -49,9 +49,8 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 /**
  * POJO class that extracts and holds the list of the users from backend.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
+ * @author Razvan Caraghin
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
- *
  */
 @Name("principalListManager")
 @Scope(SESSION)
@@ -84,10 +83,10 @@ public class PrincipalListManager implements Serializable {
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected transient UserManager userManager;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;
 
     protected SelectItem[] availablePrincipals;
@@ -134,9 +133,9 @@ public class PrincipalListManager implements Serializable {
 
     public void setSearchFilter(String searchFilter) {
         Context pageContext = Contexts.getPageContext();
-    	if (pageContext != null) {
-    	    pageContext.set("searchFilter", searchFilter);
-    	}
+        if (pageContext != null) {
+            pageContext.set("searchFilter", searchFilter);
+        }
         this.searchFilter = searchFilter;
     }
 

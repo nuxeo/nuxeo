@@ -30,7 +30,7 @@ import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,6 +40,8 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 @Name("popupHelper")
 @Scope(CONVERSATION)
@@ -47,6 +49,8 @@ import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 public class PopupHelper implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Log log = LogFactory.getLog(PopupHelper.class);
 
     public static final String POPUP_CATEGORY = "POPUP";
 
@@ -146,8 +150,7 @@ public class PopupHelper implements Serializable {
             currentPopupDocument = popupDoc;
             currentContainer = currentDocument;
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e);
         }
 
         return ctx;
@@ -169,8 +172,7 @@ public class PopupHelper implements Serializable {
     }
 
     @WebRemote
-    public String getNavigationURLOnContainer(String tabId)
-            throws ClientException {
+    public String getNavigationURLOnContainer(String tabId) {
         Map<String, String> params = new HashMap<String, String>();
 
         if (tabId != null) {
@@ -182,8 +184,7 @@ public class PopupHelper implements Serializable {
     }
 
     @WebRemote
-    public String getNavigationURLOnPopupdoc(String tabId)
-            throws ClientException {
+    public String getNavigationURLOnPopupdoc(String tabId) {
         Map<String, String> params = new HashMap<String, String>();
 
         if (tabId != null) {
@@ -195,7 +196,7 @@ public class PopupHelper implements Serializable {
     }
 
     @WebRemote
-    public String getCurrentURL() throws ClientException {
+    public String getCurrentURL() {
         Map<String, String> params = new HashMap<String, String>();
 
         String tabId = webActions.getCurrentTabId();

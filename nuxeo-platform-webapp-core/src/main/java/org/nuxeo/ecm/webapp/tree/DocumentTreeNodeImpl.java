@@ -1,0 +1,152 @@
+/*
+ * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+package org.nuxeo.ecm.webapp.tree;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.Filter;
+import org.nuxeo.ecm.core.api.Sorter;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.search.api.client.query.QueryException;
+import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
+
+/**
+ * Tree node of documents.
+ * <p>
+ * Children are lazy-loaded from backend only when needed.
+ *
+ * @author Anahide Tchertchian
+ */
+public class DocumentTreeNodeImpl implements DocumentTreeNode {
+
+    private static final long serialVersionUID = 1L;
+
+    private static final Log log = LogFactory.getLog(DocumentTreeNodeImpl.class);
+
+    protected final DocumentModel document;
+
+    protected final String sessionId;
+
+    protected final Filter filter;
+
+    protected final Filter leafFilter;
+
+    protected final Sorter sorter;
+
+    protected final QueryModel queryModel;
+
+    protected Map<Object, DocumentTreeNodeImpl> children;
+
+    public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
+            Filter leafFilter, Sorter sorter, QueryModel queryModel) {
+        this.document = document;
+        this.sessionId = document.getSessionId();
+        this.filter = filter;
+        this.leafFilter = leafFilter;
+        this.sorter = sorter;
+        this.queryModel = queryModel;
+    }
+
+    /** @deprecated use the other constructor */
+    @Deprecated
+    public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
+            Sorter sorter) {
+        this(document, filter, null, sorter, null);
+    }
+
+    public List<DocumentTreeNode> getChildren() {
+        if (children == null) {
+            fetchChildren();
+        }
+        List<DocumentTreeNode> childrenNodes = new ArrayList<DocumentTreeNode>();
+        childrenNodes.addAll(children.values());
+        return childrenNodes;
+    }
+
+    public DocumentModel getDocument() {
+        return document;
+    }
+
+    public String getId() {
+        if (document != null) {
+            return document.getId();
+        }
+        return null;
+    }
+
+    public String getPath() {
+        if (document != null) {
+            return document.getPathAsString();
+        }
+        return null;
+    }
+
+    /**
+     * Resets children map
+     */
+    public void resetChildren() {
+        children = null;
+    }
+
+    public void fetchChildren() {
+        try {
+            children = new LinkedHashMap<Object, DocumentTreeNodeImpl>();
+            if (leafFilter != null && leafFilter.accept(document)) {
+                // filter says this is a leaf, don't look at children
+                return;
+            }
+            List<DocumentModel> documents;
+            if (queryModel == null) {
+                // get the children using the core
+                CoreSession session = CoreInstance.getInstance().getSession(
+                        sessionId);
+                documents = session.getChildren(document.getRef(), null,
+                        SecurityConstants.READ, filter, sorter);
+            } else {
+                // get the children using a query model
+                try {
+                    documents = queryModel.getDocuments(new Object[] { getId() });
+                } catch (QueryException e) {
+                    log.warn("Could not query children", e);
+                    documents = Collections.emptyList();
+                }
+            }
+            // build the children nodes
+            for (DocumentModel child : documents) {
+                String identifier = child.getId();
+                DocumentTreeNodeImpl childNode = new DocumentTreeNodeImpl(
+                        child, filter, leafFilter, sorter, queryModel);
+                children.put(identifier, childNode);
+            }
+        } catch (ClientException e) {
+            log.error(e);
+        }
+    }
+
+}

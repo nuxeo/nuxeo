@@ -46,4 +46,5 @@ public class SubDirectoryDescriptor {
         return String.format("{subdirectory name=%s fields=%s", name,
                 Arrays.toString(fields));
     }
+
 }

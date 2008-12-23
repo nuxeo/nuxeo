@@ -24,10 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance;
 
 /**
  * Workflow document relations.
@@ -39,7 +36,6 @@ import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance;
  * workflow instances may be bound to one or several documents.
  *
  * @See org.nuxeo.ecm.platform.workflow.document.DocumentRefEntry
- *
  * @See org.nuxeo.ecm.platform.workflow.document.WorkflowInstanceRefEntry
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>

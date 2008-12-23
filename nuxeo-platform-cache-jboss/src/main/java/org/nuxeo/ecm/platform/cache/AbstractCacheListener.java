@@ -21,12 +21,13 @@ package org.nuxeo.ecm.platform.cache;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Abstract CacheListener without any implementation
- * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ * Abstract CacheListener without any implementation.
  *
+ * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
 public abstract class AbstractCacheListener implements CacheListener {
 
@@ -46,10 +47,15 @@ public abstract class AbstractCacheListener implements CacheListener {
 
     private void debug(String msg) {
         Log log = LogFactory.getLog(getClass());
-        log.info(msg);
+        log.debug(msg);
     }
 
-    private String getDocInfo(DocumentModel doc) {
-        return (String)doc.getProperty("common", "title");
+    private static String getDocInfo(DocumentModel doc) {
+        try {
+            return (String) doc.getProperty("common", "title");
+        } catch (ClientException e) {
+            return null;
+        }
     }
+
 }

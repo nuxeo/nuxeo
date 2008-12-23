@@ -25,4 +25,5 @@ public interface JNDILocations {
     String nxauditWsAuditLocalLocation = "nuxeo/WSAuditBean/local";
 
     String nxauditWsAuditRemoteLocation = "nuxeo/WSAuditBean/remote";
+
 }

@@ -22,12 +22,12 @@ import org.nuxeo.runtime.services.streaming.StringSource;
 
 /**
  * A StringSource with the length.
- * 
+ *
  * @author arussel
- * 
  */
 public class ExtendedStringSource extends StringSource {
-    private Integer length;
+
+    private final Integer length;
 
     public ExtendedStringSource(String string, Integer length) {
         super(string);
@@ -38,4 +38,5 @@ public class ExtendedStringSource extends StringSource {
     public long getLength() throws IOException {
         return length == null ? super.getLength() : length;
     }
+
 }
