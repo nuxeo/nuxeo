@@ -17,6 +17,7 @@
       <supported-locale>ja</supported-locale>
       <supported-locale>ru</supported-locale>
       <supported-locale>vn</supported-locale>
+      <supported-locale>pt_BR</supported-locale>
     </locale-config>
   </extension>
 
