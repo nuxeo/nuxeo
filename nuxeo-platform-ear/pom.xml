@@ -1,13 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-parent</artifactId>
-    <version>5.1.7-SNAPSHOT</version>
-    <relativePath>../../nuxeo-platform</relativePath>
+    <version>5.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-ear</artifactId>
@@ -16,9 +14,9 @@
   <description>
     Nuxeo Enterprise Platform: The Nuxeo EAR application.
   </description>
-  
+
   <properties>
-    <nuxeo.ear.assembly>nuxeo</nuxeo.ear.assembly>
+    <nuxeo.webengine.version>${nuxeo.platform.version}</nuxeo.webengine.version>
   </properties>
 
   <dependencies>
@@ -114,6 +112,10 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-cache-web</artifactId>
       <type>ejb</type>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-commandline-executor</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -355,6 +357,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-ui-web-compat</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-usermanager-api</artifactId>
     </dependency>
     <dependency>
@@ -427,7 +433,10 @@
       <artifactId>nuxeo-platform-workflow-document-facade</artifactId>
       <type>ejb</type>
     </dependency>
-    <!-- artifact with only implementations needed on client side in 2parts environment -->
+    <!--
+      artifact with only implementations needed on client side in 2parts
+      environment
+    -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-workflow-document-facade</artifactId>
@@ -466,16 +475,19 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
+      <artifactId>nuxeo-theme-html</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.theme</groupId>
+      <artifactId>nuxeo-theme-webengine</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-jsf</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
-      <artifactId>nuxeo-theme-jsf-editor</artifactId>
-      <type>ejb</type>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.theme</groupId>
-      <artifactId>nuxeo-theme-jsf-editor-web</artifactId>
+      <artifactId>nuxeo-theme-editor</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -548,6 +560,36 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-relations-io</artifactId>
     </dependency>
+
+    <!--
+      Nuxeo WebEngine
+    -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-core</artifactId>
+      <version>${nuxeo.platform.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-rendering</artifactId>
+      <version>${nuxeo.webengine.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-admin</artifactId>
+      <version>${nuxeo.webengine.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-wiki</artifactId>
+      <version>${nuxeo.webengine.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-resteasy-adapter</artifactId>
+      <version>${nuxeo.webengine.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
@@ -618,29 +660,16 @@
           </execution>
         </executions>
       </plugin>
-      <!--plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-        <execution>
-        <id>attach-artifacts</id>
-        <phase>package</phase>
-        <goals>
-        <goal>attach-artifact</goal>
-        </goals>
-        <configuration>
-        <artifacts>
-        <artifact>
-        <file>
-        ${project.build.directory}/nuxeo-platform-ear-${pom.version}.ear
-        </file>
-        <type>ear</type>
-        </artifact>
-        </artifacts>
-        </configuration>
-        </execution>
-        </executions>
-        </plugin-->
+      <!--
+        plugin> <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId> <executions>
+        <execution> <id>attach-artifacts</id> <phase>package</phase> <goals>
+        <goal>attach-artifact</goal> </goals> <configuration> <artifacts>
+        <artifact> <file>
+        ${project.build.directory}/nuxeo-platform-ear-${pom.version}.ear </file>
+        <type>ear</type> </artifact> </artifacts> </configuration> </execution>
+        </executions> </plugin
+      -->
       <!-- copy nuxeo libraries that must go into $JBOSS/server/default/lib/ -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -659,6 +688,10 @@
               <artifactId>nuxeo-runtime-jboss-extensions</artifactId>
               <version>${nuxeo.runtime.version}</version>
               <overWrite>true</overWrite>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.apache.derby</groupId>
+              <artifactId>derby</artifactId>
             </artifactItem>
           </artifactItems>
         </configuration>

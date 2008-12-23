@@ -36,6 +36,13 @@
       <artifact group="org.nuxeo.*" category="runtime,jboss4"
         includeDependsOnCategory="false" />
       <artifact group="org.nuxeo.*" category="core,search,web" />
+      <!-- Nuxeo-WebEngine -->
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-rendering" />
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-core" />
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-admin" />
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-wiki" />
+      <artifact group="org.nuxeo.ecm.webengine"
+        name="nuxeo-webengine-resteasy-adapter" />
       <!-- nuxeo-addons -->
     </includes>
     <excludes>
@@ -90,6 +97,12 @@
       <artifact group="org.hibernate" name="hibernate-entitymanager" />
       <artifact group="jboss" name="jboss-cache-jdk50" />
       <artifact group="org.jboss.seam" name="jboss-seam" />
+      <artifact group="org.jboss.seam" name="jboss-seam-remoting" />
+      <artifact group="org.jboss.seam" name="jboss-seam-ui" />
+      <artifact group="org.jboss.seam" name="jboss-seam-mail" />
+      <artifact group="org.jboss.seam" name="jboss-seam-debug" />
+      <artifact group="javax.el" name="el-ri" />
+      <artifact group="org.jboss.el" name="jboss-el" />
       <artifact group="jboss" name="jbpm" />
       <artifact group="jboss" name="jgroups" />
       <!-- version is needed because of assembly plugin don't manage classifier here -->
@@ -98,14 +111,18 @@
       <artifact group="net.sf.opencsv" name="opencsv" />
       <artifact group="org.slf4j" name="slf4j-api" />
       <artifact group="org.slf4j" name="slf4j-log4j12" />
-      <artifact group="org.apache.myfaces.tomahawk" name="tomahawk" />
-      <artifact group="org.apache.myfaces.tomahawk" name="tomahawk-sandbox" />
-      <artifact group="org.apache.myfaces.trinidad" name="trinidad-api" />
-      <artifact group="org.apache.myfaces.trinidad" name="trinidad-impl" />
+      <artifact group="org.richfaces.framework" name="richfaces-api" />
+      <artifact group="org.richfaces.framework" name="richfaces-impl" />
+      <artifact group="org.richfaces.ui" name="richfaces-ui" />
       <artifact group="org.apache.directory.server" name="apacheds-protocol-shared" />
       <artifact group="org.apache.directory.shared" name="shared-ldap" />
       <artifact group="com.sun.facelets" name="jsf-facelets" />
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-jbossws-wrapper" />
+      <!-- Nuxeo-WebEngine fixed libs -->
+      <artifact group="org.codehaus.groovy" name="groovy-all" />
+      <artifact group="org.resteasy" name="resteasy-jaxrs" />
+      <artifact group="org.resteasy" name="jaxrs-api" />
+      <artifact group="javax.script" name="script-api" />
     </artifacts>
   </artifactSet>
 

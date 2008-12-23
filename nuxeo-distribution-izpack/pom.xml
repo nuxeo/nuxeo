@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.1.7-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -19,7 +19,6 @@
   <packaging>pom</packaging>
 
   <dependencies>
-
     <dependency>
       <groupId>org.codehaus.izpack</groupId>
       <artifactId>izpack-standalone-compiler</artifactId>
@@ -32,11 +31,9 @@
       <artifactId>plexus-utils</artifactId>
       <version>1.5.6</version>
     </dependency>
-
   </dependencies>
 
   <build>
-
     <finalName>nuxeo-ep-${project.version}-installer</finalName>
     <defaultGoal>package</defaultGoal>
 
@@ -111,8 +108,6 @@
       </plugin>
 
     </plugins>
-
   </build>
-
 
 </project>
