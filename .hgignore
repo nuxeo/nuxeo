@@ -6,3 +6,5 @@ bin
 target
 *~
 *.orig
+.pydevproject
+*.pyc
