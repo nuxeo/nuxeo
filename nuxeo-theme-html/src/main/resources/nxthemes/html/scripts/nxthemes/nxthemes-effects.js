@@ -130,19 +130,6 @@ NXThemes.registerEffects({
       }
     });
     return new NXThemes.Scheduler(options);
-  },
-
-  highlight: function(node, options) {
-    var color = options.color;
-    var nodes = node.childNodes;
-    for (var i=0; i<nodes.length; i=i+1) {
-      var n = $(nodes[i]);
-      if (n.nodeType != 1) {
-        continue;
-      }
-      //this['highlight'](n, options);
-    }
-    node.setStyle({backgroundColor: color});
   }
 
 });

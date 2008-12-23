@@ -367,19 +367,11 @@ NXThemes.DragAndDropController.prototype = Object.extend(
     this.dragEvent = this.dragEvent.bindAsEventListener(
                                     Object.extend(this, {widget: widget}));
     Event.observe(widget, "mousedown", this.dragEvent);
-
-    if (this.def.frame) {
-      this.selectEvent = this.selectEvent.bindAsEventListener(
-                                    Object.extend(this, {widget: widget}));    
-      Event.observe(widget, "mouseover", this.selectEvent);
-    }
   },
 
 
   unregister: function(view) {
     var widget = view.widget;
-    this.dragEvent = this.dragEvent.bindAsEventListener(
-                                    Object.extend(this, {widget: widget}));
     Event.stopObserving(widget, "mousedown", this.dragEvent);
   },
 
@@ -440,26 +432,6 @@ NXThemes.DragAndDropController.prototype = Object.extend(
     }
   },
 
-  selectEvent: function(e) {
-    if (this.alreadyDragging) return;
-    var draggable = this._findDraggable(e);
-    if (!draggable) {
-      return false;
-    }
-    this.deselectEvent(e);
-    this.selectbox = NXThemes.Canvas.createFrameAround(draggable);
-    document.getElementsByTagName('body')[0].appendChild(this.selectbox);
-    Event.observe(draggable, "mouseout", this.deselectEvent);      
-  },
-  
-  deselectEvent: function(e) {
-    var selectbox = this.selectbox;
-    if (selectbox != null && selectbox.parentNode != null) {
-      Event.stopObserving(selectbox, "mouseout", this.deselectEvent);
-      $(selectbox).remove();
-    }
-  },  
-
   dragEvent: function(e) {
     if (NXThemes.alreadyDragging) return false;
     if (!Event.isLeftClick(e)) return false;
@@ -469,7 +441,6 @@ NXThemes.DragAndDropController.prototype = Object.extend(
     }
     if (e.cancelable) e.preventDefault();
 
-    this.deselectEvent(e);
     // start dragging
     NXThemes.alreadyDragging = true;
 

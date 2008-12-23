@@ -389,8 +389,7 @@ div.nxthemesEditorFrame {
 
 .nxthemesEmptyContainer {
   height: 50px;
-  background-color: #eee;
-  background-image: url(${basePath}/skin/nxthemes-editor/img/empty-container-bg.png);  
+  border: 1px dashed red;
 }
 
 /* Toolbox */
@@ -1238,13 +1237,11 @@ option.locked {
   background-image: url(${basePath}/skin/nxthemes-editor/img/add-hover.png);
 }
 
-div.nxthemesSelectorVertical {
-  background: transparent url(${basePath}/skin/nxthemes-editor/img/select-v.png) repeat-y;
-  width: 1px;
+div.nxthemesDraggable:hover * {
+  cursor: pointer;
 }
 
-div.nxthemesSelectorHorizontal {
-  background: transparent url(${basePath}/skin/nxthemes-editor/img/select-h.png) repeat-x;
-  height: 1px;
+div.nxthemesDraggable:hover {
+  background-color: #ff0;
 }
 
