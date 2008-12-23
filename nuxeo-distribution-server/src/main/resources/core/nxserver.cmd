@@ -19,4 +19,17 @@ set JAVA=%JAVA_HOME%\bin\java
 
 :SKIP_SET_JAVA
 
-"%JAVA%" %JAVA_OPTS% -jar nuxeo-runtime-launcher-1.5-SNAPSHOT.jar bundles/nuxeo-runtime-osgi-1.5-SNAPSHOT.jar/org.nuxeo.osgi.application.Main bundles/.:lib/.:config -bundles=bundles/nuxeo-shell-commands-base.jar@3 -home . %*
+Setlocal Enabledelayedexpansion
+for %%A in ("nuxeo-runtime-launcher-*.jar") do (
+    set "FileNameWithoutExtension=%%~nA"
+    set "SubString=!FileNameWithoutExtension:*nuxeo-runtime-launcher-=!"
+    set NXC_VERSION=!SubString!
+)
+for %%A in ("bundles\nuxeo-shell-commands-base-*.jar") do (
+    set "FileNameWithoutExtension=%%~nA"
+    set "SubString=!FileNameWithoutExtension:*bundles\nuxeo-shell-commands-base-=!"
+    set NXP_VERSION=!SubString!
+)
+
+
+"%JAVA%" %JAVA_OPTS% -jar nuxeo-runtime-launcher-%NXC_VERSION%.jar bundles/nuxeo-runtime-osgi-%NXC_VERSION%.jar/org.nuxeo.osgi.application.Main bundles/.:lib/.:config -bundles=bundles/nuxeo-shell-commands-base-%NXP_VERSION%.jar@3 -home . %*

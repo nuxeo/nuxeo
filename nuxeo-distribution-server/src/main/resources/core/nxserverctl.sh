@@ -30,7 +30,7 @@ function check_server {
 
 
 function server_status {
-   check_server 
+   check_server
    if [ "$?" -eq "0" ]; then
       server_pid
       if [ "${ACTION}" = "start" ]; then
@@ -54,15 +54,15 @@ function stop_server {
   check_server
   if [ "$?" -eq "1" ]; then
     ${ECHO} "${SERVERNAME} has been shutdown"
-  else 
+  else
     ${KILL} ${PID}
-    ${SLEEP} 5   
+    ${SLEEP} 5
     check_server
     if [ "$?" -eq "1" ]; then
       ${ECHO} "${SERVERNAME} has been killed"
     else
-      ${ECHO} "Failed to shutdown server. PID: ${PID}"  
-    fi    
+      ${ECHO} "Failed to shutdown server. PID: ${PID}"
+    fi
   fi
 }
 
@@ -70,7 +70,7 @@ function start_server {
   check_server
   if [ "$?" -eq "0" ]; then
     print_error "${SERVERNAME} is already started" && exit 1
-  fi	       
+  fi
   ${NOHUP} ./nxserver.sh >${SERVERNAME}.out 2>&1 &
   ${SLEEP} 5
   server_status
