@@ -86,6 +86,7 @@
       provided login and password from the login form and not the bindDn
       / bindPassword credentials.
     </documentation>
+
     <object class="org.nuxeo.ecm.directory.ldap.LDAPServerDescriptor"/>
   </extension-point>
 
@@ -202,6 +203,7 @@
       When using dynamic references, caching is advised since dynamic
       group resolution can be expensive.
     </documentation>
+
     <object
         class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor"/>
   </extension-point>

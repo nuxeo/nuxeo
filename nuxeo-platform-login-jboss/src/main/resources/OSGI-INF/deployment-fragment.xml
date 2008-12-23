@@ -1,15 +1,11 @@
 <?xml version="1.0"?>
-
 <fragment>
 
-
-    <extension target="jboss-app#MODULE">
-
+  <extension target="jboss-app#MODULE">
     <module>
-        <service>${bundle.fileName}</service>
+      <service>${bundle.fileName}</service>
     </module>
-
-    </extension>
+  </extension>
 
 </fragment>
 
