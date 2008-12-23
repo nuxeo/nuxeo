@@ -14,7 +14,11 @@
 
   <implementation class="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" />
 
-  <extension-point name=T>
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.audit.api.NXAuditEvents"/>
+  </service>
+  
+  <extension-point name="event">
     <documentation>
       This service registers auditable events.
       <p />
@@ -67,4 +71,18 @@
       class="org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor" />
   </extension-point>
 
+  <extension-point name="hibernateOptions">
+     <documentation>
+        This service persist audit into a database using hibernate. You're able to specify the datasource
+        using this extension point.
+        
+        <p />
+        <programlisting>
+          <hibernateOptions datasource="java/nxaudits"/>
+        </programlisting>
+     </documentation>
+      <object
+      class="org.nuxeo.ecm.platform.audit.service.extension.HibernateOptionsDescriptor" />
+     
+  </extension-point>
 </component>

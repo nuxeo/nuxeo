@@ -18,10 +18,10 @@ package org.nuxeo.ecm.platform.workflow;
 
 import java.util.Properties;
 
-import org.nuxeo.ecm.platform.audit.service.HibernateConfiguration;
+import org.nuxeo.ecm.platform.audit.service.ContainerManagedHibernateConfiguration;
 
 public class TestAuditHibernateConfiguration implements
-        HibernateConfiguration {
+        ContainerManagedHibernateConfiguration {
 
     public Properties getProperties() {
         Properties properties = new Properties();

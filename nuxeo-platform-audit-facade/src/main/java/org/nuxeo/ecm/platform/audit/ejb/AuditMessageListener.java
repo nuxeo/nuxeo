@@ -35,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.audit.AuditMessageHandler;
-import org.nuxeo.ecm.platform.audit.MessageHandler;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.ecm.platform.events.api.JMSConstant;
 
@@ -48,7 +47,7 @@ import org.nuxeo.ecm.platform.events.api.JMSConstant;
  * <li>Filter out the event based on events we are interested in</li>
  * <li>Create and persist a LogEntryImpl entity bean</li>
  * </ul>
- * 
+ *
  * @author <a mailto="ja@nuxeo.com">Julien Anguenot</a>
  */
 @MessageDriven(activationConfig = {
@@ -65,30 +64,31 @@ public class AuditMessageListener implements MessageListener {
 
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(AuditMessageListener.class);
-    
+
     @PersistenceContext(unitName = "NXAudit")
     private EntityManager em;
-    
+
     private static String repositoryName(DocumentMessage message) {
         String repositoryName = message.getRepositoryName();
         return repositoryName == null ? "default" : repositoryName;
     }
-    
+
     protected class MessageLogger extends UnrestrictedSessionRunner {
-        
+
+        protected final DocumentMessage message;
+
         MessageLogger(DocumentMessage message) {
             super(repositoryName(message));
             this.message = message;
         }
-        
-        protected DocumentMessage message;
-        
+
+        @Override
         public void run() throws ClientException {
-            MessageHandler handler = new AuditMessageHandler();
+            AuditMessageHandler handler = new AuditMessageHandler();
             handler.onDocumentMessage(em, session, message);
         }
     }
-    
+
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void onMessage(Message message) {
         try {
@@ -97,7 +97,7 @@ public class AuditMessageListener implements MessageListener {
                 return;
             }
             new MessageLogger((DocumentMessage)obj).runUnrestricted();
-            
+
         } catch (Exception e) {
             throw new EJBException(e);
         }

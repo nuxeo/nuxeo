@@ -144,7 +144,6 @@
     <module>nuxeo-platform-io-client</module>
     <module>nuxeo-platform-audit-io</module>
     <module>nuxeo-platform-relations-io</module>
-    <module>nuxeo-platform-ear</module>
     <module>nuxeo-platform-el</module>
   </modules>
 
@@ -821,9 +820,13 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-webengine</artifactId>
+        <version>${nuxeo.theme.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-editor</artifactId>
         <version>${nuxeo.theme.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -913,7 +916,11 @@
         <artifactId>nuxeo-platform-login-jboss</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-el</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-ear</artifactId>

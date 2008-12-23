@@ -16,7 +16,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author Stephane Lacoin (Nuxeo EP software engineer)
  * 
  */
-public class AuditMessageHandler implements MessageHandler {
+public class AuditMessageHandler {
 
     public void onDocumentMessage(EntityManager em, CoreSession session, DocumentMessage message) throws AuditException {
        NXAuditEventsService service =

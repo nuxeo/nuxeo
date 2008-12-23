@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.audit;
 
+import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.runtime.api.Framework;
@@ -39,8 +40,16 @@ public final class NXAudit {
      * @return the NXRuntime NXAudit events service
      */
     public static NXAuditEvents getNXAuditEventsService() {
-        return (NXAuditEvents) Framework.getRuntime().getComponent(
-                NXAuditEventsService.NAME);
+        NXAuditEvents service;
+        try {
+            service = Framework.getService(NXAuditEvents.class);
+        } catch (Exception e) {
+           throw new AuditRuntimeException("Cannot get audit service", e);
+        }
+        if (service == null) {
+            throw new AuditRuntimeException("Cannot get audit service");
+        }
+        return service;
     }
 
 }
