@@ -58,7 +58,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>net.sf</groupId>
+      <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache</artifactId>
       <scope>test</scope>
     </dependency>
