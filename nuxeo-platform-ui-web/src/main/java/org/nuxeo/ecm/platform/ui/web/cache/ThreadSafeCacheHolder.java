@@ -10,15 +10,15 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
-public class ThreadSafeCacheHolder<T> implements Serializable {
+public class ThreadSafeCacheHolder<T extends Serializable> implements Serializable {
 
     public static final int DEFAULT_SIZE = 20;
 
     private static final long serialVersionUID = 1L;
 
-    protected Map<String, T> cacheMap;
+    protected final Map<String, T> cacheMap;
 
-    protected ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
+    protected final ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
 
     public ThreadSafeCacheHolder() {
         this(DEFAULT_SIZE);
@@ -64,7 +64,7 @@ public class ThreadSafeCacheHolder<T> implements Serializable {
         return getKey(docRef, key);
     }
 
-    // Add management
+    // Adders
     protected void doAdd(String key, T value) {
         try {
             cacheLock.writeLock().lock();
@@ -74,7 +74,7 @@ public class ThreadSafeCacheHolder<T> implements Serializable {
         }
     }
 
-    public void addTocache(String key, T value) {
+    public void addToCache(String key, T value) {
         doAdd(key, value);
     }
 
@@ -86,7 +86,7 @@ public class ThreadSafeCacheHolder<T> implements Serializable {
         doAdd(getKey(doc, key), value);
     }
 
-    // get management
+    // Getters
     protected T doGet(String key) {
         try {
             cacheLock.readLock().lock();
@@ -108,7 +108,7 @@ public class ThreadSafeCacheHolder<T> implements Serializable {
         return doGet(getKey(doc, key));
     }
 
-    // remove management
+    // Removers
     protected void doRemove(String key) {
         try {
             cacheLock.writeLock().lock();

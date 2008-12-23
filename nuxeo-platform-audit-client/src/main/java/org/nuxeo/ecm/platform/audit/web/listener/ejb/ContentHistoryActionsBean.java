@@ -58,7 +58,7 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
 /**
  * Content history actions bean.
- * <p>
+ * <p/>
  * :XXX: http://jira.nuxeo.org/browse/NXP-514
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
@@ -112,12 +112,12 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         if (log.isDebugEnabled()) log.debug("Removing Audit Seam component...");
     }
 
-    @Observer(value = { EventNames.CONTENT_ROOT_SELECTION_CHANGED,
+    @Observer(value = {EventNames.CONTENT_ROOT_SELECTION_CHANGED,
             EventNames.DOCUMENT_CHANGED, EventNames.DOCUMENT_SELECTION_CHANGED,
             EventNames.DOMAIN_SELECTION_CHANGED,
             EventNames.LOCATION_SELECTION_CHANGED,
-            AuditEventTypes.HISTORY_CHANGED }, create = false, inject = false)
-   @BypassInterceptors
+            AuditEventTypes.HISTORY_CHANGED}, create = false, inject = false)
+    @BypassInterceptors
     public void invalidateLogEntries() {
         if (log.isDebugEnabled()) log.debug("Invalidate log entries.................");
         logEntries = null;
@@ -178,8 +178,8 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         } else {
             try {
                 Logs logsBean = AuditLogsServiceDelegate.getRemoteAuditLogsService();
-                /**
-                 * in case the document is a proxy,meaning is the result of a
+                /*
+                 * In case the document is a proxy,meaning is the result of a
                  * publishing,to have the history of the document from which
                  * this proxy was created,first we have to get to the version
                  * that was created when the document was publish,and to which

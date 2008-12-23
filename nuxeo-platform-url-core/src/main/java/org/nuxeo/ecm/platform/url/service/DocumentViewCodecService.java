@@ -154,8 +154,21 @@ public class DocumentViewCodecService extends DefaultComponent implements
 
     public String getUrlFromDocumentView(DocumentView docView,
             boolean needBaseUrl, String baseUrl) {
-        String codecName = getDefaultCodecName();
-        return getUrlFromDocumentView(codecName, docView, needBaseUrl, baseUrl);
+        String defaultCodecName = getDefaultCodecName();
+        String url = getUrlFromDocumentView(defaultCodecName, docView,
+                needBaseUrl, baseUrl);
+        if (url == null) {
+            for (String codecName : descriptors.keySet()) {
+                if (!codecName.equals(defaultCodecName)) {
+                    url = getUrlFromDocumentView(codecName, docView, needBaseUrl,
+                            baseUrl);
+                    if (url != null) {
+                        break;
+                    }
+                }
+            }
+        }
+        return url;
     }
 
     public String getUrlFromDocumentView(String codecName,
@@ -174,8 +187,21 @@ public class DocumentViewCodecService extends DefaultComponent implements
 
     public DocumentView getDocumentViewFromUrl(String url, boolean hasBaseUrl,
             String baseUrl) {
-        String codecName = getDefaultCodecName();
-        return getDocumentViewFromUrl(codecName, url, hasBaseUrl, baseUrl);
+        String defaultCodecName = getDefaultCodecName();
+        DocumentView docView = getDocumentViewFromUrl(defaultCodecName, url,
+                hasBaseUrl, baseUrl);
+        if (docView == null) {
+            for (String codecName : descriptors.keySet()) {
+                if (!codecName.equals(defaultCodecName)) {
+                    docView = getDocumentViewFromUrl(codecName, url, hasBaseUrl,
+                            baseUrl);
+                    if (docView != null) {
+                        break;
+                    }
+                }
+            }
+        }
+        return docView;
     }
 
     public DocumentView getDocumentViewFromUrl(String codecName, String url,

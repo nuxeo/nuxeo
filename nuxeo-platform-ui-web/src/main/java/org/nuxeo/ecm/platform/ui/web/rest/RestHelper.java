@@ -51,12 +51,12 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  * @author Florent Guillaume
  */
-
 @Name("restHelper")
 @Scope(EVENT)
 public class RestHelper implements Serializable {
 
     private static final Log log = LogFactory.getLog(RestHelper.class);
+    private static final long serialVersionUID = 1L;
 
     @In(create = true)
     NavigationContext navigationContext;

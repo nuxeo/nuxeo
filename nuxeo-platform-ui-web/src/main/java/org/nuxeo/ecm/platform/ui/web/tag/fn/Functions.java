@@ -36,27 +36,28 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Util functions.
- * 
+ *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- * 
+ *
  */
 public final class Functions {
-    public static enum BytePrefix {
-        SI(1000, new String[] { "", "k", "M", "G", "T", "P", "E", "Z", "Y" },
-                new String[] { "", "kilo", "mega", "giga", "tera", "exa",
-                        "zetta", "yotta" }), IEC(1024, new String[] { "", "Ki",
-                "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi" }, new String[] { "",
-                "kibi", "mebi", "tebi", "pebi", "exbi", "zebi", "yobi" }), JEDEC(
-                1024, new String[] { "", "K", "M", "G" }, new String[] { "",
-                        "kilo", "mega", "giga" });
-        private int base;
 
-        private String[] shortSuffixes;
+    public enum BytePrefix {
 
-        private String[] longSuffixes;
+        SI(1000, new String[]{"", "k", "M", "G", "T", "P", "E", "Z", "Y"},
+                new String[]{"", "kilo", "mega", "giga", "tera", "exa", "zetta", "yotta"}),
+        IEC(1024, new String[]{"", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi"},
+                new String[]{"", "kibi", "mebi", "tebi", "pebi", "exbi", "zebi", "yobi"}),
+        JEDEC(1024, new String[]{"", "K", "M", "G"},
+                new String[]{"", "kilo", "mega", "giga"});
 
-        private BytePrefix(int base, String[] shortSuffixes,
-                String[] longSuffixes) {
+        private final int base;
+
+        private final String[] shortSuffixes;
+
+        private final String[] longSuffixes;
+
+        BytePrefix(int base, String[] shortSuffixes, String[] longSuffixes) {
             this.base = base;
             this.shortSuffixes = shortSuffixes;
             this.longSuffixes = longSuffixes;
@@ -142,7 +143,7 @@ public final class Functions {
 
     /**
      * Returns the full name of a user.
-     * 
+     *
      * @param username the user id, or null or empty for the current user.
      * @return the full user name.
      */

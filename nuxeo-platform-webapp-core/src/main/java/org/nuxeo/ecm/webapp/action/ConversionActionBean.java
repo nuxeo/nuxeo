@@ -77,7 +77,7 @@ public class ConversionActionBean implements ConversionAction {
     @RequestParameter
     private String filename;
 
-    protected static ThreadSafeCacheHolder<Boolean> exportableToPDFCache = new ThreadSafeCacheHolder<Boolean>(20);
+    protected static final ThreadSafeCacheHolder<Boolean> exportableToPDFCache = new ThreadSafeCacheHolder<Boolean>(20);
 
     @Remove
     public void destroy() {

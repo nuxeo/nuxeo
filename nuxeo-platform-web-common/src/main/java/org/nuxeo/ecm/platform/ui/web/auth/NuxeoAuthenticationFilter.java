@@ -776,7 +776,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         AuthenticationPluginDescriptor desc = service.getDescriptor(pluginName);
 
-        if (desc.getStatefull()) {
+        if (desc.getStateful()) {
             return true;
         } else {
             return desc.getNeedStartingURLSaving();

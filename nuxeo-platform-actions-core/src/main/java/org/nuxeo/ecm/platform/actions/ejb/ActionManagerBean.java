@@ -85,7 +85,6 @@ public class ActionManagerBean implements ActionManager {
         return actionService.getFilters(actionId);
     }
 
-
     @Remove
     public void remove() {
         actionService = null;
@@ -102,4 +101,5 @@ public class ActionManagerBean implements ActionManager {
         log.info("PrePassivate");
         remove();
     }
+
 }

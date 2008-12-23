@@ -45,7 +45,7 @@ import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 
 /**
  * Log entry .
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @Entity(name = "LogEntry")
@@ -57,10 +57,6 @@ import org.nuxeo.ecm.platform.events.api.DocumentMessage;
         @NamedQuery(name = "LogEntry.findByHavingExtendedInfo", query = "from LogEntry log where log.extendedInfos['one'] is not null order by log.eventDate DESC") })
 @Table(name = "NXP_LOGS")
 public class LogEntry {
-
- 
-
-    private static final long serialVersionUID = 0L;
 
     private long id;
 
@@ -85,15 +81,13 @@ public class LogEntry {
     private Map<String, ExtendedInfo> extendedInfos = new HashMap<String, ExtendedInfo>();
 
     public LogEntry() {
-        super();
     }
 
     /**
      * Returns the log identifier.
-     * 
+     *
      * @return the log identifier
      */
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "LOG_ID", nullable = false, columnDefinition = "integer")
@@ -107,7 +101,7 @@ public class LogEntry {
 
     /**
      * Returns the name of the principal who originated the log entry.
-     * 
+     *
      * @return the name of the principal who originated the log entry
      */
     @Column(name = "LOG_PRINCIPAL_NAME")
@@ -121,10 +115,9 @@ public class LogEntry {
 
     /**
      * Returns the identifier of the event that originated the log entry.
-     * 
+     *
      * @return the identifier of the event that originated the log entry
      */
-
     @Column(name = "LOG_EVENT_ID", nullable = false)
     @MapKey(name = "logKey")
     public String getEventId() {
@@ -137,10 +130,9 @@ public class LogEntry {
 
     /**
      * Returns the date of the event that originated the log entry.
-     * 
+     *
      * @return the date of the event that originated the log entry
      */
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "LOG_EVENT_DATE")
     public Date getEventDate() {
@@ -156,10 +148,9 @@ public class LogEntry {
      * <p>
      * It might be null if the event that originated the event is noe bound to
      * any document.
-     * 
+     *
      * @return the doc UUID related to the log entry.
      */
-
     @Column(name = "LOG_DOC_UUID")
     public String getDocUUID() {
         return docUUID;
@@ -170,9 +161,10 @@ public class LogEntry {
     }
 
     public void setDocUUID(DocumentRef docRef) {
-        if (docRef.type() != DocumentRef.ID)
+        if (docRef.type() != DocumentRef.ID) {
             throw new IllegalArgumentException("not an id reference " + docRef);
-        this.docUUID = (String) docRef.reference();
+        }
+        docUUID = (String) docRef.reference();
     }
 
     /**
@@ -180,7 +172,7 @@ public class LogEntry {
      * <p>
      * It might be null if the event that originated the event is noe bound to
      * any document.
-     * 
+     *
      * @return the doc path related to the log entry.
      */
 
@@ -198,7 +190,7 @@ public class LogEntry {
      * <p>
      * It might be null if the event that originated the event is not bound to
      * any document.
-     * 
+     *
      * @return the doc type related to the log entry.
      */
 
@@ -216,7 +208,7 @@ public class LogEntry {
      * <p>
      * This is defined at client level. Categories are not restricted in any
      * ways.
-     * 
+     *
      * @return the category for this log entry.
      */
 
@@ -231,7 +223,7 @@ public class LogEntry {
 
     /**
      * Returns the associated comment for this log entry.
-     * 
+     *
      * @return the associated comment for this log entry
      */
 
@@ -249,7 +241,7 @@ public class LogEntry {
      * <p>
      * It might be null if the event that originated the event is noe bound to
      * any document.
-     * 
+     *
      * @return the life cycle if the document related to the log entry.
      */
 
@@ -269,7 +261,7 @@ public class LogEntry {
     }
 
     public void setExtendedInfos(Map<String, ExtendedInfo> infos) {
-        this.extendedInfos = infos;
+        extendedInfos = infos;
     }
 
     @Override

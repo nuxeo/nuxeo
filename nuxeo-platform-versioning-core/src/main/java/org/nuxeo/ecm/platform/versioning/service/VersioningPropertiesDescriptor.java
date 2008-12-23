@@ -30,7 +30,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Descriptor to define what fields to use for versioning given a document type.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 @XObject("versioningProperties")
 public class VersioningPropertiesDescriptor {

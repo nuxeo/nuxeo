@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
  * schema name and 'title' is the field name. It can be used to get or set the
  * document title : <h:outputText value="#{currentDocument.dublincore.title}" />
  * or <h:inputText value="#{currentDocument.dublincore.title}" />.
- * </p>
  * <p>
  * Simple document properties are get/set directly: for instance, the above
  * expression will return a String value on get, and set this String on the
@@ -49,11 +48,9 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
  * {@link Property} object controlling their value: on get, sub properties will
  * be resolved at the next iteration, and on set, they will be set on the
  * property instance so the document model is aware of the change.
- * </p>
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class DocumentModelResolver extends BeanELResolver {
 
@@ -98,7 +95,7 @@ public class DocumentModelResolver extends BeanELResolver {
             try {
                 DocumentPropertyContext ctx = (DocumentPropertyContext) base;
                 Property docProperty = ctx.doc.getProperty(ctx.schema + ":"
-                        + (String) property);
+                        + property);
                 value = getDocumentPropertyValue(docProperty);
                 context.setPropertyResolved(true);
             } catch (ClientException pe) {

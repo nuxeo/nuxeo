@@ -9,6 +9,4 @@ target
 *.ipr
 *.iml
 *.iws
-nuxeo-platform-ear/nuxeo.ear.org
-nuxeo-platform-ear/target-resources
 .DS_Store

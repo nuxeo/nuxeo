@@ -64,8 +64,6 @@ import org.richfaces.event.NodeExpandedEvent;
 @Install(precedence = FRAMEWORK)
 public class TreeActionsBean implements TreeActions {
 
-    private static final long serialVersionUID = 4773510417160248991L;
-
     private static final Log log = LogFactory.getLog(TreeActionsBean.class);
 
     public static final String NODE_SELECTED_MARKER = TreeActionsBean.class.getName() +

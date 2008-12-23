@@ -58,7 +58,7 @@ public class Xml2TextPluginImpl extends AbstractPlugin {
         }
     }
 
-    private Blob extractFromXmlSource(final InputStream sourceIs) {
+    private static Blob extractFromXmlSource(final InputStream sourceIs) {
         String text = "";
         try {
             Xml2Text xml2text = new Xml2Text();

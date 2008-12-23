@@ -9,13 +9,14 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
-public class SimpleCacheHolder<T> implements Serializable {
+// Not used as of 5.2.
+public class SimpleCacheHolder<T extends Serializable> implements Serializable {
 
     public static final int DEFAULT_SIZE = 20;
 
     private static final long serialVersionUID = 1L;
 
-    protected Map<String, T> cacheMap;
+    protected final Map<String, T> cacheMap;
 
     public SimpleCacheHolder() {
         this(DEFAULT_SIZE);
@@ -61,12 +62,12 @@ public class SimpleCacheHolder<T> implements Serializable {
         return getKey(docRef, key);
     }
 
-    // Add management
+    // Adders
     protected void doAdd(String key, T value) {
         cacheMap.put(key, value);
     }
 
-    public void addTocache(String key, T value) {
+    public void addToCache(String key, T value) {
         doAdd(key, value);
     }
 
@@ -78,7 +79,7 @@ public class SimpleCacheHolder<T> implements Serializable {
         doAdd(getKey(doc, key), value);
     }
 
-    // get management
+    // Getters
     protected T doGet(String key) {
         return cacheMap.get(key);
     }
@@ -95,7 +96,7 @@ public class SimpleCacheHolder<T> implements Serializable {
         return doGet(getKey(doc, key));
     }
 
-    // remove management
+    // Removers
     protected void doRemove(String key) {
         cacheMap.remove(key);
     }

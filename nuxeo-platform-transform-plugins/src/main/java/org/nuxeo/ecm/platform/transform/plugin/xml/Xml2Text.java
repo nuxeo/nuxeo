@@ -39,7 +39,8 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class Xml2Text extends DefaultHandler {
 
-    protected static SAXParserFactory factory = SAXParserFactory.newInstance();
+    protected static final SAXParserFactory factory = SAXParserFactory.newInstance();
+
     static {
         factory.setValidating(false);
         factory.setNamespaceAware(false);
@@ -48,7 +49,6 @@ public class Xml2Text extends DefaultHandler {
     protected SAXParser parser;
     protected StringBuffer buf;
     protected boolean trim = false;
-
 
     public Xml2Text() throws SAXException, ParserConfigurationException {
         parser = factory.newSAXParser();

@@ -26,20 +26,20 @@ import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 
 public class ExtendedInfoInjector  {
 
+    protected final ExpressionEvaluator evaluator;
+
     public ExtendedInfoInjector(ExpressionEvaluator evaluator) {
-        super();
         this.evaluator = evaluator;
     }
-    
-    protected final ExpressionEvaluator evaluator;
 
     public void injectExtendedInfo(Map<String, ExtendedInfo> infos,
             ExtendedInfoDescriptor descriptor,
             ExtendedInfoContext context) {
-        Serializable value = (Serializable) evaluator.evaluateExpression(
+        Serializable value = evaluator.evaluateExpression(
                 context, descriptor.getExpression(), Serializable.class);
-        if (value == null)
+        if (value == null) {
             return;
+        }
         String key = descriptor.getKey();
         infos.put(key, ExtendedInfo.createExtendedInfo(value));
     }

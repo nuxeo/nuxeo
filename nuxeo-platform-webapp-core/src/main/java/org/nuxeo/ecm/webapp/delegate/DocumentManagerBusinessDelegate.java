@@ -64,7 +64,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
     /**
      * Map holding the open session for each repository location.
      */
-    protected Map<RepositoryLocation, CoreSession> sessions = new HashMap<RepositoryLocation, CoreSession>();
+    protected final Map<RepositoryLocation, CoreSession> sessions = new HashMap<RepositoryLocation, CoreSession>();
 
     public void initialize() {
         log.debug("Seam component initialized...");

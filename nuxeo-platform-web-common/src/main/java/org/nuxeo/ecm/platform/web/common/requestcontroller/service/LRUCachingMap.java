@@ -13,7 +13,7 @@ public class LRUCachingMap<K,V> extends LinkedHashMap<K,V> {
 
     private static final long serialVersionUID = 1L;
 
-    private int maxCachedItems;
+    private final int maxCachedItems;
 
     public LRUCachingMap(int maxCachedItems) {
         super(maxCachedItems, 1.0f, true);

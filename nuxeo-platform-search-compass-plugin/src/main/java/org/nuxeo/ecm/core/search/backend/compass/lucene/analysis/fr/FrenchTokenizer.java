@@ -47,6 +47,7 @@ import org.apache.lucene.analysis.CharTokenizer;
 * This tokenizer will cut at anything that is nor a letter, nor a digit.
  */
 
+@SuppressWarnings({"ALL"})
 public class FrenchTokenizer extends CharTokenizer {
   /** Construct a new LetterTokenizer. */
   public FrenchTokenizer(Reader in) {

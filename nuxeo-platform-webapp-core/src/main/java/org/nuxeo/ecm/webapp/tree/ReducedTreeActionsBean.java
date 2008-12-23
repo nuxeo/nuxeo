@@ -30,7 +30,7 @@ import org.jboss.seam.annotations.Scope;
  * Manages the tree for reduced utilization, like for popup. Performs additional
  * work when a node is selected such as saving the selection and redirecting
  * towards the required page.
- *
+ * <p>
  * The scope is PAGE to reinitialize the tree for new utilization.
  *
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
@@ -39,7 +39,5 @@ import org.jboss.seam.annotations.Scope;
 @Name("reducedTreeActions")
 @Install(precedence = FRAMEWORK)
 public class ReducedTreeActionsBean extends TreeActionsBean {
-
-    private static final long serialVersionUID = 1L;
 
 }

@@ -39,12 +39,9 @@ public class LogEntryProvider  {
 
     private static final Log log = LogFactory.getLog(LogEntryProvider.class);
 
-    private static final long serialVersionUID = 3901649349937511329L;
-
     protected EntityManager em;
 
     private LogEntryProvider() {
-        super();
     }
 
     public static LogEntryProvider createProvider(EntityManager em) {
@@ -68,7 +65,7 @@ public class LogEntryProvider  {
     protected LogEntry doPublish(LogEntry entry) {
         return entry;
     }
-    
+
     public void addLogEntry(LogEntry entry) {
         doPersist(entry);
     }
@@ -79,7 +76,6 @@ public class LogEntryProvider  {
         }
     }
 
-    
     @SuppressWarnings("unchecked")
     public List<LogEntry> getLogEntriesFor(String uuid) {
         if (log.isDebugEnabled()) log.debug("getLogEntriesFor() UUID=" + uuid);
@@ -87,7 +83,7 @@ public class LogEntryProvider  {
         query.setParameter("docUUID", uuid);
         return doPublish(query.getResultList());
     }
-   
+
 
     @SuppressWarnings("unchecked")
     @Deprecated
@@ -211,7 +207,7 @@ public class LogEntryProvider  {
         if (eventIds == null) {
             throw new IllegalArgumentException("eventIds should be provided");
         }
-        StringBuffer queryString = new StringBuffer();
+        StringBuilder queryString = new StringBuilder();
 
         queryString.append("from LogEntry log where ");
 
@@ -253,11 +249,11 @@ public class LogEntryProvider  {
 
         return doPublish(query.getResultList());
     }
-    
+
     @SuppressWarnings("unchecked")
     public int removeEntries(String eventId, String pathPattern) {
-        // TODO extended infos cascade delete does not work using HQL, so we have to delete each 
-        // entry by hand. 
+        // TODO extended infos cascade delete does not work using HQL, so we have to delete each
+        // entry by hand.
         Query query = em.createNamedQuery("LogEntry.findByEventIdAndPath");
         query.setParameter("eventId", eventId);
         query.setParameter("pathPattern", pathPattern + "%");

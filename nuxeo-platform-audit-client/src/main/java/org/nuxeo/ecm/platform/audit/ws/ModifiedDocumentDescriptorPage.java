@@ -29,7 +29,7 @@ public class ModifiedDocumentDescriptorPage implements Serializable {
 
     private final boolean bHasMorePage;
 
-    private ModifiedDocumentDescriptor[] modifiedDocuments;
+    private final ModifiedDocumentDescriptor[] modifiedDocuments;
 
     public ModifiedDocumentDescriptorPage() {
         this(null, 0, false);

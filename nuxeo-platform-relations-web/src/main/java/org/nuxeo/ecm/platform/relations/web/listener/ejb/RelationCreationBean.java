@@ -33,21 +33,20 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
  * Helper for creation form validation and display.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class RelationCreationBean {
 
     // components for bindings to perform validation
 
-    protected transient UIInput objectTypeInput;
+    protected UIInput objectTypeInput;
 
-    protected transient UIInput objectLiteralValueInput;
+    protected UIInput objectLiteralValueInput;
 
-    protected transient UIInput objectUriInput;
+    protected UIInput objectUriInput;
 
-    protected transient UIInput objectDocumentTitleInput;
+    protected UIInput objectDocumentTitleInput;
 
-    protected transient UIInput objectDocumentUidInput;
+    protected UIInput objectDocumentUidInput;
 
     public UIInput getObjectLiteralValueInput() {
         return objectLiteralValueInput;

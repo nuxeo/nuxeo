@@ -67,7 +67,7 @@ public class DirectoryManagerBean implements DirectoryManager {
 
     private DirectoryService directoryService;
 
-    private AtomicLong sessionIdCounter = new AtomicLong(0);
+    private final AtomicLong sessionIdCounter = new AtomicLong(0);
 
     @PostActivate
     @PostConstruct

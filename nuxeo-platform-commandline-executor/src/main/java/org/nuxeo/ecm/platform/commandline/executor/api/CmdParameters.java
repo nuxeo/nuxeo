@@ -34,7 +34,7 @@ public class CmdParameters implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    Map<String, String> params;
+    protected final Map<String, String> params;
 
     public CmdParameters() {
         params = new HashMap<String, String>();

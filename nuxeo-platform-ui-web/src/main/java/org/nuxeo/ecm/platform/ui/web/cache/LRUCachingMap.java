@@ -15,7 +15,7 @@ public class LRUCachingMap<K, V> extends LinkedHashMap<K, V> {
 
     private static final long serialVersionUID = 1L;
 
-    private int maxCachedItems;
+    private final int maxCachedItems;
 
     public LRUCachingMap(int maxCachedItems) {
         super(maxCachedItems, 1.0f, true);
@@ -24,6 +24,7 @@ public class LRUCachingMap<K, V> extends LinkedHashMap<K, V> {
 
     @Override
     protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-        return (size() > maxCachedItems);
+        return size() > maxCachedItems;
     }
+
 }

@@ -29,10 +29,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * XMap descriptor for a CommandLine
  *
  * @author tiry
- *
  */
 @XObject("command")
-public class CommandLineDescriptor implements Serializable{
+public class CommandLineDescriptor implements Serializable {
 
     /**
      *
@@ -58,16 +57,16 @@ public class CommandLineDescriptor implements Serializable{
     protected String winParameterString;
 
     @XNode("winCommand")
-    protected String winCommand=null;
+    protected String winCommand;
 
     @XNode("tester")
-    protected String tester=null;
+    protected String tester;
 
     @XNode("readOutput")
-    protected boolean readOutput=true;
+    protected boolean readOutput = true;
 
     @XNode("installationDirective")
-    protected String installationDirective=null;
+    protected String installationDirective;
 
     protected String installErrorMessage;
 
@@ -80,7 +79,7 @@ public class CommandLineDescriptor implements Serializable{
     }
 
     public String getName() {
-        if (name==null) {
+        if (name == null) {
             return getCommand();
         }
         return name;
@@ -96,13 +95,12 @@ public class CommandLineDescriptor implements Serializable{
     }
 
     public String getCommand() {
-        if (winCommand==null) {
-            return command;}
-        else {
+        if (winCommand == null) {
+            return command;
+        } else {
             if (isWindows()) {
                 return winCommand;
-            }
-            else {
+            } else {
                 return command;
             }
         }
@@ -111,7 +109,6 @@ public class CommandLineDescriptor implements Serializable{
     public String getInstallationDirective() {
         return installationDirective;
     }
-
 
     public String getTester() {
         return tester;
@@ -130,7 +127,7 @@ public class CommandLineDescriptor implements Serializable{
     }
 
     public String getParametersString() {
-        if (isWindows() && winParameterString!=null) {
+        if (isWindows() && winParameterString != null) {
             return winParameterString;
         }
         return parameterString;
@@ -139,4 +136,5 @@ public class CommandLineDescriptor implements Serializable{
     public String getExecutor() {
         return CommandLineExecutorComponent.DEFAULT_EXECUTOR;
     }
+
 }

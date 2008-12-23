@@ -145,7 +145,7 @@ public class RFC822ToTextPlugin extends AbstractPlugin {
         return null;
     }
 
-    protected void writeInfo(OutputStream stream, Address address) {
+    protected static void writeInfo(OutputStream stream, Address address) {
         if (address != null) {
             try {
                 stream.write(address.toString().getBytes());
@@ -156,7 +156,7 @@ public class RFC822ToTextPlugin extends AbstractPlugin {
         }
     }
 
-    protected void writeInfo(OutputStream stream, Address[] addresses) {
+    protected static void writeInfo(OutputStream stream, Address[] addresses) {
         if (addresses != null) {
             for (Address address : addresses) {
                 writeInfo(stream, address);
@@ -164,7 +164,7 @@ public class RFC822ToTextPlugin extends AbstractPlugin {
         }
     }
 
-    protected void writeInfo(OutputStream stream, String info) {
+    protected static void writeInfo(OutputStream stream, String info) {
         if (info != null) {
             try {
                 stream.write(info.getBytes());
@@ -175,7 +175,7 @@ public class RFC822ToTextPlugin extends AbstractPlugin {
         }
     }
 
-    protected void writeInfo(OutputStream stream, byte[] info) {
+    protected static void writeInfo(OutputStream stream, byte[] info) {
         if (info != null) {
             try {
                 stream.write(info);
@@ -186,7 +186,7 @@ public class RFC822ToTextPlugin extends AbstractPlugin {
         }
     }
 
-    protected byte[] extractTextFromMessagePart(TransformServiceCommon service,
+    protected static byte[] extractTextFromMessagePart(TransformServiceCommon service,
             Part p) throws Exception {
         ContentType contentType = new ContentType(p.getContentType());
         String baseType = contentType.getBaseType();
@@ -209,7 +209,7 @@ public class RFC822ToTextPlugin extends AbstractPlugin {
         return null;
     }
 
-    protected List<Part> getAttachmentParts(Part p) throws Exception {
+    protected static List<Part> getAttachmentParts(Part p) throws Exception {
         List<Part> res = new ArrayList<Part>();
         if (p.isMimeType(MESSAGE_RFC822_MIMETYPE)) {
             res.addAll(getAttachmentParts((Part) p.getContent()));

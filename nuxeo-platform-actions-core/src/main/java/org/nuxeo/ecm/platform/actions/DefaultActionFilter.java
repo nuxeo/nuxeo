@@ -161,7 +161,7 @@ public class DefaultActionFilter implements ActionFilter {
                 && (rule.conditions == null || rule.conditions.length == 0 || checkConditions(
                         action, context, rule.conditions));
         // put in cache
-        precomputed.put(rule, Boolean.valueOf(result));
+        precomputed.put(rule, result);
         return result;
     }
 

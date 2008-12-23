@@ -32,7 +32,7 @@ import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor
  */
 public abstract class AbstractExecutor {
 
-    protected boolean isWindows() {
+    protected static boolean isWindows() {
         String osName = System.getProperty("os.name");
         return osName.toLowerCase().contains("windows");
     }

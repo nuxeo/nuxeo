@@ -31,78 +31,63 @@ import javax.el.VariableMapper;
 
 public class ExpressionContext extends ELContext {
 
-    private static final long serialVersionUID = -8286890979128279598L;
-
-    public ExpressionContext() {
-        super();
-    }
-
     private static class MyVariableMapper extends VariableMapper {
-        
-        private MyVariableMapper() {
-            super();
-        }
-        
-        protected Map<String,ValueExpression> map = new HashMap<String,ValueExpression>(); 
-       
+
+        protected final Map<String, ValueExpression> map = new HashMap<String, ValueExpression>();
+
         @Override
         public ValueExpression resolveVariable(String variable) {
             return map.get(variable);
         }
-        
+
         @Override
         public ValueExpression setVariable(String variable, ValueExpression expression) {
             return map.put(variable, expression);
         }
     }
-    
-    private static class MyFunctionMapper  extends FunctionMapper {
-        
-        private MyFunctionMapper() {
-            super();
-        }
-        
-        private Map<String,Method> map = new HashMap<String,Method>();
-        
+
+    private static class MyFunctionMapper extends FunctionMapper {
+
+        private final Map<String, Method> map = new HashMap<String, Method>();
+
         public void setFunction(String prefix, String localName, Method method) {
             map.put(prefix + ":" + localName, method);
         }
-        
+
         @Override
         public Method resolveFunction(String prefix, String localName) {
             return map.get(prefix + ":" + localName);
         }
     }
-    
+
     private static class MyResolver extends CompositeELResolver {
 
-        public MyResolver() {
-            super();
+        private MyResolver() {
             add(new MapELResolver());
             add(new ArrayELResolver());
             add(new DocumentModelResolver());
         }
+
     }
-    
+
     private final ELResolver resolver = new MyResolver();
-   
+
     private final FunctionMapper functionMapper = new MyFunctionMapper();
     private final VariableMapper variableMapper = new MyVariableMapper();
 
     @Override
     public ELResolver getELResolver() {
-      return resolver;
+        return resolver;
     }
 
     @Override
     public FunctionMapper getFunctionMapper() {
-      return functionMapper;
+        return functionMapper;
     }
 
     @Override
     public VariableMapper getVariableMapper() {
-      return variableMapper;
+        return variableMapper;
     }
- 
 
-  }
+}

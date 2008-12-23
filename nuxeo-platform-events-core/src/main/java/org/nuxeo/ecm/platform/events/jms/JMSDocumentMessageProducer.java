@@ -54,10 +54,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 //XXX: in the process of being refactored
 public final class JMSDocumentMessageProducer {
-    private static boolean transacted;
-    private static boolean isDeliveryPersistent;
-    private static boolean isDisableMessageID;
-    private static boolean isDisableMessageTimestamp;
+
+    private static final boolean transacted;
+    private static final boolean isDeliveryPersistent;
+    private static final boolean isDisableMessageID;
+    private static final boolean isDisableMessageTimestamp;
     private static final Log log = LogFactory.getLog(JMSDocumentMessageProducer.class);
 
     static {

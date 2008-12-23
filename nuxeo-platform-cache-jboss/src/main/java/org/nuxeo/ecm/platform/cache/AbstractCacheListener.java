@@ -50,11 +50,12 @@ public abstract class AbstractCacheListener implements CacheListener {
         log.debug(msg);
     }
 
-    private String getDocInfo(DocumentModel doc) {
+    private static String getDocInfo(DocumentModel doc) {
         try {
-            return (String)doc.getProperty("common", "title");
+            return (String) doc.getProperty("common", "title");
         } catch (ClientException e) {
             return null;
         }
     }
+
 }

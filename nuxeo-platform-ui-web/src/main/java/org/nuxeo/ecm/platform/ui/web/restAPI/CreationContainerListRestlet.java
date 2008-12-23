@@ -51,7 +51,8 @@ import org.restlet.data.Response;
 @Scope(EVENT)
 public class CreationContainerListRestlet extends BaseNuxeoRestlet implements
         LiveEditConstants, Serializable {
-    private static Log log = LogFactory.getLog(CreationContainerListRestlet.class);
+
+    private static final Log log = LogFactory.getLog(CreationContainerListRestlet.class);
     private static final long serialVersionUID = 5403775170948512675L;
 
     @Override
