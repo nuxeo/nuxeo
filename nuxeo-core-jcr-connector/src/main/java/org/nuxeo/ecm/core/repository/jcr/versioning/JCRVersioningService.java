@@ -241,12 +241,12 @@ public class JCRVersioningService implements VersioningService {
         return "nt:frozenNode".equals(node.getPrimaryNodeType().getName());
     }
 
-    protected Version getBaseVersionNode(JCRDocument doc)
+    protected static Version getBaseVersionNode(JCRDocument doc)
             throws RepositoryException {
         return doc.getNode().getBaseVersion();
     }
 
-    protected Version getVersionNode(JCRDocument doc, String label)
+    protected static Version getVersionNode(JCRDocument doc, String label)
             throws RepositoryException {
         return doc.getNode().getVersionHistory().getVersionByLabel(label);
     }
@@ -262,7 +262,7 @@ public class JCRVersioningService implements VersioningService {
             throws RepositoryException {
         if (log.isDebugEnabled()) {
             try {
-                log.info("remove doc (" + doc.getPath()
+                log.debug("remove doc (" + doc.getPath()
                         + ") version with label: " + label);
             } catch (DocumentException e) {
                 log.error(e);
@@ -280,7 +280,7 @@ public class JCRVersioningService implements VersioningService {
      *
      * @throws RepositoryException
      */
-    private void _printVersions(VersionHistory vhist) throws RepositoryException {
+    private static void _printVersions(VersionHistory vhist) throws RepositoryException {
         VersionIterator it = vhist.getAllVersions();
 
         while (it.hasNext()) {

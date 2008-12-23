@@ -91,12 +91,20 @@ public class Column implements Serializable {
     public Column(Table table, String physicalName, PropertyType type,
             int sqlType, String key, Model model) {
         this.table = table;
-        this.dialect = table.dialect;
+        dialect = table.getDialect();
         this.physicalName = physicalName;
         this.type = type;
         this.sqlType = sqlType;
         this.key = key;
         this.model = model;
+    }
+
+    /**
+     * Creates a column from an existing column and an aliased table.
+     */
+    public Column(Column column, Table table) {
+        this(table, column.physicalName, column.type, column.sqlType,
+                column.key, column.model);
     }
 
     public String getPhysicalName() {
@@ -152,7 +160,7 @@ public class Column implements Serializable {
     }
 
     public void setPrecision(int scale) {
-        this.precision = scale;
+        precision = scale;
     }
 
     public int getScale() {
@@ -211,7 +219,7 @@ public class Column implements Serializable {
             ps.setInt(index, ((Long) value).intValue());
             return;
         case Types.VARCHAR:
-        case Types.LONGVARCHAR:
+        case Types.LONGVARCHAR: // MySQL
             String v;
             if (type == PropertyType.BINARY) {
                 v = ((Binary) value).getDigest();
@@ -225,6 +233,7 @@ public class Column implements Serializable {
             return;
         case Types.BIT:
         case Types.SMALLINT: // Derby
+        case Types.BOOLEAN: // H2
             ps.setBoolean(index, ((Boolean) value).booleanValue());
             return;
         case Types.TIMESTAMP:
@@ -253,7 +262,7 @@ public class Column implements Serializable {
             result = rs.getLong(index);
             break;
         case Types.VARCHAR:
-        case Types.LONGVARCHAR:
+        case Types.LONGVARCHAR: // MySQL
             String string = rs.getString(index);
             if (type == PropertyType.BINARY && string != null) {
                 result = model.getBinary(string);
@@ -275,6 +284,7 @@ public class Column implements Serializable {
             break;
         case Types.BIT:
         case Types.SMALLINT: // Derby
+        case Types.BOOLEAN: // H2
             result = rs.getBoolean(index);
             break;
         default:

@@ -29,7 +29,7 @@ public class TestCustomVersioning  extends TestVersioning {
 
     @Override
     protected void deployCustomVersioning() throws Exception {
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "CustomVersioningService.xml");
     }
 

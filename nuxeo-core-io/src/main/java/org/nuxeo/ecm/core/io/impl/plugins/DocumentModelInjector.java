@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
 @SuppressWarnings({"ThrowableInstanceNeverThrown"})
 public class DocumentModelInjector extends AbstractDocumentModelWriter {
 
-    /**
+   /**
     *
     * @param session the session to the repository where to write
     * @param parentPath where to write the tree. this document will be used as

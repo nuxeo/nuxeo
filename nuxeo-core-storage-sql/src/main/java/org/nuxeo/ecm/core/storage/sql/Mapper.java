@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -29,6 +30,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,6 +52,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.exception.JDBCExceptionHelper;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionFragmentIterator;
@@ -144,12 +147,6 @@ public class Mapper {
         }
     }
 
-    private StorageException newStorageException(SQLException e,
-            String message, String sql) {
-        return new StorageException(JDBCExceptionHelper.convert(
-                sqlInfo.getSqlExceptionConverter(), e, message, sql));
-    }
-
     protected Model getModel() {
         return model;
     }
@@ -203,8 +200,7 @@ public class Mapper {
     // for debug
     protected void logSQL(String sql, List<Serializable> values) {
         for (Serializable v : values) {
-            String value;
-            value = loggedValue(v);
+            String value = loggedValue(v);
             sql = sql.replaceFirst("\\?", value);
         }
         logDebug(sql);
@@ -244,6 +240,19 @@ public class Mapper {
         if (value instanceof Binary) {
             return "'" + ((Binary) value).getDigest() + "'";
         }
+        if (value.getClass().isArray()) {
+            Serializable[] v = (Serializable[]) value;
+            StringBuilder b = new StringBuilder();
+            b.append('[');
+            for (int i = 0; i < v.length; i++) {
+                if (i > 0) {
+                    b.append(',');
+                }
+                b.append(loggedValue(v[i]));
+            }
+            b.append(']');
+            return b.toString();
+        }
         return value.toString();
     }
 
@@ -251,126 +260,115 @@ public class Mapper {
 
     /**
      * Creates the necessary structures in the database.
-     * <p>
-     * Preexisting tables are not recreated.
-     * <p>
-     * TODO: emit the necessary alter tables if some columns are missing
      */
     protected void createDatabase() throws StorageException {
         try {
-            /*
-             * Find existing tables.
-             */
-            DatabaseMetaData metadata = connection.getMetaData();
-            ResultSet rs = metadata.getTables(null, null, "%",
-                    new String[] { "TABLE" });
-            Set<String> tableNames = new HashSet<String>();
-            while (rs.next()) {
-                String tableName = rs.getString("TABLE_NAME");
-                tableNames.add(tableName);
-                // normalize to uppercase too
-                tableNames.add(tableName.toUpperCase());
-            }
-
-            Statement st = connection.createStatement();
-            try {
-                for (Table table : sqlInfo.getDatabase().getTables()) {
-                    String tableName = table.getPhysicalName();
-                    if (!tableNames.contains(tableName) &&
-                            !tableNames.contains(tableName.toUpperCase())) {
-                        /*
-                         * Create missing table.
-                         */
-                        String sql = table.getCreateSql();
-                        logDebug(sql);
-                        st.execute(sql);
-                        for (String s : table.getPostCreateSqls()) {
-                            logDebug(s);
-                            st.execute(s);
-                        }
-                    }
-                    /*
-                     * Get existing columns.
-                     */
-                    rs = metadata.getColumns(null, null, tableName, "%");
-                    Map<String, Integer> columnTypes = new HashMap<String, Integer>();
-                    while (rs.next()) {
-                        String columnName = rs.getString("COLUMN_NAME").toUpperCase();
-                        int sqlType = rs.getInt("DATA_TYPE");
-                        columnTypes.put(columnName, Integer.valueOf(sqlType));
-                    }
-                    /*
-                     * Update types and create missing columns.
-                     */
-                    for (Column column : table.getColumns()) {
-                        Integer type = columnTypes.remove(column.getPhysicalName().toUpperCase());
-                        if (type == null) {
-                            log.warn("Adding missing column in database: " +
-                                    column.getFullQuotedName());
-                            String sql = table.getAddColumnSql(column);
-                            logDebug(sql);
-                            st.execute(sql);
-                        } else {
-                            int sqlType = type.intValue();
-                            int t = column.getSqlType();
-                            if (t != sqlType) {
-                                // type in database is different...
-                                if (!(t == Types.BIT && sqlType == Types.SMALLINT) // Derby
-                                        &&
-                                        !(t == Types.CLOB && sqlType == Types.LONGVARCHAR) // MySQL
-                                        &&
-                                        !(t == Types.CLOB && sqlType == Types.VARCHAR) // PostgreSQL
-                                ) {
-                                    log.error(String.format(
-                                            "SQL type mismatch for %s: expected %s, database has %s",
-                                            column.getFullQuotedName(),
-                                            Integer.valueOf(t), type));
-                                }
-                                column.setSqlType(sqlType);
-                            }
-                        }
-                    }
-                    if (!columnTypes.isEmpty()) {
-                        log.warn("Database contains additional unused columns for table " +
-                                table.getQuotedName() +
-                                ": " +
-                                StringUtils.join(new ArrayList<String>(
-                                        columnTypes.keySet()), ", "));
-                    }
-                }
-
-                /*
-                 * Create stored procedures.
-                 */
-                for (StoredProcedureInfo spi : sqlInfo.getStoredProceduresSqls()) {
-                    boolean drop;
-                    if (spi.dropFlag != null) {
-                        drop = spi.dropFlag.booleanValue();
-                    } else {
-                        logDebug(spi.checkDropStatement);
-                        rs = st.executeQuery(spi.checkDropStatement);
-                        if (rs.next()) {
-                            // already present
-                            logDebug("  -> (present)");
-                            drop = true;
-                        } else {
-                            drop = false;
-                        }
-                    }
-                    if (drop) {
-                        logDebug(spi.dropStatement);
-                        st.execute(spi.dropStatement);
-                    }
-                    logDebug(spi.createStatement);
-                    st.execute(spi.createStatement);
-                }
-            } finally {
-                st.close();
-            }
-
+            executeConditionalStatements(sqlInfo.getStoredProceduresSqls());
+            createTables();
         } catch (SQLException e) {
             throw new StorageException(e);
         }
+    }
+
+    protected void createTables() throws SQLException {
+        DatabaseMetaData metadata = connection.getMetaData();
+        Set<String> tableNames = findTableNames(metadata);
+        Statement st = connection.createStatement();
+
+        for (Table table : sqlInfo.getDatabase().getTables()) {
+            String tableName = table.getName();
+            if (!tableNames.contains(tableName) &&
+                    !tableNames.contains(tableName.toUpperCase())) {
+                /*
+                 * Create missing table.
+                 */
+                String sql = table.getCreateSql();
+                logDebug(sql);
+                st.execute(sql);
+                for (String s : table.getPostCreateSqls()) {
+                    logDebug(s);
+                    st.execute(s);
+                }
+            }
+
+            /*
+             * Get existing columns.
+             */
+            ResultSet rs = metadata.getColumns(null, null, tableName, "%");
+            Map<String, Integer> columnTypes = new HashMap<String, Integer>();
+            while (rs.next()) {
+                String schema = rs.getString("TABLE_SCHEM").toUpperCase();
+                if ("INFORMATION_SCHEMA".equals(schema)) {
+                    // H2 returns some system tables (locks)
+                    continue;
+                }
+                String columnName = rs.getString("COLUMN_NAME").toUpperCase();
+                int sqlType = rs.getInt("DATA_TYPE");
+                columnTypes.put(columnName, Integer.valueOf(sqlType));
+            }
+
+            /*
+             * Update types and create missing columns.
+             */
+            for (Column column : table.getColumns()) {
+                Integer type = columnTypes.remove(column.getPhysicalName().toUpperCase());
+                if (type == null) {
+                    log.warn("Adding missing column in database: " +
+                            column.getFullQuotedName());
+                    String sql = table.getAddColumnSql(column);
+                    logDebug(sql);
+                    st.execute(sql);
+                } else {
+                    int sqlType = type.intValue();
+                    int t = column.getSqlType();
+                    if (t != sqlType) {
+                        // type in database is different...
+                        column.setSqlType(sqlType);
+                        // some databases are known to change requested types
+                        if (t == Types.BIT && //
+                                (sqlType == Types.SMALLINT // Derby
+                                || sqlType == Types.BOOLEAN // H2
+                                )) {
+                            continue;
+                        }
+                        if (t == Types.CLOB && //
+                                (sqlType == Types.LONGVARCHAR // MySQL
+                                || sqlType == Types.VARCHAR // PostgreSQL
+                                )) {
+                            continue;
+                        }
+                        // otherwise log this
+                        log.error(String.format(
+                                "SQL type mismatch for %s: expected %s, database has %s",
+                                column.getFullQuotedName(), Integer.valueOf(t),
+                                type));
+                    }
+                }
+            }
+            if (!columnTypes.isEmpty()) {
+                log.warn("Database contains additional unused columns for table " +
+                        table.getQuotedName() +
+                        ": " +
+                        StringUtils.join(new ArrayList<String>(
+                                columnTypes.keySet()), ", "));
+            }
+        }
+
+        st.close();
+    }
+
+    protected static Set<String> findTableNames(DatabaseMetaData metadata)
+            throws SQLException {
+        Set<String> tableNames = new HashSet<String>();
+        ResultSet rs = metadata.getTables(null, null, "%",
+                new String[] { "TABLE" });
+        while (rs.next()) {
+            String tableName = rs.getString("TABLE_NAME");
+            tableNames.add(tableName);
+            // normalize to uppercase too
+            tableNames.add(tableName.toUpperCase());
+        }
+        return tableNames;
     }
 
     /**
@@ -411,8 +409,36 @@ public class Mapper {
                 ps.close();
             }
         } catch (SQLException e) {
-            throw newStorageException(e, "Could not select", sql);
+            throw new StorageException("Could not select: " + sql, e);
         }
+    }
+
+    protected void executeConditionalStatements(
+            Collection<StoredProcedureInfo> spis) throws SQLException {
+        Statement st = connection.createStatement();
+        for (StoredProcedureInfo spi : spis) {
+            boolean drop;
+            if (spi.dropFlag != null) {
+                drop = spi.dropFlag.booleanValue();
+            } else {
+                logDebug(spi.checkDropStatement);
+                ResultSet rs = st.executeQuery(spi.checkDropStatement);
+                if (rs.next()) {
+                    // already present
+                    logDebug("  -> (present)");
+                    drop = true;
+                } else {
+                    drop = false;
+                }
+            }
+            if (drop) {
+                logDebug(spi.dropStatement);
+                st.execute(spi.dropStatement);
+            }
+            logDebug(spi.createStatement);
+            st.execute(spi.createStatement);
+        }
+        st.close();
     }
 
     /**
@@ -458,7 +484,7 @@ public class Mapper {
                 ps.close();
             }
         } catch (SQLException e) {
-            throw newStorageException(e, "Could not insert", sql);
+            throw new StorageException("Could not insert: " + sql, e);
         }
     }
 
@@ -499,7 +525,7 @@ public class Mapper {
                 }
                 ps.execute();
             } catch (SQLException e) {
-                throw newStorageException(e, "Could not insert", sql);
+                throw new StorageException("Could not insert: " + sql, e);
             }
 
             // TODO only do this if the id was not inserted!
@@ -522,8 +548,8 @@ public class Mapper {
                         try {
                             rs = ps.executeQuery();
                         } catch (SQLException e) {
-                            throw newStorageException(e, "Could not select",
-                                    isql);
+                            throw new StorageException("Could not select: " +
+                                    isql, e);
                         }
                         rs.next();
                         Serializable iv = icolumn.getFromResultSet(rs, 1);
@@ -532,7 +558,8 @@ public class Mapper {
                             logDebug("  -> " + icolumn.getKey() + '=' + iv);
                         }
                     } catch (SQLException e) {
-                        throw newStorageException(e, "Could not fetch", isql);
+                        throw new StorageException("Could not fetch: " + isql,
+                                e);
                     }
                 }
                 break;
@@ -581,7 +608,7 @@ public class Mapper {
                     ps.execute();
                 }
             } catch (SQLException e) {
-                throw newStorageException(e, "Could not insert", sql);
+                throw new StorageException("Could not insert: " + sql, e);
             }
 
         } finally {
@@ -743,7 +770,7 @@ public class Mapper {
             }
             return list;
         } catch (SQLException e) {
-            throw newStorageException(e, "Could not select", select.sql);
+            throw new StorageException("Could not select: " + select.sql, e);
         } finally {
             if (ps != null) {
                 try {
@@ -827,10 +854,10 @@ public class Mapper {
                     return null;
                 }
                 // construct the row from the results
-                Serializable id = null;
                 Map<String, Serializable> map = new HashMap<String, Serializable>();
                 i = 0;
                 List<Column> columns = sqlInfo.getSelectByChildNameWhatColumns(complexProp);
+                Serializable id = null;
                 for (Column column : columns) {
                     i++;
                     String key = column.getKey();
@@ -861,7 +888,7 @@ public class Mapper {
                 ps.close();
             }
         } catch (SQLException e) {
-            throw newStorageException(e, "Could not select", sql);
+            throw new StorageException("Could not select: " + sql, e);
         }
     }
 
@@ -929,7 +956,7 @@ public class Mapper {
                 ps.close();
             }
         } catch (SQLException e) {
-            throw newStorageException(e, "Could not select", sql);
+            throw new StorageException("Could not select: " + sql, e);
         }
     }
 
@@ -970,7 +997,7 @@ public class Mapper {
                 ps.close();
             }
         } catch (SQLException e) {
-            throw newStorageException(e, "Could not update", update.sql);
+            throw new StorageException("Could not update: " + update.sql, e);
         }
         row.clearDirty();
     }
@@ -1005,7 +1032,7 @@ public class Mapper {
                 ps.close();
             }
         } catch (SQLException e) {
-            throw newStorageException(e, "Could not update", sql);
+            throw new StorageException("Could not update: " + sql, e);
         }
     }
 
@@ -1032,8 +1059,8 @@ public class Mapper {
         try {
             deleteFragment(fragment.getTableName(), fragment.getId());
         } catch (SQLException e) {
-            throw newStorageException(e, "Could not delete",
-                    fragment.getId().toString());
+            throw new StorageException("Could not delete: " +
+                    fragment.getId().toString(), e);
         }
     }
 
@@ -1128,7 +1155,8 @@ public class Mapper {
             }
             return newRootId;
         } catch (SQLException e) {
-            throw newStorageException(e, "Could not copy", sourceId.toString());
+            throw new StorageException(
+                    "Could not copy: " + sourceId.toString(), e);
         }
     }
 
@@ -1454,15 +1482,23 @@ public class Mapper {
      * Makes a NXQL query to the database.
      *
      * @param query the query as a parsed tree
+     * @param queryFilter the query filter
      * @param session the current session (to resolve paths)
      * @return the results
      * @throws StorageException
      * @throws SQLException
      */
-    public List<Serializable> query(SQLQuery query, Session session)
-            throws StorageException, SQLException {
-        QueryMaker queryMaker = new QueryMaker(sqlInfo, model, session, query);
+    public List<Serializable> query(SQLQuery query, QueryFilter queryFilter,
+            Session session) throws StorageException, SQLException {
+        QueryMaker queryMaker = new QueryMaker(sqlInfo, model, session, query,
+                queryFilter);
         queryMaker.makeQuery();
+
+        if (queryMaker.selectInfo == null) {
+            logDebug("Query cannot return anything due to conflicting clauses");
+            return Collections.emptyList();
+        }
+
         if (log.isDebugEnabled()) {
             logSQL(queryMaker.selectInfo.sql, queryMaker.selectParams);
         }
@@ -1474,6 +1510,10 @@ public class Mapper {
                     Calendar cal = (Calendar) object;
                     Timestamp ts = new Timestamp(cal.getTimeInMillis());
                     ps.setTimestamp(i++, ts, cal); // cal passed for timezone
+                } else if (object instanceof String[]) {
+                    Array array = sqlInfo.dialect.createArrayOf(Types.VARCHAR,
+                            (Object[]) object);
+                    ps.setArray(i++, array);
                 } else {
                     ps.setObject(i++, object);
                 }

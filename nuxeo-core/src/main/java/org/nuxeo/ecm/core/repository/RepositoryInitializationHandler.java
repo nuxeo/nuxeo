@@ -71,9 +71,17 @@ public abstract class RepositoryInitializationHandler {
         return instance;
     }
 
-    public static void setInstance(RepositoryInitializationHandler handler) {
-        instance = handler;
-    }
+    /**
+     * The parent handler if any otherwise null
+     */
+    protected RepositoryInitializationHandler previous;
+
+    /**
+     * The next handler in the chain if any or null otherwise
+     */
+    protected RepositoryInitializationHandler next;
+
+    public abstract void doInitializeRepository(CoreSession session) throws ClientException;
 
     /**
      * Must be implemented by custom initializers.
@@ -81,6 +89,45 @@ public abstract class RepositoryInitializationHandler {
      * @param session the current session
      * @throws ClientException
      */
-    public abstract void initializeRepository(CoreSession session) throws ClientException;
+    public void initializeRepository(CoreSession session) throws ClientException {
+        synchronized (RepositoryInitializationHandler.class) {
+            if (previous != null) {
+                previous.initializeRepository(session);
+            }
+            doInitializeRepository(session);
+        }
+    }
+
+    public void install() {
+        synchronized (RepositoryInitializationHandler.class) {
+            previous = instance;
+            if (previous != null) {
+                previous.next = this;
+            }
+            instance = this;
+        }
+    }
+
+    public void uninstall() {
+        synchronized (RepositoryInitializationHandler.class) {
+            if (previous != null) {
+                previous.next = next;
+                if (next != null) {
+                    next.previous = previous;
+                }
+            }
+            if (instance == this) {
+                instance = previous;
+            }
+        }
+    }
+
+    public RepositoryInitializationHandler getPrevious() {
+        return previous;
+    }
+
+    public RepositoryInitializationHandler getNext() {
+        return next;
+    }
 
 }

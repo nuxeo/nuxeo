@@ -44,7 +44,6 @@ public class ArrayFragment extends CollectionFragment {
      * Constructs an empty {@link ArrayFragment} of the given table with the
      * given id (which may be a temporary one).
      *
-     * @param tableName the table name
      * @param id the id
      * @param state the initial state for the fragment
      * @param context the persistence context to which the row is tied, or
@@ -100,7 +99,7 @@ public class ArrayFragment extends CollectionFragment {
             if (column == null) {
                 throw new AssertionError(columns);
             }
-            ArrayList<Serializable> list = new ArrayList<Serializable>();
+            List<Serializable> list = new ArrayList<Serializable>();
             while (rs.next()) {
                 int i = 0;
                 Serializable value = null;
@@ -168,7 +167,7 @@ public class ArrayFragment extends CollectionFragment {
                 if (key.equals(model.MAIN_KEY)) {
                     v = getId();
                 } else if (key.equals(model.COLL_TABLE_POS_KEY)) {
-                    v = Long.valueOf(i);
+                    v = (long) i;
                 } else if (key.equals(model.COLL_TABLE_VALUE_KEY)) {
                     v = array[i];
                 } else {

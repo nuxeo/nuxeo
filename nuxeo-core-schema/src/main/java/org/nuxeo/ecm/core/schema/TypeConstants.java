@@ -21,6 +21,8 @@ package org.nuxeo.ecm.core.schema;
 
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 
 /**
@@ -42,6 +44,8 @@ public final class TypeConstants {
     public static final String SECURITY_SCHEMA_PREFIX = "sec";
     public static final String SECURITY_SCHEMA_NAME = "security";
 
+    private static final Log log = LogFactory.getLog(TypeConstants.class);
+
     // Constant utility class
     private TypeConstants() {
     }
@@ -51,7 +55,7 @@ public final class TypeConstants {
             return Framework.getLocalService(SchemaManager.class).getType(
                     CONTENT_SCHEMA,  CONTENT);
         } catch (Throwable e) {
-            e.printStackTrace();
+            log.error(e);
         }
         return null;
     }

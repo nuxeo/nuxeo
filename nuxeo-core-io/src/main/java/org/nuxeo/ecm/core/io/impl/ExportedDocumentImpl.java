@@ -34,6 +34,8 @@ import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -97,7 +99,11 @@ public class ExportedDocumentImpl implements ExportedDocument {
             throws IOException {
         id = doc.getId();
         this.path = path.makeRelative();
-        readDocument(doc, inlineBlobs);
+        try {
+            readDocument(doc, inlineBlobs);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
 
         srcLocation = new DocumentLocationImpl(doc);
     }
@@ -112,36 +118,24 @@ public class ExportedDocumentImpl implements ExportedDocument {
     }
 
     /**
-     * @return source DocumentLocation
+     * @return the source DocumentLocation
      */
     public DocumentLocation getSourceLocation() {
         return srcLocation;
     }
 
-    /**
-     * @return the path.
-     */
     public Path getPath() {
         return path;
     }
 
-    /**
-     * @param path the path to set.
-     */
     public void setPath(Path path) {
         this.path = path;
     }
 
-    /**
-     * @return the id.
-     */
     public String getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set.
-     */
     public void setId(String id) {
         this.id = id;
     }
@@ -151,16 +145,10 @@ public class ExportedDocumentImpl implements ExportedDocument {
                 .elementText("type");
     }
 
-    /**
-     * @return the document.
-     */
     public Document getDocument() {
         return document;
     }
 
-    /**
-     * @param document the document to set.
-     */
     public void setDocument(Document document) {
         this.document = document;
         id = document.getRootElement().attributeValue(ExportConstants.ID_ATTR);
@@ -169,9 +157,6 @@ public class ExportedDocumentImpl implements ExportedDocument {
         srcLocation = new DocumentLocationImpl(repName, new IdRef(id));
     }
 
-    /**
-     * @return the blobs.
-     */
     public Map<String, Blob> getBlobs() {
         return blobs;
     }
@@ -192,9 +177,6 @@ public class ExportedDocumentImpl implements ExportedDocument {
         return !blobs.isEmpty();
     }
 
-    /**
-     * @return the documents.
-     */
     public Map<String, Document> getDocuments() {
         return documents;
     }
@@ -221,7 +203,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
     }
 
     private void readDocument(DocumentModel doc, boolean inlineBlobs)
-            throws IOException {
+            throws IOException, ClientException {
         document = DocumentFactory.getInstance().createDocument();
         document.setName(doc.getName());
         Element rootElement = document.addElement(ExportConstants.DOCUMENT_TAG);

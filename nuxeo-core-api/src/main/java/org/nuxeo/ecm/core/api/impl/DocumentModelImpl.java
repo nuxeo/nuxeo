@@ -41,6 +41,7 @@ import org.nuxeo.common.utils.Null;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -77,7 +78,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @version $Revision: 1.0 $
  */
-@SuppressWarnings({ "SuppressionAnnotation" })
+@SuppressWarnings( { "SuppressionAnnotation" })
 public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     public static final long F_STORED = 1L;
@@ -126,7 +127,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     // whether the acp was cached
     protected transient boolean isACPLoaded = false;
 
-    // the adapters registered for this document - only vaild on client
+    // the adapters registered for this document - only valid on client
     protected transient ArrayMap<Class, Object> adapters;
 
     // flags : TODO
@@ -145,7 +146,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     private ScopedMap contextData;
 
-    @SuppressWarnings({"CollectionDeclaredAsConcreteClass"})
+    @SuppressWarnings( { "CollectionDeclaredAsConcreteClass" })
     protected HashMap<String, Serializable> prefetch;
 
     private String currentLifeCycleState;
@@ -277,11 +278,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         this.type = new TypeRef<DocumentType>(SchemaNames.DOCTYPES, type);
         this.id = id;
         this.path = path;
-        this.ref = docRef;
+        ref = docRef;
         this.parentRef = parentRef;
-        this.declaredSchemas = schemas;
-        this.declaredFacets = facets;
-        this.dataModels = new DataModelMapImpl();
+        declaredSchemas = schemas;
+        declaredFacets = facets;
+        dataModels = new DataModelMapImpl();
         this.lock = lock;
         contextData = new ScopedMap();
     }
@@ -309,11 +310,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         this.type = new TypeRef<DocumentType>(SchemaNames.DOCTYPES, type);
         this.id = id;
         this.path = path;
-        this.ref = docRef;
+        ref = docRef;
         this.parentRef = parentRef;
-        this.declaredSchemas = schemas;
-        this.declaredFacets = facets;
-        this.dataModels = new DataModelMapImpl();
+        declaredSchemas = schemas;
+        declaredFacets = facets;
+        dataModels = new DataModelMapImpl();
         this.lock = lock;
         contextData = new ScopedMap();
         this.repositoryName = repositoryName;
@@ -322,15 +323,16 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     public DocumentType getDocumentType() {
         return type.get();
-   }
+    }
 
     /**
      * Gets the title from the dublincore schema.
      *
      * @return String
+     * @throws ClientException
      * @see DocumentModel#getTitle()
      */
-    public String getTitle() {
+    public String getTitle() throws ClientException {
         String title = (String) getProperty("dublincore", "title");
         if (title != null) {
             return title;
@@ -342,31 +344,14 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return id;
     }
 
-    /**
-     * @return the sessionId
-     *
-     * @see DocumentModel#getSessionId()
-     */
     public String getSessionId() {
         return sid;
     }
 
-    /**
-     * Method getRef.
-     *
-     * @return DocumentRef
-     * @see DocumentModel#getRef()
-     */
     public DocumentRef getRef() {
         return ref;
     }
 
-    /**
-     * Method getParentRef.
-     *
-     * @return DocumentRef
-     * @see DocumentModel#getParentRef()
-     */
     public DocumentRef getParentRef() {
         if (parentRef == null && path != null) {
             Path parentPath = path.removeLastSegments(1);
@@ -375,12 +360,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return parentRef;
     }
 
-    /**
-     * Method getClient.
-     *
-     * @return CoreSession
-     */
-    public final CoreSession getClient() {
+    public final CoreSession getClient() throws ClientException {
         if (sid == null) {
             throw new UnsupportedOperationException(
                     "Cannot load data models for client defined models");
@@ -395,7 +375,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                 // set new session id
                 sid = session.getSessionId();
             } catch (Exception e) {
-                // do nothing
+                throw new ClientException(e);
             }
         }
         return session;
@@ -412,7 +392,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             throws ClientException {
         if (hasSchema(schema)) { // lazy data model
             if (sid == null) {
-                DataModel dataModel = new DataModelImpl(schema); // supports non bound docs
+                DataModel dataModel = new DataModelImpl(schema); // supports non
+                // bound docs
                 dataModels.put(schema, dataModel);
                 return dataModel;
             }
@@ -427,80 +408,34 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return null;
     }
 
-    /**
-     * Method getDataModel.
-     *
-     * @param schema String
-     * @return DataModel
-     * @see DocumentModel#getDataModel(String)
-     */
-    public DataModel getDataModel(String schema) {
+    public DataModel getDataModel(String schema) throws ClientException {
         DataModel dataModel = dataModels.get(schema);
         if (dataModel == null) {
-            try {
-                dataModel = loadDataModel(schema);
-            } catch (ClientException e) {
-                // TODO: how to handle exceptions?
-                log.error("ERROR getting the data model: " + schema + " for "
-                        + ref,e);
-            }
+            dataModel = loadDataModel(schema);
         }
         return dataModel;
     }
 
-    /**
-     * Method getDataModelsCollection.
-     *
-     * @see DocumentModel#getDataModelsCollection()
-     */
     public Collection<DataModel> getDataModelsCollection() {
         return dataModels.values();
     }
 
-    /**
-     * Method addDataModel.
-     *
-     * @param dataModel DataModel
-     */
     public void addDataModel(DataModel dataModel) {
         dataModels.put(dataModel.getSchema(), dataModel);
     }
 
-    /**
-     * Method getDeclaredSchemas.
-     *
-     * @return String[]
-     * @see DocumentModel#getDeclaredSchemas()
-     */
     public String[] getDeclaredSchemas() {
         return declaredSchemas;
     }
 
-    /**
-     * Method getDeclaredFacets.
-     *
-     * @see org.nuxeo.ecm.core.api.DocumentModel#getDeclaredFacets()
-     */
     public Set<String> getDeclaredFacets() {
         return declaredFacets;
     }
 
-    /**
-     * Method getId.
-     *
-     * @return String
-     * @see DocumentModel#getId()
-     */
     public String getId() {
         return id;
     }
 
-    /**
-     * Method getName.
-     *
-     * @return String
-     * @see DocumentModel#getName()
-     */
     public String getName() {
         if (path != null) {
             return path.lastSegment();
@@ -508,12 +443,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return null;
     }
 
-    /**
-     * Method getPathAsString.
-     *
-     * @return String
-     * @see DocumentModel#getPathAsString()
-     */
     public String getPathAsString() {
         if (path != null) {
             return path.toString();
@@ -521,13 +450,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return null;
     }
 
-    /**
-     * Method getProperties.
-     *
-     * @param schemaName String
-     * @see DocumentModel#getProperties(String)
-     */
-    public Map<String, Object> getProperties(String schemaName) {
+    public Map<String, Object> getProperties(String schemaName)
+            throws ClientException {
         DataModel dm = getDataModel(schemaName);
         return dm == null ? null : dm.getMap();
     }
@@ -542,7 +466,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * @return Object
      * @see DocumentModel#getProperty(String, String)
      */
-    public Object getProperty(String schemaName, String name) {
+    public Object getProperty(String schemaName, String name)
+            throws ClientException {
         DataModel dm = dataModels.get(schemaName);
         if (dm == null) { // no data model loaded
             // try prefetched props
@@ -557,159 +482,75 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return dm == null ? null : dm.getData(name);
     }
 
-    /**
-     * Method setPathInfo.
-     *
-     * @param parentPath String
-     * @param name String
-     * @see DocumentModel#setPathInfo(String, String)
-     */
     public void setPathInfo(String parentPath, String name) {
         path = new Path(parentPath + '/' + name);
         ref = new PathRef(parentPath, name);
     }
 
-    /**
-     * Method getLock.
-     *
-     * @return String
-     * @see DocumentModel#getLock()
-     */
     public String getLock() {
         return lock;
     }
 
-    /**
-     * Method isLocked.
-     *
-     * @return boolean
-     * @see DocumentModel#isLocked()
-     */
     public boolean isLocked() {
         return lock != null;
     }
 
-    /**
-     * Method setLock.
-     *
-     * @param key String
-     * @throws ClientException
-     * @see DocumentModel#setLock(String)
-     */
     public void setLock(String key) throws ClientException {
         getClient().setLock(ref, key);
         lock = key;
     }
 
-    /**
-     * Method unlock.
-     *
-     * @throws ClientException
-     * @see DocumentModel#unlock()
-     */
     public void unlock() throws ClientException {
         if (getClient().unlock(ref) != null) {
             lock = null;
         }
     }
 
-    /**
-     * Method getACP.
-     *
-     * @return ACP
-     * @see DocumentModel#getACP()
-     */
-    public ACP getACP() {
+    public ACP getACP() throws ClientException {
         if (!isACPLoaded) { // lazy load
-            try {
-                acp = getClient().getACP(ref);
-                isACPLoaded = true;
-            } catch (Exception e) {
-                // XXX this exception shouldn't be swallowed!
-                log.error("ERROR getting the ACP for " + ref,e);
-            }
+            acp = getClient().getACP(ref);
+            isACPLoaded = true;
         }
         return acp;
     }
 
-    /**
-     * Method setACP.
-     *
-     * @param acp ACP
-     * @param overwrite boolean
-     * @see DocumentModel#setACP(ACP, boolean)
-     */
-    public void setACP(ACP acp, boolean overwrite) {
-        try {
-            getClient().setACP(ref, acp, overwrite);
-            isACPLoaded = false;
-        } catch (Exception e) {
-            // XXX this exception shouldn't be swallowed!
-            log.error("ERROR setting the ACP for " + ref,e);
-        }
+    public void setACP(ACP acp, boolean overwrite) throws ClientException {
+        getClient().setACP(ref, acp, overwrite);
+        isACPLoaded = false;
     }
 
-    /**
-     * Method getType.
-     *
-     * @return String
-     * @see DocumentModel#getType()
-     */
     public String getType() {
         // TODO there are some DOcumentModel impl like DocumentMessageImpl which
-        // use null types and extend this impl which is wrong - fix this -> type must never be null
+        // use null types and extend this impl which is wrong - fix this -> type
+        // must never be null
         return type != null ? type.getName() : null;
     }
 
-    /**
-     * Method setProperties.
-     *
-     * @param schemaName String
-     */
-    public void setProperties(String schemaName, Map<String, Object> data) {
+    public void setProperties(String schemaName, Map<String, Object> data)
+            throws ClientException {
         DataModel dm = getDataModel(schemaName);
         if (dm != null) {
             dm.setMap(data);
         }
     }
 
-    /**
-     * Method setProperty.
-     *
-     * @param schemaName String
-     * @param name String
-     * @param value Object
-     * @see DocumentModel#setProperty(String, String, Object)
-     */
-    public void setProperty(String schemaName, String name, Object value) {
+    public void setProperty(String schemaName, String name, Object value)
+            throws ClientException {
         DataModel dm = getDataModel(schemaName);
         if (dm != null) {
             dm.setData(name, value);
         }
     }
 
-    /**
-     * Method hasSchema.
-     *
-     * @param schema String
-     * @return boolean
-     * @see DocumentModel#hasSchema(String)
-     */
     public boolean hasSchema(String schema) {
         if (type == null) {
             return false;
         }
-        DocumentType dt = type.get(); // some tests use dummy types. TODO: fix these tests? (TestDocumentModel)
+        DocumentType dt = type.get(); // some tests use dummy types. TODO: fix
+        // these tests? (TestDocumentModel)
         return dt == null ? false : dt.hasSchema(schema);
     }
 
-    /**
-     * Method hasFacet.
-     *
-     * @param facet String
-     * @return boolean
-     * @see DocumentModel#hasFacet(String)
-     */
     public boolean hasFacet(String facet) {
         if (declaredFacets != null) {
             return declaredFacets.contains(facet);
@@ -717,64 +558,29 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return false;
     }
 
-    /**
-     * Method getPath.
-     *
-     * @return Path
-     * @see DocumentModel#getPath()
-     */
     public Path getPath() {
         return path;
     }
 
-    /**
-     * Method getDataModels.
-     *
-     * @return DataModelMap
-     * @see DocumentModel#getDataModels()
-     */
     public DataModelMap getDataModels() {
         return dataModels;
     }
 
-    /**
-     * Method copyContentInto.
-     *
-     * @param other DocumentModelImpl
-     */
     public void copyContentInto(DocumentModelImpl other) {
         other.declaredSchemas = declaredSchemas;
         other.declaredFacets = declaredFacets;
         other.dataModels = dataModels;
     }
 
-    /**
-     * Method isFolder.
-     *
-     * @return boolean
-     * @see DocumentModel#isFolder()
-     */
     public boolean isFolder() {
         return hasFacet("Folderish");
     }
 
-    /**
-     * Method isVersionable.
-     *
-     * @return boolean
-     * @see DocumentModel#isVersionable()
-     */
     public boolean isVersionable() {
         return hasFacet("Versionable");
     }
 
-    /**
-     * Method isDownloadable.
-     *
-     * @return boolean
-     * @see DocumentModel#isDownloadable()
-     */
-    public boolean isDownloadable() {
+    public boolean isDownloadable() throws ClientException {
         if (hasFacet("Downloadable")) {
             // XXX find a better way to check size that does not depend on the
             // document schema
@@ -786,13 +592,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return false;
     }
 
-    /**
-     * Method getAdapter.
-     *
-     * @param itf Class<T>
-     * @return T
-     * @see DocumentModel#getAdapter(Class<T>)
-     */
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Class<T> itf) {
         T facet = (T) getAdapters().get(itf);
@@ -833,12 +632,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return facet;
     }
 
-    /**
-     * Method findAdapter.
-     *
-     * @param itf Class<T>
-     * @return T
-     */
     @SuppressWarnings("unchecked")
     private <T> T findAdapter(Class<T> itf) {
         DocumentAdapterService svc = (DocumentAdapterService) Framework.getRuntime().getComponent(
@@ -865,33 +658,14 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return null;
     }
 
-    /**
-     * Method followTransition.
-     *
-     * @param transition String
-     * @return boolean
-     * @throws ClientException
-     * @see DocumentModel#followTransition(String)
-     */
     public boolean followTransition(String transition) throws ClientException {
 
         // :FIXME: need to open a new session against the core.
-
-        CoreSession client;
-
-        try {
-            client = getClient();
-        } catch (UnsupportedOperationException usoe) {
-            throw new ClientException(usoe);
-        }
+        CoreSession client = getClient();
 
         boolean res = false;
         if (client != null) {
-            try {
-                res = client.followTransition(ref, transition);
-            } catch (NullPointerException ne) {
-                throw new ClientException(ne.getMessage(), ne);
-            }
+            res = client.followTransition(ref, transition);
         } else {
             log.error("Cannot find bound core session....");
         }
@@ -904,33 +678,17 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return res;
     }
 
-    /**
-     * Method getAllowedStateTransitions.
-     *
-     * @throws ClientException
-     * @see org.nuxeo.ecm.core.api.DocumentModel#getAllowedStateTransitions()
-     */
     public Collection<String> getAllowedStateTransitions()
             throws ClientException {
 
         // :FIXME: need to open a new session against the core.
-
         Collection<String> allowedStateTransitions = new ArrayList<String>();
 
-        CoreSession client;
-        try {
-            client = getClient();
-        } catch (UnsupportedOperationException usoe) {
-            throw new ClientException(usoe);
-        }
+        CoreSession client = getClient();
 
         if (client != null) {
-            try {
-                allowedStateTransitions = getClient().getAllowedStateTransitions(
-                        ref);
-            } catch (NullPointerException ne) {
-                throw new ClientException(ne.getMessage(), ne);
-            }
+            allowedStateTransitions = getClient().getAllowedStateTransitions(
+                    ref);
         } else {
             log.error("Cannot found bound core session....");
         }
@@ -938,13 +696,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return allowedStateTransitions;
     }
 
-    /**
-     * Method getCurrentLifeCycleState.
-     *
-     * @return String
-     * @throws ClientException
-     * @see DocumentModel#getCurrentLifeCycleState()
-     */
     public String getCurrentLifeCycleState() throws ClientException {
 
         if (currentLifeCycleState != null) {
@@ -957,20 +708,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
 
         // String currentLifeCycleState = null;
-        CoreSession client;
-        try {
-            client = getClient();
-        } catch (UnsupportedOperationException usoe) {
-            throw new ClientException(usoe);
-        }
+        CoreSession client = getClient();
 
         if (client != null) {
-            try {
-                currentLifeCycleState = getClient().getCurrentLifeCycleState(
-                        ref);
-            } catch (NullPointerException ne) {
-                throw new ClientException(ne.getMessage(), ne);
-            }
+            currentLifeCycleState = getClient().getCurrentLifeCycleState(ref);
+
         } else {
             log.error("Cannot found bound core session....");
         }
@@ -978,13 +720,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return currentLifeCycleState;
     }
 
-    /**
-     * Method getLifeCyclePolicy.
-     *
-     * @return String
-     * @throws ClientException
-     * @see DocumentModel#getLifeCyclePolicy()
-     */
     public String getLifeCyclePolicy() throws ClientException {
 
         if (lifeCyclePolicy != null) {
@@ -995,19 +730,10 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
         // String lifeCyclePolicy = null;
 
-        CoreSession client;
-        try {
-            client = getClient();
-        } catch (UnsupportedOperationException usoe) {
-            throw new ClientException(usoe);
-        }
+        CoreSession client = getClient();
 
         if (client != null) {
-            try {
-                lifeCyclePolicy = getClient().getLifeCyclePolicy(ref);
-            } catch (NullPointerException ne) {
-                throw new ClientException(ne.getMessage(), ne);
-            }
+            lifeCyclePolicy = getClient().getLifeCyclePolicy(ref);
         } else {
             log.error("Cannot found bound core session....");
         }
@@ -1015,12 +741,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return lifeCyclePolicy;
     }
 
-    /**
-     * Method isVersion.
-     *
-     * @return boolean
-     * @see DocumentModel#isVersion()
-     */
     public boolean isVersion() {
         return (flags & F_VERSION) != 0;
     }
@@ -1029,11 +749,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return (flags & F_PROXY) != 0;
     }
 
-    /**
-     * Method setIsVersion.
-     *
-     * @param isVersion boolean
-     */
     public void setIsVersion(boolean isVersion) {
         if (isVersion) {
             flags |= F_VERSION;
@@ -1050,68 +765,26 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
     }
 
-    /**
-     * Method getContextData.
-     *
-     * @return ScopedMap
-     * @see DocumentModel#getContextData()
-     */
     public ScopedMap getContextData() {
         return contextData;
     }
 
-    /**
-     * Method getContextData.
-     *
-     * @param scope ScopeType
-     * @param key String
-     * @return Serializable
-     * @see DocumentModel#getContextData(ScopeType, String)
-     */
     public Serializable getContextData(ScopeType scope, String key) {
         return contextData.getScopedValue(scope, key);
     }
 
-    /**
-     * Method putContextData.
-     *
-     * @param scope ScopeType
-     * @param key String
-     * @param value Serializable
-     * @see DocumentModel#putContextData(ScopeType, String, Serializable)
-     */
     public void putContextData(ScopeType scope, String key, Serializable value) {
         contextData.putScopedValue(scope, key, value);
     }
 
-    /**
-     * Method getContextData.
-     *
-     * @param key String
-     * @return Serializable
-     * @see DocumentModel#getContextData(String)
-     */
     public Serializable getContextData(String key) {
         return contextData.getScopedValue(key);
     }
 
-    /**
-     * Method putContextData.
-     *
-     * @param key String
-     * @param value Serializable
-     * @see DocumentModel#putContextData(String, Serializable)
-     */
     public void putContextData(String key, Serializable value) {
         contextData.putScopedValue(key, value);
     }
 
-    /**
-     * Method copyContextData.
-     *
-     * @param otherDocument DocumentModel
-     * @see DocumentModel#copyContextData(DocumentModel)
-     */
     public void copyContextData(DocumentModel otherDocument) {
         ScopedMap otherMap = otherDocument.getContextData();
         if (otherMap != null) {
@@ -1119,13 +792,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
     }
 
-    /**
-     * Method copyContent.
-     *
-     * @param sourceDoc DocumentModel
-     * @see DocumentModel#copyContent(DocumentModel)
-     */
-    public void copyContent(DocumentModel sourceDoc) {
+    public void copyContent(DocumentModel sourceDoc) throws ClientException {
         declaredSchemas = new String[sourceDoc.getDeclaredSchemas().length];
         for (int i = 0; i < sourceDoc.getDeclaredSchemas().length; i++) {
             declaredSchemas[i] = sourceDoc.getDeclaredSchemas()[i];
@@ -1136,9 +803,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
         DataModelMap newDataModels = new DataModelMapImpl();
         // dataModels could not be all loaded
-        //for (String key : sourceDoc.getDataModels().keySet()) {
+        // for (String key : sourceDoc.getDataModels().keySet()) {
         for (String key : declaredSchemas) {
-            //DataModel oldDM = sourceDoc.getDataModels().get(key);
+            // DataModel oldDM = sourceDoc.getDataModels().get(key);
             DataModel oldDM = sourceDoc.getDataModel(key);
             DataModel newDM = cloneDataModel(oldDM);
             newDataModels.put(key, newDM);
@@ -1146,7 +813,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         dataModels = newDataModels;
     }
 
-    public Object cloneField(Field field, String key, Object value) {
+    public static Object cloneField(Field field, String key, Object value) {
         // key is unused
         Object clone;
         Type type = field.getType();
@@ -1205,16 +872,25 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return clone;
     }
 
-    public DataModel cloneDataModel(Schema schema, DataModel data) {
+    public static DataModel cloneDataModel(Schema schema, DataModel data) {
         DataModel dm = new DataModelImpl(schema.getName());
         for (Field field : schema.getFields()) {
             String key = field.getName().getLocalName();
-            Object value = data.getData(key);
+            Object value;
+            try {
+                value = data.getData(key);
+            } catch (PropertyException e1) {
+                continue;
+            }
             if (value == null) {
                 continue;
             }
             Object clone = cloneField(field, key, value);
-            dm.setData(key, clone);
+            try {
+                dm.setData(key, clone);
+            } catch (PropertyException e) {
+                throw new ClientRuntimeException(e);
+            }
         }
         return dm;
     }
@@ -1224,68 +900,34 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return cloneDataModel(mgr.getSchema(data.getSchema()), data);
     }
 
-    /**
-     * Method getCacheKey.
-     *
-     * @return String
-     * @see DocumentModel#getCacheKey()
-     */
-    public String getCacheKey() {
+    public String getCacheKey() throws ClientException {
         // UUID - sessionId
         String key = id + '-' + sid + '-' + getPathAsString();
         // :FIXME: Assume a dublin core schema => enough for us right now.
         Calendar timeStamp = (Calendar) getProperty("dublincore", "modified");
 
         if (timeStamp != null) {
-            key = key + '-' + String.valueOf(timeStamp.getTimeInMillis());
+            key += '-' + String.valueOf(timeStamp.getTimeInMillis());
         }
         return key;
     }
 
-    /**
-     * Method getRepositoryName.
-     *
-     * @return String
-     * @see DocumentModel#getRepositoryName()
-     */
     public String getRepositoryName() {
         return repositoryName;
     }
 
-    /**
-     * Method getSourceId.
-     *
-     * @return String
-     * @see DocumentModel#getSourceId()
-     */
     public String getSourceId() {
         return sourceId;
     }
 
-    /**
-     * Method getVersionLabel.
-     *
-     * @return String
-     * @see DocumentModel#getVersionLabel()
-     */
     public String getVersionLabel() {
         return (String) contextData.getScopedValue("version.label");
     }
 
-    /**
-     * Method isSchemaLoaded.
-     *
-     * @param name String
-     * @return boolean
-     */
     public boolean isSchemaLoaded(String name) {
         return dataModels.containsKey(name);
     }
 
-    /**
-     * @param id String
-     * @param value Object
-     */
     // TODO: id is schema.field and not prefix:field
     public void prefetchProperty(String id, Object value) {
         if (prefetch == null) {
@@ -1351,7 +993,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         buf.append(DocumentModelImpl.class.getSimpleName());
         buf.append(" {");
         buf.append(" -title: ");
-        buf.append(getProperty("dublincore", "title"));
+        try {
+            buf.append(getProperty("dublincore", "title"));
+        } catch (ClientException e) {
+            buf.append("ERROR GETTING THE TITLE: " + e);
+        }
         buf.append(", sessionId: ");
         buf.append(sid);
         buf.append(", doc id: ");
@@ -1379,8 +1025,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return prefetch;
     }
 
-    public <T extends Serializable> T getSystemProp(String systemProperty, Class<T> type)
-            throws ClientException, DocumentException {
+    public <T extends Serializable> T getSystemProp(String systemProperty,
+            Class<T> type) throws ClientException, DocumentException {
         CoreSession client = getClient();
         return client.getDocumentSystemProp(ref, systemProperty, type);
     }
@@ -1389,25 +1035,26 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return currentLifeCycleState != null;
     }
 
-    public DocumentPart getPart(String schema) {
+    public DocumentPart getPart(String schema) throws ClientException {
         DataModel dm = getDataModel(schema);
         if (dm != null) {
-            return ((DataModelImpl)dm).getDocumentPart();
+            return ((DataModelImpl) dm).getDocumentPart();
         }
         return null; // TODO thrown an exception?
     }
 
-    public DocumentPart[] getParts() {
-        DocumentType type = null;
+    public DocumentPart[] getParts() throws ClientException {
+        DocumentType type;
         try {
-            type = Framework.getService(SchemaManager.class).getDocumentType(getType());
+            type = Framework.getService(SchemaManager.class).getDocumentType(
+                    getType());
         } catch (Exception e) {
-            log.error(e);
+            throw new IllegalStateException(e);
         }
         Collection<Schema> schemas = type.getSchemas();
         int size = schemas.size();
         DocumentPart[] parts = new DocumentPart[size];
-        int i=0;
+        int i = 0;
         for (Schema schema : schemas) {
             DataModel dm = getDataModel(schema.getName());
             parts[i++] = ((DataModelImpl) dm).getDocumentPart();
@@ -1415,7 +1062,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return parts;
     }
 
-    public Property getProperty(String xpath) throws PropertyException {
+    public Property getProperty(String xpath) throws ClientException {
         Path path = new Path(xpath);
         if (path.segmentCount() == 0) {
             throw new PropertyNotFoundException(xpath, "Schema not specified");
@@ -1423,7 +1070,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         String segment = path.segment(0);
         int p = segment.indexOf(':');
         if (p == -1) { // support also other schema paths? like schema.property
-            // allow also unprefixed schemas -> make a search for the first matching schema having a property with same name as path segment 0
+            // allow also unprefixed schemas -> make a search for the first
+            // matching schema having a property with same name as path segment
+            // 0
             DocumentPart[] parts = getParts();
             for (DocumentPart part : parts) {
                 if (part.getSchema().hasField(segment)) {
@@ -1443,12 +1092,15 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                         "Could not find registered schema with prefix: "
                                 + prefix);
             }
-            // workaround for a schema prefix bug -> XPATH lookups in DocumentPart must use prefixed
-            // names for schema with prefixes and non prefixed names for the rest o schemas.
-            // Until then we used the name as the prefix but we must remove it since it is not a valid prefix:
+            // workaround for a schema prefix bug -> XPATH lookups in
+            // DocumentPart must use prefixed
+            // names for schema with prefixes and non prefixed names for the
+            // rest o schemas.
+            // Until then we used the name as the prefix but we must remove it
+            // since it is not a valid prefix:
             // NXP-1913
             String[] segments = path.segments();
-            segments[0] = segments[0].substring(p+1);
+            segments[0] = segments[0].substring(p + 1);
             path = Path.createFromSegments(segments);
         }
 
@@ -1463,54 +1115,119 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return part.resolvePath(path.toString());
     }
 
-    public Serializable getPropertyValue(String path) throws PropertyException {
+    public Serializable getPropertyValue(String path) throws PropertyException, ClientException {
         return getProperty(path).getValue();
     }
 
-    public void setPropertyValue(String path, Serializable value) throws PropertyException {
+    public void setPropertyValue(String path, Serializable value)
+            throws PropertyException, ClientException {
         getProperty(path).setValue(value);
     }
 
+    @Override
     public DocumentModel clone() throws CloneNotSupportedException {
-        DocumentModelImpl dm = (DocumentModelImpl)super.clone();
-//        dm.id =id;
-//        dm.acp = acp;
-//        dm.currentLifeCycleState = currentLifeCycleState;
-//        dm.lifeCyclePolicy = lifeCyclePolicy;
-//        dm.declaredSchemas = declaredSchemas; // schemas are immutable so we don't clone the array
-//        dm.flags = flags;
-//        dm.repositoryName = repositoryName;
-//        dm.ref = ref;
-//        dm.parentRef = parentRef;
-//        dm.path = path; // path is immutable
-//        dm.isACPLoaded = isACPLoaded;
-//        dm.prefetch = dm.prefetch; // prefetch can be shared
-//        dm.lock = lock;
-//        dm.sourceId =sourceId;
-//        dm.sid = sid;
-//        dm.type = type;
-        dm.declaredFacets = new HashSet<String>(declaredFacets); // facets should be clones too - they are not immutable
+        DocumentModelImpl dm = (DocumentModelImpl) super.clone();
+        // dm.id =id;
+        // dm.acp = acp;
+        // dm.currentLifeCycleState = currentLifeCycleState;
+        // dm.lifeCyclePolicy = lifeCyclePolicy;
+        // dm.declaredSchemas = declaredSchemas; // schemas are immutable so we
+        // don't clone the array
+        // dm.flags = flags;
+        // dm.repositoryName = repositoryName;
+        // dm.ref = ref;
+        // dm.parentRef = parentRef;
+        // dm.path = path; // path is immutable
+        // dm.isACPLoaded = isACPLoaded;
+        // dm.prefetch = dm.prefetch; // prefetch can be shared
+        // dm.lock = lock;
+        // dm.sourceId =sourceId;
+        // dm.sid = sid;
+        // dm.type = type;
+        dm.declaredFacets = new HashSet<String>(declaredFacets); // facets
+        // should be
+        // clones too -
+        // they are not
+        // immutable
         // context data is keeping contextual info so it is reseted
         dm.contextData = new ScopedMap();
 
         // copy parts
         dm.dataModels = new DataModelMapImpl();
-        for (Map.Entry<String,DataModel> entry : dataModels.entrySet()) {
+        for (Map.Entry<String, DataModel> entry : dataModels.entrySet()) {
             String key = entry.getKey();
             DataModel data = entry.getValue();
-            DataModelImpl newData = new DataModelImpl(key, data.getMap());
+            DataModelImpl newData;
+            try {
+                newData = new DataModelImpl(key, data.getMap());
+            } catch (PropertyException e) {
+                throw new ClientRuntimeException(e);
+            }
             dm.dataModels.put(key, newData);
         }
         return dm;
     }
 
     public void reset() {
-        if (dataModels != null) dataModels.clear();
-        if (prefetch != null) prefetch.clear();
+        if (dataModels != null) {
+            dataModels.clear();
+        }
+        if (prefetch != null) {
+            prefetch.clear();
+        }
         isACPLoaded = false;
         acp = null;
         currentLifeCycleState = null;
         lifeCyclePolicy = null;
+    }
+
+    public void refresh() throws ClientException {
+        refresh(REFRESH_DEFAULT, null);
+    }
+
+    public void refresh(int refreshFlags, String[] schemas)
+            throws ClientException {
+        if ((refreshFlags & REFRESH_ACP_IF_LOADED) != 0 && isACPLoaded) {
+            refreshFlags |= REFRESH_ACP;
+            // we must not clean the REFRESH_ACP_IF_LOADED flag since it is used
+            // below on the client
+        }
+
+        if ((refreshFlags & REFRESH_CONTENT_IF_LOADED) != 0) {
+            refreshFlags |= REFRESH_CONTENT;
+            Collection<String> keys = dataModels.keySet();
+            schemas = keys.toArray(new String[keys.size()]);
+        }
+
+        Object[] result = getClient().refreshDocument(ref, refreshFlags,
+                schemas);
+
+        if ((refreshFlags & REFRESH_PREFETCH) != 0) {
+            prefetch = (HashMap<String, Serializable>) result[0];
+        }
+        if ((refreshFlags & REFRESH_LOCK) != 0) {
+            lock = (String) result[1];
+        }
+        if ((refreshFlags & REFRESH_LIFE_CYCLE) != 0) {
+            currentLifeCycleState = (String) result[2];
+            lifeCyclePolicy = (String) result[3];
+        }
+        acp = null;
+        isACPLoaded = false;
+        if ((refreshFlags & REFRESH_ACP) != 0) {
+            acp = (ACP) result[4];
+            isACPLoaded = true;
+        }
+        dataModels.clear();
+        if ((refreshFlags & REFRESH_CONTENT) != 0) {
+            DocumentPart[] parts = (DocumentPart[]) result[5];
+            if (parts != null) {
+                for (DocumentPart part : parts) {
+                    DataModelImpl dm = new DataModelImpl(part);
+                    dataModels.put(dm.getSchema(), dm);
+                }
+            }
+        }
     }
 
 }

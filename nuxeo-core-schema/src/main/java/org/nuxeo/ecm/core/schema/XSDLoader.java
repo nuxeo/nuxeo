@@ -70,7 +70,6 @@ public class XSDLoader {
 
     private static final Log log = LogFactory.getLog(XSDLoader.class);
 
-
     private final SchemaManagerImpl typeManager;
 
     private XSOMParser parser;
@@ -89,14 +88,10 @@ public class XSDLoader {
         parser.setEntityResolver(new CustomEntityResolver());
     }
 
-    /**
-     * @param schemaSet
-     * @return
-     */
     // TODO: this type of loading schemas must use a new parser each time
     // a new schema should be loaded.
     // When reusing the parser the SchemaSet is collecting all the schemas.
-    public final XSSchema getUserSchema(XSSchemaSet schemaSet) {
+    public static XSSchema getUserSchema(XSSchemaSet schemaSet) {
         Collection<XSSchema> schemas = schemaSet.getSchemas();
         for (XSSchema schema : schemas) {
             String ns = schema.getTargetNamespace();

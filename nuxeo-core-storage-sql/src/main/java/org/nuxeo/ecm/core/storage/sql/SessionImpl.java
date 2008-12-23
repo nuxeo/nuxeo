@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.security.AccessControlException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +27,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.security.AccessControlException;
 
 import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionMetaData;
@@ -41,12 +41,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.query.QueryResult;
+import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLQueryResult;
 
 /**
  * The session is the main high level access point to data from the underlying
@@ -334,13 +333,13 @@ public class SessionImpl implements Session {
         hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY,
                 Boolean.valueOf(complexProp));
 
-        SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
+        SimpleFragment mainRow = context.createSimpleFragment(
                 model.mainTableName, id, mainMap);
 
         SimpleFragment hierRow;
         if (model.separateMainTable) {
             // TODO put it in a collection context instead
-            hierRow = (SimpleFragment) context.createSimpleFragment(
+            hierRow = context.createSimpleFragment(
                     model.hierTableName, id, hierMap);
         } else {
             hierRow = null;
@@ -529,9 +528,10 @@ public class SessionImpl implements Session {
         return nodes;
     }
 
-    public List<Serializable> query(SQLQuery query) throws StorageException {
+    public List<Serializable> query(SQLQuery query, QueryFilter queryFilter)
+            throws StorageException {
         try {
-            return mapper.query(query, this);
+            return mapper.query(query, queryFilter, this);
         } catch (SQLException e) {
             throw new StorageException("Invalid query: " + query, e);
         }
@@ -542,7 +542,7 @@ public class SessionImpl implements Session {
         return context.getContextOrNull(tableName);
     }
 
-    private void checkLive() throws IllegalStateException {
+    private void checkLive() {
         if (!live) {
             throw new IllegalStateException("Session is not live");
         }
@@ -583,12 +583,12 @@ public class SessionImpl implements Session {
         hierMap.put(model.HIER_CHILD_NAME_KEY, "");
         hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.FALSE);
 
-        SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
+        SimpleFragment mainRow = context.createSimpleFragment(
                 model.mainTableName, id, mainMap);
 
         SimpleFragment hierRow;
         if (model.separateMainTable) {
-            hierRow = (SimpleFragment) context.createSimpleFragment(
+            hierRow = context.createSimpleFragment(
                     model.hierTableName, id, hierMap);
         } else {
             hierRow = null;

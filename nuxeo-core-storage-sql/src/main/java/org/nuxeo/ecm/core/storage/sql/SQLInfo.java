@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Delete;
 import org.nuxeo.ecm.core.storage.sql.db.DerbyFunctions;
 import org.nuxeo.ecm.core.storage.sql.db.Dialect;
+import org.nuxeo.ecm.core.storage.sql.db.H2Functions;
 import org.nuxeo.ecm.core.storage.sql.db.Insert;
 import org.nuxeo.ecm.core.storage.sql.db.Select;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
@@ -127,11 +128,11 @@ public class SQLInfo {
 
     private final Map<String, Column> copyIdColumnMap;
 
-    private String selectVersionIdByLabelSql;
+    private final String selectVersionIdByLabelSql;
 
     private final List<Column> selectVersionIdByLabelWhereColumns;
 
-    private Column selectVersionIdByLabelWhatColumn;
+    private final Column selectVersionIdByLabelWhatColumn;
 
     protected final Map<String, SQLInfoSelect> selectFragmentById;
 
@@ -411,12 +412,13 @@ public class SQLInfo {
          * versions
          */
         Table table = database.getTable(model.VERSION_TABLE_NAME);
-        selectVersionsByVersionable = makeSelect(table,
-                model.VERSION_VERSIONABLE_KEY);
-        table.addIndex(model.VERSION_VERSIONABLE_KEY);
         selectVersionsByLabel = makeSelect(table,
                 model.VERSION_VERSIONABLE_KEY, model.VERSION_LABEL_KEY);
+        table.addIndex(model.VERSION_VERSIONABLE_KEY);
         // don't index versionable+label, a simple label scan will suffice
+        selectVersionsByVersionable = makeSelect(table, new String[] {
+                model.VERSION_CREATED_KEY, ORDER_ASC },
+                model.VERSION_VERSIONABLE_KEY);
         selectVersionsByVersionableLastFirst = makeSelect(table, new String[] {
                 model.VERSION_CREATED_KEY, ORDER_DESC },
                 model.VERSION_VERSIONABLE_KEY);
@@ -604,7 +606,8 @@ public class SQLInfo {
                     // databases (Derby) don't allow matches on CLOB columns
                     sqlType = Types.VARCHAR;
                 } else if (tableName.equals(model.mainTableName) ||
-                        tableName.equals(model.mainTableName)) {
+                        tableName.equals(model.ACL_TABLE_NAME) ||
+                        tableName.equals(model.MISC_TABLE_NAME)) {
                     // or VARCHAR for system tables // TODO size?
                     sqlType = Types.VARCHAR;
                 } else {
@@ -791,8 +794,8 @@ public class SQLInfo {
         // children ids and types
         protected void postProcessSelectChildrenIdsAndTypes() {
             assert !model.separateMainTable; // otherwise join needed
-            ArrayList<Column> whatColumns = new ArrayList<Column>(2);
-            ArrayList<String> whats = new ArrayList<String>(2);
+            List<Column> whatColumns = new ArrayList<Column>(2);
+            List<String> whats = new ArrayList<String>(2);
             Column column = table.getColumn(model.MAIN_KEY);
             whatColumns.add(column);
             whats.add(column.getQuotedName());
@@ -1127,7 +1130,7 @@ public class SQLInfo {
 
         public final String methodSuffix;
 
-        public final String className;
+        public final String className = DerbyFunctions.class.getName();
 
         public DerbyStoredProcedureInfoMaker() {
             switch (model.idGenPolicy) {
@@ -1142,11 +1145,23 @@ public class SQLInfo {
             default:
                 throw new AssertionError(model.idGenPolicy);
             }
-            className = DerbyFunctions.class.getName();
         }
 
-        public StoredProcedureInfo make(String functionName, String proto,
-                String methodName) {
+        public StoredProcedureInfo makeInTree() {
+            return makeFunction("NX_IN_TREE",
+                    "(ID %s, BASEID %<s) RETURNS SMALLINT", "isInTree" +
+                            methodSuffix, "READS SQL DATA");
+        }
+
+        public StoredProcedureInfo makeAccessAllowed() {
+            return makeFunction(
+                    "NX_ACCESS_ALLOWED",
+                    "(ID %s, PRINCIPALS VARCHAR(10000), PERMISSIONS VARCHAR(10000)) RETURNS SMALLINT",
+                    "isAccessAllowed" + methodSuffix, "READS SQL DATA");
+        }
+
+        protected StoredProcedureInfo makeFunction(String functionName,
+                String proto, String methodName, String info) {
             proto = String.format(proto, idType);
             return new StoredProcedureInfo(
                     null, // do a drop check
@@ -1157,10 +1172,49 @@ public class SQLInfo {
                     String.format("CREATE FUNCTION %s%s " //
                             + "LANGUAGE JAVA " //
                             + "PARAMETER STYLE JAVA " //
-                            + "EXTERNAL NAME '%s.%s%s' " //
-                            + "READS SQL DATA", //
+                            + "EXTERNAL NAME '%s.%s' " //
+                            + "%s", //
                             functionName, proto, //
-                            className, methodName, methodSuffix));
+                            className, methodName, info));
+        }
+    }
+
+    public class H2StoredProcedureInfoMaker {
+
+        public final String methodSuffix;
+
+        public final String className = H2Functions.class.getName();
+
+        public H2StoredProcedureInfoMaker() {
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                methodSuffix = "String";
+                break;
+            case DB_IDENTITY:
+                methodSuffix = "Long";
+                break;
+            default:
+                throw new AssertionError(model.idGenPolicy);
+            }
+        }
+
+        public StoredProcedureInfo makeInTree() {
+            return makeFunction("NX_IN_TREE", "isInTree" + methodSuffix);
+        }
+
+        public StoredProcedureInfo makeAccessAllowed() {
+            return makeFunction("NX_ACCESS_ALLOWED", "isAccessAllowed" +
+                    methodSuffix);
+        }
+
+        protected StoredProcedureInfo makeFunction(String functionName,
+                String methodName) {
+            return new StoredProcedureInfo(//
+                    Boolean.TRUE, // always drop
+                    null, //
+                    String.format("DROP ALIAS IF EXISTS %s", functionName), //
+                    String.format("CREATE ALIAS %s FOR \"%s.%s\"",
+                            functionName, className, methodName));
         }
     }
 
@@ -1192,19 +1246,57 @@ public class SQLInfo {
                                     + "RETURNS boolean " //
                                     + "AS $$ " //
                                     + "DECLARE" //
-                                    + "  cur %<s := id; " //
+                                    + "  curid %<s := id; " //
                                     + "BEGIN" //
                                     + "  IF baseid IS NULL OR id IS NULL OR baseid = id THEN" //
                                     + "    RETURN false;" //
                                     + "  END IF;" //
                                     + "  LOOP" //
-                                    + "    SELECT parentid INTO cur FROM hierarchy WHERE hierarchy.id = cur;" //
-                                    + "    IF cur IS NULL THEN" //
+                                    + "    SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;" //
+                                    + "    IF curid IS NULL THEN" //
                                     + "      RETURN false; " //
-                                    + "    ELSIF cur = baseid THEN" //
+                                    + "    ELSIF curid = baseid THEN" //
                                     + "      RETURN true;" //
                                     + "    END IF;" //
                                     + "  END LOOP;" //
+                                    + "END " //
+                                    + "$$ " //
+                                    + "LANGUAGE plpgsql " //
+                                    + "STABLE " //
+                            , idType));
+        }
+
+        public StoredProcedureInfo makeAccessAllowed() {
+            return new StoredProcedureInfo(
+                    //
+                    Boolean.FALSE, // no drop needed
+                    null,
+                    null, //
+                    String.format(
+                            "CREATE OR REPLACE FUNCTION NX_ACCESS_ALLOWED" //
+                                    + "(id %s, users varchar[], permissions varchar[]) " //
+                                    + "RETURNS boolean " //
+                                    + "AS $$ " //
+                                    + "DECLARE" //
+                                    + "  curid %<s := id;" //
+                                    + "  newid %<s;" //
+                                    + "  r record;" //
+                                    + "  first boolean := true;" //
+                                    + "BEGIN" //
+                                    + "  WHILE curid IS NOT NULL LOOP" //
+                                    + "    FOR r in SELECT acls.grant, acls.permission, acls.user FROM acls WHERE acls.id = curid ORDER BY acls.pos LOOP"
+                                    + "      IF r.permission = ANY(permissions) AND r.user = ANY(users) THEN" //
+                                    + "        RETURN r.grant;" //
+                                    + "      END IF;" //
+                                    + "    END LOOP;" //
+                                    + "    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;" //
+                                    + "    IF first AND newid IS NULL THEN" //
+                                    + "      SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;" //
+                                    + "    END IF;" //
+                                    + "    first := false;" //
+                                    + "    curid := newid;" //
+                                    + "  END LOOP;" //
+                                    + "  RETURN false; " //
                                     + "END " //
                                     + "$$ " //
                                     + "LANGUAGE plpgsql " //
@@ -1221,13 +1313,16 @@ public class SQLInfo {
         String databaseName = dialect.getDatabaseName();
         if ("Apache Derby".equals(databaseName)) {
             DerbyStoredProcedureInfoMaker maker = new DerbyStoredProcedureInfoMaker();
-            spis.add(maker.make("NX_IN_TREE",
-                    "(ID %s, BASEID %<s) RETURNS SMALLINT", "isInTree"));
-            spis.add(maker.make("NX_CAN_BROWSE", "(ID %s) RETURNS SMALLINT",
-                    "canBrowse"));
+            spis.add(maker.makeInTree());
+            spis.add(maker.makeAccessAllowed());
+        } else if ("H2".equals(databaseName)) {
+            H2StoredProcedureInfoMaker maker = new H2StoredProcedureInfoMaker();
+            spis.add(maker.makeInTree());
+            spis.add(maker.makeAccessAllowed());
         } else if ("PostgreSQL".equals(databaseName)) {
             PostgreSQLstoredProcedureInfoMaker maker = new PostgreSQLstoredProcedureInfoMaker();
             spis.add(maker.makeInTree());
+            spis.add(maker.makeAccessAllowed());
         }
         return spis;
     }

@@ -36,8 +36,6 @@ public class Expression implements Operand {
 
 
     public Expression(Operand lvalue, Operator operator, Operand rvalue) {
-        assert lvalue != null && operator != null;
-
         this.lvalue = lvalue;
         this.rvalue = rvalue;
         this.operator = operator;
@@ -88,6 +86,11 @@ public class Expression implements Operand {
         result = 37 * result + lvalue.hashCode();
         result = 37 * result + (rvalue == null ? 0 : rvalue.hashCode());
         return result;
+    }
+
+
+    public boolean isPathExpression() {
+        return (lvalue instanceof Reference) && "ecm:path".equals(((Reference)lvalue).name);
     }
 
 }

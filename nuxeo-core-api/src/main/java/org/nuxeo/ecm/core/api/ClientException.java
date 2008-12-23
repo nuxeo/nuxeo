@@ -19,18 +19,14 @@
 
 package org.nuxeo.ecm.core.api;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
- * @author bstefanescu
+ * The most generic exception thrown by the Nuxeo Core.
  *
+ * @author bstefanescu
  */
 public class ClientException extends Exception {
 
     private static final long serialVersionUID = 829907884555472415L;
-
-    private static final Log log = LogFactory.getLog(ClientException.class);
 
     public ClientException() {
     }
@@ -53,6 +49,23 @@ public class ClientException extends Exception {
 
     public ClientException(ClientException cause) {
         super(cause);
+    }
+
+    public static ClientException wrap(Throwable exception) {
+        ClientException clientException;
+
+        if (null == exception) {
+            clientException = new ClientException(
+                    "Root exception was null. Please check your code.");
+        } else {
+            if (exception instanceof ClientException) {
+                clientException = (ClientException) exception;
+            } else {
+                clientException = new ClientException(
+                        exception.getLocalizedMessage(), exception);
+            }
+        }
+        return clientException;
     }
 
 }
