@@ -21,9 +21,9 @@
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-schema" />
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-query" />
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-io" />
-      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-client" />
+      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-client" version="${nuxeo.core.version}"/>
 
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-shell-commands-base" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-shell-commands-base" version="${nuxeo.platform.version}"/>
     </artifacts>
   </artifactSet>
 

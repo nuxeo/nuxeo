@@ -43,6 +43,24 @@
         <activeByDefault>false</activeByDefault>
       </activation>
     </profile>
+    <profile>
+      <id>jpa</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+    <profile>
+      <id>el</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+    <profile>
+      <id>audit</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
   </profiles>
 
 
@@ -51,7 +69,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-nuxeo-plugin</artifactId>
-        <extensions>true</extensions>
+        <extensions>false</extensions>
         <executions>
           <execution>
             <id>assemble-app</id>
