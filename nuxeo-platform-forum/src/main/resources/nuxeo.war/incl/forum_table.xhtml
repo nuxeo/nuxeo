@@ -7,8 +7,7 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:s="http://jboss.com/products/seam/taglib">
 
-  <a4j:region
-  rendered="#{documents != null}">
+  <a4j:region rendered="#{documents != null}">
   <h:form id="#{documents.name}">
     <h:outputText value="#{messages['label.content.emptyFolder']}"
       rendered="#{documents.rowCount == 0}" />
@@ -68,9 +67,7 @@
       </nxd:restDocumentLink>
       </nxu:column>
 
-
       <nxu:methodResult name="threadAdapter" value="#{threadAction.getAdapter(row.data)}" >
-
 
       <!--  Last post information -->
       <nxu:methodResult name="lastPost" value="#{threadAdapter.getLastPublishedPost()}" >

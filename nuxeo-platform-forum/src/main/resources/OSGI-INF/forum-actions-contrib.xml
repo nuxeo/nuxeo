@@ -63,7 +63,6 @@
     </action>
 
     <!-- Filter tabs for thread -->
-
     <action id="TAB_EDIT">
       <filter id="no_edit_on_thread">
         <rule grant="false">
@@ -71,6 +70,7 @@
         </rule>
       </filter>
     </action>
+
     <action id="TAB_RELATIONS">
       <filter id="no_relations_on_thread">
         <rule grant="false">
@@ -78,6 +78,7 @@
         </rule>
       </filter>
     </action>
+
     <action id="TAB_METADATA_EDIT">
       <filter id="no_metadata_on_thread">
         <rule grant="false">
@@ -85,6 +86,7 @@
         </rule>
       </filter>
     </action>
+
     <action id="TAB_CONTENT_HISTORY">
       <filter id="no_history_on_thread">
         <rule grant="false">
@@ -92,6 +94,7 @@
         </rule>
       </filter>
     </action>
+
     <action id="TAB_METADATA_VIEW">
       <filter id="no_metadata_view_on_thread">
         <rule grant="false">
