@@ -103,21 +103,22 @@ def testShell():
     flush()
 
     clean()
-    mvn("install package -P nxshell")
+    mvn("install package -P shell")
     zipfile = getZipFileFrom("nuxeo-distribution-shell/target/")
 
     os.mkdir("test")
     os.chdir("test")
     system("unzip -q ../nuxeo-distribution-shell/target/" + zipfile)
     os.chdir("nxshell")
-
+    print "Starting server, and running short tests"
+    flush()
     p = pexpect.spawn("sh nxclient.sh", timeout=120)
+    p.logfile = sys.stdout
     p.expect("Framework started in")
     # No real tests since there is no real server to connect to (for now).
     p.sendline("quit")
     p.expect("Bye.")
     p.close(force=True)
-
     os.chdir("../..")
 
 def testJetty():
@@ -165,7 +166,7 @@ def testJetty():
 
     os.chdir("../..")
 
-def testGF3():
+def testGf3():
     print "## Testing 'gf3' packaging"
     flush()
 
@@ -219,6 +220,7 @@ def main(argv):
                       help="Test mvn profile.", default=None)
     options, args = parser.parse_args(argv)
     if options.verbose:
+        global VERBOSE
         VERBOSE = True
     if options.profile:
         method_name = 'test' + options.profile.capitalize()
