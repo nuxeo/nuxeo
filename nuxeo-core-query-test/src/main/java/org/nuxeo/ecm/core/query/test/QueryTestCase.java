@@ -760,6 +760,18 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
                 + "AND dc:contributors = 'pete'";
         dml = session.query(query);
         assertIdSet(dml, file2.getId());
+
+        // multi-valued field
+        query = "SELECT * FROM Document WHERE ecm:fulltext = 'bzzt'";
+        dml = session.query(query);
+        assertEquals(0, dml.size());
+        file1.setProperty("dublincore", "subjects", new String[] { "bzzt" });
+        session.saveDocument(file1);
+        session.save();
+        query = "SELECT * FROM Document WHERE ecm:fulltext = 'bzzt'";
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId());
+
     }
 
 }
