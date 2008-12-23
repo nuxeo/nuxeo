@@ -3,21 +3,18 @@
 <component name="org.nuxeo.ecm.platform.workflow.DefaultWorkflowSecurityPolicyContributions">
 
   <documentation>
+    Default NXP workflow security policy association contributions.
 
-      Default NXP workflow security policy association contributions.
-
-      @version 1.0
-      @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+    @version 1.0
+    @author Julien Anguenot
   </documentation>
 
   <extension target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService"
-         point="workflowDocumentSecurityPolicyRelation">
+      point="workflowDocumentSecurityPolicyRelation">
 
     <documentation>
-
       Contribute security policies to workflow definitions associations for
       NXP.
-
     </documentation>
 
     <workflowDocumentSecurityPolicyRelation for="parallel_review">
@@ -28,6 +25,6 @@
       <workflowName>document_review_serial</workflowName>
       <workflowName>document_review_approbation</workflowName>
     </workflowDocumentSecurityPolicyRelation>
- </extension>
+  </extension>
 
 </component>

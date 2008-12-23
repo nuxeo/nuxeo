@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.transform;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.File;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -31,8 +32,8 @@ public class TestTransformDocumentWithUnknownExtension extends AbstractTransform
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        String wordPath = FileUtils.getResourcePathFromContext("test-data/hello.doc");
-        InputStream stream = new FileInputStream(wordPath);
+        File wordFile = FileUtils.getResourceFileFromContext("test-data/hello.doc");
+        InputStream stream = new FileInputStream(wordFile);
         Blob blob = new FileBlob(stream);
         document = new TransformDocumentImpl(blob);
     }

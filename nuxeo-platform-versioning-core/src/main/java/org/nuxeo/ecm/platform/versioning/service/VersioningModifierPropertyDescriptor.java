@@ -22,11 +22,8 @@ import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
-
 /***
- *
- * @author <a href="mailto:bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
- *
+ * @author Brice Chaffangeon
  */
 @XObject("property")
 public class VersioningModifierPropertyDescriptor {

@@ -13,12 +13,5 @@
       </interceptor-class>
     </interceptor-binding>
 
-    <interceptor-binding>
-      <ejb-name>*</ejb-name>
-      <interceptor-class>
-        org.nuxeo.ecm.platform.ui.web.shield.NuxeoErrorInterceptor
-      </interceptor-class>
-    </interceptor-binding>
-
   </assembly-descriptor>
 </ejb-jar>

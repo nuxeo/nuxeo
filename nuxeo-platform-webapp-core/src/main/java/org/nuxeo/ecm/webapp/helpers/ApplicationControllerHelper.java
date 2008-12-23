@@ -43,6 +43,8 @@ public class ApplicationControllerHelper  {
 
     private static final Log log = LogFactory.getLog(ApplicationControllerHelper.class);
 
+    // Utility class.
+    private ApplicationControllerHelper() {}
 
     public static String getPageOnSelectedDocumentType(Type docType) {
         String returnPage = null;

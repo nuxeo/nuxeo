@@ -57,18 +57,12 @@ import org.nuxeo.ecm.core.search.api.client.search.results.document.impl.ResultD
 import org.nuxeo.ecm.core.search.api.client.search.results.impl.DocumentModelResultItem;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceConf;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.ResourceType;
-import org.nuxeo.runtime.services.streaming.StreamSource;
-import org.nuxeo.runtime.services.streaming.StringSource;
 
 /**
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
- * 
+ *
  */
 public class SearchPageProvider implements PagedDocumentsProvider {
-
-    private static final long serialVersionUID = 4391326971391218440L;
-
-    private static final Log log = LogFactory.getLog(SearchPageProvider.class);
 
     // to be used by the blob filter to transform maps into blob instances
 
@@ -84,7 +78,13 @@ public class SearchPageProvider implements PagedDocumentsProvider {
 
     public static final String BLOB_LENGTH_KEY = "length";
 
+    private static final long serialVersionUID = 4391326971391218440L;
+
+    private static final Log log = LogFactory.getLog(SearchPageProvider.class);
+
     private static final DocumentModelList EMPTY = new DocumentModelListImpl();
+
+    private static final Map<String, String> prefix2SchemaNameCache = new HashMap<String, String>();
 
     private ResultSet searchResults;
 
@@ -111,13 +111,11 @@ public class SearchPageProvider implements PagedDocumentsProvider {
 
     private SchemaManager typeManager;
 
-    private static Map<String, String> prefix2SchemaNameCache = new HashMap<String, String>();
-
     /**
      * Constructor to create a sortable provider. Note that a provider can be
      * sortable and have a null sortInfo, which means a subsequent method call
      * with sortInfo not null will succeed.
-     * 
+     *
      * @param set The resultset
      * @param sortable if sortable, a subsequent call that provides sorting info
      * @param sortInfo the sorting info or null if the resultset is not sorted
@@ -136,7 +134,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
 
     /**
      * Constructor to create a non-sortable resultset.
-     * 
+     *
      * @param set
      */
     public SearchPageProvider(ResultSet set) {
@@ -174,9 +172,9 @@ public class SearchPageProvider implements PagedDocumentsProvider {
 
     /**
      * Return the current list of document models
-     * 
+     *
      * @return the list
-     * @deprecated use {@link getCurrentPage} (see in interface) instead. will
+     * @deprecated use {@link #getCurrentPage} (see in interface) instead. will
      *             be removed in 5.2
      */
     @Deprecated
@@ -194,7 +192,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
     public String getCurrentPageStatus() {
         int total = getNumberOfPages();
         int current = getCurrentPageIndex() + 1;
-        if (total == PagedDocumentsProvider.UNKNOWN_SIZE) {
+        if (total == UNKNOWN_SIZE) {
             return String.format("%d", current);
         } else {
             return String.format("%d/%d", current, total);
@@ -327,7 +325,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
      * </p>
      * TODO This is wrong: prefix and schema name are actually transversal
      * concepts
-     * 
+     *
      * @param prefix
      * @return the schema name
      */
@@ -351,8 +349,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
         return schemaName;
     }
 
-    protected DocumentModelList constructDocumentModels()
-            throws SearchException {
+    protected DocumentModelList constructDocumentModels() {
         if (searchResults == null) {
             return EMPTY;
         }
@@ -370,7 +367,6 @@ public class SearchPageProvider implements PagedDocumentsProvider {
         return new DocumentModelListImpl(res);
     }
 
-    @SuppressWarnings("unchecked")
     private DocumentModel constructDocumentModel(ResultItem rItem)
             throws SearchException {
 
@@ -425,7 +421,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
 
         List<String> facetsList = (List<String>) rItem.get(BuiltinDocumentFields.FIELD_DOC_FACETS);
         if (facetsList == null) {
-            facetsList = Collections.EMPTY_LIST;
+            facetsList = Collections.emptyList();
         }
 
         Set<String> facets = new HashSet<String>(facetsList);
@@ -464,7 +460,6 @@ public class SearchPageProvider implements PagedDocumentsProvider {
         }
 
         return docModel;
-
     }
 
     protected Field getSchemaField(String schemaName, String fieldName) {
@@ -473,7 +468,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
 
     /**
      * Gets the type manager from the platform service platform service.
-     * 
+     *
      * @return a type manager instance.
      */
     protected SchemaManager getTypeManager() {
@@ -486,10 +481,10 @@ public class SearchPageProvider implements PagedDocumentsProvider {
     /**
      * Introspect typed value and create Blob instances instead of Maps when
      * appropriate
-     * 
+     *
      * @param value raw value as returned by the search service backend
      * @param field Field instance of the matching core Schema
-     * 
+     *
      * @return the filter Object with Blob instances instead of Map instances
      *         when required
      */

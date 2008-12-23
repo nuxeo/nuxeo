@@ -89,7 +89,7 @@ public final class WorkflowConstants {
      * Used when a process ends without life cycle update. The content goes back
      * to its old state through this transition.
      *
-     * @see org.nuxeo.ecm.workflow.handlers
+     * @see org.nuxeo.ecm.platform.workflow.handlers
      */
     public static final String LIFE_CYCLE_TRANSITION_TO_FORMER_STATE = "LifeCycleTransitionToFormerState";
 

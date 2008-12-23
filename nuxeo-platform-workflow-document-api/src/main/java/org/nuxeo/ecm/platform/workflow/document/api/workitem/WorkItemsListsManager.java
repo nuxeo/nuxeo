@@ -24,14 +24,10 @@ import java.util.List;
 
 /**
  * Work items list manager.
- *
- * <p/>
- *
+ * <p>
  * Interface for the service that deals with stored work items lists.
  *
- * <p/>
- *
- * @see org.nuxeo.ecm.platform.workflow.ejb.WorkItemsListBean
+ * @see org.nuxeo.ecm.platform.workflow.document.ejb.WorkItemsListsBean
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
@@ -40,23 +36,18 @@ public interface WorkItemsListsManager extends Serializable {
     /**
      * Fetch the entry in the backend given its id.
      *
-     * @param entryId : the work items list entry identifier
+     * @param entryId the work items list entry identifier
      * @return the work item list entry instance or null if not found.
      */
     WorkItemsListEntry getWorkItemListEntry(int entryId);
 
     /**
      * Fetch the entry in the backend given its name for a given participant.
-     *
      * <p>
      * For a given paticipant, only one name exist for a given list.
-     * </p>
-     *
      * <p>
      * Returns null if the list does not exist.
-     * </p>
      *
-     * @param entryId : the work items list entry identifier
      * @return the work item list entry instance or null if not found.
      */
     WorkItemsListEntry getWorkItemListEntryByName(String participantName,
@@ -78,6 +69,7 @@ public interface WorkItemsListsManager extends Serializable {
     /**
      * Return work items entries for all participants and for a given
      * process given its name.
+     *
      * @param processName The processName
      *
      * @return a list of work items lists
@@ -100,7 +92,7 @@ public interface WorkItemsListsManager extends Serializable {
     /**
      * Saves a work items list entry.
      *
-     * @param entry : a work items list entry.
+     * @param entry a work items list entry.
      * @throws WorkItemsListException
      */
     void saveWorkItemsList(WorkItemsListEntry entry)

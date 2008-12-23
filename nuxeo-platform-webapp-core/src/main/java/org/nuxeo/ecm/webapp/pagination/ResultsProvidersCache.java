@@ -36,17 +36,19 @@ public interface ResultsProvidersCache {
 
     /**
      * Get a named results provider.
+     * <p>
+     * This handles caching and first instantiation.
      *
-     * <p>This handles caching and first instantiation</p>
      * @throws ClientException
      * @throws SortNotSupportedException
      */
     PagedDocumentsProvider get(String name) throws ClientException;
 
     /**
-     * Get a named results provider.
+     * Gets a named results provider.
+     * <p>
+     * This handles caching and first instantiation.
      *
-     * <p>This handles caching and first instantiation</p>
      * @throws ClientException
      * @throws SortNotSupportedException
      */
@@ -55,9 +57,8 @@ public interface ResultsProvidersCache {
 
     /**
      * Invalidates a results provider.
-     * <p>A new provider will be computed next time get() is called</p>
-     *
-     * @throws ClientException
+     * <p>
+     * A new provider will be computed next time get() is called.
      */
     void invalidate(String name);
 
@@ -79,4 +80,4 @@ public interface ResultsProvidersCache {
     int getNumberOfPages();
     int getPageIndex();
 
-    }
+}

@@ -7,9 +7,7 @@
     </module>
   </extension>
 
-
   <extension target="faces-config#APPLICATION">
-
     <locale-config>
       <supported-locale>ar</supported-locale>
       <supported-locale>cn</supported-locale>
@@ -20,17 +18,13 @@
       <supported-locale>ru</supported-locale>
       <supported-locale>vn</supported-locale>
     </locale-config>
-
-
   </extension>
 
   <install>
-
     <!--  unzip the war template -->
     <unzip from="${bundle.fileName}" to="/">
       <include>nuxeo.war/**</include>
     </unzip>
-
   </install>
 
 </fragment>

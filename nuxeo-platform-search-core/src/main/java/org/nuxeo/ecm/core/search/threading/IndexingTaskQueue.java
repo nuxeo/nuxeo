@@ -34,9 +34,9 @@ import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.Task;
 
 /**
  * A {@code BlockingQueue} implementation used for the indexing tasks.
- * 
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * 
+ *
  */
 public class IndexingTaskQueue extends LinkedBlockingQueue<Runnable> {
 
@@ -48,13 +48,13 @@ public class IndexingTaskQueue extends LinkedBlockingQueue<Runnable> {
      * Tasks from the underlying queue that cannot be run when they were taken
      * because a task was already running for the same document
      */
-    private List<Runnable> awaitingTasks = Collections.synchronizedList(new ArrayList<Runnable>());
+    private final List<Runnable> awaitingTasks = Collections.synchronizedList(new ArrayList<Runnable>());
 
     /**
      * Store all the tasks managed by this queue: the ones from the {@code
      * awaitingTasks} plus the ones from the underlying queue
      */
-    private Set<Runnable> tasksInQueue = Collections.synchronizedSet(new HashSet<Runnable>());
+    private final Set<Runnable> tasksInQueue = Collections.synchronizedSet(new HashSet<Runnable>());
 
     /**
      * Read-only list containing the currently running indexing tasks. This list
@@ -242,7 +242,7 @@ public class IndexingTaskQueue extends LinkedBlockingQueue<Runnable> {
     /**
      * Returns the first awaiting task of the list not yet already running by
      * the IndexingThreadPool, {@code null} if all tasks are already running.
-     * 
+     *
      */
     private Runnable getAwaitingTask() {
         // any awaiting task in the list?

@@ -49,7 +49,6 @@ import org.nuxeo.ecm.platform.relations.search.resources.indexing.api.RelationIn
  * Relations indexable resource implementation.
  *
  * @author <a href="mailto:gr@nuxeo.com">Georges Racinet</a>
- *
  */
 public class RelationIndexableResourceImpl extends
         AbstractNXCoreIndexableResource implements RelationIndexableResource {
@@ -65,7 +64,6 @@ public class RelationIndexableResourceImpl extends
     private RelationManager relationManager;
 
     public RelationIndexableResourceImpl() {
-        super();
     }
 
     private void initGraph() {
@@ -214,7 +212,7 @@ public class RelationIndexableResourceImpl extends
         return null;
     }
 
-    private Serializable extractPropertyValue(IndexableResourceDataConf conf,
+    private static Serializable extractPropertyValue(IndexableResourceDataConf conf,
             Node[] nodes) {
         // TODO handle lists and type according to conf
         if (nodes.length == 0) {
@@ -236,18 +234,17 @@ public class RelationIndexableResourceImpl extends
         }
 
         // try and convert
-        if (type.equals("int")) {
+        if ("int".equals(type)) {
             return new Integer(sValue);
         }
 
-        if (type.equals("date")) {
+        if ("date".equals(type)) {
             // Search Service expects Calendar, in turn because that's
             // what NXCore feeds him
             return RelationDate.getCalendar((Literal) node);
         }
 
         return sValue;
-
     }
 
     private Serializable getIndexingRepresentation(QNameResource s)

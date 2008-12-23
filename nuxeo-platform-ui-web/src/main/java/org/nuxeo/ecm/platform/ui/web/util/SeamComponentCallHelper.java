@@ -129,17 +129,11 @@ public final class SeamComponentCallHelper {
             result = m.invoke(seamComponent, params);
             return result;
         } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw new RuntimeException("Error calling method " + e.getMessage());
+            throw new RuntimeException("Error calling method " + e.getMessage(), e);
         } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw new RuntimeException("Error calling method " + e.getMessage());
+            throw new RuntimeException("Error calling method " + e.getMessage(), e);
         } catch (InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw new RuntimeException("Error calling method " + e.getMessage());
+            throw new RuntimeException("Error calling method " + e.getMessage(), e);
         }
     }
 
@@ -208,24 +202,17 @@ public final class SeamComponentCallHelper {
      * Extracts the Seam name from annotation given a reference.
      */
     private static String getSeamComponentName(Object seamRef) {
-        String seamName;
         Name componentName = seamRef.getClass().getAnnotation(Name.class);
 
         if (componentName == null) {
             return null;
         }
 
-        seamName = componentName.value();
-        return seamName;
+        return componentName.value();
     }
 
     /**
      * Finds the method in the local interface of the Seam component.
-     *
-     * @param name
-     * @param cls
-     * @param params
-     * @return
      */
     private static Method findMethod(String name, Class cls, Object[] params) {
         Map<Method, Integer> candidates = new HashMap<Method, Integer>();

@@ -132,7 +132,6 @@ public class PublishingListener implements MessageListener {
     }
 
     private void moderate(DocumentMessage msg) throws Exception {
-
         log.debug("Moderation will occur for dm=" + msg.getPathAsString());
 
         // Start actual publishing workflow.
@@ -176,15 +175,16 @@ public class PublishingListener implements MessageListener {
     }
 
     public void onMessage(Message message) {
-
         try {
             Object obj = ((ObjectMessage) message).getObject();
-            if (!(obj instanceof DocumentMessage))
+            if (!(obj instanceof DocumentMessage)) {
                 return;
+            }
             DocumentMessage doc = (DocumentMessage) obj;
             moderate(doc);
         } catch (Exception e) {
             throw new EJBException(e);
         }
     }
+
 }

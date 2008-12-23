@@ -30,24 +30,14 @@ public class SizeLimitExceededException extends DirectoryException {
     public SizeLimitExceededException() {
     }
 
-    /**
-     * @param message
-     * @param th
-     */
     public SizeLimitExceededException(String message, Throwable th) {
         super(message, th);
     }
 
-    /**
-     * @param message
-     */
     public SizeLimitExceededException(String message) {
         super(message);
     }
 
-    /**
-     * @param th
-     */
     public SizeLimitExceededException(Throwable th) {
         super(th);
     }

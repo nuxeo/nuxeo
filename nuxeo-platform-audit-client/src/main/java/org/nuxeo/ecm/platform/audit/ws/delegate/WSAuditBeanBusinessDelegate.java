@@ -43,7 +43,7 @@ public class WSAuditBeanBusinessDelegate implements Serializable {
     protected WSAudit ws;
 
     public WSAudit getWSAuditRemote() throws NamingException {
-        log.debug("getWSAuditRemote()");
+        if (log.isDebugEnabled()) log.debug("getWSAuditRemote()");
         if (ws == null) {
             ws = ejbFactory.getWSAuditRemote();
         }

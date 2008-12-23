@@ -1,12 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.1.7-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
@@ -16,12 +15,12 @@
   <description>Nuxeo Enterprise Platform: Parent.</description>
 
   <properties>
-    <nuxeo.common.version>1.4.4-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>1.4.4-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.core.version>1.4.4-SNAPSHOT</nuxeo.core.version>
-    <nuxeo.theme.version>5.1.7-SNAPSHOT</nuxeo.theme.version>
+    <nuxeo.common.version>1.5-SNAPSHOT</nuxeo.common.version>
+    <nuxeo.runtime.version>1.5-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.core.version>1.5-SNAPSHOT</nuxeo.core.version>
+    <nuxeo.theme.version>5.2-SNAPSHOT</nuxeo.theme.version>
     <nuxeo.ear.assembly>nuxeo</nuxeo.ear.assembly>
-    <nuxeo.platform.version>5.1.7-SNAPSHOT</nuxeo.platform.version>
+    <nuxeo.platform.version>5.2-SNAPSHOT</nuxeo.platform.version>
   </properties>
 
   <modules>
@@ -39,6 +38,7 @@
     <module>nuxeo-platform-cache-jboss</module>
     <module>nuxeo-platform-cache-server</module>
     <module>nuxeo-platform-cache-web</module>
+    <module>nuxeo-platform-commandline-executor</module>
     <module>nuxeo-platform-comment-api</module>
     <module>nuxeo-platform-comment</module>
     <module>nuxeo-platform-comment-web</module>
@@ -59,6 +59,7 @@
     <module>nuxeo-platform-filemanager-core-listener</module>
     <module>nuxeo-platform-filemanager-api</module>
     <module>nuxeo-platform-filemanager-facade</module>
+    <module>nuxeo-platform-lang</module>
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-login-jboss</module>
     <module>nuxeo-platform-auth-web-jboss</module>
@@ -99,6 +100,8 @@
     <module>nuxeo-platform-types-facade</module>
     <module>nuxeo-platform-uidgen-core</module>
     <module>nuxeo-platform-ui-api</module>
+    <module>nuxeo-platform-web-common</module>
+    <module>nuxeo-platform-ui-web-compat</module>
     <module>nuxeo-platform-ui-web</module>
     <module>nuxeo-platform-url-core</module>
     <module>nuxeo-platform-url-facade</module>
@@ -142,6 +145,7 @@
     <module>nuxeo-platform-io-client</module>
     <module>nuxeo-platform-audit-io</module>
     <module>nuxeo-platform-relations-io</module>
+    <module>nuxeo-platform-el</module>
   </modules>
 
   <dependencyManagement>
@@ -298,6 +302,11 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-commandline-executor</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-comment</artifactId>
         <version>${nuxeo.platform.version}</version>
         <type>ejb</type>
@@ -424,6 +433,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-login</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-lang</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>
@@ -613,6 +627,16 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-web-common</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-ui-web-compat</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-ui-web</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
@@ -797,18 +821,22 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-html</artifactId>
+        <version>${nuxeo.theme.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-jsf</artifactId>
         <version>${nuxeo.theme.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-jsf-editor</artifactId>
+        <artifactId>nuxeo-theme-webengine</artifactId>
         <version>${nuxeo.theme.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-jsf-editor-web</artifactId>
+        <artifactId>nuxeo-theme-editor</artifactId>
         <version>${nuxeo.theme.version}</version>
       </dependency>
       <dependency>
@@ -958,9 +986,7 @@
 
   <scm>
     <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-platform</connection>
-    <developerConnection>
-      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-platform
-    </developerConnection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-platform</developerConnection>
     <url>http://hg.nuxeo.org/nuxeo/nuxeo-platform</url>
   </scm>
 

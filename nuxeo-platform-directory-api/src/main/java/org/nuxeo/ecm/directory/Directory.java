@@ -48,7 +48,6 @@ public interface Directory {
      */
     String getSchema() throws DirectoryException;
 
-
     /**
      * Gets the name of the parent directory. This is used for hierarchical
      * vocabularies.
@@ -85,7 +84,6 @@ public interface Directory {
      * Shuts down the directory.
      *
      * @throws DirectoryException
-     *
      */
     void shutdown() throws DirectoryException;
 

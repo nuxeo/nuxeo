@@ -45,4 +45,40 @@ public class DirectoryException extends ClientException {
         super(th);
     }
 
+    /**
+     * Wraps the received exception into a {@link ClientException}.
+     *
+     * @param exception
+     * @return
+     */
+    public static DirectoryException wrap(Throwable exception) {
+        DirectoryException clientException;
+
+        if (null == exception) {
+            clientException = new DirectoryException(
+                    "Root exception was null. Pls check your code.");
+        } else {
+            if (exception instanceof DirectoryException) {
+                clientException = (DirectoryException) exception;
+            } else {
+                if (exception instanceof Error) {
+                    clientException = new DirectoryException(
+                            "An ERROR type of exception occurred. This will most likely kill your session/application",
+                            exception);
+                } else {
+                    if (exception instanceof RuntimeException) {
+                        clientException = new DirectoryException(
+                                "Runtime exception was raised. Wrapping now...",
+                                exception);
+                    } else {
+                        clientException = new DirectoryException(
+                                "Unwrapped application exception was raised. Wrapping now...",
+                                exception);
+                    }
+                }
+            }
+        }
+        return clientException;
+    }
+
 }

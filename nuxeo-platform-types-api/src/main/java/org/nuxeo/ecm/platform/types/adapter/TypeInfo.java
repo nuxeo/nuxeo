@@ -35,6 +35,7 @@ public interface TypeInfo {
 
     /**
      * @deprecated Use {@link #getId} instead.
+     * Not used. Remove in 5.2.
      */
     @Deprecated
     String getCoreType();
@@ -50,6 +51,7 @@ public interface TypeInfo {
     /**
      * @deprecated use {@link #getLayouts(String)} instead, using mode
      *             {@link BuiltinModes#ANY}.
+     * Not used. Remove in 5.2.
      */
     @Deprecated
     FieldWidget[] getLayout();

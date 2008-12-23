@@ -21,47 +21,24 @@ package org.nuxeo.ecm.platform.audit.api;
 
 import java.util.Set;
 
-import org.nuxeo.ecm.platform.events.api.DocumentMessage;
-
 /**
  * NXAuditEvents interface.
  * <p>
  * Allows to query for auditable events.
- * </p>
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
-public interface NXAuditEvents {
+public interface NXAuditEvents extends Logs {
 
     /**
      * Returns the list of auditable event names.
-     *
+     * 
+     * Is there any no reason to expose event names outside of audit service ? If
+     * not, we will remove that API.
+     * 
      * @return list of String representing event names.
      */
+    @Deprecated
     Set<String> getAuditableEventNames();
-
-    /**
-     * Returns the log entry factory class.
-     *
-     * @return a LogEntryFactory class
-     */
-    Class<LogEntryFactory> getLogEntryFactoryKlass();
-
-    /**
-     * Returns a log entry factory instance.
-     *
-     * @return a LogEntryFactory instance.
-     */
-    LogEntryFactory getLogEntryFactory();
-
-    /**
-     * Computes a log entry given a document message instance.
-     *
-     * @param doc :
-     *            the document message instance.
-     * @return a log entry instance.
-     */
-    LogEntry computeLogEntry(DocumentMessage doc);
 
 }
