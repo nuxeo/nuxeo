@@ -1,10 +1,7 @@
 <?xml version="1.0"?>
-
 <fragment>
 
-
   <extension target="application#MODULE">
-
     <module>
       <java>${bundle.fileName}</java>
     </module>
@@ -12,7 +9,6 @@
     <module>
       <java>datasources/nxworkflow-jbpm-ds.xml</java>
     </module>
-
   </extension>
 
 </fragment>

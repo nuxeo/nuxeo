@@ -2,6 +2,7 @@
 <component name="DomainManagerService">
 
   <documentation>Handles domain creation.</documentation>
+
   <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
     point="listener">
     <documentation>
