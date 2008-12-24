@@ -48,4 +48,23 @@ public class TestEmbeddedFunctions extends TestCase {
         checkSplit('-', "A-B-C", "A", "B", "C");
     }
 
+    public void testParse() throws Exception {
+        assertNull(EmbeddedFunctions.parseWord("gr"));
+        assertNull(EmbeddedFunctions.parseWord("are"));
+        assertNull(EmbeddedFunctions.parseWord("THE"));
+        assertEquals("foo", EmbeddedFunctions.parseWord("foo"));
+        assertEquals("foo", EmbeddedFunctions.parseWord("fOoS"));
+    }
+
+    public void testParseFullText() throws Exception {
+        assertEquals(
+                "brown dog fail fox jump lazy over quick",
+                EmbeddedFunctions.parseFullText("The quick brown fox jumps over the lazy dog -- and fails!"));
+        assertEquals(
+                "aime cafe jure pas",
+                EmbeddedFunctions.parseFullText("J'aime PAS le caf\u00e9, je te jure."));
+        assertEquals("007 bond jame thx1138",
+                EmbeddedFunctions.parseFullText("James Bond 007 && THX1138"));
+    }
+
 }

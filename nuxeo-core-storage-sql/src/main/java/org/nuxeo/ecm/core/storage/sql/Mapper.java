@@ -265,6 +265,7 @@ public class Mapper {
         try {
             executeConditionalStatements(sqlInfo.getStoredProceduresSqls());
             createTables();
+            executeConditionalStatements(sqlInfo.getTriggersSqls());
         } catch (SQLException e) {
             throw new StorageException(e);
         }
@@ -967,7 +968,7 @@ public class Mapper {
      * @throws StorageException
      */
     public void updateSingleRow(SimpleFragment row) throws StorageException {
-        List<String> dirty = row.getDirty();
+        Collection<String> dirty = row.getDirty();
         if (dirty.isEmpty()) {
             return;
         }

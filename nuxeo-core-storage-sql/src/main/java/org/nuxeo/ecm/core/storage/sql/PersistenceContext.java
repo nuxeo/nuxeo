@@ -18,18 +18,23 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
 
 /**
  * The persistence context in use by a session.
@@ -145,6 +150,86 @@ public class PersistenceContext {
             context.close();
         }
         // don't clean the contexts, we keep the pristine cache around
+    }
+
+    /**
+     * Update fulltext.
+     */
+    protected void updateFulltext(Session session) throws StorageException {
+        Set<Serializable> dirtyStrings = new HashSet<Serializable>();
+        Set<Serializable> dirtyBinaries = new HashSet<Serializable>();
+        for (Context context : contexts.values()) {
+            context.findDirtyDocuments(dirtyStrings, dirtyBinaries);
+        }
+        Set<Serializable> dirtyDocuments = new HashSet<Serializable>(
+                dirtyStrings);
+        dirtyDocuments.addAll(dirtyBinaries);
+        if (dirtyDocuments.isEmpty()) {
+            return;
+        }
+
+        log.debug("Computing fulltext");
+        for (Serializable docId : dirtyDocuments) {
+            boolean doStrings = dirtyStrings.contains(docId);
+            boolean doBinaries = dirtyBinaries.contains(docId);
+            Node document = session.getNodeById(docId);
+            if (document == null) {
+                // cannot happen
+                continue;
+            }
+            Queue<Node> queue = new LinkedList<Node>();
+            queue.add(document);
+
+            // collect strings on all the document's nodes recursively
+            List<String> strings = new LinkedList<String>();
+            while (!queue.isEmpty()) {
+                Node node = queue.remove();
+                // recurse into complex properties
+                // TODO could avoid recursion if no know fulltext properties
+                // there
+                queue.addAll(session.getChildren(node, null, true));
+
+                if (doStrings) {
+                    Map<String, PropertyInfo> infos = model.getFulltextStringPropertyInfos(node.getPrimaryType());
+                    if (infos != null) {
+                        for (Entry<String, PropertyInfo> entry : infos.entrySet()) {
+                            PropertyInfo info = entry.getValue();
+                            String name = entry.getKey();
+                            if (info.propertyType == PropertyType.STRING) {
+                                String v = node.getSimpleProperty(name).getString();
+                                if (v != null) {
+                                    strings.add(v);
+                                }
+                            } else /* ARRAY_STRING */{
+                                for (Serializable v : node.getCollectionProperty(
+                                        name).getValue()) {
+                                    if (v != null) {
+                                        strings.add((String) v);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+                if (doBinaries) {
+                    Map<String, PropertyInfo> infos = model.getFulltextBinaryPropertyInfos(node.getPrimaryType());
+                    if (infos != null) {
+                        /* BINARY */
+                        // log.debug("Process binary TODO");
+                    }
+
+                }
+            }
+
+            if (doStrings) {
+                // set the computed full text
+                // on INSERT/UPDATE a trigger will change the actual fulltext
+                document.setSingleProperty(model.FULLTEXT_SIMPLETEXT_PROP,
+                        StringUtils.join(strings, " "));
+            }
+        }
+        log.debug("End of fulltext");
     }
 
     /**
@@ -512,6 +597,18 @@ public class PersistenceContext {
         }
         Context proxiesContext = getContext(model.PROXY_TABLE_NAME);
         return mapper.getProxies(searchId, byTarget, parentId, proxiesContext);
+    }
+
+    /**
+     * Finds the id of the enclosing non-complex-property node.
+     *
+     * @param id the id
+     * @return the id of the containing document, or {@code null} if there is no
+     *         parent or the parent has been deleted.
+     */
+    protected Serializable getContainingDocument(Serializable id)
+            throws StorageException {
+        return hierContext.getContainingDocument(id);
     }
 
 }
