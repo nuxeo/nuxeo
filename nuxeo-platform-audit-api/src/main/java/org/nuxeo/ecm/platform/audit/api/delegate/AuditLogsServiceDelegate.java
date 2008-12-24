@@ -50,7 +50,7 @@ public final class AuditLogsServiceDelegate implements Serializable {
      * @return the audit logs service.
      */
     public static Logs getRemoteAuditLogsService() {
-        Logs service = null;
+        Logs service;
         try {
             service = Framework.getService(Logs.class);
         } catch (Exception e) {
@@ -58,6 +58,5 @@ public final class AuditLogsServiceDelegate implements Serializable {
         }
         return service;
     }
-
 
 }
