@@ -1237,11 +1237,14 @@ option.locked {
   background-image: url(${basePath}/skin/nxthemes-editor/img/add-hover.png);
 }
 
-div.nxthemesDraggable:hover * {
+div.nxthemesDraggable * {
   cursor: pointer;
 }
 
-div.nxthemesDraggable:hover {
-  background-color: #ff0;
+div.nxthemesDraggable:hover div.nxthemesPointer {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: url(${basePath}/skin/nxthemes-editor/img/pointer.png) no-repeat;
 }
 
