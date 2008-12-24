@@ -57,6 +57,8 @@
     <jboss.version>4.0.4.GA</jboss.version>
     <jboss.ejb.version>3.0-RC8</jboss.ejb.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <apacheds.version>1.5.1</apacheds.version>
+    <apachedshared.version>0.9.7</apachedshared.version>
   </properties>
 
   <dependencyManagement>
@@ -159,9 +161,13 @@
         <version>1.0.1</version>
         <scope>provided</scope>
       </dependency>
+      <dependency>
+        <groupId>javax.script</groupId>
+        <artifactId>script-api</artifactId>
+        <version>1.0</version>
+      </dependency>
       
       <!-- commons -->
-      
       <dependency>
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
@@ -228,7 +234,6 @@
       </dependency>
 
       <!-- apache -->
-
       <dependency>
         <groupId>org.apache.derby</groupId>
         <artifactId>derby</artifactId>
@@ -250,13 +255,13 @@
       <dependency>
         <groupId>org.apache.directory.shared</groupId>
         <artifactId>shared-asn1</artifactId>
-        <version>0.9.7</version>
+        <version>${apachedshared.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.shared</groupId>
         <artifactId>shared-ldap-constants</artifactId>
-        <version>0.9.7</version>
+        <version>${apachedshared.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -284,6 +289,36 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.apache.directory.shared</groupId>
+        <artifactId>shared-ldap</artifactId>
+        <version>${apachedshared.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-protocol-shared</artifactId>
+        <version>${apacheds.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-core</artifactId>
+        <version>${apacheds.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-core-shared</artifactId>
+        <version>${apacheds.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-bootstrap-partition</artifactId>
+        <version>${apacheds.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
         <groupId>xerces</groupId>
         <artifactId>xmlParserAPIs</artifactId>
         <scope>provided</scope>
@@ -297,7 +332,6 @@
       </dependency>
 
       <!-- jboss (+ hibernate, richfaces...) -->
-      
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>ejb3</artifactId>
@@ -386,16 +420,25 @@
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-ui</artifactId>
         <version>2.0.3.CR1</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-mail</artifactId>
         <version>2.0.3.CR1</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-debug</artifactId>
         <version>2.0.3.CR1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.el</groupId>
+        <artifactId>jboss-el</artifactId>
+        <version>2.0.1.GA</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
@@ -479,7 +522,6 @@
       </dependency>
       
       <!-- OpenOffice.org -->
-      
       <dependency>
         <groupId>org.openoffice</groupId>
         <artifactId>juh</artifactId>
@@ -512,7 +554,6 @@
       </dependency>
 
       <!-- others -->
-      
       <dependency>
         <groupId>cssparser</groupId>
         <artifactId>cssparser</artifactId>
@@ -574,7 +615,7 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>net.sf</groupId>
+        <groupId>net.sf.ehcache</groupId>
         <artifactId>ehcache</artifactId>
         <version>1.2.3</version>
         <scope>provided</scope>
@@ -592,6 +633,12 @@
         <version>0.9</version>
         <scope>provided</scope>
       </dependency>
+      <dependency>
+        <groupId>net.sf.opencsv</groupId>
+        <artifactId>opencsv</artifactId>
+        <version>1.7</version>
+        <scope>provided</scope>
+      </dependency> 
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>osgi-core</artifactId>
@@ -665,6 +712,55 @@
         <version>2.1_3</version>
         <scope>provided</scope>
       </dependency>
+      <dependency>
+        <groupId>commons-jexl</groupId>
+        <artifactId>commons-jexl</artifactId>
+        <version>1.1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>xml-apis</groupId>
+        <artifactId>xml-apis</artifactId>
+        <scope>provided</scope>
+        <version>1.0.b2</version>
+      </dependency>
+      <dependency>
+        <groupId>xerces</groupId>
+        <artifactId>xmlParserAPIs</artifactId>
+        <scope>provided</scope>
+        <version>2.6.2</version>
+      </dependency>
+      <dependency>
+        <groupId>jsr170</groupId>
+        <artifactId>jcr</artifactId>
+        <version>1.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-all</artifactId>
+        <version>1.5.7</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.resteasy</groupId>
+        <artifactId>resteasy-jaxrs</artifactId>
+        <version>1.0-beta-8-nx</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.resteasy</groupId>
+        <artifactId>jaxrs-api</artifactId>
+        <version>1.0-beta-8</version>
+        <scope>provided</scope>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-jbossws-wrapper</artifactId>
+        <version>4.0.5.GA</version>
+        <scope>provided</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -698,6 +794,17 @@
   </dependencies>
 
   <build>
+    <extensions>
+      <!--
+        This extension is used for the artifacts upload to the repository with the
+        deploy plugin
+      -->
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
+    </extensions>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
