@@ -21,6 +21,10 @@ package org.nuxeo.ecm.platform.audit.api;
 
 import java.util.Set;
 
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.event.CoreEvent;
+import org.nuxeo.ecm.platform.events.api.DocumentMessage;
+
 /**
  * NXAuditEvents interface.
  * <p>
@@ -40,5 +44,4 @@ public interface NXAuditEvents extends Logs {
      */
     @Deprecated
     Set<String> getAuditableEventNames();
-
 }

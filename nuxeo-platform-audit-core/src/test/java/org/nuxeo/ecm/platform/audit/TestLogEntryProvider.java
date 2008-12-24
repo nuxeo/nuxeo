@@ -20,13 +20,10 @@
 package org.nuxeo.ecm.platform.audit;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import java_cup.emit;
 
 import javax.persistence.EntityManager;
 
@@ -58,8 +55,7 @@ public class TestLogEntryProvider extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        PersistenceProvider.hibernateConfigurationClass = TestHibernateConfiguration.class;
-        persistenceProvider = new PersistenceProvider();
+        persistenceProvider = new PersistenceProvider(new TestHibernateConfiguration());
 
         persistenceProvider.openPersistenceUnit();
 

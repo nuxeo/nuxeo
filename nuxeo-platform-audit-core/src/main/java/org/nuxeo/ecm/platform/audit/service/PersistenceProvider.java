@@ -36,11 +36,16 @@ public class PersistenceProvider {
 
     protected EntityManagerFactory emf;
 
-    public PersistenceProvider() {
+    public PersistenceProvider(HibernateConfiguration configuration) {
+        this.hibernateConfiguration = configuration;
     }
 
-    public static Class<? extends HibernateConfiguration> hibernateConfigurationClass = DefaultHibernateConfiguration.class;
-
+    protected HibernateConfiguration hibernateConfiguration;
+    
+    public void setHibernateConfiguration(HibernateConfiguration configuration) {
+        this.hibernateConfiguration = configuration;
+    }
+    
     public void openPersistenceUnit() {
         Ejb3Configuration cfg = new Ejb3Configuration();
 
@@ -51,7 +56,7 @@ public class PersistenceProvider {
         }
 
         try {
-            cfg.addProperties(hibernateConfigurationClass.newInstance().getProperties());
+            cfg.addProperties(hibernateConfiguration.getProperties());
         } catch (Exception error) {
             throw new AuditRuntimeException(
                     "Cannot load hibernate configuration", error);
@@ -72,26 +77,27 @@ public class PersistenceProvider {
     }
 
     public void closePersistenceUnit() {
+        if (emf == null) return;
+          
         if (emf.isOpen()) {
             emf.close();
         }
         emf = null;
     }
 
-    protected EntityManager guardedEntityManager() {
+    protected EntityManager doEntityManager() {
         if (emf == null) {
-            throw new AuditRuntimeException(
-                    "Cannot get entity manager, no factory available");
+           openPersistenceUnit();
         }
         return emf.createEntityManager();
     }
 
     public EntityManager acquireEntityManager() {
-        return guardedEntityManager();
+        return doEntityManager();
     }
 
     public EntityManager acquireEntityManagerWithActiveTransaction() {
-        EntityManager em = guardedEntityManager();
+        EntityManager em = doEntityManager();
         EntityTransaction et = em.getTransaction();
         et.begin();
         return em;
