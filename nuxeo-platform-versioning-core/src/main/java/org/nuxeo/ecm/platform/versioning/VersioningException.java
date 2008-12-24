@@ -25,6 +25,7 @@ package org.nuxeo.ecm.platform.versioning;
  * @author DM
  *
  * @deprecated use {@link VersioningException} instead
+ * Unused. Remove in 5.2.
  */
 @Deprecated
 public class VersioningException extends Exception {

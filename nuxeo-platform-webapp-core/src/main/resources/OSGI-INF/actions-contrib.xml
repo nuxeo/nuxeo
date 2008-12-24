@@ -132,8 +132,8 @@
       <filter-id>delete_content</filter-id>
     </action>
 
-    <!-- tabs are handled by a specific template so links should be paths to template
-      to include in the tab content -->
+    <!-- tabs are handled by a specific template so links should be paths to
+    template to include in the tab content -->
 
     <action id="TAB_VIEW" link="/incl/tabs/document_view.xhtml" enabled="true"
         order="0" label="action.view.summary" icon="/icons/file.gif">

@@ -30,6 +30,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @deprecated use {@link org.nuxeo.ecm.platform.versioning.api.PropertiesDef}
  *             instead
+ * Unused. Remove in 5.2
  */
 @Deprecated
 public final class PropertiesDef {

@@ -37,9 +37,9 @@ public interface VersionChangeRequest {
      * of the request.
      */
     enum RequestSource {
-        WORKFLOW("Workflow", "Issued from WF engine"), EDIT("Edit",
-                "Direct user action on changing version"), AUTO("Auto",
-                "Issued by a core event listener");
+        WORKFLOW("Workflow", "Issued from WF engine"),
+        EDIT("Edit", "Direct user action on changing version"),
+        AUTO("Auto", "Issued by a core event listener");
 
         private final String name;
 

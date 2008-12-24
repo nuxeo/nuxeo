@@ -24,6 +24,7 @@ import java.io.Serializable;
 /**
  * @deprecated use {@link org.nuxeo.ecm.platform.versioning.api.DocVersion}
  *             instead
+ * Unused. Remove in 5.2.
  */
 @Deprecated
 public interface DocVersion extends Serializable {

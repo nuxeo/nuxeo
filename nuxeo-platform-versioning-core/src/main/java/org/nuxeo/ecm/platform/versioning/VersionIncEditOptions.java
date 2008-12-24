@@ -37,6 +37,7 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
  * @deprecated use
  *             {@link org.nuxeo.ecm.platform.versioning.api.VersionIncEditOptions}
  *             instead
+ * Unused. Remove in 5.2.
  */
 @Deprecated
 public class VersionIncEditOptions implements Serializable {
