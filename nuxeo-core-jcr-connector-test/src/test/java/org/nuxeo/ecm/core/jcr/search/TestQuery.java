@@ -25,6 +25,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.SimpleTimeZone;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -57,6 +58,8 @@ public class TestQuery extends RepositoryTestCase {
     private static final Log log = LogFactory.getLog(TestQuery.class);
 
     private static final String DOC_PATH = "SampleDoc.doc";
+
+    private static final SimpleTimeZone UTC = new SimpleTimeZone(0, "UTC");
 
     private Session session;
 
@@ -100,9 +103,9 @@ public class TestQuery extends RepositoryTestCase {
      *
      */
     private void createDocs() throws Exception {
-        Calendar date1 = Calendar.getInstance();
+        Calendar date1 = Calendar.getInstance(UTC);
         date1.set(1974, 6 - 1, 24); // month is 0 based
-        Calendar date2 = Calendar.getInstance();
+        Calendar date2 = Calendar.getInstance(UTC);
         date2.set(1975, 6 - 1, 24);
 
         // put some data in workspace
@@ -177,12 +180,12 @@ public class TestQuery extends RepositoryTestCase {
         qr = qry.execute();
         assertEquals(1, qr.count());
 
-        sql = "SELECT * FROM document WHERE dc:issued >= TIMESTAMP '1974-06-24 00:00:00'";
+        sql = "SELECT * FROM document WHERE dc:issued >= TIMESTAMP '1974-06-24 00:00:00Z'";
         qry = session.createQuery(sql, Query.Type.NXQL);
         qr = qry.execute();
         assertEquals(3, qr.count());
 
-        sql = "SELECT * FROM document WHERE dc:issued >= TIMESTAMP '1974-06-25 00:00:00'";
+        sql = "SELECT * FROM document WHERE dc:issued >= TIMESTAMP '1974-06-25 00:00:00Z'";
         qry = session.createQuery(sql, Query.Type.NXQL);
         qr = qry.execute();
         assertEquals(1, qr.count());
