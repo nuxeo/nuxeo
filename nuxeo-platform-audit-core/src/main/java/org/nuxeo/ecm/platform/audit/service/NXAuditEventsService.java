@@ -595,7 +595,6 @@ public class NXAuditEventsService extends DefaultComponent implements
         LogEntryProvider.createProvider(em).addLogEntry(entry);
     }
 
-<<<<<<< local
     /**
      * @param coreEvent
      * @throws AuditException
@@ -623,6 +622,4 @@ public class NXAuditEventsService extends DefaultComponent implements
         addLogEntry(em, entry);
     }
 
-=======
->>>>>>> other
 }
