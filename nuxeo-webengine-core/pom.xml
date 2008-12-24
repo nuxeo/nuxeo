@@ -154,6 +154,11 @@
       <artifactId>commons-jexl</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.nuxeo.ecm.platform</groupId>
+    	<artifactId>nuxeo-platform-audit-api</artifactId>
+    	<version>${nuxeo.platform.version}</version>
+    </dependency>
   </dependencies>
 
 </project>
