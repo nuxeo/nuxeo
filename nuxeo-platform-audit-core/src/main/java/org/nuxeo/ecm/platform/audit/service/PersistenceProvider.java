@@ -77,6 +77,8 @@ public class PersistenceProvider {
     }
 
     public void closePersistenceUnit() {
+        if (emf == null) return;
+          
         if (emf.isOpen()) {
             emf.close();
         }

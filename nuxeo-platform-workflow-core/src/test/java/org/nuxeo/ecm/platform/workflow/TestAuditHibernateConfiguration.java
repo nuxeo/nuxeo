@@ -12,16 +12,16 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *     Stephane Lacoin (Nuxeo EP Software Engineer)
  */
 package org.nuxeo.ecm.platform.workflow;
 
 import java.util.Properties;
 
-import org.nuxeo.ecm.platform.audit.service.ContainerManagedHibernateConfiguration;
+import org.nuxeo.ecm.platform.audit.service.HibernateConfiguration;
 
 public class TestAuditHibernateConfiguration implements
-        ContainerManagedHibernateConfiguration {
+        HibernateConfiguration {
 
     public Properties getProperties() {
         Properties properties = new Properties();
