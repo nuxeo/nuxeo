@@ -14,29 +14,35 @@
  * Contributors:
  *     Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-package org.nuxeo.ecm.platform.workflow;
+package org.nuxeo.ecm.platform.audit.service;
 
 import java.util.Properties;
 
-import org.nuxeo.ecm.platform.audit.service.HibernateConfiguration;
+import org.nuxeo.ecm.platform.audit.service.extension.HibernateOptionsDescriptor;
 
-public class TestAuditHibernateConfiguration implements
-        HibernateConfiguration {
 
+public class ContainerManagedHibernateConfiguration implements HibernateConfiguration {
+
+    ContainerManagedHibernateConfiguration() {
+    }
+    
+    private HibernateOptionsDescriptor descriptor;
+    
+    public void setDescriptor(HibernateOptionsDescriptor descriptor) {
+        this.descriptor = descriptor;
+    }
+    
+    protected String getDatasource() {
+        if (descriptor != null) return descriptor.getDatasource();
+        return "jdbc/nxaudits";
+    }
+    
     public Properties getProperties() {
         Properties properties = new Properties();
-        properties.put("hibernate.connection.url",
-                "jdbc:hsqldb:mem:.;sql.enforce_strict_size=true");
-        properties.put("hibernate.connection.driver_class",
-                "org.hsqldb.jdbcDriver");
-        properties.put("hibernate.connection.auto_commit", "true");
-        properties.put("hibernate.connection.pool_size", "1");
-        properties.put("hibernate.dialect",
-                "org.hibernate.dialect.HSQLDialect");
+        properties.put("hibernate.connection.autocommit", true);
+        properties.put("hibernate.show_sql", false);
         properties.put("hibernate.hbm2ddl.auto", "update");
-        properties.put("hibernate.show_sql", "true");
-        properties.put("hibernate.format_sql", "true");
-
+        properties.put("hibernate.connection.datasource", getDatasource());
         return properties;
     }
 
