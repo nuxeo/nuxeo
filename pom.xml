@@ -30,6 +30,7 @@
     <module>nuxeo-runtime-gf3-adapter</module>
     <module>nuxeo-runtime-tomcat-adapter</module>    
     <module>nuxeo-runtime-scripting</module>
+    <module>nuxeo-runtime-management</module>
   </modules>
 
   <dependencyManagement>
