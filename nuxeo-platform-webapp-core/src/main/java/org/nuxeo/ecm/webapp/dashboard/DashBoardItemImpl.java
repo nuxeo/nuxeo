@@ -181,29 +181,4 @@ public class DashBoardItemImpl implements DashBoardItem {
         this.textUtils = textUtils;
     }
 
-/*
- * XXX: comment out setters. Remove ?
- *
- * public void setComment(String comment) { this.comment = comment; }
- *
- * public void setDescription(String description) { this.description =
- * description; }
- *
- * public void setDueDate(Date dueDate) { this.dueDate = dueDate; }
- *
- * public void setId(String id) { this.id = id; }
- *
- * public void setPriority(String priority) { this.priority = priority; }
- *
- * public void setStartDate(Date startDate) { this.startDate = startDate; }
- *
- * public void setName(String name) { this.name = name; }
- *
- * public void setDocRefTitle(String docRefTitle) { this.docRefTitle =
- * docRefTitle; }
- *
- * public void setDocUUID(int docUUID) { this.docUUID = docUUID; }
- *
- */
-
 }
