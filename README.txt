@@ -5,67 +5,77 @@ This module builds Nuxeo products: Nuxeo-EP, Nuxeo-WebEngine, Nuxeo-Shell, ...
 
 Building predefined applications
 --------------------------------
+
 Using this project you can build the following applications:
 
 1. Nuxeo EP
 
-  Previously built by nuxeo-platform/nuxeo-platform-ear/, Nuxeo EP EAR is now built here.
-  From this directory, build syntax: "mvn package" or "mvn package -Pnuxeo-jboss"
-  From nuxeo-platform-ear, run "mvn package" or see in package.sh for available packages.
-  Built EAR is in nuxeo-platform-ear/target/ and its name depends on chosen package: default is nuxeo.ear
+Previously built by nuxeo-platform/nuxeo-platform-ear/, Nuxeo EP EAR is now
+built here.
+
+From this directory, build syntax: "mvn package" or "mvn package -Pnuxeo-jboss"
+
+From nuxeo-platform-ear, run "mvn package" or see in package.sh for available
+packages.
+
+Built EAR is in nuxeo-platform-ear/target/ and its name depends on chosen
+package: default is nuxeo.ear
 
 2. Nuxeo Shell 
 
-  A client application suitable to connect on remote nuxeo servers.
-  This application can be used to connect to remote nuxeo servers for debugging,
-  browsing or administration stuff.
+A client application suitable to connect on remote nuxeo servers.
 
-  Build syntax: "mvn install package -Pshell"
+This application can be used to connect to remote nuxeo servers for debugging,
+browsing or administration stuff.
+
+Build syntax is: "mvn install package -Pshell"
     
 3. Nuxeo Core Server 
 
-  A minimal server application. An embedded repository will be started. No other
-  platform services are available.
+A minimal server application. An embedded repository will be started. No other
+platform services are available.
   
-  This application can be used to debug, test or develop nuxeo components that
-  need a repository connection.
+This application can be used to debug, test or develop nuxeo components that
+need a repository connection.
   
-  Remoting will be also available in the future via Nuxeo Runtime.
+Remoting will be also available in the future via Nuxeo Runtime.
   
-  Build syntax: "mvn install package -Pcore"
+Build syntax: "mvn install package -Pcore"
     
 4. Nuxeo Jetty Server
   
-  A Nuxeo server application embedding a Jetty server. 
+A Nuxeo server application embedding a Jetty server. 
   
-  This application can be used to browse repository content via WEB.
+This application can be used to browse repository content via WEB.
   
-  This is also known as Nuxeo WebEngine (based on Jetty).
+This is also known as Nuxeo WebEngine (based on Jetty).
 
-  Build syntax: "mvn install package -Pjetty"
+Build syntax: "mvn install package -Pjetty"
    
 5. Nuxeo GF3 Server
   
-  A Nuxeo server application embedding a GlassFish v3 server. 
+A Nuxeo server application embedding a GlassFish v3 server. 
   
-  This application can be used to browse a repository content via the web.
+This application can be used to browse a repository content via the web.
   
-  This is also known as Nuxeo WebEngine (based on GF3).
+This is also known as Nuxeo WebEngine (based on GF3).
    
-  In the future, this application will provide a full installation of Nuxeo
-  (including EJBs, JMS, etc).
+In the future, this application will provide a full installation of Nuxeo
+(including EJBs, JMS, etc).
 
-  Build syntax: "mvn install package -Pgf3"
+Build syntax: "mvn install package -Pgf3"
   
 6. Nuxeo Tomcat WebApp
   
-  A Nuxeo Server packaged as an exploded WAR for tomcat v6.
-  This build will generated a zip containing a 'tomcat' directory. You need to copy the content of 
-  tomcat directory inside your installed tomcat. Then restart tomcat. Nuxeo WebEngine will be 
-  available at htpp://localhost:8080/nuxeo
+A Nuxeo Server packaged as an exploded WAR for Tomcat v6.
 
-  Build syntax: "mvn install package -Ptomcat"
+This build will generate a zip containing a 'tomcat' directory. You need to
+copy the content of this directory to your installed Tomcat. Then restart
+Tomcat.
 
+Nuxeo WebEngine will be available at htpp://localhost:8080/nuxeo
+
+Build syntax: "mvn install package -Ptomcat"
 
 Extending
 ---------
@@ -109,7 +119,10 @@ This way, the build is reused more easily than by using assembly inheritance,
 since any modification on an intermediate artifact (ZIP) is automatically
 visible in the projects that are overriding the artifact.
 
-NB: we are not using for now categories on Nuxeo-Shell and Nuxeo-WebEngine since the projects are not
-so complex to manage by using explicit dependencies in assembly files. Also, existing
-categories may not fit well with the kind of build done for nxshell or webengine. 
+NB: we are not using for now categories on Nuxeo-Shell and Nuxeo-WebEngine
+since the projects are not so complex to manage by using explicit dependencies
+in assembly files. Also, existing categories may not fit well with the kind of
+build done for nxshell or webengine. 
+
 Maybe in the future we will use categories too, if projects become too complex.
+
