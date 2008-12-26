@@ -36,16 +36,16 @@ public class PersistenceProvider {
 
     protected EntityManagerFactory emf;
 
+    protected HibernateConfiguration hibernateConfiguration;
+
     public PersistenceProvider(HibernateConfiguration configuration) {
-        this.hibernateConfiguration = configuration;
+        hibernateConfiguration = configuration;
     }
 
-    protected HibernateConfiguration hibernateConfiguration;
-    
     public void setHibernateConfiguration(HibernateConfiguration configuration) {
-        this.hibernateConfiguration = configuration;
+        hibernateConfiguration = configuration;
     }
-    
+
     public void openPersistenceUnit() {
         Ejb3Configuration cfg = new Ejb3Configuration();
 
@@ -77,8 +77,9 @@ public class PersistenceProvider {
     }
 
     public void closePersistenceUnit() {
-        if (emf == null) return;
-          
+        if (emf == null) {
+            return;
+        }
         if (emf.isOpen()) {
             emf.close();
         }

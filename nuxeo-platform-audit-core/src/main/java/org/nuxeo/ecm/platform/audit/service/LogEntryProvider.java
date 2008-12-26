@@ -39,19 +39,14 @@ public class LogEntryProvider  {
 
     private static final Log log = LogFactory.getLog(LogEntryProvider.class);
 
-    protected EntityManager em;
+    protected final EntityManager em;
 
-    private LogEntryProvider() {
+    private LogEntryProvider(EntityManager em) {
+        this.em = em;
     }
 
     public static LogEntryProvider createProvider(EntityManager em) {
-        LogEntryProvider provider = new LogEntryProvider();
-        provider.setEntityManager(em);
-        return provider;
-    }
-
-    public void setEntityManager(EntityManager em) {
-        this.em = em;
+        return new LogEntryProvider(em);
     }
 
     protected void doPersist(LogEntry entry) {

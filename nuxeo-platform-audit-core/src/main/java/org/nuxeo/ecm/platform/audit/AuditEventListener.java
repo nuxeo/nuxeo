@@ -22,35 +22,30 @@ import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.runtime.api.Framework;
 
-public class  AuditEventListener extends AbstractEventListener {
+public class AuditEventListener extends AbstractEventListener {
 
-        protected NXAuditEventsService guardedService() {
-            NXAuditEventsService service;
-            try {
-                service = (NXAuditEventsService)Framework.getRuntime().getComponent(NXAuditEventsService.NAME);
-            } catch (Exception e) {
-                throw new AuditRuntimeException(
-                        "Cannot get audit service");
-            }
-            if (service == null) {
-                throw new AuditRuntimeException(
-                        "Cannot get audit service");
-            }
-            return service;
+    protected NXAuditEventsService guardedService() {
+        NXAuditEventsService service;
+        service = (NXAuditEventsService) Framework.getRuntime().getComponent(NXAuditEventsService.NAME);
+        if (service == null) {
+            throw new AuditRuntimeException("Cannot get audit service");
         }
-
-        @Override
-        public void handleEvent(CoreEvent coreEvent) throws Exception {
-            guardedService().logEvent(coreEvent);
-        }
-
-        @Override
-        public boolean accepts(String eventId) {
-            return guardedService().getAuditableEventNames().contains(eventId);
-        }
-
-        @Override
-        public void addEventId(String eventId) {
-            throw new UnsupportedOperationException();
-        }
+        return service;
     }
+
+    @Override
+    public void handleEvent(CoreEvent coreEvent) throws Exception {
+        guardedService().logEvent(coreEvent);
+    }
+
+    @Override
+    public boolean accepts(String eventId) {
+        return guardedService().getAuditableEventNames().contains(eventId);
+    }
+
+    @Override
+    public void addEventId(String eventId) {
+        throw new UnsupportedOperationException();
+    }
+
+}

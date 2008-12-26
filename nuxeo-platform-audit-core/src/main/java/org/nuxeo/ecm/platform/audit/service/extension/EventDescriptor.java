@@ -31,10 +31,10 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class EventDescriptor {
 
     @XNode("@name")
-    protected String name;
+    private String name;
 
     @XNode("@enabled")
-    protected Boolean enabled;
+    private Boolean enabled;
 
     public Boolean getEnabled() {
         return enabled;

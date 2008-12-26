@@ -37,14 +37,13 @@ public class ExtendedInfoDescriptor implements Serializable {
     private static final long serialVersionUID = 5381693968565370680L;
 
     @XNode("@key")
-    protected String key;
-
+    private String key;
 
     @XNode("@expression")
-    protected String expression;
+    private String expression;
 
     @XNode("@enabled")
-    protected Boolean enabled = true;
+    private Boolean enabled = true;
 
 
     public String getKey() {
@@ -58,7 +57,6 @@ public class ExtendedInfoDescriptor implements Serializable {
     public String getExpression() {
         return expression;
     }
-
 
     public void setExpression(String value) {
         expression = value;
