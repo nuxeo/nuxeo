@@ -50,4 +50,9 @@ public class TestJCRRepositoryQuery extends QueryTestCase {
         // JCR cannot do queries on special fields
     }
 
+    @Override
+    public void testSQLFulltextBlob() {
+        // TODO blob indexing configuration
+    }
+
 }

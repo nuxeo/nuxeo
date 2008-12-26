@@ -235,33 +235,90 @@ public class Dialect {
      * <p>
      * Needed for Derby and H2.
      *
+     * @param inOrderBy {@code true} if the expression is for an ORDER BY column
      * @return a pattern for String.format with one parameter for the column
      *         name and one for the width
      */
-    public String clobCasting() {
+    public String getClobCast(boolean inOrderBy) {
         if (dialect instanceof DerbyDialect) {
             return "CAST(%s AS VARCHAR(%d))";
         }
-        if (dialect instanceof H2Dialect) {
+        if (dialect instanceof H2Dialect && !inOrderBy) {
             return "CAST(%s AS VARCHAR)";
         }
         return null;
     }
 
     /**
-     * When using a CLOB field in ORDER BY, is some casting required and with
-     * what pattern?
-     * <p>
-     * Needed for Derby.
+     * Gets the expression to use to check security.
      *
-     * @return a pattern for String.format with one parameter for the column
-     *         name and one for the width
+     * @param the quoted name of the id column to use
+     * @return an SQL expression with two parameters (principals and
+     *         permissions) that is true if access is allowed
      */
-    public String clobCastingInOrderBy() {
+    public String getSecurityCheckSql(String idColumnName) {
+        String sql = String.format("NX_ACCESS_ALLOWED(%s, ?, ?)", idColumnName);
         if (dialect instanceof DerbyDialect) {
-            return "CAST(%s AS VARCHAR(%d))";
+            // dialect has no boolean functions
+            sql += " = 1";
         }
-        return null;
+        return sql;
+    }
+
+    /**
+     * Checks if the fulltext table is needed in queries.
+     * <p>
+     * This won't be the case if {@link #getFulltextMatch} returns a join that
+     * already does the job.
+     */
+    public boolean isFulltextTableNeeded() {
+        return !(dialect instanceof H2Dialect);
+    }
+
+    /**
+     * Gets the information needed to do a a fulltext match, either with a
+     * direct expression in the WHERE clause, or using a join with an additional
+     * table.
+     * <p>
+     * Returns a String array with:
+     * <ul>
+     * <li>the expression to join with, or {@code null}; this expression has one
+     * % parameters for the table alias,</li>
+     * <li>a potential query paramenter for it,</li>
+     * <li>the where expression to add to the WHERE clause (may be {@code null}
+     * if none is required when a join is enough); this expression has one %
+     * parameters for the table alias,</li>
+     * <li>a potential query paramenter for it.</li>
+     * </ul>
+     *
+     * @param ftColumn the column containing the fulltext to match
+     * @param mainColumn the column with the main id, for joins
+     * @return a String array with the table join expression, the join param,
+     *         the where expression and the where parm
+     *
+     */
+    public String[] getFulltextMatch(Column ftColumn, Column mainColumn,
+            String fulltextQuery) {
+        if (dialect instanceof DerbyDialect) {
+            String qname = ftColumn.getFullQuotedName();
+            if (ftColumn.getSqlType() == Types.CLOB) {
+                String colFmt = getClobCast(false);
+                if (colFmt != null) {
+                    qname = String.format(colFmt, qname, Integer.valueOf(255));
+                }
+            }
+            String whereExpr = "NX_CONTAINS(" + qname + ", ?) = 1";
+            return new String[] { null, null, whereExpr, fulltextQuery };
+        }
+        if (dialect instanceof H2Dialect) {
+            String queryTable = String.format("NXFT_SEARCH('%s', '%s', ?)",
+                    "PUBLIC", ftColumn.getTable().getName());
+            String whereExpr = String.format("%%s.KEY = %s",
+                    mainColumn.getFullQuotedName());
+            return new String[] { (queryTable + " %s"), fulltextQuery,
+                    whereExpr, null };
+        }
+        throw new UnsupportedOperationException();
     }
 
     /**
