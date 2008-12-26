@@ -1,6 +1,0 @@
-  {"id": "fragment factory expander",
-   "type": "node expander",
-   "effect": "slide",
-   "nodeclass": "fragment",
-   "childclass": "views"
-  }
