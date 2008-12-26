@@ -1109,6 +1109,17 @@ img.nxthemesAlignSection:hover {
   z-index: 1;  
 }
 
+#nxthemesElementEditor {
+  position: absolute;
+  top: 100px;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  padding: 0 20px;
+  font-family: Arial, sans-serif;
+  z-index: 1;  
+}
+
 #nxthemesPaddingEditor {
   position: absolute;
   z-index: 50;
