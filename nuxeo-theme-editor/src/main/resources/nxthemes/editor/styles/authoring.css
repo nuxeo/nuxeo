@@ -317,7 +317,7 @@ html, body {
 /* canvas mode */
 #nxthemesCanvasModeArea {
   position: absolute;
-  top: 69px;
+  top: 75px;
   right: 0;
   background-color: #fff;
   padding: 4px 10px;
@@ -612,7 +612,7 @@ div.nxthemesEditorFrame {
   font: 12px Arial, sans-serif;
   margin: 0;
   padding: 0;
-  padding-top: 15px;
+  padding-top: 20px;
   padding-left: 15px;
   border-bottom: 1px solid #999;
 }
