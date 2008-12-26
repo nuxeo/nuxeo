@@ -61,6 +61,8 @@ public class PersistenceContext {
 
     private final Model model;
 
+    private final BinaryConverter binaryConverter;
+
     /**
      * Fragment ids generated but not yet saved. We know that any fragment with
      * one of these ids cannot exist in the database.
@@ -91,6 +93,8 @@ public class PersistenceContext {
         // are used and need this
         createdIds = new LinkedHashSet<Serializable>();
         oldIdMap = new HashMap<Serializable, Serializable>();
+
+        binaryConverter = new BinaryConverter();
     }
 
     /**
@@ -182,6 +186,7 @@ public class PersistenceContext {
 
             // collect strings on all the document's nodes recursively
             List<String> strings = new LinkedList<String>();
+            List<String> binaries = new LinkedList<String>();
             while (!queue.isEmpty()) {
                 Node node = queue.remove();
                 // recurse into complex properties
@@ -215,18 +220,53 @@ public class PersistenceContext {
                 if (doBinaries) {
                     Map<String, PropertyInfo> infos = model.getFulltextBinaryPropertyInfos(node.getPrimaryType());
                     if (infos != null) {
-                        /* BINARY */
-                        // log.debug("Process binary TODO");
+                        for (Entry<String, PropertyInfo> entry : infos.entrySet()) {
+                            PropertyInfo info = entry.getValue();
+                            String name = entry.getKey();
+                            if (info.propertyType == PropertyType.BINARY) {
+                                Binary binary = (Binary) node.getSimpleProperty(
+                                        name).getValue();
+                                if (binary != null) {
+                                    /*
+                                     * Find mime-type (heuristic on schema)
+                                     */
+                                    String mimeType;
+                                    try {
+                                        mimeType = (String) node.getSimpleProperty(
+                                                "mime-type").getValue();
+                                    } catch (IllegalArgumentException e) {
+                                        // no mime-type column
+                                        mimeType = null;
+                                    } catch (ClassCastException e) {
+                                        // not a string
+                                        mimeType = null;
+                                    }
+                                    /*
+                                     * TODO: compute this in a post-commit
+                                     * asynchronous event
+                                     */
+                                    String text = binaryConverter.getString(
+                                            binary, mimeType);
+                                    if (text != null) {
+                                        binaries.add(text);
+                                    }
+                                }
+                            }
+                        }
                     }
 
                 }
             }
 
+            // set the computed full text
+            // on INSERT/UPDATE a trigger will change the actual fulltext
             if (doStrings) {
-                // set the computed full text
-                // on INSERT/UPDATE a trigger will change the actual fulltext
                 document.setSingleProperty(model.FULLTEXT_SIMPLETEXT_PROP,
                         StringUtils.join(strings, " "));
+            }
+            if (doBinaries) {
+                document.setSingleProperty(model.FULLTEXT_BINARYTEXT_PROP,
+                        StringUtils.join(binaries, " "));
             }
         }
         log.debug("End of fulltext");

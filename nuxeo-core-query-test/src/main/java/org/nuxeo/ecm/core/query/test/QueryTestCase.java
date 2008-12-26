@@ -146,7 +146,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
                 "testfile1", "File");
         file1.setPropertyValue("dc:title", "testfile1_Title");
         file1.setPropertyValue("dc:description", "testfile1_description");
-        String content = "This is a file.\nCaf\u00e9.";
+        String content = "Some caf\u00e9 in a restaurant.\nDrink!.\n";
         String filename = "testfile.txt";
         ByteArrayBlob blob1 = new ByteArrayBlob(content.getBytes("UTF-8"),
                 "text/plain");
@@ -772,7 +772,17 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         query = "SELECT * FROM Document WHERE ecm:fulltext = 'bzzt'";
         dml = session.query(query);
         assertIdSet(dml, file1.getId());
+    }
 
+    public void testSQLFulltextBlob() throws Exception {
+        createDocs();
+        String query;
+        DocumentModelList dml;
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant'";
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId());
     }
 
 }

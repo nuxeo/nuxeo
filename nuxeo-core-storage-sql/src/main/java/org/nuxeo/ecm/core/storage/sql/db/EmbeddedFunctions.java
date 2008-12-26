@@ -233,12 +233,24 @@ public class EmbeddedFunctions {
     /**
      * Extracts the words from a string for simple fulltext indexing.
      *
-     * @param id the string
+     * @param string1 the first string
+     * @param string2 the second string
      * @param a string with extracted words
      */
-    public static String parseFullText(String string) throws SQLException {
+    public static String parseFullText(String string1, String string2)
+            throws SQLException {
+        Set<String> set = new HashSet<String>();
+        set.addAll(parseFullText(string1));
+        set.addAll(parseFullText(string2));
+        List<String> words = new ArrayList<String>(set);
+        Collections.sort(words);
+        return join(words, ' ');
+    }
+
+    protected static Set<String> parseFullText(String string)
+            throws SQLException {
         if (string == null) {
-            return null;
+            return Collections.emptySet();
         }
         Set<String> set = new HashSet<String>();
         for (String word : wordPattern.split(string)) {
@@ -247,9 +259,7 @@ public class EmbeddedFunctions {
                 set.add(w);
             }
         }
-        List<String> words = new ArrayList<String>(set);
-        Collections.sort(words);
-        return join(words, ' ');
+        return set;
     }
 
     /**

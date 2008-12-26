@@ -1155,8 +1155,9 @@ public class SQLInfo {
         }
 
         public StoredProcedureInfo makeParseFullText() {
-            return makeFunction("NX_PARSE_FULLTEXT",
-                    "(S VARCHAR(10000)) RETURNS VARCHAR(10000)",
+            return makeFunction(
+                    "NX_PARSE_FULLTEXT",
+                    "(S1 VARCHAR(10000), S2 VARCHAR(10000)) RETURNS VARCHAR(10000)",
                     "parseFullText", "");
         }
 
@@ -1170,7 +1171,8 @@ public class SQLInfo {
         public StoredProcedureInfo makeFTInsertTrigger() {
             Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
             Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY);
-            Column ftt = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY);
+            Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY);
+            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY);
             Column ftid = ft.getColumn(model.MAIN_KEY);
             return makeTrigger(
                     "NX_TRIG_FT_INSERT", //
@@ -1179,33 +1181,36 @@ public class SQLInfo {
                                     + "REFERENCING NEW AS NEW " //
                                     + "FOR EACH ROW "//
                                     + "UPDATE %1$s " //
-                                    + "SET %2$s = NX_PARSE_FULLTEXT(CAST(%3$s AS VARCHAR(10000))) " //
-                                    + "WHERE %4$s = NEW.%4$s", //
+                                    + "SET %2$s = NX_PARSE_FULLTEXT(CAST(%3$s AS VARCHAR(10000)), CAST(%4$s AS VARCHAR(10000))) " //
+                                    + "WHERE %5$s = NEW.%5$s", //
                             ft.getQuotedName(), // 1 table "FULLTEXT"
                             ftft.getQuotedName(), // 2 column "TEXT"
-                            ftt.getQuotedName(), // 3 column "SIMPLETEXT"
-                            ftid.getQuotedName() // 4 column "ID"
+                            ftst.getQuotedName(), // 3 column "SIMPLETEXT"
+                            ftbt.getQuotedName(), // 4 column "BINARYTEXT"
+                            ftid.getQuotedName() // 5 column "ID"
                     ));
         }
 
         public StoredProcedureInfo makeFTUpdateTrigger() {
             Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
             Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY);
-            Column ftt = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY);
+            Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY);
+            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY);
             Column ftid = ft.getColumn(model.MAIN_KEY);
             return makeTrigger(
                     "NX_TRIG_FT_UPDATE", //
                     String.format(
-                            "AFTER UPDATE OF %3$s ON %1$s "//
+                            "AFTER UPDATE OF %3$s, %4$s ON %1$s "//
                                     + "REFERENCING NEW AS NEW " //
                                     + "FOR EACH ROW "//
                                     + "UPDATE %1$s " //
-                                    + "SET %2$s = NX_PARSE_FULLTEXT(CAST(%3$s AS VARCHAR(10000))) " //
-                                    + "WHERE %4$s = NEW.%4$s", //
+                                    + "SET %2$s = NX_PARSE_FULLTEXT(CAST(%3$s AS VARCHAR(10000)), CAST(%4$s AS VARCHAR(10000))) " //
+                                    + "WHERE %5$s = NEW.%5$s", //
                             ft.getQuotedName(), // 1 table "FULLTEXT"
                             ftft.getQuotedName(), // 2 column "TEXT"
-                            ftt.getQuotedName(), // 3 column "SIMPLETEXT"
-                            ftid.getQuotedName() // 4 column "ID"
+                            ftst.getQuotedName(), // 3 column "SIMPLETEXT"
+                            ftbt.getQuotedName(), // 4 column "BINARYTEXT"
+                            ftid.getQuotedName() // 5 column "ID"
                     ));
         }
 
@@ -1286,10 +1291,15 @@ public class SQLInfo {
         public StoredProcedureInfo makeFTIndex() {
             Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
             Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY);
-            return new StoredProcedureInfo(Boolean.FALSE, null, null, //
+            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY);
+            return new StoredProcedureInfo(
+                    Boolean.FALSE,
+                    null,
+                    null, //
                     String.format(
-                            "CALL NXFT_CREATE_INDEX('PUBLIC', '%s', ('%s'))", //
-                            ft.getName(), ftst.getPhysicalName()));
+                            "CALL NXFT_CREATE_INDEX('PUBLIC', '%s', ('%s', '%s'))", //
+                            ft.getName(), ftst.getPhysicalName(),
+                            ftbt.getPhysicalName()));
         }
 
         protected StoredProcedureInfo makeFunction(String functionName,

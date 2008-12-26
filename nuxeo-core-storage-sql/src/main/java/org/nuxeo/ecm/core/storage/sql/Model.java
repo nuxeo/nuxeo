@@ -206,6 +206,10 @@ public class Model {
 
     public static final String FULLTEXT_SIMPLETEXT_KEY = "simpletext";
 
+    public static final String FULLTEXT_BINARYTEXT_PROP = "ecm:binaryText";
+
+    public static final String FULLTEXT_BINARYTEXT_KEY = "binarytext";
+
     public static class PropertyInfo {
 
         public final PropertyType propertyType;
@@ -868,6 +872,9 @@ public class Model {
                 StringType.INSTANCE);
         addPropertyInfo(null, FULLTEXT_SIMPLETEXT_PROP, PropertyType.STRING,
                 FULLTEXT_TABLE_NAME, FULLTEXT_SIMPLETEXT_KEY, false,
+                StringType.INSTANCE);
+        addPropertyInfo(null, FULLTEXT_BINARYTEXT_PROP, PropertyType.STRING,
+                FULLTEXT_TABLE_NAME, FULLTEXT_BINARYTEXT_KEY, false,
                 StringType.INSTANCE);
     }
 

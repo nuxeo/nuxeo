@@ -135,6 +135,7 @@ public class H2Fulltext {
      */
     public static void createIndex(Connection conn, String schema,
             String table, String columns) throws SQLException {
+        columns = columns.replace("(", "").replace(")", "").replace(" ", "");
         PreparedStatement ps = conn.prepareStatement("SELECT COLUMNS FROM " +
                 FT_TABLE + " WHERE SCHEMA = ? AND TABLE = ?");
         ps.setString(1, schema);
@@ -329,7 +330,7 @@ public class H2Fulltext {
         rs.next();
         String path = rs.getString(1);
         if (path == null) {
-            throw new SQLException("FULLTEXT",
+            throw new SQLException(
                     "Fulltext search for in-memory databases is not supported.");
         }
         st.close();
@@ -375,8 +376,7 @@ public class H2Fulltext {
     }
 
     private static SQLException convertException(Exception e) {
-        SQLException e2 = new SQLException("FULLTEXT",
-                "Error while indexing document");
+        SQLException e2 = new SQLException("Error while indexing document");
         e2.initCause(e);
         return e2;
     }
@@ -425,8 +425,7 @@ public class H2Fulltext {
         case Types.ARRAY:
         case DataType.TYPE_DATALINK:
         case Types.DISTINCT:
-            throw new SQLException("FULLTEXT",
-                    "Unsupported column data type: " + type);
+            throw new SQLException("Unsupported column data type: " + type);
         default:
             return "";
         }
@@ -528,7 +527,7 @@ public class H2Fulltext {
                         schema + '.' + table);
             }
             Set<String> columnNames = new HashSet<String>(
-                    Arrays.asList(StringUtils.arraySplit(columns, ',', true)));
+                    Arrays.asList(columns.split(",")));
 
             // find the column's indices
             columnTypes = new int[columnNames.size()];
