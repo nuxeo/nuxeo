@@ -345,9 +345,6 @@ public class Main extends DefaultModule {
       String destId = form.getString("dest_id")    
       String typeName = form.getString("type_name")             
       Element destElement = ThemeManager.getElementById(destId)
-      if (destElement instanceof Fragment) {
-          destElement = destElement.getParent()
-      }
       Editor.insertFragment(destElement, typeName)
   }
   
@@ -357,7 +354,7 @@ public class Main extends DefaultModule {
       FormData form = ctx.getForm()
       String id = form.getString("id")           
       Element element = ThemeManager.getElementById(id)
-      Editor.insertSectionAfter(element)    
+      Editor.insertSectionAfter(element)
   }
 
   @POST

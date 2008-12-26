@@ -594,6 +594,14 @@ public class Editor {
     }
 
     public static void insertFragment(Element destElement, String typeName) {
+        int order = 0;
+        Element destContainer = destElement;
+        if (destElement instanceof Fragment) {
+            order = destElement.getOrder() +1;
+            destContainer = (Element) destElement.getParent();
+        } else if (destElement instanceof CellElement) {
+            order = destElement.getChildren().size();
+        }
         ThemeManager themeManager = Manager.getThemeManager();
         // create the new fragment
         String fragmentTypeName = typeName.split("/")[0];
@@ -605,10 +613,12 @@ public class Editor {
         themeManager.registerFormat(widget);
         ElementFormatter.setFormat(fragment, widget);
         // insert the fragment
-        destElement.addChild(fragment);
+        destContainer.addChild(fragment);
+        // set the fragment order
+        fragment.moveTo(destContainer, order);
         EventManager eventManager = Manager.getEventManager();
         eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
-                fragment, destElement));
+                fragment, destContainer));
     }
 
     public static void insertSectionAfter(Element element) {
