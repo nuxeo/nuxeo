@@ -20,13 +20,25 @@
       <class>org.nuxeo.theme.models.Html</class>
     </model>
 
+    <model name="region">
+      <class>org.nuxeo.theme.models.Region</class>
+    </model>
+
+    <model name="menu">
+      <class>org.nuxeo.theme.models.Menu</class>
+    </model>
+    
     <model name="menu item">
       <class>org.nuxeo.theme.models.MenuItem</class>
     </model>
 
-    <model name="region">
-      <class>org.nuxeo.theme.models.Region</class>
+    <model name="feed">
+      <class>org.nuxeo.theme.models.Feed</class>
     </model>
+    
+    <model name="feed item">
+      <class>org.nuxeo.theme.models.FeedItem</class>
+    </model>  
 
   </extension>
 
