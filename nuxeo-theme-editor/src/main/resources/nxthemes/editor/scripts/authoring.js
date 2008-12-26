@@ -79,23 +79,20 @@ NXThemesEditor.moveElement = function(info) {
     });
 };
 
-NXThemesEditor.insertFragment = function(info) {
-    var destId = info.target.getAttribute('id');
-    var order = info.order;
-    var typeName = info.source.getAttribute('typename');
+NXThemesEditor.addFragment = function(typeName, destId) {
     var url = nxthemesBasePath + "/nxthemes-editor/insert_fragment";
     new Ajax.Request(url, {
          method: 'post',
          parameters: {
              type_name: typeName,
-             dest_id: destId,
-             order: order
+             dest_id: destId
          },
          onComplete: function(r) {
              NXThemesEditor.refreshCanvas();
              NXThemesEditor.switchToEditCanvas()
          }
     });
+    return false;
 };
 
 NXThemesEditor.editElement = function(info) {
@@ -109,6 +106,20 @@ NXThemesEditor.editElement = function(info) {
          onComplete: function(r) {
              NXThemes.getControllerById("editor perspectives").switchTo("edit element");
              NXThemes.getViewById("element editor tabs").switchTo("element editor perspectives/edit properties");             
+         }
+    });
+};
+
+NXThemesEditor.insertFragment = function(info) {
+    var id = info.target.getAttribute('id');
+    var url = nxthemesBasePath + "/nxthemes-editor/select_element";
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             'id': id
+         },
+         onComplete: function(r) {
+             NXThemes.getControllerById("editor perspectives").switchTo("add fragments");
          }
     });
 };

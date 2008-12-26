@@ -160,7 +160,7 @@ ins.model, ins.view, ins.controller {
   color: #000 !important;
   text-decoration: none;
   display: block;
-  padding: 2px 17px 0px 0px;
+  padding: 2px 17px 0 0;
   background-position: top right;
   background-repeat: no-repeat;
 }
@@ -210,7 +210,7 @@ html, body {
 }
 
 #nxthemesBackToCanvas {
-  padding: 0px 22px;
+  padding: 0 22px;
   position: absolute;
   top: 60px;
   left: 20px;
@@ -280,7 +280,7 @@ html, body {
   background-color: #fff;
   cursor: pointer;
   border: 1px solid #ccc;
-  padding: 0px;
+  padding: 0;
   margin: 2px;
   width: 16px;
   height: 16px;
@@ -289,7 +289,7 @@ html, body {
 .nxthemesAreaStyle .selected {
   background-color: #fff;
   border: 2px solid #f00;
-  padding: 0px;
+  padding: 0;
   margin: 1px;
 }
 
@@ -317,8 +317,10 @@ html, body {
 /* canvas mode */
 #nxthemesCanvasModeArea {
   position: absolute;
-  top: 85px;
-  right: 8px;
+  top: 69px;
+  right: 0;
+  background-color: #fff;
+  padding: 4px 10px;
 }
 
 div.nxthemesButtonSelector {
@@ -330,7 +332,7 @@ div.nxthemesButtonSelector {
 
 div.nxthemesButtonSelector a {
   text-decoration: none;
-  padding: 0px 7px;
+  padding: 0 7px;
   color: #000;
   background-color: #fff;
   border-style: solid;
@@ -489,7 +491,7 @@ div.nxthemesEditorFrame {
 
 .nxthemesCollapsible ul ul li {
   color: #600;
-  padding: 3px 0px 3px 23px;
+  padding: 3px 0 3px 23px;
   z-index: 50;
   background: #ffefb9;
   font-size: 9px;
@@ -542,7 +544,7 @@ div.nxthemesEditorFrame {
   background-color: #000;
   width: 100%;
   margin-bottom: -2px;
-  margin-top: 0px;
+  margin-top: 0;
   text-align: center;
   border-top: 3px solid #000;
 }
@@ -556,8 +558,7 @@ div.nxthemesEditorFrame {
 .nxthemesThemeTabs a {
   text-decoration: none;
   color: #444 !important;
-  text-transform: uppercase;
-  padding: 0;
+  font-size: 12px;
 }
 
 .nxthemesThemeTabs a:hover {
@@ -569,7 +570,7 @@ div.nxthemesEditorFrame {
 }
 
 .nxthemesThemeTabs .tab {
-  padding: 2px 0px;
+  padding: 2px 0;
   background-color: #e3e3e3;
   border-bottom: 1px solid #ccc;
 }
@@ -608,13 +609,12 @@ div.nxthemesEditorFrame {
 
 /* page tabs */
 .nxthemesPageTabs {
-  font: 10px Arial, sans-serif;
+  font: 12px Arial, sans-serif;
   margin: 0;
   padding: 0;
-  padding-top: 10px;
-  padding-left: 7px;
-  border-bottom: 1px dotted #999;
-  text-transform: uppercase;
+  padding-top: 15px;
+  padding-left: 15px;
+  border-bottom: 1px solid #999;
 }
 
 .nxthemesPageTabs ul {
@@ -626,7 +626,7 @@ div.nxthemesEditorFrame {
   float: left;
   margin-bottom: -1px;
   margin-left: 3px;
-  padding: 0px 0px 0px 14px;
+  padding: 0 0 0 14px;
   background-image: url(${basePath}/skin/nxthemes-editor/img/page-tab.png);
   background-position: 0 -28px;
 }
@@ -642,7 +642,7 @@ div.nxthemesEditorFrame {
 
 .nxthemesPageTabs li a {
   display: block;
-  padding: 2px 14px 0px 0px;
+  padding: 2px 14px 0 0;
   background-image: url(${basePath}/skin/nxthemes-editor/img/page-tab.png);
   background-position: 100% -28px;
   color: #444 !important;
@@ -650,11 +650,11 @@ div.nxthemesEditorFrame {
 
 .nxthemesPageTabs li:hover a {
   color: #000 !important;
-  background-position: 100% 0px;
+  background-position: 100% 0;
 }
 
 .nxthemesPageTabs li:hover {
-  background-position: 0 0px;
+  background-position: 0 0;
 }
 
 .nxthemesPageTabs li.selected a {
@@ -710,7 +710,7 @@ div.nxthemesEditorFrame {
   text-transform: uppercase;
   font: 12px Arial, sans-serif;
   margin: 15px 0 0 0;
-  padding: 0px 3px;
+  padding: 0 3px;
 }
 
 .nxthemesForm button:hover {
@@ -871,7 +871,7 @@ div.nxthemesFragment {
   border-color: #999 #000 #000 #999;
   background: #ffe;
   font: 11px Arial, sans-serif !important;
-  padding: 6px !important;
+  padding: 7px !important;
   margin: 3px !important;
   color: #333;
   cursor: pointer;
@@ -903,7 +903,7 @@ div.nxthemesFragment b {
   font:  12px Arial, sans-serif;
 }
 
-.nxthemesScreen {
+#nxthemesThemeManager {
   position: absolute;
   top: 105px;
   left: 0;
@@ -914,6 +914,8 @@ div.nxthemesFragment b {
   z-index: 1;
 }
 
+
+
 .nxthemesScreen a {
   text-decoration: none;
   color: #006;
@@ -922,41 +924,53 @@ div.nxthemesFragment b {
 .nxthemesScreen a img {
   border: none;
 }
-
-/* theme manager */
-#nxthemesThemeManager table {
+.nxthemesScreen table {
   font: 12px Arial, sans-serif;
   width: 100%;
-  border-top: 1px solid #aaa;
-  border-left: 1px solid #aaa;
-  border-right: 1px solid #aaa;
+  border: 1px solid #000;
+  cursor: default;
 }
 
-#nxthemesThemeManager table th {
-  background: #ccc;
+.nxthemesScreen table th {
+  background: #333;
   text-align: left;
-  padding: 3px 10px;
+  padding: 4px 10px;
   font: bold 11px Arial;
   text-transform: uppercase;
-  border-bottom: 1px solid #999;
-  color: #666;
+  border-bottom: 1px solid #000;
+  color: #eee;
 }
 
-#nxthemesThemeManager table td {
+.nxthemesScreen table td {
   background-color: #eee;
   text-align: left;
-  padding: 7px 10px;
-  border-bottom: 1px solid #999;
-  vertical-align: top;
+  padding: 3px 10px 3px 10px;
+  vertical-align: middle;
+  border-bottom: 1px solid #ccc;
+  vertical-align: middle;
 }
 
-#nxthemesThemeManager table td.action {
-  text-transform: uppercase;
-  font-size: 0.8em;
+.nxthemesScreen table tr.odd td {
+  background-color: #f9f9f9;
 }
 
-#nxthemesThemeManager table td.action img {
-  padding-right: 4px;
+
+.nxthemesScreen table tr:hover td {
+  background-color: #fff;
+}
+
+.nxthemesScreen table button {
+  font-size: 11px;
+  padding: 0 4px;
+}
+
+.nxthemesScreen table td.action {
+  font-size: 11px;
+  text-align: center;
+}
+
+.nxthemesScreen table td img {
+  padding-right: 2px;
   vertical-align: middle;
 }
 
@@ -995,7 +1009,7 @@ img.nxthemesAlignSection {
   cursor: pointer;
   border: 1px solid #fff !important;
   margin: 3px;
-  padding: 0px;
+  padding: 0;
 }
 
 img.nxthemesAlignSection:hover {
@@ -1086,11 +1100,13 @@ img.nxthemesAlignSection:hover {
 
 #nxthemesFragmentFactory {
   position: absolute;
-  z-index: 50;
-  top: 40px;
-  left: 10px;
+  top: 100px;
+  left: 0;
+  right: 0;
   background-color: #fff;
-  border: 1px solid #000;
+  padding: 0 20px;
+  font-family: Arial, sans-serif;
+  z-index: 1;  
 }
 
 #nxthemesPaddingEditor {
@@ -1150,7 +1166,7 @@ form.nxthemesInheritedStyles select, form.nxthemesInheritedStyles button {
 
 form.nxthemesInheritedStyles button {
   font-size: 13px;
-  padding: 0px 3px;
+  padding: 0 3px;
   margin: 0 0 0 2px;
   cursor: pointer;
   color: #333;
@@ -1241,10 +1257,43 @@ div.nxthemesDraggable * {
   cursor: pointer;
 }
 
-div.nxthemesDraggable:hover div.nxthemesPointer {
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  background: url(${basePath}/skin/nxthemes-editor/img/pointer.png) no-repeat;
+div.nxthemesDraggable {
+  position: relative;
 }
 
+
+div.nxthemesDraggable:hover div.nxthemesFrameLeft {
+  position: absolute;
+  width: 1px;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: url(${basePath}/skin/nxthemes-editor/img/frame-v.png) repeat-y;
+}
+
+div.nxthemesDraggable:hover div.nxthemesFrameTop {
+  position: absolute;
+  right: 0px;
+  width: 100%;
+  height: 1px;
+  top: 0px;
+  background: url(${basePath}/skin/nxthemes-editor/img/frame-h.png) repeat-x;
+}
+
+div.nxthemesDraggable:hover div.nxthemesFrameBottom {
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  left: 0px;
+  bottom: 0px;
+  background: url(${basePath}/skin/nxthemes-editor/img/frame-h.png) repeat-x;
+}
+
+div.nxthemesDraggable:hover div.nxthemesFrameRight {
+  position: absolute;
+  width: 1px;
+  height: 100%;
+  right: 0;
+  bottom: 0;
+  background: url(${basePath}/skin/nxthemes-editor/img/frame-v.png) repeat-y;
+}

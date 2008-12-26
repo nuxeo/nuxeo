@@ -21,10 +21,6 @@
     <div id="nxthemesHeader">
 
       <div id="nxthemesTopButtons">
-        <@nxthemes_button identifier="add fragments"
-          controlledBy="editor buttons"
-          classNames="dropList"
-          switchTo="editor perspectives/add fragments" label="Add fragments" />
 
         <@nxthemes_button identifier="edit canvas"
           controlledBy="editor buttons"
@@ -37,7 +33,7 @@
         <@nxthemes_button identifier="manage themes"
           controlledBy="editor buttons"
           switchTo="editor perspectives/manage themes" label="Manage themes" />
-
+          
         <@nxthemes_button identifier="exit"
           link="javascript:NXThemesEditor.exit()"
           label="Exit" />
@@ -56,13 +52,13 @@
       <@nxthemes_panel identifier="theme selector"
         url="${basePath}/nxthemes-editor/themeSelector"
         controlledBy="editor perspectives,theme switcher"
-        visibleInPerspectives="add fragments,edit canvas,edit padding" />
+        visibleInPerspectives="edit canvas,edit padding" />
 
       <!-- canvas mode selector -->
       <@nxthemes_panel identifier="canvas mode selector"
         url="${basePath}/nxthemes-editor/canvasModeSelector"
         controlledBy="editor perspectives,canvas mode selector"
-        visibleInPerspectives="add fragments,edit canvas,edit padding" />
+        visibleInPerspectives="edit canvas,edit padding" />
 
       <!--  Status message -->
       <div id="nxthemesStatusMessage" style="display:none"></div>
@@ -70,7 +66,7 @@
       <@nxthemes_panel identifier="back to canvas"
         url="${basePath}/nxthemes-editor/backToCanvas"
         controlledBy="editor perspectives"
-        visibleInPerspectives="edit element,manage themes" />
+        visibleInPerspectives="add fragments,edit element,manage themes" />
 
     </div>
 
@@ -85,8 +81,8 @@
           url="%{here}?engine=page-editor"
           loading="nxthemesWaitAnimation"
           filter="clean up canvas"
-          controlledBy="editor perspectives,link disabler,element mover,layout editor actions,fragment inserter,area style actions"
-          visibleInPerspectives="add fragments,edit canvas,edit padding" />
+          controlledBy="editor perspectives,link disabler,element mover,layout editor actions,area style actions"
+          visibleInPerspectives="edit canvas,edit padding" />
       </div>
 
       <!-- element drag-and-drop -->
@@ -108,9 +104,7 @@
     <@nxthemes_controller resource="area-style-perspectives.json" />
     <@nxthemes_controller resource="area-style-actions.json" />
 
-    <@nxthemes_controller resource="fragment-factory-expander.json" />
     <@nxthemes_controller resource="toolbox-mover.json" />
-    <@nxthemes_controller resource="fragment-inserter.json" />
 
     <@nxthemes_controller resource="theme-switcher.json" />
 
@@ -137,7 +131,7 @@
     <!--  fragment factory -->
     <@nxthemes_panel identifier="fragment factory"
       url="${basePath}/nxthemes-editor/fragmentFactory"
-      controlledBy="editor perspectives,fragment factory expander,toolbox mover,fragment inserter"
+      controlledBy="editor perspectives"
       visibleInPerspectives="add fragments" />
 
     <!--  Area style chooser -->

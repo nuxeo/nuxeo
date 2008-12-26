@@ -73,7 +73,7 @@ public class Main extends DefaultModule {
   @GET
   @Path("fragmentFactory")
   public Object renderFragmentFactory(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("fragmentFactory.ftl").arg("fragments", getFragments(path))
+    return getTemplate("fragmentFactory.ftl").arg("fragments", getFragments(path)).arg("selected_element_id", getSelectedElementId())
   }
 
   @GET
@@ -342,9 +342,12 @@ public class Main extends DefaultModule {
   @Path("insert_fragment")
   public void insertFragment() {
       FormData form = ctx.getForm()
-      String destId = form.getString("dest_id")        
+      String destId = form.getString("dest_id")    
       String typeName = form.getString("type_name")             
       Element destElement = ThemeManager.getElementById(destId)
+      if (destElement instanceof Fragment) {
+          destElement = destElement.getParent()
+      }
       Editor.insertFragment(destElement, typeName)
   }
   

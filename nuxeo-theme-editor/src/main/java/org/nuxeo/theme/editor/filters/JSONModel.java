@@ -51,9 +51,8 @@ public class JSONModel extends StandaloneFilter {
     @Override
     public RenderingInfo process(final RenderingInfo info, final boolean cache) {
         final Element element = info.getElement();
-        final String typeName = element.getElementType().getTypeName();
         final String markup = info.getMarkup();
-
+        final String templateEngine = info.getTemplateEngine().getName();
         final String viewMode = info.getViewMode();
         if (viewMode != null && viewMode.startsWith("area-styles")) {
             return info;
@@ -69,7 +68,7 @@ public class JSONModel extends StandaloneFilter {
         final Map<String, Object> model = new HashMap<String, Object>();
         final Map<String, Object> model_data = new HashMap<String, Object>();
 
-        model_data.put("title", typeName);
+        model_data.put("can add fragment", false);
         model_data.put("editable", false);
         model_data.put("duplicable", false);
         model_data.put("alignable", false);
@@ -82,16 +81,19 @@ public class JSONModel extends StandaloneFilter {
         model_data.put("has padding", false);
 
         if (element instanceof Fragment) {
-            FragmentType fragmentType = ((Fragment) element).getFragmentType();
-            model_data.put("title", fragmentType.getTypeName());
+            model_data.put("can add fragment", true);
             model_data.put("editable", true);
             model_data.put("duplicable", true);
             model_data.put("copyable", true);
             model_data.put("deletable", true);
             model_data.put("pastable", true);
-            model_data.put("widgets", getWidgetsFor(element,
-                    info.getTemplateEngine().getName()));
-            model_data.put("has widget", true);
+
+            List<Map<String, Object>> widgets = getWidgetsFor(element,
+                    templateEngine);
+            if (widgets.size() > 1) {
+                model_data.put("widgets", widgets);
+                model_data.put("has widget", true);
+            }
             model_data.put("has style", true);
         }
 
@@ -100,6 +102,7 @@ public class JSONModel extends StandaloneFilter {
                 model_data.put("splittable", true);
                 model_data.put("deletable", true);
             }
+            model_data.put("can add fragment", true);
             model_data.put("pastable", true);
             model_data.put("alignable", true);
             model_data.put("alignments", getAlignments());
@@ -107,6 +110,7 @@ public class JSONModel extends StandaloneFilter {
         }
 
         model.put("id", String.format("%s-%s", info.getUid(), viewMode));
+
         model.put("data", model_data);
 
         StringBuilder s = new StringBuilder();

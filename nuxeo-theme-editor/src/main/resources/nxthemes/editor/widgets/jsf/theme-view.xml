@@ -24,10 +24,6 @@
     <div id="nxthemesHeader">
 
       <div id="nxthemesTopButtons">
-        <nxthemes:button identifier="add fragments"
-          controlledBy="editor buttons"
-          classNames="dropList"
-          switchTo="editor perspectives/add fragments" label="Add fragments" />
 
         <nxthemes:button identifier="edit canvas"
           controlledBy="editor buttons"
@@ -36,7 +32,7 @@
         <nxthemes:button identifier="refresh"
           link="javascript:NXThemesEditor.refresh()"
           label="Refresh" />
-
+        
         <nxthemes:button identifier="manage themes"
           controlledBy="editor buttons"
           switchTo="editor perspectives/manage themes" label="Manage themes" />
@@ -49,7 +45,7 @@
       <nxthemes:panel identifier="perspective selector"
         url="/nuxeo/site/nxthemes-editor/perspectiveSelector"
         controlledBy="editor perspectives,perspective selector"
-        visibleInPerspectives="add fragments,edit canvas,edit padding" />
+        visibleInPerspectives="edit canvas,edit padding" />
 
       <div id="nxthemesWaitAnimation" style="display:none">
         <img src="/nuxeo/site/skin/nxthemes-editor/img/loader.gif" alt="" width="16" height="16" /> loading ...
@@ -59,13 +55,13 @@
       <nxthemes:panel identifier="theme selector"
         url="/nuxeo/site/nxthemes-editor/themeSelector"
         controlledBy="editor perspectives,theme switcher"
-        visibleInPerspectives="add fragments,edit canvas,edit padding" />
+        visibleInPerspectives="edit canvas,edit padding" />
 
       <!-- canvas mode selector -->
       <nxthemes:panel identifier="canvas mode selector"
         url="/nuxeo/site/nxthemes-editor/canvasModeSelector"
         controlledBy="editor perspectives,canvas mode selector"
-        visibleInPerspectives="add fragments,edit canvas,edit padding" />
+        visibleInPerspectives="edit canvas,edit padding" />
 
       <!--  Status message -->
       <div id="nxthemesStatusMessage" style="display:none"></div>
@@ -73,7 +69,7 @@
       <nxthemes:panel identifier="back to canvas"
         url="/nuxeo/site/nxthemes-editor/backToCanvas"
         controlledBy="editor perspectives"
-        visibleInPerspectives="edit element,manage themes" />
+        visibleInPerspectives="add fragments,edit element,manage themes" />
 
     </div>
 
@@ -88,8 +84,8 @@
           url="%{here}?engine=page-editor"
           loading="nxthemesWaitAnimation"
           filter="clean up canvas"
-          controlledBy="editor perspectives,link disabler,element mover,layout editor actions,fragment inserter,area style actions"
-          visibleInPerspectives="add fragments,edit canvas,edit padding" />
+          controlledBy="editor perspectives,link disabler,element mover,layout editor actions,area style actions"
+          visibleInPerspectives="edit canvas,edit padding" />
       </div>
 
       <!-- element drag-and-drop -->
@@ -113,10 +109,7 @@
     <nxthemes:controller resource="area-style-perspectives.json" />
     <nxthemes:controller resource="area-style-actions.json" />
 
-    <nxthemes:controller
-      resource="fragment-factory-expander.json" />
     <nxthemes:controller resource="toolbox-mover.json" />
-    <nxthemes:controller resource="fragment-inserter.json" />
 
     <nxthemes:controller resource="theme-switcher.json" />
 
@@ -143,7 +136,7 @@
     <!--  fragment factory -->
     <nxthemes:panel identifier="fragment factory"
       url="/nuxeo/site/nxthemes-editor/fragmentFactory"
-      controlledBy="editor perspectives,fragment factory expander,toolbox mover,fragment inserter"
+      controlledBy="editor perspectives"
       visibleInPerspectives="add fragments" />
 
     <!--  Area style chooser -->

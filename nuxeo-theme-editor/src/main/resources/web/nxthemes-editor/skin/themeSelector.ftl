@@ -13,7 +13,7 @@
       <td class="separator"></td>
     </#list>
     <td class="ltab"><img alt="" width="5" height="5" src="${skinPath}/img/l-theme-tab.png" /></td>
-    <td class="tab"><a href="javascript:void(0)" onclick="javascript:NXThemesEditor.addTheme()"> + </a></td>
+    <td class="tab" style=" width: 120px"><a style="font-weight: bold;" href="javascript:void(0)" onclick="javascript:NXThemesEditor.addTheme()">add theme</a></td>
     <td class="rtab"><img alt="" width="5" height="5" src="${skinPath}/img/r-theme-tab.png" /></td>
   </tr>
 </table>
@@ -24,7 +24,7 @@
       <li class='${page.className}'><a class="switcher" href="javascript:void(0)"
         name="${page.link}">${page.name}</a></li>
     </#list>
-    <li><a href="javascript:void(0)" onclick="javascript:NXThemesEditor.addPage('${current_theme_name}')"> + </a></li>
+    <li><a style="font-weight: bold" href="javascript:void(0)" onclick="javascript:NXThemesEditor.addPage('${current_theme_name}')">add page</a></li>
   </ul>
 
 <div style="clear: both"></div>

@@ -6,7 +6,13 @@
        "arrow":  "/skin/nxthemes-editor/img/arrow-16.png",
        "showDisabled": false,
        "items": [
-         {"type": "title"
+         {"type": "item",
+          "label": "Add fragment",
+          "icon": "/skin/nxthemes-editor/img/add-16.png",
+          "action": "insert fragment",
+          "visible": "can add fragment"
+         },             
+         {"type": "separator"
          },
          {"type": "item",
           "label": "Edit",
@@ -14,10 +20,8 @@
           "action": "edit element",
           "visible": "editable"
          },
-         {"type": "separator"
-         },
          {"type": "submenu",
-          "label": "Widget",
+          "label": "Change view",
           "visible": "has widget",
           "icon": "/skin/nxthemes-editor/img/set-widget-16.png",
           "items": [
