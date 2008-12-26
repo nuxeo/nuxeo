@@ -186,7 +186,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         if (env != null && !"JBoss".equals(env.getHostApplicationName())) {
             File dir = env.getConfig() ;
             if (dir != null) {
-                System.out.println(dir.getAbsolutePath());
+                log.debug(dir.getAbsolutePath());
                 if (dir.isDirectory()) {
                     for (String name : dir.list()) {
                         if (name.endsWith("-config.xml") || name.endsWith("-bundle.xml")) {

@@ -152,7 +152,7 @@ public interface RuntimeService {
      * Gets a component given its name.
      *
      * @param name the component name
-     * @return the component or null if no such component was registered
+     * @return the component, or null if no such component was registered
      */
     Object getComponent(ComponentName name);
 
@@ -183,7 +183,7 @@ public interface RuntimeService {
      * Gets the service of type serviceClass if such a service was declared by a
      * resolved runtime component.
      * <p>
-     * If the component is not yet activated it will be prior to return the
+     * If the component is not yet activated, it will be prior to return the
      * service.
      *
      * @param <T> the service type
@@ -193,8 +193,9 @@ public interface RuntimeService {
     <T> T getService(Class<T> serviceClass);
 
     /**
-     * Get a list of startup warnings.
-     * Can be modified to add new warnings
+     * Gets a list of startup warnings.
+     * Can be modified to add new warnings.
+     *
      * @return the warning list
      */
     List<String> getWarnings();
@@ -203,11 +204,11 @@ public interface RuntimeService {
      * OSGi frameworks are using a string {@link Bundle#getLocation()} to identify bundle locations.
      * <p>
      * This method try to convert the bundle location to real file if possible.
-     * If this bundle location cannot be converted to a file (e.g. it's may be a remote URL) null is returned.
+     * If this bundle location cannot be converted to a file (e.g. it may be a remote URL), null is returned.
      * <p>
      * This method works only for bundles that are installed as files on the host file system.
      *
-     * @return the bundle file or null
+     * @return the bundle file, or null
      */
     File getBundleFile(Bundle bundle);
 

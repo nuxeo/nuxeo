@@ -100,7 +100,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     public synchronized void start() throws Exception {
         if (!isStarted) {
-            log.info("Starting NXRuntime service " + getName() + "; version: "
+            log.info("Starting Nuxeo Runtime service " + getName() + "; version: "
                     + getVersion());
             //NXRuntime.setInstance(this);
             manager = createComponentManager();
@@ -116,7 +116,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     public synchronized void stop() throws Exception {
         if (isStarted) {
-            log.info("Stopping NXRuntime service " + getName() + "; version: " + getVersion());
+            log.info("Stopping Nuxeo Runtime service " + getName() + "; version: " + getVersion());
             Framework.sendEvent(new RuntimeServiceEvent(
                     RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP, this));
             stopExtensions();

@@ -29,23 +29,11 @@ import org.nuxeo.common.utils.PathFilter;
  */
 public abstract class AbstractFilter implements PathFilter {
 
-    protected Path pattern;
+    protected final Path pattern;
 
 
     protected AbstractFilter(Path pattern) {
         this.pattern = pattern;
-    }
-
-    public void setPattern(Path pattern) {
-        this.pattern = pattern;
-    }
-
-    public void setPattern(String pattern) {
-        this.pattern = new Path(pattern);
-    }
-
-    public Path getPattern() {
-        return pattern;
     }
 
     public boolean accept(Path path, boolean defaultPolicy) {

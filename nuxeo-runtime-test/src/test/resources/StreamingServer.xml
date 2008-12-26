@@ -4,7 +4,7 @@
   <documentation>
     A streaming service. It behaves like a registry of streams that can be created and retrieved from remote.
     <p/>
-    This is useful to share (upload and download) large files between various hosts forming the system
+    This is useful to share (upload and download) large files between various hosts forming the system.
 
     @property serverLocator the server address in jboss-remoting invoker locator uri format. Example: socket://localhost:3233
     @property isServer whether or not to run as a server. Defaults to true.
