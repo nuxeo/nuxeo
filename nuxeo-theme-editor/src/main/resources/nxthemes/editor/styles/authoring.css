@@ -54,6 +54,9 @@ ins.model, ins.view, ins.controller {
   z-index: 10;
   width: 135px;
   padding: 2px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;  
 }
 
 .nxthemesContextMenu a {
@@ -63,6 +66,9 @@ ins.model, ins.view, ins.controller {
   color: #000 !important;
   padding: 3px 5px 3px 5px;
   white-space: nowrap;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
 }
 
 .nxthemesContextMenu a img {
@@ -101,6 +107,9 @@ ins.model, ins.view, ins.controller {
   border-style: solid;
   border-color: #333;
   margin-top: -2px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;  
 }
 
 .nxthemesContextMenu .submenuitem {
@@ -875,6 +884,9 @@ div.nxthemesFragment {
   margin: 3px !important;
   color: #333;
   cursor: pointer;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;  
 }
 
 div.nxthemesFragment b {
@@ -929,6 +941,9 @@ div.nxthemesFragment b {
   width: 100%;
   border: 1px solid #000;
   cursor: default;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;  
 }
 
 .nxthemesScreen table th {
@@ -1146,6 +1161,9 @@ img.nxthemesAlignSection:hover {
   background-color: #ffc !important;
   padding: 0 !important;
   font: 12px Arial, sans-serif !important;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;  
 }
 
 .nxthemesPageArea .title {
@@ -1154,6 +1172,9 @@ img.nxthemesAlignSection:hover {
   text-align: center;
   font-weight: bold;
   font-size: 12px;
+  -moz-border-radius: 5px 5px 0 0;
+  -webkit-border-radius: 5px 5px 0 0;
+  border-radius: 5px 5px 0 0; 
 }
 
 .nxthemesPageArea .body {
