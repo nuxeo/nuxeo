@@ -43,7 +43,6 @@ public class ListenerDescriptor {
 
     EventListener listener;
 
-
     @XNode("@class")
     public void setListener(Class<EventListener> listenerClass) {
         try {

@@ -56,7 +56,8 @@ public class AdaptableServiceImpl implements AdaptableService {
         return getAdapter(adapter) != null;
     }
 
-    public Object invokeAdapter(MethodInvocation invocation, Object[] args) throws NoSuchAdapterException, InvocationTargetException, IllegalAccessException {
+    public Object invokeAdapter(MethodInvocation invocation, Object[] args)
+            throws NoSuchAdapterException, InvocationTargetException, IllegalAccessException {
         Method m = invocation.getMethod();
         Class<?> adapterClass = m.getDeclaringClass();
         Object adapterInstance = getAdapter(adapterClass);

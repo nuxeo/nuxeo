@@ -26,7 +26,7 @@ package org.nuxeo.runtime.binding;
  */
 public abstract class AbstractServiceProvider implements ServiceProvider {
 
-    protected ServiceManager manager;
+    ServiceManager manager;
 
     public void setManager(ServiceManager manager) {
         if (manager != null) {

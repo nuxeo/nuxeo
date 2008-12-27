@@ -24,7 +24,6 @@ import org.nuxeo.runtime.service.AdapterManager;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ServiceProxyFactory {
 

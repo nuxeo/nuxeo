@@ -107,7 +107,7 @@ public final class Framework {
     /**
      * Gets the runtime service instance.
      *
-     * @return
+     * @return the runtime service instance
      */
     public static RuntimeService getRuntime() {
         return runtime;

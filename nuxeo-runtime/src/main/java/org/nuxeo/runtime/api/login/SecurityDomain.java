@@ -54,9 +54,7 @@ public class SecurityDomain implements Serializable {
     private transient AppConfigurationEntry[] entries;
 
     public SecurityDomain() {
-
     }
-
     public SecurityDomain(String name) {
         this.name = name;
     }

@@ -49,8 +49,9 @@ public class BeanServiceProvider extends AbstractServiceProvider {
     }
 
     /**
-     * This constructor should be used on clients
-     * @param ctx
+     * This constructor should be used on clients.
+     *
+     * @param ctx the initial naming context
      * @throws NamingException
      */
     public BeanServiceProvider(InitialContext ctx) throws NamingException {

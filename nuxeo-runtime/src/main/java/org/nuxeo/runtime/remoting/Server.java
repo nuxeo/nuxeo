@@ -38,7 +38,7 @@ import org.nuxeo.runtime.model.RegistrationInfo;
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface  Server {
+public interface Server {
 
     ServerConfiguration  getConfiguration(InvokerLocator locator, Version version) throws ConfigurationException;
 

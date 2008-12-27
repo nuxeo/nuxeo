@@ -28,9 +28,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class AdapterManager {
 
-    protected final Map<Class<?>, AdaptableDescriptor> adapters;
-
     private static final AdapterManager instance = new AdapterManager();
+
+    protected final Map<Class<?>, AdaptableDescriptor> adapters;
 
     public static AdapterManager getInstance() {
         return instance;

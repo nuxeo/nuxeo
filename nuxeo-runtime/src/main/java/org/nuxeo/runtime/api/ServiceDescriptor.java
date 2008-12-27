@@ -46,7 +46,7 @@ public class ServiceDescriptor implements Serializable {
     private transient Class<?> serviceClass;
 
     @XNode("@class")
-    void setServiceClass(Class<?> serviceClass) {
+    private void setServiceClass(Class<?> serviceClass) {
         this.serviceClass = serviceClass;
         serviceClassName = serviceClass.getName();
     }
@@ -118,10 +118,6 @@ public class ServiceDescriptor implements Serializable {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getServiceClassName() {

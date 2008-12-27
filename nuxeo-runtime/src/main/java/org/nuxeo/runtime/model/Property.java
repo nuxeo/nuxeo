@@ -36,16 +36,16 @@ public class Property implements Serializable {
     private static final long serialVersionUID = -2661183859962287565L;
 
     @XNode("@name")
-    public String name;
+    private String name;
 
     @XNode("@type")
-    public String type = "string";
+    private String type = "string";
 
     // FIXME: value must be serializable for this class to be serializable.
-    public Object value;
+    private Object value;
 
     @XNode("@value")
-    public void setStringValue(String value) {
+    private void setStringValue(String value) {
         this.value = PropertyDecoder.decode(type, value);
     }
 
