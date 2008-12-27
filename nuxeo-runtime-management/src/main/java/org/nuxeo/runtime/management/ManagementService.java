@@ -25,7 +25,9 @@ import javax.management.ObjectInstance;
  * 
  */
 public interface ManagementService {
+
     Set<ObjectInstance> getManagedServices();
 
     Set<ObjectInstance> getManagedResources();
+
 }

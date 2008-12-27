@@ -16,11 +16,13 @@
  */
 package org.nuxeo.runtime.management;
 
+import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectInstance;
@@ -46,36 +48,46 @@ public class ManagementServiceImpl extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(ManagementServiceImpl.class);
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.nuxeo.ecm.platform.management.service.ManagementService#
-     * getManagedServices()
-     */
-    @SuppressWarnings("unchecked")
-    public Set<ObjectInstance> getManagedServices() {
-        String qualifiedName = ManagementNameFormatter.formatManagedNames("service");
-        ObjectName objectName = ManagementNameFormatter.getObjectName(qualifiedName);
-        return mbeanServer.queryMBeans(objectName, null);
-    }
-
-    protected final MBeanServer mbeanServer = java.lang.management.ManagementFactory.getPlatformMBeanServer();
-
-    @SuppressWarnings("unchecked")
-    public Set<ObjectInstance> getManagedResources() {
-        return mbeanServer.queryMBeans(null, null);
-    }
-
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (extensionPoint.equals("managedServices")) {
-            doRegisterManagedServiceContribution((ManagedServiceDescriptor) contribution);
+            doRegister((ManagedServiceDescriptor) contribution);
         }
     }
 
-    protected Class<?> guardedLoadClass(String className) {
+    @Override
+    public void unregisterContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        if (extensionPoint.equals("managedServices")) {
+            doUnregister((ManagedServiceDescriptor) contribution);
+        }
+    }
+
+    protected final Set<ManagedServiceDescriptor> registeredDescriptors = new HashSet<ManagedServiceDescriptor>();
+
+    protected void doRegister(ManagedServiceDescriptor contribution) {
+        registeredDescriptors.add(contribution);
+        if (log.isInfoEnabled()) {
+            log.info("registered management contribution for " + contribution);
+        }
+    }
+
+    protected void doUnregister(ManagedServiceDescriptor descriptor) {
+        if (registeredDescriptors.remove(descriptor) == false) {
+            throw new IllegalArgumentException(descriptor
+                    + " is not registered");
+        }
+        ManagedService managedService = managedServices.remove(descriptor);
+        if (managedService == null || !managedService.isRegistered()) {
+            return;
+        }
+        doUnregister(managedService);
+    }
+
+    protected Class<?> doLoadServiceClass(String className) {
         try {
             return getClass().getClassLoader().loadClass(className);
         } catch (ClassNotFoundException e) {
@@ -83,7 +95,8 @@ public class ManagementServiceImpl extends DefaultComponent implements
         }
     }
 
-    protected Object guardedService(Class<?> serviceClass, boolean isAdapted) {
+    protected Object doGetServiceInstance(Class<?> serviceClass,
+            boolean isAdapted) {
         Object service;
         if (isAdapted) {
             try {
@@ -106,23 +119,11 @@ public class ManagementServiceImpl extends DefaultComponent implements
         return service;
     }
 
-    protected final ModelMBeanInfoFactory mbeanInfoFactory = new ModelMBeanInfoFactory();
-
-    protected final Set<ManagedServiceDescriptor> registeredDescriptors = new HashSet<ManagedServiceDescriptor>();
-
-    protected final Set<ManagedService> managedServices = new HashSet<ManagedService>();
-
-    protected void doRegisterManagedServiceContribution(
-            ManagedServiceDescriptor contribution) {
-        registeredDescriptors.add(contribution);
-        if (log.isInfoEnabled()) {
-            log.info("registered management contribution for " + contribution);
-        }
-    }
+    protected final Map<ManagedServiceDescriptor, ManagedService> managedServices = new HashMap<ManagedServiceDescriptor, ManagedService>();
 
     protected ManagedService doResolve(ManagedServiceDescriptor descriptor) {
-        Class<?> serviceClass = guardedLoadClass(descriptor.getServiceClassName());
-        Object serviceInstance = guardedService(serviceClass,
+        Class<?> serviceClass = doLoadServiceClass(descriptor.getServiceClassName());
+        Object serviceInstance = doGetServiceInstance(serviceClass,
                 descriptor.isAdapted());
         String serviceName = descriptor.getServiceName();
         if (serviceName == null) {
@@ -133,11 +134,15 @@ public class ManagementServiceImpl extends DefaultComponent implements
         }
         ObjectName managementName = ManagementNameFormatter.getObjectName(serviceName);
         String ifaceClassName = descriptor.getIfaceClassName();
-        Class<?> managementClass = ifaceClassName != null ? guardedLoadClass(ifaceClassName)
+        Class<?> managementClass = ifaceClassName != null ? doLoadServiceClass(ifaceClassName)
                 : serviceClass;
         return new ManagedService(descriptor, managementName, managementClass,
                 serviceInstance);
     }
+
+    protected final ModelMBeanInfoFactory mbeanInfoFactory = new ModelMBeanInfoFactory();
+
+    protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
     protected void doRegister(ManagedService service) {
         try {
@@ -171,10 +176,7 @@ public class ManagementServiceImpl extends DefaultComponent implements
     }
 
     public class ManagementAdapter implements ManagementServiceMBean {
-        
-        /* (non-Javadoc)
-         * @see org.nuxeo.runtime.management.ManagementServiceMBean#getRegisteredServicesClassName()
-         */
+
         public Set<String> getRegisteredServicesClassName() {
             Set<String> registeredServicesClassName = new HashSet<String>();
             for (ManagedServiceDescriptor registeredDescriptor : registeredDescriptors) {
@@ -183,16 +185,10 @@ public class ManagementServiceImpl extends DefaultComponent implements
             return registeredServicesClassName;
         }
 
-        /* (non-Javadoc)
-         * @see org.nuxeo.runtime.management.ManagementServiceMBean#enable()
-         */
         public void enable() {
             doEnable();
         }
 
-        /* (non-Javadoc)
-         * @see org.nuxeo.runtime.management.ManagementServiceMBean#disable()
-         */
         public void disable() {
             doDisable();
         }
@@ -202,14 +198,15 @@ public class ManagementServiceImpl extends DefaultComponent implements
         for (ManagedServiceDescriptor descriptor : registeredDescriptors) {
             ManagedService service = doResolve(descriptor);
             doRegister(service);
-            managedServices.add(service);
+            managedServices.put(descriptor, service);
         }
     }
 
     protected void doDisable() {
-        Iterator<ManagedService> iterator = managedServices.iterator();
+        Iterator<Entry<ManagedServiceDescriptor, ManagedService>> iterator = 
+            managedServices.entrySet().iterator();
         while (iterator.hasNext()) {
-            ManagedService service = iterator.next();
+            ManagedService service = iterator.next().getValue();
             doUnregister(service);
             iterator.remove();
         }
@@ -236,6 +233,18 @@ public class ManagementServiceImpl extends DefaultComponent implements
             throw ManagementRuntimeException.wrap("Cannot disable management",
                     e);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public Set<ObjectInstance> getManagedServices() {
+        String qualifiedName = ManagementNameFormatter.formatManagedNames("service");
+        ObjectName objectName = ManagementNameFormatter.getObjectName(qualifiedName);
+        return mbeanServer.queryMBeans(objectName, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Set<ObjectInstance> getManagedResources() {
+        return mbeanServer.queryMBeans(null, null);
     }
 
 }
