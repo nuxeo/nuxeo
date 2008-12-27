@@ -87,40 +87,20 @@ public class EditBasedRuleDescriptor implements RuleDescriptor {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getAction() {
         return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
     }
 
     public String getLifecycleState() {
         return lifecycleState;
     }
 
-    public void setLifecycleState(String lifecycleState) {
-        this.lifecycleState = lifecycleState;
-    }
-
     public RuleOptionDescriptor[] getOptions() {
         return options;
     }
 
-    public void setOptions(RuleOptionDescriptor[] options) {
-        this.options = options;
-    }
-
     public String[] getExcludeDocTypes() {
         return excludeDocTypes;
-    }
-
-    public void setExcludeDocTypes(String[] excludeDocTypes) {
-        this.excludeDocTypes = excludeDocTypes;
     }
 
     public boolean isDocTypeExcluded(String docType) {
@@ -156,9 +136,7 @@ public class EditBasedRuleDescriptor implements RuleDescriptor {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append(getClass().getSimpleName());
-        sb.append(" {name=");
-        sb.append(name);
-        sb.append('}');
+        sb.append(" {name=").append(name).append('}');
         return sb.toString();
     }
 

@@ -60,32 +60,16 @@ public class WFBasedRuleDescriptor implements RuleDescriptor {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getAction() {
         return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
     }
 
     public String getWorkflowStateFinal() {
         return workflowStateFinal;
     }
 
-    public void setWorkflowStateFinal(String workflowStateFinal) {
-        this.workflowStateFinal = workflowStateFinal;
-    }
-
     public String getWorkflowStateInitial() {
         return workflowStateInitial;
-    }
-
-    public void setWorkflowStateInitial(String workflowStateInitial) {
-        this.workflowStateInitial = workflowStateInitial;
     }
 
     public boolean isEnabled() {

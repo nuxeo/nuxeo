@@ -43,7 +43,7 @@ public interface VersionChangeRequest {
 
         private final String name;
 
-        private RequestSource(String name, String desc) {
+        RequestSource(String name, String desc) {
             this.name = name;
         }
 
