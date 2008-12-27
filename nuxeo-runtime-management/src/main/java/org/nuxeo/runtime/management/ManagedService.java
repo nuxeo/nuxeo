@@ -18,6 +18,8 @@ package org.nuxeo.runtime.management;
 
 import javax.management.ObjectName;
 
+import org.jsesoft.mmbi.NamedModelMBean;
+
 /**
  * @author matic
  * 
@@ -32,6 +34,7 @@ public class ManagedService {
 
     protected final ManagedServiceDescriptor descriptor;
 
+    protected NamedModelMBean mbean;
 
     /**
      * @param descriptor
@@ -62,5 +65,9 @@ public class ManagedService {
 
     public ManagedServiceDescriptor getDescriptor() {
         return descriptor;
+    }
+
+    public boolean isRegistered() {
+        return mbean != null;
     }
 }

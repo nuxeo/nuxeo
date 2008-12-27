@@ -6,11 +6,11 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.jsesoft.mmbi.PureResource;
-import org.nuxeo.runtime.management.inspector.ModelMBeanInfoInstrumentorFactory;
+import org.nuxeo.runtime.management.inspector.ModelMBeanInfoFactory;
 
 public class TestManagedResourceInstrumentation extends TestCase {
 
-    ModelMBeanInfoInstrumentorFactory instrumentatorFactory = new ModelMBeanInfoInstrumentorFactory();
+    ModelMBeanInfoFactory instrumentatorFactory = new ModelMBeanInfoFactory();
 
     public void testInstrumentation() throws Exception {
         ModelMBeanInfo info = instrumentatorFactory.getModelMBeanInfo(PureResource.class);

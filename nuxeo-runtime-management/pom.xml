@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
+
   <parent>
     <groupId>org.nuxeo.runtime</groupId>
     <artifactId>nuxeo-runtime-parent</artifactId>
     <version>1.5-SNAPSHOT</version>
   </parent>
+
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-runtime-management</artifactId>
   <name>Nuxeo Runtime Management</name>
+
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
@@ -26,7 +29,17 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>commons-lang</groupId>
+    	<artifactId>commons-lang</artifactId>
     </dependency>
   </dependencies>
+
 </project>
    

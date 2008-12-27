@@ -12,20 +12,29 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Stephane Lacoin (Nuxeo EP Software Engineer)
+ *     matic
  */
 package org.nuxeo.runtime.management;
 
+import java.util.Map;
 import java.util.Set;
 
-import javax.management.ObjectInstance;
-
 /**
- * @author Stephane Lacoin (Nuxeo EP Software Engineer)
+ * @author matic
  * 
  */
-public interface ManagementService {
-    Set<ObjectInstance> getManagedServices();
+public interface RuntimeServiceMBean {
 
-    Set<ObjectInstance> getManagedResources();
+    String getDescription();
+
+    String getHomeLocation();
+
+    String getName();
+
+    String getVersion();
+
+    Map<String, Set<String>> getPendingComponents();
+
+    Set<String> getResolvedComponents();
+
 }

@@ -51,12 +51,10 @@ import org.jsesoft.mmbi.JMX;
 import org.jsesoft.mmbi.JMXNotification;
 import org.jsesoft.ri.InspectorSupport;
 
-import quicktime.streaming.SettingsDialog;
-
-public class ModelMBeanInspectorSupport extends InspectorSupport {
+public class ModelMBeanInspectorStrategy extends InspectorSupport {
 
     // ESCA-JAVA0242:
-    private static final transient Log log = LogFactory.getLog(ModelMBeanInspectorSupport.class);
+    private static final transient Log log = LogFactory.getLog(ModelMBeanInspectorStrategy.class);
 
     /** The mbean's descriptor. */
     private Descriptor mbeanDescriptor;
@@ -68,16 +66,16 @@ public class ModelMBeanInspectorSupport extends InspectorSupport {
     private BeanInfo beanInfo;
 
     /** The mbean's constructor infos. */
-    private Vector<ModelMBeanConstructorInfo> constructorInfos;
+    private Vector<ModelMBeanConstructorInfo> constructorInfos = new Vector<ModelMBeanConstructorInfo>();
 
     /** The mbean's operation infos. */
-    private Vector<ModelMBeanOperationInfo> operationInfos;
+    private Vector<ModelMBeanOperationInfo> operationInfos = new Vector<ModelMBeanOperationInfo>();
 
     /** The mbean's attribute infos. */
-    private Vector<ModelMBeanAttributeInfo> attributeInfos;
+    private Vector<ModelMBeanAttributeInfo> attributeInfos = new Vector<ModelMBeanAttributeInfo>();
 
     /** The mbean's notification infos. */
-    private Vector<ModelMBeanNotificationInfo> notificationInfos;
+    private Vector<ModelMBeanNotificationInfo> notificationInfos = new Vector<ModelMBeanNotificationInfo>();
 
     /** A type specifier for Vector.toArray() */
     private final ModelMBeanConstructorInfo[] constructors = new ModelMBeanConstructorInfo[0];
@@ -93,10 +91,9 @@ public class ModelMBeanInspectorSupport extends InspectorSupport {
 
     private final Class<?> sentinel;
 
-    public ModelMBeanInspectorSupport(Class<?> inspected, Class<?> sentinel)
+    public ModelMBeanInspectorStrategy(Class<?> inspected)
             throws IntrospectionException {
-        super();
-        this.sentinel = sentinel;
+        this.sentinel = inspected.isInterface() ? null : Object.class;
         this.beanInfo = Introspector.getBeanInfo(inspected);
     }
 
@@ -120,7 +117,7 @@ public class ModelMBeanInspectorSupport extends InspectorSupport {
         BeanInfo oldBeanInfo = beanInfo;
         beanInfo = Introspector.getBeanInfo(inspected, sentinel);
         handleJMXNotificationAnnotations(inspected.getAnnotations());
-        JMX annotation = (JMX) inspected.getAnnotation(org.jsesoft.mmbi.JMX.class);
+        JMX annotation = inspected.getAnnotation(org.jsesoft.mmbi.JMX.class);
 
         Descriptor descriptor = getDescriptor(annotation,
                 beanInfo.getBeanDescriptor(), inspected.getName(),
@@ -154,7 +151,7 @@ public class ModelMBeanInspectorSupport extends InspectorSupport {
             return false;
         }
         handleJMXNotificationAnnotations(constructor.getAnnotations());
-        JMX annotation = (JMX) constructor.getAnnotation(org.jsesoft.mmbi.JMX.class);
+        JMX annotation = constructor.getAnnotation(org.jsesoft.mmbi.JMX.class);
         if ((annotation != null) && (annotation.hide())) {
             return false;
         }
@@ -165,9 +162,6 @@ public class ModelMBeanInspectorSupport extends InspectorSupport {
         Descriptor descriptor = getDescriptor(annotation, null, name, name,
                 name, "operation");
         descriptor.setField("role", "constructor");
-        if (constructorInfos == null) {
-            constructorInfos = new Vector<ModelMBeanConstructorInfo>();
-        }
         constructorInfos.add(new ModelMBeanConstructorInfo(
                 (String) descriptor.getFieldValue("name"),
                 (String) descriptor.getFieldValue("description"),
@@ -218,13 +212,14 @@ public class ModelMBeanInspectorSupport extends InspectorSupport {
                 && (operation.getParameterTypes().length == 0) && (operation.getReturnType() != null))
                 || (operation.getName().startsWith("is")
                         && (operation.getParameterTypes().length == 0) && boolean.class.equals(operation.getReturnType()))) {
-            descriptor.setField("role", "getter");
             doFixAttribute(inspected, operation.getName());
+            descriptor.setField("role","getter");
         } else if (operation.getName().startsWith("set")
                 && (void.class.equals(operation.getReturnType()))
-                && (operation.getParameterTypes().length == 1)) {
-            descriptor.setField("role", "setter");
+                && (operation.getParameterTypes().length == 0)
+                && (operation.getReturnType() != null)) {
             doFixAttribute(inspected, operation.getName());
+            descriptor.setField("role", "setter");
         } else {
             descriptor.setField("role", "operation");
         }
@@ -232,9 +227,6 @@ public class ModelMBeanInspectorSupport extends InspectorSupport {
                 : annotation.impact();
         if (impact == MBeanOperationInfo.UNKNOWN) {
             impact = MBeanOperationInfo.ACTION_INFO;
-        }
-        if (operationInfos == null) {
-            operationInfos = new Vector<ModelMBeanOperationInfo>();
         }
         operationInfos.add(new ModelMBeanOperationInfo(
                 (String) descriptor.getFieldValue("name"),
@@ -341,9 +333,6 @@ public class ModelMBeanInspectorSupport extends InspectorSupport {
         if (setter != null) {
             descriptor.setField("setMethod", setter.getName());
         }
-        if (attributeInfos == null) {
-            attributeInfos = new Vector<ModelMBeanAttributeInfo>();
-        }
         attributeInfos.add(new ModelMBeanAttributeInfo(
                 (String) descriptor.getFieldValue("name"),
                 (String) descriptor.getFieldValue("description"), getter,
@@ -382,8 +371,7 @@ public class ModelMBeanInspectorSupport extends InspectorSupport {
         String name = field.getName();
         String upper = Character.toUpperCase(name.charAt(0))
                 + name.substring(1);
-        final Method methods[] = inspected.getDeclaredMethods();
-        for (Method method : methods) {
+        for (Method method : inspected.getDeclaredMethods()) {
             if (!Modifier.isPublic(method.getModifiers())) {
                 continue;
             }
@@ -413,8 +401,7 @@ public class ModelMBeanInspectorSupport extends InspectorSupport {
         String name = field.getName();
         String upper = Character.toUpperCase(name.charAt(0))
                 + name.substring(1);
-        Method methods[] = inspected.getDeclaredMethods();
-        for (Method method : methods) {
+        for (Method method : inspected.getDeclaredMethods()) {
             if (!Modifier.isPublic(method.getModifiers())) {
                 continue;
             }
@@ -450,7 +437,6 @@ public class ModelMBeanInspectorSupport extends InspectorSupport {
      * Handles the JMXNotification annotations.
      * 
      * @param annotations the annotations to be looked up for the JMX annotation
-     * @throws Exception if descriptor cannot be created
      */
     public void handleJMXNotificationAnnotations(Annotation[] annotations) {
         for (Annotation annotation : annotations) {
@@ -606,9 +592,9 @@ public class ModelMBeanInspectorSupport extends InspectorSupport {
      * </p>
      * 
      * @return ModelMBeanInfo
-     * @throws Exception
      */
     public ModelMBeanInfo getMBeanInfo() {
+
         if (mbeanInfo != null) {
             return mbeanInfo;
         }
@@ -631,48 +617,62 @@ public class ModelMBeanInspectorSupport extends InspectorSupport {
         return matcher.group(2);
     }
 
-    protected void doFixAttribute(Class<?> inspected, String operationName) throws Exception {
-        String methodSuffix = doExtractMethodSuffix(operationName);
-        String attributeName = methodSuffix.substring(0, 1).toLowerCase() + methodSuffix.substring(1);;
-        
-        if (attributeInfos != null) {
-            for (ModelMBeanAttributeInfo attributeInfo : attributeInfos) {
-                if (attributeInfo.getName().equals(attributeName)) {
-                    return;
-                }
+    protected boolean hasAttributeInfo(String attributeName) {
+       for (ModelMBeanAttributeInfo attributeInfo : attributeInfos) {
+            if (attributeInfo.getName().equals(attributeName)) {
+                return true;
             }
         }
+        return false;
+    }
+
+    protected void doFixAttribute(Class<?> inspected, String operationName)
+            throws Exception {
+        String methodSuffix = doExtractMethodSuffix(operationName);
+        String attributeName = methodSuffix.substring(0, 1).toLowerCase()
+                + methodSuffix.substring(1);
+
+        if (hasAttributeInfo(attributeName)) {
+            return;
+        }
+ 
         Method reader = null;
         Method writter = null;
-        for(Method method:inspected.getMethods()) {
+        for (Method method : inspected.getMethods()) {
             Matcher matcher = attributePattern.matcher(method.getName());
-             if (!matcher.matches()) {
-                 continue;
-             }
-             if (!matcher.group(2).equals(methodSuffix)) {
-                 continue;
-             }
-             String prefix = matcher.group(1);
-           if (prefix.equals("is")) {
-                if (reader == null) reader = method;
+            if (!matcher.matches()) {
+                continue;
+            }
+            if (!matcher.group(2).equals(methodSuffix)) {
+                continue;
+            }
+            String prefix = matcher.group(1);
+            if (prefix.equals("is")) {
+                if (reader == null) {
+                    reader = method;
+                }
             } else if (prefix.equals("get")) {
                 reader = method;
             } else if (prefix.equals("set")) {
                 writter = method;
             }
-           
+
         }
-        
-       Descriptor descriptor = getDescriptor(null, null, attributeName, null, null, "attribute");
-       descriptor.setField("getMethod", reader.getName());
-       descriptor.setField("setMethod", writter.getName());
+
+        Descriptor descriptor = getDescriptor(null, null, attributeName, null,
+                null, "attribute");
+        if (reader != null) {
+            descriptor.setField("getMethod", reader.getName());
+        }
+        if (writter != null) {
+            descriptor.setField("setMethod", writter.getName());
+        }
         if (attributeInfos == null) {
             attributeInfos = new Vector<ModelMBeanAttributeInfo>();
         }
-        attributeInfos.add(new ModelMBeanAttributeInfo(
-                attributeName, 
+        attributeInfos.add(new ModelMBeanAttributeInfo(attributeName,
                 attributeName, reader, writter, descriptor));
-        
+
         if (log.isDebugEnabled()) {
             log.debug(((DescriptorSupport) descriptor).toXMLString());
         }

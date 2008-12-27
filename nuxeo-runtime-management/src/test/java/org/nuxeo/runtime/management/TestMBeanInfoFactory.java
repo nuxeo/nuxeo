@@ -22,7 +22,7 @@ import javax.management.modelmbean.ModelMBeanInfo;
 
 import junit.framework.TestCase;
 
-import org.nuxeo.runtime.management.inspector.ModelMBeanInfoInstrumentorFactory;
+import org.nuxeo.runtime.management.inspector.ModelMBeanInfoFactory;
 
 /**
  * @author matic
@@ -30,8 +30,8 @@ import org.nuxeo.runtime.management.inspector.ModelMBeanInfoInstrumentorFactory;
  */
 public class TestMBeanInfoFactory extends TestCase {
 
-    protected ModelMBeanInfoInstrumentorFactory factoryUnderTest = 
-        new ModelMBeanInfoInstrumentorFactory();
+    protected ModelMBeanInfoFactory factoryUnderTest = 
+        new ModelMBeanInfoFactory();
     
     public void testInterfaceProperty() throws Exception {
         ModelMBeanInfo ifaceInfo =

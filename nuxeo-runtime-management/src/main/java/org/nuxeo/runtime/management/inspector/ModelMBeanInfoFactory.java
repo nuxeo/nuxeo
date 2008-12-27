@@ -7,7 +7,7 @@ import javax.management.modelmbean.ModelMBeanInfo;
 
 import org.jsesoft.ri.ReflectionInspector;
 
-public class ModelMBeanInfoInstrumentorFactory {
+public class ModelMBeanInfoFactory {
 
     private final Map<Class<?>, ModelMBeanInfo> infos = new HashMap<Class<?>, ModelMBeanInfo>();
 
@@ -17,8 +17,8 @@ public class ModelMBeanInfoInstrumentorFactory {
             return infos.get(resourceClass);
         }
 
-        ModelMBeanInspectorSupport inspectorStrategy = new ModelMBeanInspectorSupport(
-                resourceClass, !resourceClass.isInterface() ? Object.class : null);
+        ModelMBeanInspectorStrategy inspectorStrategy = new ModelMBeanInspectorStrategy(
+                resourceClass);
 
         ReflectionInspector inspector = new ReflectionInspector();
 

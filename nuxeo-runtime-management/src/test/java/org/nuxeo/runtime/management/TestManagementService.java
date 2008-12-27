@@ -37,10 +37,10 @@ public class TestManagementService extends NXRuntimeTestCase {
 
         return managementService;
     }
-    
+
     public void testExport() throws InterruptedException {
         log.info("do pause a while, giving you some time to test using jconsole");
-        Thread.sleep(60000);
+        Thread.sleep(1000000);
        
     }
 

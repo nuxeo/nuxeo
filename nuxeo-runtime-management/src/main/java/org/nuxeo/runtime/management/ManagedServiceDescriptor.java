@@ -23,7 +23,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
+ * 
  */
 @XObject("managedService")
 public class ManagedServiceDescriptor implements Serializable {
@@ -34,12 +34,15 @@ public class ManagedServiceDescriptor implements Serializable {
 
     @XNode("@name")
     protected String serviceName;
-    
+
     @XNode("@class")
     protected String serviceClassName;
-    
+
     @XNode("@iface")
     protected String ifaceClassName;
+
+    @XNode("@isAdapted")
+    protected boolean isAdapted;
 
     public String getServiceName() {
         if (serviceName == null) {
@@ -54,6 +57,10 @@ public class ManagedServiceDescriptor implements Serializable {
 
     public String getIfaceClassName() {
         return ifaceClassName;
+    }
+
+    public boolean isAdapted() {
+        return isAdapted;
     }
 
     @Override
@@ -87,6 +94,5 @@ public class ManagedServiceDescriptor implements Serializable {
         }
         return true;
     }
-    
-  
+
 }
