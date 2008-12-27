@@ -235,7 +235,7 @@ NXThemesStyleEditor.makeElementUseNamedStyle = function(select) {
         id: id,
         theme_name: themeName
     }    
-    if (style_name) {
+    if (styleName) {
         parameters['style_name'] = styleName;
     }
     new Ajax.Request(url, {
