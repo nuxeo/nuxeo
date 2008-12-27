@@ -21,7 +21,7 @@ import org.nuxeo.ecm.platform.relations.api.impl.LiteralImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.runtime.api.Framework;
 
-public class RelationHelper implements RelationConstants{
+public class RelationHelper {
 
     static RelationManager relationManager;
 
@@ -154,7 +154,7 @@ public class RelationHelper implements RelationConstants{
             List<Statement> stmts = new ArrayList<Statement>();
             Statement stmt = new StatementImpl(subject, predicat, object);
             stmts.add(stmt);
-            getRelationManager().remove(GRAPH_NAME, stmts);
+            getRelationManager().remove(RelationConstants.GRAPH_NAME, stmts);
         } catch (ClientException e) {
             e.printStackTrace();
         }
