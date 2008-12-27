@@ -79,11 +79,11 @@ public class PermissionProviderBean implements PermissionProvider {
     public List<UserVisiblePermission> getUserVisiblePermissionDescriptors()
             throws ClientException {
         return permissionProvider.getUserVisiblePermissionDescriptors();
-
     }
 
     public List<UserVisiblePermission> getUserVisiblePermissionDescriptors(
             String typeName) throws ClientException {
         return permissionProvider.getUserVisiblePermissionDescriptors(typeName);
     }
+
 }

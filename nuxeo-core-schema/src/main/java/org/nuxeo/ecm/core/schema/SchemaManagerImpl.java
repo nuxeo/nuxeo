@@ -455,7 +455,7 @@ public class SchemaManagerImpl implements SchemaManager {
     }
 
     /**
-     * Same remarks as in {@link getDocumentTypeNamesExtending}.
+     * Same remarks as in {@link #getDocumentTypeNamesExtending}.
      *
      * Tested in nuxeo-core
      */
