@@ -4,7 +4,9 @@
 
 <h1>404 - Resource Not Found</h1>
 
-The page you requested doesn't exists
+<p>
+The page you requested doesn't exist.
+</p>
 
 </@block>
 </@extends>

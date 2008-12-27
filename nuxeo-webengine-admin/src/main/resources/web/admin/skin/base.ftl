@@ -1,5 +1,4 @@
 <html>
-
   <head>
     <title>
        <@block name="title">
@@ -22,18 +21,17 @@
            $(document).ready(function(){
              $('#query').focus(function() {
                if (this.value == "Search") {
-                 this.value = ""
+                 this.value = "";
                }
-             })
-           })
+             });
+           });
           </script>
     </#if>
-     <@block name="header_scripts" />
+    <@block name="header_scripts" />
   </head>
 
 <body>
-
-<div id="wrap">
+  <div id="wrap">
     <div id="header">
       <div class="webEngineRoot"><a href="${appPath}"><img src="${skinPath}/image/dots.png" width="16" height="16" alt=""/></a></div>
        <@block name="header">
@@ -91,7 +89,7 @@
     <#if Context.principal.isAdministrator()>
     <h3>Administration</h3>
     <ul>
-      <li><a href="${basePath}/admin">Admin board</a></li>    
+      <li><a href="${basePath}/admin">Admin board</a></li>
       <li><a href="${basePath}/admin/users">User Management</a></li>
     </ul>
     </#if>
@@ -116,7 +114,7 @@
        </@block>
     </div>
 
-</div>
+  </div>
 
 </body>
 </html>

@@ -14,17 +14,16 @@ import org.nuxeo.ecm.webengine.*;
 @Path("/admin")
 @Produces(["text/html", "*/*"])
 public class Main extends DefaultModule {
-  
+
   @Path("users")
   public Object getUserManagement() {
     return newObject("UserManager");
   }
 
-  @Path("engine")  
+  @Path("engine")
   public Object getEngine() {
     return newObject("Engine");
   }
-  
 
   @Path("repository")
   public Object getRepository() {
@@ -58,6 +57,5 @@ public class Main extends DefaultModule {
       return super.handleError(e);
     }
   }
-  
-}
 
+}
