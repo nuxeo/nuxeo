@@ -52,11 +52,11 @@ public abstract class CompositeContribution extends ExtensibleContribution {
         return isContributionEnabled;
     }
 
-    public void setContributionEnabled(boolean isEnabled) {
+    private void setContributionEnabled(boolean isEnabled) {
         isContributionEnabled = isEnabled;
     }
 
-    public void addContributionFragment(CompositeContribution fragment) {
+    private void addContributionFragment(CompositeContribution fragment) {
         fragment.setContributionEnabled(true);
         int index = contributionFragments.indexOf(fragment);
         if (index > -1) {
@@ -66,7 +66,7 @@ public abstract class CompositeContribution extends ExtensibleContribution {
         }
     }
 
-    public void removeContributionFragment(CompositeContribution fragment) {
+    private void removeContributionFragment(CompositeContribution fragment) {
         int index = contributionFragments.indexOf(fragment);
         if (index > -1) { // do not physically remove fragments since they can be reloaded
             contributionFragments.get(index).setContributionEnabled(false);
@@ -77,7 +77,7 @@ public abstract class CompositeContribution extends ExtensibleContribution {
         return contributionFragments;
     }
 
-    public CompositeContribution getRootComposite() {
+    private CompositeContribution getRootComposite() {
         if (baseContribution instanceof CompositeContribution) {
             return ((CompositeContribution) baseContribution).getRootComposite();
         }

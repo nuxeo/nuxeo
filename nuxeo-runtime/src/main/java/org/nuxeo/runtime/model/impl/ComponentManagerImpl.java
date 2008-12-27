@@ -142,7 +142,7 @@ public class ComponentManagerImpl implements ComponentManager {
         _register((RegistrationInfoImpl) regInfo);
     }
 
-    public final void _register(RegistrationInfoImpl ri) {
+    private void _register(RegistrationInfoImpl ri) {
         ComponentName name = ri.getName();
         if (isRegistered(name)) {
             if (name.getName().startsWith("org.nuxeo.runtime.")) {
@@ -216,8 +216,7 @@ public class ComponentManagerImpl implements ComponentManager {
         _unregister((RegistrationInfoImpl) regInfo);
     }
 
-    public final void _unregister(RegistrationInfoImpl ri) {
-
+    private void _unregister(RegistrationInfoImpl ri) {
         // remove me as a dependent on other objects
         if (ri.requires != null) {
             for (ComponentName dep : ri.requires) {
@@ -279,6 +278,45 @@ public class ComponentManagerImpl implements ComponentManager {
 
     public void removeComponentListener(ComponentListener listener) {
         listeners.remove(listener);
+    }
+
+    public ComponentInstance getComponentProvidingService(Class<?> serviceClass) {
+        try {
+            RegistrationInfoImpl ri = services.get(serviceClass.getName());
+            if (ri != null) {
+                if (!ri.isActivated()) {
+                    if (ri.isResolved()) {
+                        ri.activate(); // activate the component if not yet activated
+                    } else {
+                        // Hack to avoid messages during TypeService activation
+                        if (!serviceClass.getSimpleName().equals("TypeProvider")) {
+                            log.debug("The component exposing the service " +
+                                    serviceClass + " is not resolved");
+                        }
+                        return null;
+                    }
+                }
+                return ri.getComponent();
+            }
+        } catch (Exception e) {
+            log.error("Failed to get service: " + serviceClass);
+        }
+        return null;
+    }
+
+    public <T> T getService(Class<T> serviceClass) {
+        ComponentInstance comp = getComponentProvidingService(serviceClass);
+        return comp != null ? comp.getAdapter(serviceClass) : null;
+    }
+
+    public Collection<ComponentName> getActivatingRegistrations() {
+        Collection<ComponentName> activating = new ArrayList<ComponentName>();
+        for (RegistrationInfo ri : registry.values()) {
+            if (ri.getState() == RegistrationInfo.ACTIVATING) {
+                activating.add(ri.getName());
+            }
+        }
+        return activating;
     }
 
     void sendEvent(ComponentEvent event) {
@@ -425,47 +463,9 @@ public class ComponentManagerImpl implements ComponentManager {
         }
     }
 
+    // Not used. Remove ?
     public String[] getServices() {
         return services.keySet().toArray(new String[services.size()]);
-    }
-
-    public ComponentInstance getComponentProvidingService(Class<?> serviceClass) {
-        try {
-            RegistrationInfoImpl ri = services.get(serviceClass.getName());
-            if (ri != null) {
-                if (!ri.isActivated()) {
-                    if (ri.isResolved()) {
-                        ri.activate(); // activate the component if not yet activated
-                    } else {
-                        // Hack to avoid messages during TypeService activation
-                        if (!serviceClass.getSimpleName().equals("TypeProvider")) {
-                            log.debug("The component exposing the service " +
-                                    serviceClass + " is not resolved");
-                        }
-                        return null;
-                    }
-                }
-                return ri.getComponent();
-            }
-        } catch (Exception e) {
-            log.error("Failed to get service: " + serviceClass);
-        }
-        return null;
-    }
-
-    public <T> T getService(Class<T> serviceClass) {
-        ComponentInstance comp = getComponentProvidingService(serviceClass);
-        return comp != null ? comp.getAdapter(serviceClass) : null;
-    }
-
-    public Collection<ComponentName> getActivatingRegistrations() {
-        Collection<ComponentName> activating = new ArrayList<ComponentName>();
-        for (RegistrationInfo ri : registry.values()) {
-            if (ri.getState() == RegistrationInfo.ACTIVATING) {
-                activating.add(ri.getName());
-            }
-        }
-        return activating;
     }
 
 }

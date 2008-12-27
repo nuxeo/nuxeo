@@ -46,9 +46,6 @@ public class ComponentInstanceImpl implements ComponentInstance {
     protected Object instance;
     protected RegistrationInfoImpl ri;
 
-    protected ComponentInstanceImpl() {
-    }
-
     public ComponentInstanceImpl(RegistrationInfoImpl ri) throws Exception {
         this.ri = ri;
         if (ri.implementation == null) {

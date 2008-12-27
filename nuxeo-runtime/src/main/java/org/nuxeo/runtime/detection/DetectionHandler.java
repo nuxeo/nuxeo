@@ -30,7 +30,8 @@ package org.nuxeo.runtime.detection;
 public interface DetectionHandler {
 
     /**
-     * A new peer was detected
+     * A new peer was detected.
+     * 
      * @param peer the peer
      */
     void peerOnline(Peer peer);
