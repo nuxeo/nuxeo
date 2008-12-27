@@ -690,7 +690,7 @@ public class Mapper {
                         state == State.INVALIDATED_MODIFIED ||
                         state == State.INVALIDATED_DELETED) {
                     // XXX TODO
-                    throw new RuntimeException(state.toString());
+                    throw new IllegalStateException(state.toString());
                 }
                 // known id
             }
@@ -838,7 +838,7 @@ public class Mapper {
                         throw new AssertionError("Invalid hier column: " + key);
                     }
                     if (v == null) {
-                        throw new RuntimeException("Null value for key: " + key);
+                        throw new IllegalStateException("Null value for key: " + key);
                     }
                     column.setToPreparedStatement(ps, i, v);
                     if (debugValues != null) {

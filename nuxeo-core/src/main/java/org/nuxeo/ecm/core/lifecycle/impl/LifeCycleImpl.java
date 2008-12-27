@@ -56,6 +56,7 @@ public class LifeCycleImpl implements LifeCycle {
         this.transitions = transitions;
     }
 
+    @Deprecated
     public String getInitialStateName() {
         return getDefaultInitialStateName();
     }

@@ -36,13 +36,6 @@ public interface LifeCycleTransition {
     String getName();
 
     /**
-     * Sets the transition name.
-     *
-     * @param name the name of the transition
-     */
-    void setName(String name);
-
-    /**
      * Returns the description of the transition.
      *
      * @return the description of the transition.
@@ -50,24 +43,10 @@ public interface LifeCycleTransition {
     String getDescription();
 
     /**
-     * Sets the description of the transition.
-     *
-     * @param description of the transition as a string
-     */
-    void setDescription(String description);
-
-    /**
      * Returns the destination state.
      *
      * @return the destination state name as a string
      */
     String getDestinationStateName();
-
-    /**
-     * Sets the destination state.
-     *
-     * @param stateName the destination state name
-     */
-    void setDestinationStateName(String stateName);
 
 }

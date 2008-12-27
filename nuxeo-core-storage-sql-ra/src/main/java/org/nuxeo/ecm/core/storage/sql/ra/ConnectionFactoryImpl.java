@@ -162,11 +162,11 @@ public class ConnectionFactoryImpl implements Repository,
 
     public ResourceAdapterMetaData getMetaData() throws ResourceException {
         // TODO Auto-generated method stub
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     public RecordFactory getRecordFactory() throws ResourceException {
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     /*
@@ -186,7 +186,7 @@ public class ConnectionFactoryImpl implements Repository,
      */
 
     public void close() throws StorageException {
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     /*
@@ -259,7 +259,7 @@ public class ConnectionFactoryImpl implements Repository,
     }
 
     public void shutdown() {
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException("Not implemented");
         // close();
     }
 

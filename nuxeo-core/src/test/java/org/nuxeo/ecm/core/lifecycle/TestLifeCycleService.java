@@ -88,7 +88,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         assertEquals(expected, stateNames);
 
         // Test the initial state
-        assertEquals("work", lcd.getInitialStateName());
+        assertEquals("work", lcd.getDefaultInitialStateName());
 
         // Test all initial states
         List<String> expectedInitialStates = new ArrayList<String>();

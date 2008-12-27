@@ -61,7 +61,7 @@ public class Update implements Serializable {
 
     public void setWhere(String where) {
         if (where == null || where.length() == 0) {
-            throw new RuntimeException("unexpected empty WHERE");
+            throw new IllegalArgumentException("unexpected empty WHERE");
         }
         this.where = where;
     }
@@ -84,7 +84,7 @@ public class Update implements Serializable {
             buf.append(" WHERE ");
             buf.append(where);
         } else {
-            throw new RuntimeException("unexpected empty WHERE");
+            throw new IllegalArgumentException("unexpected empty WHERE");
         }
         return buf.toString();
     }

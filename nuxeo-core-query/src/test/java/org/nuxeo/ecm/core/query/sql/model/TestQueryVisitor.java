@@ -109,10 +109,11 @@ public class TestQueryVisitor extends TestCase {
     }
 
     private static final Pattern REMOVE_TZ_PATTERN = Pattern.compile("(.*)(\\+.*|Z)'\\)$");
+
     private String removeTzSuffix(String value) {
         Matcher matcher = REMOVE_TZ_PATTERN.matcher(value);
         if (!matcher.matches()) {
-            throw new RuntimeException(REMOVE_TZ_PATTERN + " pattern does not match " + value);
+            throw new AssertionError(REMOVE_TZ_PATTERN + " pattern does not match " + value);
         }
         return matcher.group(1);
     }

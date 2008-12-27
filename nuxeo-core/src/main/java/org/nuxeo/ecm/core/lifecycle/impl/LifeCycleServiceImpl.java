@@ -114,7 +114,7 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
 
         // set initial life cycle state
         if (initialStateName == null) {
-            initialStateName = documentLifeCycle.getInitialStateName();
+            initialStateName = documentLifeCycle.getDefaultInitialStateName();
         } else {
             // check it's a valid initial state
             if (!documentLifeCycle.getInitialStateNames().contains(
@@ -181,20 +181,24 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Deprecated
     public String getCurrentLifeCycleState(Document doc)
             throws LifeCycleException {
         return doc.getCurrentLifeCycleState();
     }
 
+    @Deprecated
     public void setCurrentLifeCycleState(Document doc, String stateName)
             throws LifeCycleException {
         doc.setCurrentLifeCycleState(stateName);
     }
 
+    @Deprecated
     public String getLifeCyclePolicy(Document doc) throws LifeCycleException {
         return doc.getLifeCyclePolicy();
     }
 
+    @Deprecated
     public void setLifeCycelPolicy(Document doc, String policy)
             throws LifeCycleException {
         doc.setLifeCyclePolicy(policy);

@@ -1748,7 +1748,7 @@ public abstract class AbstractSession implements CoreSession,
                     continue;
                 }
                 if (docVersion.getType() == null) {
-                    throw new RuntimeException("FAILED TO GET VERSIONS FOR"
+                    throw new IllegalStateException("FAILED TO GET VERSIONS FOR"
                             + docRef + " with path: " + doc.getPath());
                 }
                 DocumentModel versionModel = readModel(docVersion, null);

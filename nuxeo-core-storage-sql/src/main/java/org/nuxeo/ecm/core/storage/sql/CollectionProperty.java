@@ -57,7 +57,7 @@ public class CollectionProperty extends BaseProperty {
             }
             return (String[]) res;
         default:
-            throw new RuntimeException("Not implemented: " + type);
+            throw new UnsupportedOperationException("Not implemented: " + type);
         }
     }
 
