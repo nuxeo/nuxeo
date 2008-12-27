@@ -16,52 +16,31 @@ package org.nuxeo.theme.models;
 
 import org.nuxeo.theme.nodes.NodeTypeFamily;
 
-public class MenuItem extends AbstractModel {
+public class NavigationItem extends AbstractModel {
 
     private String title;
-
-    private String description;
 
     private String url;
 
     private boolean selected = false;
 
-    private String icon;
+    public NavigationItem() {
+    }
 
-    public MenuItem(String title, String description, String url,
-            boolean selected, String icon) {
+    public NavigationItem(String title, String url, boolean selected) {
         this.title = title;
-        this.description = description;
         this.url = url;
         this.selected = selected;
-        this.icon = icon;
     }
 
     @Override
     public String getModelTypeName() {
-        return "menu item";
+        return "navigation item";
     }
 
     @Override
     public NodeTypeFamily getNodeTypeFamily() {
-        return getChildren().isEmpty() ? NodeTypeFamily.LEAF
-                : NodeTypeFamily.INNER;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public boolean isSelected() {
-        return selected;
-    }
-
-    public void setSelected(boolean selected) {
-        this.selected = selected;
+        return NodeTypeFamily.LEAF;
     }
 
     public String getTitle() {
@@ -80,12 +59,11 @@ public class MenuItem extends AbstractModel {
         this.url = url;
     }
 
-    public String getDescription() {
-        return description;
+    public boolean isSelected() {
+        return selected;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
-
 }

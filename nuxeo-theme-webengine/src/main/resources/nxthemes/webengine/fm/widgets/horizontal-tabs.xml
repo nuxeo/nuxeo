@@ -1,6 +1,5 @@
 <div>
-<#assign items="${nxthemesInfo.model.children}" />
-<#list items as item>
+<#list nxthemesInfo.model.items as item>
   <a href="${item.url}">${item.title}</a>
 </#list>
 </div>

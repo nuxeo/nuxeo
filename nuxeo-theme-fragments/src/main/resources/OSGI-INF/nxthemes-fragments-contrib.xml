@@ -24,16 +24,28 @@
       <class>org.nuxeo.theme.models.Region</class>
     </model>
 
+    <model name="navigation">
+      <class>org.nuxeo.theme.models.Navigation</class>
+      <contains>navigation item</contains>
+    </model>
+    
+    <model name="navigation item">
+      <class>org.nuxeo.theme.models.NavigationItem</class>
+    </model>
+    
     <model name="menu">
       <class>org.nuxeo.theme.models.Menu</class>
+      <contains>menu item</contains>
     </model>
     
     <model name="menu item">
       <class>org.nuxeo.theme.models.MenuItem</class>
+      <contains>menu item</contains>
     </model>
 
     <model name="feed">
       <class>org.nuxeo.theme.models.Feed</class>
+      <contains>feed item</contains>
     </model>
     
     <model name="feed item">

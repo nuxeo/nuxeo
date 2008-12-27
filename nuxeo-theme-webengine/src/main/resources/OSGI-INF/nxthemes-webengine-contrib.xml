@@ -90,6 +90,8 @@
       </class>
     </view>
 
+    <!-- Layout -->
+    
     <view name="theme view" template-engine="freemarker">
       <element-type>theme</element-type>
       <format-type>widget</format-type>
@@ -114,6 +116,9 @@
       <template>nxthemes/webengine/fm/widgets/cell-frame.xml</template>
     </view>
     
+    
+    <!-- Default widgets -->
+    
     <view name="block region" template-engine="freemarker">
       <format-type>widget</format-type>
       <model-type>region</model-type>
@@ -125,16 +130,28 @@
 
     <view name="vertical menu" template-engine="freemarker">
       <format-type>widget</format-type>
-      <model-type>menu item</model-type>
-      <template>nxthemes/webengine/widgets/vertical-menu.xml</template>
+      <model-type>menu</model-type>
+      <template>nxthemes/webengine/fm/widgets/vertical-menu.xml</template>
     </view>
 
     <view name="horizontal tabs" template-engine="freemarker">
       <format-type>widget</format-type>
-      <model-type>menu item</model-type>
+      <model-type>menu</model-type>
       <template>
-        nxthemes/webengine/widgets/horizontal-tabs.xml
+        nxthemes/webengine/fm/widgets/horizontal-tabs.xml
       </template>
+    </view>
+    
+    <view name="vertical list" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <model-type>navigation</model-type>
+      <template>nxthemes/webengine/fm/widgets/vertical-list.xml</template>
+    </view>
+    
+    <view name="horizontal trail" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <model-type>navigation</model-type>
+      <template>nxthemes/webengine/fm/widgets/horizontal-trail.xml</template>
     </view>
     
     <view name="plain text" template-engine="freemarker">

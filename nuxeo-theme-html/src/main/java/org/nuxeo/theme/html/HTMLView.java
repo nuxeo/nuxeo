@@ -31,7 +31,7 @@ public class HTMLView extends TemplateView {
             "<([a-zA-Z0-9:]*)[^>]*>", Pattern.DOTALL);
 
     private static final String[] ALLOWED_TAGS = { "html", "body", "table",
-            "tr", "td", "div" };
+            "tr", "td", "div", "ul" };
 
     @Override
     public String render(final RenderingInfo info) {

@@ -14,7 +14,11 @@
 
 package org.nuxeo.theme.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
@@ -28,12 +32,16 @@ public final class ModelType implements Type {
     @XNode("class")
     public String className;
 
+    @XNodeList(value = "contains", type =  ArrayList.class, componentType = String.class)
+    public List<String> allowedTypes;
+
     public ModelType() {
     }
 
-    public ModelType(String name, String className) {
+    public ModelType(String name, String className, List<String> allowedTypes) {
         this.name = name;
         this.className = className;
+        this.allowedTypes = allowedTypes;
     }
 
     public String getTypeName() {
@@ -50,6 +58,14 @@ public final class ModelType implements Type {
 
     public void setClassName(String className) {
         this.className = className;
+    }
+
+    public List<String> getAllowedTypes() {
+        return allowedTypes;
+    }
+
+    public void setAllowedTypes(List<String> allowedTypes) {
+        this.allowedTypes = allowedTypes;
     }
 
 }
