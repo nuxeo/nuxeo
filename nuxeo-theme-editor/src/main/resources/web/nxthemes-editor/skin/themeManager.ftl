@@ -12,10 +12,10 @@ window.scrollTo(0,0);
   <tr>
     <th>theme</th>
     <th>source</th>
-    <th style="text-align: center">save theme</th>
-    <th style="text-align: center">export to disk</th>
-    <th style="text-align: center">restore theme</th>     
-    <th style="text-align: center">repair theme</th>
+    <th style="text-align: center; width: 90px">save theme</th>
+    <th style="text-align: center; width: 90px">export to disk</th>
+    <th style="text-align: center; width: 90px">restore theme</th>     
+    <th style="text-align: center; width: 90px">repair theme</th>
   </tr>
   <#assign row = 1 /> 
   <#list themes as theme>
