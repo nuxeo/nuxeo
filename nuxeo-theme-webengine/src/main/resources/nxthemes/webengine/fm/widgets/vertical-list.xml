@@ -1,3 +1,4 @@
+<div>
 <ul>
   <#list nxthemesInfo.model.items as item>
     <li>
@@ -5,3 +6,4 @@
     </li>
   </#list>
 </ul>
+</div>
