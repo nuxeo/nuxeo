@@ -22,27 +22,19 @@ package org.nuxeo.ecm.platform.ui.web.auth;
 public final class NXAuthConstants {
 
     public static final String PRINCIPAL_KEY = "org.nuxeo.ecm.Principal";
-
     public static final String USERNAME_KEY = "user_name";
-
     public static final String PASSORD_KEY = "user_password";
-
     public static final String FORM_SUBMITTED_MARKER = "form_submitted_marker";
-
     public static final String USERIDENT_KEY = "org.nuxeo.ecm.login.identity";
-
     public static final String LOGINCONTEXT_KEY = "org.nuxeo.ecm.login.context";
 
     public static final String LOGIN_ERROR = "org.nuxeo.ecm.login.error";
-
     public static final String LOGOUT_PAGE = "logout";
 
     public static final String SWITCH_USER_PAGE = "swuser";
-
     public static final String SWITCH_USER_KEY = "deputy";
 
     public static final String ERROR_AUTHENTICATION_FAILED = "authentication.failed";
-
     public static final String ERROR_USERNAME_MISSING = "username.missing";
 
     // Constant utility class.

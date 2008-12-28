@@ -46,17 +46,11 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class PluggableAuthenticationService extends DefaultComponent {
 
     public static final String NAME = "org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService";
-
     public static final String EP_AUTHENTICATOR = "authenticators";
-
     public static final String EP_SESSIONMANAGER = "sessionManager";
-
     public static final String EP_CHAIN = "chain";
-
     public static final String EP_PROPAGATOR = "propagator";
-
     public static final String EP_CBFACTORY = "JbossCallbackfactory";
-
     public static final String EP_STARTURL = "startURL";
 
     private static final Log log = LogFactory.getLog(PluggableAuthenticationService.class);
@@ -67,11 +61,12 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     private Map<String, NuxeoAuthenticationSessionManager> sessionManagers;
 
+    // NB: not used. Remove?
     private NuxeoAuthenticationSessionManager defaultSessionManager;
 
-    private NuxeoAuthenticationPropagator propagator = null;
+    private NuxeoAuthenticationPropagator propagator;
 
-    private NuxeoCallbackHandlerFactory cbhFactory = null;
+    private NuxeoCallbackHandlerFactory cbhFactory;
 
     private List<String> authChain;
 
