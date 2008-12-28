@@ -393,11 +393,9 @@ public class Editor {
             // create a theme descriptor
             ThemeDescriptor themeDescriptor = new ThemeDescriptor();
             themeDescriptor.setName(name);
-
-            final String tmpdir = Manager.getLocalThemePath();
-            if (tmpdir != null) {
-                final String src = String.format("file://%s/theme-%s.xml",
-                        tmpdir, name);
+            final String path = Manager.getLocalThemePath(name);
+            if (path != null) {
+                final String src = String.format("file://%s", path);
                 themeDescriptor.setSrc(src);
             }
             TypeRegistry typeRegistry = Manager.getTypeRegistry();

@@ -52,10 +52,12 @@ public final class Manager {
     private Manager() {
     }
 
-    public static String getLocalThemePath() {
+    public static String getLocalThemePath(String themeName) {
         String path = null;
         try {
-            path = LOCAL_THEME_DIR.getCanonicalPath();
+            String themeFileName = String.format("theme-%s.xml", themeName);
+            File themeFile = new File(LOCAL_THEME_DIR, themeFileName); 
+            path = themeFile.getCanonicalPath();
         } catch (IOException e) {
             e.printStackTrace();
         }
