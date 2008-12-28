@@ -815,19 +815,11 @@ public final class ThemeManager implements Registrable {
     public static List<ThemeDescriptor> getThemesDescriptors() {
         final List<ThemeDescriptor> themeDescriptors = new ArrayList<ThemeDescriptor>();
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        final Set<String> themeNames = Manager.getThemeManager().getThemeNames();
         for (Type type : typeRegistry.getTypes(TypeFamily.THEME)) {
             if (type != null) {
                 ThemeDescriptor themeDescriptor = (ThemeDescriptor) type;
                 themeDescriptors.add(themeDescriptor);
-                themeNames.remove(themeDescriptor.getName());
             }
-        }
-        /* Create temporary theme descriptors for unregistered themes */
-        for (String themeName : themeNames) {
-            ThemeDescriptor themeDescriptor = new ThemeDescriptor();
-            themeDescriptor.setName(themeName);
-            themeDescriptors.add(themeDescriptor);
         }
         return themeDescriptors;
     }

@@ -42,9 +42,11 @@ import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.FieldIO;
+import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeIOException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeFamily;
+import org.nuxeo.theme.types.TypeRegistry;
 import org.nuxeo.theme.views.ViewType;
 
 public class Editor {
@@ -386,6 +388,12 @@ public class Editor {
             ElementFormatter.setFormat(page, pageStyle);
             ElementFormatter.setFormat(page, pageLayout);
             theme.addChild(page);
+            // create a theme descriptor
+            ThemeDescriptor themeDescriptor = new ThemeDescriptor();
+            themeDescriptor.setName(name);
+            TypeRegistry typeRegistry = Manager.getTypeRegistry();
+            typeRegistry.register(themeDescriptor);
+            // register the theme
             themeManager.registerTheme(theme);
             res = String.format("%s/%s", name, "default");
         }
@@ -597,7 +605,7 @@ public class Editor {
         int order = 0;
         Element destContainer = destElement;
         if (destElement instanceof Fragment) {
-            order = destElement.getOrder() +1;
+            order = destElement.getOrder() + 1;
             destContainer = (Element) destElement.getParent();
         } else if (destElement instanceof CellElement) {
             order = destElement.getChildren().size();
