@@ -1,0 +1,13 @@
+<component name="org.nuxeo.webengine.management">
+
+  <require>org.nuxeo.runtime.management.ManagementService</require>
+
+  <extension target="org.nuxeo.runtime.management.ManagementService"
+    point="managedServices">
+
+    <managedService isAdapted="true"
+      name="runtime" class="org.nuxeo.runtime.management.RuntimeServiceMBeanAdapter" />
+
+  </extension>
+
+</component>

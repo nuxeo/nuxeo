@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<module>
+  <links>
+    <link id="tab_content" path="/@views/content_page">
+      <category>TABVIEW</category>
+    </link>
+
+    <link id="link_print" path="/@views/print">
+      <category>TOOLBOX</category>
+    </link>
+    
+
+  </links>
+</module>
