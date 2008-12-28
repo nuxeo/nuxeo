@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLStreamHandler;
@@ -38,11 +39,19 @@ public final class Manager {
 
     private static final String PROTOCOL_HANDLER_PKG = "org.nuxeo.theme.protocol";
 
-    private Manager() {
-    }
+    private static final File LOCAL_THEME_DIR;
 
     static {
         initializeProtocols();
+        LOCAL_THEME_DIR = new File(Framework.getRuntime().getHome(), "tmp/themes");
+        LOCAL_THEME_DIR.mkdirs();
+    }
+
+    private Manager() {
+    }
+    
+    public static String getLocalThemePath() {
+        return LOCAL_THEME_DIR.getAbsolutePath();
     }
 
     private static ThemeService getThemeService() {
@@ -94,7 +103,7 @@ public final class Manager {
         return (VocabularyManager) getRegistry("vocabularies");
     }
 
-    @SuppressWarnings({"ResultOfObjectAllocationIgnored"})
+    @SuppressWarnings( { "ResultOfObjectAllocationIgnored" })
     public static void initializeProtocols() {
         Properties properties = System.getProperties();
         String handlers = System.getProperty("java.protocol.handler.pkgs");
@@ -109,9 +118,9 @@ public final class Manager {
         /*
          * Register the 'nxtheme' URL protocol handler programmatically to get
          * around m2/surefire classloading bug.
-         *
+         * 
          * ref. http://jira.codehaus.org/browse/SUREFIRE-104
-         *
+         * 
          * TODO: remove with Maven surefire 2.4
          */
 

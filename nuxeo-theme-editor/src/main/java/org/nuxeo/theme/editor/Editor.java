@@ -14,12 +14,14 @@
 
 package org.nuxeo.theme.editor;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.CellElement;
 import org.nuxeo.theme.elements.Element;
@@ -391,7 +393,8 @@ public class Editor {
             // create a theme descriptor
             ThemeDescriptor themeDescriptor = new ThemeDescriptor();
             themeDescriptor.setName(name);
-            final String tmpdir = System.getProperty("java.io.tmpdir");
+            
+            final String tmpdir = Manager.getLocalThemePath();
             final String src = String.format("file://%s/theme-%s.xml", tmpdir, name);
             themeDescriptor.setSrc(src);
             TypeRegistry typeRegistry = Manager.getTypeRegistry();
