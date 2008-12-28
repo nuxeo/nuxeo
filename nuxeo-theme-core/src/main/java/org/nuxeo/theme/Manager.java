@@ -42,23 +42,23 @@ public final class Manager {
 
     private static final String PROTOCOL_HANDLER_PKG = "org.nuxeo.theme.protocol";
 
-    private static final File LOCAL_THEME_DIR;
+    private static final File CUSTOM_THEME_DIR;
 
     static {
         initializeProtocols();
-        LOCAL_THEME_DIR = new File(Framework.getRuntime().getHome(),
+        CUSTOM_THEME_DIR = new File(Framework.getRuntime().getHome(),
                 "tmp/themes");
-        LOCAL_THEME_DIR.mkdirs();
+        CUSTOM_THEME_DIR.mkdirs();
     }
 
     private Manager() {
     }
 
-    public static String getLocalThemePath(String themeName) {
+    public static String getCustomThemePath(String themeName) {
         String path = null;
         try {
             String themeFileName = String.format("theme-%s.xml", themeName);
-            File themeFile = new File(LOCAL_THEME_DIR, themeFileName);
+            File themeFile = new File(CUSTOM_THEME_DIR, themeFileName);
             path = themeFile.getCanonicalPath();
         } catch (IOException e) {
             e.printStackTrace();
@@ -66,9 +66,9 @@ public final class Manager {
         return path;
     }
 
-    public static List<File> getLocalThemeFiles() {
+    public static List<File> getCustomThemeFiles() {
         List<File> files = new ArrayList<File>();
-        for (File f : LOCAL_THEME_DIR.listFiles()) {
+        for (File f : CUSTOM_THEME_DIR.listFiles()) {
             files.add(f);
         }
         return files;

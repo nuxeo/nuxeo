@@ -27,10 +27,19 @@ window.scrollTo(0,0);
   <#assign row = row + 1/>
   
       <td>
-        <#if theme.exportable>
+        <#if theme.custom>
+          <img src="${skinPath}/img/custom-theme-16.png" width="16" height="16" />
+        </#if>
+        <#if theme.customized>
+          <img src="${skinPath}/img/customized-theme-16.png" width="16" height="16" />
+        </#if>
+        <#if theme.configured>
+          <img src="${skinPath}/img/theme-16.png" width="16" height="16" />
+        </#if>
+        <#if theme.exportable>  
           <a href="${basePath}/nxthemes-editor/xml_export?theme=${theme.name}">${theme.name}</a>
         <#else>
-          &nbsp;
+          <span class="nxthemesCustomized">${theme.name}</span>
         </#if>
         <#if theme.loadingFailed>
           <span class="nxthemesEmphasize">LOADING FAILED</span>
@@ -39,13 +48,19 @@ window.scrollTo(0,0);
         </#if>
       </td>
       
-      <td>${theme.src}</td>
+      <td>
+        <#if theme.customized>
+          <span class="nxthemesCustomized">${theme.src}</span>
+        <#else>
+          ${theme.src}
+        </#if>
+      </td>
 
       <td class="action">
         <#if theme.saveable>
           <button onclick="NXThemesEditor.saveTheme('${theme.src}', 2)">
             <img src="${skinPath}/img/theme-save.png" width="16" height="16" />
-            <div>Save</div>
+            Save
           </button>
         <#else>
           &nbsp;
@@ -53,21 +68,21 @@ window.scrollTo(0,0);
       </td>
       
       <td class="action">
-        <button onclick="window.location='${basePath}/nxthemes-editor/xml_export?theme=${theme.name}&amp;download=1&amp;indent=2'">
-          <#if theme.exportable>
+        <#if theme.exportable>
+          <button onclick="window.location='${basePath}/nxthemes-editor/xml_export?theme=${theme.name}&amp;download=1&amp;indent=2'">
             <img src="${skinPath}/img/theme-download.png" width="16" height="16" />
-            <div>Download</div>
-          <#else>
-            &nbsp;
-          </#if>
-        </button>
+            Download
+          </button>
+        <#else>
+          &nbsp;
+        </#if>
       </td>
       
       <td class="action">
           <#if theme.reloadable>
             <button onclick="NXThemesEditor.loadTheme('${theme.src}')">
             <img src="${skinPath}/img/theme-reload.png" width="16" height="16" />
-            <div>Reload</div>
+            Reload
             </button>
           <#else>
             &nbsp;
@@ -75,7 +90,7 @@ window.scrollTo(0,0);
           <#if theme.loadable>
             <button onclick="NXThemesEditor.loadTheme('${theme.src}')">
             <img src="${skinPath}/img/theme-load.png" width="16" height="16" />          
-            <div>Load</div>
+            Load
             </button>
           <#else>
             &nbsp;
@@ -83,10 +98,14 @@ window.scrollTo(0,0);
       </td>
             
       <td class="action">
-        <button onclick="NXThemesEditor.repairTheme('${theme.name}')">
-          <img src="${skinPath}/img/theme-repair.png" width="16" height="16" />
-          <div>Repair</div>
-        </button>
+        <#if theme.repairable>
+          <button onclick="NXThemesEditor.repairTheme('${theme.name}')">
+            <img src="${skinPath}/img/theme-repair.png" width="16" height="16" />
+            Repair
+          </button>
+          <#else>
+            &nbsp;
+          </#if>
       </td>
     </tr>
   </#list>

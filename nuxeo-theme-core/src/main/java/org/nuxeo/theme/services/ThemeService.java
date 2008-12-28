@@ -87,20 +87,22 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
     public void activate(ComponentContext ctx) {
         this.context = ctx.getRuntimeContext();
         registries = new HashMap<String, Registrable>();
-        ctx.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(this);
+        ctx.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
+                this);
         log.debug("Theme service activated");
     }
 
     @Override
     public void deactivate(ComponentContext ctx) {
         registries = null;
-        ctx.getRuntimeContext().getBundle().getBundleContext().removeFrameworkListener(this);
+        ctx.getRuntimeContext().getBundle().getBundleContext().removeFrameworkListener(
+                this);
         log.debug("Theme service deactivated");
     }
 
     public void frameworkEvent(FrameworkEvent event) {
         if (event.getType() == FrameworkEvent.STARTED) {
-            registerLocalThemes();
+            registerCustomThemes();
         }
     }
 
@@ -159,40 +161,6 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
         } else {
             log.warn(String.format("Unknown extension point: %s", xp));
         }
-    }
-
-    private void registerLocalThemes() {
-        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
-        for (File file : Manager.getLocalThemeFiles()) {
-            ThemeDescriptor themeDescriptor = new ThemeDescriptor();
-            themeDescriptor.setConfigured(false);
-
-            URL url = null;
-            String src = null;
-            try {
-                src = String.format("file://%s", file.getCanonicalPath());
-                url = new URL(src);
-            } catch (Exception e) {
-                log.error("Could not read theme file: " + src);
-            }
-            themeDescriptor.setSrc(src);
-
-            typeRegistry.register(themeDescriptor);
-            if (url != null) {
-                String themeName = ThemeParser.registerTheme(url);
-                if (themeName != null) {
-                    // add some meta information to the theme descriptor
-                    themeDescriptor.setLastLoaded(new Date());
-                    themeDescriptor.setName(themeName);
-                } else {
-                    log.error("Could not parse theme: " + src);
-                }
-            } else {
-                log.error("Could not load theme: " + src);
-            }
-        }
-        log.debug("Registered local themes");
-
     }
 
     private void registerRegistryExtension(Extension extension) {
@@ -385,6 +353,12 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             if (url != null) {
                 String themeName = ThemeParser.registerTheme(url);
                 if (themeName != null) {
+                    // set customized themes
+                    for (ThemeDescriptor t : ThemeManager.getThemeDescriptorsByThemeName(themeName)) {
+                        t.setCustomized(true);
+                        log.info("Overriding '" + themeName + "' " + t.getSrc()
+                                + " with " + src);
+                    }
                     // add some meta information to the theme descriptor
                     themeDescriptor.setLastLoaded(new Date());
                     themeDescriptor.setName(themeName);
@@ -394,8 +368,46 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             } else {
                 log.error("Could not load theme: " + src);
             }
-
         }
+    }
+
+    private void registerCustomThemes() {
+        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
+        for (File file : Manager.getCustomThemeFiles()) {
+            ThemeDescriptor themeDescriptor = new ThemeDescriptor();
+            themeDescriptor.setConfigured(false);
+
+            URL url = null;
+            String src = null;
+            try {
+                src = String.format("file://%s", file.getCanonicalPath());
+                url = new URL(src);
+            } catch (Exception e) {
+                log.error("Could not read theme file: " + src);
+            }
+            themeDescriptor.setSrc(src);
+
+            typeRegistry.register(themeDescriptor);
+            if (url != null) {
+                String themeName = ThemeParser.registerTheme(url);
+                if (themeName != null) {
+                    // set customized themes
+                    for (ThemeDescriptor t : ThemeManager.getThemeDescriptorsByThemeName(themeName)) {
+                        t.setCustomized(true);
+                        log.info("Overriding '" + themeName + "' " + t.getSrc()
+                                + " with " + src);
+                    }
+                    // add some meta information to the theme descriptor
+                    themeDescriptor.setLastLoaded(new Date());
+                    themeDescriptor.setName(themeName);
+                } else {
+                    log.error("Could not parse theme: " + src);
+                }
+            } else {
+                log.error("Could not load theme: " + src);
+            }
+        }
+        log.debug("Registered local themes");
     }
 
     private void registerPresetExtension(Extension extension) {

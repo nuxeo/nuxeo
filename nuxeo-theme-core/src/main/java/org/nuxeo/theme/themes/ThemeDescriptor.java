@@ -30,6 +30,8 @@ public class ThemeDescriptor implements Type {
 
     private boolean configured = false;
 
+    private boolean customized = false;
+
     private Date lastSaved;
 
     private String name;
@@ -68,7 +70,7 @@ public class ThemeDescriptor implements Type {
         return configured;
     }
 
-    private boolean isCustom() {
+    public boolean isCustom() {
         return !isXmlConfigured();
     }
 
@@ -86,19 +88,23 @@ public class ThemeDescriptor implements Type {
     }
 
     public boolean isLoadable() {
-        return !isLoaded();
+        return !isLoaded()&& !isCustomized();
     }
 
     public boolean isReloadable() {
-        return isLoaded();
+        return isLoaded() && !isCustomized();
     }
 
     public boolean isSaveable() {
-        return isWritable() && (isLoaded() || isCustom());
+        return isWritable() && (isLoaded() || isCustom()) && !isCustomized();
     }
 
     public boolean isExportable() {
-        return isCustom() || isLoaded();
+        return (isCustom() || isLoaded()) && !isCustomized();
+    }
+
+    public boolean isRepairable() {
+        return (isCustom() || isLoaded()) && !isCustomized();
     }
 
     public boolean isLoadingFailed() {
@@ -111,6 +117,14 @@ public class ThemeDescriptor implements Type {
 
     public void setSrc(String src) {
         this.src = src;
+    }
+
+    public boolean isCustomized() {
+        return customized;
+    }
+
+    public void setCustomized(boolean customized) {
+        this.customized = customized;
     }
 
     public Date getLastLoaded() {

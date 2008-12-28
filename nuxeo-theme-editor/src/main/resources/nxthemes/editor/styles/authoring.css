@@ -1001,6 +1001,11 @@ div.nxthemesWarning {
   background-color: #ff0;
 }
 
+span.nxthemesCustomized {
+  text-decoration: line-through;
+  color: #999;
+}
+
 /* style manager */
 #nxthemesStyleManager {
   position: absolute;
