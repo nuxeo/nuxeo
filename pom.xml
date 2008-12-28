@@ -25,6 +25,7 @@
     <module>nuxeo-webengine-wiki</module>
     <module>nuxeo-webengine-server</module>
     <module>nuxeo-webengine-wiki-jsf</module>
+    <module>nuxeo-webengine-management</module>
   </modules>
 
   <properties>
