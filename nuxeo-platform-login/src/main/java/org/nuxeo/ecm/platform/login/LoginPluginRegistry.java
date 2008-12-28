@@ -37,6 +37,10 @@ public class LoginPluginRegistry extends DefaultComponent {
     public static final ComponentName NAME =
         new ComponentName("org.nuxeo.ecm.platform.login.LoginPluginRegistry");
 
+    public static final String EP_PLUGIN = "plugin";
+
+    public static final String EP_CBFACTORY = "callbackFactory";
+
     private static final Log log = LogFactory.getLog(LoginPluginRegistry.class);
 
     private LoginPlugin currentLoginPlugin;
@@ -51,14 +55,9 @@ public class LoginPluginRegistry extends DefaultComponent {
         currentLoginPlugin = null;
     }
 
-    public static final String EP_PLUGIN = "plugin";
-
-    public static final String EP_CBFACTORY = "callbackFactory";
-
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
-
         if (extensionPoint.equals(EP_PLUGIN)) {
             log.info("registering Login Plugin ... ");
             registerPlugin((LoginPluginDescriptor) contribution);
