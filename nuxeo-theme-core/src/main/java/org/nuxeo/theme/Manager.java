@@ -15,6 +15,7 @@
 package org.nuxeo.theme;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLStreamHandler;
@@ -43,15 +44,22 @@ public final class Manager {
 
     static {
         initializeProtocols();
-        LOCAL_THEME_DIR = new File(Framework.getRuntime().getHome(), "tmp/themes");
+        LOCAL_THEME_DIR = new File(Framework.getRuntime().getHome(),
+                "tmp/themes");
         LOCAL_THEME_DIR.mkdirs();
     }
 
     private Manager() {
     }
-    
+
     public static String getLocalThemePath() {
-        return LOCAL_THEME_DIR.getAbsolutePath();
+        String path = null;
+        try {
+            path = LOCAL_THEME_DIR.getCanonicalPath();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return path;
     }
 
     private static ThemeService getThemeService() {
