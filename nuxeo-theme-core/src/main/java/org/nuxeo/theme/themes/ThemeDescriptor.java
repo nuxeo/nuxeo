@@ -28,6 +28,8 @@ public class ThemeDescriptor implements Type {
 
     private Date lastLoaded;
 
+    private boolean configured = false;
+
     private Date lastSaved;
 
     private String name;
@@ -58,8 +60,16 @@ public class ThemeDescriptor implements Type {
         return url;
     }
 
+    public void setConfigured(boolean configured) {
+        this.configured = configured;
+    }
+
     private boolean isXmlConfigured() {
-        return !src.equals("");
+        return configured;
+    }
+
+    private boolean isCustom() {
+        return !isXmlConfigured();
     }
 
     private boolean isLoaded() {
@@ -76,19 +86,19 @@ public class ThemeDescriptor implements Type {
     }
 
     public boolean isLoadable() {
-        return isXmlConfigured() && !isLoaded();
+        return !isLoaded();
     }
 
     public boolean isReloadable() {
-        return isXmlConfigured() && isLoaded();
+        return isLoaded();
     }
 
     public boolean isSaveable() {
-        return isXmlConfigured() && isWritable() && isLoaded();
+        return isWritable() && (isLoaded() || isCustom());
     }
 
     public boolean isExportable() {
-        return !isXmlConfigured() || isLoaded();
+        return isCustom() || isLoaded();
     }
 
     public boolean isLoadingFailed() {
@@ -97,6 +107,10 @@ public class ThemeDescriptor implements Type {
 
     public String getSrc() {
         return src;
+    }
+
+    public void setSrc(String src) {
+        this.src = src;
     }
 
     public Date getLastLoaded() {

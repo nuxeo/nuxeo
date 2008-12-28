@@ -321,6 +321,8 @@ public class ThemeService extends DefaultComponent {
 
         for (Object contrib : contribs) {
             ThemeDescriptor themeDescriptor = (ThemeDescriptor) contrib;
+            themeDescriptor.setConfigured(true);
+            
             String src = themeDescriptor.getSrc();
 
             // register the theme descriptor even if the theme fails to load
@@ -333,6 +335,7 @@ public class ThemeService extends DefaultComponent {
             } catch (MalformedURLException e) {
                 url = extensionContext.getResource(src);
             }
+
 
             if (url != null) {
                 String themeName = ThemeParser.registerTheme(url);

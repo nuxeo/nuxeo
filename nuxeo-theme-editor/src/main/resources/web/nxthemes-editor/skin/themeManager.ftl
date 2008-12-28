@@ -33,14 +33,13 @@ window.scrollTo(0,0);
           &nbsp;
         </#if>
         <#if theme.loadingFailed>
-          <span class="nxthemesEmphasize">LOADING FAILED"</span>
+          <span class="nxthemesEmphasize">LOADING FAILED</span>
         <#else>
           &nbsp;
         </#if>
       </td>
       
       <td>${theme.src}</td>
-
 
       <td class="action">
         <#if theme.saveable>

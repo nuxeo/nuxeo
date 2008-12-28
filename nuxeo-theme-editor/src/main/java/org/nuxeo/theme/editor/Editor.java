@@ -391,6 +391,9 @@ public class Editor {
             // create a theme descriptor
             ThemeDescriptor themeDescriptor = new ThemeDescriptor();
             themeDescriptor.setName(name);
+            final String tmpdir = System.getProperty("java.io.tmpdir");
+            final String src = String.format("file://%s/theme-%s.xml", tmpdir, name);
+            themeDescriptor.setSrc(src);
             TypeRegistry typeRegistry = Manager.getTypeRegistry();
             typeRegistry.register(themeDescriptor);
             // register the theme
