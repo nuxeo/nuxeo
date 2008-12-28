@@ -145,5 +145,11 @@ public class PresetManager {
       PresetType preset = PresetManager.getCustomPreset(themeName, presetName);
       preset.setValue(value);
     }
+    
+    public static void clearCustomPresets(String themeName) {
+        for (PresetType preset : getCustomPresets(themeName)) {
+            Manager.getTypeRegistry().unregister(preset);
+        }
+    }
 
 }

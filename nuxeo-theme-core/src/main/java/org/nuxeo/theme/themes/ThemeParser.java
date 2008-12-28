@@ -241,6 +241,7 @@ public class ThemeParser {
     private static void parsePresets(final ThemeElement theme, Node node) {
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         final String themeName = theme.getName();
+        PresetManager.clearCustomPresets(themeName);
         for (Node n : getChildElements(node)) {
             NamedNodeMap attrs = n.getAttributes();
             final String name = attrs.getNamedItem("name").getNodeValue();
