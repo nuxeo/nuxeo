@@ -32,26 +32,26 @@ public class ManagementNameFormatter {
 
     public static final String NUXEO_DOMAIN_NAME = "nx";
 
-    public static String formatManagedName(String domainName, String typeName,
+    public static String formatName(String domainName, String typeName,
             String instanceName) {
         return String.format("%s:type=%s,name=%s", domainName, typeName,
                 instanceName);
     }
 
-    public static String formatManagedName(String typeName, String instanceName) {
-        return formatManagedName(NUXEO_DOMAIN_NAME, typeName, instanceName);
+    public static String formatName(String typeName, String instanceName) {
+        return formatName(NUXEO_DOMAIN_NAME, typeName, instanceName);
     }
 
-    public static String formatManagedName(String instanceName) {
-        return formatManagedName("service", instanceName);
+    public static String formatName(String instanceName) {
+        return formatName("service", instanceName);
     }
 
-    public static String formatManagedNames(String typeName) {
-        return formatManagedNames(NUXEO_DOMAIN_NAME, typeName);
+    public static String formatTypeQuery(String typeName) {
+        return formatTypeQuery(NUXEO_DOMAIN_NAME, typeName);
     }
 
-    public static String formatManagedNames(String domainName, String typeName) {
-        return String.format("%s:type=%s", domainName, typeName);
+    public static String formatTypeQuery(String domainName, String typeName) {
+        return String.format("%s:type=%s,*", domainName, typeName);
     }
 
     protected static final Pattern namePattern = Pattern.compile("(.*):(.*)");

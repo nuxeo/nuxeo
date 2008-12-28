@@ -59,17 +59,28 @@ public class ManagedServiceDescriptor implements Serializable {
         return ifaceClassName;
     }
 
+    public String getName() {
+        if (serviceName != null)
+            return serviceName;
+        return serviceClassName;
+    }
+
     public boolean isAdapted() {
         return isAdapted;
+    }
+
+    @Override
+    public String toString() {
+        if (serviceName != null)
+            return serviceName;
+        return serviceClassName;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime
-                * result
-                + ((serviceClassName == null) ? 0 : serviceClassName.hashCode());
+        result = prime * result + getName().hashCode();
         return result;
     }
 
@@ -85,11 +96,7 @@ public class ManagedServiceDescriptor implements Serializable {
             return false;
         }
         ManagedServiceDescriptor other = (ManagedServiceDescriptor) obj;
-        if (serviceClassName == null) {
-            if (other.serviceClassName != null) {
-                return false;
-            }
-        } else if (!serviceClassName.equals(other.serviceClassName)) {
+        if (!this.getName().equals(other.getName())) {
             return false;
         }
         return true;

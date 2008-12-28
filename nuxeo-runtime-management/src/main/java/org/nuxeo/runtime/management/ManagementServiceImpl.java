@@ -66,25 +66,24 @@ public class ManagementServiceImpl extends DefaultComponent implements
         }
     }
 
-    protected final Set<ManagedServiceDescriptor> registeredDescriptors = new HashSet<ManagedServiceDescriptor>();
-
-    protected void doRegister(ManagedServiceDescriptor contribution) {
-        registeredDescriptors.add(contribution);
+    protected void doRegister(ManagedServiceDescriptor descriptor) {
+        ManagedService service = doResolve(descriptor);
+        doBind(service);
+        managedServices.put(descriptor, service);
         if (log.isInfoEnabled()) {
-            log.info("registered management contribution for " + contribution);
+            log.info("registered management contribution for " + descriptor);
         }
     }
 
     protected void doUnregister(ManagedServiceDescriptor descriptor) {
-        if (registeredDescriptors.remove(descriptor) == false) {
+        ManagedService managedService = managedServices.remove(descriptor);
+        if (managedService == null) {
             throw new IllegalArgumentException(descriptor
                     + " is not registered");
         }
-        ManagedService managedService = managedServices.remove(descriptor);
-        if (managedService == null || !managedService.isRegistered()) {
-            return;
+        if (managedService.isRegistered()) {
+            doUnbind(managedService);
         }
-        doUnregister(managedService);
     }
 
     protected Class<?> doLoadServiceClass(String className) {
@@ -130,7 +129,7 @@ public class ManagementServiceImpl extends DefaultComponent implements
             serviceName = serviceClass.getSimpleName();
         }
         if (!ManagementNameFormatter.isQualified(serviceName)) {
-            serviceName = ManagementNameFormatter.formatManagedName(serviceName);
+            serviceName = ManagementNameFormatter.formatName(serviceName);
         }
         ObjectName managementName = ManagementNameFormatter.getObjectName(serviceName);
         String ifaceClassName = descriptor.getIfaceClassName();
@@ -144,7 +143,10 @@ public class ManagementServiceImpl extends DefaultComponent implements
 
     protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
-    protected void doRegister(ManagedService service) {
+    protected void doBind(ManagedService service) {
+        if (service.mbean != null) {
+            throw new IllegalStateException(service.getDescriptor() + " is already bound");
+        }
         try {
             NamedModelMBean mbean = new NamedModelMBean();
             mbean.setManagedResource(service.getServiceInstance(),
@@ -155,18 +157,17 @@ public class ManagementServiceImpl extends DefaultComponent implements
             service.mbean = mbean;
         } catch (Exception e) {
             throw ManagementRuntimeException.wrap(
-                    "Cannot register management contribution for " + service, e);
+                    "Cannot register management contribution for " + service.getDescriptor(), e);
         }
     }
 
-    protected void doUnregister(ManagedService service) {
-        NamedModelMBean mbean = service.mbean;
-        if (mbean == null) {
+    protected void doUnbind(ManagedService service) {
+        if (service.mbean == null) {
             throw new IllegalStateException(service.getDescriptor()
-                    + " is not registered into mbean server");
+                    + " is not bound");
         }
         try {
-            mbeanServer.unregisterMBean(mbean.getName());
+            mbeanServer.unregisterMBean(service.mbean.getName());
         } catch (Exception e) {
             throw ManagementRuntimeException.wrap("Cannot unregister "
                     + service.getDescriptor(), e);
@@ -179,36 +180,44 @@ public class ManagementServiceImpl extends DefaultComponent implements
 
         public Set<String> getRegisteredServicesClassName() {
             Set<String> registeredServicesClassName = new HashSet<String>();
-            for (ManagedServiceDescriptor registeredDescriptor : registeredDescriptors) {
+            for (ManagedServiceDescriptor registeredDescriptor : managedServices.keySet()) {
                 registeredServicesClassName.add(registeredDescriptor.getServiceClassName());
             }
             return registeredServicesClassName;
         }
 
+        private boolean isEnabled = true;
+
         public void enable() {
+            if (isEnabled) {
+                throw new IllegalStateException("already enabled");
+            }
             doEnable();
+            isEnabled = true;
         }
 
         public void disable() {
+            if (!isEnabled) {
+                throw new IllegalStateException("already disabled");
+            }
             doDisable();
+            isEnabled = false;
+        }
+
+        public boolean isEnabled() {
+            return managedServices != null;
         }
     }
 
     protected void doEnable() {
-        for (ManagedServiceDescriptor descriptor : registeredDescriptors) {
-            ManagedService service = doResolve(descriptor);
-            doRegister(service);
-            managedServices.put(descriptor, service);
+        for (ManagedService service : managedServices.values()) {
+            doBind(service);
         }
     }
 
     protected void doDisable() {
-        Iterator<Entry<ManagedServiceDescriptor, ManagedService>> iterator = 
-            managedServices.entrySet().iterator();
-        while (iterator.hasNext()) {
-            ManagedService service = iterator.next().getValue();
-            doUnregister(service);
-            iterator.remove();
+        for (ManagedService service : managedServices.values()) {
+            doUnbind(service);
         }
     }
 
@@ -219,7 +228,7 @@ public class ManagementServiceImpl extends DefaultComponent implements
             RequiredModelMBean mbean = new RequiredModelMBean(mbeanInfo);
             mbean.setManagedResource(new ManagementAdapter(), "ObjectReference");
             mbeanServer.registerMBean(mbean, new ObjectName(
-                    "nx:service=management"));
+                    "nx:type=service,name=management"));
         } catch (Exception e) {
             throw ManagementRuntimeException.wrap("Cannot enable management", e);
         }
@@ -228,7 +237,7 @@ public class ManagementServiceImpl extends DefaultComponent implements
     @Override
     public void deactivate(ComponentContext context) {
         try {
-            mbeanServer.unregisterMBean(new ObjectName("nx:service=management"));
+            mbeanServer.unregisterMBean(new ObjectName("nx:type=service,name=management"));
         } catch (Exception e) {
             throw ManagementRuntimeException.wrap("Cannot disable management",
                     e);
@@ -237,7 +246,7 @@ public class ManagementServiceImpl extends DefaultComponent implements
 
     @SuppressWarnings("unchecked")
     public Set<ObjectInstance> getManagedServices() {
-        String qualifiedName = ManagementNameFormatter.formatManagedNames("service");
+        String qualifiedName = ManagementNameFormatter.formatTypeQuery("service");
         ObjectName objectName = ManagementNameFormatter.getObjectName(qualifiedName);
         return mbeanServer.queryMBeans(objectName, null);
     }

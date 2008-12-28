@@ -11,10 +11,4 @@
     <object class="org.nuxeo.runtime.management.ManagedServiceDescriptor" />
   </extension-point>
 
-  <extension target="org.nuxeo.runtime.management.ManagementService"
-    point="managedServices">
-    <managedService isAdapted="true"
-      class="org.nuxeo.runtime.management.RuntimeServiceMBeanAdapter" />
-  </extension>
-
 </component>

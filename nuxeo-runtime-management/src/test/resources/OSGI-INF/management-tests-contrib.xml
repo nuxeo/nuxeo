@@ -7,7 +7,8 @@
     <provide interface="org.nuxeo.runtime.management.DummyManagedService" />
   </service>
 
-  <require>org.nuxeo.runtime.management.ManagementService</require>
+  <require>org.nuxeo.runtime.management.ManagementService
+  </require>
 
 
   <extension target="org.nuxeo.runtime.management.ManagementService"
@@ -15,14 +16,14 @@
 
     <managedService class="org.nuxeo.runtime.management.DummyManagedService" />
     <managedService name="test-with-iface"
-      class="org.nuxeo.runtime.management.DummyManagedService"
-      iface="org.nuxeo.runtime.management.DummyManagedServiceManagement" />
+      class="org.nuxeo.runtime.management.DummyManagedService" iface="org.nuxeo.runtime.management.DummyManagedServiceManagement" />
     <managedService name="test-with-impl"
       class="org.nuxeo.runtime.management.DummyManagedService" iface="org.nuxeo.runtime.management.DummyManagedServiceImpl" />
     <managedService name="foo:name=test"
       class="org.nuxeo.runtime.management.DummyManagedService" />
-      
-    <managedService isAdapted="true" class="org.nuxeo.runtime.management.RuntimeServiceMBeanAdapter"/>
+
+    <managedService isAdapted="true"
+      class="org.nuxeo.runtime.management.RuntimeServiceMBeanAdapter" />
 
   </extension>
 
