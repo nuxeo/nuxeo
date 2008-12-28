@@ -20,6 +20,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -56,12 +58,20 @@ public final class Manager {
         String path = null;
         try {
             String themeFileName = String.format("theme-%s.xml", themeName);
-            File themeFile = new File(LOCAL_THEME_DIR, themeFileName); 
+            File themeFile = new File(LOCAL_THEME_DIR, themeFileName);
             path = themeFile.getCanonicalPath();
         } catch (IOException e) {
             e.printStackTrace();
         }
         return path;
+    }
+
+    public static List<File> getLocalThemeFiles() {
+        List<File> files = new ArrayList<File>();
+        for (File f : LOCAL_THEME_DIR.listFiles()) {
+            files.add(f);
+        }
+        return files;
     }
 
     private static ThemeService getThemeService() {

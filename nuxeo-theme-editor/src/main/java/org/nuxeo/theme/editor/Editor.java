@@ -14,14 +14,12 @@
 
 package org.nuxeo.theme.editor;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.CellElement;
 import org.nuxeo.theme.elements.Element;

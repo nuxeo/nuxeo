@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.services;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
@@ -29,6 +30,7 @@ import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.CachingDef;
+import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
 import org.nuxeo.theme.Registrable;
 import org.nuxeo.theme.RegistryType;
@@ -51,8 +53,10 @@ import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 import org.nuxeo.theme.views.ViewType;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
-public class ThemeService extends DefaultComponent {
+public class ThemeService extends DefaultComponent implements FrameworkListener {
 
     public static final ComponentName ID = new ComponentName(
             "org.nuxeo.theme.services.ThemeService");
@@ -83,13 +87,21 @@ public class ThemeService extends DefaultComponent {
     public void activate(ComponentContext ctx) {
         this.context = ctx.getRuntimeContext();
         registries = new HashMap<String, Registrable>();
+        ctx.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(this);
         log.debug("Theme service activated");
     }
 
     @Override
     public void deactivate(ComponentContext ctx) {
         registries = null;
+        ctx.getRuntimeContext().getBundle().getBundleContext().removeFrameworkListener(this);
         log.debug("Theme service deactivated");
+    }
+
+    public void frameworkEvent(FrameworkEvent event) {
+        if (event.getType() == FrameworkEvent.STARTED) {
+            registerLocalThemes();
+        }
     }
 
     @Override
@@ -147,6 +159,40 @@ public class ThemeService extends DefaultComponent {
         } else {
             log.warn(String.format("Unknown extension point: %s", xp));
         }
+    }
+
+    private void registerLocalThemes() {
+        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
+        for (File file : Manager.getLocalThemeFiles()) {
+            ThemeDescriptor themeDescriptor = new ThemeDescriptor();
+            themeDescriptor.setConfigured(false);
+
+            URL url = null;
+            String src = null;
+            try {
+                src = String.format("file://%s", file.getCanonicalPath());
+                url = new URL(src);
+            } catch (Exception e) {
+                log.error("Could not read theme file: " + src);
+            }
+            themeDescriptor.setSrc(src);
+
+            typeRegistry.register(themeDescriptor);
+            if (url != null) {
+                String themeName = ThemeParser.registerTheme(url);
+                if (themeName != null) {
+                    // add some meta information to the theme descriptor
+                    themeDescriptor.setLastLoaded(new Date());
+                    themeDescriptor.setName(themeName);
+                } else {
+                    log.error("Could not parse theme: " + src);
+                }
+            } else {
+                log.error("Could not load theme: " + src);
+            }
+        }
+        log.debug("Registered local themes");
+
     }
 
     private void registerRegistryExtension(Extension extension) {
@@ -318,15 +364,15 @@ public class ThemeService extends DefaultComponent {
     private void registerThemeExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         RuntimeContext extensionContext = extension.getContext();
+        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
 
         for (Object contrib : contribs) {
             ThemeDescriptor themeDescriptor = (ThemeDescriptor) contrib;
             themeDescriptor.setConfigured(true);
-            
+
             String src = themeDescriptor.getSrc();
 
             // register the theme descriptor even if the theme fails to load
-            TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
             typeRegistry.register(themeDescriptor);
 
             URL url;
@@ -335,7 +381,6 @@ public class ThemeService extends DefaultComponent {
             } catch (MalformedURLException e) {
                 url = extensionContext.getResource(src);
             }
-
 
             if (url != null) {
                 String themeName = ThemeParser.registerTheme(url);
@@ -383,7 +428,8 @@ public class ThemeService extends DefaultComponent {
             typeRegistry.register(palette);
             Map<String, String> entries = PaletteParser.parse(url);
             for (Map.Entry<String, String> entry : entries.entrySet()) {
-                String value = PresetManager.resolvePresets(null, entry.getValue());
+                String value = PresetManager.resolvePresets(null,
+                        entry.getValue());
                 PresetType preset = new PresetType(entry.getKey(), value,
                         paletteName, category);
                 typeRegistry.register(preset);
