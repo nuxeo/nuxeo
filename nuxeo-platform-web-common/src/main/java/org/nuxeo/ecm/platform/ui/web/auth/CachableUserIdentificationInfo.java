@@ -76,8 +76,4 @@ public class CachableUserIdentificationInfo implements Serializable {
         return userInfo;
     }
 
-    public void setUserInfo(UserIdentificationInfo userInfo) {
-        this.userInfo = userInfo;
-    }
-
 }

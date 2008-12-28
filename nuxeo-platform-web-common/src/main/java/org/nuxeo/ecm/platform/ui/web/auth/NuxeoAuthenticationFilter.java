@@ -278,7 +278,6 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         Principal principal = doAuthenticate(newCachableUserIdent, httpRequest);
         if (principal != null) {
-
             NuxeoPrincipal nxUser = (NuxeoPrincipal) principal;
             nxUser.setOriginatingUser(originatingUser);
             propagateUserIdentificationInformation(cachableUserIdent);

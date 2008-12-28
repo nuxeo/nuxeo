@@ -120,13 +120,11 @@ public class PluggableAuthenticationService extends DefaultComponent {
             } catch (InstantiationException e) {
                 log.error("Unable to create AuthPlugin for : "
                         + actualDescriptor.getName() + "Error : "
-                        + e.getMessage());
-                e.printStackTrace();
+                        + e.getMessage(), e);
             } catch (IllegalAccessException e) {
                 log.error("Unable to create AuthPlugin for : "
                         + actualDescriptor.getName() + "Error : "
-                        + e.getMessage());
-                e.printStackTrace();
+                        + e.getMessage(), e);
             }
 
         } else if (extensionPoint.equals(EP_CHAIN)) {
@@ -199,8 +197,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
         oldDescriptor.setParameters(oldParameters);
 
         // override LoginLModule
-        if ((newContrib.getLoginModulePlugin() != null)
-                && (newContrib.getLoginModulePlugin().length() > 0)) {
+        if (newContrib.getLoginModulePlugin() != null
+                && newContrib.getLoginModulePlugin().length() > 0) {
             oldDescriptor.setLoginModulePlugin(newContrib.getLoginModulePlugin());
         }
     }
@@ -234,8 +232,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
         List<NuxeoAuthenticationPlugin> result = new ArrayList<NuxeoAuthenticationPlugin>();
 
         for (String pluginName : authChain) {
-            if ((authenticatorsDescriptors.containsKey(pluginName))
-                    && (authenticatorsDescriptors.get(pluginName).getEnabled())) {
+            if (authenticatorsDescriptors.containsKey(pluginName)
+                    && authenticatorsDescriptors.get(pluginName).getEnabled()) {
                 if (authenticators.containsKey(pluginName)) {
                     result.add(authenticators.get(pluginName));
                 }
@@ -278,7 +276,6 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
     public HttpSession reinitSession(HttpServletRequest httpRequest) {
-
         if (!sessionManagers.isEmpty()) {
             for (String smName : sessionManagers.keySet()) {
                 NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);

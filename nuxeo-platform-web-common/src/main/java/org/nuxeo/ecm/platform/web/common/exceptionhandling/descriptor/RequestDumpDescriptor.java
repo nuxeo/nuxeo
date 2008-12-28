@@ -34,8 +34,4 @@ public class RequestDumpDescriptor {
         return klass;
     }
 
-    public void setKlass(Class<? extends RequestDumper> klass) {
-        this.klass = klass;
-    }
-
 }
