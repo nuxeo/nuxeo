@@ -565,7 +565,6 @@ public class Main extends DefaultModule {
       String id = form.getString("id")
       List<String> perspectives = form.getList("perspectives")
       boolean alwaysVisible = Boolean.valueOf(form.getString("always_visible"))
-      System.out.println(alwaysVisible);
       Element element = ThemeManager.getElementById(id)
       Editor.updateElementVisibility(element, perspectives, alwaysVisible)
   }
