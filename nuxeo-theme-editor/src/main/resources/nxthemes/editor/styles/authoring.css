@@ -1247,7 +1247,7 @@ a.editPreset img {
 }
 
 option.locked {
-  background:#FFFFFF url(${basePath}/skin/nxthemes-editor/img/option_lock.png) no-repeat right top;
+  font-style: italic;
 }
 
 .nxthemesAlignSection {

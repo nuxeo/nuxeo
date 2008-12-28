@@ -797,6 +797,10 @@ NXThemesEditor.repairTheme = function(themeName) {
 };
 
 NXThemesEditor.loadTheme = function(src) {
+    var ok = confirm("Unsaved changes will be lost, are you sure?");
+    if (!ok) {
+        return;
+    }
     var url = nxthemesBasePath + "/nxthemes-editor/load_theme"; 
     new Ajax.Request(url, {
          method: 'post',
