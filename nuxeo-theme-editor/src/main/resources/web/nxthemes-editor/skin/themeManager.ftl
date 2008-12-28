@@ -13,7 +13,7 @@ window.scrollTo(0,0);
     <th>theme</th>
     <th>source</th>
     <th style="text-align: center; width: 90px">save theme</th>
-    <th style="text-align: center; width: 90px">export to disk</th>
+    <th style="text-align: center; width: 90px">export theme</th>
     <th style="text-align: center; width: 90px">restore theme</th>     
     <th style="text-align: center; width: 90px">repair theme</th>
   </tr>
