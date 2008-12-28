@@ -19,11 +19,11 @@ package org.nuxeo.runtime.management;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
 import javax.management.MBeanServer;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
@@ -145,7 +145,8 @@ public class ManagementServiceImpl extends DefaultComponent implements
 
     protected void doBind(ManagedService service) {
         if (service.mbean != null) {
-            throw new IllegalStateException(service.getDescriptor() + " is already bound");
+            throw new IllegalStateException(service.getDescriptor()
+                    + " is already bound");
         }
         try {
             NamedModelMBean mbean = new NamedModelMBean();
@@ -157,7 +158,8 @@ public class ManagementServiceImpl extends DefaultComponent implements
             service.mbean = mbean;
         } catch (Exception e) {
             throw ManagementRuntimeException.wrap(
-                    "Cannot register management contribution for " + service.getDescriptor(), e);
+                    "Cannot register management contribution for "
+                            + service.getDescriptor(), e);
         }
     }
 
@@ -178,12 +180,8 @@ public class ManagementServiceImpl extends DefaultComponent implements
 
     public class ManagementAdapter implements ManagementServiceMBean {
 
-        public Set<String> getRegisteredServicesClassName() {
-            Set<String> registeredServicesClassName = new HashSet<String>();
-            for (ManagedServiceDescriptor registeredDescriptor : managedServices.keySet()) {
-                registeredServicesClassName.add(registeredDescriptor.getServiceClassName());
-            }
-            return registeredServicesClassName;
+        public Set<ObjectName> getRegisteredServicesName() {
+            return ManagementServiceImpl.this.getServicesName();
         }
 
         private boolean isEnabled = true;
@@ -237,7 +235,8 @@ public class ManagementServiceImpl extends DefaultComponent implements
     @Override
     public void deactivate(ComponentContext context) {
         try {
-            mbeanServer.unregisterMBean(new ObjectName("nx:type=service,name=management"));
+            mbeanServer.unregisterMBean(new ObjectName(
+                    "nx:type=service,name=management"));
         } catch (Exception e) {
             throw ManagementRuntimeException.wrap("Cannot disable management",
                     e);
@@ -245,15 +244,49 @@ public class ManagementServiceImpl extends DefaultComponent implements
     }
 
     @SuppressWarnings("unchecked")
-    public Set<ObjectInstance> getManagedServices() {
+    public Set<ObjectName> getServicesName() {
         String qualifiedName = ManagementNameFormatter.formatTypeQuery("service");
         ObjectName objectName = ManagementNameFormatter.getObjectName(qualifiedName);
-        return mbeanServer.queryMBeans(objectName, null);
+        return mbeanServer.queryNames(objectName, null);
     }
 
     @SuppressWarnings("unchecked")
-    public Set<ObjectInstance> getManagedResources() {
-        return mbeanServer.queryMBeans(null, null);
+    public Set<ObjectName> getResourcesName() {
+        return mbeanServer.queryNames(null, null);
     }
 
+    public ObjectName getObjectName(String name) throws ManagementException {
+        Set<ObjectName> names;
+        try {
+            names = mbeanServer.queryNames(new ObjectName(name), null);
+        } catch (Exception e) {
+            throw ManagementRuntimeException.wrap("Cannot get " + name, e);
+        }
+        if (names == null || names.size() == 0) {
+            throw new ManagementException(name + " not found");
+        }
+        if (names.size() > 1) {
+            throw new ManagementRuntimeException(
+                    "identified more than one instance for " + name);
+        }
+        return names.iterator().next();
+    }
+
+    public MBeanInfo getObjectInfo(ObjectName objectName) {
+        try {
+            return mbeanServer.getMBeanInfo(objectName);
+        } catch (Exception e) {
+            throw ManagementRuntimeException.wrap("Cannot get " + objectName
+                    + "'s bean info", e);
+        }
+    }
+
+    public Object getObjectAttribute(ObjectName objectName, MBeanAttributeInfo info) {
+        try {
+            return mbeanServer.getAttribute(objectName, info.getName());
+        } catch (Exception e) {
+            throw ManagementRuntimeException.wrap("Cannot get "
+                    + info.getName() + " from " + objectName, e);
+        }
+    }
 }

@@ -18,13 +18,15 @@ package org.nuxeo.runtime.management;
 
 import java.util.Set;
 
+import javax.management.ObjectName;
+
 /**
  * @author matic
  *
  */
 public interface ManagementServiceMBean {
 
-    public abstract Set<String> getRegisteredServicesClassName();
+    public abstract Set<ObjectName> getRegisteredServicesName();
 
     public abstract void enable();
 

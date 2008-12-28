@@ -11,4 +11,5 @@
     <object class="org.nuxeo.runtime.management.ManagedServiceDescriptor" />
   </extension-point>
 
+
 </component>

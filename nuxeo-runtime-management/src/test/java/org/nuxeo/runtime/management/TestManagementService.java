@@ -2,7 +2,7 @@ package org.nuxeo.runtime.management;
 
 import java.util.Set;
 
-import javax.management.ObjectInstance;
+import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,13 +42,13 @@ public class TestManagementService extends NXRuntimeTestCase {
     }
 
     public void testQuery() {
-        Set<ObjectInstance> services = managementService.getManagedServices();
+        Set<ObjectName> services = managementService.getServicesName();
         assertNotNull(services);
         assertEquals(5, services.size());
     }
 
     public void testQueryResources() {
-        Set<ObjectInstance> resources = managementService.getManagedResources();
+        Set<ObjectName> resources = managementService.getResourcesName();
         assertNotNull(resources);
         assertTrue(resources.size() > 5);
     }

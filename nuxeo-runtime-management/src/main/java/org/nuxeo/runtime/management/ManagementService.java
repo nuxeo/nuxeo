@@ -18,7 +18,9 @@ package org.nuxeo.runtime.management;
 
 import java.util.Set;
 
-import javax.management.ObjectInstance;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
+import javax.management.ObjectName;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
@@ -26,8 +28,14 @@ import javax.management.ObjectInstance;
  */
 public interface ManagementService {
 
-    Set<ObjectInstance> getManagedServices();
+    Set<ObjectName> getServicesName();
 
-    Set<ObjectInstance> getManagedResources();
+    Set<ObjectName> getResourcesName();
+
+    ObjectName getObjectName(String name) throws ManagementException;
+    
+    MBeanInfo getObjectInfo(ObjectName name);
+    
+    Object getObjectAttribute(ObjectName name, MBeanAttributeInfo info);
 
 }
