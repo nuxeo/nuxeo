@@ -83,9 +83,7 @@ public class UserManagerActionsBean extends InputController implements
     private static final Log log = LogFactory.getLog(UserManagerActionsBean.class);
 
     private static final String ALL = "all";
-
     private static final String TABBED = "tabbed";
-
     private static final String SEARCH_ONLY = "search_only";
 
     public static final String VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789";
@@ -213,8 +211,6 @@ public class UserManagerActionsBean extends InputController implements
 
     /**
      * Gets the general type of User from the xml definition.
-     *
-     * @return
      */
     public Type getChangeableUserType() {
         return typeManager.getType("User");

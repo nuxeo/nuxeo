@@ -70,7 +70,6 @@ public class PermissionActionListManager implements Serializable {
         }
 
         SelectItem[] permissionActionItems = jsfModelList.toArray(new SelectItem[0]);
-
         return permissionActionItems;
     }
 

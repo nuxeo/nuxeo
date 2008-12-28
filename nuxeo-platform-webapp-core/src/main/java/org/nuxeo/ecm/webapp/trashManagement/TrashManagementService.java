@@ -31,7 +31,7 @@ public class TrashManagementService extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(TrashManagementService.class);
 
-    private Boolean trashManagementEnabled;
+    private boolean trashManagementEnabled;
 
     @Override
     public void activate(ComponentContext context) {
@@ -59,7 +59,7 @@ public class TrashManagementService extends DefaultComponent {
     }
 
     public boolean isTrashManagementEnabled(){
-        return trashManagementEnabled != null && trashManagementEnabled.booleanValue();
+        return trashManagementEnabled;
     }
 
 }
