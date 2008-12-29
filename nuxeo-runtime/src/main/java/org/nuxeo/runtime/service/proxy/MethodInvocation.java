@@ -113,18 +113,18 @@ public class MethodInvocation implements Serializable {
         String meth = readChars(in);
 
         try {
-        int len = in.readInt();
-        if (len > 0) {
-            Class<?>[] params = new Class<?>[len];
-            for (int i=0; i<params.length; i++) {
-                params[i] = getType(readChars(in));
+            int len = in.readInt();
+            if (len > 0) {
+                Class<?>[] params = new Class<?>[len];
+                for (int i = 0; i < params.length; i++) {
+                    params[i] = getType(readChars(in));
+                }
+                method = klass.getMethod(meth, params);
+            } else {
+                method = klass.getMethod(meth);
             }
-            method = klass.getMethod(meth, params);
-        } else {
-            method = klass.getMethod(meth);
-        }
         } catch (NoSuchMethodException e) {
-            IOException ee = new IOException("No such method: "+meth+" for class "+klass.getName());
+            IOException ee = new IOException("No such method: " + meth + " for class " + klass.getName());
             ee.initCause(e);
             throw ee;
         }

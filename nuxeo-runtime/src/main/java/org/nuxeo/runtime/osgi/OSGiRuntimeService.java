@@ -112,6 +112,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     public synchronized RuntimeContext createContext(Bundle bundle)
             throws Exception {
+        // FIXME: can't work, bundle is a Bundle, context is a Map<String, RuntimeContext>
         RuntimeContext ctx = contexts.get(bundle);
         if (ctx == null) {
             // hack to handle fragment bundles
@@ -123,6 +124,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     public synchronized void destroyContext(Bundle bundle) {
+        // FIXME: can't work, bundle is a Bundle, context is a Map<String, RuntimeContext>
         RuntimeContext ctx = contexts.remove(bundle);
         if (ctx != null) {
             ctx.destroy();
@@ -130,6 +132,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     public synchronized RuntimeContext getContext(Bundle bundle) {
+        // FIXME: can't work, bundle is a Bundle, context is a Map<String, RuntimeContext>
         return contexts.get(bundle);
     }
 
@@ -335,7 +338,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     public Bundle findHostBundle(Bundle bundle) {
-        String hostId = (String)bundle.getHeaders().get(Constants.FRAGMENT_HOST);
+        String hostId = (String) bundle.getHeaders().get(Constants.FRAGMENT_HOST);
         if (hostId != null) {
             int p = hostId.indexOf(';');
             if (p > -1) { // remove version or other extra information if any

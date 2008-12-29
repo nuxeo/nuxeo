@@ -21,7 +21,6 @@ package org.nuxeo.runtime.service.proxy;
 
 import org.nuxeo.runtime.service.AdapterManager;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -29,14 +28,14 @@ public class ServiceProxyFactory {
 
     @SuppressWarnings("unchecked")
     public static <T> T getProxy(T service) {
-        ServiceProxy<T> prx= AdapterManager.getInstance().getAdapter(service, ServiceProxy.class);
-        return prx != null ? (T)prx : service;
+        ServiceProxy<T> prx = AdapterManager.getInstance().getAdapter(service, ServiceProxy.class);
+        return prx != null ? (T) prx : service;
     }
 
     @SuppressWarnings("unchecked")
     public static <T> T getAdapterProxy(T adapter) {
-        AdapterProxy<T> prx= AdapterManager.getInstance().getAdapter(adapter, AdapterProxy.class);
-        return prx != null ? (T)prx : adapter;
+        AdapterProxy<T> prx = AdapterManager.getInstance().getAdapter(adapter, AdapterProxy.class);
+        return prx != null ? (T) prx : adapter;
     }
 
 }

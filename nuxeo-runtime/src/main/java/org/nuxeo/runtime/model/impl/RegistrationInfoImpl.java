@@ -325,4 +325,5 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         }
         return null;
     }
+
 }

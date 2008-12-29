@@ -38,9 +38,6 @@ public class ServiceAdapterInvoker implements InvocationHandler {
         invoker = remote;
     }
 
-    /**
-     * @return the remote.
-     */
     public AdaptableServiceInvoker<?> getServiceInvoker() {
         return invoker;
     }

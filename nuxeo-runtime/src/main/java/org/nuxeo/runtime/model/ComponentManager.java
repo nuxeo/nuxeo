@@ -143,7 +143,7 @@ public interface ComponentManager {
      * resolved runtime component.
      * <p>
      * If the component is not yet activated it will be prior to return the
-     * service
+     * service.
      *
      * @param <T> the service type
      * @param serviceClass the service class
@@ -152,7 +152,8 @@ public interface ComponentManager {
     <T> T getService(Class<T> serviceClass);
 
     /**
-     * Get the component that provides the given service
+     * Gets the component that provides the given service.
+     *
      * @param serviceClass the service class
      * @return the component or null if none
      */

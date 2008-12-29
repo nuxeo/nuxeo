@@ -30,7 +30,8 @@ public abstract class AnnotatedAdapterFactory<O> implements AdapterFactory<O> {
     public Class<O> getAdaptableType() {
         Adapter anno = getClass().getAnnotation(Adapter.class);
         if (anno == null) {
-            throw new IllegalStateException("Invalid AnnotatedAdapterFactory class: "+getClass().getName()+". Must be annotated with Adapter annotation");
+            throw new IllegalStateException(
+                    "Invalid AnnotatedAdapterFactory class: "+getClass().getName()+". Must be annotated with Adapter annotation");
         }
         return (Class<O>)anno.type();
     }
@@ -38,7 +39,8 @@ public abstract class AnnotatedAdapterFactory<O> implements AdapterFactory<O> {
     public Class<?>[] getAdapterTypes() {
         Adapter anno = getClass().getAnnotation(Adapter.class);
         if (anno == null) {
-            throw new IllegalStateException("Invalid AnnotatedAdapterFactory class. Must be annotated with Adapter annotation");
+            throw new IllegalStateException(
+                    "Invalid AnnotatedAdapterFactory class. Must be annotated with Adapter annotation");
         }
         return anno.interfaces();
     }

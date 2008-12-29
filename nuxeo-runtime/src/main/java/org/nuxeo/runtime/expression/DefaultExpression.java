@@ -19,8 +19,6 @@
 
 package org.nuxeo.runtime.expression;
 
-
-
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -28,7 +26,6 @@ package org.nuxeo.runtime.expression;
 public class DefaultExpression implements Expression {
 
     public static final DefaultExpression INSTANCE = new DefaultExpression();
-
 
     public Object eval(Context context) throws Exception {
         return null;

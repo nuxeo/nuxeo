@@ -103,7 +103,6 @@ public class AdapterManager {
         }
     }
 
-
     public void unregisterAdapter(Class<?> adapter) {
         //TODO
     }

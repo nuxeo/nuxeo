@@ -28,7 +28,7 @@ public class NoSuchAdapterException extends Exception {
     private static final long serialVersionUID = 1L;
 
     public NoSuchAdapterException(String adapterName) {
-        super (adapterName);
+        super(adapterName);
     }
 
 }

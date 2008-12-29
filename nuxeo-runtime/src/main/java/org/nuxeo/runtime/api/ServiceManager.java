@@ -137,12 +137,11 @@ public final class ServiceManager implements org.nuxeo.runtime.ServiceManager {
     }
 
     /**
-     * This method is provided to dynamically lookup services given a service
-     * URI.
+     * Dynamically lookup services given a service URI.
      * <p>
      * This is a dynamic lookup in the sense that the service bindings should
      * not be registered through extension points but all the information about
-     * hoe to locate the service is passed through the uri.
+     * how to locate the service are passed through the URI.
      * <p>
      * This method is not portable since the URI depends on the target server
      * and configuration. Examples of service URIs:
