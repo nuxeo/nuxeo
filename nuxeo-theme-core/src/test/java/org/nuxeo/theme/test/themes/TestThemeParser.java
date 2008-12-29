@@ -14,8 +14,6 @@
 
 package org.nuxeo.theme.test.themes;
 
-import java.net.URL;
-
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.Element;
@@ -44,8 +42,7 @@ public class TestThemeParser extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "fragment-config.xml");
 
-        URL url = getClass().getClassLoader().getResource("theme.xml");
-        ThemeParser.registerTheme(url);
+        ThemeParser.registerTheme("theme.xml");
 
         themeManager = Manager.getThemeManager();
         theme1 = themeManager.getThemeByName("theme1");

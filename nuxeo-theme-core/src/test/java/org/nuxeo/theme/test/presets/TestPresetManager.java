@@ -18,7 +18,6 @@ import java.util.List;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
-import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.presets.CustomPresetType;
 import org.nuxeo.theme.presets.PresetManager;

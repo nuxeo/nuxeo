@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -559,10 +560,8 @@ public final class ThemeManager implements Registrable {
         if (themeDescriptor == null) {
             throw new ThemeIOException("Theme not found: " + src);
         }
-        URL url = themeDescriptor.getUrl();
-
-        if (url != null) {
-            String themeName = ThemeParser.registerTheme(url);
+        if (src != null) {
+            String themeName = ThemeParser.registerTheme(src);
             if (themeName == null) {
                 throw new ThemeIOException("Could not parse theme: " + src);
             }
@@ -593,8 +592,15 @@ public final class ThemeManager implements Registrable {
         final String xml = serializer.serializeToXml(theme, indent);
 
         // Write the file
-        URL url = themeDescriptor.getUrl();
-        Utils.writeFile(url, xml);
+        URL url = null;
+        try {
+            url = new URL(src);
+        } catch (MalformedURLException e) {
+            log.error("Could not save theme to " + src);
+        }
+        if (url != null) {
+            Utils.writeFile(url, xml);
+        }
     }
 
     public static void repairTheme(ThemeElement theme) {

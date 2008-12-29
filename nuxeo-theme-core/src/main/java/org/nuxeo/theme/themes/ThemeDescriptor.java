@@ -49,15 +49,14 @@ public class ThemeDescriptor implements Type {
         return src;
     }
 
-    public URL getUrl() {
+    private URL getUrl() {
         if (url != null) {
             return url;
         }
         try {
             url = new URL(src);
         } catch (MalformedURLException e) {
-            url = Thread.currentThread().getContextClassLoader().getResource(
-                    src);
+return null;
         }
         return url;
     }
@@ -66,16 +65,16 @@ public class ThemeDescriptor implements Type {
         this.configured = configured;
     }
 
-    private boolean isXmlConfigured() {
-        return configured;
-    }
-
     public boolean isCustom() {
         return !isXmlConfigured();
     }
 
     private boolean isLoaded() {
         return lastLoaded != null;
+    }
+
+    public boolean isXmlConfigured() {
+        return configured;
     }
 
     public boolean isWritable() {

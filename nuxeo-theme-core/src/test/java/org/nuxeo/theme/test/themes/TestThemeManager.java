@@ -313,8 +313,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testRemoveOrphanedFormatsOnTestTheme() {
-        URL url = getClass().getClassLoader().getResource("theme.xml");
-        ThemeParser.registerTheme(url);
+        ThemeParser.registerTheme("theme.xml");
         List<Format> formatsBefore = themeManager.listFormats();
         themeManager.removeOrphanedFormats();
         List<Format> formatsAfter = themeManager.listFormats();

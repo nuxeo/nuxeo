@@ -33,7 +33,7 @@ window.scrollTo(0,0);
         <#if theme.customized>
           <img src="${skinPath}/img/customized-theme-16.png" width="16" height="16" />
         </#if>
-        <#if theme.configured>
+        <#if theme.xmlConfigured>
           <img src="${skinPath}/img/theme-16.png" width="16" height="16" />
         </#if>
         <#if theme.exportable>  

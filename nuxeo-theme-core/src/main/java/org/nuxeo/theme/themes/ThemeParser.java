@@ -17,6 +17,7 @@ package org.nuxeo.theme.themes;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -68,22 +69,35 @@ public class ThemeParser {
 
     private static final XPath xpath = XPathFactory.newInstance().newXPath();
 
-    public static String registerTheme(URL url) {
+    public static String registerTheme(final String src) {
         String themeName = null;
+        URL url = null;
         InputStream in = null;
         try {
+            url = new URL(src);
+        } catch (MalformedURLException e) {
+            url = Thread.currentThread().getContextClassLoader().getResource(
+                    src);
+        }
+
+        if (url == null) {
+            log.error("Incorrect theme URL: " + src);
+            return null;
+        }
+
+        try {
             in = url.openStream();
-            themeName = registerTheme(in);
+            themeName = registerTheme(src, in);
         } catch (FileNotFoundException e) {
-            log.error("File not found: " + url);
+            log.error("File not found: " + src);
         } catch (IOException e) {
-            log.error("Could not open file: " + url);
+            log.error("Could not open file: " + src);
         } finally {
             if (in != null) {
                 try {
                     in.close();
                 } catch (IOException e) {
-                    log.error("Could not read theme", e);
+                    log.error(e);
                 } finally {
                     in = null;
                 }
@@ -92,7 +106,8 @@ public class ThemeParser {
         return themeName;
     }
 
-    public static String registerTheme(final InputStream in) {
+    private static String registerTheme(final String src, final InputStream in) {
+        String themeName = null;
         try {
             final InputSource is = new InputSource(in);
             final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -115,7 +130,7 @@ public class ThemeParser {
                 return null;
             }
 
-            String themeName = docElem.getAttributes().getNamedItem("name").getNodeValue();
+            themeName = docElem.getAttributes().getNamedItem("name").getNodeValue();
             if (!themeName.matches("[a-z0-9_\\-]+")) {
                 log.error("Theme names may only contain lower-case alpha-numeric characters, underscores and hyphens.");
                 return null;
@@ -134,7 +149,7 @@ public class ThemeParser {
             if (description != null) {
                 theme.setDescription(description);
             }
-            
+
             // register custom presets
             for (Node n : getChildElementsByTagName(docElem, "presets")) {
                 parsePresets(theme, n);
@@ -156,7 +171,18 @@ public class ThemeParser {
                 return null;
             }
 
+            // parse layout
             parseLayout(theme, baseNode);
+
+            // update theme descriptors
+            for (ThemeDescriptor t : ThemeManager.getThemeDescriptorsByThemeName(themeName)) {
+                if (!t.getSrc().equals(src)) {
+                    t.setCustomized(true);
+                    log.info("Overriding '" + themeName + "' " + t.getSrc()
+                            + " with " + src);
+                }
+            }
+
             themeManager.registerTheme(theme);
             return themeName;
 
@@ -246,9 +272,12 @@ public class ThemeParser {
             NamedNodeMap attrs = n.getAttributes();
             final String name = attrs.getNamedItem("name").getNodeValue();
             final String category = attrs.getNamedItem("category").getNodeValue();
-            final String value = PresetManager.resolvePresets(themeName, n.getTextContent());
-            final String group = theme.getName(); // use the theme's name as group name
-            PresetType preset = new CustomPresetType(name, value, group, category);
+            final String value = PresetManager.resolvePresets(themeName,
+                    n.getTextContent());
+            final String group = theme.getName(); // use the theme's name as
+            // group name
+            PresetType preset = new CustomPresetType(name, value, group,
+                    category);
             typeRegistry.register(preset);
         }
     }
