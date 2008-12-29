@@ -359,7 +359,7 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
 
     private void registerCustomThemes() {
         TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
-        for (File file : Manager.getCustomThemeFiles()) {
+        for (File file : ThemeManager.getCustomThemeFiles()) {
             ThemeDescriptor themeDescriptor = new ThemeDescriptor();
             themeDescriptor.setConfigured(false);
 

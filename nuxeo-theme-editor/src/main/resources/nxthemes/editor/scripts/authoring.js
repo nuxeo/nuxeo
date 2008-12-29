@@ -24,16 +24,7 @@ if (typeof NXThemesEditor == "undefined") {
             }
           }
           return true;
-        },
-        isLowerCaseOrDigitOrUnderscoreOrDash: function(s) {
-          for (var i = 0; i < s.length; i= i+1) {
-            var c = s.charAt(i);
-            if ( !((c>="a") && (c<="z") || c == '-' || c == '_' || (c>="0") && (c<="9"))) {
-              return false;
-            }
-          }
-          return true;
-        }               
+        }              
     };
 
 }
@@ -532,7 +523,7 @@ NXThemesEditor.addTheme = function() {
         window.alert("Theme names cannot be empty.");
         return "";
     }
-    if (!NXThemesEditor.isLowerCaseOrDigitOrUnderscoreOrDash(name)) {
+    if (!name.match(/^([a-z]|[a-z][a-z0-9_\-]*?[a-z0-9])$/)) {
         window.alert("Theme names may only contain lower-case alpha-numeric characters, digits, underscores and dashes");
         return "";
     }
@@ -561,7 +552,7 @@ NXThemesEditor.addPage = function(themeName) {
         window.alert("Page names cannot be empty.");
         return "";
     }
-    if (!NXThemesEditor.isLowerCaseOrDigitOrUnderscoreOrDash(name)) {
+    if (!name.match(/^([a-z]|[a-z][a-z0-9_\-]*?[a-z0-9])$/)) {
         window.alert("Page names may only contain lower-case alpha-numeric characters, digits, underscores and dashes.");
         return "";
     }

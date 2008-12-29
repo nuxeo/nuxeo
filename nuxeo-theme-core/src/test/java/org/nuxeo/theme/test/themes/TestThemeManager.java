@@ -14,12 +14,14 @@
 
 package org.nuxeo.theme.test.themes;
 
+import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.theme.CustomThemeNameFilter;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFactory;
@@ -69,6 +71,28 @@ public class TestThemeManager extends NXRuntimeTestCase {
         super.tearDown();
     }
 
+
+    public void testValidateThemeName() {
+        assertTrue(ThemeManager.validateThemeName("default"));
+        assertTrue(ThemeManager.validateThemeName("default-1"));
+        assertTrue(ThemeManager.validateThemeName("default_1l"));
+        assertTrue(ThemeManager.validateThemeName("default-1-2"));
+        assertTrue(ThemeManager.validateThemeName("default-a"));
+        assertTrue(ThemeManager.validateThemeName("a"));
+        assertTrue(ThemeManager.validateThemeName("a1"));
+        
+        assertFalse(ThemeManager.validateThemeName("1"));
+        assertFalse(ThemeManager.validateThemeName("default-1.2"));
+        assertFalse(ThemeManager.validateThemeName("default-"));
+        assertFalse(ThemeManager.validateThemeName("default_"));
+        assertFalse(ThemeManager.validateThemeName("Default"));
+        assertFalse(ThemeManager.validateThemeName("-_"));
+        assertFalse(ThemeManager.validateThemeName("-"));
+        assertFalse(ThemeManager.validateThemeName("-."));
+        assertFalse(ThemeManager.validateThemeName("-1"));
+    }
+
+    
     public void testGetThemeNames() {
         assertTrue(themeManager.getThemeNames().isEmpty());
         ThemeElement theme = new ThemeElement();

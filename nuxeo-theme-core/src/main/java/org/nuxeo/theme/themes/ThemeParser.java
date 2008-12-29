@@ -131,8 +131,8 @@ public class ThemeParser {
             }
 
             themeName = docElem.getAttributes().getNamedItem("name").getNodeValue();
-            if (!themeName.matches("[a-z0-9_\\-]+")) {
-                log.error("Theme names may only contain lower-case alpha-numeric characters, underscores and hyphens.");
+            if (!ThemeManager.validateThemeName(themeName)) {
+                log.error("Theme names may only contain lower-case alpha-numeric characters, underscores and hyphens: " + themeName);
                 return null;
             }
 

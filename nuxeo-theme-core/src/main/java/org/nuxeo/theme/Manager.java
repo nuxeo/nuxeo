@@ -15,6 +15,7 @@
 package org.nuxeo.theme;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -42,36 +43,11 @@ public final class Manager {
 
     private static final String PROTOCOL_HANDLER_PKG = "org.nuxeo.theme.protocol";
 
-    private static final File CUSTOM_THEME_DIR;
-
     static {
         initializeProtocols();
-        CUSTOM_THEME_DIR = new File(Framework.getRuntime().getHome(),
-                "tmp/themes");
-        CUSTOM_THEME_DIR.mkdirs();
     }
 
     private Manager() {
-    }
-
-    public static String getCustomThemePath(String themeName) {
-        String path = null;
-        try {
-            String themeFileName = String.format("theme-%s.xml", themeName);
-            File themeFile = new File(CUSTOM_THEME_DIR, themeFileName);
-            path = themeFile.getCanonicalPath();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return path;
-    }
-
-    public static List<File> getCustomThemeFiles() {
-        List<File> files = new ArrayList<File>();
-        for (File f : CUSTOM_THEME_DIR.listFiles()) {
-            files.add(f);
-        }
-        return files;
     }
 
     private static ThemeService getThemeService() {

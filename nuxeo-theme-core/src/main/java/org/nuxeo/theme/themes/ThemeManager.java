@@ -15,6 +15,8 @@
 package org.nuxeo.theme.themes;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -35,7 +37,9 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.ApplicationType;
+import org.nuxeo.theme.CustomThemeNameFilter;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
 import org.nuxeo.theme.Registrable;
@@ -93,11 +97,45 @@ public final class ThemeManager implements Registrable {
 
     private final Map<String, String> cachedResources = new HashMap<String, String>();
 
+    private static final File CUSTOM_THEME_DIR;
+
+    private static final FilenameFilter CUSTOM_THEME_FILENAME_FILTER = new CustomThemeNameFilter();
+
+    static {
+        CUSTOM_THEME_DIR = new File(Framework.getRuntime().getHome(),
+                "tmp/themes");
+        CUSTOM_THEME_DIR.mkdirs();
+    }
+
     public void clear() {
         themes.clear();
         pages.clear();
         formatsByTypeName.clear();
         namedObjects.clear();
+    }
+
+    public static boolean validateThemeName(String themeName) {
+        return (themeName.matches("^([a-z]|[a-z][a-z0-9_\\-]*?[a-z0-9])$"));
+    }
+
+    public static String getCustomThemePath(String themeName) {
+        String path = null;
+        try {
+            String themeFileName = String.format("theme-%s.xml", themeName);
+            File themeFile = new File(CUSTOM_THEME_DIR, themeFileName);
+            path = themeFile.getCanonicalPath();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return path;
+    }
+
+    public static List<File> getCustomThemeFiles() {
+        List<File> files = new ArrayList<File>();
+        for (File f : CUSTOM_THEME_DIR.listFiles(CUSTOM_THEME_FILENAME_FILTER)) {
+            files.add(f);
+        }
+        return files;
     }
 
     public static String getDefaultTheme(final String applicationPath) {
