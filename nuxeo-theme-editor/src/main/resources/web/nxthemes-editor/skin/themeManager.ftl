@@ -32,10 +32,11 @@ window.scrollTo(0,0);
         </#if>
         <#if theme.customized>
           <img src="${skinPath}/img/customized-theme-16.png" width="16" height="16" />
-        </#if>
-        <#if theme.xmlConfigured>
-          <img src="${skinPath}/img/theme-16.png" width="16" height="16" />
-        </#if>
+        <#else>
+          <#if theme.xmlConfigured>
+            <img src="${skinPath}/img/theme-16.png" width="16" height="16" />
+          </#if>
+        </#if>  
         <#if theme.exportable>  
           <a href="${basePath}/nxthemes-editor/xml_export?theme=${theme.name}">${theme.name}</a>
         <#else>

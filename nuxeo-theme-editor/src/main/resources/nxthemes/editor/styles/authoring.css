@@ -1001,7 +1001,7 @@ div.nxthemesWarning {
   background-color: #ff0;
 }
 
-span.nxthemesCustomized {
+.nxthemesCustomized {
   text-decoration: line-through;
   color: #666;
 }
