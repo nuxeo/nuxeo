@@ -41,8 +41,7 @@ public class Property implements Serializable {
     @XNode("@type")
     private String type = "string";
 
-    // FIXME: value must be serializable for this class to be serializable.
-    private Object value;
+    private Serializable value;
 
     @XNode("@value")
     private void setStringValue(String value) {
@@ -59,30 +58,37 @@ public class Property implements Serializable {
         return value;
     }
 
-    public void setValue(Object value) {
-        this.value = value;
-    }
+    // Not used.
+    //public void setValue(Object value) {
+    //    this.value = value;
+    //}
 
+    // Not used.
     public String getType() {
         return type;
     }
 
+    // Not used.
     public String getName() {
         return name;
     }
 
+    // Not used.
     public String getString() {
         return value.toString();
     }
 
+    // Not used.
     public Integer getInteger() {
         return (Integer) value;
     }
 
+    // Not used.
     public Boolean getBoolean() {
         return (Boolean) value;
     }
 
+    // Not used.
     @SuppressWarnings("unchecked")
     public List<String> getList() {
         return (List<String>) value;

@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.io.Serializable;
 
 import org.nuxeo.runtime.api.Framework;
 import org.apache.commons.logging.Log;
@@ -40,7 +41,7 @@ public abstract class PropertyDecoder {
     private static final Map<String, PropertyDecoder> decoders = new HashMap<String, PropertyDecoder>();
 
 
-    public static Object decode(String type, String value) {
+    public static Serializable decode(String type, String value) {
         // expand value if needed
         if (value != null) {
             value = Framework.getRuntime().expandVars(value);
@@ -62,20 +63,20 @@ public abstract class PropertyDecoder {
         decoders.put(type, decoder);
     }
 
-    public abstract Object decode(String value);
+    public abstract Serializable decode(String value);
 
 
     public static final PropertyDecoder STRING = new PropertyDecoder() {
         @Override
-        public Object decode(String value) {
+        public Serializable decode(String value) {
             return value;
         }
     };
 
     public static final PropertyDecoder LIST = new PropertyDecoder() {
         @Override
-        public Object decode(String value) {
-            List<String> values = new ArrayList<String>();
+        public Serializable decode(String value) {
+            ArrayList<String> values = new ArrayList<String>();
             StringTokenizer tokenizer = new StringTokenizer(value, ",");
             while (tokenizer.hasMoreTokens()) {
                 String tok = tokenizer.nextToken();
@@ -88,49 +89,49 @@ public abstract class PropertyDecoder {
 
     public static final PropertyDecoder LONG = new PropertyDecoder() {
         @Override
-        public Object decode(String value) {
+        public Serializable decode(String value) {
             return Long.valueOf(value);
         }
     };
 
     public static final PropertyDecoder INTEGER = new PropertyDecoder() {
         @Override
-        public Object decode(String value) {
+        public Serializable decode(String value) {
             return Integer.valueOf(value);
         }
     };
 
     public static final PropertyDecoder DOUBLE = new PropertyDecoder() {
         @Override
-        public Object decode(String value) {
+        public Serializable decode(String value) {
             return Double.valueOf(value);
         }
     };
 
     public static final PropertyDecoder FLOAT = new PropertyDecoder() {
         @Override
-        public Object decode(String value) {
+        public Serializable decode(String value) {
             return Float.valueOf(value);
         }
     };
 
     public static final PropertyDecoder BOOLEAN = new PropertyDecoder() {
         @Override
-        public Object decode(String value) {
+        public Serializable decode(String value) {
             return Boolean.valueOf(value);
         }
     };
 
     public static final PropertyDecoder BYTE = new PropertyDecoder() {
         @Override
-        public Object decode(String value) {
+        public Serializable decode(String value) {
             return Byte.valueOf(value);
         }
     };
 
     public static final PropertyDecoder CHAR = new PropertyDecoder() {
         @Override
-        public Object decode(String value) {
+        public Serializable decode(String value) {
             if (value.length() == 0) {
                 return 0;
             }
@@ -140,14 +141,14 @@ public abstract class PropertyDecoder {
 
     public static final PropertyDecoder SHORT = new PropertyDecoder() {
         @Override
-        public Object decode(String value) {
+        public Serializable decode(String value) {
             return Short.valueOf(value);
         }
     };
 
     public static final PropertyDecoder OBJECT = new PropertyDecoder() {
         @Override
-        public Object decode(String value) {
+        public Serializable decode(String value) {
             return null; // TODO not yet impl
         }
     };
@@ -155,21 +156,21 @@ public abstract class PropertyDecoder {
 
     public static final PropertyDecoder CLASS = new PropertyDecoder() {
         @Override
-        public Object decode(String value) {
+        public Serializable decode(String value) {
             return null; // TODO not yet impl
         }
     };
 
     public static final PropertyDecoder INSTANCE = new PropertyDecoder() {
         @Override
-        public Object decode(String value) {
+        public Serializable decode(String value) {
             return null; // TODO not yet impl
         }
     };
 
     public static final PropertyDecoder COMPONENT = new PropertyDecoder() {
         @Override
-        public Object decode(String value) {
+        public Serializable decode(String value) {
             return null; // TODO not yet impl
         }
     };
