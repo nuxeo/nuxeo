@@ -248,7 +248,7 @@ public class ThemeParser {
             if (elem instanceof PageElement) {
                 String pageName = attributes.getNamedItem("name").getNodeValue();
                 if (!pageName.matches("[a-z0-9_\\-]+")) {
-                    log.error("Page names may only contain lower-case alpha-numeric characters, underscores and hyphens.");
+                    log.error("Page names may only contain lower-case alpha-numeric characters, digits, underscores and dashes.");
                     return;
                 }
                 elem.setName(pageName);

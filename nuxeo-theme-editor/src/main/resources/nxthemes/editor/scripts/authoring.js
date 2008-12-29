@@ -24,7 +24,16 @@ if (typeof NXThemesEditor == "undefined") {
             }
           }
           return true;
-        }        
+        },
+        isLowerCaseOrDigitOrUnderscoreOrDash: function(s) {
+          for (var i = 0; i < s.length; i= i+1) {
+            var c = s.charAt(i);
+            if ( !((c>="a") && (c<="z") || c == '-' || c == '_' || (c>="0") && (c<="9"))) {
+              return false;
+            }
+          }
+          return true;
+        }               
     };
 
 }
@@ -520,11 +529,11 @@ NXThemesEditor.switchTheme = function(info) {
 NXThemesEditor.addTheme = function() {
     var name = prompt("Please enter a theme name:", "");
     if (name === "") {
-        window.alert("Theme names must not be empty.");
+        window.alert("Theme names cannot be empty.");
         return "";
     }
-    if (!NXThemesEditor.isLowerCase(name)) {
-        window.alert("Theme names must only contain alphabetic characters.");
+    if (!NXThemesEditor.isLowerCaseOrDigitOrUnderscoreOrDash(name)) {
+        window.alert("Theme names may only contain lower-case alpha-numeric characters, digits, underscores and dashes");
         return "";
     }
     var url = nxthemesBasePath + "/nxthemes-editor/add_theme";
@@ -549,11 +558,11 @@ NXThemesEditor.addTheme = function() {
 NXThemesEditor.addPage = function(themeName) {
     var name = prompt("Please enter a page name:", "");
     if (name === "") {
-        window.alert("Page names must not be empty.");
+        window.alert("Page names cannot be empty.");
         return "";
     }
-    if (!NXThemesEditor.isLowerCase(name)) {
-        window.alert("Page names must only contain alphabetic characters.");
+    if (!NXThemesEditor.isLowerCaseOrDigitOrUnderscoreOrDash(name)) {
+        window.alert("Page names may only contain lower-case alpha-numeric characters, digits, underscores and dashes.");
         return "";
     }
     var url = nxthemesBasePath + "/nxthemes-editor/add_page";
@@ -590,7 +599,7 @@ NXThemesEditor.backToCanvas = function() {
 NXThemesEditor.addPreset = function(themeName, category, view_id) {
     var name = prompt("Please enter a preset name:", "");
     if (name === "") {
-        window.alert("Preset names must not be empty.");
+        window.alert("Preset names cannot be empty.");
         return "";
     }
     if (!NXThemesEditor.isLowerCaseOrSpace(name)) {
