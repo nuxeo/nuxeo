@@ -31,6 +31,7 @@
     <!-- JQuery 1.2.3 -->
     <resource name="jquery.js">
       <path>nxthemes/html/scripts/jquery.js</path>
+      <shrinkable>false</shrinkable>
     </resource>
 
     <!-- ObjTree 0.24 (http://www.kawa.net/works/js/xml/objtree-e.html)  -->
