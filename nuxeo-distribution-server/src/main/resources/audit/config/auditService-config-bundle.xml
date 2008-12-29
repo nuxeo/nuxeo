@@ -5,7 +5,7 @@
   <require>org.nuxeo.ecm.platform.audit.service.NXAuditEventsService</require>
 
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
-    point="activationOptions">
+    point="hibernateOptions">
     <activationOptions datasource="jdbc/nxaudits"/>
   </extension>
 
