@@ -14,12 +14,12 @@
 
 package org.nuxeo.theme.test.themes;
 
-import java.io.File;
 import java.io.FilenameFilter;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.CustomThemeNameFilter;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeRegistry;
 
@@ -77,6 +77,41 @@ public class TestCustomThemes extends NXRuntimeTestCase {
         assertFalse(filter.accept(null, "dummy-1.xml"));
         assertFalse(filter.accept(null, "dummy-1.ext"));
         assertFalse(filter.accept(null, "dummy.ext"));
+    }
+    
+    public void testUpdateDescriptors() {
+        ThemeManager.updateThemeDescriptors();
+        
+        ThemeDescriptor theme1 = new ThemeDescriptor();
+        theme1.setName("default");
+        theme1.setSrc("src1");
+        typeRegistry.register(theme1);
+        ThemeManager.updateThemeDescriptors();
+        assertFalse(theme1.isCustomized());
+        
+        ThemeDescriptor theme2 = new ThemeDescriptor();
+        theme2.setName("alt");
+        theme2.setSrc("src2");
+        typeRegistry.register(theme2);
+        ThemeManager.updateThemeDescriptors();
+        assertFalse(theme1.isCustomized());
+        assertFalse(theme2.isCustomized());
+        
+        ThemeDescriptor theme3 = new ThemeDescriptor();
+        // override "default" theme
+        theme3.setName("default");
+        theme3.setSrc("src3");
+        typeRegistry.register(theme3);
+        ThemeManager.updateThemeDescriptors();
+        assertTrue(theme1.isCustomized());
+        assertFalse(theme2.isCustomized());
+        assertFalse(theme3.isCustomized());
+        
+        theme3.setName("default-new");
+        ThemeManager.updateThemeDescriptors();
+        assertFalse(theme1.isCustomized());
+        assertFalse(theme2.isCustomized());
+        assertFalse(theme3.isCustomized());
     }
 
 }

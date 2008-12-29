@@ -104,6 +104,7 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
         if (event.getType() == FrameworkEvent.STARTED) {
             registerCustomThemes();
         }
+        ThemeManager.updateThemeDescriptors();
     }
 
     @Override

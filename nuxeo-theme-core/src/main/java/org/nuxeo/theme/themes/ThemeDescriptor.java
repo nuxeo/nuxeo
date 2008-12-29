@@ -56,7 +56,7 @@ public class ThemeDescriptor implements Type {
         try {
             url = new URL(src);
         } catch (MalformedURLException e) {
-return null;
+            return null;
         }
         return url;
     }
@@ -87,11 +87,11 @@ return null;
     }
 
     public boolean isLoadable() {
-        return !isLoaded()&& !isCustomized();
+        return !isLoaded();
     }
 
     public boolean isReloadable() {
-        return isLoaded() && !isCustomized();
+        return isLoaded();
     }
 
     public boolean isSaveable() {

@@ -10,6 +10,7 @@ window.scrollTo(0,0);
 
 <table cellpadding="0" cellspacing="0" border="0">
   <tr>
+    <th></th>
     <th>theme</th>
     <th>source</th>
     <th style="text-align: center; width: 90px">save theme</th>
@@ -25,18 +26,21 @@ window.scrollTo(0,0);
     <tr class="even">
   </#if>
   <#assign row = row + 1/>
-  
-      <td>
-        <#if theme.custom>
-          <img src="${skinPath}/img/custom-theme-16.png" width="16" height="16" />
-        </#if>
+
+      <td style="width: 16px">
         <#if theme.customized>
           <img src="${skinPath}/img/customized-theme-16.png" width="16" height="16" />
         <#else>
           <#if theme.xmlConfigured>
             <img src="${skinPath}/img/theme-16.png" width="16" height="16" />
           </#if>
-        </#if>  
+          <#if theme.custom>
+            <img src="${skinPath}/img/custom-theme-16.png" width="16" height="16" />
+        </#if>
+        </#if>
+      </td>
+      
+      <td>     
         <#if theme.exportable>  
           <a href="${basePath}/nxthemes-editor/xml_export?theme=${theme.name}">${theme.name}</a>
         <#else>
@@ -51,9 +55,9 @@ window.scrollTo(0,0);
       
       <td>
         <#if theme.customized>
-          <span class="nxthemesCustomized">${theme.src}</span>
+          <input class="nxthemesCustomized" value="${theme.src}" style="width: 100%; background: none; border: none" />
         <#else>
-          ${theme.src}
+          <input value="${theme.src}" style="width: 100%; background: none; border: none" />
         </#if>
       </td>
 

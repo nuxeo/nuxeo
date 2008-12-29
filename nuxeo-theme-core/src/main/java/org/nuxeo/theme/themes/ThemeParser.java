@@ -87,7 +87,7 @@ public class ThemeParser {
 
         try {
             in = url.openStream();
-            themeName = registerTheme(src, in);
+            themeName = registerTheme(in);
         } catch (FileNotFoundException e) {
             log.error("File not found: " + src);
         } catch (IOException e) {
@@ -106,7 +106,7 @@ public class ThemeParser {
         return themeName;
     }
 
-    private static String registerTheme(final String src, final InputStream in) {
+    private static String registerTheme(final InputStream in) {
         String themeName = null;
         try {
             final InputSource is = new InputSource(in);
@@ -132,7 +132,8 @@ public class ThemeParser {
 
             themeName = docElem.getAttributes().getNamedItem("name").getNodeValue();
             if (!ThemeManager.validateThemeName(themeName)) {
-                log.error("Theme names may only contain lower-case alpha-numeric characters, underscores and hyphens: " + themeName);
+                log.error("Theme names may only contain lower-case alpha-numeric characters, underscores and hyphens: "
+                        + themeName);
                 return null;
             }
 
@@ -173,15 +174,6 @@ public class ThemeParser {
 
             // parse layout
             parseLayout(theme, baseNode);
-
-            // update theme descriptors
-            for (ThemeDescriptor t : ThemeManager.getThemeDescriptorsByThemeName(themeName)) {
-                if (!t.getSrc().equals(src)) {
-                    t.setCustomized(true);
-                    log.info("Overriding '" + themeName + "' " + t.getSrc()
-                            + " with " + src);
-                }
-            }
 
             themeManager.registerTheme(theme);
             return themeName;

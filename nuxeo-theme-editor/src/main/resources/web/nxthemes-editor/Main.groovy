@@ -67,7 +67,7 @@ public class Main extends DefaultModule {
   @GET
   @Path("themeManager")
   public Object renderThemeManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("themeManager.ftl").arg("themes", getThemesDescriptors())
+    return getTemplate("themeManager.ftl").arg("themes", getThemeDescriptors())
   }
 
   @GET
@@ -592,8 +592,8 @@ public class Main extends DefaultModule {
   
   /* API */
    
-  public static List<ThemeDescriptor> getThemesDescriptors() {
-      return ThemeManager.getThemesDescriptors()
+  public static List<ThemeDescriptor> getThemeDescriptors() {
+      return ThemeManager.getThemeDescriptors()
   }
   
   public static List<String> getNamedStyles(String applicationPath) {

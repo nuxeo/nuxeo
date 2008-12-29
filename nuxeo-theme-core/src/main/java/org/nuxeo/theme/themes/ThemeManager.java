@@ -138,6 +138,24 @@ public final class ThemeManager implements Registrable {
         return files;
     }
 
+    public static void updateThemeDescriptors() {
+        Map<String, List<ThemeDescriptor>> names = new HashMap<String, List<ThemeDescriptor>>();
+        for (ThemeDescriptor themeDescriptor : getThemeDescriptors()) {
+            String themeName = themeDescriptor.getName();
+            if (!names.containsKey(themeName)) {
+                names.put(themeName, new ArrayList<ThemeDescriptor>());
+            }
+            names.get(themeName).add(themeDescriptor);
+        }
+        for (List<ThemeDescriptor> themeDescriptors : names.values()) {
+            for (ThemeDescriptor themeDescriptor : themeDescriptors) {
+                themeDescriptor.setCustomized(true);
+            }
+            int size = themeDescriptors.size();
+            themeDescriptors.get(size - 1).setCustomized(false);
+        }
+    }
+
     public static String getDefaultTheme(final String applicationPath) {
         String defaultTheme = "";
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
@@ -607,6 +625,7 @@ public final class ThemeManager implements Registrable {
             themeDescriptor.setLastLoaded(new Date());
             themeModified();
         }
+        updateThemeDescriptors();
     }
 
     public static void saveTheme(final String src, final int indent)
@@ -856,28 +875,13 @@ public final class ThemeManager implements Registrable {
         return viewTypes;
     }
 
-    public static List<ThemeDescriptor> getThemesDescriptors() {
+    public static List<ThemeDescriptor> getThemeDescriptors() {
         final List<ThemeDescriptor> themeDescriptors = new ArrayList<ThemeDescriptor>();
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         for (Type type : typeRegistry.getTypes(TypeFamily.THEME)) {
             if (type != null) {
                 ThemeDescriptor themeDescriptor = (ThemeDescriptor) type;
                 themeDescriptors.add(themeDescriptor);
-            }
-        }
-        return themeDescriptors;
-    }
-
-    public static List<ThemeDescriptor> getThemeDescriptorsByThemeName(
-            final String themeName) {
-        final List<ThemeDescriptor> themeDescriptors = new ArrayList<ThemeDescriptor>();
-        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        for (Type type : typeRegistry.getTypes(TypeFamily.THEME)) {
-            if (type != null) {
-                ThemeDescriptor themeDescriptor = (ThemeDescriptor) type;
-                if (themeName.equals(themeDescriptor.getName())) {
-                    themeDescriptors.add(themeDescriptor);
-                }
             }
         }
         return themeDescriptors;
