@@ -8,12 +8,16 @@
     <directory>src/main/resources/core</directory>
   </fileSet>
 
-  <fileSet id="webengine-template" profile="webengine">
-    <directory>src/main/resources/webengine</directory>
-  </fileSet>
-
   <fileSet id="platform-template" profile="platform">
     <directory>src/main/resources/platform</directory>
+  </fileSet>
+
+  <fileSet id="platform-audit-template" profile="audit">
+    <directory>src/main/resources/audit</directory>
+  </fileSet>
+
+  <fileSet id="webengine-template" profile="webengine">
+    <directory>src/main/resources/webengine</directory>
   </fileSet>
 
 
@@ -37,6 +41,9 @@
   <!-- only if platform profile enabled -->
   <artifactSet id="platform-bundles" profile="platform">
     <artifacts>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-types-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-types-core"/>
+
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-comment"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-comment-api"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-comment-core"/>
@@ -59,6 +66,19 @@
 
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-versioning-api"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-versioning-core"/>
+    </artifacts>
+  </artifactSet>
+
+  <artifactSet id="platform-audit-bundles" profile="audit">
+    <artifacts>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-audit-api"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-audit-core"/>
+    </artifacts>
+  </artifactSet>
+
+  <artifactSet id="platform-el-bundles" profile="el">
+    <artifacts>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-el"/>
     </artifacts>
   </artifactSet>
 
@@ -98,23 +118,44 @@
     </artifacts>
   </artifactSet>
 
+  <artifactSet id="third-party-el-libs" profile="el">
+    <artifacts>
+      <artifact group="javax.el" name="el-ri"/>
+      <artifact group="javax.el" name="el-api"/>
+    </artifacts>
+  </artifactSet>
+
+  <artifactSet id="third-party-jpa-libs" profile="jpa">
+    <artifacts>
+      <artifact group="antlr" name="antlr"/>
+      <artifact group="cglib" name="cglib-nodep"/>
+      <artifact group="javax.persistence" name="persistence"/>
+      <artifact group="javax.transaction" name="jta"/>
+      <artifact group="org.hibernate" name="hibernate-entitymanager" />
+    </artifacts>
+  </artifactSet>
 
   <assemble>
     <set>base-template</set>
     <set>template</set>
     <set>webengine-template</set>
     <set>platform-template</set>
+    <set>platform-audit-template</set>
     <outputFile>/</outputFile>
   </assemble>
 
   <assemble>
     <set>third-party-libs</set>
+    <set>third-party-el-libs</set>
+    <set>third-party-jpa-libs</set>
     <outputFile>lib</outputFile>
   </assemble>
 
   <assemble>
     <set>bundles</set>
     <set>platform-bundles</set>
+    <set>platform-el-bundles</set>
+    <set>platform-audit-bundles</set>
     <set>webengine-bundles</set>
     <outputFile>bundles</outputFile>
   </assemble>
