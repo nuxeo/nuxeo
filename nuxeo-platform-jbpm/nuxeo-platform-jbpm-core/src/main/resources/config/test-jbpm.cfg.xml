@@ -1,0 +1,7 @@
+<jbpm-configuration>
+	<string name='resource.hibernate.cfg.xml' value='config/test-hibernate.cfg.xml' />
+	<jbpm-context>
+		<service name="tx" factory="org.jbpm.tx.TxServiceFactory" />
+    <service name="persistence" factory="org.jbpm.persistence.db.DbPersistenceServiceFactory" />
+	</jbpm-context>
+</jbpm-configuration>

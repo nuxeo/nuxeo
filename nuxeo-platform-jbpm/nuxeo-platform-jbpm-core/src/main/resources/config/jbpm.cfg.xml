@@ -1,0 +1,19 @@
+<jbpm-configuration>
+  <string name='resource.hibernate.cfg.xml' value='config/hibernate.cfg.xml' />
+  <string name="resource.node.types" value="config/node.types.xml" />
+	<jbpm-context>
+		<service name="persistence">
+			<factory>
+				<bean class="org.jbpm.persistence.db.DbPersistenceServiceFactory">
+					<field name="isTransactionEnabled">
+						<false />
+					</field>
+					<field name="isCurrentSessionEnabled">
+						<true />
+					</field>
+				</bean>
+			</factory>
+		</service>
+    <service name="tx" factory="org.jbpm.tx.TxServiceFactory" />
+	</jbpm-context>
+</jbpm-configuration>

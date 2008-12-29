@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM JBPM Test
+Bundle-SymbolicName: org.nuxeo.ecm.platform.core.jbpm.test;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateful
+Require-Bundle: org.nuxeo.ecm.platform.types.core
+  org.nuxeo.ecm.platform.core.jbpm
+Nuxeo-Component: OSGI-INF/test-contrib.xml

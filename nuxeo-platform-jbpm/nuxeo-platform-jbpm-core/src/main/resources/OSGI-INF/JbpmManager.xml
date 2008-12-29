@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.jbpm.core.JbpmManager">
+  <documentation>The JbpmConfiguration manages the configuration of jBPM</documentation>
+  <implementation class="org.nuxeo.ecm.platform.jbpm.core.JBPMManagerComponent" />
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.jbpm.core.JBPMConfiguration"/>
+  </service>
+  <extension-point name="configurationPath">
+    <documentation>A named configuration contribution. It provides the path of
+      the jbpm configuration file to use.</documentation>
+    <object
+      class="org.nuxeo.ecm.platform.jbpm.core.service.ConfigurationPathDescriptor" />
+  </extension-point>
+  <extension-point name="activeConfiguration">
+    <documentation>The name of the active configuration. Only one
+      configuration can be active.</documentation>
+    <object
+      class="org.nuxeo.ecm.platform.jbpm.core.service.ActiveConfigurationDescriptor" />
+  </extension-point>
+</component>

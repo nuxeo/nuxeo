@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component
+	name="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContribWithWF">
+  <require>org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContrib</require>
+	<extension
+		target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
+		point="factoryBinding">
+
+		<factoryBinding name="DomainFactory" factoryName="SimpleTemplateFactory"
+			targetType="Domain">
+			<template>
+				<templateItem typeName="WorkspaceRoot" id="workspaces"
+					title="Workspaces" description="Workspaces" />
+				<templateItem typeName="SectionRoot" id="sections"
+					title="Sections" description="Sections" />
+				<templateItem typeName="TemplateRoot" id="templates"
+					title="Templates" description="Root of workspaces templates" />
+				<templateItem typeName="TaskFolder" id="taskroot"
+					title="Tasks" description="Tasks" />
+				<templateItem typeName="WorkflowFolder" id="workflowroot"
+					title="Workflows" description="Workflows" />
+			</template>
+		</factoryBinding>
+
+	</extension>
+
+</component>

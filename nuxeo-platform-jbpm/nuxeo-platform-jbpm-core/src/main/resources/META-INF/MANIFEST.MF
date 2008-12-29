@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM JBPM
+Bundle-SymbolicName: org.nuxeo.ecm.platform.core.jbpm;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateful
+Require-Bundle: org.nuxeo.ecm.platform.types.core
+Nuxeo-Component: OSGI-INF/JbpmActiveConfiguration-contrib.xml,
+  OSGI-INF/jbpmService-contrib.xml,
+  OSGI-INF/JbpmService.xml

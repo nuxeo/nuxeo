@@ -1,0 +1,18 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:c="http://java.sun.com/jstl/core">
+  <ui:define name="page title">#{messages['title.create.workflow']}</ui:define>
+  <ui:define name="body">
+  #{messages['workflow.choose.processdefinition']}
+  :#{pd}:#{org.nuxeo.ecm.platform.jbpm.web.ProcessDefinitionManager}:
+  <!-- h:selectOneMenu id="selected-pd" value="#{pd.selectedPD}">
+    <f:selectItems value="#{pd.listPD}"/>
+  </h:selectOneMenu -->
+  </ui:define>
+</nxthemes:composition>

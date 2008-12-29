@@ -1,0 +1,23 @@
+<node-types>
+  <!-- Default jbpm node types -->
+  <node-type element="start-state" class="org.jbpm.graph.node.StartState" />
+  <node-type element="end-state" class="org.jbpm.graph.node.EndState" />
+  <node-type element="node" class="org.jbpm.graph.def.Node" />
+  <node-type element="state" class="org.jbpm.graph.node.State" />
+  <node-type element="task-node" class="org.jbpm.graph.node.TaskNode" />
+  <node-type element="fork" class="org.jbpm.graph.node.Fork" />
+  <node-type element="join" class="org.jbpm.graph.node.Join" />
+  <node-type element="decision" class="org.jbpm.graph.node.Decision" />
+  <node-type element="process-state" class="org.jbpm.graph.node.ProcessState" />
+  <node-type element="super-state" class="org.jbpm.graph.def.SuperState" />
+  <node-type element="merge" class="org.jbpm.graph.node.Merge" />
+  <node-type element="milestone-node" class="org.jbpm.graph.node.MilestoneNode" />
+  <node-type element="interleave-start" class="org.jbpm.graph.node.InterleaveStart" />
+  <node-type element="interleave-end" class="org.jbpm.graph.node.InterleaveEnd" />
+  <node-type element="mail-node" class="org.jbpm.graph.node.MailNode" />
+  <node-type element="page" class="org.jboss.seam.pageflow.Page" />
+  <node-type element="start-page" class="org.jboss.seam.pageflow.Page" />
+  <!-- Nuxeo added node type -->
+  <node-type element="foreach-fork" class="org.nuxeo.ecm.platform.jbpm.core.node.ForeachFork"/>
+  <node-type element="foreach-join" class="org.nuxeo.ecm.platform.jbpm.core.node.ForeachJoin"/>
+</node-types>

@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.jbpm.LayoutContrib">
+	<extension target="org.nuxeo.ecm.platform.types.TypeService"
+		point="types">
+		<type id="TaskFolder" coretype="TaskFolder">
+			<label>WorkspaceRoot</label>
+			<icon>/icons/workspace.gif</icon>
+			<default-view>view_documents</default-view>
+			<subtypes>
+			  <type>Task</type>
+			</subtypes>
+			<layouts mode="any">
+			  <layout>heading</layout>
+			</layouts>
+		</type>
+    <type id="WorkflowFolder" coretype="WorkflowFolder">
+      <label>WorkspaceRoot</label>
+      <icon>/icons/workspace.gif</icon>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Workflow</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+    </type>
+    <type id="Task" coretype="Task">
+      <label>Task</label>
+      <icon>/icons/file.gif</icon>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+    </type>
+    <type id="Workflow" coretype="Workflow">
+      <label>Workflow</label>
+      <icon>/icons/file.gif</icon>
+      <default-view>view_documents</default-view>
+      <create-view>workflow_create_view</create-view>
+      <laytouts mode="any">
+        <layout>heading</layout>
+      </laytouts>
+    </type>
+    <type id="Domain" coretype="Domain">
+      <subtypes>
+        <type>WorkspaceRoot</type>
+        <type>SectionRoot</type>
+        <type>TemplateRoot</type>
+        <type>TaskFolder</type>
+        <type>WorkflowFolder</type>
+      </subtypes>
+    </type>
+	</extension>
+</component>
