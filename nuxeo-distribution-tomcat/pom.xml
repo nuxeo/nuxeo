@@ -22,7 +22,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-nuxeo-plugin</artifactId>
-        <extensions>true</extensions>
+        <extensions>false</extensions>
         <executions>
           <execution>
             <id>assemble-app</id>

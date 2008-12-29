@@ -247,6 +247,17 @@
         </New>
       </Arg>
     </New>
+    
+     <!-- ======== Nuxeo Audits Data Source ========= -->
+    <New id="nxaudits" class="org.mortbay.jetty.plus.naming.Resource">
+      <Arg>jdbc/nxaudits</Arg>
+      <Arg>
+        <New class="org.apache.derby.jdbc.EmbeddedDataSource">
+          <Set name="databaseName">nxaudits</Set>
+          <Set name="createDatabase">create</Set>
+        </New>
+      </Arg>
+    </New>
 
     
     
