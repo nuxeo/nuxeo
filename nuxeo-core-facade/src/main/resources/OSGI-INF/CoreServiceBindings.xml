@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.ecm.core.facade.CoreServiceBindings" version="1.0">
   <documentation>
     The default core service bindings
@@ -26,6 +25,5 @@
   </service-->
 
   </extension>
-
 
 </component>

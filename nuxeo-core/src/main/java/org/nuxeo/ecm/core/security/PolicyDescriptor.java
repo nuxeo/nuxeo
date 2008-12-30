@@ -40,16 +40,8 @@ public class PolicyDescriptor {
         return policy;
     }
 
-    public void setPolicy(Class<Object> policy) {
-        this.policy = policy;
-    }
-
     public String getType() {
         return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
 }

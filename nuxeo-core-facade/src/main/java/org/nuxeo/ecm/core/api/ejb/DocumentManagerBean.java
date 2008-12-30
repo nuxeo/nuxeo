@@ -91,7 +91,6 @@ public class DocumentManagerBean extends AbstractSession implements SessionSynch
     @Resource
     transient EJBContext context;
 
-
     @Override
     @Remove
     @PermitAll
@@ -218,7 +217,6 @@ public class DocumentManagerBean extends AbstractSession implements SessionSynch
         Repository repo = NXCore.getRepository(repoName);
         return repo.getSession(context);
     }
-
 
     // ----------------------- cache interceptors ------------
 

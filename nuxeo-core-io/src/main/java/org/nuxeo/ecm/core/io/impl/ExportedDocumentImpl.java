@@ -194,9 +194,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
     }
 
     /**
-     * The number of files describing the document.
-     *
-     * @return
+     * @return the number of files describing the document.
      */
     public int getFilesCount() {
         return 1 + documents.size() + blobs.size();

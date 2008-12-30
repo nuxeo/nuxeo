@@ -40,10 +40,8 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
  * <p>
  * Iterates over ordered policies. First policy to give a known access (grant or
  * deny) applies.
- * </p>
  *
  * @author Anahide Tchertchian
- *
  */
 public class SecurityPolicyServiceImpl implements SecurityPolicyService {
 

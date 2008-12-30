@@ -93,10 +93,12 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
         return typesMapping;
     }
 
+    @Deprecated
     public void setTypesMapping(Map<String, String> typesMapping) {
         this.typesMapping = typesMapping;
     }
 
+    @Deprecated
     public void setLifeCycles(Map<String, LifeCycle> lifeCycles) {
         this.lifeCycles = lifeCycles;
     }

@@ -78,4 +78,5 @@ public interface VersioningDocument {
      * @return
      */
     String getVersionAsString(int majorDigits, int minorDigits, char sep) throws DocumentException;
+
 }

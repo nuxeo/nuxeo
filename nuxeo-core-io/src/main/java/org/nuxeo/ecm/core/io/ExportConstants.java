@@ -19,13 +19,14 @@
 
 package org.nuxeo.ecm.core.io;
 
-
 /**
  * Constants that provide the types for which the reader are for.
  *
  * @author <a href="mailto:bt@nuxeo.com">Bogdan Tatar</a>
  */
 public final class ExportConstants {
+
+    // All these constants are actually used. This is Good.
 
     public static final String ZIP_HEADER = "=========== Nuxeo ECM Archive v. 1.0.0 ===========\r\n";
 
