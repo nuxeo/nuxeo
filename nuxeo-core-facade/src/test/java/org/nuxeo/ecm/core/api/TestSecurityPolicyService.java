@@ -120,16 +120,6 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         saveAndcloseSession(session);
     }
 
-    public void testOldCorePolicy() throws Exception {
-        // standard permissions
-        deployContrib(TestConstants.CORE_BUNDLE,
-                "OSGI-INF/permissions-contrib.xml");
-        // deploy custom security policy
-        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
-                "PolicyService.xml");
-        checkCorePolicy();
-    }
-
     public void testNewSecurityPolicy() throws Exception {
         // standard permissions
         deployContrib(TestConstants.CORE_BUNDLE,
