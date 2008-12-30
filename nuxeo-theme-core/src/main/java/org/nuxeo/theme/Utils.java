@@ -48,15 +48,15 @@ public final class Utils {
         return text.replaceAll("\n", " ").replaceAll("\\t+", " ").replaceAll(
                 "\\s+", " ").trim();
     }
-        
+
     public static byte[] readResourceAsBytes(final String path) {
         return readResource(path).toByteArray();
     }
-    
+
     public static String readResourceAsString(final String path) {
         return readResource(path).toString();
     }
-    
+
     private static ByteArrayOutputStream readResource(final String path) {
         InputStream is = null;
         ByteArrayOutputStream os = null;
@@ -117,7 +117,7 @@ public final class Utils {
         return content;
     }
 
-    public static void writeFile(URL url, String text) {
+    public static void writeFile(URL url, String text) throws IOException {
         // local file system
         if (url.getProtocol().equals("file")) {
             String filepath = url.getFile();
@@ -125,12 +125,13 @@ public final class Utils {
             PrintWriter out = null;
             try {
                 out = new PrintWriter(new FileWriter(file));
-            } catch (IOException e) {
-                log.error(e);
-            }
-            if (out != null) {
                 out.write(text);
-                out.close();
+            } catch (IOException e) {
+                throw e;
+            } finally {
+                if (out != null) {
+                    out.close();
+                }
             }
 
         } else {

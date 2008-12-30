@@ -19,6 +19,7 @@ import org.nuxeo.theme.elements.ElementFormatter;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.test.DummyFragment;
+import org.nuxeo.theme.themes.ThemeException;
 
 public class TestFormatter extends NXRuntimeTestCase {
 
@@ -29,7 +30,7 @@ public class TestFormatter extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
     }
 
-    public void testFormatter() {
+    public void testFormatter() throws ThemeException {
         DummyFragment fragment = new DummyFragment();
         Format widget= FormatFactory.create("widget");
         widget.setName("vertical menu");

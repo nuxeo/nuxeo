@@ -60,6 +60,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class ThemeParser {
 
@@ -69,7 +70,8 @@ public class ThemeParser {
 
     private static final XPath xpath = XPathFactory.newInstance().newXPath();
 
-    public static String registerTheme(final String src) {
+    public static String registerTheme(final String src)
+            throws ThemeIOException {
         String themeName = null;
         URL url = null;
         InputStream in = null;
@@ -81,17 +83,18 @@ public class ThemeParser {
         }
 
         if (url == null) {
-            log.error("Incorrect theme URL: " + src);
-            return null;
+            throw new ThemeIOException("Incorrect theme URL: " + src);
         }
 
         try {
             in = url.openStream();
             themeName = registerTheme(in);
         } catch (FileNotFoundException e) {
-            log.error("File not found: " + src);
+            throw new ThemeIOException("File not found: " + src, e);
         } catch (IOException e) {
-            log.error("Could not open file: " + src);
+            throw new ThemeIOException("Could not open file: " + src, e);
+        } catch (ThemeException e) {
+            throw new ThemeIOException("Parsing error: " + src, e);
         } finally {
             if (in != null) {
                 try {
@@ -106,86 +109,91 @@ public class ThemeParser {
         return themeName;
     }
 
-    private static String registerTheme(final InputStream in) {
+    private static String registerTheme(final InputStream in)
+            throws ThemeIOException, ThemeException {
         String themeName = null;
+
+        final InputSource is = new InputSource(in);
+        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
-            final InputSource is = new InputSource(in);
-            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            try {
-                dbf.setFeature("http://xml.org/sax/features/validation", false);
-                dbf.setFeature(
-                        "http://apache.org/xml/features/nonvalidating/load-external-dtd",
-                        false);
-            } catch (ParserConfigurationException e) {
-                log.debug("Could not set DTD non-validation feature");
-            }
-            final ThemeManager themeManager = Manager.getThemeManager();
-
-            final DocumentBuilder db = dbf.newDocumentBuilder();
-            final Document document = db.parse(is);
-            final org.w3c.dom.Element docElem = document.getDocumentElement();
-            if (!docElem.getNodeName().equals(DOCROOT_NAME)) {
-                log.warn("No <" + DOCROOT_NAME + "> document tag found in "
-                        + in.toString() + ", ignoring the resource.");
-                return null;
-            }
-
-            themeName = docElem.getAttributes().getNamedItem("name").getNodeValue();
-            if (!ThemeManager.validateThemeName(themeName)) {
-                log.error("Theme names may only contain lower-case alpha-numeric characters, underscores and hyphens: "
-                        + themeName);
-                return null;
-            }
-
-            // remove old theme
-            ThemeElement oldTheme = themeManager.getThemeByName(themeName);
-            if (oldTheme != null) {
-                themeManager.destroyElement(oldTheme);
-            }
-
-            // create a new theme
-            ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
-            theme.setName(themeName);
-            String description = docElem.getAttribute("description");
-            if (description != null) {
-                theme.setDescription(description);
-            }
-
-            // register custom presets
-            for (Node n : getChildElementsByTagName(docElem, "presets")) {
-                parsePresets(theme, n);
-            }
-
-            // register formats
-            for (Node n : getChildElementsByTagName(docElem, "formats")) {
-                parseFormats(theme, docElem, n);
-            }
-
-            // register element properties
-            for (Node n : getChildElementsByTagName(docElem, "properties")) {
-                parseProperties(docElem, n);
-            }
-
-            Node baseNode = getBaseNode(docElem);
-            if (baseNode == null) {
-                log.warn(in.toString() + ": no <layout> section  found.");
-                return null;
-            }
-
-            // parse layout
-            parseLayout(theme, baseNode);
-
-            themeManager.registerTheme(theme);
-            return themeName;
-
-        } catch (Exception e) {
-            log.error("Could not register theme", e);
+            dbf.setFeature("http://xml.org/sax/features/validation", false);
+            dbf.setFeature(
+                    "http://apache.org/xml/features/nonvalidating/load-external-dtd",
+                    false);
+        } catch (ParserConfigurationException e) {
+            log.debug("Could not set DTD non-validation feature");
         }
-        return null;
+        final ThemeManager themeManager = Manager.getThemeManager();
+
+        DocumentBuilder db;
+        try {
+            db = dbf.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new ThemeIOException(e);
+        }
+        Document document;
+        try {
+            document = db.parse(is);
+        } catch (SAXException e) {
+            throw new ThemeIOException(e);
+        } catch (IOException e) {
+            throw new ThemeIOException(e);
+        }
+        final org.w3c.dom.Element docElem = document.getDocumentElement();
+        if (!docElem.getNodeName().equals(DOCROOT_NAME)) {
+            throw new ThemeIOException("No <" + DOCROOT_NAME
+                    + "> document tag found in " + in.toString()
+                    + ", ignoring the resource.");
+        }
+
+        themeName = docElem.getAttributes().getNamedItem("name").getNodeValue();
+        if (!ThemeManager.validateThemeName(themeName)) {
+            throw new ThemeIOException(
+                    "Theme names may only contain lower-case alpha-numeric characters, underscores and hyphens: "
+                            + themeName);
+        }
+
+        // remove old theme
+        ThemeElement oldTheme = themeManager.getThemeByName(themeName);
+        if (oldTheme != null) {
+            themeManager.destroyElement(oldTheme);
+        }
+
+        Node baseNode = getBaseNode(docElem);
+
+        // create a new theme
+        ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
+        theme.setName(themeName);
+        String description = docElem.getAttribute("description");
+        if (description != null) {
+            theme.setDescription(description);
+        }
+
+        // register custom presets
+        for (Node n : getChildElementsByTagName(docElem, "presets")) {
+            parsePresets(theme, n);
+        }
+
+        // register formats
+        for (Node n : getChildElementsByTagName(docElem, "formats")) {
+            parseFormats(theme, docElem, n);
+        }
+
+        // register element properties
+        for (Node n : getChildElementsByTagName(docElem, "properties")) {
+            parseProperties(docElem, n);
+        }
+
+        // parse layout
+        parseLayout(theme, baseNode);
+
+        themeManager.registerTheme(theme);
+        return themeName;
+
     }
 
     private static void parseLayout(final Element parent, Node node)
-            throws Exception {
+            throws ThemeIOException {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         for (String formatName : typeRegistry.getTypeNames(TypeFamily.FORMAT)) {
             Object format = node.getUserData(formatName);
@@ -233,15 +241,14 @@ public class ThemeParser {
             }
 
             if (elem == null) {
-                log.error("Could not parse node: " + nodeName);
-                return;
+                throw new ThemeIOException("Could not parse node: " + nodeName);
             }
 
             if (elem instanceof PageElement) {
                 String pageName = attributes.getNamedItem("name").getNodeValue();
                 if (!pageName.matches("[a-z0-9_\\-]+")) {
-                    log.error("Page names may only contain lower-case alpha-numeric characters, digits, underscores and dashes.");
-                    return;
+                    throw new ThemeIOException(
+                            "Page names may only contain lower-case alpha-numeric characters, digits, underscores and dashes.");
                 }
                 elem.setName(pageName);
             }
@@ -275,7 +282,7 @@ public class ThemeParser {
     }
 
     private static void parseFormats(final ThemeElement theme,
-            org.w3c.dom.Element doc, Node node) {
+            org.w3c.dom.Element doc, Node node) throws ThemeIOException, ThemeException {
         Node baseNode = getBaseNode(doc);
         String themeName = theme.getName();
         ThemeManager themeManager = Manager.getThemeManager();
@@ -291,7 +298,12 @@ public class ThemeParser {
                 elementXPath = elementItem.getNodeValue();
             }
 
-            Format format = FormatFactory.create(nodeName);
+            Format format;
+            try {
+                format = FormatFactory.create(nodeName);
+            } catch (ThemeException e) {
+                throw new ThemeIOException(e);
+            }
             format.setProperties(getPropertiesFromNode(n));
 
             String description = getCommentAssociatedTo(n);
@@ -438,12 +450,13 @@ public class ThemeParser {
         }
     }
 
-    private static void parseProperties(org.w3c.dom.Element doc, Node node) {
+    private static void parseProperties(org.w3c.dom.Element doc, Node node)
+            throws ThemeIOException {
         NamedNodeMap attributes = node.getAttributes();
         Node elementAttr = attributes.getNamedItem("element");
         if (elementAttr == null) {
-            log.error("<properties> node has no 'element' attribute.");
-            return;
+            throw new ThemeIOException(
+                    "<properties> node has no 'element' attribute.");
         }
         String elementXPath = elementAttr.getNodeValue();
 
@@ -453,12 +466,11 @@ public class ThemeParser {
             element = (Node) xpath.evaluate(elementXPath, baseNode,
                     XPathConstants.NODE);
         } catch (XPathExpressionException e) {
-            log.error("Could not parse properties", e);
+            throw new ThemeIOException(e);
         }
         if (element == null) {
-            log.warn("Could not find the element associated to: "
-                    + elementXPath);
-            return;
+            throw new ThemeIOException(
+                    "Could not find the element associated to: " + elementXPath);
         }
         element.setUserData("properties", getPropertiesFromNode(node), null);
     }
@@ -505,13 +517,17 @@ public class ThemeParser {
         return nodes;
     }
 
-    private static Node getBaseNode(org.w3c.dom.Element doc) {
+    private static Node getBaseNode(org.w3c.dom.Element doc)
+            throws ThemeIOException {
         Node baseNode = null;
         try {
             baseNode = (Node) xpath.evaluate('/' + DOCROOT_NAME + "/layout",
                     doc, XPathConstants.NODE);
-        } catch (XPathExpressionException le) {
-            log.warn("Could not find the layout node");
+        } catch (XPathExpressionException e) {
+            throw new ThemeIOException(e);
+        }
+        if (baseNode == null) {
+            throw new ThemeIOException("No <layout> section found.");
         }
         return baseNode;
     }
@@ -564,7 +580,8 @@ public class ThemeParser {
         return null;
     }
 
-    private static List<Node> getNodesByXPath(Node baseNode, String elementXPath) {
+    private static List<Node> getNodesByXPath(Node baseNode, String elementXPath)
+            throws ThemeIOException {
         final List<Node> nodes = new ArrayList<Node>();
         if (elementXPath != null) {
             try {
@@ -574,7 +591,7 @@ public class ThemeParser {
                     nodes.add(elementNodes.item(i));
                 }
             } catch (XPathExpressionException e) {
-                log.warn("Could not parse the path: " + elementXPath);
+                throw new ThemeIOException(e);
             }
         }
         return nodes;

@@ -29,6 +29,7 @@ import org.nuxeo.theme.formats.widgets.Widget;
 import org.nuxeo.theme.fragments.FragmentFactory;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.test.DummyFragment;
+import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.themes.ThemeSerializer;
 
@@ -52,7 +53,7 @@ public class TestThemeSerializer extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    public void testSerializeTheme() {
+    public void testSerializeTheme() throws ThemeException {
         Element theme = ElementFactory.create("theme");
         theme.setName("default");
         Element page = ElementFactory.create("page");

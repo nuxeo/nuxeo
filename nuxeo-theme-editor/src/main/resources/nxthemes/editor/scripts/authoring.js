@@ -826,7 +826,7 @@ NXThemesEditor.saveTheme = function(src, indent) {
          },
          onComplete: function(r) {
            var text = r.responseText;
-           var msg = text ? "Theme saved." : "The theme could not be saved.";
+           var msg = text == "1" ? "Theme saved." : "The theme could not be saved.";
            NXThemes.getViewById("theme manager").refresh();
            NXThemesEditor.writeMessage(msg);
          }

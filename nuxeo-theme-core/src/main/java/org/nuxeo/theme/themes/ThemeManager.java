@@ -54,7 +54,9 @@ import org.nuxeo.theme.engines.EngineType;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.formats.FormatType;
+import org.nuxeo.theme.formats.layouts.Layout;
 import org.nuxeo.theme.formats.styles.Style;
+import org.nuxeo.theme.formats.widgets.Widget;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentFactory;
 import org.nuxeo.theme.fragments.FragmentType;
@@ -420,7 +422,7 @@ public final class ThemeManager implements Registrable {
 
     // Element actions
     public Element duplicateElement(final Element element,
-            final boolean duplicateFormats) {
+            final boolean duplicateFormats) throws ThemeException {
         Element duplicate;
         final String typeName = element.getElementType().getTypeName();
 
@@ -483,7 +485,7 @@ public final class ThemeManager implements Registrable {
     }
 
     // Formats
-    public Format duplicateFormat(final Format format) {
+    public Format duplicateFormat(final Format format) throws ThemeException {
         final String typeName = format.getFormatType().getTypeName();
         final Format duplicate = FormatFactory.create(typeName);
         registerFormat(duplicate);
@@ -655,15 +657,22 @@ public final class ThemeManager implements Registrable {
         try {
             url = new URL(src);
         } catch (MalformedURLException e) {
-            log.error("Could not save theme to " + src);
+            throw new ThemeIOException("Could not save theme to " + src, e);
         }
-        if (url != null) {
+        try {
             Utils.writeFile(url, xml);
+        } catch (IOException e) {
+            throw new ThemeIOException("Could not save theme to " + src, e);
         }
     }
 
-    public static void repairTheme(ThemeElement theme) {
-        ThemeRepairer.repair(theme);
+    public static void repairTheme(ThemeElement theme) throws ThemeIOException {
+        try {
+            ThemeRepairer.repair(theme);
+        } catch (ThemeException e) {
+            throw new ThemeIOException("Could not repair theme: "
+                    + theme.getName(), e);
+        }
     }
 
     public static String renderElement(URL url) {
@@ -942,6 +951,39 @@ public final class ThemeManager implements Registrable {
         // Get the first element assuming all elements belong to the same theme.
         Element element = elements.iterator().next();
         return getThemeOf(element);
+    }
+
+    public Layout createLayout() {
+        Layout layout = null;
+        try {
+            layout = (Layout) FormatFactory.create("layout");
+            registerFormat(layout);
+        } catch (ThemeException e) {
+            log.error("Layout creation failed", e);
+        }
+        return layout;
+    }
+
+    public Widget createWidget() {
+        Widget widget = null;
+        try {
+            widget = (Widget) FormatFactory.create("widget");
+            registerFormat(widget);
+        } catch (ThemeException e) {
+            log.error("Widget creation failed", e);
+        }
+        return widget;
+    }
+
+    public Style createStyle() {
+        Style style = null;
+        try {
+            style = (Style) FormatFactory.create("style");
+            registerFormat(style);
+        } catch (ThemeException e) {
+            log.error("Style creation failed", e);
+        }
+        return style;
     }
 
 }

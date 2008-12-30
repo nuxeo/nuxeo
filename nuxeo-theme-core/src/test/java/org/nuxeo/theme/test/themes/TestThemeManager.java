@@ -14,14 +14,12 @@
 
 package org.nuxeo.theme.test.themes;
 
-import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.nuxeo.theme.CustomThemeNameFilter;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFactory;
@@ -38,6 +36,8 @@ import org.nuxeo.theme.fragments.FragmentFactory;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.test.DummyFragment;
+import org.nuxeo.theme.themes.ThemeException;
+import org.nuxeo.theme.themes.ThemeIOException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.themes.ThemeParser;
 import org.nuxeo.theme.types.TypeRegistry;
@@ -155,7 +155,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertFalse(ThemeManager.belongToSameTheme(page12, page22));
     }
 
-    public void testDuplicateElement() {
+    public void testDuplicateElement() throws ThemeException {
         Element element = ElementFactory.create("page");
         element.setName("page 1");
 
@@ -177,7 +177,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
                 ElementFormatter.getFormatsFor(duplicate).iterator().next());
     }
 
-    public void testDuplicateFragment() {
+    public void testDuplicateFragment() throws ThemeException {
         DummyFragment fragment = (DummyFragment) FragmentFactory.create("dummy fragment");
         fragment.setField1("value of field 1");
         fragment.setField2("value of field 2");
@@ -218,7 +218,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertEquals("description", duplicatedFormat2.getDescription());
     }
 
-    public void testDuplicateWidget() {
+    public void testDuplicateWidget() throws ThemeException {
         Widget widget = (Widget) FormatFactory.create("widget");
         widget.setName("vertical menu");
         widget.setDescription("Description");
@@ -231,7 +231,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertSame(duplicate.getFormatType(), widget.getFormatType());
     }
 
-    public void testDuplicateLayout() {
+    public void testDuplicateLayout() throws ThemeException {
         Layout layout = (Layout) FormatFactory.create("layout");
         layout.setProperty("width", "100%");
         layout.setProperty("height", "50px");
@@ -242,7 +242,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertEquals("50px", duplicate.getProperty("height"));
     }
 
-    public void testDuplicateStyle() {
+    public void testDuplicateStyle() throws ThemeException {
         Style style = (Style) FormatFactory.create("style");
         Properties properties1 = new Properties();
         properties1.setProperty("color", "red");
@@ -261,7 +261,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertEquals(properties2, duplicateProperties2);
     }
 
-    public void testDuplicateFormatWithAncestors() {
+    public void testDuplicateFormatWithAncestors() throws ThemeException {
         Style style = (Style) FormatFactory.create("style");
 
         Style ancestor1 = (Style) FormatFactory.create("style");
@@ -279,7 +279,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertSame(ancestor2, ThemeManager.getAncestorFormatOf(ancestor1));
     }
 
-    public void testListFormats() {
+    public void testListFormats() throws ThemeException {
         DefaultFormat widget0 = (DefaultFormat) FormatFactory.create("widget");
         DefaultFormat widget1 = (DefaultFormat) FormatFactory.create("widget");
         assertTrue(themeManager.listFormats().isEmpty());
@@ -292,7 +292,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(themeManager.listFormats().isEmpty());
     }
 
-    public void testRemoveOrphanedFormats() {
+    public void testRemoveOrphanedFormats() throws ThemeException {
         Element theme = ElementFactory.create("theme");
 
         DefaultFormat widget0 = (DefaultFormat) FormatFactory.create("widget");
@@ -336,7 +336,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertFalse(themeManager.listFormats().contains(style3));
     }
 
-    public void testRemoveOrphanedFormatsOnTestTheme() {
+    public void testRemoveOrphanedFormatsOnTestTheme() throws ThemeIOException {
         ThemeParser.registerTheme("theme.xml");
         List<Format> formatsBefore = themeManager.listFormats();
         themeManager.removeOrphanedFormats();
@@ -344,7 +344,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertEquals(formatsBefore, formatsAfter);
     }
 
-    public void testStyleInheritance() {
+    public void testStyleInheritance() throws ThemeException {
         Style style = (Style) FormatFactory.create("style");
         style.setUid(1);
         Style ancestor1 = (Style) FormatFactory.create("style");
@@ -407,7 +407,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(ThemeManager.listAncestorFormatsOf(style1).isEmpty());
     }
 
-    public void testStyleInheritanceCycles() {
+    public void testStyleInheritanceCycles() throws ThemeException {
         Style style = (Style) FormatFactory.create("style");
         style.setUid(1);
         Style ancestor1 = (Style) FormatFactory.create("style");
@@ -433,7 +433,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(ThemeManager.listAncestorFormatsOf(ancestor3).isEmpty());
     }
 
-    public void testDestroyElement() {
+    public void testDestroyElement() throws ThemeException {
         Element theme = ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         Element section = ElementFactory.create("section");

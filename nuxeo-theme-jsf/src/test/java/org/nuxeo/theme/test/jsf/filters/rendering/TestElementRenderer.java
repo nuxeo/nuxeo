@@ -35,18 +35,26 @@ import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentFactory;
 import org.nuxeo.theme.rendering.RenderingInfo;
+import org.nuxeo.theme.themes.ThemeManager;
 
 public class TestElementRenderer extends NXRuntimeTestCase {
+
+    private ThemeManager themeManager;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         Manager.initializeProtocols();
-        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
-        deployContrib("org.nuxeo.theme.html", "OSGI-INF/nxthemes-html-contrib.xml");
-        deployContrib("org.nuxeo.theme.jsf", "OSGI-INF/nxthemes-jsf-contrib.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.html",
+                "OSGI-INF/nxthemes-html-contrib.xml");
+        deployContrib("org.nuxeo.theme.jsf",
+                "OSGI-INF/nxthemes-jsf-contrib.xml");
         deployContrib("org.nuxeo.theme.jsf.tests", "fragment-config.xml");
+        themeManager = Manager.getThemeManager();
     }
 
     @Override
@@ -54,6 +62,7 @@ public class TestElementRenderer extends NXRuntimeTestCase {
         // clear relations that have been set through ElementFormatter
         Manager.getRelationStorage().clear();
         super.tearDown();
+        themeManager = null;
     }
 
     public void testElement() throws MalformedURLException {
@@ -75,10 +84,10 @@ public class TestElementRenderer extends NXRuntimeTestCase {
         fragment.setUid(1);
 
         // format the elements (e.g. with widgets)
-        Format widget1 = FormatFactory.create("widget");
-        Format widget2 = FormatFactory.create("widget");
-        Format widget3 = FormatFactory.create("widget");
-        Format widget4 = FormatFactory.create("widget");
+        Format widget1 = themeManager.createWidget();
+        Format widget2 = themeManager.createWidget();
+        Format widget3 = themeManager.createWidget();
+        Format widget4 = themeManager.createWidget();
 
         widget1.setName("page frame");
         widget2.setName("section frame");
@@ -90,12 +99,12 @@ public class TestElementRenderer extends NXRuntimeTestCase {
         ElementFormatter.setFormat(cell, widget3);
         ElementFormatter.setFormat(fragment, widget4);
 
-        Format sectionLayout = FormatFactory.create("layout");
+        Format sectionLayout = themeManager.createLayout();
         sectionLayout.setProperty("width", "100%");
         sectionLayout.setProperty("height", "300px");
         ElementFormatter.setFormat(section, sectionLayout);
 
-        Format cellLayout = FormatFactory.create("layout");
+        Format cellLayout = themeManager.createLayout();
         cellLayout.setProperty("width", "100px");
         ElementFormatter.setFormat(cell, cellLayout);
 

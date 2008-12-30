@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.CellElement;
 import org.nuxeo.theme.elements.Element;
@@ -31,7 +33,6 @@ import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.events.EventContext;
 import org.nuxeo.theme.events.EventManager;
 import org.nuxeo.theme.formats.Format;
-import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.formats.FormatType;
 import org.nuxeo.theme.formats.layouts.Layout;
 import org.nuxeo.theme.formats.styles.Style;
@@ -43,6 +44,7 @@ import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.FieldIO;
 import org.nuxeo.theme.themes.ThemeDescriptor;
+import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeIOException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeFamily;
@@ -51,14 +53,15 @@ import org.nuxeo.theme.views.ViewType;
 
 public class Editor {
 
+    private static final Log log = LogFactory.getLog(Editor.class);
+    
     public static void updateElementWidget(Element element, String viewName) {
         FormatType widgetType = (FormatType) Manager.getTypeRegistry().lookup(
                 TypeFamily.FORMAT, "widget");
         Format widget = ElementFormatter.getFormatByType(element, widgetType);
         ThemeManager themeManager = Manager.getThemeManager();
         if (widget == null) {
-            widget = FormatFactory.create("widget");
-            themeManager.registerFormat(widget);
+            widget = themeManager.createWidget();
         }
         widget.setName(viewName);
         ElementFormatter.setFormat(element, widget);
@@ -73,8 +76,7 @@ public class Editor {
             Layout layout = (Layout) ElementFormatter.getFormatFor(element,
                     "layout");
             if (layout == null) {
-                layout = (Layout) FormatFactory.create("layout");
-                Manager.getThemeManager().registerFormat(layout);
+                layout = Manager.getThemeManager().createLayout();
                 ElementFormatter.setFormat(element, layout);
             }
             for (Object key : propertyMap.keySet()) {
@@ -131,11 +133,9 @@ public class Editor {
         }
         ThemeManager themeManager = Manager.getThemeManager();
         Element newCell = ElementFactory.create("cell");
-        Format cellWidget = FormatFactory.create("widget");
+        Format cellWidget = themeManager.createWidget();
         cellWidget.setName("cell frame");
-        themeManager.registerFormat(cellWidget);
-        Format cellLayout = FormatFactory.create("layout");
-        themeManager.registerFormat(cellLayout);
+        Format cellLayout = themeManager.createLayout();
         FormatType layoutType = (FormatType) Manager.getTypeRegistry().lookup(
                 TypeFamily.FORMAT, "layout");
         Format layout = ElementFormatter.getFormatByType(element, layoutType);
@@ -150,8 +150,7 @@ public class Editor {
                                 halfWidth));
             }
         }
-        Format cellStyle = FormatFactory.create("style");
-        themeManager.registerFormat(cellStyle);
+        Format cellStyle = themeManager.createStyle();
         ElementFormatter.setFormat(newCell, cellWidget);
         ElementFormatter.setFormat(newCell, cellLayout);
         ElementFormatter.setFormat(newCell, cellStyle);
@@ -193,6 +192,7 @@ public class Editor {
         try {
             FieldIO.updateFieldsFromProperties(element, properties);
         } catch (Exception e) {
+            log.error(e);
         }
         EventManager eventManager = Manager.getEventManager();
         eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
@@ -212,7 +212,11 @@ public class Editor {
         if (theme == null) {
             return 0;
         }
-        ThemeManager.repairTheme(theme);
+        try {
+            ThemeManager.repairTheme(theme);
+        } catch (ThemeIOException e) {
+            log.error(e);
+        }
         EventManager eventManager = Manager.getEventManager();
         eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
                 theme, null));
@@ -226,6 +230,7 @@ public class Editor {
         try {
             ThemeManager.saveTheme(src, indent);
         } catch (ThemeIOException e) {
+            log.error("Could not save theme: " + src + ", " + e.getMessage());
             res = 0;
         }
         return res;
@@ -286,20 +291,25 @@ public class Editor {
         return css.toString();
     }
 
-    public static void pasteElement(Element element, String destId) {
+    public static int pasteElement(Element element, String destId) {
         Element destElement = ThemeManager.getElementById(destId);
         if (destElement.isLeaf()) {
             destElement = (Element) destElement.getParent();
         }
         if (element != null) {
-            destElement.addChild(Manager.getThemeManager().duplicateElement(
-                    element, true));
+            try {
+                destElement.addChild(Manager.getThemeManager().duplicateElement(
+                        element, true));
+            } catch (ThemeException e) {
+                return 0;
+            }
         }
         EventManager eventManager = Manager.getEventManager();
         eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
                 null, null));
         eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null,
                 destElement));
+        return element.getUid();
     }
 
     public static void moveElement(Element srcElement, Element destElement,
@@ -350,12 +360,10 @@ public class Editor {
         PageElement page = (PageElement) ElementFactory.create("page");
         String pageName = path.split("/")[1];
         page.setName(pageName);
-        Format pageWidget = FormatFactory.create("widget");
+        Format pageWidget = themeManager.createWidget();
         pageWidget.setName("page frame");
-        themeManager.registerFormat(pageWidget);
-        Format pageLayout = FormatFactory.create("layout");
-        themeManager.registerFormat(pageLayout);
-        Format pageStyle = FormatFactory.create("style");
+        Format pageLayout = themeManager.createLayout();
+        Format pageStyle = themeManager.createStyle();
         themeManager.registerFormat(pageStyle);
         ElementFormatter.setFormat(page, pageWidget);
         ElementFormatter.setFormat(page, pageStyle);
@@ -370,19 +378,16 @@ public class Editor {
         if (themeManager.getThemeByName(name) == null) {
             ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
             theme.setName(name);
-            Format themeWidget = FormatFactory.create("widget");
+            Format themeWidget = themeManager.createWidget();
             themeWidget.setName("theme view");
-            themeManager.registerFormat(themeWidget);
             ElementFormatter.setFormat(theme, themeWidget);
             // default page
             PageElement page = (PageElement) ElementFactory.create("page");
             page.setName("default");
-            Format pageWidget = FormatFactory.create("widget");
-            themeManager.registerFormat(pageWidget);
+            Format pageWidget = themeManager.createWidget();
             pageWidget.setName("page frame");
-            Format pageLayout = FormatFactory.create("layout");
-            themeManager.registerFormat(pageLayout);
-            Format pageStyle = FormatFactory.create("style");
+            Format pageLayout = themeManager.createLayout();
+            Format pageStyle = themeManager.createStyle();
             themeManager.registerFormat(pageStyle);
             ElementFormatter.setFormat(page, pageWidget);
             ElementFormatter.setFormat(page, pageStyle);
@@ -409,8 +414,7 @@ public class Editor {
             String propertyName, String value) {
         Style style = (Style) ElementFormatter.getFormatFor(element, "style");
         if (style == null) {
-            style = (Style) FormatFactory.create("style");
-            Manager.getThemeManager().registerFormat(style);
+            style = Manager.getThemeManager().createStyle();
             ElementFormatter.setFormat(element, style);
         }
         Widget widget = (Widget) ElementFormatter.getFormatFor(element,
@@ -441,8 +445,7 @@ public class Editor {
         Layout layout = (Layout) ElementFormatter.getFormatFor(element,
                 "layout");
         if (layout == null) {
-            layout = (Layout) FormatFactory.create("layout");
-            themeManager.registerFormat(layout);
+            layout = themeManager.createLayout();
             ElementFormatter.setFormat(element, layout);
         }
         if (element instanceof SectionElement) {
@@ -515,8 +518,13 @@ public class Editor {
     }
 
     public static int duplicateElement(Element element) {
-        Element duplicate = Manager.getThemeManager().duplicateElement(element,
-                true);
+        Element duplicate;
+        try {
+            duplicate = Manager.getThemeManager().duplicateElement(element,
+                    true);
+        } catch (ThemeException e) {
+            return 0;
+        }
         // insert the duplicated element
         element.getParent().addChild(duplicate);
         duplicate.moveTo(element.getParent(), element.getOrder() + 1);
@@ -532,9 +540,8 @@ public class Editor {
         if (element == null) {
             return;
         }
-        final Format style = FormatFactory.create("style");
         ThemeManager themeManager = Manager.getThemeManager();
-        themeManager.registerFormat(style);
+        final Format style = themeManager.createStyle();
         ElementFormatter.setFormat(element, style);
         EventManager eventManager = Manager.getEventManager();
         eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
@@ -547,10 +554,9 @@ public class Editor {
         Style style = (Style) themeManager.getNamedObject(themeName, "style",
                 styleName);
         if (style == null) {
-            style = (Style) FormatFactory.create("style");
+            style = themeManager.createStyle();
             style.setName(styleName);
             themeManager.setNamedObject(themeName, "style", style);
-            themeManager.registerFormat(style);
         }
         themeManager.makeElementUseNamedStyle(element, styleName, themeName);
         EventManager eventManager = Manager.getEventManager();
@@ -596,6 +602,7 @@ public class Editor {
         try {
             Manager.getThemeManager().loadTheme(src);
         } catch (ThemeIOException e) {
+            log.error("Could not load theme: " + src + ", " + e.getMessage());
             return 0;
         }
         EventManager eventManager = Manager.getEventManager();
@@ -620,10 +627,9 @@ public class Editor {
         String fragmentTypeName = typeName.split("/")[0];
         Fragment fragment = FragmentFactory.create(fragmentTypeName);
         // add a temporary view to the fragment
-        Format widget = FormatFactory.create("widget");
+        Format widget = themeManager.createWidget();
         String viewTypeName = typeName.split("/")[1];
         widget.setName(viewTypeName);
-        themeManager.registerFormat(widget);
         ElementFormatter.setFormat(fragment, widget);
         // insert the fragment
         destContainer.addChild(fragment);
@@ -635,30 +641,25 @@ public class Editor {
     }
 
     public static void insertSectionAfter(Element element) {
+        ThemeManager themeManager = Manager.getThemeManager();
         Element newSection = ElementFactory.create("section");
         Element newCell = ElementFactory.create("cell");
         // section
-        Format sectionWidget = FormatFactory.create("widget");
+        Format sectionWidget = themeManager.createWidget();
         sectionWidget.setName("section frame");
-        ThemeManager themeManager = Manager.getThemeManager();
-        themeManager.registerFormat(sectionWidget);
-        Format sectionLayout = FormatFactory.create("layout");
+        Format sectionLayout = themeManager.createLayout();
         sectionLayout.setProperty("width", "100%");
-        themeManager.registerFormat(sectionLayout);
-        Format sectionStyle = FormatFactory.create("style");
-        themeManager.registerFormat(sectionStyle);
+        Format sectionStyle = themeManager.createStyle();
         ElementFormatter.setFormat(newSection, sectionWidget);
         ElementFormatter.setFormat(newSection, sectionLayout);
         ElementFormatter.setFormat(newSection, sectionStyle);
         // cell
-        Format cellWidget = FormatFactory.create("widget");
+        Format cellWidget =  themeManager.createWidget();
         cellWidget.setName("cell frame");
         themeManager.registerFormat(cellWidget);
-        Format cellLayout = FormatFactory.create("layout");
-        themeManager.registerFormat(cellLayout);
+        Format cellLayout = themeManager.createLayout();
         cellLayout.setProperty("width", "100%");
-        Format cellStyle = FormatFactory.create("style");
-        themeManager.registerFormat(cellStyle);
+        Format cellStyle = themeManager.createStyle();
         ElementFormatter.setFormat(newCell, cellWidget);
         ElementFormatter.setFormat(newCell, cellLayout);
         ElementFormatter.setFormat(newCell, cellStyle);

@@ -26,13 +26,14 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.theme.themes.ThemeIOException;
 
 public class FieldIO {
 
     private static final Log log = LogFactory.getLog(FieldIO.class);
 
     public static void updateFieldsFromProperties(Object object,
-            Properties properties) throws Exception {
+            Properties properties) throws ThemeIOException {
         Enumeration<?> names = properties.propertyNames();
 
         while (names.hasMoreElements()) {
@@ -40,20 +41,40 @@ public class FieldIO {
             String value = properties.getProperty(name);
 
             Class<?> c = object.getClass();
-            Field field = c.getField(name);
+            Field field;
+            try {
+                field = c.getField(name);
+            } catch (SecurityException e) {
+                throw new ThemeIOException(e);
+            } catch (NoSuchFieldException e) {
+                throw new ThemeIOException(e);
+            }
             Class<?> fieldType = field.getType();
             Type fieldGenericType = field.getGenericType();
 
             // boolean fields
             if (fieldType.equals(boolean.class)
                     || fieldType.equals(Boolean.class)) {
-                field.setBoolean(object, Boolean.parseBoolean(value));
+                try {
+                    field.setBoolean(object, Boolean.parseBoolean(value));
+                } catch (IllegalArgumentException e) {
+                    throw new ThemeIOException(e);
+                } catch (IllegalAccessException e) {
+                    throw new ThemeIOException(e);
+                }
                 continue;
             }
 
             // string fields
             if (fieldType.equals(String.class)) {
-                field.set(object, value);
+                try {
+                    field.set(object, value);
+                } catch (IllegalArgumentException e) {
+                    // TODO Auto-generated catch block
+                    throw new ThemeIOException(e);
+                } catch (IllegalAccessException e) {
+                    throw new ThemeIOException(e);
+                }
                 continue;
             }
 
@@ -73,7 +94,13 @@ public class FieldIO {
                     if (actualTypes[0].equals(String.class)) {
                         List<String> list = new ArrayList<String>();
                         list.addAll(Arrays.asList(value.split(",")));
-                        field.set(object, list);
+                        try {
+                            field.set(object, list);
+                        } catch (IllegalArgumentException e) {
+                            throw new ThemeIOException(e);
+                        } catch (IllegalAccessException e) {
+                            throw new ThemeIOException(e);
+                        }
                         continue;
                     }
                 }

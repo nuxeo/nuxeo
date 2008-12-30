@@ -21,15 +21,12 @@ import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFactory;
 import org.nuxeo.theme.elements.ElementFormatter;
-import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.formats.styles.StyleFormat;
-import org.nuxeo.theme.formats.widgets.Widget;
 import org.nuxeo.theme.html.JSUtils;
 import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.presets.CustomPresetType;
 import org.nuxeo.theme.presets.PresetType;
-import org.nuxeo.theme.themes.ThemeManager;
 
 public class TestUtils extends NXRuntimeTestCase {
 
@@ -167,7 +164,7 @@ public class TestUtils extends NXRuntimeTestCase {
     public void testStyleToCssWithPresets() {
         Element theme = ElementFactory.create("theme");
         theme.setName("theme1");
-        Style style = (Style) FormatFactory.create("style");
+        Style style = Manager.getThemeManager().createStyle();
         style.setUid(1);
         ElementFormatter.setFormat(theme, style);
         

@@ -66,7 +66,7 @@ public final class ThemeRepairer {
     private static final String[] CELL_STYLE_PROPERTIES = { "border-top",
             "border-left", "border-bottom", "border-right", "background" };
 
-    public static void repair(ThemeElement theme) {
+    public static void repair(ThemeElement theme) throws ThemeException {
         // Make sure that all shared formats are assigned to elements of a same
         // type
         checkSharedFormats(theme);
@@ -96,7 +96,7 @@ public final class ThemeRepairer {
         }
     }
 
-    public static void checkSharedFormats(ThemeElement theme) {
+    public static void checkSharedFormats(ThemeElement theme) throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         for (Format format : Manager.getThemeManager().listFormats()) {
             Collection<Element> elements = ElementFormatter.getElementsFor(format);
@@ -132,7 +132,7 @@ public final class ThemeRepairer {
         }
     }
 
-    private static void moveLayoutProperties(Element element) {
+    private static void moveLayoutProperties(Element element) throws ThemeException {
         Widget widget = (Widget) ElementFormatter.getFormatFor(element,
                 "widget");
         Style style = (Style) ElementFormatter.getFormatFor(element, "style");

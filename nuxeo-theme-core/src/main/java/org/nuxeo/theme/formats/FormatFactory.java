@@ -17,6 +17,7 @@ package org.nuxeo.theme.formats;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.uids.UidManager;
 
@@ -28,19 +29,26 @@ public final class FormatFactory {
     private FormatFactory() {
     }
 
-    public static Format create(final String typeName) {
+    public static Format create(final String typeName) throws ThemeException {
         Format format = null;
         final FormatType formatType = (FormatType) Manager.getTypeRegistry().lookup(
                 TypeFamily.FORMAT, typeName);
+        if (formatType == null) {
+            throw new ThemeException("Unknown format type: " + typeName);
+        }
+        
         final UidManager uidManager = Manager.getUidManager();
-
         try {
             format = (Format) Class.forName(formatType.getFormatClass()).newInstance();
-            format.setFormatType(formatType);
-            uidManager.register(format);
-        } catch (Exception e) {
-            log.error("Could not create format",e);
+        } catch (InstantiationException e) {
+            throw new ThemeException(e);
+        } catch (IllegalAccessException e) {
+            throw new ThemeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new ThemeException("Format creation failed: " + typeName, e);
         }
+        format.setFormatType(formatType);
+        uidManager.register(format);
         return format;
     }
 

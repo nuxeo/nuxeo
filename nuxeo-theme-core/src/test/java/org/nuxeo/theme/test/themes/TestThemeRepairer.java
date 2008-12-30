@@ -26,6 +26,7 @@ import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.formats.layouts.Layout;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.formats.widgets.Widget;
+import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.themes.ThemeRepairer;
 
@@ -52,7 +53,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    public void testMissingFormats() {
+    public void testMissingFormats() throws ThemeException {
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         Element section = ElementFactory.create("section");
@@ -79,7 +80,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
         assertFalse(themeManager.listFormats().isEmpty());
     }
 
-    public void testLayoutProperties() {
+    public void testLayoutProperties() throws ThemeException {
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         Element section = ElementFactory.create("section");
@@ -130,7 +131,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
         assertEquals("red", styleProperties.get("color"));
     }
 
-    public void testStyleProperties() {
+    public void testStyleProperties() throws ThemeException {
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         Element section = ElementFactory.create("section");
@@ -173,7 +174,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
         assertEquals("2px solid #000", styleProperties.get("border-bottom"));
     }
 
-    public void testCleanupEmptyStylePaths() {
+    public void testCleanupEmptyStylePaths() throws ThemeException {
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         theme.addChild(page);
@@ -201,7 +202,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
         assertTrue(style.getPathsForView("page frame").contains("h2"));
     }
 
-    public void testSharedStyles() {
+    public void testSharedStyles() throws ThemeException {
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         Element section1 = ElementFactory.create("section");
@@ -245,7 +246,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
                 style.getPropertiesFor("section frame", "").getProperty("color"));
     }
 
-    public void testSharedStylesOnDifferentElementTypes() {
+    public void testSharedStylesOnDifferentElementTypes() throws ThemeException {
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         Element section = ElementFactory.create("section");
