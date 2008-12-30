@@ -3,23 +3,11 @@
     <transition to='s' />
   </start-state>
   <fork>
-    <transition to="foo"/>
     <transition to="bar"/>
   </fork>
-  <task-node name="foo">
-    <transition to="myjoin" condition="#{securityHandler.canEndWorkflow()}"/>
-    <transition to="myjoin2" condition="#{securityHandler.canRejectWorkflow()}"/>
-  </task-node>
   <task-node name="bar">
-    <task 
     <transition to="myjoin"/>
   </task-node>
-  <node>
-    <action expression="document.followTransition('bar')"/>
-  </node>
-  <!-- state name='s'>
-    <transition to='end' />
-  </state -->
   <join name="myjoin">
     <transition to="end"/>
   </join>
