@@ -378,15 +378,6 @@ public class Main extends DefaultModule {
       Editor.editPreset(themeName, presetName, value);
   }
   
-  
-  @POST
-  @Path("load_theme")
-  public String loadTheme() {
-      FormData form = ctx.getForm()
-      String src = form.getString("src")      
-      return Editor.loadTheme(src)
-  }
-  
   @POST
   @Path("make_element_use_named_style")
   public void makeElementUseNamedStyle() {
@@ -425,21 +416,40 @@ public class Main extends DefaultModule {
   
   @POST
   @Path("repair_theme")
-  public String repairTheme() {
-		FormData form = ctx.getForm()
-		String themeName = form.getString("name")
-      return Editor.repairTheme(themeName)
+  public Response repairTheme() {
+	  FormData form = ctx.getForm()
+      String themeName = form.getString("name")
+	  try {
+	      Editor.repairTheme(themeName)
+      } catch (ThemeIOException e) {
+          return Response.status(500).entity(e.getMessage()).build()
+      }
   }
   
   @POST
   @Path("save_theme")
-  public int saveTheme() {
+  public Response saveTheme() {
       FormData form = ctx.getForm()
       String src = form.getString("src")
       def indent = form.getString("indent") as Integer
-      return Editor.saveTheme(src, indent)
+      try {
+          Editor.saveTheme(src, indent)
+      } catch (ThemeIOException e) {
+          return Response.status(500).entity(e.getMessage()).build()
+      }
   }
 
+  @POST
+  @Path("load_theme")
+  public Response loadTheme() {
+      FormData form = ctx.getForm()
+      String src = form.getString("src")      
+      try {
+          Editor.loadTheme(src)
+      } catch (ThemeIOException e) {
+          return Response.status(500).entity(e.getMessage()).build()
+      }
+  }
   
   @POST
   @Path("select_preset_group")

@@ -789,10 +789,14 @@ NXThemesEditor.repairTheme = function(themeName) {
          parameters: {
              theme: themeName
          },
-         onComplete: function(r) {
+         onSuccess: function(r) {
              NXThemes.getViewById("theme manager").refresh();
              NXThemesEditor.writeMessage("Theme repaired.");
-         }
+         },
+         onFailure: function(r) {
+             NXThemes.getViewById("theme manager").refresh();
+             NXThemesEditor.writeMessage("The theme could not be repaired.");
+         }         
     });
 };
 
@@ -807,12 +811,14 @@ NXThemesEditor.loadTheme = function(src) {
          parameters: {
              src: src
          },
-         onComplete: function(r) {
-           var text = r.responseText;
-           var msg = text == "1" ? "Theme loaded." : "The theme could not be loaded.";
+         onSuccess: function(r) {
            NXThemes.getViewById("theme manager").refresh();
-           NXThemesEditor.writeMessage(msg);
-         }
+           NXThemesEditor.writeMessage("Theme loaded.");
+         },
+         onFailure: function(r) {
+           NXThemes.getViewById("theme manager").refresh();
+           NXThemesEditor.writeMessage("The theme could not be loaded.");
+         }          
     });
 };
 
@@ -824,12 +830,14 @@ NXThemesEditor.saveTheme = function(src, indent) {
              src: src,
              indent: indent
          },
-         onComplete: function(r) {
-           var text = r.responseText;
-           var msg = text == "1" ? "Theme saved." : "The theme could not be saved.";
+         onSuccess: function(r) {
            NXThemes.getViewById("theme manager").refresh();
-           NXThemesEditor.writeMessage(msg);
-         }
+           NXThemesEditor.writeMessage("Theme saved.");
+         },
+         onFailure: function(r) {
+           NXThemes.getViewById("theme manager").refresh();
+           NXThemesEditor.writeMessage("The theme could not be saved.");
+         }         
     });
 };
 

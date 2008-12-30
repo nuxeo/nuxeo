@@ -618,17 +618,15 @@ public final class ThemeManager implements Registrable {
         if (themeDescriptor == null) {
             throw new ThemeIOException("Theme not found: " + src);
         }
-        if (src != null) {
-            String themeName = ThemeParser.registerTheme(src);
-            if (themeName == null) {
-                themeDescriptor.setLoadingFailed(true);
-                throw new ThemeIOException("Could not parse theme: " + src);
-            }
-            themeDescriptor.setName(themeName);
-            themeDescriptor.setLoadingFailed(false);
-            themeDescriptor.setLastLoaded(new Date());
-            themeModified();
+        themeDescriptor.setLoadingFailed(true);
+        String themeName = ThemeParser.registerTheme(src);
+        if (themeName == null) {
+            throw new ThemeIOException("Could not parse theme: " + src);
         }
+        themeDescriptor.setName(themeName);
+        themeDescriptor.setLoadingFailed(false);
+        themeDescriptor.setLastLoaded(new Date());
+        themeModified();
         updateThemeDescriptors();
     }
 

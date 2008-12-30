@@ -54,7 +54,7 @@ import org.nuxeo.theme.views.ViewType;
 public class Editor {
 
     private static final Log log = LogFactory.getLog(Editor.class);
-    
+
     public static void updateElementWidget(Element element, String viewName) {
         FormatType widgetType = (FormatType) Manager.getTypeRegistry().lookup(
                 TypeFamily.FORMAT, "widget");
@@ -598,19 +598,13 @@ public class Editor {
                 new EventContext(null, null));
     }
 
-    public static int loadTheme(String src) {
-        try {
-            Manager.getThemeManager().loadTheme(src);
-        } catch (ThemeIOException e) {
-            log.error("Could not load theme: " + src + ", " + e.getMessage());
-            return 0;
-        }
+    public static void loadTheme(String src) throws ThemeIOException {
+        Manager.getThemeManager().loadTheme(src);
         EventManager eventManager = Manager.getEventManager();
         eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null,
                 null));
         eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
                 null, null));
-        return 1;
     }
 
     public static void insertFragment(Element destElement, String typeName) {
@@ -654,7 +648,7 @@ public class Editor {
         ElementFormatter.setFormat(newSection, sectionLayout);
         ElementFormatter.setFormat(newSection, sectionStyle);
         // cell
-        Format cellWidget =  themeManager.createWidget();
+        Format cellWidget = themeManager.createWidget();
         cellWidget.setName("cell frame");
         themeManager.registerFormat(cellWidget);
         Format cellLayout = themeManager.createLayout();
