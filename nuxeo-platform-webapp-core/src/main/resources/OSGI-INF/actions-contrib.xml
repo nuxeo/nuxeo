@@ -51,14 +51,12 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <!--
     <action id="themes_manager"
-      link="#{nxthemesUiManager.startEditor}" enabled="true"
+      link="#{themeEditorAction.startEditor}" enabled="true"
       label="command.manageThemes" order="40">
       <category>USER_SERVICES</category>
       <filter-id>only_for_manager</filter-id>
     </action>
-    -->
 
     <action id="newDomain" link="#{documentActions.createDocument('Domain')}"
         enabled="true" label="command.create.domain"
