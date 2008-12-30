@@ -1,7 +1,3 @@
 <components xmlns="http://jboss.com/products/seam/components"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<factory name="pd" scope="CONVERSATION"
-		value="#{org.nuxeo.ecm.platform.jbpm.web.ProcessDefinitionManager}" />
-  <factory name="task" scope="CONVERSATION"
-    value="#{org.nuxeo.ecm.platform.jbpm.web.TaskManager}" />
 </components>

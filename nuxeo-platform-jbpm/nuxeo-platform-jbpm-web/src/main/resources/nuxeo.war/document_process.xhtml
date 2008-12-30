@@ -1,0 +1,26 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+  <!-- Process -->
+  <c:set var="processes" value="#{jbpmService.getProcessInstances(currentDocument, currentUser)}"/>
+  <c:choose>
+    <c:when test="#{empty processes}">
+    empty
+    </c:when>
+    <c:when test="#{processes.size() == 1}">
+    size == 1
+    </c:when>
+  </c:choose>
+  <!-- Tasks -->
+  <c:set var="tasks" value="#{jbpmService.getTaskInstances(currentDocument, currentUser)}"/>
+  <c:choose>
+    <c:when test="#{empty tasks}">
+    no task
+    </c:when>
+    <c:otherwise>
+    tasks
+    </c:otherwise>
+  </c:choose>
+</div>
