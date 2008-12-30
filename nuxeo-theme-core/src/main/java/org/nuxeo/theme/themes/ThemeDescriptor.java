@@ -26,13 +26,15 @@ import org.nuxeo.theme.types.TypeFamily;
 @XObject("theme")
 public class ThemeDescriptor implements Type {
 
-    private Date lastLoaded;
-
     private boolean configured = false;
 
     private boolean customized = false;
 
     private Date lastSaved;
+    
+    private Date lastLoaded;
+
+    private boolean loadingFailed = false;
 
     private String name;
 
@@ -107,7 +109,11 @@ public class ThemeDescriptor implements Type {
     }
 
     public boolean isLoadingFailed() {
-        return isXmlConfigured() && !isLoaded();
+        return loadingFailed;
+    }
+
+    public void setLoadingFailed(boolean loadingFailed) {
+        this.loadingFailed = loadingFailed;
     }
 
     public String getSrc() {

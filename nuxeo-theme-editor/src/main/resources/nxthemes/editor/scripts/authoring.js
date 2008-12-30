@@ -809,7 +809,7 @@ NXThemesEditor.loadTheme = function(src) {
          },
          onComplete: function(r) {
            var text = r.responseText;
-           var msg = text ? "Theme loaded." : "The theme could not be loaded.";
+           var msg = text == "1" ? "Theme loaded." : "The theme could not be loaded.";
            NXThemes.getViewById("theme manager").refresh();
            NXThemesEditor.writeMessage(msg);
          }

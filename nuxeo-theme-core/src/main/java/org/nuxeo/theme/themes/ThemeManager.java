@@ -619,9 +619,11 @@ public final class ThemeManager implements Registrable {
         if (src != null) {
             String themeName = ThemeParser.registerTheme(src);
             if (themeName == null) {
+                themeDescriptor.setLoadingFailed(true);
                 throw new ThemeIOException("Could not parse theme: " + src);
             }
             themeDescriptor.setName(themeName);
+            themeDescriptor.setLoadingFailed(false);
             themeDescriptor.setLastLoaded(new Date());
             themeModified();
         }
