@@ -123,8 +123,6 @@ public interface MimetypeRegistry {
      * @param defaultMimetype defaultMimeType to be used if no found
      * @return the string mimetype
      * @throws MimetypeDetectionException
-     *
-     *
      */
     String getMimetypeFromFilenameAndBlobWithDefault(String filename,
             Blob blob, String defaultMimetype)
@@ -158,4 +156,5 @@ public interface MimetypeRegistry {
      * @throws MimetypeDetectionException
      */
     Blob updateMimetype(Blob blob) throws MimetypeDetectionException;
+
 }

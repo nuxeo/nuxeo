@@ -29,7 +29,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  *
  */
-
 @XObject("configuration")
 public class ConfigurationDescriptor {
 

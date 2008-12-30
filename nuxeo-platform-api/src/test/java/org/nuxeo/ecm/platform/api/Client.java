@@ -29,6 +29,9 @@ import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
 import org.nuxeo.runtime.services.event.EventService;
 import org.nuxeo.runtime.util.NXRuntimeApplication;
+import org.nuxeo.runtime.api.Framework;
+
+import javax.security.auth.login.LoginContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -68,15 +71,14 @@ public class Client extends NXRuntimeApplication {
         // ---------------------------------------------------
         us.logout();
 
-        SystemSession ss = new SystemSession();
-        ss.login();
+        LoginContext loginContext = Framework.login();
         // ------------ system session started -----------
         platform = ECM.getPlatform();
         repositoryExample(platform);
         serviceExample(platform);
         localServiceTest(platform);
         // ---------------------------------------------------
-        ss.logout();
+        loginContext.logout();
     }
 
     protected void repositoryExample(Platform platform) throws Exception {

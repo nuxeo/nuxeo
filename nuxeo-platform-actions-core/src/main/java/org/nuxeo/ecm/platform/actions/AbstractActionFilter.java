@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.actions;
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+// Is this used for real?
 public abstract class AbstractActionFilter implements ActionFilter {
 
     private static final long serialVersionUID = 6863014001035976681L;

@@ -36,6 +36,9 @@ import org.nuxeo.runtime.services.event.EventService;
 import org.nuxeo.runtime.services.streaming.FileSource;
 import org.nuxeo.runtime.services.streaming.StreamSource;
 import org.nuxeo.runtime.util.NXRuntimeApplication;
+import org.nuxeo.runtime.api.Framework;
+
+import javax.security.auth.login.LoginContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -59,8 +62,7 @@ public class StreamingClient extends NXRuntimeApplication {
 
     @Override
     protected void run() throws Exception {
-        SystemSession ss = new SystemSession();
-        ss.login();
+        LoginContext loginContext = Framework.login();
 
         // upload a big blob
         Platform platform = ECM.getPlatform();
@@ -89,7 +91,7 @@ public class StreamingClient extends NXRuntimeApplication {
 
         CoreInstance.getInstance().close(session);
 
-        ss.logout();
+        loginContext.logout();
     }
 
     protected void repositoryExample(Platform platform) throws Exception {

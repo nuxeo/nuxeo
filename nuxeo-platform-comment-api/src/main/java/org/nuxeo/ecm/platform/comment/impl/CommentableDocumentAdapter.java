@@ -37,15 +37,11 @@ public class CommentableDocumentAdapter implements CommentableDocument {
 
     final DocumentModel docModel;
 
-    /**
-     * @param docModel
-     */
     public CommentableDocumentAdapter(DocumentModel docModel) {
         this.docModel = docModel;
     }
 
-    public CommentManager getCommentManager() {
-        //return CommentServiceHelper.getCommentService().getCommentManager();
+    private static CommentManager getCommentManager() {
         try {
             return Framework.getService(CommentManager.class);
         } catch (Exception e) {
@@ -58,6 +54,7 @@ public class CommentableDocumentAdapter implements CommentableDocument {
         return commentManager.createComment(docModel, comment);
     }
 
+    @Deprecated
     public DocumentModel addComment(String comment) throws ClientException {
         CommentManager commentManager = getCommentManager();
         return commentManager.createComment(docModel, comment);
@@ -82,4 +79,5 @@ public class CommentableDocumentAdapter implements CommentableDocument {
         CommentManager commentManager = getCommentManager();
         return commentManager.getComments(docModel, parent);
     }
+
 }

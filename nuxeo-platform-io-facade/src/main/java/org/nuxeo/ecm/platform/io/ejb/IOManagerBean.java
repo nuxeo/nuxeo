@@ -93,8 +93,7 @@ public class IOManagerBean implements IOManager {
 
     public void exportDocumentsAndResources(OutputStream out, String repo,
             Collection<DocumentRef> sources, boolean recurse, String format,
-            Collection<String> ioAdapters) throws IOException, ClientException,
-            ExportDocumentException {
+            Collection<String> ioAdapters) throws ClientException {
         try {
             service.exportDocumentsAndResources(out, repo, sources, false,
                     format, ioAdapters);
@@ -113,8 +112,7 @@ public class IOManagerBean implements IOManager {
 
 //  ------------ this is not goood
     public void importDocumentsAndResources(InputStream in, String repo,
-            DocumentRef root) throws IOException, ClientException,
-            ImportDocumentException {
+            DocumentRef root) throws ClientException {
         try {
             service.importDocumentsAndResources(in, repo, root);
         } catch (Throwable t) {

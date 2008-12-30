@@ -175,7 +175,6 @@ public class LogEntry {
      *
      * @return the doc path related to the log entry.
      */
-
     @Column(name = "LOG_DOC_PATH", length = 1024)
     public String getDocPath() {
         return docPath;
@@ -193,7 +192,6 @@ public class LogEntry {
      *
      * @return the doc type related to the log entry.
      */
-
     @Column(name = "LOG_DOC_TYPE")
     public String getDocType() {
         return docType;
@@ -211,7 +209,6 @@ public class LogEntry {
      *
      * @return the category for this log entry.
      */
-
     @Column(name = "LOG_EVENT_CATEGORY")
     public String getCategory() {
         return category;
@@ -226,7 +223,6 @@ public class LogEntry {
      *
      * @return the associated comment for this log entry
      */
-
     @Column(name = "LOG_EVENT_COMMENT", length = 1024)
     public String getComment() {
         return comment;
@@ -244,7 +240,6 @@ public class LogEntry {
      *
      * @return the life cycle if the document related to the log entry.
      */
-
     @Column(name = "LOG_DOC_LIFE_CYCLE")
     public String getDocLifeCycle() {
         return docLifeCycle;
