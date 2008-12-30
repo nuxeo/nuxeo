@@ -186,10 +186,14 @@ NXThemesEditor.updateElementProperties = function(info) {
              id: id,
              property_map: propertyMap.toJSON()
          },
-         onComplete: function(r) {
+         onSuccess: function(r) {
              NXThemes.getViewById("element properties").refresh();
              NXThemesEditor.writeMessage("Properties updated.");
-         }
+         },
+         onFailure: function(r) {
+             NXThemes.getViewById("element properties").refresh();
+             NXThemesEditor.writeMessage("Properties could not be updated.");
+         }         
     });
 };
 
@@ -461,10 +465,14 @@ NXThemesEditor.duplicateElement = function(info) {
          parameters: {
              id: id
          },
-         onComplete: function(r) {
+         onSuccess: function(r) {
              NXThemes.getViewById("style css").hide();
              NXThemes.getViewById("style css").show();
              NXThemesEditor.refreshCanvas();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             alert(text);
          }
     });       
 };
@@ -477,12 +485,16 @@ NXThemesEditor.pasteElement = function(info) {
          parameters: {
              dest_id: destId
          },
-         onComplete: function(r) {
+         onSuccess: function(r) {
              NXThemes.getViewById("style css").hide();
              NXThemes.getViewById("style css").show();
              NXThemesEditor.refreshCanvas();
              NXThemesEditor.writeMessage("Element pasted.");
-         }
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             NXThemesEditor.writeMessage(text);
+         }  
     });
 };
 
@@ -533,16 +545,16 @@ NXThemesEditor.addTheme = function() {
          parameters: {
              name: name
          },
-         onComplete: function(r) {
+         onSuccess: function(r) {
              var text = r.responseText;
-             if (text === "") {
-                 window.alert("The theme name is already taken.");
-             } else {
-                 NXThemes.setCookie("nxthemes.theme", text);
-                 NXThemes.getViewById("theme selector").refresh();
-                 NXThemesEditor.refreshCanvas();
-             }
-         }
+             NXThemes.setCookie("nxthemes.theme", text);
+             NXThemes.getViewById("theme selector").refresh();
+             NXThemesEditor.refreshCanvas();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }         
     });
 };
 
@@ -562,16 +574,16 @@ NXThemesEditor.addPage = function(themeName) {
          parameters: {
              path: themeName + '/' + name
          },
-         onComplete: function(r) {
+         onSuccess: function(r) {
              var text = r.responseText;
-             if (text === "") {
-                 window.alert("The page name is already taken.");
-             } else {
-                 NXThemes.setCookie("nxthemes.theme", text);
-                 NXThemes.getViewById("theme selector").refresh();
-                 NXThemesEditor.refreshCanvas();
-             }
-         }
+             NXThemes.setCookie("nxthemes.theme", text);
+             NXThemes.getViewById("theme selector").refresh();
+             NXThemesEditor.refreshCanvas();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }            
     });    
 };
 
@@ -787,7 +799,7 @@ NXThemesEditor.repairTheme = function(themeName) {
     new Ajax.Request(url, {
          method: 'post',
          parameters: {
-             theme: themeName
+             name: themeName
          },
          onSuccess: function(r) {
              NXThemes.getViewById("theme manager").refresh();

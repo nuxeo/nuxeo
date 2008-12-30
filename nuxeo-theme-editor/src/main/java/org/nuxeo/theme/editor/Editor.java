@@ -184,16 +184,12 @@ public class Editor {
     }
 
     public static void updateElementProperties(Element element,
-            Map<String, String> propertyMap) {
+            Map<String, String> propertyMap) throws ThemeIOException {
         Properties properties = new Properties();
         for (Object key : propertyMap.keySet()) {
             properties.put(key, propertyMap.get(key));
         }
-        try {
-            FieldIO.updateFieldsFromProperties(element, properties);
-        } catch (Exception e) {
-            log.error(e);
-        }
+        FieldIO.updateFieldsFromProperties(element, properties);
         EventManager eventManager = Manager.getEventManager();
         eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
                 element, null));
@@ -207,33 +203,22 @@ public class Editor {
                 element, null));
     }
 
-    public static int repairTheme(String themeName) {
+    public static void repairTheme(String themeName) throws ThemeIOException {
         ThemeElement theme = Manager.getThemeManager().getThemeByName(themeName);
         if (theme == null) {
-            return 0;
+            throw new ThemeIOException("Unknown theme: " + themeName);
         }
-        try {
-            ThemeManager.repairTheme(theme);
-        } catch (ThemeIOException e) {
-            log.error(e);
-        }
+        ThemeManager.repairTheme(theme);
         EventManager eventManager = Manager.getEventManager();
         eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
                 theme, null));
         eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
                 theme, null));
-        return 1;
     }
 
-    public static int saveTheme(String src, int indent) {
-        int res = 1;
-        try {
-            ThemeManager.saveTheme(src, indent);
-        } catch (ThemeIOException e) {
-            log.error("Could not save theme: " + src + ", " + e.getMessage());
-            res = 0;
-        }
-        return res;
+    public static void saveTheme(String src, int indent)
+            throws ThemeIOException {
+        ThemeManager.saveTheme(src, indent);
     }
 
     public static String renderCssPreview(Element element, Style style,
@@ -291,7 +276,8 @@ public class Editor {
         return css.toString();
     }
 
-    public static int pasteElement(Element element, String destId) {
+    public static void pasteElement(Element element, String destId)
+            throws ThemeIOException {
         Element destElement = ThemeManager.getElementById(destId);
         if (destElement.isLeaf()) {
             destElement = (Element) destElement.getParent();
@@ -301,7 +287,7 @@ public class Editor {
                 destElement.addChild(Manager.getThemeManager().duplicateElement(
                         element, true));
             } catch (ThemeException e) {
-                return 0;
+                throw new ThemeIOException(e);
             }
         }
         EventManager eventManager = Manager.getEventManager();
@@ -309,12 +295,10 @@ public class Editor {
                 null, null));
         eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null,
                 destElement));
-        return element.getUid();
     }
 
     public static void moveElement(Element srcElement, Element destElement,
             int order) {
-        // move the element
         srcElement.moveTo(destElement, order);
         EventManager eventManager = Manager.getEventManager();
         eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
@@ -347,18 +331,19 @@ public class Editor {
                 element, null));
     }
 
-    public static String addPage(String path) {
+    public static String addPage(String path) throws ThemeIOException {
         ThemeManager themeManager = Manager.getThemeManager();
         if (!path.contains("/")) {
-            return "";
-        }
-        if (themeManager.getPageByPath(path) != null) {
-            return "";
+            throw new ThemeIOException("Incorrect theme path: " + path);
         }
         String themeName = path.split("/")[0];
+        String pageName = path.split("/")[1];
+        if (themeManager.getPageByPath(path) != null) {
+            throw new ThemeIOException("Theme page name is already taken: "
+                    + pageName);
+        }
         ThemeElement theme = themeManager.getThemeByName(themeName);
         PageElement page = (PageElement) ElementFactory.create("page");
-        String pageName = path.split("/")[1];
         page.setName(pageName);
         Format pageWidget = themeManager.createWidget();
         pageWidget.setName("page frame");
@@ -372,42 +357,42 @@ public class Editor {
         return path;
     }
 
-    public static String addTheme(String name) {
+    public static String addTheme(String name) throws ThemeIOException {
         ThemeManager themeManager = Manager.getThemeManager();
-        String res = "";
-        if (themeManager.getThemeByName(name) == null) {
-            ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
-            theme.setName(name);
-            Format themeWidget = themeManager.createWidget();
-            themeWidget.setName("theme view");
-            ElementFormatter.setFormat(theme, themeWidget);
-            // default page
-            PageElement page = (PageElement) ElementFactory.create("page");
-            page.setName("default");
-            Format pageWidget = themeManager.createWidget();
-            pageWidget.setName("page frame");
-            Format pageLayout = themeManager.createLayout();
-            Format pageStyle = themeManager.createStyle();
-            themeManager.registerFormat(pageStyle);
-            ElementFormatter.setFormat(page, pageWidget);
-            ElementFormatter.setFormat(page, pageStyle);
-            ElementFormatter.setFormat(page, pageLayout);
-            theme.addChild(page);
-            // create a theme descriptor
-            ThemeDescriptor themeDescriptor = new ThemeDescriptor();
-            themeDescriptor.setName(name);
-            final String path = ThemeManager.getCustomThemePath(name);
-            if (path != null) {
-                final String src = String.format("file://%s", path);
-                themeDescriptor.setSrc(src);
-            }
-            TypeRegistry typeRegistry = Manager.getTypeRegistry();
-            typeRegistry.register(themeDescriptor);
-            // register the theme
-            themeManager.registerTheme(theme);
-            res = String.format("%s/%s", name, "default");
+        if (themeManager.getThemeByName(name) != null) {
+            throw new ThemeIOException("The theme name is already taken: "
+                    + name);
         }
-        return res;
+        ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
+        theme.setName(name);
+        Format themeWidget = themeManager.createWidget();
+        themeWidget.setName("theme view");
+        ElementFormatter.setFormat(theme, themeWidget);
+        // default page
+        PageElement page = (PageElement) ElementFactory.create("page");
+        page.setName("default");
+        Format pageWidget = themeManager.createWidget();
+        pageWidget.setName("page frame");
+        Format pageLayout = themeManager.createLayout();
+        Format pageStyle = themeManager.createStyle();
+        themeManager.registerFormat(pageStyle);
+        ElementFormatter.setFormat(page, pageWidget);
+        ElementFormatter.setFormat(page, pageStyle);
+        ElementFormatter.setFormat(page, pageLayout);
+        theme.addChild(page);
+        // create a theme descriptor
+        ThemeDescriptor themeDescriptor = new ThemeDescriptor();
+        themeDescriptor.setName(name);
+        final String path = ThemeManager.getCustomThemePath(name);
+        if (path != null) {
+            final String src = String.format("file://%s", path);
+            themeDescriptor.setSrc(src);
+        }
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        typeRegistry.register(themeDescriptor);
+        // register the theme
+        themeManager.registerTheme(theme);
+        return String.format("%s/%s", name, "default");
     }
 
     public static void assignStyleProperty(Element element,
@@ -517,13 +502,13 @@ public class Editor {
                 null));
     }
 
-    public static int duplicateElement(Element element) {
+    public static int duplicateElement(Element element) throws ThemeIOException {
         Element duplicate;
         try {
             duplicate = Manager.getThemeManager().duplicateElement(element,
                     true);
         } catch (ThemeException e) {
-            return 0;
+            throw new ThemeIOException(e);
         }
         // insert the duplicated element
         element.getParent().addChild(duplicate);
@@ -537,9 +522,6 @@ public class Editor {
     }
 
     public static void createStyle(Element element) {
-        if (element == null) {
-            return;
-        }
         ThemeManager themeManager = Manager.getThemeManager();
         final Format style = themeManager.createStyle();
         ElementFormatter.setFormat(element, style);

@@ -245,16 +245,26 @@ public class Main extends DefaultModule {
   
   @POST
   @Path("add_page")
-  public String addPage() {
+  public Response addPage() {
       String pagePath = ctx.getForm().getString("path")
-      return Editor.addPage(pagePath)
+	  try {
+	      String res = Editor.addPage(pagePath)
+	      return Response.status(200).entity(res).build()
+      } catch (ThemeIOException e) {
+          return Response.status(500).entity(e.getMessage()).build()
+      }      
   }
   
   @POST
   @Path("add_theme")
-  public String addTheme() {
+  public Response addTheme() {
       String name = ctx.getForm().getString("name")
-      return Editor.addTheme(name)
+	  try {
+	      String res = Editor.addTheme(name)
+	      return Response.status(200).entity(res).build()
+      } catch (ThemeIOException e) {
+          return Response.status(500).entity(e.getMessage()).build()
+      }
   }
   
   @POST
@@ -325,11 +335,15 @@ public class Main extends DefaultModule {
   
   @POST
   @Path("duplicate_element")
-  public String duplicateElement() {
+  public Object duplicateElement() {
       FormData form = ctx.getForm()
       String id = form.getString("id")        
       Element element = ThemeManager.getElementById(id)
-      return Editor.duplicateElement(element)
+	  try {
+	      return Editor.duplicateElement(element)
+      } catch (ThemeIOException e) {
+          return Response.status(500).entity(e.getMessage()).build()
+      }
   }
   
   @POST
@@ -403,15 +417,20 @@ public class Main extends DefaultModule {
   
   @POST
   @Path("paste_element")
-  public void pasteElement() {
+  public Response pasteElement() {
       FormData form = ctx.getForm()
       String destId = form.getString("dest_id")      
       String id = getClipboardElement()
       if (id == null) {
-          return
+          return Response.status(500).entity("Nothing to paste").build()
       }
       Element element = ThemeManager.getElementById(id)
-      Editor.pasteElement(element, destId)
+	  try {
+	      String res = Editor.pasteElement(element, destId)
+	      return Response.status(200).entity(res).build()
+      } catch (ThemeIOException e) {
+          return Response.status(500).entity(e.getMessage()).build()
+      }      
   }
   
   @POST
@@ -514,13 +533,17 @@ public class Main extends DefaultModule {
   
   @POST
   @Path("update_element_properties")
-  public void updateElementProperties() {
+  public Response updateElementProperties() {
       FormData form = ctx.getForm()
       String id = form.getString("id")
       String property_map = form.getString("property_map")
       Map propertyMap = JSONObject.fromObject(property_map)
       Element element = ThemeManager.getElementById(id)
-      Editor.updateElementProperties(element, propertyMap)
+      try {
+          Editor.updateElementProperties(element, propertyMap)
+      } catch (ThemeIOException e) {
+          return Response.status(500).entity(e.getMessage()).build()
+      }      
   }
 
   @POST
