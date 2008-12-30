@@ -273,10 +273,6 @@ public class CommentManagerActionsBean extends InputController implements
 
     /**
      * Recursively retrieves all comments of a doc.
-     *
-     * @param doc
-     * @return
-     * @throws ClientException
      */
     public List<ThreadEntry> getCommentsAsThreadOnDoc(DocumentModel doc)
             throws ClientException {
@@ -371,8 +367,6 @@ public class CommentManagerActionsBean extends InputController implements
 
     /**
      * Retrieves children for a given comment.
-     *
-     * @param comment
      */
     public void getChildren(UIComment comment) {
         assert comment != null;
