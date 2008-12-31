@@ -81,8 +81,11 @@ public class UserSuggestionActionsBean implements Serializable {
     @RequestParameter
     protected String userSuggestionSearchType;
 
-    // TODO: add configurable search results maximum (triggering search overflow
-    // message if too many results)
+    @RequestParameter
+    protected Integer userSuggestionMaxSearchResults;
+
+    @RequestParameter
+    protected String userSuggestionMessageId;
 
     /**
      * Id of the editable list component where selection ids are put.
@@ -93,9 +96,14 @@ public class UserSuggestionActionsBean implements Serializable {
     protected String suggestionSelectionListId;
 
     protected void addSearchOverflowMessage() {
-        facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                resourcesAccessor.getMessages().get(
-                        "label.security.searchOverFlow"));
+        if (userSuggestionMessageId != null) {
+            facesMessages.addToControl(userSuggestionMessageId,
+                    FacesMessage.SEVERITY_ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "label.security.searchOverFlow"));
+        } else {
+            log.error("Search overflow");
+        }
     }
 
     public List<NuxeoGroup> getGroupsSuggestions(Object input)
@@ -142,8 +150,22 @@ public class UserSuggestionActionsBean implements Serializable {
             groups = Collections.emptyList();
         }
 
+        int userSize = users.size();
+        int groupSize = groups.size();
+        int totalSize = userSize + groupSize;
+
+        if (userSuggestionMaxSearchResults != null
+                && userSuggestionMaxSearchResults > 0) {
+            if (userSize > userSuggestionMaxSearchResults
+                    || groupSize > userSuggestionMaxSearchResults
+                    || totalSize > userSuggestionMaxSearchResults) {
+                addSearchOverflowMessage();
+                return null;
+            }
+        }
+
         List<Map<String, Object>> result = new ArrayList<Map<String, Object>>(
-                users.size() + groups.size());
+                totalSize);
 
         for (NuxeoPrincipal user : users) {
             Map<String, Object> entry = new HashMap<String, Object>();
