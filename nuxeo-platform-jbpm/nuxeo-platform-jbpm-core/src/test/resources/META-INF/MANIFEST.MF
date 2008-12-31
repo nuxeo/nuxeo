@@ -4,6 +4,6 @@ Bundle-Name: Nuxeo ECM JBPM Test
 Bundle-SymbolicName: org.nuxeo.ecm.platform.core.jbpm.test;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateful
-Require-Bundle: org.nuxeo.ecm.platform.types.core
-  org.nuxeo.ecm.platform.core.jbpm
-Nuxeo-Component: OSGI-INF/test-contrib.xml
+Require-Bundle: org.nuxeo.ecm.platform.core.jbpm
+Nuxeo-Component: OSGI-INF/test-contrib.xml,
+  OSGI-INF/test-sql-directories-contrib.xml

@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.platform.jbpm.core.service;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -87,6 +86,7 @@ public class JbpmServiceImpl implements JbpmService {
             return (List<TaskInstance>) executeJbpmOperation(new JbpmOperation() {
                 public ArrayList<TaskInstance> run(JbpmContext context)
                         throws NuxeoJbpmException {
+                    context.setActorId(currentUser.getName());
                     return toArrayList(context.getTaskList(currentUser.getName()));
                 }
 
@@ -114,8 +114,8 @@ public class JbpmServiceImpl implements JbpmService {
                 ProcessDefinition pd = context.getGraphSession().findLatestProcessDefinition(
                         processInstanceName);
                 if (dm != null) {
-                    Boolean permission = getPermission(pd,
-                            JbpmSecurityPolicy.Action.execute, dm);
+                    boolean permission = getPermission(pd,
+                            JbpmSecurityPolicy.Action.execute, dm) == Boolean.FALSE ? false : true;
                     if (!permission) {
                         throw new NuxeoJbpmSecurityException();
                     }
@@ -135,7 +135,7 @@ public class JbpmServiceImpl implements JbpmService {
 
     @SuppressWarnings("unchecked")
     public List<ProcessInstance> getCurrentProcessInstances(
-            final Principal principal) throws NuxeoJbpmException {
+            final NuxeoPrincipal principal) throws NuxeoJbpmException {
         return (List<ProcessInstance>) executeJbpmOperation(new JbpmOperation() {
             public ArrayList<ProcessInstance> run(JbpmContext context)
                     throws NuxeoJbpmException {
@@ -151,7 +151,7 @@ public class JbpmServiceImpl implements JbpmService {
     }
 
     @SuppressWarnings("unchecked")
-    public List<ProcessDefinition> getProcessDefinitions(Principal user)
+    public List<ProcessDefinition> getProcessDefinitions(NuxeoPrincipal user)
             throws NuxeoJbpmException {
         return (List<ProcessDefinition>) executeJbpmOperation(new JbpmOperation() {
             public ArrayList<ProcessDefinition> run(JbpmContext context) {
@@ -166,6 +166,7 @@ public class JbpmServiceImpl implements JbpmService {
         return (DocumentModel) executeJbpmOperation(new JbpmOperation() {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
+                context.setActorId(user.getName());
                 TaskInstance sessionedTi = context.getTaskInstance(ti.getId());
                 String docId = (String) sessionedTi.getVariable(JbpmService.VariableName.documentId.name());
                 String repoId = (String) sessionedTi.getVariable(JbpmService.VariableName.documentRepositoryName.name());
@@ -204,10 +205,11 @@ public class JbpmServiceImpl implements JbpmService {
 
     @SuppressWarnings("unchecked")
     public List<ProcessInstance> getProcessInstances(final DocumentModel dm,
-            NuxeoPrincipal user) throws NuxeoJbpmException {
+            final NuxeoPrincipal user) throws NuxeoJbpmException {
         return (List<ProcessInstance>) executeJbpmOperation(new JbpmOperation() {
             public ArrayList<ProcessInstance> run(JbpmContext context)
                     throws NuxeoJbpmException {
+                context.setActorId(user.getName());
                 ArrayList<ProcessInstance> result = new ArrayList<ProcessInstance>();
                 Session session = context.getSession();
                 List<ProcessInstance> list = session.getNamedQuery(
@@ -224,12 +226,15 @@ public class JbpmServiceImpl implements JbpmService {
 
     @SuppressWarnings("unchecked")
     public List<TaskInstance> getTaskInstances(final DocumentModel dm,
-            NuxeoPrincipal user) throws NuxeoJbpmException {
+            final NuxeoPrincipal user) throws NuxeoJbpmException {
         return (List<TaskInstance>) executeJbpmOperation(new JbpmOperation() {
             public ArrayList<TaskInstance> run(JbpmContext context)
                     throws NuxeoJbpmException {
+                context.setActorId(user.getName());
                 ArrayList<TaskInstance> result = new ArrayList<TaskInstance>();
                 Session session = context.getSession();
+                session.flush();
+                session.createSQLQuery("select * from jbpm_variableinstance;").list();
                 List<TaskInstance> list = session.getNamedQuery(
                         JbpmService.HibernateQueries.NuxeoHibernateQueries_getTaskInstancesForDoc.name()).setParameter(
                         "docId", dm.getId()).setParameter("repoId",
@@ -394,6 +399,7 @@ public class JbpmServiceImpl implements JbpmService {
         return (List<ProcessDefinition>) executeJbpmOperation(new JbpmOperation() {
             public ArrayList<ProcessDefinition> run(JbpmContext context)
                     throws NuxeoJbpmException {
+                context.setActorId(user.getName());
                 List<ProcessDefinition> pds = context.getGraphSession().findLatestProcessDefinitions();
                 ArrayList<ProcessDefinition> result = new ArrayList<ProcessDefinition>();
                 for (ProcessDefinition pd : pds) {

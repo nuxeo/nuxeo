@@ -7,10 +7,22 @@
   <c:set var="processes" value="#{jbpmService.getProcessInstances(currentDocument, currentUser)}"/>
   <c:choose>
     <c:when test="#{empty processes}">
-    empty
+      <h:form>
+      <h:selectOneMenu id="selectPD" value="#{selectedPD}">
+        <c:forEach var="pd" items="#{jbpmService.getProcessDefinitions(currentUser, currentDocument)}">
+          <f:selectItem itemLabel="#{pd.name}" itemValue="#{pd.name}"/>
+        </c:forEach>
+      </h:selectOneMenu>
+      <h:commandButton style="button"
+                        value="#{messages['jbpm.processview.newpdInstance']}"
+                        action="#{jbpmService.createProcessInstance(currentUser, selectedPD, currentDocument)}"/>
+      </h:form>
     </c:when>
     <c:when test="#{processes.size() == 1}">
-    size == 1
+     <c:set var="process" value="#{processes.get(0)}"/>
+     <ui:decorate template="/process/#{process.processDefinition.name}.xhtml">
+       <ui:param name="process" value="#{process}"/>
+     </ui:decorate>
     </c:when>
   </c:choose>
   <!-- Tasks -->

@@ -24,11 +24,13 @@
       from org.jbpm.context.exe.variableinstance.StringInstance si1, 
            org.jbpm.context.exe.variableinstance.StringInstance si2,
            org.jbpm.taskmgmt.exe.TaskInstance t
-      where si1.id member of t.variableInstances
+      where (si1.id member of t.variableInstances
+        or si1.token.id = t.token.id)
       and si1.name = 'documentId'
       and si2.name = 'documentRepositoryName'
       and si1.value = :docId
       and si2.value = :repoId
+      and t.end is null
     ]]>
   </query>
 </hibernate-mapping>

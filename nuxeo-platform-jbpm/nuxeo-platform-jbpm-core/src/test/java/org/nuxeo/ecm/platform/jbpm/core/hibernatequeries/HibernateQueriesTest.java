@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.jbpm.core.hibernatequeries;
 
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -24,7 +25,12 @@ import junit.framework.TestCase;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.jbpm.context.exe.ContextInstance;
+import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
+import org.jbpm.graph.exe.Token;
+import org.jbpm.taskmgmt.exe.TaskInstance;
+import org.jbpm.taskmgmt.exe.TaskMgmtInstance;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 
 /**
@@ -32,7 +38,19 @@ import org.nuxeo.ecm.platform.jbpm.JbpmService;
  *
  */
 public class HibernateQueriesTest extends TestCase {
+    private static final String DEMO = "demo";
+
+    private static final String _1 = "1";
+
+    private static final String GET_TI = JbpmService.HibernateQueries.NuxeoHibernateQueries_getTaskInstancesForDoc.name();
+
     private static SessionFactory factory;
+
+    private static final String DOC_ID = JbpmService.VariableName.documentId.name();
+
+    private static final String REP_ID = JbpmService.VariableName.documentRepositoryName.name();
+
+    private static final String GET_PI = JbpmService.HibernateQueries.NuxeoHibernateQueries_getProcessInstancesForDoc.name();
 
     private Session session;
 
@@ -44,16 +62,48 @@ public class HibernateQueriesTest extends TestCase {
         }
 
         session = factory.openSession();
+        assertNotNull(session);
     }
 
     @SuppressWarnings("unchecked")
     public void testGetProcessInstancesForDoc() {
-        assertNotNull(session);
-        List<ProcessInstance> list = session.getNamedQuery(
-                JbpmService.HibernateQueries.NuxeoHibernateQueries_getProcessInstancesForDoc.name()).setParameter(
-                "docId", "1").setParameter("repoId", "demo").list();
+        List<ProcessInstance> list = session.getNamedQuery(GET_PI).setParameter(
+                "docId", _1).setParameter("repoId", DEMO).list();
         assertNotNull(list);
         assertTrue(list.isEmpty());
+
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testGetTaskInstancesForDoc() {
+        ProcessDefinition pd = new ProcessDefinition();
+        ProcessInstance pi = new ProcessInstance(pd);
+        pi.setRootToken(new Token(pi));
+        ContextInstance ci = pi.getContextInstance();
+        ci.setVariable(DOC_ID, _1);
+        ci.setVariable(REP_ID, DEMO);
+        TaskMgmtInstance tmi = pi.getTaskMgmtInstance();
+        TaskInstance ti1 = tmi.createTaskInstance();
+        ti1.setCreate(new Date());
+        TaskInstance ti = new TaskInstance();
+        ti.setVariable(DOC_ID, _1);
+        ti.setVariable(REP_ID, DEMO);
+        session.save(ci);
+        session.save(pd);
+        session.save(ti);
+        session.save(pi);
+        session.save(ti1);
+        session.save(tmi);
+        session.flush();
+        List ll = session.createSQLQuery("select * from jbpm_variableinstance").list();
+        List<TaskInstance> list = session.getNamedQuery(GET_TI).setParameter(
+                "docId", _1).setParameter("repoId", DEMO).list();
+        assertEquals(2, list.size());
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
         session.close();
     }
+
 }

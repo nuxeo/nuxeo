@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.jbpm;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.List;
 
 import org.jbpm.graph.def.ProcessDefinition;
@@ -130,7 +129,7 @@ public interface JbpmService {
      * @param principal
      * @return A list of ProcessInstance
      */
-    List<ProcessInstance> getCurrentProcessInstances(Principal principal)
+    List<ProcessInstance> getCurrentProcessInstances(NuxeoPrincipal principal)
             throws NuxeoJbpmException;
 
     /**

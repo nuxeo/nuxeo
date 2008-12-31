@@ -23,9 +23,9 @@
             <f:selectItem itemLabel="#{pd.name}" itemValue="#{pd.name}" />
           </c:forEach>
         </h:selectOneMenu>
-        <h:commandButton styleclass="button"
+        <h:commandButton style="button"
                          value="#{messages['jbpm.dashboard.newpdInstance']}"
-                         action="#{jbpmService.createProcessInstance(currentUser, selectedPd)}"/>
+                         action="#{jbpmService.createProcessInstance(currentUser, selectedPd, selectedPd)}"/>
       </h:form>
     </div>
   </div>

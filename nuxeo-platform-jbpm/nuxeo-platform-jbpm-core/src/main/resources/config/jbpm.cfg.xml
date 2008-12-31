@@ -1,6 +1,6 @@
 <jbpm-configuration>
-  <string name='resource.hibernate.cfg.xml' value='config/hibernate.cfg.xml' />
-  <string name="resource.node.types" value="config/node.types.xml" />
+	<string name='resource.hibernate.cfg.xml' value='config/hibernate.cfg.xml' />
+	<string name="resource.node.types" value="config/node.types.xml" />
 	<jbpm-context>
 		<service name="persistence">
 			<factory>
@@ -14,6 +14,8 @@
 				</bean>
 			</factory>
 		</service>
-    <service name="tx" factory="org.jbpm.tx.TxServiceFactory" />
+		<service name="tx" factory="org.jbpm.tx.TxServiceFactory" />
+		<service name="authentication"
+			factory="org.jbpm.security.authentication.DefaultAuthenticationServiceFactory" />
 	</jbpm-context>
 </jbpm-configuration>
