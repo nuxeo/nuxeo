@@ -57,8 +57,6 @@ public class TestIndexingThreadPool extends RepositoryTestCase {
                 "RepositoryManager.xml");
 
         deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "PolicyService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "CoreTestExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "DemoRepository.xml");

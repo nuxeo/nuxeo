@@ -151,7 +151,7 @@ public class TestSearchPolicy extends RepositoryOSGITestCase {
         CoreSession remote = getCoreSession();
 
         // put lower access level => too low for this doc
-        ((NuxeoPrincipal) remote.getPrincipal()).setModel(getUserModel(Long.valueOf(2)));
+        ((NuxeoPrincipal) remote.getPrincipal()).setModel(getUserModel(2L));
         spp = query(query, remote.getPrincipal());
         assertEquals(0, spp.getResultsCount());
     }
