@@ -25,7 +25,7 @@ public class TestLocalAPIWithCustomVersioning extends TestLocalAPI {
     @Override
     protected void doDeployments() throws Exception {
         super.doDeployments();
-        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "CustomVersioningService.xml");
     }
 

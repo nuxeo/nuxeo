@@ -51,17 +51,17 @@ public class TestSecurity extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployBundle(TestConstants.SCHEMA_BUNDLE);
-        deployContrib(TestConstants.CORE_BUNDLE,
+        deployBundle(Constants.SCHEMA_BUNDLE);
+        deployContrib(Constants.CORE_BUNDLE,
                 "OSGI-INF/CoreService.xml");
-        deployContrib(TestConstants.CORE_BUNDLE,
+        deployContrib(Constants.CORE_BUNDLE,
                 "OSGI-INF/SecurityService.xml");
-        deployContrib(TestConstants.CORE_BUNDLE,
+        deployContrib(Constants.CORE_BUNDLE,
                 "OSGI-INF/RepositoryService.xml");
 
-        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "test-CoreExtensions.xml");
-        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "DemoRepository.xml");
 
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();

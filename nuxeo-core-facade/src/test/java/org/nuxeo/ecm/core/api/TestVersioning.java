@@ -47,24 +47,24 @@ public class TestVersioning extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib(TestConstants.CORE_BUNDLE,
+        deployContrib(Constants.CORE_BUNDLE,
                 "OSGI-INF/CoreService.xml");
-        deployContrib(TestConstants.CORE_BUNDLE,
+        deployContrib(Constants.CORE_BUNDLE,
                 "OSGI-INF/SecurityService.xml");
-        deployContrib(TestConstants.CORE_BUNDLE,
+        deployContrib(Constants.CORE_BUNDLE,
                 "OSGI-INF/RepositoryService.xml");
-        deployContrib(TestConstants.CORE_BUNDLE,
+        deployContrib(Constants.CORE_BUNDLE,
                 "OSGI-INF/LifeCycleService.xml");
 
-        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "TypeService.xml");
-        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "test-CoreExtensions.xml");
-        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "CoreTestExtensions.xml");
-        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "LifeCycleServiceExtensions.xml");
-        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "DemoRepository.xml");
 
         deployCustomVersioning();
