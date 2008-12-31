@@ -46,7 +46,7 @@
       <facet name="Folderish"/>
     </doctype>
 
-    <doctype name="WikiPage" extends="Document">
+    <doctype name="WikiPage" extends="Folder">
       <schema name="common"/>
       <schema name="dublincore"/>
       <schema name="files"/>
@@ -56,6 +56,7 @@
       <facet name="Publishable"/>
       <facet name="Indexable"/>
       <facet name="Commentable"/>
+      <facet name="Folderish"/>
     </doctype>
 
     <doctype name="Blog" extends="Folder">

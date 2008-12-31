@@ -12,24 +12,19 @@ import org.nuxeo.runtime.api.*;
 import org.nuxeo.ecm.platform.usermanager.*;
 import org.nuxeo.ecm.core.rest.*;
 
-@WebObject(type="Wiki")
+@WebObject(type="WikiPage")
 @Produces(["text/html", "*/*"])
-public class WikiObject extends DocumentObject {
+public class WikiPageObject extends DocumentObject {
 
   public void initialize(Object... args) {
     super.initialize(args);
-    println args;
     setRoot(true);
-  }
-
-  @GET
-  public Response doGet() {
-    return redirect(path+"/FrontPage");
   }
 
   @GET
   @Path("create/{segment}")
   public Response createPage(@PathParam("segment") String segment) {
+    println "=====================================";
     def session = ctx.getCoreSession();
     def newDoc = session.createDocumentModel(doc.getPathAsString(), segment, "WikiPage");
     if (newDoc.getTitle().length() == 0) {

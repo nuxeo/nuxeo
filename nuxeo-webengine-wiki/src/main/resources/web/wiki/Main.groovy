@@ -41,15 +41,15 @@ public class Main extends DocumentModule {
            throw WebException.wrap(e);
       }
   }
-  
-  
+
+
   @POST
-  public Response doPost() {      
+  public Response doPost() {
       String name = ctx.getForm().getString("name");
       DocumentModel newDoc = DocumentHelper.createDocument(ctx, doc, name);
       return redirect(getPath()+'/'+newDoc.getName());
   }
-  
+
   @GET
   public Object doGet() {
     def docs = ctx.getCoreSession().getChildren(doc.getRef(), "Wiki");
@@ -82,14 +82,16 @@ public class Main extends DocumentModule {
   public Object handleError(WebApplicationException e) {
     if (e instanceof WebSecurityException) {
       return Response.status(401).entity(getTemplate("error/error_401.ftl")).build();
-    } else if (e instanceof WebResourceNotFoundException) {      
+    } else if (e instanceof WebResourceNotFoundException) {
       return Response.status(404).entity(getTemplate("error/error_404.ftl")).build();
     } else {
       return super.handleError(e);
-    } 
+    }
   }
 
   public String getLink(DocumentModel doc) {
+    println ">>>>>>>>>>>>>>>>>>>>> getLink  called "
+
     String type = doc.getType();
     if ("Wiki".equals(type)) {
       return getPath()+"/"+doc.getName();
@@ -97,7 +99,8 @@ public class Main extends DocumentModule {
       //TODO: this will not work with multi level wiki pages
       def path = doc.getPath();
       int cnt = path.segmentCount();
-      return getPath()+"/"+path.segment(cnt-2)+"/"+path.lastSegment();
+      String s =  getPath()+"/"+path.segment(cnt-2)+"/"+path.lastSegment();
+      return s;
     }
     return super.getLink(doc);
   }

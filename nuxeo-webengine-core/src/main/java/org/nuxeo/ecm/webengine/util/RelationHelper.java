@@ -64,7 +64,7 @@ public class RelationHelper {
             QNameResource resource = (QNameResource) node;
             Map<String, Serializable> context = new HashMap<String, Serializable>();
             context.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY, coreSessionId);
-            Object o = relationManager.getResourceRepresentation(
+            Object o = getRelationManager().getResourceRepresentation(
                     resource.getNamespace(), resource, context);
             if (o instanceof DocumentModel) {
                 return (DocumentModel) o;
@@ -78,7 +78,7 @@ public class RelationHelper {
         try {
             Literal literal = new LiteralImpl(stringObject);
             Statement pattern = new StatementImpl(null, predicat, literal);
-            List<Statement> stmts = relationManager.getStatements(RelationConstants.GRAPH_NAME, pattern);
+            List<Statement> stmts = getRelationManager().getStatements(RelationConstants.GRAPH_NAME, pattern);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
@@ -99,7 +99,7 @@ public class RelationHelper {
         try {
             QNameResource docResource = getDocumentResource(objectDocument);
             Statement pattern = new StatementImpl(null, predicat, docResource);
-            List<Statement> stmts = relationManager.getStatements(RelationConstants.GRAPH_NAME, pattern);
+            List<Statement> stmts = getRelationManager().getStatements(RelationConstants.GRAPH_NAME, pattern);
             if (stmts != null) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
@@ -140,7 +140,7 @@ public class RelationHelper {
             QNameResource docResource = getDocumentResource(subjectDoc);
             Statement pattern = new StatementImpl(
                     docResource, predicat, null);
-            return relationManager.getStatements(RelationConstants.GRAPH_NAME, pattern);
+            return getRelationManager().getStatements(RelationConstants.GRAPH_NAME, pattern);
         } catch (ClientException e) {
             e.printStackTrace();
         }

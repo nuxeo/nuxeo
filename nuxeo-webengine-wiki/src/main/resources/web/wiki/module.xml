@@ -13,7 +13,12 @@
       <category>TABVIEW</category>
       <facet>Versionable</facet>
     </link>
-    
+    <link id="tab_backlinks" path="/@views/backlinks">
+      <category>TABVIEW</category>
+      <type>WikiPage</type>
+    </link>
+
+
     <link id="link_print" path="/@views/print">
       <category>TOOLBOX</category>
     </link>
@@ -21,15 +26,16 @@
       <type>Document</type>
       <category>TOOLBOX</category>
     </link>
+
     <link id="link_create_doc" path="/@views/create">
       <facet>Folderish</facet>
       <category>TOOLBOX</category>
-    </link> 
-    
+    </link>
+
     <link id="link_create_wikis" path="/@views/create">
       <facet>mainWiki</facet>
       <category>TOOLBOX</category>
-    </link> 
-    
+    </link>
+
   </links>
 </module>
