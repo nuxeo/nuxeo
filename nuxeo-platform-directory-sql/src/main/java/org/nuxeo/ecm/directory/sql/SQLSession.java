@@ -224,6 +224,8 @@ public class SQLSession implements Session, EntrySource {
         return directory.getCache().getEntry(id, this, fetchReferences);
     }
 
+    @Deprecated
+    // Not used. Remove in 5.2
     public DocumentModel getEntryFromSource(String id)
             throws DirectoryException {
         return getEntry(id, true);

@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.api.security.PolicyService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -79,7 +78,6 @@ import org.nuxeo.ecm.core.search.api.internals.IndexingThreadPoolDescriptor;
 import org.nuxeo.ecm.core.search.api.internals.SearchPolicyDescriptor;
 import org.nuxeo.ecm.core.search.api.internals.SearchServiceInternals;
 import org.nuxeo.ecm.core.search.api.security.SearchPolicy;
-import org.nuxeo.ecm.core.search.api.security.SearchPolicyService;
 import org.nuxeo.ecm.core.search.backend.SearchEngineBackendDescriptor;
 import org.nuxeo.ecm.core.search.threading.IndexingThreadPool;
 import org.nuxeo.ecm.core.search.transaction.Transactions;
@@ -693,15 +691,6 @@ public class SearchServiceImpl extends DefaultComponent implements
             String backendName = defaultBackendName;
             SearchEngineBackend backend = getSearchEngineBackendByName(backendName);
             if (backend != null) {
-                // old search policy
-                PolicyService policyService = Framework.getLocalService(PolicyService.class);
-                if (policyService != null) {
-                    SearchPolicyService searchPolicyService = (SearchPolicyService) policyService.getSearchPolicy();
-                    if (searchPolicyService != null) {
-                        nxqlQuery = searchPolicyService.applyPolicy(nxqlQuery);
-                    }
-                }
-                // new search policy
                 List<SearchPolicy> policies = getSearchPolicies();
                 for (SearchPolicy policy : policies) {
                     nxqlQuery = policy.applyPolicy(nxqlQuery);

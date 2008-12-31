@@ -4,8 +4,7 @@
   <documentation>
     A document manager binding.
 
-    @author
-    <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+    @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
   </documentation>
 
   <extension target="org.nuxeo.ecm.platform.api.PlatformService"
