@@ -349,7 +349,6 @@ public class Editor {
         pageWidget.setName("page frame");
         Format pageLayout = themeManager.createLayout();
         Format pageStyle = themeManager.createStyle();
-        themeManager.registerFormat(pageStyle);
         ElementFormatter.setFormat(page, pageWidget);
         ElementFormatter.setFormat(page, pageStyle);
         ElementFormatter.setFormat(page, pageLayout);
@@ -375,7 +374,6 @@ public class Editor {
         pageWidget.setName("page frame");
         Format pageLayout = themeManager.createLayout();
         Format pageStyle = themeManager.createStyle();
-        themeManager.registerFormat(pageStyle);
         ElementFormatter.setFormat(page, pageWidget);
         ElementFormatter.setFormat(page, pageStyle);
         ElementFormatter.setFormat(page, pageLayout);
@@ -632,7 +630,6 @@ public class Editor {
         // cell
         Format cellWidget = themeManager.createWidget();
         cellWidget.setName("cell frame");
-        themeManager.registerFormat(cellWidget);
         Format cellLayout = themeManager.createLayout();
         cellLayout.setProperty("width", "100%");
         Format cellStyle = themeManager.createStyle();
