@@ -1,4 +1,5 @@
 package org.nuxeo.webengine.management.adapters;
+
 /*
  * (C) Copyright 2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
@@ -50,13 +51,13 @@ public class RepositoryManagerMBeanAdapter implements RepositoryMBean {
         if (service == null) {
             throw new ClientRuntimeException("Cannot get repository service");
         }
-        Repository repository = null;
         try {
-            return  service.getRepositoryManager();
+            return service.getRepositoryManager();
         } catch (Exception cause) {
-            throw new ClientRuntimeException("Cannot get repository manager"
-                    , cause);
-        }    }
+            throw new ClientRuntimeException("Cannot get repository manager",
+                    cause);
+        }
+    }
 
     protected Repository guardedRepository(RepositoryManager manager,
             String name) {
