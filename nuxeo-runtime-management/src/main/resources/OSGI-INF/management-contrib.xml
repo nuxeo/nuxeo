@@ -7,8 +7,12 @@
     <provide interface="org.nuxeo.runtime.management.ManagementService" />
   </service>
 
-  <extension-point name="managedServices">
-    <object class="org.nuxeo.runtime.management.ManagedServiceDescriptor" />
+  <extension-point name="resources">
+    <object class="org.nuxeo.runtime.management.ResourceDescriptor" />
+  </extension-point>
+
+  <extension-point name="factories">
+    <object class="org.nuxeo.runtime.management.ResourceFactoryDescriptor" />
   </extension-point>
 
 

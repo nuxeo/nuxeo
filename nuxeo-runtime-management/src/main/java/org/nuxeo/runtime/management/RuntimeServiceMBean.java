@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *    Stephane Lacoin (Nuxeo EP Software Engineer)ne Lacoin (Nuxeo EP Software Engineer)
  */
 package org.nuxeo.runtime.management;
 
@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author matic
+ * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  * 
  */
 public interface RuntimeServiceMBean {

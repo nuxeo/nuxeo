@@ -18,14 +18,12 @@ package org.nuxeo.runtime.management;
 
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanServer;
-import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 import javax.management.modelmbean.ModelMBeanInfo;
 import javax.management.modelmbean.RequiredModelMBean;
@@ -37,6 +35,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.inspector.ModelMBeanInfoFactory;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -46,14 +45,19 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class ManagementServiceImpl extends DefaultComponent implements
         ManagementService {
 
+    public static final ComponentName NAME = new ComponentName(
+            "org.nuxeo.runtime.management.ManagementService");
+
     private static final Log log = LogFactory.getLog(ManagementServiceImpl.class);
 
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (extensionPoint.equals("managedServices")) {
-            doRegister((ManagedServiceDescriptor) contribution);
+        if (extensionPoint.equals("resources")) {
+            doRegisterResource((ResourceDescriptor) contribution);
+        } else if (extensionPoint.equals("factories")) {
+            doRegisterFactory((ResourceFactoryDescriptor) contribution);
         }
     }
 
@@ -61,32 +65,66 @@ public class ManagementServiceImpl extends DefaultComponent implements
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (extensionPoint.equals("managedServices")) {
-            doUnregister((ManagedServiceDescriptor) contribution);
+        if (extensionPoint.equals("resources")) {
+            doUnregisterResource((ResourceDescriptor) contribution);
+        } else {
+            doUnregisterFactory((ResourceFactoryDescriptor) contribution);
         }
     }
 
-    protected void doRegister(ManagedServiceDescriptor descriptor) {
-        ManagedService service = doResolve(descriptor);
-        doBind(service);
-        managedServices.put(descriptor, service);
+    protected final Map<ResourceFactoryDescriptor, ResourceFactory> factories = new HashMap<ResourceFactoryDescriptor, ResourceFactory>();
+
+    @SuppressWarnings("unchecked")
+    protected void doRegisterFactory(ResourceFactoryDescriptor descriptor) {
+        String factoryClassName = descriptor.getClassName();
+        ResourceFactory factory = null;
+        try {
+            Class<ResourceFactory> factoryClass = (Class<ResourceFactory>) getClass().getClassLoader().loadClass(
+                    descriptor.getClassName());
+            try {
+                factory = factoryClass.getConstructor(
+                        new Class[] { ResourceFactoryDescriptor.class }).newInstance(
+                        descriptor);
+            } catch (NoSuchMethodException e) {
+                factory = factoryClass.newInstance();
+            }
+        } catch (Exception e) {
+            throw new ManagementRuntimeException("Cannot create factory "
+                    + factoryClassName, e);
+        }
+        for (ResourceDescriptor resourceDescriptor : factory.getDescriptors()) {
+            doRegisterResource(resourceDescriptor);
+        }
+        factories.put(descriptor, factory);
+    }
+
+    protected void doUnregisterFactory(ResourceFactoryDescriptor descriptor) {
+        factories.remove(descriptor);
+    }
+
+    protected final Map<ResourceDescriptor, Resource> resources = new HashMap<ResourceDescriptor, Resource>();
+
+    protected void doRegisterResource(ResourceDescriptor descriptor) {
+        Resource resource = doResolve(descriptor);
+        doBind(resource);
+        resources.put(descriptor, resource);
         if (log.isInfoEnabled()) {
             log.info("registered management contribution for " + descriptor);
         }
     }
 
-    protected void doUnregister(ManagedServiceDescriptor descriptor) {
-        ManagedService managedService = managedServices.remove(descriptor);
-        if (managedService == null) {
+    protected void doUnregisterResource(ResourceDescriptor descriptor) {
+        Resource resource = resources.remove(descriptor);
+        if (resource == null) {
             throw new IllegalArgumentException(descriptor
                     + " is not registered");
         }
-        if (managedService.isRegistered()) {
-            doUnbind(managedService);
+        if (resource.isRegistered()) {
+            doUnbind(resource);
         }
     }
 
-    protected Class<?> doLoadServiceClass(String className) {
+    protected Class<?> doLoadClass(String className) {
         try {
             return getClass().getClassLoader().loadClass(className);
         } catch (ClassNotFoundException e) {
@@ -94,94 +132,116 @@ public class ManagementServiceImpl extends DefaultComponent implements
         }
     }
 
-    protected Object doGetServiceInstance(Class<?> serviceClass,
-            boolean isAdapted) {
-        Object service;
-        if (isAdapted) {
+    protected <T> T doCreateResourceInstance(Class<T> resourceClass,
+            ResourceDescriptor descriptor) {
+        try {
+            return resourceClass.getConstructor(ResourceDescriptor.class).newInstance(
+                    descriptor);
+        } catch (Exception e) {
             try {
-                return serviceClass.newInstance();
-            } catch (Exception e) {
-                throw ManagementRuntimeException.wrap(
-                        "Cannot create adapter for " + serviceClass, e);
+                return resourceClass.newInstance();
+            } catch (Exception cause) {
+                throw new ManagementRuntimeException(
+                        "Cannot create resource for " + descriptor, cause);
             }
         }
-        try {
-            service = Framework.getService(serviceClass);
-        } catch (Exception e) {
-            throw ManagementRuntimeException.wrap(
-                    "Cannot locate service using " + serviceClass, e);
-        }
-        if (service == null) {
-            throw new ManagementRuntimeException("Cannot locate service using "
-                    + serviceClass);
-        }
-        return service;
     }
 
-    protected final Map<ManagedServiceDescriptor, ManagedService> managedServices = new HashMap<ManagedServiceDescriptor, ManagedService>();
+    protected <T> T doGetResourceInstance(Class<T> resourceClass,
+            ResourceDescriptor descriptor) {
+        if (descriptor.isAdapted()) {
+            return doCreateResourceInstance(resourceClass, descriptor);
+        }
+        T resource;
+        try {
+            resource = Framework.getService(resourceClass);
+        } catch (Exception e) {
+            throw ManagementRuntimeException.wrap(
+                    "Cannot locate resource using " + resourceClass, e);
+        }
+        if (resource == null) {
+            throw new ManagementRuntimeException(
+                    "Cannot locate resource using " + resourceClass);
+        }
+        return resource;
+    }
 
-    protected ManagedService doResolve(ManagedServiceDescriptor descriptor) {
-        Class<?> serviceClass = doLoadServiceClass(descriptor.getServiceClassName());
-        Object serviceInstance = doGetServiceInstance(serviceClass,
-                descriptor.isAdapted());
-        String serviceName = descriptor.getServiceName();
-        if (serviceName == null) {
-            serviceName = serviceClass.getSimpleName();
+    protected Resource doResolve(ResourceDescriptor descriptor) {
+        Class<?> resourceClass = doLoadClass(descriptor.getClassName());
+        Object resourceInstance = doGetResourceInstance(resourceClass,
+                descriptor);
+        String resourceName = descriptor.getName();
+        if (resourceName == null) {
+            resourceName = resourceClass.getSimpleName();
         }
-        if (!ManagementNameFormatter.isQualified(serviceName)) {
-            serviceName = ManagementNameFormatter.formatName(serviceName);
-        }
-        ObjectName managementName = ManagementNameFormatter.getObjectName(serviceName);
+        ObjectName managementName = ObjectNameFactory.getObjectName(resourceName);
         String ifaceClassName = descriptor.getIfaceClassName();
-        Class<?> managementClass = ifaceClassName != null ? doLoadServiceClass(ifaceClassName)
-                : serviceClass;
-        return new ManagedService(descriptor, managementName, managementClass,
-                serviceInstance);
+        Class<?> managementClass = ifaceClassName != null ? doLoadClass(ifaceClassName)
+                : resourceClass;
+        return new Resource(descriptor, managementName, managementClass,
+                resourceInstance);
     }
 
     protected final ModelMBeanInfoFactory mbeanInfoFactory = new ModelMBeanInfoFactory();
 
     protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
-    protected void doBind(ManagedService service) {
-        if (service.mbean != null) {
-            throw new IllegalStateException(service.getDescriptor()
+    public void bind(ObjectName name, Object instance, Class<?> clazz) {
+        doBind(name, instance, clazz);
+    }
+
+    protected NamedModelMBean doBind(ObjectName objectName,
+            Object objectInstance, Class<?> objectClass) {
+        NamedModelMBean mbean = null;
+        try {
+            mbean = new NamedModelMBean();
+            mbean.setManagedResource(objectInstance, "ObjectReference");
+            mbean.setModelMBeanInfo(mbeanInfoFactory.getModelMBeanInfo(objectInstance.getClass()));
+            mbean.setInstance(mbeanServer.registerMBean(mbean, objectName));
+        } catch (Exception e) {
+            throw new ManagementRuntimeException("Cannot register bean "
+                    + objectName);
+        }
+        return mbean;
+    }
+
+    protected void doBind(Resource resource) {
+        if (resource.mbean != null) {
+            throw new IllegalStateException(resource.getDescriptor()
                     + " is already bound");
         }
+        resource.mbean = doBind(resource.getName(), resource.getInstance(),
+                resource.getClazz());
+    }
+
+    protected void doUnbind(ObjectName objectName, Object objectInstance) {
         try {
-            NamedModelMBean mbean = new NamedModelMBean();
-            mbean.setManagedResource(service.getServiceInstance(),
-                    "ObjectReference");
-            mbean.setModelMBeanInfo(mbeanInfoFactory.getModelMBeanInfo(service.getManagementClass()));
-            mbean.setInstance(mbeanServer.registerMBean(mbean,
-                    service.getManagementName()));
-            service.mbean = mbean;
+            mbeanServer.unregisterMBean(objectName);
         } catch (Exception e) {
-            throw ManagementRuntimeException.wrap(
-                    "Cannot register management contribution for "
-                            + service.getDescriptor(), e);
+            throw ManagementRuntimeException.wrap("Cannot unregister "
+                    + objectName, e);
         }
     }
 
-    protected void doUnbind(ManagedService service) {
-        if (service.mbean == null) {
-            throw new IllegalStateException(service.getDescriptor()
+    protected void doUnbind(Resource resource) {
+        if (resource.mbean == null) {
+            throw new IllegalStateException(resource.getDescriptor()
                     + " is not bound");
         }
         try {
-            mbeanServer.unregisterMBean(service.mbean.getName());
+            mbeanServer.unregisterMBean(resource.mbean.getName());
         } catch (Exception e) {
             throw ManagementRuntimeException.wrap("Cannot unregister "
-                    + service.getDescriptor(), e);
+                    + resource.getDescriptor(), e);
         } finally {
-            service.mbean = null;
+            resource.mbean = null;
         }
     }
 
     public class ManagementAdapter implements ManagementServiceMBean {
 
-        public Set<ObjectName> getRegisteredServicesName() {
-            return ManagementServiceImpl.this.getServicesName();
+        public Set<ObjectName> getResourcesName() {
+            return ManagementServiceImpl.this.getResourcesName();
         }
 
         private boolean isEnabled = true;
@@ -203,19 +263,19 @@ public class ManagementServiceImpl extends DefaultComponent implements
         }
 
         public boolean isEnabled() {
-            return managedServices != null;
+            return resources != null;
         }
     }
 
     protected void doEnable() {
-        for (ManagedService service : managedServices.values()) {
-            doBind(service);
+        for (Resource resource : resources.values()) {
+            doBind(resource);
         }
     }
 
     protected void doDisable() {
-        for (ManagedService service : managedServices.values()) {
-            doUnbind(service);
+        for (Resource resource : resources.values()) {
+            doUnbind(resource);
         }
     }
 
@@ -226,7 +286,7 @@ public class ManagementServiceImpl extends DefaultComponent implements
             RequiredModelMBean mbean = new RequiredModelMBean(mbeanInfo);
             mbean.setManagedResource(new ManagementAdapter(), "ObjectReference");
             mbeanServer.registerMBean(mbean, new ObjectName(
-                    "nx:type=service,name=management"));
+                    "nx:type=resource,name=management"));
         } catch (Exception e) {
             throw ManagementRuntimeException.wrap("Cannot enable management", e);
         }
@@ -236,7 +296,7 @@ public class ManagementServiceImpl extends DefaultComponent implements
     public void deactivate(ComponentContext context) {
         try {
             mbeanServer.unregisterMBean(new ObjectName(
-                    "nx:type=service,name=management"));
+                    "nx:type=resource,name=management"));
         } catch (Exception e) {
             throw ManagementRuntimeException.wrap("Cannot disable management",
                     e);
@@ -244,17 +304,13 @@ public class ManagementServiceImpl extends DefaultComponent implements
     }
 
     @SuppressWarnings("unchecked")
-    public Set<ObjectName> getServicesName() {
-        String qualifiedName = ManagementNameFormatter.formatTypeQuery("service");
-        ObjectName objectName = ManagementNameFormatter.getObjectName(qualifiedName);
+    public Set<ObjectName> getResourcesName() {
+        String qualifiedName = ObjectNameFactory.formatTypeQuery("service");
+        ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
         return mbeanServer.queryNames(objectName, null);
     }
 
     @SuppressWarnings("unchecked")
-    public Set<ObjectName> getResourcesName() {
-        return mbeanServer.queryNames(null, null);
-    }
-
     public ObjectName getObjectName(String name) throws ManagementException {
         Set<ObjectName> names;
         try {
@@ -281,7 +337,8 @@ public class ManagementServiceImpl extends DefaultComponent implements
         }
     }
 
-    public Object getObjectAttribute(ObjectName objectName, MBeanAttributeInfo info) {
+    public Object getObjectAttribute(ObjectName objectName,
+            MBeanAttributeInfo info) {
         try {
             return mbeanServer.getAttribute(objectName, info.getName());
         } catch (Exception e) {

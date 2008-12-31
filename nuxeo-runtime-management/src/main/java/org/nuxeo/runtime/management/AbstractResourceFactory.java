@@ -1,3 +1,4 @@
+package org.nuxeo.runtime.management;
 /*
  * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
@@ -14,15 +15,18 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.runtime.management;
+
 
 /**
  * @author matic
- *
+ * 
  */
-public interface DummyManagedServiceManagement {
+public abstract class AbstractResourceFactory implements ResourceFactory {
 
-    String getManagedMessage();
-    void setManagedMessage(String message);
-    String sayManagedHelloWorld();
+    protected final ResourceFactoryDescriptor descriptor;
+
+    protected AbstractResourceFactory(ResourceFactoryDescriptor descriptor) {
+        this.descriptor = descriptor;
+    }
+
 }

@@ -16,22 +16,13 @@
  */
 package org.nuxeo.runtime.management;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import junit.framework.TestCase;
-
 /**
  * @authorStephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ *
  */
-public class TestMatchAccessorName extends TestCase {
+public interface DummyMBean {
 
-    private static final Pattern fixAttributePattern = Pattern.compile("(get|set|is)(.*)");
-
-    public void testMatchGet() {
-        Matcher matcher = fixAttributePattern.matcher("getSomething");
-        assertTrue(matcher.matches());
-        assertEquals("Something",matcher.group(2));
-    }
+    String getManagedMessage();
+    void setManagedMessage(String message);
+    String sayManagedHelloWorld();
 }

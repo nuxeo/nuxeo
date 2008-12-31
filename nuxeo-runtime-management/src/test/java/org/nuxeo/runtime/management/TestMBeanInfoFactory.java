@@ -12,12 +12,11 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *    Stephane Lacoin (Nuxeo EP Software Engineer)ne Lacoin (Nuxeo EP Software Engineer)
  */
 package org.nuxeo.runtime.management;
 
 import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanInfo;
 import javax.management.modelmbean.ModelMBeanInfo;
 
 import junit.framework.TestCase;
@@ -25,7 +24,7 @@ import junit.framework.TestCase;
 import org.nuxeo.runtime.management.inspector.ModelMBeanInfoFactory;
 
 /**
- * @author matic
+ * @authorStephane Lacoin (Nuxeo EP Software Engineer)
  *
  */
 public class TestMBeanInfoFactory extends TestCase {
@@ -35,11 +34,11 @@ public class TestMBeanInfoFactory extends TestCase {
     
     public void testInterfaceProperty() throws Exception {
         ModelMBeanInfo ifaceInfo =
-            factoryUnderTest.getModelMBeanInfo(DummyManagedServiceManagement.class);
+            factoryUnderTest.getModelMBeanInfo(DummyMBean.class);
         MBeanAttributeInfo ifaceAttribute = ifaceInfo.getAttributes()[0];
         assertEquals("managedMessage", ifaceAttribute.getName());
         ModelMBeanInfo classInfo =
-            factoryUnderTest.getModelMBeanInfo(DummyManagedServiceImpl.class);
+            factoryUnderTest.getModelMBeanInfo(DummyServiceImpl.class);
         MBeanAttributeInfo classAttribute = classInfo.getAttributes()[0];
         assertEquals("message", classAttribute.getName());
     }

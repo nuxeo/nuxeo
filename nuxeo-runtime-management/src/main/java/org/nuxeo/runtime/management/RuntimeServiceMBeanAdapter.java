@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *    Stephane Lacoin (Nuxeo EP Software Engineer)ne Lacoin (Nuxeo EP Software Engineer)
  */
 package org.nuxeo.runtime.management;
 
@@ -32,8 +32,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RegistrationInfo;
 
+
 /**
- * @author matic
+ * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  * 
  */
 public class RuntimeServiceMBeanAdapter implements RuntimeServiceMBean {

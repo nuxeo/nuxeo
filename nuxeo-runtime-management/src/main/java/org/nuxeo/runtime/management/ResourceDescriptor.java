@@ -18,6 +18,8 @@ package org.nuxeo.runtime.management;
 
 import java.io.Serializable;
 
+import javax.management.ObjectName;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -25,44 +27,48 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  * 
  */
-@XObject("managedService")
-public class ManagedServiceDescriptor implements Serializable {
-    /**
-     * 
-     */
+@XObject("resource")
+public class ResourceDescriptor implements Serializable {
+
     private static final long serialVersionUID = 6338431911839779273L;
 
-    @XNode("@name")
-    protected String serviceName;
-
-    @XNode("@class")
-    protected String serviceClassName;
-
-    @XNode("@iface")
-    protected String ifaceClassName;
-
-    @XNode("@isAdapted")
-    protected boolean isAdapted;
-
-    public String getServiceName() {
-        if (serviceName == null) {
-            return serviceName = serviceClassName;
-        }
-        return serviceName;
+    public ResourceDescriptor(ObjectName name, Class<?> implClass,
+            Class<?> ifaceClass, boolean isAdapted) {
+        this.name = name.getCanonicalName();
+        this.className = implClass.getCanonicalName();
+        this.ifaceClassName = ifaceClass.getCanonicalName();
+        this.isAdapted = isAdapted;
     }
 
-    public String getServiceClassName() {
-        return serviceClassName;
+    public ResourceDescriptor() {
+        ;
+    }
+
+    @XNode("@name")
+    private String name;
+
+    @XNode("@class")
+    private String className;
+
+    @XNode("@iface")
+    private String ifaceClassName;
+
+    @XNode("@isAdapted")
+    private boolean isAdapted;
+
+    public String getName() {
+        if (name == null) {
+            return name = className;
+        }
+        return name;
+    }
+
+    public String getClassName() {
+        return className;
     }
 
     public String getIfaceClassName() {
         return ifaceClassName;
-    }
-
-    public String getName() {
-        if (serviceName != null)
-            return serviceName;
-        return serviceClassName;
     }
 
     public boolean isAdapted() {
@@ -71,9 +77,9 @@ public class ManagedServiceDescriptor implements Serializable {
 
     @Override
     public String toString() {
-        if (serviceName != null)
-            return serviceName;
-        return serviceClassName;
+        if (name != null)
+            return name;
+        return className;
     }
 
     @Override
@@ -95,7 +101,7 @@ public class ManagedServiceDescriptor implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        ManagedServiceDescriptor other = (ManagedServiceDescriptor) obj;
+        ResourceDescriptor other = (ResourceDescriptor) obj;
         if (!this.getName().equals(other.getName())) {
             return false;
         }

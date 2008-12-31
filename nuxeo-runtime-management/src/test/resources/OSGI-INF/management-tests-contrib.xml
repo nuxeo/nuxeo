@@ -1,29 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component name="org.nuxeo.runtime.management.tests.DummyManagedService">
+<component name="org.nuxeo.runtime.management.tests.DummyService">
 
-  <implementation class="org.nuxeo.runtime.management.DummyManagedServiceImpl" />
+  <implementation class="org.nuxeo.runtime.management.DummyServiceImpl" />
 
   <service>
-    <provide interface="org.nuxeo.runtime.management.DummyManagedService" />
+    <provide interface="org.nuxeo.runtime.management.DummyService" />
   </service>
 
   <require>org.nuxeo.runtime.management.ManagementService
   </require>
 
+<!-- 
+  <extension target="org.nuxeo.runtime.management.ManagementService"
+    point="resources">
+
+    <resource class="org.nuxeo.runtime.management.DummyService" />
+
+    <resource name="test-with-iface" class="org.nuxeo.runtime.management.DummyService"
+      iface="org.nuxeo.runtime.management.DummyMBean" />
+
+    <resource name="test-with-impl" class="org.nuxeo.runtime.management.DummyService"
+      iface="org.nuxeo.runtime.management.DummyServiceImpl" />
+
+    <resource name="foo:name=test" class="org.nuxeo.runtime.management.DummyService" />
+
+    <resource isAdapted="true"
+      class="org.nuxeo.runtime.management.RuntimeServiceMBeanAdapter" />
+
+  </extension> -->
 
   <extension target="org.nuxeo.runtime.management.ManagementService"
-    point="managedServices">
+    point="factories">
 
-    <managedService class="org.nuxeo.runtime.management.DummyManagedService" />
-    <managedService name="test-with-iface"
-      class="org.nuxeo.runtime.management.DummyManagedService" iface="org.nuxeo.runtime.management.DummyManagedServiceManagement" />
-    <managedService name="test-with-impl"
-      class="org.nuxeo.runtime.management.DummyManagedService" iface="org.nuxeo.runtime.management.DummyManagedServiceImpl" />
-    <managedService name="foo:name=test"
-      class="org.nuxeo.runtime.management.DummyManagedService" />
-
-    <managedService isAdapted="true"
-      class="org.nuxeo.runtime.management.RuntimeServiceMBeanAdapter" />
+    <factory name="dummy"
+      class="org.nuxeo.runtime.management.DummyServiceMBeanFactory" />
 
   </extension>
 

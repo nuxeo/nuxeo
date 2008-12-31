@@ -25,9 +25,9 @@ import javax.management.ObjectName;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  * 
  */
-public class ManagementNameFormatter {
+public class ObjectNameFactory {
 
-    private ManagementNameFormatter() {
+    private ObjectNameFactory() {
     }
 
     public static final String NUXEO_DOMAIN_NAME = "nx";
@@ -54,25 +54,41 @@ public class ManagementNameFormatter {
         return String.format("%s:type=%s,*", domainName, typeName);
     }
 
-    protected static final Pattern namePattern = Pattern.compile("(.*):(.*)");
+    private static final Pattern namePattern = Pattern.compile(".*:.*");
 
-    public static boolean isQualified(String value) {
+    public static boolean hasDomain(String value) {
         Matcher matcher = namePattern.matcher(value);
         return matcher.matches();
     }
+    
+    private static final Pattern avaPattern = Pattern.compile(".*=.*");
+    
+    public static boolean hasAttributeValueAssertion(String value) {
+        Matcher matcher = avaPattern.matcher(value);
+        return matcher.matches();
+    }
 
-    public static ObjectName getObjectName(String qualifiedName) {
-        if (!isQualified(qualifiedName)) {
-            throw new IllegalArgumentException(qualifiedName
-                    + " is not a fully qualified name");
+    public static ObjectName getObjectName(String name) {
+        String qualifiedName = name;
+        if (!hasAttributeValueAssertion(qualifiedName)) {
+            qualifiedName = "nx:type=service,name=" + name;
+        } else if (!hasDomain(qualifiedName)) {
+            qualifiedName = NUXEO_DOMAIN_NAME + ":" + qualifiedName;
         }
-        ObjectName name = null;
+        
         try {
-            name = new ObjectName(qualifiedName);
+           return new ObjectName(qualifiedName);
         } catch (Exception e) {
-            throw ManagementRuntimeException.wrap(qualifiedName
+            throw ManagementRuntimeException.wrap(name
                     + " is not correct", e);
         }
-        return name;
+    }
+    
+    public static ObjectName getObjectName(ObjectName name, String attribute, String value) {
+        try {
+            return new ObjectName(name.getCanonicalName() + "," + attribute + "=" + value);
+        } catch (Exception e) {
+            throw ManagementRuntimeException.wrap(e);
+        }
     }
 }

@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *    Stephane Lacoin (Nuxeo EP Software Engineer)ne Lacoin (Nuxeo EP Software Engineer)
  */
 package org.nuxeo.runtime.management;
 
@@ -21,18 +21,18 @@ import javax.management.ObjectName;
 import org.jsesoft.mmbi.NamedModelMBean;
 
 /**
- * @author matic
+ * @authorStephane Lacoin (Nuxeo EP Software Engineer)
  * 
  */
-public class ManagedService {
+public class Resource {
 
-    protected final Object serviceInstance;
+    protected final Object instance;
 
-    protected final ObjectName managementName;
+    protected final ObjectName name;
 
-    protected final Class<?> managementClass;
+    protected final Class<?> clazz;
 
-    protected final ManagedServiceDescriptor descriptor;
+    protected final ResourceDescriptor descriptor;
 
     protected NamedModelMBean mbean;
 
@@ -42,28 +42,28 @@ public class ManagedService {
      * @param managementClass
      * @param serviceInstance
      */
-    public ManagedService(ManagedServiceDescriptor descriptor,
+    public Resource(ResourceDescriptor descriptor,
             ObjectName managementName, Class<?> managementClass,
             Object serviceInstance) {
         this.descriptor = descriptor;
-        this.managementName = managementName;
-        this.managementClass = managementClass;
-        this.serviceInstance = serviceInstance;
+        this.name = managementName;
+        this.clazz = managementClass;
+        this.instance = serviceInstance;
     }
 
-    public Object getServiceInstance() {
-        return serviceInstance;
+    public Object getInstance() {
+        return instance;
     }
 
-    public ObjectName getManagementName() {
-        return managementName;
+    public ObjectName getName() {
+        return name;
     }
 
-    public Class<?> getManagementClass() {
-        return managementClass;
+    public Class<?> getClazz() {
+        return clazz;
     }
 
-    public ManagedServiceDescriptor getDescriptor() {
+    public ResourceDescriptor getDescriptor() {
         return descriptor;
     }
 

@@ -1,3 +1,7 @@
+package org.nuxeo.runtime.management;
+
+import java.util.Set;
+
 /*
  * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
@@ -12,16 +16,13 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *     Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-package org.nuxeo.runtime.management;
 
 /**
- * @author matic
+ * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  *
  */
-public interface DummyManagedService  {
-    String getMessage();
-    void setMessage(String message);
-    String sayHelloWorld();
+public interface ResourceFactory {
+    Set<ResourceDescriptor> getDescriptors();
 }

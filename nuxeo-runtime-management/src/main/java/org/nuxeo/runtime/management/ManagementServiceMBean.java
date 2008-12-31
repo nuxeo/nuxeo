@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *    Stephane Lacoin (Nuxeo EP Software Engineer)ne Lacoin (Nuxeo EP Software Engineer)
  */
 package org.nuxeo.runtime.management;
 
@@ -21,12 +21,12 @@ import java.util.Set;
 import javax.management.ObjectName;
 
 /**
- * @author matic
+ * @authorStephane Lacoin (Nuxeo EP Software Engineer)
  *
  */
 public interface ManagementServiceMBean {
 
-    public abstract Set<ObjectName> getRegisteredServicesName();
+    public abstract Set<ObjectName> getResourcesName();
 
     public abstract void enable();
 

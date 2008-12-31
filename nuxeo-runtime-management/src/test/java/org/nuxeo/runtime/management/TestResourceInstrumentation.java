@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 import org.jsesoft.mmbi.PureResource;
 import org.nuxeo.runtime.management.inspector.ModelMBeanInfoFactory;
 
-public class TestManagedResourceInstrumentation extends TestCase {
+public class TestResourceInstrumentation extends TestCase {
 
     ModelMBeanInfoFactory instrumentatorFactory = new ModelMBeanInfoFactory();
 

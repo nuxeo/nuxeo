@@ -12,31 +12,32 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Stephane Lacoin (Nuxeo EP Software Engineer)
+ *     matic
  */
 package org.nuxeo.runtime.management;
 
+import java.util.HashSet;
 import java.util.Set;
 
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanInfo;
 import javax.management.ObjectName;
 
 /**
- * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ * @author matic
+ *
  */
-public interface ManagementService {
+public class DummyMBeanFactory extends AbstractResourceFactory implements ResourceFactory {
 
-    Set<ObjectName> getResourcesName();
+    public DummyMBeanFactory(ResourceFactoryDescriptor descriptor) {
+        super(descriptor);
+    }
 
-    @Deprecated
-    ObjectName getObjectName(String name) throws ManagementException;
-    
-    @Deprecated
-    MBeanInfo getObjectInfo(ObjectName name);
-    
-    @Deprecated
-    Object getObjectAttribute(ObjectName name, MBeanAttributeInfo info);
+    public Set<ResourceDescriptor> getDescriptors() {
+        Set<ResourceDescriptor> descriptors =
+            new HashSet<ResourceDescriptor>();
+        ObjectName factoryName = ObjectNameFactory.getObjectName(descriptor.getName());
+        ObjectName name = ObjectNameFactory.getObjectName(factoryName,"other","dummy");
+        descriptors.add(new ResourceDescriptor(name,DummyServiceImpl.class,DummyMBean.class,true));
+        return descriptors;
+    }
 
 }
