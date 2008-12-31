@@ -245,25 +245,23 @@ public class Main extends DefaultModule {
   
   @POST
   @Path("add_page")
-  public Response addPage() {
+  public String addPage() {
       String pagePath = ctx.getForm().getString("path")
 	  try {
-	      String res = Editor.addPage(pagePath)
-	      return Response.status(200).entity(res).build()
+	      return Editor.addPage(pagePath)
       } catch (ThemeIOException e) {
-          return Response.status(500).entity(e.getMessage()).build()
+          throw WebException.wrap(e.getMessage(), e)
       }      
   }
   
   @POST
   @Path("add_theme")
-  public Response addTheme() {
+  public String addTheme() {
       String name = ctx.getForm().getString("name")
 	  try {
-	      String res = Editor.addTheme(name)
-	      return Response.status(200).entity(res).build()
+	      return Editor.addTheme(name)
       } catch (ThemeIOException e) {
-          return Response.status(500).entity(e.getMessage()).build()
+          throw WebException.wrap(e.getMessage(), e)
       }
   }
   
@@ -335,14 +333,14 @@ public class Main extends DefaultModule {
   
   @POST
   @Path("duplicate_element")
-  public Object duplicateElement() {
+  public String duplicateElement() {
       FormData form = ctx.getForm()
       String id = form.getString("id")        
       Element element = ThemeManager.getElementById(id)
 	  try {
 	      return Editor.duplicateElement(element)
       } catch (ThemeIOException e) {
-          return Response.status(500).entity(e.getMessage()).build()
+          throw WebException.wrap(e.getMessage(), e)
       }
   }
   
@@ -417,56 +415,55 @@ public class Main extends DefaultModule {
   
   @POST
   @Path("paste_element")
-  public Response pasteElement() {
+  public String pasteElement() {
       FormData form = ctx.getForm()
       String destId = form.getString("dest_id")      
       String id = getClipboardElement()
       if (id == null) {
-          return Response.status(500).entity("Nothing to paste").build()
+          throw WebException.wrap("Nothing to paste")
       }
       Element element = ThemeManager.getElementById(id)
 	  try {
-	      String res = Editor.pasteElement(element, destId)
-	      return Response.status(200).entity(res).build()
+	      return Editor.pasteElement(element, destId)
       } catch (ThemeIOException e) {
-          return Response.status(500).entity(e.getMessage()).build()
+          throw WebException.wrap(e.getMessage(), e)
       }      
   }
   
   @POST
   @Path("repair_theme")
-  public Response repairTheme() {
+  public void repairTheme() {
 	  FormData form = ctx.getForm()
       String themeName = form.getString("name")
 	  try {
 	      Editor.repairTheme(themeName)
       } catch (ThemeIOException e) {
-          return Response.status(500).entity(e.getMessage()).build()
+          throw WebException.wrap(e.getMessage(), e)
       }
   }
   
   @POST
   @Path("save_theme")
-  public Response saveTheme() {
+  public void saveTheme() {
       FormData form = ctx.getForm()
       String src = form.getString("src")
       def indent = form.getString("indent") as Integer
       try {
           Editor.saveTheme(src, indent)
       } catch (ThemeIOException e) {
-          return Response.status(500).entity(e.getMessage()).build()
+          throw WebException.wrap(e.getMessage(), e)
       }
   }
 
   @POST
   @Path("load_theme")
-  public Response loadTheme() {
+  public void loadTheme() {
       FormData form = ctx.getForm()
       String src = form.getString("src")      
       try {
           Editor.loadTheme(src)
       } catch (ThemeIOException e) {
-          return Response.status(500).entity(e.getMessage()).build()
+          throw WebException.wrap(e.getMessage(), e)
       }
   }
   
