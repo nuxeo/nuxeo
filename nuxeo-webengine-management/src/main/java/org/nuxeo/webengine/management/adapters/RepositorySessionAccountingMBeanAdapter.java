@@ -28,18 +28,22 @@ import org.nuxeo.runtime.management.ResourceDescriptor;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  * 
  */
-public class RepositoryMBeanAdapter implements RepositoryMBean {
+public class RepositorySessionAccountingMBeanAdapter implements RepositorySessionAccountingMBean {
 
-    public RepositoryMBeanAdapter(String repositoryName) {
+    public RepositorySessionAccountingMBeanAdapter(String repositoryName) {
         this.repositoryName = repositoryName;
     }
 
-    public RepositoryMBeanAdapter(ResourceDescriptor descriptor) {
+    public RepositorySessionAccountingMBeanAdapter(ResourceDescriptor descriptor) {
         this.repositoryName = ObjectNameFactory.getObjectName(
                 descriptor.getName()).getKeyProperty("repository");
     }
 
     protected final String repositoryName;
+    
+    public String getRepositoryName() {
+        return repositoryName;
+    }
 
     protected Repository guardedRepository() {
         RepositoryService service = null;

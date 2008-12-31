@@ -1,4 +1,5 @@
 package org.nuxeo.webengine.management.adapters;
+
 /*
  * (C) Copyright 2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
@@ -16,11 +17,12 @@ package org.nuxeo.webengine.management.adapters;
  *     Stephane Lacoin (Nuxeo EP Software Engineer)
  */
 
-
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public interface RepositoryMBean {
+public interface RepositorySessionAccountingMBean {
+    
+    String getRepositoryName();
 
     Integer getActiveSessionsCount();
 

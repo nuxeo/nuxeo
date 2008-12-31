@@ -36,10 +36,10 @@ import org.nuxeo.runtime.management.ResourceFactoryDescriptor;
  * @author matic
  * 
  */
-public class RepositoryMBeanAdapterFactory extends AbstractResourceFactory
+public class RepositorySessionAccountingMBeanAdapterFactory extends AbstractResourceFactory
         implements ResourceFactory {
 
-    public RepositoryMBeanAdapterFactory(ResourceFactoryDescriptor descriptor) {
+    public RepositorySessionAccountingMBeanAdapterFactory(ResourceFactoryDescriptor descriptor) {
         super(descriptor);
     }
 
@@ -63,14 +63,14 @@ public class RepositoryMBeanAdapterFactory extends AbstractResourceFactory
         Set<ResourceDescriptor> descriptors = new HashSet<ResourceDescriptor>();
         ObjectName objectName = ObjectNameFactory.getObjectName(descriptor.getName());
         descriptors.add(new ResourceDescriptor(objectName,
-                RepositoryManagerMBeanAdapter.class, RepositoryMBean.class,
+                WholeRepositoriesSessionAccountingMBeanAdapter.class, RepositorySessionAccountingMBean.class,
                 true));
         for (String repositoryName : manager.getRepositoryNames()) {
             ObjectName repositoryObjectName = ObjectNameFactory.getObjectName(
                     objectName, "repository", repositoryName);
             ResourceDescriptor repositoryDescriptor = new ResourceDescriptor(
-                    repositoryObjectName, RepositoryMBeanAdapter.class,
-                    RepositoryMBean.class, true);
+                    repositoryObjectName, RepositorySessionAccountingMBeanAdapter.class,
+                    RepositorySessionAccountingMBean.class, true);
             descriptors.add(repositoryDescriptor);
         }
         return descriptors;
