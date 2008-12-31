@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.model.Document;
 
+@Deprecated
 public class CorePolicyServiceImpl implements CorePolicyService {
 
     private static final Log log = LogFactory.getLog(CorePolicyServiceImpl.class);

@@ -266,10 +266,9 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
                 // TODO: OG: use a specific exception sub class instead of the
                 // base type
                 throw new Exception(
-                        String
-                                .format(
-                                        "Permission '%s' included by '%s' is not a registered permission",
-                                        includePerm, descriptor.getName()));
+                        String.format(
+                                "Permission '%s' included by '%s' is not a registered permission",
+                                 includePerm, descriptor.getName()));
             }
         }
         // invalidate merged permission
