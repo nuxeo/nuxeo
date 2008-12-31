@@ -6,7 +6,7 @@ Bundle-Vendor: Nuxeo
 Provide-Package: org.nuxeo.ecm.webengine.management
 Require-Bundle: org.nuxeo.ecm.webengine.core,
  org.nuxeo.runtime.management,
- org.nuxeo.jboss.runtime
+ org.nuxeo.ecm.core
 Nuxeo-Require: org.nuxeo.ecm.core.api, 
  org.nuxeo.ecm.webengine.core,
  org.nuxeo.runtime.management

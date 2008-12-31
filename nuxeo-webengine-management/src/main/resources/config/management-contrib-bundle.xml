@@ -3,11 +3,17 @@
   <require>org.nuxeo.runtime.management.ManagementService</require>
 
   <extension target="org.nuxeo.runtime.management.ManagementService"
-    point="managedServices">
+    point="resources">
 
-    <managedService isAdapted="true"
+    <resource isAdapted="true"
       name="runtime" class="org.nuxeo.runtime.management.RuntimeServiceMBeanAdapter" />
-
+  </extension>
+  
+  <extension target="org.nuxeo.runtime.management.ManagementService"
+    point="factories">
+    <factory 
+      name="repository" class="org.nuxeo.webengine.management.adapters.RepositoryMBeanAdapterFactory" />
+  
   </extension>
 
 </component>

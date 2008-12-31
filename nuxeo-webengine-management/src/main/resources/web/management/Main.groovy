@@ -1,6 +1,7 @@
 package management;
 
 import java.io.*;
+import java.lang.management.*;
 import javax.management.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -18,9 +19,7 @@ import org.nuxeo.runtime.management.*;
 @Produces(["text/html; charset=UTF-8"])
 public class Main extends DefaultModule {
 
-  protected ManagementService service() {
-    return Framework.getService(ManagementService.class);
-  }
+  protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
     
   /**
    * Default view
@@ -37,7 +36,7 @@ public class Main extends DefaultModule {
   }
   
   public Set<ObjectName> getServices() {
-      return service().getServicesName();
+      return mbeanServer.queryNames(null,null)
   }
   
   @GET
@@ -49,7 +48,7 @@ public class Main extends DefaultModule {
 
   
   public Set<ObjectName> getResources() {
-      return service().getResourcesName();
+      return mbeanServe.queryNames(new ObjectName(null,null));
   }
   
 
@@ -60,8 +59,8 @@ public class Main extends DefaultModule {
   @GET
   @Path("/{name}")
   public Object doGetResource(@PathParam("name") String name) {
-      this.objectName = service().getObjectName(name);
-      this.objectInfo = service().getObjectInfo(objectName);
+      this.objectName = new ObjectName(name);
+      this.objectInfo = mbeanServer.getMBeanInfo(objectName);
       return getTemplate("resource.ftl");
   }
   
@@ -74,7 +73,7 @@ public class Main extends DefaultModule {
   }
   
   public String getObjectAttribute(MBeanAttributeInfo attributeInfo) {
-      return service().getObjectAttribute(objectName,attributeInfo).toString();
+      return mbeanServer.getAttribute(objectName,attributeInfo.getName()).toString();
   }
  
 }
