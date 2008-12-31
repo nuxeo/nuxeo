@@ -55,12 +55,11 @@ public class TestLocalAPI extends TestAPI {
     protected void doDeployments() throws Exception {
         deployContrib(TestConstants.CORE_BUNDLE, "OSGI-INF/CoreService.xml");
         deployContrib(TestConstants.CORE_BUNDLE, "OSGI-INF/SecurityService.xml");
+        deployContrib(TestConstants.CORE_BUNDLE, "OSGI-INF/RepositoryService.xml");
 
         deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE, "TypeService.xml");
         deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "permissions-contrib.xml");
-        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
-                "RepositoryService.xml");
         deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "test-CoreExtensions.xml");
         deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,

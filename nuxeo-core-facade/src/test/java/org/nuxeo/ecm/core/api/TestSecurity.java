@@ -58,6 +58,7 @@ public class TestSecurity extends NXRuntimeTestCase {
                 "OSGI-INF/SecurityService.xml");
         deployContrib(TestConstants.CORE_BUNDLE,
                 "OSGI-INF/RepositoryService.xml");
+
         deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "test-CoreExtensions.xml");
         deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,

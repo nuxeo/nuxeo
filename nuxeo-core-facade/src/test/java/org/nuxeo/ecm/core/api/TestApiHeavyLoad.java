@@ -36,26 +36,19 @@ public class TestApiHeavyLoad extends TestConnection {
                 "OSGI-INF/CoreService.xml");
         deployContrib(TestConstants.CORE_BUNDLE,
                 "OSGI-INF/SecurityService.xml");
+        deployContrib(TestConstants.CORE_BUNDLE,
+                "OSGI-INF/RepositoryService.xml");
+
         deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "TypeService.xml");
         deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "permissions-contrib.xml");
-        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
-                "RepositoryService.xml");
         deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "test-CoreExtensions.xml");
         deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "CoreTestExtensions.xml");
         deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "DemoRepository.xml");
-        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
-                "LifeCycleService.xml");
-        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
-                "LifeCycleServiceExtensions.xml");
-        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
-                "CoreEventListenerService.xml");
-        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
-                "DocumentAdapterService.xml");
     }
 
     @Override
