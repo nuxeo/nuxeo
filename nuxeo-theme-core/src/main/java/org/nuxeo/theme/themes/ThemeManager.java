@@ -455,7 +455,7 @@ public final class ThemeManager implements Registrable {
         return duplicate;
     }
 
-    public void destroyElement(final Element element) {
+    public void destroyElement(final Element element) throws ThemeException {
         final Element parent = (Element) element.getParent();
 
         if (element instanceof ThemeElement) {
@@ -513,20 +513,41 @@ public final class ThemeManager implements Registrable {
         return formats;
     }
 
-    public void registerFormat(final Format format) {
-        Integer id = format.getUid();
-        String formatTypeName = format.getFormatType().getTypeName();
+    public void registerFormat(final Format format) throws ThemeException {
+        final Integer id = format.getUid();
+        if (id == null) {
+            throw new ThemeException("Cannot register a format without an id");
+        }
+        final String formatTypeName = format.getFormatType().getTypeName();
+        if (formatTypeName == null) {
+            throw new ThemeException("Cannot register a format without a type");
+        }
         if (!formatsByTypeName.containsKey(formatTypeName)) {
             formatsByTypeName.put(formatTypeName, new ArrayList<Integer>());
         }
-        formatsByTypeName.get(formatTypeName).add(id);
+        final List<Integer> ids = formatsByTypeName.get(formatTypeName);
+        if (ids.contains(id)) {
+            throw new ThemeException("Cannot register a format twice: " + id);
+        }
+        ids.add(id);
     }
 
-    public void unregisterFormat(final Format format) {
-        Integer id = format.getUid();
-        String formatTypeName = format.getFormatType().getTypeName();
+    public void unregisterFormat(final Format format) throws ThemeException {
+        final Integer id = format.getUid();
+        if (id == null) {
+            throw new ThemeException("Cannot unregister a format without an id");
+        }
+        final String formatTypeName = format.getFormatType().getTypeName();
+        if (formatTypeName == null) {
+            throw new ThemeException("Cannot register a format without a type");
+        }
         if (formatsByTypeName.containsKey(formatTypeName)) {
-            formatsByTypeName.get(formatTypeName).remove(id);
+            final List<Integer> ids = formatsByTypeName.get(formatTypeName);
+            if (!ids.contains(id)) {
+                throw new ThemeException("Format with id: " + id
+                        + " is not registered.");
+            }
+            ids.remove(id);
         }
     }
 
@@ -710,7 +731,7 @@ public final class ThemeManager implements Registrable {
         return result;
     }
 
-    public void removeOrphanedFormats() {
+    public void removeOrphanedFormats() throws ThemeException {
         RelationStorage relationStorage = Manager.getRelationStorage();
         UidManager uidManager = Manager.getUidManager();
         Set<Format> formatsToUnregister = new HashSet<Format>();
@@ -833,7 +854,7 @@ public final class ThemeManager implements Registrable {
         return formats;
     }
 
-    public void deleteFormat(Format format) {
+    public void deleteFormat(Format format) throws ThemeException {
         for (Format f : ThemeManager.listFormatsDirectlyInheritingFrom(format)) {
             ThemeManager.removeInheritanceTowards(f);
         }

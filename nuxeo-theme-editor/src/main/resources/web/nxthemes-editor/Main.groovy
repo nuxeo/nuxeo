@@ -249,8 +249,8 @@ public class Main extends DefaultModule {
       String pagePath = ctx.getForm().getString("path")
 	  try {
 	      return Editor.addPage(pagePath)
-      } catch (ThemeIOException e) {
-          throw WebException.wrap(e.getMessage(), e)
+      } catch (ThemeException e) {
+          throw new ThemeEditorException(e.getMessage(), e)
       }      
   }
   
@@ -260,8 +260,8 @@ public class Main extends DefaultModule {
       String name = ctx.getForm().getString("name")
 	  try {
 	      return Editor.addTheme(name)
-      } catch (ThemeIOException e) {
-          throw WebException.wrap(e.getMessage(), e)
+      } catch (ThemeException e) {
+          throw new ThemeEditorException(e.getMessage(), e)
       }
   }
   
@@ -339,8 +339,8 @@ public class Main extends DefaultModule {
       Element element = ThemeManager.getElementById(id)
 	  try {
 	      return Editor.duplicateElement(element)
-      } catch (ThemeIOException e) {
-          throw WebException.wrap(e.getMessage(), e)
+      } catch (ThemeException e) {
+          throw new ThemeEditorException(e.getMessage(), e)
       }
   }
   
@@ -420,13 +420,13 @@ public class Main extends DefaultModule {
       String destId = form.getString("dest_id")      
       String id = getClipboardElement()
       if (id == null) {
-          throw WebException.wrap("Nothing to paste")
+          throw ThemeEditorException.wrap("Nothing to paste")
       }
       Element element = ThemeManager.getElementById(id)
 	  try {
 	      return Editor.pasteElement(element, destId)
-      } catch (ThemeIOException e) {
-          throw WebException.wrap(e.getMessage(), e)
+      } catch (ThemeException e) {
+          throw new ThemeEditorException(e.getMessage(), e)
       }      
   }
   
@@ -437,8 +437,8 @@ public class Main extends DefaultModule {
       String themeName = form.getString("name")
 	  try {
 	      Editor.repairTheme(themeName)
-      } catch (ThemeIOException e) {
-          throw WebException.wrap(e.getMessage(), e)
+      } catch (ThemeException e) {
+          throw new ThemeEditorException(e.getMessage(), e)
       }
   }
   
@@ -450,8 +450,8 @@ public class Main extends DefaultModule {
       def indent = form.getString("indent") as Integer
       try {
           Editor.saveTheme(src, indent)
-      } catch (ThemeIOException e) {
-          throw WebException.wrap(e.getMessage(), e)
+      } catch (ThemeException e) {
+          throw new ThemeEditorException(e.getMessage(), e)
       }
   }
 
@@ -462,8 +462,8 @@ public class Main extends DefaultModule {
       String src = form.getString("src")      
       try {
           Editor.loadTheme(src)
-      } catch (ThemeIOException e) {
-          throw WebException.wrap(e.getMessage(), e)
+      } catch (ThemeException e) {
+          throw new ThemeEditorException(e.getMessage(), e)
       }
   }
   
@@ -530,7 +530,7 @@ public class Main extends DefaultModule {
   
   @POST
   @Path("update_element_properties")
-  public Response updateElementProperties() {
+  public void updateElementProperties() {
       FormData form = ctx.getForm()
       String id = form.getString("id")
       String property_map = form.getString("property_map")
@@ -538,8 +538,8 @@ public class Main extends DefaultModule {
       Element element = ThemeManager.getElementById(id)
       try {
           Editor.updateElementProperties(element, propertyMap)
-      } catch (ThemeIOException e) {
-          return Response.status(500).entity(e.getMessage()).build()
+      } catch (ThemeException e) {
+          Response.status(500).entity(e.getMessage()).build()
       }      
   }
 
@@ -1079,5 +1079,14 @@ public class Main extends DefaultModule {
     return themes
   }
 
+  // handle errors
+  public Response handleError(WebApplicationException e) {
+      if (e instanceof ThemeEditorException) {
+          return Response.status(500).entity(e.getMessage()).build();
+      } else {
+          return super.handleError(e)
+      }
+  }
+  
 }
 

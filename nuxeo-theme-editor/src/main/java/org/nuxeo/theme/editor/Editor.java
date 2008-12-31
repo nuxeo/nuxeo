@@ -53,8 +53,6 @@ import org.nuxeo.theme.views.ViewType;
 
 public class Editor {
 
-    private static final Log log = LogFactory.getLog(Editor.class);
-
     public static void updateElementWidget(Element element, String viewName) {
         FormatType widgetType = (FormatType) Manager.getTypeRegistry().lookup(
                 TypeFamily.FORMAT, "widget");
@@ -184,7 +182,7 @@ public class Editor {
     }
 
     public static void updateElementProperties(Element element,
-            Map<String, String> propertyMap) throws ThemeIOException {
+            Map<String, String> propertyMap) throws ThemeException {
         Properties properties = new Properties();
         for (Object key : propertyMap.keySet()) {
             properties.put(key, propertyMap.get(key));
@@ -277,7 +275,7 @@ public class Editor {
     }
 
     public static void pasteElement(Element element, String destId)
-            throws ThemeIOException {
+            throws ThemeException {
         Element destElement = ThemeManager.getElementById(destId);
         if (destElement.isLeaf()) {
             destElement = (Element) destElement.getParent();
@@ -287,7 +285,7 @@ public class Editor {
                 destElement.addChild(Manager.getThemeManager().duplicateElement(
                         element, true));
             } catch (ThemeException e) {
-                throw new ThemeIOException(e);
+                throw new ThemeException(e);
             }
         }
         EventManager eventManager = Manager.getEventManager();
@@ -331,15 +329,15 @@ public class Editor {
                 element, null));
     }
 
-    public static String addPage(String path) throws ThemeIOException {
+    public static String addPage(String path) throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         if (!path.contains("/")) {
-            throw new ThemeIOException("Incorrect theme path: " + path);
+            throw new ThemeException("Incorrect theme path: " + path);
         }
         String themeName = path.split("/")[0];
         String pageName = path.split("/")[1];
         if (themeManager.getPageByPath(path) != null) {
-            throw new ThemeIOException("Theme page name is already taken: "
+            throw new ThemeException("Theme page name is already taken: "
                     + pageName);
         }
         ThemeElement theme = themeManager.getThemeByName(themeName);
@@ -356,10 +354,10 @@ public class Editor {
         return path;
     }
 
-    public static String addTheme(String name) throws ThemeIOException {
+    public static String addTheme(String name) throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         if (themeManager.getThemeByName(name) != null) {
-            throw new ThemeIOException("The theme name is already taken: "
+            throw new ThemeException("The theme name is already taken: "
                     + name);
         }
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
@@ -456,11 +454,11 @@ public class Editor {
                 element, null));
     }
 
-    public static void deleteElement(Element element) {
+    public static void deleteElement(Element element) throws ThemeException {
         Element parent = (Element) element.getParent();
         ThemeManager themeManager = Manager.getThemeManager();
         if (element instanceof ThemeElement || element instanceof PageElement) {
-            themeManager.destroyElement(element);
+                themeManager.destroyElement(element);
         } else if (element instanceof CellElement) {
             if (element.hasSiblings()) {
                 Element sibling = (Element) element.getNextNode();
@@ -500,13 +498,13 @@ public class Editor {
                 null));
     }
 
-    public static int duplicateElement(Element element) throws ThemeIOException {
+    public static int duplicateElement(Element element) throws ThemeException {
         Element duplicate;
         try {
             duplicate = Manager.getThemeManager().duplicateElement(element,
                     true);
         } catch (ThemeException e) {
-            throw new ThemeIOException(e);
+            throw new ThemeException(e);
         }
         // insert the duplicated element
         element.getParent().addChild(duplicate);
@@ -547,7 +545,7 @@ public class Editor {
     }
 
     public static void deleteNamedStyle(Element element, String styleName,
-            String themeName) {
+            String themeName) throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         Style inheritedStyle = (Style) themeManager.getNamedObject(themeName,
                 "style", styleName);

@@ -40,6 +40,10 @@
       <version>2.2.1</version>
       <classifier>jdk15</classifier>
     </dependency>    
+    <dependency>
+      <groupId>org.resteasy</groupId>
+      <artifactId>jaxrs-api</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>

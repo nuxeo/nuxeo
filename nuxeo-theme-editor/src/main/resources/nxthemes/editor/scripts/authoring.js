@@ -49,15 +49,14 @@ NXThemesEditor.deleteThemeOrPage = function(info) {
          parameters: {
              id: element_id
          },
-         onComplete: function(r) {
+         onSuccess: function(r) {
+             NXThemes.getViewById("theme selector").refresh();
+             NXThemesEditor.refreshCanvas();
+         },
+         onFailure: function(r) {
              var text = r.responseText;
-             if (text === "") {
-                 window.alert("Could not delete the element.");
-             } else {
-                 NXThemes.getViewById("theme selector").refresh();
-                 NXThemesEditor.refreshCanvas();
-             }
-         }
+             window.alert(text);
+         },         
     });
 };
 
@@ -472,7 +471,7 @@ NXThemesEditor.duplicateElement = function(info) {
          },
          onFailure: function(r) {
              var text = r.responseText;
-             alert(text);
+             window.alert(text);
          }
     });       
 };
@@ -506,9 +505,14 @@ NXThemesEditor.deleteElement = function(info) {
          parameters: {
              id: id
          },
-         onComplete: function(r) {
+         onSuccess: function(r) {
              NXThemesEditor.refreshCanvas();
-         }
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         },
+         
     });
 };
 

@@ -283,8 +283,12 @@ NXThemesStyleEditor.deleteNamedStyle = function(id, currentThemeName, styleName)
              style_name: styleName,
              theme_name: currentThemeName
          },
-         onComplete: function(req) {
+         onSuccess: function(r) {
              NXThemes.getViewById("element style").refresh();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
          }
     });
 };

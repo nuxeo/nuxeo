@@ -14,7 +14,7 @@
 
 package org.nuxeo.theme.themes;
 
-public class ThemeIOException extends Exception {
+public class ThemeIOException extends ThemeException {
 
     private static final long serialVersionUID = 1L;
 

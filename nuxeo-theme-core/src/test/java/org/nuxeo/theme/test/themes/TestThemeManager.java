@@ -336,7 +336,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertFalse(themeManager.listFormats().contains(style3));
     }
 
-    public void testRemoveOrphanedFormatsOnTestTheme() throws ThemeIOException {
+    public void testRemoveOrphanedFormatsOnTestTheme() throws ThemeIOException, ThemeException {
         ThemeParser.registerTheme("theme.xml");
         List<Format> formatsBefore = themeManager.listFormats();
         themeManager.removeOrphanedFormats();
