@@ -156,13 +156,6 @@ public class TestSearchPolicy extends RepositoryOSGITestCase {
         assertEquals(0, spp.getResultsCount());
     }
 
-    public void testOldSearchPolicy() throws Exception {
-        // setup old secu policy
-        deployContrib(SearchTestConstants.SEARCH_INTEGRATION_TEST_BUNDLE,
-                "nxsearch-old-policy-test-contrib.xml");
-        checkPolicy();
-    }
-
     public void testSearchPolicy() throws Exception {
         // setup new secu policy
         deployContrib(SearchTestConstants.SEARCH_INTEGRATION_TEST_BUNDLE,
