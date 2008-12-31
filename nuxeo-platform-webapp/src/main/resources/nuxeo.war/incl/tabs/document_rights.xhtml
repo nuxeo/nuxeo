@@ -3,6 +3,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
 <h3><h:outputText
@@ -190,16 +191,17 @@
 <h3><h:outputText value="#{messages['label.security.addNewRule']}" /></h3>
 
 <a4j:region renderRegionOnly="true">
-  <h:form>
-    <ui:include src="/incl/select_users_search.xhtml" />
+  <h:form id="add_rights_form">
     <table cellspacing="5" cellpadding="0" border="0" class="rightsAddManager">
       <tbody>
         <tr>
-          <td valign="top" align="center"><ui:include
-            src="/incl/select_users_results.xhtml" /></td>
-          <td valign="top" align="center"><ui:include
-            src="/incl/select_users_selection.xhtml" /></td>
-          <td><ui:include src="/incl/document_rights_action.xhtml" /></td>
+          <td valign="top" align="center">
+            <nxl:layout name="add_rights" mode="edit"
+              value="#{securityActions}" />
+          </td>
+          <td>
+            <ui:include src="/incl/document_rights_action.xhtml" />
+          </td>
         </tr>
       </tbody>
     </table>
