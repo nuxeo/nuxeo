@@ -317,7 +317,11 @@ public class Main extends DefaultModule {
       FormData form = ctx.getForm()
       String id = form.getString("id")      
       Element element = ThemeManager.getElementById(id)
-      Editor.deleteElement(element)
+	  try {
+	      Editor.deleteElement(element)
+      } catch (ThemeException e) {
+          throw new ThemeEditorException(e.getMessage(), e)
+      }            
   }
   
   @POST
@@ -328,7 +332,11 @@ public class Main extends DefaultModule {
       String themeName = form.getString("theme_name")
       String styleName = form.getString("style_name")
       Element element = ThemeManager.getElementById(id)
-      Editor.deleteNamedStyle(element, styleName, themeName)
+	  try {
+	      Editor.deleteNamedStyle(element, styleName, themeName)
+      } catch (ThemeException e) {
+          throw new ThemeEditorException(e.getMessage(), e)
+      }           
   }
   
   @POST
@@ -420,7 +428,7 @@ public class Main extends DefaultModule {
       String destId = form.getString("dest_id")      
       String id = getClipboardElement()
       if (id == null) {
-          throw ThemeEditorException.wrap("Nothing to paste")
+          throw new ThemeEditorException("Nothing to paste")
       }
       Element element = ThemeManager.getElementById(id)
 	  try {
@@ -536,10 +544,10 @@ public class Main extends DefaultModule {
       String property_map = form.getString("property_map")
       Map propertyMap = JSONObject.fromObject(property_map)
       Element element = ThemeManager.getElementById(id)
-      try {
-          Editor.updateElementProperties(element, propertyMap)
+	  try {
+	      Editor.updateElementProperties(element, propertyMap)
       } catch (ThemeException e) {
-          Response.status(500).entity(e.getMessage()).build()
+          throw new ThemeEditorException(e.getMessage(), e)
       }      
   }
 
