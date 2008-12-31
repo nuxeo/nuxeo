@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.2-SNAPSHOT</version>
+    <version>5.2-20081231</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
@@ -15,12 +15,12 @@
   <description>Nuxeo Enterprise Platform: Parent.</description>
 
   <properties>
-    <nuxeo.common.version>1.5-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>1.5-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.core.version>1.5-SNAPSHOT</nuxeo.core.version>
-    <nuxeo.theme.version>5.2-SNAPSHOT</nuxeo.theme.version>
+    <nuxeo.common.version>1.5-20081231</nuxeo.common.version>
+    <nuxeo.runtime.version>1.5-20081231</nuxeo.runtime.version>
+    <nuxeo.core.version>1.5-20081231</nuxeo.core.version>
+    <nuxeo.theme.version>5.2-20081231</nuxeo.theme.version>
     <nuxeo.ear.assembly>nuxeo</nuxeo.ear.assembly>
-    <nuxeo.platform.version>5.2-SNAPSHOT</nuxeo.platform.version>
+    <nuxeo.platform.version>5.2-20081231</nuxeo.platform.version>
   </properties>
 
   <modules>
