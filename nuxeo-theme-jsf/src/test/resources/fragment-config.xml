@@ -7,9 +7,23 @@
 
     <fragment name="dummy fragment">
       <class>org.nuxeo.theme.test.jsf.DummyFragment</class>
-      <node-type>inner</node-type>
     </fragment>
 
   </extension>
 
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="models">
+    
+    <model name="dummy menu">
+      <class>org.nuxeo.theme.test.jsf.DummyMenu</class>
+      <contains>dummy menu item</contains>
+    </model>
+    
+    <model name="dummy menu item">
+      <class>org.nuxeo.theme.test.jsf.DummyMenuItem</class>
+      <contains>dummy menu item</contains>
+    </model>
+
+  </extension>
+  
 </component>

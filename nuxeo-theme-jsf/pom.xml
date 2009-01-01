@@ -89,6 +89,17 @@
         <filtering>false</filtering>
       </resource>
     </resources>
+
+    <plugins>
+ 	  <plugin>
+ 	   <artifactId>maven-surefire-plugin</artifactId>
+ 	   <configuration>
+ 	          <excludes>
+ 	            <exclude>**/*TestElementRenderer.java</exclude>
+ 	          </excludes>
+ 	        </configuration>
+ 	      </plugin>
+ 	    </plugins>  
   </build>
 
   <reporting>
