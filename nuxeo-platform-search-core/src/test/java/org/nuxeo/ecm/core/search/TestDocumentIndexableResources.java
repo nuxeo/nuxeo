@@ -51,8 +51,6 @@ public class TestDocumentIndexableResources extends RepositoryTestCase {
         super.setUp();
 
         deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "ServiceManagement.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "LoginComponent.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "RepositoryManager.xml");

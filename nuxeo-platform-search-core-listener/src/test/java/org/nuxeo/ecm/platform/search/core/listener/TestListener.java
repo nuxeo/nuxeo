@@ -73,8 +73,6 @@ public class TestListener extends RepositoryTestCase {
         super.setUp();
 
         deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
-                "ServiceManagement.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
                 "LoginComponent.xml");
         deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
                 "RepositoryManager.xml");

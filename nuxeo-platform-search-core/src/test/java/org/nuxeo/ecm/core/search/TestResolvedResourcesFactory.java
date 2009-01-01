@@ -77,7 +77,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        //deploy("ServiceManagement.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "RepositoryManager.xml");
 
