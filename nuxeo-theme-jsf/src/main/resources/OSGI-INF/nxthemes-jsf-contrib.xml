@@ -152,13 +152,13 @@
 
     <view name="vertical menu" template-engine="jsf-facelets">
       <format-type>widget</format-type>
-      <model-type>menu item</model-type>
+      <model-type>menu</model-type>
       <template>nxthemes/jsf/widgets/vertical-menu.xml</template>
     </view>
 
     <view name="horizontal tabs" template-engine="jsf-facelets">
       <format-type>widget</format-type>
-      <model-type>menu item</model-type>
+      <model-type>menu</model-type>
       <template>
         nxthemes/jsf/widgets/horizontal-tabs.xml
       </template>

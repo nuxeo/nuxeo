@@ -90,7 +90,7 @@ public class TestElementRenderer extends NXRuntimeTestCase {
         widget1.setName("page frame");
         widget2.setName("section frame");
         widget3.setName("cell frame");
-        widget4.setName("vertical menu");
+        widget4.setName("dummy vertical menu");
 
         ElementFormatter.setFormat(page, widget1);
         ElementFormatter.setFormat(section, widget2);

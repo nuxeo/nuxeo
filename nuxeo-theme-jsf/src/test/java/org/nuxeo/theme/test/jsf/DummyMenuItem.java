@@ -39,7 +39,7 @@ public class DummyMenuItem extends AbstractModel {
 
     @Override
     public String getModelTypeName() {
-        return "menu item";
+        return "dummy menu item";
     }
 
     public String getIcon() {

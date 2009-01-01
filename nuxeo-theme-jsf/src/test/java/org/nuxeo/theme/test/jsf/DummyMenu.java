@@ -29,7 +29,7 @@ public class DummyMenu extends AbstractModel {
 
     @Override
     public String getModelTypeName() {
-        return "menu";
+        return "dummy menu";
     }
 
     public String getTitle() {
