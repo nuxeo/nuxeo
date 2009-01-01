@@ -27,13 +27,23 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriter;
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
+import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.NegotiationDef;
+import org.nuxeo.theme.negotiation.NegotiationException;
 import org.nuxeo.theme.themes.ThemeManager;
+import org.nuxeo.theme.types.TypeFamily;
+import org.nuxeo.theme.webengine.negotiation.WebNegotiator;
 
 import freemarker.core.Environment;
-import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateDirectiveBody;
@@ -47,6 +57,8 @@ import freemarker.template.TemplateModelException;
  * 
  */
 public class ThemeDirective implements TemplateDirectiveModel {
+
+    private static final Log log = LogFactory.getLog(ThemeDirective.class);
 
     private final Map<URL, String> cachedThemes = new HashMap<URL, String>();
 
@@ -68,12 +80,13 @@ public class ThemeDirective implements TemplateDirectiveModel {
             throw new TemplateModelException("Expecting a body");
         }
 
-        WebContext context = (WebContext) Utils.getWrappedObject("Context", env);
+        AbstractWebContext context = (AbstractWebContext) WebEngine.getActiveContext();
 
-        final URL themeUrl = Utils.getThemeUrlAndSetupRequest(context);
+        Map<String, Object> vars = new HashMap<String, Object>();
+        vars.put("nxthemesInfo", Manager.getInfoPool());
+        context.createBindings(vars);
 
-        env.setGlobalVariable("nxthemesInfo",
-                BeansWrapper.getDefaultInstance().wrap(Manager.getInfoPool()));
+        final URL themeUrl = getThemeUrlAndSetupRequest(context);
 
         BlockWriter writer = (BlockWriter) env.getOut();
         writer.setSuppressOutput(true);
@@ -114,6 +127,49 @@ public class ThemeDirective implements TemplateDirectiveModel {
             }
         }
         return false;
+    }
+
+    private static URL getThemeUrlAndSetupRequest(WebContext context)
+            throws IOException {
+        HttpServletRequest request = context.getRequest();
+        URL themeUrl = (URL) request.getAttribute("org.nuxeo.theme.url");
+        if (themeUrl != null) {
+            return themeUrl;
+        }
+
+        // Get the negotiation strategy
+        final String root = context.getModulePath();
+
+        final ApplicationType application = (ApplicationType) Manager.getTypeRegistry().lookup(
+                TypeFamily.APPLICATION, root);
+
+        String strategy = null;
+        if (application != null) {
+            final NegotiationDef negotiation = application.getNegotiation();
+            if (negotiation != null) {
+                request.setAttribute("org.nuxeo.theme.default.theme",
+                        negotiation.getDefaultTheme());
+                request.setAttribute("org.nuxeo.theme.default.engine",
+                        negotiation.getDefaultEngine());
+                request.setAttribute("org.nuxeo.theme.default.perspective",
+                        negotiation.getDefaultPerspective());
+                strategy = negotiation.getStrategy();
+            }
+        }
+
+        if (strategy == null) {
+            log.error("Could not obtain the negotiation strategy for " + root);
+        } else {
+            try {
+                final String spec = new WebNegotiator(strategy, context).getSpec();
+                themeUrl = new URL(spec);
+                request.setAttribute("org.nuxeo.theme.url", themeUrl);
+            } catch (NegotiationException e) {
+                log.error("Could not get default negotiation settings.", e);
+            }
+        }
+
+        return themeUrl;
     }
 
 }
