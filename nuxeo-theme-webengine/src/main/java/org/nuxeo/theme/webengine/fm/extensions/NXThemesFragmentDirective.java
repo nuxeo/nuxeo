@@ -25,12 +25,13 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.Map;
 
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.themes.ThemeManager;
 
 import freemarker.core.Environment;
 import freemarker.ext.beans.BeansWrapper;
-import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateDirectiveModel;
@@ -58,20 +59,25 @@ public class NXThemesFragmentDirective implements TemplateDirectiveModel {
             throw new TemplateModelException("Didn't expect a body");
         }
 
+        WebContext ctx = WebEngine.getActiveContext();
+        if (ctx == null) {
+            throw new IllegalStateException("Not In a Web Context");
+        }
+
+        env.setGlobalVariable("nxthemesInfo",
+                BeansWrapper.getDefaultInstance().wrap(Manager.getInfoPool()));
+
         Map<String, String> attributes = Utils.getTemplateDirectiveParameters(params);
         final URL elementUrl = new URL(String.format(
                 "nxtheme://element/%s/%s/%s/%s", attributes.get("engine"),
                 attributes.get("mode"), templateEngine, attributes.get("uid")));
 
-        env.setGlobalVariable("nxthemesInfo",
-                BeansWrapper.getDefaultInstance().wrap(Manager.getInfoPool()));
-
         StringReader sr = new StringReader(
                 ThemeManager.renderElement(elementUrl));
         BufferedReader reader = new BufferedReader(sr);
-        Configuration cfg = env.getConfiguration();
-        Template temp = new Template(elementUrl.toString(), reader, cfg);
-        env.include(temp);
+        Template tpl = new Template(elementUrl.toString(), reader,
+                env.getConfiguration(), env.getTemplate().getEncoding());
+        env.include(tpl);
     }
 
 }

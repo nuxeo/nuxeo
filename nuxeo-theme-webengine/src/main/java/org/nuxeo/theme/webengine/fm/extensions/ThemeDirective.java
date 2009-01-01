@@ -20,6 +20,7 @@
 package org.nuxeo.theme.webengine.fm.extensions;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
@@ -31,10 +32,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriter;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
+import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
@@ -45,7 +48,6 @@ import org.nuxeo.theme.webengine.negotiation.WebNegotiator;
 
 import freemarker.core.Environment;
 import freemarker.ext.beans.BeansWrapper;
-import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateDirectiveModel;
@@ -80,28 +82,21 @@ public class ThemeDirective implements TemplateDirectiveModel {
         if (body == null) {
             throw new TemplateModelException("Expecting a body");
         }
-
-        AbstractWebContext context = (AbstractWebContext) WebEngine.getActiveContext();
-
-        Map<String, Object> vars = new HashMap<String, Object>();
-        vars.put("nxthemesInfo", Manager.getInfoPool());
-        context.createBindings(vars);
-
+        
+        WebContext ctx = WebEngine.getActiveContext();
+        if (ctx == null) {
+            throw new IllegalStateException("Not In a Web Context");
+        }
+        
         env.setGlobalVariable("nxthemesInfo",
                 BeansWrapper.getDefaultInstance().wrap(Manager.getInfoPool()));
 
-        final URL themeUrl = getThemeUrlAndSetupRequest(context);
-
-        BlockWriter writer = (BlockWriter) env.getOut();
-        writer.setSuppressOutput(true);
-        body.render(writer);
-        writer.setSuppressOutput(false);
-
+        final URL themeUrl = getThemeUrlAndSetupRequest(ctx);
         StringReader sr = new StringReader(renderTheme(themeUrl));
         BufferedReader reader = new BufferedReader(sr);
-        Configuration cfg = env.getConfiguration();
-        Template temp = new Template(themeUrl.toString(), reader, cfg);
-        env.include(temp);
+        Template tpl = new Template(themeUrl.toString(), reader,
+                env.getConfiguration(), env.getTemplate().getEncoding());
+        env.include(tpl);
     }
 
     public String renderTheme(URL themeUrl) {
