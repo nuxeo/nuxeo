@@ -25,6 +25,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.html.ui.Head;
 import org.nuxeo.theme.themes.ThemeManager;
@@ -60,8 +63,9 @@ public class NXThemesHeadDirective implements TemplateDirectiveModel {
 
         Writer writer = env.getOut();
 
-        WebContext context = (WebContext) Utils.getWrappedObject("Context", env);
-        final URL themeUrl = Utils.getThemeUrlAndSetupRequest(context);
+        WebContext context = WebEngine.getActiveContext();        
+        HttpServletRequest request = context.getRequest();
+        final URL themeUrl = (URL) request.getAttribute("org.nuxeo.theme.url");
 
         Map<String, String> attributes = new HashMap<String, String>();
         attributes.put("themeName", ThemeManager.getThemeNameByUrl(themeUrl));

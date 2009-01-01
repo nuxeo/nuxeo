@@ -44,6 +44,7 @@ import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.webengine.negotiation.WebNegotiator;
 
 import freemarker.core.Environment;
+import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateDirectiveBody;
@@ -85,6 +86,9 @@ public class ThemeDirective implements TemplateDirectiveModel {
         Map<String, Object> vars = new HashMap<String, Object>();
         vars.put("nxthemesInfo", Manager.getInfoPool());
         context.createBindings(vars);
+
+        env.setGlobalVariable("nxthemesInfo",
+                BeansWrapper.getDefaultInstance().wrap(Manager.getInfoPool()));
 
         final URL themeUrl = getThemeUrlAndSetupRequest(context);
 
@@ -171,5 +175,4 @@ public class ThemeDirective implements TemplateDirectiveModel {
 
         return themeUrl;
     }
-
 }

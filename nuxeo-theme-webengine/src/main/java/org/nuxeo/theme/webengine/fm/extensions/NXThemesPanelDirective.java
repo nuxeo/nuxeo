@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.html.ui.Panel;
 
@@ -52,7 +53,7 @@ public class NXThemesPanelDirective implements TemplateDirectiveModel {
         }
 
         Writer writer = env.getOut();
-        WebContext context = (WebContext) Utils.getWrappedObject("Context", env);
+        WebContext context = WebEngine.getActiveContext();
 
         Map<String, String> attributes = Utils.getTemplateDirectiveParameters(params);
         String applicationPath = context.getRequest().getParameter(
