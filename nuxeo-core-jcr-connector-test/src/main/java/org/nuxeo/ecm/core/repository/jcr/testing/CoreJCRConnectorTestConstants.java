@@ -22,6 +22,8 @@ package org.nuxeo.ecm.core.repository.jcr.testing;
  */
 public class CoreJCRConnectorTestConstants {
 
+    public static final String CORE_BUNDLE = "org.nuxeo.ecm.core";
+
     public static final String BUNDLE = "org.nuxeo.ecm.core.jcr-connector";
 
     public static final String TESTS_BUNDLE = "org.nuxeo.ecm.core.jcr-connector.tests";
