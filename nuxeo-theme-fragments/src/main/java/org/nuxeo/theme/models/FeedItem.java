@@ -16,9 +16,6 @@ package org.nuxeo.theme.models;
 
 import java.util.Calendar;
 
-import org.nuxeo.theme.models.AbstractModel;
-import org.nuxeo.theme.nodes.NodeTypeFamily;
-
 public class FeedItem extends AbstractModel {
 
     private String title;
@@ -37,11 +34,6 @@ public class FeedItem extends AbstractModel {
     @Override
     public String getModelTypeName() {
         return "feed item";
-    }
-
-    @Override
-    public NodeTypeFamily getNodeTypeFamily() {
-        return NodeTypeFamily.LEAF;
     }
 
     public String getTitle() {

@@ -19,10 +19,11 @@ import junit.framework.TestCase;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.TextFragment;
 import org.nuxeo.theme.models.Html;
+import org.nuxeo.theme.models.ModelException;
 
 public class TestFragments extends TestCase {
 
-    public void testTextFragment() {
+    public void testTextFragment() throws ModelException {
         Fragment fragment = new TextFragment("Text here");
         assertEquals("Text here", ((Html) fragment.getModel()).getBody());
     }

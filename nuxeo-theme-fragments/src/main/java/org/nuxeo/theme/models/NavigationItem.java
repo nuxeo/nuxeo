@@ -14,8 +14,6 @@
 
 package org.nuxeo.theme.models;
 
-import org.nuxeo.theme.nodes.NodeTypeFamily;
-
 public class NavigationItem extends AbstractModel {
 
     private String title;
@@ -36,11 +34,6 @@ public class NavigationItem extends AbstractModel {
     @Override
     public String getModelTypeName() {
         return "navigation item";
-    }
-
-    @Override
-    public NodeTypeFamily getNodeTypeFamily() {
-        return NodeTypeFamily.LEAF;
     }
 
     public String getTitle() {

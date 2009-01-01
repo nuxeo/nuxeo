@@ -23,8 +23,6 @@ import org.nuxeo.theme.uids.UidManager;
 
 public final class FormatFactory {
 
-    private static final Log log = LogFactory.getLog(FormatFactory.class);
-
     // This class is not supposed to be instantiated.
     private FormatFactory() {
     }

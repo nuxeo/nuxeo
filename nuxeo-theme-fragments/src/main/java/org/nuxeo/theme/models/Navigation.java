@@ -14,21 +14,14 @@
 
 package org.nuxeo.theme.models;
 
-import org.nuxeo.theme.nodes.NodeTypeFamily;
-
 public class Navigation extends AbstractModel {
 
-    public Navigation() {;
+    public Navigation() {
     }
 
     @Override
     public String getModelTypeName() {
         return "navigation";
-    }
-
-    @Override
-    public NodeTypeFamily getNodeTypeFamily() {
-        return NodeTypeFamily.INNER;
     }
 
 }

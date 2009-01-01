@@ -14,12 +14,19 @@
 
 package org.nuxeo.theme.models;
 
+import java.util.List;
+
 public interface Model {
 
     String getModelTypeName();
-    
+
     ModelType getModelType();
 
-    Model addItem(Model model);
+    Model addItem(Model model) throws ModelException;
 
+    Model insertItem(int order, Model model) throws ModelException;
+
+    List<Model> getItems();
+
+    boolean hasItems();
 }

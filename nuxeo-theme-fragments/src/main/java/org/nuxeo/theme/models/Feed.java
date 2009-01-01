@@ -14,8 +14,6 @@
 
 package org.nuxeo.theme.models;
 
-import org.nuxeo.theme.models.AbstractModel;
-import org.nuxeo.theme.nodes.NodeTypeFamily;
 
 public class Feed extends AbstractModel {
 
@@ -31,11 +29,6 @@ public class Feed extends AbstractModel {
     @Override
     public String getModelTypeName() {
         return "feed";
-    }
-
-    @Override
-    public NodeTypeFamily getNodeTypeFamily() {
-        return NodeTypeFamily.INNER;
     }
 
     public String getTitle() {

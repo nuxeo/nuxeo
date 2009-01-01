@@ -14,8 +14,6 @@
 
 package org.nuxeo.theme.models;
 
-import org.nuxeo.theme.nodes.NodeTypeFamily;
-
 public class Html extends AbstractModel {
 
     private String body;
@@ -27,11 +25,6 @@ public class Html extends AbstractModel {
     @Override
     public String getModelTypeName() {
         return "html";
-    }
-
-    @Override
-    public NodeTypeFamily getNodeTypeFamily() {
-        return NodeTypeFamily.LEAF;
     }
 
     public String getBody() {

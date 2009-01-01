@@ -19,15 +19,16 @@ import java.util.List;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.AbstractElement;
 import org.nuxeo.theme.models.Model;
+import org.nuxeo.theme.models.ModelException;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 
 public abstract class AbstractFragment extends AbstractElement implements
         Fragment {
 
+    public abstract Model getModel() throws ModelException;
+    
     private FragmentType fragmentType;
-
-    public abstract Model getModel();
 
     public void setFragmentType(FragmentType fragmentType) {
         this.fragmentType = fragmentType;

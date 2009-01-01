@@ -17,7 +17,9 @@ package org.nuxeo.theme.test.models;
 import junit.framework.TestCase;
 
 import org.nuxeo.theme.models.Html;
+import org.nuxeo.theme.models.Menu;
 import org.nuxeo.theme.models.MenuItem;
+import org.nuxeo.theme.models.ModelException;
 import org.nuxeo.theme.models.Text;
 
 public class TestModels extends TestCase {
@@ -34,20 +36,14 @@ public class TestModels extends TestCase {
         assertEquals("<p>content here</p>", html.getBody());
     }
 
-    public void testMenuItem() {
-        MenuItem menuitem = new MenuItem("title", "description", "url", true,
-                "icon.png");
-        assertEquals("menu item", menuitem.getModelTypeName());
-        assertEquals("title", menuitem.getTitle());
-        assertEquals("description", menuitem.getDescription());
-        assertEquals("url", menuitem.getUrl());
-        assertTrue(menuitem.isSelected());
-        assertEquals("icon.png", menuitem.getIcon());
+    public void Menu() throws ModelException {
+        Menu menu = new Menu();
+        assertEquals("menu", menu.getModelTypeName());
 
-        MenuItem submenuitem = new MenuItem("title sub-menu",
+        MenuItem menuitem = new MenuItem("title sub-menu",
                 "description sub-menu", "url sub-menu", false, "icon.png");
-        menuitem.addChild(submenuitem);
-        assertSame(submenuitem, menuitem.getChildren().iterator().next());
+        menu.addItem(menuitem);
+        assertSame(menuitem, menu.getItems().iterator().next());
     }
 
 }

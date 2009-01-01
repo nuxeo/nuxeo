@@ -18,11 +18,12 @@ import java.util.List;
 
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.models.Model;
+import org.nuxeo.theme.models.ModelException;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 
 public interface Fragment extends Element {
 
-    Model getModel();
+    Model getModel() throws ModelException;
 
     void setFragmentType(FragmentType fragmentType);
 

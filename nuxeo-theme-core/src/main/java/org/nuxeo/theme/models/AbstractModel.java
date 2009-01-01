@@ -17,40 +17,43 @@ package org.nuxeo.theme.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.Manager;
-import org.nuxeo.theme.nodes.AbstractNode;
-import org.nuxeo.theme.nodes.Node;
 import org.nuxeo.theme.types.TypeFamily;
 
-public abstract class AbstractModel extends AbstractNode implements Model {
+public abstract class AbstractModel implements Model {
 
-    private static final Log log = LogFactory.getLog(AbstractModel.class);
+    private List<Model> items = new ArrayList<Model>();
 
     public abstract String getModelTypeName();
-
+    
     public ModelType getModelType() {
         return (ModelType) Manager.getTypeRegistry().lookup(TypeFamily.MODEL,
                 getModelTypeName());
     }
 
-    public Model addItem(Model model) {
+    public Model addItem(Model model) throws ModelException {
         if (!getModelType().getAllowedTypes().contains(model.getModelTypeName())) {
-            log.error("Model type: " + model.getModelTypeName()
+            throw new ModelException("Model type: " + model.getModelTypeName()
                     + " not allowed in: " + this.getModelTypeName());
-            return null;
         }
-        addChild((Node) model);
+        items.add(model);
+        return model;
+    }
+
+    public Model insertItem(int index, Model model) throws ModelException{
+        if (!getModelType().getAllowedTypes().contains(model.getModelTypeName())) {
+            throw new ModelException("Model type: " + model.getModelTypeName()
+                    + " not allowed in: " + this.getModelTypeName());
+        }
+        items.add(index, model);
         return model;
     }
 
     public List<Model> getItems() {
-        List<Model> items = new ArrayList<Model>();
-        for (Node node : getChildren()) {
-            items.add((Model) node);
-        }
         return items;
     }
-
+    
+    public boolean hasItems() {
+        return !items.isEmpty();
+    }
 }

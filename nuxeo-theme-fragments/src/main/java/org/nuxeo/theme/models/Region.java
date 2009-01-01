@@ -14,8 +14,6 @@
 
 package org.nuxeo.theme.models;
 
-import org.nuxeo.theme.nodes.NodeTypeFamily;
-
 public final class Region extends AbstractModel {
 
     public final String name;
@@ -41,11 +39,6 @@ public final class Region extends AbstractModel {
     @Override
     public String getModelTypeName() {
         return "region";
-    }
-
-    @Override
-    public NodeTypeFamily getNodeTypeFamily() {
-        return NodeTypeFamily.LEAF;
     }
 
 }

@@ -25,6 +25,7 @@ import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.FormatFilter;
 import org.nuxeo.theme.formats.FormatType;
 import org.nuxeo.theme.fragments.Fragment;
+import org.nuxeo.theme.models.ModelException;
 import org.nuxeo.theme.nodes.Node;
 import org.nuxeo.theme.rendering.Filter;
 import org.nuxeo.theme.rendering.FilterType;
@@ -65,8 +66,11 @@ public final class ElementRenderer {
         String markup = "";
         if (element.isLeaf()) {
             final Fragment fragment = (Fragment) element;
-            copy.setModel(fragment.getModel());
-
+            try {
+                copy.setModel(fragment.getModel());
+            } catch (ModelException e) {
+                return copy;
+            }
             if (fragment.isDynamic()) {
                 copy.setDirty(true);
             }

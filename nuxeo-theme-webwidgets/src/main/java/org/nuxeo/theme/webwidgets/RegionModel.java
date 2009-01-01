@@ -15,7 +15,6 @@
 package org.nuxeo.theme.webwidgets;
 
 import org.nuxeo.theme.models.AbstractModel;
-import org.nuxeo.theme.nodes.NodeTypeFamily;
 
 public final class RegionModel extends AbstractModel {
 
@@ -37,11 +36,6 @@ public final class RegionModel extends AbstractModel {
     @Override
     public String getModelTypeName() {
         return "web widget region";
-    }
-
-    @Override
-    public NodeTypeFamily getNodeTypeFamily() {
-        return NodeTypeFamily.LEAF;
     }
 
 }

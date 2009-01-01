@@ -15,7 +15,6 @@
 package org.nuxeo.theme.test;
 
 import org.nuxeo.theme.models.AbstractModel;
-import org.nuxeo.theme.nodes.NodeTypeFamily;
 
 public class DummyMenuItem extends AbstractModel {
 
@@ -41,12 +40,6 @@ public class DummyMenuItem extends AbstractModel {
     @Override
     public String getModelTypeName() {
         return "menu item";
-    }
-
-    @Override
-    public NodeTypeFamily getNodeTypeFamily() {
-        return getChildren().isEmpty() ? NodeTypeFamily.LEAF
-                : NodeTypeFamily.INNER;
     }
 
     public String getIcon() {

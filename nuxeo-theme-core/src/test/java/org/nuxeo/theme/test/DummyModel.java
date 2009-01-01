@@ -15,18 +15,12 @@
 package org.nuxeo.theme.test;
 
 import org.nuxeo.theme.models.AbstractModel;
-import org.nuxeo.theme.nodes.NodeTypeFamily;
 
 public class DummyModel extends AbstractModel {
 
     @Override
     public String getModelTypeName() {
         return "model 1";
-    }
-
-    @Override
-    public NodeTypeFamily getNodeTypeFamily() {
-        return NodeTypeFamily.LEAF;
     }
 
 }

@@ -14,25 +14,18 @@
 
 package org.nuxeo.theme.models;
 
-import org.nuxeo.theme.nodes.NodeTypeFamily;
-
 public class Menu extends AbstractModel {
 
     private String title;
 
     private String description;
 
-    public Menu() {;
+    public Menu() {
     }
 
     @Override
     public String getModelTypeName() {
         return "menu";
-    }
-
-    @Override
-    public NodeTypeFamily getNodeTypeFamily() {
-        return NodeTypeFamily.INNER;
     }
 
     public String getTitle() {

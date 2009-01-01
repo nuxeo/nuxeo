@@ -12,29 +12,25 @@
  * $Id$
  */
 
-package org.nuxeo.theme.test;
+package org.nuxeo.theme.models;
 
-import org.nuxeo.theme.models.AbstractModel;
+public class ModelException extends Exception {
 
-public class DummyHtml extends AbstractModel {
+    private static final long serialVersionUID = 1L;
 
-    private String body;
-
-    public DummyHtml(String body) {
-        this.body = body;
+    public ModelException() {
     }
 
-    @Override
-    public String getModelTypeName() {
-        return "html";
+    public ModelException(String message) {
+        super(message);
     }
 
-    public String getBody() {
-        return body;
+    public ModelException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public void setBody(String body) {
-        this.body = body;
+    public ModelException(Throwable cause) {
+        super(cause);
     }
 
 }

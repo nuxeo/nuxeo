@@ -14,15 +14,10 @@
 
 package org.nuxeo.theme;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
