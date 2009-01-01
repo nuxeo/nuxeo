@@ -69,6 +69,9 @@ public final class ElementRenderer {
             try {
                 copy.setModel(fragment.getModel());
             } catch (ModelException e) {
+                log.error("Rendering of fragment '"
+                        + fragment.getFragmentType().getTypeName()
+                        + "' failed: " + e.getMessage());
                 return copy;
             }
             if (fragment.isDynamic()) {

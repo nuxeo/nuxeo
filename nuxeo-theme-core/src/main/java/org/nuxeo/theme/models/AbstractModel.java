@@ -25,13 +25,18 @@ public abstract class AbstractModel implements Model {
     private List<Model> items = new ArrayList<Model>();
 
     public abstract String getModelTypeName();
-    
+
     public ModelType getModelType() {
         return (ModelType) Manager.getTypeRegistry().lookup(TypeFamily.MODEL,
                 getModelTypeName());
     }
 
     public Model addItem(Model model) throws ModelException {
+        ModelType modelType = getModelType();
+        if (modelType == null) {
+            throw new ModelException("Model type not found: "
+                    + getModelTypeName());
+        }
         if (!getModelType().getAllowedTypes().contains(model.getModelTypeName())) {
             throw new ModelException("Model type: " + model.getModelTypeName()
                     + " not allowed in: " + this.getModelTypeName());
@@ -40,7 +45,7 @@ public abstract class AbstractModel implements Model {
         return model;
     }
 
-    public Model insertItem(int index, Model model) throws ModelException{
+    public Model insertItem(int index, Model model) throws ModelException {
         if (!getModelType().getAllowedTypes().contains(model.getModelTypeName())) {
             throw new ModelException("Model type: " + model.getModelTypeName()
                     + " not allowed in: " + this.getModelTypeName());
@@ -52,7 +57,7 @@ public abstract class AbstractModel implements Model {
     public List<Model> getItems() {
         return items;
     }
-    
+
     public boolean hasItems() {
         return !items.isEmpty();
     }
