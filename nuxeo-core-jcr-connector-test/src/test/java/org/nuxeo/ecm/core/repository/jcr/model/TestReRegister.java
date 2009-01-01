@@ -164,17 +164,13 @@ public class TestReRegister extends RepositoryTestCase {
                 "DemoRepository.xml");
         undeployContrib(CoreJCRConnectorTestConstants.BUNDLE,
                 "test-CoreExtensions.xml");
-        undeployContrib(CoreJCRConnectorTestConstants.BUNDLE,
-                "OSGI-INF/CoreService.xml");
-        undeployContrib(CoreJCRConnectorTestConstants.BUNDLE,
-                "TypeService.xml");
+        undeployContrib(CoreJCRConnectorTestConstants.BUNDLE, "CoreService.xml");
+        undeployContrib(CoreJCRConnectorTestConstants.BUNDLE, "TypeService.xml");
         undeployContrib(CoreJCRConnectorTestConstants.BUNDLE,
                 "RepositoryService.xml");
 
-        deployContrib(CoreJCRConnectorTestConstants.BUNDLE,
-                "OSGI-INF/CoreService.xml");
-        deployContrib(CoreJCRConnectorTestConstants.BUNDLE,
-                "TypeService.xml");
+        deployContrib(CoreJCRConnectorTestConstants.BUNDLE, "CoreService.xml");
+        deployContrib(CoreJCRConnectorTestConstants.BUNDLE, "TypeService.xml");
         deployContrib(CoreJCRConnectorTestConstants.BUNDLE,
                 "RepositoryService.xml");
         deployContrib(CoreJCRConnectorTestConstants.BUNDLE,

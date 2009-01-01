@@ -43,10 +43,8 @@ public abstract class RepositoryTestCase extends NXRuntimeTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         // the core bundle
-        deployContrib(CoreJCRConnectorTestConstants.BUNDLE,
-                "OSGI-INF/CoreService.xml");
-        deployContrib(CoreJCRConnectorTestConstants.BUNDLE,
-                "TypeService.xml");
+        deployContrib(CoreJCRConnectorTestConstants.BUNDLE, "CoreService.xml");
+        deployContrib(CoreJCRConnectorTestConstants.BUNDLE, "TypeService.xml");
         deployContrib(CoreJCRConnectorTestConstants.BUNDLE,
                 "SecurityService.xml");
         deployContrib(CoreJCRConnectorTestConstants.BUNDLE,
