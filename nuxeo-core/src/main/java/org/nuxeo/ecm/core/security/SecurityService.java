@@ -35,14 +35,12 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
-import org.nuxeo.ecm.core.api.security.PolicyService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
 import org.nuxeo.ecm.core.api.security.impl.SecuritySummaryEntryImpl;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -151,19 +149,6 @@ public class SecurityService extends DefaultComponent {
         // :FIXME: tmp hack
         if (username.equals("system")) {
             return true;
-        }
-
-        // Security Policy
-        PolicyService policyService = Framework.getLocalService(PolicyService.class);
-        if (policyService != null) {
-            CorePolicyService corePolicyService = (CorePolicyService) policyService.getCorePolicy();
-            if (corePolicyService != null
-                    && principal instanceof NuxeoPrincipal) {
-                if (!corePolicyService.checkPolicy(doc,
-                        (NuxeoPrincipal) principal, permission)) {
-                    return false;
-                }
-            }
         }
 
         // get the security store
