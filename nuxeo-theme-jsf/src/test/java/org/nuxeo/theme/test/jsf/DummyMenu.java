@@ -16,46 +16,20 @@ package org.nuxeo.theme.test.jsf;
 
 import org.nuxeo.theme.models.AbstractModel;
 
-public class DummyMenuItem extends AbstractModel {
+public class DummyMenu extends AbstractModel {
 
     private String title;
 
     private String description;
 
-    private String url;
-
-    private boolean selected;
-
-    private String icon;
-
-    public DummyMenuItem(String title, String description, String url,
-            boolean selected, String icon) {
+    public DummyMenu(String title, String description) {
         this.title = title;
         this.description = description;
-        this.url = url;
-        this.selected = selected;
-        this.icon = icon;
     }
 
     @Override
     public String getModelTypeName() {
-        return "menu item";
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public boolean isSelected() {
-        return selected;
-    }
-
-    public void setSelected(boolean selected) {
-        this.selected = selected;
+        return "menu";
     }
 
     public String getTitle() {
@@ -64,14 +38,6 @@ public class DummyMenuItem extends AbstractModel {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     public String getDescription() {

@@ -16,6 +16,7 @@ package org.nuxeo.theme.test.jsf;
 
 import org.nuxeo.theme.fragments.AbstractFragment;
 import org.nuxeo.theme.models.Model;
+import org.nuxeo.theme.models.ModelException;
 
 public final class DummyFragment extends AbstractFragment {
 
@@ -24,18 +25,13 @@ public final class DummyFragment extends AbstractFragment {
     public String field2 = "";
 
     @Override
-    public Model getModel() {
-        DummyMenuItem root = new DummyMenuItem("Menu", "A menu", "", true, "");
-        root.addChild(new DummyMenuItem("Menu item 1", "A menu item",
-                "http://www.some.url.org", true, ""));
-        root.addChild(new DummyMenuItem("Menu item 2", "A menu item",
-                "http://www.some.url.org", true, ""));
-        return root;
-    }
-
-    @Override
-    public boolean isDynamic() {
-        return true;
+    public Model getModel() throws ModelException {
+        DummyMenu menu = new DummyMenu("Menu", "A menu");
+            menu.addItem(new DummyMenuItem("Menu item 1", "A menu item",
+                    "http://www.some.url.org", true, ""));
+            menu.addItem(new DummyMenuItem("Menu item 2", "A menu item",
+                    "http://www.some.url.org", true, ""));
+        return menu;
     }
 
     public String getField1() {

@@ -31,7 +31,6 @@ import org.nuxeo.theme.elements.ElementRenderer;
 import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.Format;
-import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentFactory;
 import org.nuxeo.theme.rendering.RenderingInfo;
