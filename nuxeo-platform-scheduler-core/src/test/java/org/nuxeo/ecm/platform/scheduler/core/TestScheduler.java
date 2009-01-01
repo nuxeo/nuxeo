@@ -38,8 +38,7 @@ public class TestScheduler extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
         deployContrib("org.nuxeo.ecm.core.jcr-connector", "TypeService.xml");
         deployContrib("org.nuxeo.ecm.core", "OSGI-INF/SecurityService.xml");
-        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
-                "test-RepositoryService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/RepositoryService.xml");
         deployContrib("org.nuxeo.ecm.core",
                 "OSGI-INF/CoreEventListenerService.xml");
         deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",

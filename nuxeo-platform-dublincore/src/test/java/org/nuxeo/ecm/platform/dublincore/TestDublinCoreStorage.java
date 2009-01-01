@@ -62,8 +62,9 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
-                "CoreService.xml");
+        deployContrib("org.nuxeo.ecm.core",
+                "OSGI-INF/CoreService.xml");
+
         deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
                 "test-CoreExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.dublincore.tests",

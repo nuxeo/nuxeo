@@ -47,7 +47,7 @@ public class TestJMSProducerService extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.events.tests",
                 "RepositoryService.xml");
         deployContrib("org.nuxeo.ecm.platform.events.tests",
-                "test-CoreExtensions.xml");
+                "CoreExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.events.tests",
                 "CoreTestExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.events.tests",
