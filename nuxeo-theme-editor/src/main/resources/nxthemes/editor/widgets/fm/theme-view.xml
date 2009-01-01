@@ -1,9 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>
-      <@block name="title">
-        <#if Document??>${Document['dc:title']}<#else>NXThemes WebEngine</#if>
-      </@block>
+      <@block name="title"></@block>
     </title>
 
     <@nxthemes_head />

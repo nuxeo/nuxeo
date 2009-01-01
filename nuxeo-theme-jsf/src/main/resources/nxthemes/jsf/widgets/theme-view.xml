@@ -5,7 +5,7 @@
   <f:view contentType="text/html" />
   <head>
     <title>
-      <ui:insert name="page title">Page title</ui:insert>
+      <ui:insert name="page title"></ui:insert>
     </title>
 
     <ui:insert name="bookmark"><!-- Bookmark URL --></ui:insert>
