@@ -16,9 +16,8 @@ package org.nuxeo.theme.editor.previews;
 
 public class Background implements Preview {
 
-    public String render(final String value, final String content) {
-        return String.format("%s <div style=\"background:%s;\"></div>",
-                content, value);
+    public String render(final String value) {
+        return String.format("<div style=\"background:%s;\"></div>", value);
     }
 
 }

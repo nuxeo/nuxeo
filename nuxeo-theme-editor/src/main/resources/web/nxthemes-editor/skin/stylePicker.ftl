@@ -32,11 +32,13 @@
     <#list presets_for_selected_group as preset_info>
       <div>
         <#if !selected_preset_group>
-          <a class="editPreset" href="javascript:void(0)" onclick="NXThemesEditor.editPreset('${current_theme_name}', '${preset_info.name}', '${preset_info.value}', 'style picker');">
+          <a class="editPreset" href="javascript:void(0)" onclick="NXThemesEditor.editPreset('${current_theme_name}', '${preset_info.effectiveName}', '${preset_info.value}', 'style picker');">
 	      <img src="${basePath}/skin/nxthemes-editor/img/edit-12.png" /></a>
         </#if>
-        <div class="selection" onclick="NXThemesStyleEditor.updateFormField('&quot;${preset_info.name}&quot;')">
-           ${preset_info.preview}
+        <div class="selection" title="${preset_info.effectiveName}" onclick="NXThemesStyleEditor.updateFormField('&quot;${preset_info.effectiveName}&quot;')">
+           <div class="name">${preset_info.name}</div>
+           <div class="preview">${preset_info.preview}</div>
+           <div class="value">${preset_info.value}</div>
         </div>
 	</div>
     </#list>

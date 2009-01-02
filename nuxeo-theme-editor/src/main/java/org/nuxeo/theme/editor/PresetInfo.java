@@ -33,6 +33,10 @@ public class PresetInfo {
     }
 
     public String getName() {
+        return preset.getName();
+    }
+    
+    public String getEffectiveName() {
         return preset.getEffectiveName();
     }
 
@@ -52,8 +56,7 @@ public class PresetInfo {
         if (preview == null) {
             return "";
         }
-        String content = preset.getName();
-        return preview.render(preset.getValue(), content);
+        return preview.render(preset.getValue());
     }
 
     public String getValue() {

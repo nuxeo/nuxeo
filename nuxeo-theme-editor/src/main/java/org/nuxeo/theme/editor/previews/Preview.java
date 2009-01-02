@@ -16,6 +16,6 @@ package org.nuxeo.theme.editor.previews;
 
 public interface Preview {
 
-    String render(String value, String content);
+    String render(String value);
 
 }

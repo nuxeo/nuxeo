@@ -443,16 +443,27 @@ div.nxthemesEditorFrame {
   margin: 5px;
   cursor: pointer;
   font: 12px Arial;
-  color: #666;
   border: 1px solid #ddd;
 }
 
-.nxthemesToolbox div.selection div {
-  padding: 20px;
+.nxthemesToolbox div.selection div.name {
+  color: #333;
+}
+
+.nxthemesToolbox div.selection div.value {
+  font-size: 10px;
+  color: #666;
+}
+
+.nxthemesToolbox div.selection div.preview {
   color: #000;
   text-align: center;
   border: 1px solid #000;
   margin-top: 2px;
+}
+
+.nxthemesToolbox div.selection div.preview div {
+  height: 40px;
 }
 
 .nxthemesToolbox div.selection:hover {
