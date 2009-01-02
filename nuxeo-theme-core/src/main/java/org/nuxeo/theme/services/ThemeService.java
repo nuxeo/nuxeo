@@ -512,13 +512,29 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             }
         }
     }
-    
+
     private void registerModelExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
         ThemeManager themeManager = Manager.getThemeManager();
         for (Object contrib : contribs) {
             ModelType modelType = (ModelType) contrib;
+            final String modelTypeName = modelType.getTypeName();
+            final ModelType oldModelType = (ModelType) typeRegistry.lookup(
+                    TypeFamily.MODEL, modelTypeName);
+            if (oldModelType != null) {
+                if (oldModelType.getClassName().equals(modelType.getClassName())) {
+                    log.debug("Model '" + modelTypeName + "' ("
+                            + oldModelType.getClassName()
+                            + ") has already been registered.");
+                } else {
+                    log.warn("Model '" + modelTypeName
+                            + "' has already been registered as "
+                            + oldModelType.getClassName() + ", the new class "
+                            + modelType.getClassName() + " will be ignored.");
+                }
+                continue;
+            }
             typeRegistry.register(modelType);
             themeManager.registerModelByClassname(modelType);
         }
