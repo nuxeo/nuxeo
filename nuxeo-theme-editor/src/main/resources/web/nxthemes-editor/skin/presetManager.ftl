@@ -16,8 +16,7 @@ window.scrollTo(0,0);
   </#if>
 <td>
 <div class="name">${preset_info.name}</div>
-<div class="preview">${preset_info.preview}</div>
-<div class="value">${preset_info.value}</div>
+<div class="preview" title="${preset_info.value}">${preset_info.preview}</div>
 </td>
   <#if count % 10 == 10>
     </tr>

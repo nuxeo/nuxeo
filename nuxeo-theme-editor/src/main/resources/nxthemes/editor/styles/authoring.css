@@ -936,8 +936,6 @@ div.nxthemesFragment b {
   font-family: Arial, sans-serif;
   z-index: 1;
 }
-
-
 #nxthemesPresetManager {
   position: absolute;
   top: 105px;
@@ -951,13 +949,8 @@ div.nxthemesFragment b {
 
 #nxthemesPresetManager div.name {
   color: #333;
-  font-size: 11px;
   font-weight: bold;
-}
-
-#nxthemesPresetManager div.value {
-  font-size: 10px;
-  color: #666;
+  font-size: 11px;
 }
 
 #nxthemesPresetManager div.preview {
