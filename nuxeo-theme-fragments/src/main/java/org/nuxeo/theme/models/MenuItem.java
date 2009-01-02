@@ -35,11 +35,6 @@ public class MenuItem extends AbstractModel {
         this.icon = icon;
     }
 
-    @Override
-    public String getModelTypeName() {
-        return "menu item";
-    }
-
     public String getIcon() {
         return icon;
     }

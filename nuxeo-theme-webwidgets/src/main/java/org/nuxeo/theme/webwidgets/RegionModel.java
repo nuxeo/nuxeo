@@ -33,9 +33,4 @@ public final class RegionModel extends AbstractModel {
         this.decoration = decoration;
     }
 
-    @Override
-    public String getModelTypeName() {
-        return "web widget region";
-    }
-
 }

@@ -26,11 +26,6 @@ public class Feed extends AbstractModel {
     public Feed() {
     }
 
-    @Override
-    public String getModelTypeName() {
-        return "feed";
-    }
-
     public String getTitle() {
         return title;
     }

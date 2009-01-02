@@ -18,17 +18,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.theme.Manager;
-import org.nuxeo.theme.types.TypeFamily;
 
 public abstract class AbstractModel implements Model {
 
     private List<Model> items = new ArrayList<Model>();
 
-    public abstract String getModelTypeName();
+    public String getModelTypeName() {
+        ModelType modelType = getModelType();
+        if (modelType == null) {
+            return null;
+        }
+        return modelType.getTypeName();
+    }
 
     public ModelType getModelType() {
-        return (ModelType) Manager.getTypeRegistry().lookup(TypeFamily.MODEL,
-                getModelTypeName());
+        final String className = this.getClass().getCanonicalName();
+        return Manager.getThemeManager().getModelByClassname(className);
     }
 
     public Model addItem(Model model) throws ModelException {

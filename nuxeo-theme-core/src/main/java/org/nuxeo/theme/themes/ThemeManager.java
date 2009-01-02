@@ -90,6 +90,8 @@ public final class ThemeManager implements Registrable {
 
     private final Map<String, List<Integer>> formatsByTypeName = new LinkedHashMap<String, List<Integer>>();
 
+    private final Map<String, ModelType> modelsByClassname = new HashMap<String, ModelType>();
+
     private final Map<String, Map<String, Integer>> namedObjects = new HashMap<String, Map<String, Integer>>();
 
     private static final Predicate PREDICATE_FORMAT_INHERIT = new DefaultPredicate(
@@ -1003,6 +1005,18 @@ public final class ThemeManager implements Registrable {
             log.error("Style creation failed", e);
         }
         return style;
+    }
+
+    public void registerModelByClassname(ModelType modelType) {
+        modelsByClassname.put(modelType.getClassName(), modelType);
+    }
+
+    public void unregisterModelByClassname(ModelType modelType) {
+        modelsByClassname.remove(modelType.getClassName());
+    }
+
+    public ModelType getModelByClassname(String className) {
+        return modelsByClassname.get(className);
     }
 
 }

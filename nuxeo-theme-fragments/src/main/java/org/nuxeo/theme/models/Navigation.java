@@ -19,9 +19,4 @@ public class Navigation extends AbstractModel {
     public Navigation() {
     }
 
-    @Override
-    public String getModelTypeName() {
-        return "navigation";
-    }
-
 }

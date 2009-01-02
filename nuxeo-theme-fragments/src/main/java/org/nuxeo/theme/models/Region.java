@@ -36,9 +36,4 @@ public final class Region extends AbstractModel {
         this(name, defaultBody, null);
     }
 
-    @Override
-    public String getModelTypeName() {
-        return "region";
-    }
-
 }

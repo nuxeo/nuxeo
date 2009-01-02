@@ -22,11 +22,6 @@ public class Text extends AbstractModel {
         this.body = body;
     }
 
-    @Override
-    public String getModelTypeName() {
-        return "text";
-    }
-
     public String getBody() {
         return body;
     }

@@ -26,20 +26,16 @@ public class TestModels extends TestCase {
 
     public void testText() {
         Text text = new Text("content here");
-        assertEquals("text", text.getModelTypeName());
         assertEquals("content here", text.getBody());
     }
 
     public void testHTML() {
         Html html = new Html("<p>content here</p>");
-        assertEquals("html", html.getModelTypeName());
         assertEquals("<p>content here</p>", html.getBody());
     }
 
     public void Menu() throws ModelException {
         Menu menu = new Menu();
-        assertEquals("menu", menu.getModelTypeName());
-
         MenuItem menuitem = new MenuItem("title sub-menu",
                 "description sub-menu", "url sub-menu", false, "icon.png");
         menu.addItem(menuitem);

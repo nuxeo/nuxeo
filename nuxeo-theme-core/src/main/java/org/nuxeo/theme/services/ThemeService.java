@@ -30,6 +30,7 @@ import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.CachingDef;
+import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
 import org.nuxeo.theme.Registrable;
 import org.nuxeo.theme.RegistryType;
@@ -39,6 +40,7 @@ import org.nuxeo.theme.events.EventListener;
 import org.nuxeo.theme.events.EventListenerType;
 import org.nuxeo.theme.events.EventManager;
 import org.nuxeo.theme.events.EventType;
+import org.nuxeo.theme.models.ModelType;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.presets.PaletteType;
@@ -113,8 +115,7 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
         if (xp.equals("registries")) {
             registerRegistryExtension(extension);
         } else if (xp.equals("elements") || xp.equals("fragments")
-                || xp.equals("models") || xp.equals("formats")
-                || xp.equals("format-filters")
+                || xp.equals("formats") || xp.equals("format-filters")
                 || xp.equals("standalone-filters") || xp.equals("resources")
                 || xp.equals("negotiations") || xp.equals("shortcuts")
                 || xp.equals("vocabularies")) {
@@ -135,6 +136,8 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             registerPresetExtension(extension);
         } else if (xp.equals("views")) {
             registerViewExtension(extension);
+        } else if (xp.equals("models")) {
+            registerModelExtension(extension);
         } else {
             log.warn(String.format("Unknown extension point: %s", xp));
         }
@@ -146,8 +149,7 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
         if (xp.equals("registries")) {
             unregisterRegistryExtension(extension);
         } else if (xp.equals("elements") || xp.equals("fragments")
-                || xp.equals("models") || xp.equals("formats")
-                || xp.equals("format-filters")
+                || xp.equals("formats") || xp.equals("format-filters")
                 || xp.equals("standalone-filters") || xp.equals("resources")
                 || xp.equals("engines") || xp.equals("template-engines")
                 || xp.equals("negotiations") || xp.equals("perspectives")
@@ -159,6 +161,8 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             unregisterEventListenerExtension(extension);
         } else if (xp.equals("views")) {
             unregisterViewExtension(extension);
+        } else if (xp.equals("models")) {
+            unregisterModelExtension(extension);
         } else {
             log.warn(String.format("Unknown extension point: %s", xp));
         }
@@ -354,7 +358,8 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
                 themeName = ThemeParser.registerTheme(src);
             } catch (ThemeIOException e) {
                 themeDescriptor.setLoadingFailed(true);
-                log.error("Could not register theme: " + src + " " +  e.getMessage());
+                log.error("Could not register theme: " + src + " "
+                        + e.getMessage());
                 continue;
             }
 
@@ -385,7 +390,8 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
                 themeName = ThemeParser.registerTheme(src);
             } catch (ThemeIOException e) {
                 themeDescriptor.setLoadingFailed(true);
-                log.error("Could not register theme: " + src + " " +  e.getMessage());
+                log.error("Could not register theme: " + src + " "
+                        + e.getMessage());
                 continue;
             }
 
@@ -503,6 +509,30 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
         if (typeRegistry != null) {
             for (Object contrib : contribs) {
                 typeRegistry.unregister((ViewType) contrib);
+            }
+        }
+    }
+    
+    private void registerModelExtension(Extension extension) {
+        Object[] contribs = extension.getContributions();
+        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
+        ThemeManager themeManager = Manager.getThemeManager();
+        for (Object contrib : contribs) {
+            ModelType modelType = (ModelType) contrib;
+            typeRegistry.register(modelType);
+            themeManager.registerModelByClassname(modelType);
+        }
+    }
+
+    private void unregisterModelExtension(Extension extension) {
+        Object[] contribs = extension.getContributions();
+        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
+        ThemeManager themeManager = Manager.getThemeManager();
+        if (typeRegistry != null) {
+            for (Object contrib : contribs) {
+                ModelType modelType = (ModelType) contrib;
+                themeManager.unregisterModelByClassname(modelType);
+                typeRegistry.unregister(modelType);
             }
         }
     }

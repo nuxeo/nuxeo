@@ -31,11 +31,6 @@ public class NavigationItem extends AbstractModel {
         this.selected = selected;
     }
 
-    @Override
-    public String getModelTypeName() {
-        return "navigation item";
-    }
-
     public String getTitle() {
         return title;
     }

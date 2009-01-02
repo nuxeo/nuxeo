@@ -23,11 +23,6 @@ public class Menu extends AbstractModel {
     public Menu() {
     }
 
-    @Override
-    public String getModelTypeName() {
-        return "menu";
-    }
-
     public String getTitle() {
         return title;
     }
