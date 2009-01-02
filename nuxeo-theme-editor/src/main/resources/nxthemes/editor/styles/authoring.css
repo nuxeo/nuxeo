@@ -956,8 +956,8 @@ div.nxthemesFragment b {
 #nxthemesPresetManager div.preview {
   color: #000;
   text-align: center;
-  order: 1px solid #000;
-  margin-top: 2px;
+  border: 1px solid #000;
+  margin: 2px;
 }
 
 #nxthemesPresetManager table {
@@ -977,9 +977,8 @@ div.nxthemesFragment b {
 }
 
 #nxthemesPresetManager div.preview div {
-  height: 80px;
+  height: 65px;
 }
-
 
 .nxthemesScreen a {
   text-decoration: none;

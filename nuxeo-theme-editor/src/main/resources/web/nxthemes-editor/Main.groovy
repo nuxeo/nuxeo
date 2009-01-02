@@ -67,7 +67,9 @@ public class Main extends DefaultModule {
   @GET
   @Path("presetManager")
   public Object renderPresetManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("presetManager.ftl").arg("presets", getPresets())
+    return getTemplate("presetManager.ftl").arg(
+            "preset_groups", getPresetGroups()).arg(
+            "theme_names", Manager.getThemeManager().getThemeNames())
   }
   
   @GET
@@ -929,32 +931,7 @@ public class Main extends DefaultModule {
       boolean INDENT = true
       return org.nuxeo.theme.html.Utils.styleToCss(style, viewNames, RESOLVE_PRESETS, IGNORE_VIEW_NAME, IGNORE_CLASSNAME, INDENT)
   }
-
   
-  public static List<String> getPresetGroupsForSelectedCategory() {
-      def groups = []
-      String category = getSelectedStyleCategory()
-      if (category == null) {
-          return groups
-      }
-      def groupNames = []
-      for (Type type : Manager.getTypeRegistry().getTypes(TypeFamily.PRESET)) {
-          PresetType preset = (PresetType) type
-          String group = preset.getGroup()
-          if (!preset.getCategory().equals(category)) {
-              continue
-          }
-          // skip custom presets
-          if (preset instanceof CustomPresetType) {
-              continue
-          }
-          if (!groupNames.contains(group)) {
-              groups.add(group)
-          }
-          groupNames.add(group)
-      }
-      return groups
-  }
     
   public static Widget getWidgetOfSelectedElement() {
     Element element = getSelectedElement()
@@ -999,11 +976,36 @@ public class Main extends DefaultModule {
       return org.nuxeo.theme.editor.Utils.getPropertiesOf(selectedElement) 
   }
   
-  public static List<PresetInfo> getPresets() {
-      def presets = []
-      for (Type type : Manager.getTypeRegistry().getTypes(TypeFamily.PRESET)) {
-          PresetType preset = (PresetType) type
+  /* Presets */
+  
+  public static List<String> getPresetGroupsForSelectedCategory() {
+      return getPresetGroups(getSelectedStyleCategory())
+  }
+  
+  public static List<String> getPresetGroups(String category) {
+      def groups = []
+      def groupNames = []
+      for (PresetType preset : PresetManager.getGlobalPresets(null, category)) {
           String group = preset.getGroup()
+          if (!groupNames.contains(group)) {
+              groups.add(group)
+          }
+          groupNames.add(group)
+      }
+      return groups
+  }
+    
+  public static List<PresetInfo> getGlobalPresets(String group) {
+      def presets = []
+      for (preset in  PresetManager.getGlobalPresets(group, null)) {
+          presets.add(new PresetInfo(preset))
+      }
+      return presets
+  }
+  
+  public static List<PresetInfo> getCustomPresets(String themeName) {
+      def presets = []
+      for (preset in PresetManager.getCustomPresets(themeName, null)) {
           presets.add(new PresetInfo(preset))
       }
       return presets
@@ -1020,6 +1022,8 @@ public class Main extends DefaultModule {
       }
       return presets
   }
+  
+  /* Session */
   
   public static String getSelectedPresetGroup() {
       String category = SessionManager.getPresetGroup()
