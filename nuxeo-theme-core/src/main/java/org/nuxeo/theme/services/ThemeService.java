@@ -524,13 +524,13 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
                     TypeFamily.MODEL, modelTypeName);
             if (oldModelType != null) {
                 if (oldModelType.getClassName().equals(modelType.getClassName())) {
-                    log.debug("Model '" + modelTypeName + "' ("
+                    log.debug("Model type '" + modelTypeName + "' ("
                             + oldModelType.getClassName()
                             + ") has already been registered.");
                 } else {
-                    log.warn("Model '" + modelTypeName
-                            + "' has already been registered as "
-                            + oldModelType.getClassName() + ", the new class "
+                    log.warn("Failed to reregister model type '"
+                            + modelTypeName + "' ("
+                            + oldModelType.getClassName() + "). The new class "
                             + modelType.getClassName() + " will be ignored.");
                 }
                 continue;

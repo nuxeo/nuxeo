@@ -28,6 +28,10 @@
           link="javascript:NXThemesEditor.refresh()"
           label="Refresh" />
 
+        <@nxthemes_button identifier="manage presets"
+          controlledBy="editor buttons"
+          switchTo="editor perspectives/manage presets" label="Manage presets" />
+          
         <@nxthemes_button identifier="manage themes"
           controlledBy="editor buttons"
           switchTo="editor perspectives/manage themes" label="Manage themes" />
@@ -64,7 +68,7 @@
       <@nxthemes_panel identifier="back to canvas"
         url="${basePath}/nxthemes-editor/backToCanvas"
         controlledBy="editor perspectives"
-        visibleInPerspectives="add fragments,edit element,manage themes" />
+        visibleInPerspectives="add fragments,edit element,manage presets,manage themes" />
 
     </div>
 
@@ -120,6 +124,12 @@
       controlledBy="editor perspectives,layout editor actions,toolbox mover"
       visibleInPerspectives="edit padding" />
 
+    <!-- preset manager -->
+    <@nxthemes_panel identifier="preset manager"
+      url="${basePath}/nxthemes-editor/presetManager"
+      controlledBy="editor perspectives"
+      visibleInPerspectives="manage presets" />
+      
     <!-- theme manager -->
     <@nxthemes_panel identifier="theme manager"
       url="${basePath}/nxthemes-editor/themeManager"

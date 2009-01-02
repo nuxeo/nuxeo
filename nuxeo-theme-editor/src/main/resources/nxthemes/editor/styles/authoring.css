@@ -938,6 +938,55 @@ div.nxthemesFragment b {
 }
 
 
+#nxthemesPresetManager {
+  position: absolute;
+  top: 105px;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  padding: 0 20px;
+  font-family: Arial, sans-serif;
+  z-index: 1;
+}
+
+#nxthemesPresetManager div.name {
+  color: #333;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+#nxthemesPresetManager div.value {
+  font-size: 10px;
+  color: #666;
+}
+
+#nxthemesPresetManager div.preview {
+  color: #000;
+  text-align: center;
+  order: 1px solid #000;
+  margin-top: 2px;
+}
+
+#nxthemesPresetManager table {
+  vertical-align:top;
+}
+
+#nxthemesPresetManager table td {
+  vertical-align:top;
+  text-align: center;
+  cursor: default;
+  width: 10%;
+  border: 2px solid #fff;
+}
+
+#nxthemesPresetManager table td:hover {
+  border: 2px solid #999;
+}
+
+#nxthemesPresetManager div.preview div {
+  height: 80px;
+}
+
 
 .nxthemesScreen a {
   text-decoration: none;

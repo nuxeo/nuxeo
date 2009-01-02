@@ -65,6 +65,12 @@ public class Main extends DefaultModule {
   }
 
   @GET
+  @Path("presetManager")
+  public Object renderPresetManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
+    return getTemplate("presetManager.ftl").arg("presets", getPresets())
+  }
+  
+  @GET
   @Path("themeManager")
   public Object renderThemeManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("themeManager.ftl").arg("themes", getThemeDescriptors())
@@ -923,6 +929,7 @@ public class Main extends DefaultModule {
       boolean INDENT = true
       return org.nuxeo.theme.html.Utils.styleToCss(style, viewNames, RESOLVE_PRESETS, IGNORE_VIEW_NAME, IGNORE_CLASSNAME, INDENT)
   }
+
   
   public static List<String> getPresetGroupsForSelectedCategory() {
       def groups = []
@@ -986,12 +993,22 @@ public class Main extends DefaultModule {
       }
       return viewNames
   }
-   
+  
   public static List<FieldProperty> getSelectedElementProperties() {
       Element selectedElement = getSelectedElement()
       return org.nuxeo.theme.editor.Utils.getPropertiesOf(selectedElement) 
   }
   
+  public static List<PresetInfo> getPresets() {
+      def presets = []
+      for (Type type : Manager.getTypeRegistry().getTypes(TypeFamily.PRESET)) {
+          PresetType preset = (PresetType) type
+          String group = preset.getGroup()
+          presets.add(new PresetInfo(preset))
+      }
+      return presets
+  }
+
   public static List<PresetInfo> getPresetsForSelectedGroup(applicationPath) {
       String category = getSelectedStyleCategory()
       String group = getSelectedPresetGroup()
