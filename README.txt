@@ -13,20 +13,22 @@ notably:
 - nuxeo-platform
 - nuxeo-runtime
 - nuxeo-theme
+- nuxeo-distribution
+- nuxeo-shell
 
 See http://doc.nuxeo.org/xwiki/bin/view/FAQ/DownloadingNuxeoSources for more
 information if needed.
 
-2. Have the right version of JBoss installed somewhere on your system (we like
-/opt/jboss, but YMMV).
+2. Have the "right" version of JBoss installed somewhere on your system (we
+like /opt/jboss, but YMMV).
 
 "Right" = JBoss 4.2.2 or 4.2.3 for Nuxeo EP 5.2, and JBoss 4.0.5 for Nuxeo EP
 5.1.
 
 3. Copy build.properties.sample to build.properties and edit it to match the
-location of your JBoss instance.
+location of your JBoss instance (not needed if your JBoss is in /opt/jboss).
 
-3. Run:
+4. Run:
 
 - "ant patch" (will "patch" your JBoss, modifying certain config files)
 
@@ -34,6 +36,10 @@ location of your JBoss instance.
 
 NB: you only have to run "ant patch" once. You have to run "ant" or "ant
 deploy" each time you change the source code.
+
+5. Start JBoss and go to http://localhost:8080/nuxeo/
+
+6. You're done.
 
 Long story
 ----------
