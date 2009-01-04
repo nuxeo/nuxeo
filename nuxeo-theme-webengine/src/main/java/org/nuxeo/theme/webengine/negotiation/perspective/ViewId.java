@@ -15,6 +15,7 @@
 package org.nuxeo.theme.webengine.negotiation.perspective;
 
 import org.nuxeo.ecm.webengine.model.AdapterResource;
+import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.ApplicationType;
@@ -36,16 +37,13 @@ public final class ViewId implements Scheme {
         if (application == null) {
             return null;
         }
-
+        
         Resource targetObject = webContext.getTargetObject();
         if (targetObject == null) {
             return null;
         }
-        final AdapterResource targetView = targetObject.getActiveAdapter();
-        if (targetView == null) {
-            return null;
-        }
-        final String viewId = targetView.getNextSegment();
+        final String viewId = targetObject.getTrailingPath();
+        
         final ViewDef view = application.getViewById(viewId);
         if (view == null) {
             return null;

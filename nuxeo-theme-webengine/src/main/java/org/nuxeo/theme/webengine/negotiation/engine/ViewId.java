@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.webengine.negotiation.engine;
 
+import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
@@ -33,23 +34,23 @@ public final class ViewId implements Scheme {
         if (application == null) {
             return null;
         }
-        for (String path : webContext.getUriInfo().getMatchedURIs()) {
-            if (path.equals(applicationPath)) {
-                return null;
-            }
-            final String viewId = path.substring(applicationPath.length() + 1,
-                    path.length());
-            final ViewDef view = application.getViewById(viewId);
-            if (view == null) {
-                continue;
-            }
-            final String engineName = view.getEngine();
-            if (engineName == null) {
-                continue;
-            }
-            if (Manager.getTypeRegistry().lookup(TypeFamily.ENGINE, engineName) != null) {
-                return engineName;
-            }
+
+        Resource targetObject = webContext.getTargetObject();
+        if (targetObject == null) {
+            return null;
+        }
+        final String viewId = targetObject.getTrailingPath();
+
+        final ViewDef view = application.getViewById(viewId);
+        if (view == null) {
+            return null;
+        }
+        final String engineName = view.getEngine();
+        if (engineName == null) {
+            return null;
+        }
+        if (Manager.getTypeRegistry().lookup(TypeFamily.ENGINE, engineName) != null) {
+            return engineName;
         }
         return null;
     }
