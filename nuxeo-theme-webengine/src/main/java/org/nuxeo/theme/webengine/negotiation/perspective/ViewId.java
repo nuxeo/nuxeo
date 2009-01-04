@@ -14,6 +14,8 @@
 
 package org.nuxeo.theme.webengine.negotiation.perspective;
 
+import org.nuxeo.ecm.webengine.model.AdapterResource;
+import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
@@ -34,20 +36,23 @@ public final class ViewId implements Scheme {
         if (application == null) {
             return null;
         }
-        for (String path : webContext.getUriInfo().getMatchedURIs()) {
-            if (path.equals(applicationPath)) {
-                return null;
-            }
-            final String viewId = path.substring(applicationPath.length() + 1,
-                    path.length());
-            final ViewDef view = application.getViewById(viewId);
-            if (view == null) {
-                continue;
-            }
-            final String perspectiveName = view.getPerspective();
-            if (PerspectiveManager.hasPerspective(perspectiveName)) {
-                return perspectiveName;
-            }
+
+        Resource targetObject = webContext.getTargetObject();
+        if (targetObject == null) {
+            return null;
+        }
+        final AdapterResource targetView = targetObject.getActiveAdapter();
+        if (targetView == null) {
+            return null;
+        }
+        final String viewId = targetView.getNextSegment();
+        final ViewDef view = application.getViewById(viewId);
+        if (view == null) {
+            return null;
+        }
+        final String perspectiveName = view.getPerspective();
+        if (PerspectiveManager.hasPerspective(perspectiveName)) {
+            return perspectiveName;
         }
         return null;
     }
