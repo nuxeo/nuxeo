@@ -173,6 +173,10 @@
       </path>
     </resource>
 
+    <resource name="preset-menu.json">
+      <path>nxthemes/editor/views/preset-menu.json</path>
+    </resource>    
+
   </extension>
 
   <extension target="org.nuxeo.theme.services.ThemeService"

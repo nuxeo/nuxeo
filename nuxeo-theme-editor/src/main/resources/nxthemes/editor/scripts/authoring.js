@@ -918,7 +918,11 @@ NXThemes.addActions({
     'delete theme or page': NXThemesEditor.deleteThemeOrPage,
     'set element widget': NXThemesEditor.setElementWidget,
     'set area style': NXThemesEditor.setAreaStyle,
-    'change element style': NXThemesEditor.changeElementStyle
+    'change element style': NXThemesEditor.changeElementStyle,
+    'edit preset': function(info) {alert('Not implemented yet')},
+    'copy preset': function(info) {alert('Not implemented yet')},
+    'paste preset': function(info) {alert('Not implemented yet')},
+    'delete preset': function(info) {alert('Not implemented yet')}
 });
 
 // Filters

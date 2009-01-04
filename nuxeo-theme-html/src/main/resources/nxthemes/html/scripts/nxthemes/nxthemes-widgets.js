@@ -388,9 +388,9 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
 
     var ignore = this.def.ignore;
     var element = Event.element(e);
-    if (element.tagName.toLowerCase() == 'input') return;
+                
     if (ignore && element.hasClassName(ignore)) return;
-
+    
     // get the first node that is identifiable and that has a model
     var node = element;
     while (node) {
@@ -404,12 +404,12 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
       }
       node = node.parentNode;
     }
-
+   
     // if no model is associated in the view definition, require that the model is obtained from the canvas
     if (typeof this.def.model == "undefined" && model == null) {
       return;
     }
-
+    
     var data = model.getData();
     if (data == null) return;
     if (!this._containVisibleItems(data)) return;
@@ -427,10 +427,8 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
       var items = this.def.widget.items;
       for (var i=0; i< items.length; i=i+1) {
         var visible = items[i].visible;
-        if (typeof visible != "undefined") {
-          if (data.get(visible)) {
-            return true;
-          }
+        if (typeof visible == "undefined" || data.get(visible)) {
+          return true;
         }
       };
       return false;
