@@ -12,6 +12,13 @@
   <name>Nuxeo WebEngine Administration</name>
   <description>Nuxeo5 Administartion interface based on Nuxeo WebEngine.</description>
 
+  <dependencies>
+   <dependency>
+     <groupId>org.nuxeo.ecm.platform</groupId>
+     <artifactId>nuxeo-platform-audit-core</artifactId>
+   </dependency>
+  </dependencies>
+
   <build>
     <plugins>
       <plugin>
