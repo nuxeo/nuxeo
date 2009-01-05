@@ -1244,36 +1244,46 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
             return workItemDefinitions;
         }
 
-        JbpmWorkflowExecutionContext ctx = getExecutionContext();
-        GraphSession graphSession = ctx.getGraphSession();
+        JbpmWorkflowExecutionContext ctx = null;
 
-        ProcessInstance pi = null;
         try {
-            pi = graphSession.getProcessInstance(IDConverter.getJbpmIdentifier(activityInstance.getProcessInstance().getId()));
-        } catch (JbpmException jbpme) {
-            log.debug("Cannot find workflow instance.", jbpme);
-        }
+            ctx = getExecutionContext();
 
-        if (pi == null) {
-            ctx.closeContext();
-            return workItemDefinitions;
-        }
+            GraphSession graphSession = ctx.getGraphSession();
 
-        Token token = pi.findToken(activityInstance.getRelativePath());
-        if (token != null) {
-            // http://www.mail-archive.com/jboss-user@lists.sourceforge.net/msg107722.html
-            TaskNode taskNode = (TaskNode) ctx.getContext().getSession().load(
-                    TaskNode.class, token.getNode().getId());
-            for (Object taskOb : taskNode.getTasks()) {
-                Task task = (Task) taskOb;
-                WMWorkItemDefinition workItemDefinition = WAPIGenerator.createWorkItemDefinition(task);
-                workItemDefinitions.add(workItemDefinition);
+            ProcessInstance pi = null;
+            try {
+                pi = graphSession.getProcessInstance(IDConverter.getJbpmIdentifier(activityInstance.getProcessInstance().getId()));
+            } catch (JbpmException jbpme) {
+                log.debug("Cannot find workflow instance.", jbpme);
             }
-        } else {
-            log.debug("Path does not exist anymore.");
+
+            if (pi == null) {
+                ctx.closeContext();
+                return workItemDefinitions;
+            }
+
+            Token token = pi.findToken(activityInstance.getRelativePath());
+            if (token != null) {
+                try {
+                    // http://www.mail-archive.com/jboss-user@lists.sourceforge.net/msg107722.html
+                    TaskNode taskNode = (TaskNode) ctx.getContext().getSession().load(
+                            TaskNode.class, token.getNode().getId());
+                    for (Object taskOb : taskNode.getTasks()) {
+                        Task task = (Task) taskOb;
+                        WMWorkItemDefinition workItemDefinition = WAPIGenerator.createWorkItemDefinition(task);
+                        workItemDefinitions.add(workItemDefinition);
+                    }
+                } catch (ClassCastException e) {
+                    log.debug("There is a node that is not a Task-Node");
+                }
+            } else {
+                log.debug("Path does not exist anymore.");
+            }
+        } finally {
+            ctx.closeContext();
         }
 
-        ctx.closeContext();
         return workItemDefinitions;
     }
 
@@ -1548,8 +1558,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
 
         String queryStr = "select si.processInstance, si.value "
                 + "from org.jbpm.context.exe.variableinstance.StringInstance si "
-                + "where si.name = :siName "
-                + "and si.value in (:groupNames) "
+                + "where si.name = :siName " + "and si.value in (:groupNames) "
                 + "and si.processInstance.end is null ";
         Query query;
         try {
