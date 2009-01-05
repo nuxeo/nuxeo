@@ -959,7 +959,23 @@ NXThemesPresetManager.deletePreset = function(info) {
     var target = Event.element(info);
     var model = info.model;
     var data = model.getData();
-    alert('not implemented');
+    var themeName = data.get('theme_name');
+    var presetName = data.get('name');
+    var url = nxthemesBasePath + "/nxthemes-editor/delete_preset"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             theme_name: themeName,
+             preset_name: presetName
+         },
+         onSuccess: function(r) {
+             NXThemes.getViewById("preset manager").refresh();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }  
+    });    
 }
 
 NXThemesEditor.StyleCss = Class.create();

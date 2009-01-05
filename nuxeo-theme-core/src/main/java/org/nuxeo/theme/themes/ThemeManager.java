@@ -569,6 +569,14 @@ public final class ThemeManager implements Registrable {
         return formats;
     }
 
+    public List<Style> getStyles() {
+        List<Style> styles = new ArrayList<Style>();
+        for (Format format : getFormatsByTypeName("style")) {
+            styles.add((Style) format);
+        }
+        return styles;
+    }
+    
     // Cache management
     public void themeModified() {
         lastModified = new Date().getTime();

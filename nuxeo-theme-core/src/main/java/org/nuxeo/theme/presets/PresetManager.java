@@ -20,6 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
@@ -146,7 +147,7 @@ public class PresetManager {
 
     public static void editPreset(String themeName, String presetName,
             String value) {
-        PresetType preset = PresetManager.getCustomPreset(themeName, presetName);
+        PresetType preset = getCustomPreset(themeName, presetName);
         preset.setValue(value);
     }
 
@@ -155,13 +156,30 @@ public class PresetManager {
         if (newName.equals("")) {
             throw new ThemeException("Preset name cannot be empty");
         }
-        PresetType preset = PresetManager.getCustomPreset(themeName, oldName);
-        if (PresetManager.getCustomPreset(themeName, newName) != null) {
-            throw new ThemeException("Preset name is already taken: " + newName);
+        PresetType preset = getCustomPreset(themeName, oldName);
+        if (getCustomPreset(themeName, newName) != null) {
+            throw new ThemeException("Preset name already taken: " + newName);
         }
         Manager.getTypeRegistry().unregister(preset);
         preset.setName(newName);
         Manager.getTypeRegistry().register(preset);
+    }
+
+    public static void deletePreset(String themeName, String presetName)
+            throws ThemeException {
+        PresetType preset = getCustomPreset(themeName, presetName);
+        if (getCustomPreset(themeName, presetName) == null) {
+            throw new ThemeException("Preset unknown: " + presetName);
+        }
+        if (isPresetUsed(preset)) {
+            throw new ThemeException("Preset used by a style: " + presetName);
+        }
+        Manager.getTypeRegistry().unregister(preset);
+    }
+
+    public static boolean isPresetUsed(PresetType preset) {
+        // TODO
+        return false;
     }
 
     public static void clearCustomPresets(String themeName) {

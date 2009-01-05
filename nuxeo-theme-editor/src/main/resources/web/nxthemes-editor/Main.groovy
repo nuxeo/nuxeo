@@ -457,6 +457,19 @@ public class Main extends DefaultModule {
           throw new ThemeEditorException(e.getMessage(), e)
       }           
   }
+
+  @POST
+  @Path("delete_preset")
+  public void deletePreset() {
+      FormData form = ctx.getForm()
+      String themeName = form.getString("theme_name")
+      String presetName = form.getString("preset_name")
+     try {
+	      Editor.deletePreset(themeName, presetName)
+      } catch (ThemeException e) {
+          throw new ThemeEditorException(e.getMessage(), e)
+      }           
+  }
   
   @POST
   @Path("make_element_use_named_style")

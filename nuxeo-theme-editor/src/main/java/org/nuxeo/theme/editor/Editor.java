@@ -579,6 +579,11 @@ public class Editor {
                 null, null));
     }
 
+    public static void deletePreset(String themeName, String presetName)
+            throws ThemeException {
+        PresetManager.deletePreset(themeName, presetName);
+    }
+
     public static void expireThemes() {
         Manager.getEventManager().notify(Events.THEME_MODIFIED_EVENT,
                 new EventContext(null, null));
