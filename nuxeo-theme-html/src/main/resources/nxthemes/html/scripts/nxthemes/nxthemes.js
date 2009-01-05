@@ -546,11 +546,7 @@ Object.extend(NXThemes.Identifiable, {
       return false;
     }
 
-    if (node.getAttribute("id")) {
-      return true;
-    }
-
-    return false;
+    return true;
   },
 
   getIdentifiable: function(node) {

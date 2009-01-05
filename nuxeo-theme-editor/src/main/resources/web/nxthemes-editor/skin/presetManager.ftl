@@ -27,9 +27,9 @@ window.scrollTo(0,0);
   <#if row == 0>
     <tr>
   </#if>
-<td>
+<td class="preset">
 
-<div class="preview" id="${preset_info.name}" title="${preset_info.value}">
+<div class="preview" title="${preset_info.value}">
 <ins class="model">
   {"id": "preset_${theme_name}_${preset_info.name}",
    "data": {
@@ -59,7 +59,7 @@ ${preset_info.preview}</div>
 <#if row < 10>
   <#list row..9 as i>
      <#if i == row>
-       <td id="paste_${theme_name}_${count}">
+       <td>
          &nbsp;
          <ins class="model">
          {"id": "paste_${theme_name}_${count}",
@@ -77,7 +77,7 @@ ${preset_info.preview}</div>
          </ins>
        </td>
      <#else>
-       <td></td>
+       <td>&nbsp;</td>
      </#if>
      
   </#list>
@@ -102,9 +102,9 @@ ${preset_info.preview}</div>
   <#if row == 0>
     <tr>
   </#if>
-<td>
+<td class="preset">
 
-<div class="preview"  id="${preset_info.name}" title="${preset_info.value}">
+<div class="preview" title="${preset_info.value}">
 <ins class="model">
   {"id": "preset_${group}_${preset_info.name}",
    "data": {
@@ -140,8 +140,6 @@ ${preset_info.preview}</div>
 </table>
 
 </#list>
-
-
 
 </div>
 

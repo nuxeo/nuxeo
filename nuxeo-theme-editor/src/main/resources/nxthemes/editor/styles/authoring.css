@@ -964,7 +964,7 @@ div.nxthemesFragment b {
   vertical-align:top;
 }
 
-#nxthemesPresetManager table td {
+#nxthemesPresetManager table td.preset {
   vertical-align:top;
   text-align: center;
   cursor: default;
@@ -972,8 +972,13 @@ div.nxthemesFragment b {
   border: 2px solid #fff;
 }
 
-#nxthemesPresetManager table td:hover {
-  border: 2px solid #999;
+#nxthemesPresetManager table td.preset:hover {
+  border: 2px solid #ff0;
+  background-color: #ffc;
+}
+
+#nxthemesPresetManager table td.presetTarget {
+  height: 100px;
 }
 
 #nxthemesPresetManager div.preview div {
