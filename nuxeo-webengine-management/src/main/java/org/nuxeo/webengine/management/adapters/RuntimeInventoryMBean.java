@@ -16,7 +16,6 @@
  */
 package org.nuxeo.webengine.management.adapters;
 
-import java.util.List;
 import java.util.Set;
 
 /**
