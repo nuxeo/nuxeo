@@ -7,7 +7,7 @@
   <name>Nuxeo Addons list</name>
   <packaging>pom</packaging>
   <description>Nuxeo Addons list</description>
-  <version>1.0</version>
+  <version>5.1</version>
 
   <scm>
     <connection>scm:hg:https://hg.nuxeo.org/addons</connection>
@@ -21,11 +21,8 @@
     <module>nuxeo-platform-annotations</module>
     <module>nuxeo-platform-audit-web-access</module>
     <module>nuxeo-platform-documentLink</module>
-    <module>nuxeo-platform-dynsearch</module>
     <module>nuxeo-platform-exalead-connector</module>
     <module>nuxeo-platform-filemanager-io-plugin</module>
-    <module>nuxeo-platform-flex</module>
-    <module>nuxeo-platform-gwt</module>
     <module>nuxeo-platform-imaging</module>
     <module>nuxeo-platform-imaging-tiling</module>
     <module>nuxeo-platform-indexing-gateway</module>
@@ -37,16 +34,14 @@
     <module>nuxeo-platform-preview</module>
     <module>nuxeo-platform-restpack</module>
     <module>nuxeo-platform-seam-pdf</module>
-    <module>nuxeo-platform-spellchecker</module>
+    <module>nuxeo-platform-shell</module>
     <module>nuxeo-platform-transform-plugins</module>
     <module>nuxeo-platform-userworkspace</module>
     <module>nuxeo-platform-virtualnavigation</module>
     <module>nuxeo-platform-webdav-server</module>
-    <module>nuxeo-platform-webwidgets-providers</module>
-    <module>nuxeo-platform-zip2text-extractor</module>
+    <module>nuxeo-platform-xmlrpc-connector</module>
     <module>nuxeo-portlets</module>
     <module>nuxeo-samples</module>
-    <module>nuxeo-shell-scripts</module>
   </modules>
 
 </project>
