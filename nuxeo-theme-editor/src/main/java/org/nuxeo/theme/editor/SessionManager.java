@@ -38,6 +38,8 @@ public class SessionManager extends AbstractComponent {
 
     private static String CLIPBOARD_ELEMENT_ID = "org.nuxeo.theme.editor.clipboard_element";
 
+    private static String CLIPBOARD_PRESET_ID = "org.nuxeo.theme.editor.clipboard_preset";
+
     private static UserSession getUserSession() {
         return WebEngine.getActiveContext().getUserSession();
     }
@@ -104,6 +106,14 @@ public class SessionManager extends AbstractComponent {
 
     public static synchronized void setClipboardElementId(String id) {
         getUserSession().put(CLIPBOARD_ELEMENT_ID, id);
+    }
+
+    public static synchronized void setClipboardPresetId(String id) {
+        getUserSession().put(CLIPBOARD_PRESET_ID, id);
+    }
+
+    public static synchronized String getClipboardPresetId() {
+        return (String) getUserSession().get(CLIPBOARD_PRESET_ID);
     }
 
 }

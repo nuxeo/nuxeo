@@ -29,6 +29,11 @@ if (typeof NXThemesEditor == "undefined") {
 
 }
 
+if (typeof NXThemesPresetManager == "undefined") {
+    NXThemesPresetManager = {
+    }
+}
+
 NXThemesEditor.setCanvasMode =  function(info) {
     var target = Event.element(info);
     var mode = target.getAttribute("name");
@@ -632,6 +637,7 @@ NXThemesEditor.addPreset = function(themeName, category, view_id) {
     });     
 };
 
+
 NXThemesEditor.editPreset = function(themeName, presetName, value, view_id) {
     var value = prompt("Enter a preset value:", value);
     var url = nxthemesBasePath + "/nxthemes-editor/edit_preset";
@@ -861,6 +867,61 @@ NXThemesEditor.refreshCanvas = function() {
     NXThemes.getViewById("canvas area").refresh();
 };
 
+/* Preset manager */
+
+NXThemesPresetManager.editPreset = function(info) {
+    var target = Event.element(info);
+    var model = info.model;
+    var data = model.getData();
+    var themeName = data.get('theme_name');
+    var presetName = data.get('name');
+    var value = data.get('value');
+    value = prompt("Enter a preset value:", value);
+    var url = nxthemesBasePath + "/nxthemes-editor/edit_preset";
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             theme_name: themeName,
+             preset_name: presetName,
+             value: value
+         },
+         onComplete: function(r) {
+             NXThemes.getViewById("preset manager").refresh();
+         }
+    });          
+}
+
+NXThemesPresetManager.copyPreset = function(info) {
+    var target = Event.element(info);
+    var model = info.model;
+    var data = model.getData();
+    var id = data.get('id');
+    var url = nxthemesBasePath + "/nxthemes-editor/copy_preset"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             id: id
+         },
+         onComplete: function(r) {
+             NXThemesEditor.writeMessage("Preset copied.");
+         }
+    });    
+}
+
+NXThemesPresetManager.pastePreset = function(info) {
+    var target = Event.element(info);
+    var model = info.model;
+    var data = model.getData();
+    alert('not implemented');
+}
+
+NXThemesPresetManager.deletePreset = function(info) {
+    var target = Event.element(info);
+    var model = info.model;
+    var data = model.getData();
+    alert('not implemented');
+}
+
 NXThemesEditor.StyleCss = Class.create();
 NXThemesEditor.StyleCss.prototype = Object.extend(new NXThemes.View(), {
 
@@ -919,10 +980,10 @@ NXThemes.addActions({
     'set element widget': NXThemesEditor.setElementWidget,
     'set area style': NXThemesEditor.setAreaStyle,
     'change element style': NXThemesEditor.changeElementStyle,
-    'edit preset': function(info) {alert('Not implemented yet')},
-    'copy preset': function(info) {alert('Not implemented yet')},
-    'paste preset': function(info) {alert('Not implemented yet')},
-    'delete preset': function(info) {alert('Not implemented yet')}
+    'edit preset': NXThemesPresetManager.editPreset,
+    'copy preset': NXThemesPresetManager.copyPreset,
+    'paste preset': NXThemesPresetManager.pastePreset,
+    'delete preset': NXThemesPresetManager.deletePreset
 });
 
 // Filters

@@ -300,6 +300,13 @@ public class Main extends DefaultModule {
       String id = ctx.getForm().getString("id")
       SessionManager.setClipboardElementId(id)
   }
+
+  @POST
+  @Path("copy_preset")
+  public void copyPreset() {
+      String id = ctx.getForm().getString("id")
+      SessionManager.setClipboardPresetId(id)
+  }
   
   @POST
   @Path("create_named_style")
