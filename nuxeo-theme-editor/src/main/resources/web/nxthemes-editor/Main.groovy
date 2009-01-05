@@ -309,6 +309,34 @@ public class Main extends DefaultModule {
   }
   
   @POST
+  @Path("paste_preset")
+  public String pastePreset() {
+      FormData form = ctx.getForm()
+      String themeName = form.getString("theme_name")
+      String newPresetName = form.getString("preset_name")    
+      String id = getClipboardPreset()
+      if (id == null) {
+          throw new ThemeEditorException("Nothing to paste")
+      }
+      
+      String presetName = getClipboardPreset()
+      if (presetName == null) {
+        return
+      }
+      
+      PresetType preset = PresetManager.getPresetByName(presetName)
+      if (preset == null) {
+          return
+      }
+     
+      try {
+          Editor.addPreset(themeName, newPresetName, preset.getCategory(), preset.getValue())
+      } catch (ThemeException e) {
+          throw new ThemeEditorException(e.getMessage(), e)
+      }      
+  }
+  
+  @POST
   @Path("create_named_style")
   public void createNamedStyle() {
       FormData form = ctx.getForm()
@@ -398,8 +426,12 @@ public class Main extends DefaultModule {
       FormData form = ctx.getForm()
       String themeName = form.getString("theme_name")
       String presetName = form.getString("preset_name")      
-      String category = form.getString("category")        
-      return Editor.addPreset(themeName, presetName, category);
+      String category = form.getString("category")
+      try {
+          return Editor.addPreset(themeName, presetName, category, "")
+      } catch (ThemeException) {
+          throw new ThemeEditorException(e.getMessage(), e)
+      }
   }
   
   @POST
@@ -695,6 +727,10 @@ public class Main extends DefaultModule {
   
   public static String getClipboardElement() {
       return SessionManager.getClipboardElementId()
+  }
+  
+  public static String getClipboardPreset() {
+      return SessionManager.getClipboardPresetId()
   }
   
   public static List<StyleLayer> getStyleLayersOfSelectedElement() {

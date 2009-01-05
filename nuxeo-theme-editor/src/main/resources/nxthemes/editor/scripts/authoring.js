@@ -626,13 +626,12 @@ NXThemesEditor.addPreset = function(themeName, category, view_id) {
              preset_name: name,
              category: category
          },
-         onComplete: function(r) {
+         onSuccess: function(r) {
+             NXThemes.getViewById(view_id).refresh();
+         },
+         onFailure: function(r) {
              var text = r.responseText;
-             if (text === "") {
-                 window.alert("The preset name is already taken.");
-             } else {
-                 NXThemes.getViewById(view_id).refresh();
-             }
+             window.alert(text);
          }
     });     
 };
@@ -912,7 +911,23 @@ NXThemesPresetManager.pastePreset = function(info) {
     var target = Event.element(info);
     var model = info.model;
     var data = model.getData();
-    alert('not implemented');
+    var themeName = data.get('theme_name');
+    var presetName = prompt("Enter a preset name:");
+    var url = nxthemesBasePath + "/nxthemes-editor/paste_preset"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             theme_name: themeName,
+             preset_name: presetName
+         },
+         onSuccess: function(r) {
+             NXThemes.getViewById("preset manager").refresh();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }  
+    });    
 }
 
 NXThemesPresetManager.deletePreset = function(info) {

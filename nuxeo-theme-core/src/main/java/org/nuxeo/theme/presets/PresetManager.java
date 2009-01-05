@@ -135,8 +135,8 @@ public class PresetManager {
         return sb.toString();
     }
 
-    public static void createCustomPreset(String themeName, String presetName, String category) {
-        CustomPresetType preset = new CustomPresetType(presetName, "", themeName, category);
+    public static void createCustomPreset(String themeName, String presetName, String category, String value) {
+        CustomPresetType preset = new CustomPresetType(presetName, value, themeName, category);
         Manager.getTypeRegistry().register(preset);
     }
 

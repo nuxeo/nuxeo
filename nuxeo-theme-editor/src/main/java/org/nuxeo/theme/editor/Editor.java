@@ -355,8 +355,7 @@ public class Editor {
     public static String addTheme(String name) throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         if (themeManager.getThemeByName(name) != null) {
-            throw new ThemeException("The theme name is already taken: "
-                    + name);
+            throw new ThemeException("The theme name is already taken: " + name);
         }
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         theme.setName(name);
@@ -456,7 +455,7 @@ public class Editor {
         Element parent = (Element) element.getParent();
         ThemeManager themeManager = Manager.getThemeManager();
         if (element instanceof ThemeElement || element instanceof PageElement) {
-                themeManager.destroyElement(element);
+            themeManager.destroyElement(element);
         } else if (element instanceof CellElement) {
             if (element.hasSiblings()) {
                 Element sibling = (Element) element.getNextNode();
@@ -553,11 +552,14 @@ public class Editor {
     }
 
     public static String addPreset(String themeName, String presetName,
-            String category) {
-        if (PresetManager.getCustomPreset(themeName, presetName) != null) {
-            return "";
+            String category, String value) throws ThemeException {
+        if (presetName.equals("")) {
+            throw new ThemeException("Preset name cannot be empty");
         }
-        PresetManager.createCustomPreset(themeName, presetName, category);
+        if (PresetManager.getCustomPreset(themeName, presetName) != null) {
+            throw new ThemeException("Preset name already taken: " + presetName);
+        }
+        PresetManager.createCustomPreset(themeName, presetName, category, value);
         return presetName;
     }
 

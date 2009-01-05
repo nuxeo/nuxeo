@@ -40,7 +40,7 @@ window.scrollTo(0,0);
      "value": "${preset_info.value}",
      "editable": true,
      "copyable": true,
-     "pastable": false,
+     "pastable": true,
      "deletable": true
      }
   }
@@ -59,7 +59,28 @@ ${preset_info.preview}</div>
 
 <#if row < 10>
   <#list row..9 as i>
-      <td></td>
+     <#if i == row>
+       <td id="paste_${theme_name}_${count}">
+         &nbsp;
+         <ins class="model">
+         {"id": "paste_${theme_name}_${count}",
+          "data": {
+            "id": "",
+            "theme_name": "${theme_name}",
+            "name": "",
+            "value": "",
+            "editable": false,
+            "copyable": false,
+            "pastable": true,
+            "deletable": false
+          }
+         }
+         </ins>
+       </td>
+     <#else>
+       <td></td>
+     </#if>
+     
   </#list>
   </tr>
 </#if>
