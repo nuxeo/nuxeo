@@ -233,8 +233,6 @@ public class JbpmServiceImpl implements JbpmService {
                 context.setActorId(user.getName());
                 ArrayList<TaskInstance> result = new ArrayList<TaskInstance>();
                 Session session = context.getSession();
-                session.flush();
-                session.createSQLQuery("select * from jbpm_variableinstance;").list();
                 List<TaskInstance> list = session.getNamedQuery(
                         JbpmService.HibernateQueries.NuxeoHibernateQueries_getTaskInstancesForDoc.name()).setParameter(
                         "docId", dm.getId()).setParameter("repoId",

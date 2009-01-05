@@ -28,24 +28,32 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.JbpmConfiguration;
+import org.jbpm.persistence.db.DbPersistenceServiceFactory;
+import org.jbpm.svc.Services;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.ProcessDefinitionDeployer;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
-public class JbpmComponent extends DefaultComponent {
+public class JbpmComponent extends DefaultComponent implements
+        FrameworkListener {
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.jbpm.core.JbpmService");
 
     public static enum ExtensionPoint {
         deployer, processDefinition, activeConfiguration, configurationPath, permissionMapper
     };
+
+    private JbpmConfiguration jbpmConfiguration;
 
     private String activeConfigurationName;
 
@@ -93,6 +101,8 @@ public class JbpmComponent extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) throws Exception {
+        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
+                this);
         for (Map.Entry<ProcessDefinitionDescriptor, ComponentInstance> entry : pdDesc.entrySet()) {
             ProcessDefinitionDescriptor pdDescriptor = entry.getKey();
             ProcessDefinitionDeployer deployer = deployerDesc.get(pdDescriptor.getDeployer());
@@ -108,6 +118,12 @@ public class JbpmComponent extends DefaultComponent {
                 deployer.deploy(url);
             }
         }
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) throws Exception {
+        context.getRuntimeContext().getBundle().getBundleContext().removeFrameworkListener(
+                this);
     }
 
     @SuppressWarnings("unchecked")
@@ -126,20 +142,24 @@ public class JbpmComponent extends DefaultComponent {
     }
 
     private JbpmConfiguration getConfiguration() {
-        URL url = paths.get(activeConfigurationName);
-        InputStream is;
-        try {
-            is = url.openStream();
-        } catch (IOException e) {
-            throw new RuntimeException(
-                    "Unable to open input stream for jbpm configuration.", e);
-        }
-        JbpmConfiguration jbpmConfiguration = JbpmConfiguration.parseInputStream(is);
-        try {
-            is.close();
-        } catch (IOException e) {
-            throw new RuntimeException(
-                    "Unable to open input stream for jbpm configuration.", e);
+        if (jbpmConfiguration == null) {
+            URL url = paths.get(activeConfigurationName);
+            InputStream is;
+            try {
+                is = url.openStream();
+            } catch (IOException e) {
+                throw new RuntimeException(
+                        "Unable to open input stream for jbpm configuration.",
+                        e);
+            }
+            jbpmConfiguration = JbpmConfiguration.parseInputStream(is);
+            try {
+                is.close();
+            } catch (IOException e) {
+                throw new RuntimeException(
+                        "Unable to open input stream for jbpm configuration.",
+                        e);
+            }
         }
         return jbpmConfiguration;
     }
@@ -156,6 +176,22 @@ public class JbpmComponent extends DefaultComponent {
                 } catch (Exception e) {
                     log.error("error deploying url: " + url, e);
                 }
+            }
+        }
+    }
+
+    public void frameworkEvent(FrameworkEvent event) {
+        // creating shema outside transaction if needed
+        if (event.getType() == FrameworkEvent.STARTED) {
+
+            ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
+            ClassLoader nuxeoCL = Framework.class.getClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(nuxeoCL);
+                ((DbPersistenceServiceFactory) getConfiguration().createJbpmContext().getServiceFactory(
+                        Services.SERVICENAME_PERSISTENCE)).getSessionFactory();
+            } finally {
+                Thread.currentThread().setContextClassLoader(jbossCL);
             }
         }
     }

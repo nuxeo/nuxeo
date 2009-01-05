@@ -6,16 +6,10 @@
 
 <hibernate-configuration>
   <session-factory>
-    <property name="hbm2ddl.auto">create-drop</property>
-
     <!-- hibernate dialect -->
-    <!-- property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property -->
-
+    <property name="hibernate.hbm2ddl.auto">update</property>
     <!-- JDBC connection properties (begin) -->
-    <property name="hibernate.connection.driver_class">org.hsqldb.jdbcDriver</property>
-    <property name="hibernate.connection.url">jdbc:hsqldb:mem:jbpm</property>
-    <property name="hibernate.connection.username">sa</property>
-    <property name="hibernate.connection.password"></property>
+    <property name="hibernate.connection.datasource">java:/nxjbpm</property>
     <!-- JDBC connection properties (end) -->
     
     <property name="hibernate.cache.provider_class">org.hibernate.cache.HashtableCacheProvider</property>
