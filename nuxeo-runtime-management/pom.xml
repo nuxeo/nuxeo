@@ -8,7 +8,7 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.nuxeo.ecm.platform</groupId>
+  <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-management</artifactId>
   <name>Nuxeo Runtime Management</name>
 
