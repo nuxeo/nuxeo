@@ -13,6 +13,7 @@ import org.nuxeo.ecm.webengine.*;
 import org.nuxeo.runtime.api.*;
 import org.nuxeo.runtime.management.*;
 
+
 @WebModule(name="management")
 
 @Path("/management")

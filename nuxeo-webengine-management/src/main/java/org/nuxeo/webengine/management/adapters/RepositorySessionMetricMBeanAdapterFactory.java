@@ -17,18 +17,16 @@ package org.nuxeo.webengine.management.adapters;
  *     matic
  */
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.management.ObjectName;
 
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.repository.RepositoryManagerImpl;
+import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryManager;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.AbstractResourceFactory;
 import org.nuxeo.runtime.management.ObjectNameFactory;
-import org.nuxeo.runtime.management.ResourceDescriptor;
 import org.nuxeo.runtime.management.ResourceFactory;
 import org.nuxeo.runtime.management.ResourceFactoryDescriptor;
 
@@ -36,14 +34,15 @@ import org.nuxeo.runtime.management.ResourceFactoryDescriptor;
  * @author matic
  * 
  */
-public class RepositorySessionAccountingMBeanAdapterFactory extends AbstractResourceFactory
-        implements ResourceFactory {
+public class RepositorySessionMetricMBeanAdapterFactory extends
+        AbstractResourceFactory implements ResourceFactory {
 
-    public RepositorySessionAccountingMBeanAdapterFactory(ResourceFactoryDescriptor descriptor) {
+    public RepositorySessionMetricMBeanAdapterFactory(
+            ResourceFactoryDescriptor descriptor) {
         super(descriptor);
     }
 
-    protected RepositoryManager guardedRepositoryManager() {
+    protected RepositoryManager repositoryManager() {
         RepositoryService service = null;
         try {
             service = (RepositoryService) Framework.getRuntime().getComponent(
@@ -58,21 +57,38 @@ public class RepositorySessionAccountingMBeanAdapterFactory extends AbstractReso
         return service.getRepositoryManager();
     }
 
-    public Set<ResourceDescriptor> getDescriptors() {
-        RepositoryManager manager = guardedRepositoryManager();
-        Set<ResourceDescriptor> descriptors = new HashSet<ResourceDescriptor>();
-        ObjectName objectName = ObjectNameFactory.getObjectName(descriptor.getName());
-        descriptors.add(new ResourceDescriptor(objectName,
-                WholeRepositoriesSessionAccountingMBeanAdapter.class, RepositorySessionAccountingMBean.class,
-                true));
-        for (String repositoryName : manager.getRepositoryNames()) {
-            ObjectName repositoryObjectName = ObjectNameFactory.getObjectName(
-                    objectName, "repository", repositoryName);
-            ResourceDescriptor repositoryDescriptor = new ResourceDescriptor(
-                    repositoryObjectName, RepositorySessionAccountingMBeanAdapter.class,
-                    RepositorySessionAccountingMBean.class, true);
-            descriptors.add(repositoryDescriptor);
+    protected Repository repository(RepositoryManager manager, String name) {
+        Repository repository = null;
+        try {
+            repository = manager.getRepository(name);
+        } catch (Exception cause) {
+            throw new ClientRuntimeException("Cannot get " + name
+                    + " repository", cause);
         }
-        return descriptors;
+        if (repository == null) {
+            throw new ClientRuntimeException("Cannot get " + name
+                    + " repository");
+        }
+        return repository;
+    }
+
+    public void registerResources(Callback callback) {
+        RepositoryManager manager = repositoryManager();
+        String qualifiedName = ObjectNameFactory.getQualifiedName(RepositoryManagerImpl.NAME.getName());
+
+        callback.invokeFor(ObjectNameFactory.getObjectName(qualifiedName,
+                "metric"), WholeRepositoriesSessionMetricMBean.class,
+                new WholeRepositoriesSessionMetricMBeanAdapter(manager));
+
+        for (String repositoryName : manager.getRepositoryNames()) {
+            ObjectName objectName = ObjectNameFactory.getObjectName(
+                    qualifiedName + ",repository=" + repositoryName, "metric");
+            Object objectInstance = new RepositorySessionMetricMBeanAdapter(
+                    repository(manager, repositoryName));
+            callback.invokeFor(objectName, RepositorySessionMetricMBean.class,
+                    objectInstance);
+            ;
+        }
+        ;
     }
 }

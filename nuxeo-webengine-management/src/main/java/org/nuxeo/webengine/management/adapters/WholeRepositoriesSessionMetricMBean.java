@@ -20,9 +20,7 @@ package org.nuxeo.webengine.management.adapters;
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public interface RepositorySessionAccountingMBean {
-    
-    String getRepositoryName();
+public interface WholeRepositoriesSessionMetricMBean {
 
     Integer getActiveSessionsCount();
 

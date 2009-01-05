@@ -2,18 +2,17 @@
 
   <require>org.nuxeo.runtime.management.ManagementService</require>
 
+  
   <extension target="org.nuxeo.runtime.management.ManagementService"
-    point="resources">
-
-    <resource isAdapted="true"
-      name="runtime" class="org.nuxeo.runtime.management.RuntimeServiceMBeanAdapter" />
+    point="factories">
+    <factory 
+      name="repositorySessionMetric" class="org.nuxeo.webengine.management.adapters.RepositorySessionMetricMBeanAdapterFactory" />
   </extension>
   
   <extension target="org.nuxeo.runtime.management.ManagementService"
     point="factories">
     <factory 
-      name="repository" class="org.nuxeo.webengine.management.adapters.RepositoryMBeanAdapterFactory" />
-  
+      name="inventory" class="org.nuxeo.webengine.management.adapters.RuntimeInventoryMBeanAdapterFactory" />
   </extension>
 
 </component>

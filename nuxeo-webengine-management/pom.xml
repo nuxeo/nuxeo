@@ -6,6 +6,7 @@
     <groupId>org.nuxeo.ecm.webengine</groupId>
     <artifactId>nuxeo-webengine-parent</artifactId>
     <version>5.2-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.ecm.webengine</groupId>
@@ -79,6 +80,10 @@
   		<artifactId>nuxeo-runtime-management</artifactId>
       <version>${nuxeo.runtime.version}</version>
   	</dependency>
+  	<dependency>
+  		<groupId>org.nuxeo.ecm.webengine</groupId>
+  		<artifactId>nuxeo-webengine-core</artifactId>
+  	</dependency>
     <!--  DEPENDENCIES ===========================
     <dependency>
     <dependency>
@@ -95,12 +100,11 @@
       <type>ejb</type>
     </dependency>-->
 
-    <!--  TEST DEPENDENCIES ========================
+    
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jcr-connector-test</artifactId>
     </dependency>
-  </dependencies>-->
 
   </dependencies>
 

@@ -10,4 +10,5 @@ Require-Bundle: org.nuxeo.ecm.webengine.core,
 Nuxeo-Require: org.nuxeo.ecm.core.api, 
  org.nuxeo.ecm.webengine.core,
  org.nuxeo.runtime.management
-Nuxeo-Component: OSGI-INF/deployment-contrib.xml
+Nuxeo-Component: OSGI-INF/deployment-contrib.xml,
+ OSGI-INF/management-contrib.xml
