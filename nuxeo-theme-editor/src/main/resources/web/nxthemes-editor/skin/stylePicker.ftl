@@ -35,11 +35,19 @@
           <a class="editPreset" href="javascript:void(0)" onclick="NXThemesEditor.editPreset('${current_theme_name}', '${preset_info.effectiveName}', '${preset_info.value}', 'style picker');">
 	      <img src="${basePath}/skin/nxthemes-editor/img/edit-12.png" /></a>
         </#if>
-        <div class="selection" title="${preset_info.effectiveName}" onclick="NXThemesStyleEditor.updateFormField('&quot;${preset_info.effectiveName}&quot;')">
-           <div class="name">${preset_info.name}</div>
-           <div class="preview">${preset_info.preview}</div>
-           <div class="value">${preset_info.value}</div>
-        </div>
+        <#if preset_info.value>
+          <div class="selection" title="${preset_info.effectiveName}" onclick="NXThemesStyleEditor.updateFormField('&quot;${preset_info.effectiveName}&quot;')">
+            <div class="name">${preset_info.name}</div>
+            <div class="preview">${preset_info.preview}</div>
+            <div class="value">${preset_info.value}</div>
+          </div>
+        <#else>
+          <div class="selection" title="${preset_info.effectiveName}" onclick="NXThemesEditor.editPreset('${current_theme_name}', '${preset_info.effectiveName}', '${preset_info.value}', 'style picker');">
+            <div class="name">${preset_info.name}</div>
+            <div class="preview">${preset_info.preview}</div>
+            <div class="value">???</div>
+          </div>
+        </#if>
 	</div>
     </#list>
   </div>

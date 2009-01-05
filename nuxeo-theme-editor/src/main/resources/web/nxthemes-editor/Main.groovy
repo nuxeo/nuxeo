@@ -424,7 +424,7 @@ public class Main extends DefaultModule {
       String category = form.getString("category")
       try {
           return Editor.addPreset(themeName, presetName, category, "")
-      } catch (ThemeException) {
+      } catch (ThemeException e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }

@@ -59,7 +59,7 @@ ${preset_info.preview}</div>
 <#if row < 10>
   <#list row..9 as i>
      <#if i == row>
-       <td>
+       <td id="paste_${theme_name}_${count}">
          &nbsp;
          <ins class="model">
          {"id": "paste_${theme_name}_${count}",
@@ -77,7 +77,7 @@ ${preset_info.preview}</div>
          </ins>
        </td>
      <#else>
-       <td>&nbsp;</td>
+       <td></td>
      </#if>
      
   </#list>
