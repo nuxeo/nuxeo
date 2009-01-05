@@ -12,4 +12,5 @@ Export-Package: org.nuxeo.ecm.platform.audit,
  org.nuxeo.ecm.platform.audit.service.extension
 Require-Bundle: org.nuxeo.ecm.platform.audit.api,
  org.nuxeo.ecm.platform.events.api,
- org.nuxeo.ecm.platform.el
+ org.nuxeo.ecm.platform.el,
+ org.nuxeo.runtime.management

@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.audit;
 
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
-import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.runtime.api.Framework;
 
 /**

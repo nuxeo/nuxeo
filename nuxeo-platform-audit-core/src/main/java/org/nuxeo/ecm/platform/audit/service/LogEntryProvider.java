@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
 import org.nuxeo.ecm.platform.audit.api.query.DateRangeParser;
 
-public class LogEntryProvider  {
+public class LogEntryProvider {
 
     private static final Log log = LogFactory.getLog(LogEntryProvider.class);
 
@@ -78,22 +78,24 @@ public class LogEntryProvider  {
 
     @SuppressWarnings("unchecked")
     public List<LogEntry> getLogEntriesFor(String uuid) {
-        if (log.isDebugEnabled()) log.debug("getLogEntriesFor() UUID=" + uuid);
+        if (log.isDebugEnabled())
+            log.debug("getLogEntriesFor() UUID=" + uuid);
         Query query = em.createNamedQuery("LogEntry.findByDocument");
         query.setParameter("docUUID", uuid);
         return doPublish(query.getResultList());
     }
 
-
     @SuppressWarnings("unchecked")
     @Deprecated
     public List<LogEntry> getLogEntriesFor(String uuid,
             Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
-        if (log.isDebugEnabled()) log.debug("getLogEntriesFor() UUID=" + uuid);
+        if (log.isDebugEnabled())
+            log.debug("getLogEntriesFor() UUID=" + uuid);
 
         if (filterMap == null) {
-            if (log.isWarnEnabled()) log.warn("filter map is null");
-            filterMap = new HashMap<String,FilterMapEntry>();
+            if (log.isWarnEnabled())
+                log.warn("filter map is null");
+            filterMap = new HashMap<String, FilterMapEntry>();
         }
 
         StringBuilder queryStr = new StringBuilder();
@@ -141,8 +143,9 @@ public class LogEntryProvider  {
         return doPublish(query.getResultList());
     }
 
-    public LogEntry getLogEntryByID(long id)  {
-        if (log.isDebugEnabled()) log.debug("getLogEntriesFor() logID=" + id);
+    public LogEntry getLogEntryByID(long id) {
+        if (log.isDebugEnabled())
+            log.debug("getLogEntriesFor() logID=" + id);
         return doPublish(em.find(LogEntry.class, id));
     }
 
@@ -160,9 +163,11 @@ public class LogEntryProvider  {
     @SuppressWarnings("unchecked")
     public List<LogEntry> queryLogs(String[] eventIds, String dateRange) {
         if (eventIds == null || eventIds.length == 0) {
-            throw new IllegalArgumentException("You must give a not null eventId");
+            throw new IllegalArgumentException(
+                    "You must give a not null eventId");
         }
-        if (log.isDebugEnabled()) log.debug("queryLogs() whereClause=" + eventIds);
+        if (log.isDebugEnabled())
+            log.debug("queryLogs() whereClause=" + eventIds);
 
         Date limit;
         try {
@@ -252,19 +257,32 @@ public class LogEntryProvider  {
 
     @SuppressWarnings("unchecked")
     public int removeEntries(String eventId, String pathPattern) {
-        // TODO extended infos cascade delete does not work using HQL, so we have to delete each
+        // TODO extended infos cascade delete does not work using HQL, so we
+        // have to delete each
         // entry by hand.
         Query query = em.createNamedQuery("LogEntry.findByEventIdAndPath");
         query.setParameter("eventId", eventId);
         query.setParameter("pathPattern", pathPattern + "%");
         int count = 0;
-        for (LogEntry entry:(List<LogEntry>)query.getResultList()) {
+        for (LogEntry entry : (List<LogEntry>) query.getResultList()) {
             em.remove(entry);
             count += 1;
         }
-        if (log.isDebugEnabled()) log.debug("removed " + count + " entries from "
-                + pathPattern);
+        if (log.isDebugEnabled())
+            log.debug("removed " + count + " entries from " + pathPattern);
         return count;
+    }
+
+    public Long countEventsById(String eventId) {
+        Query query = em.createNamedQuery("LogEntry.countEventsById");
+        query.setParameter("eventId", eventId);
+        return (Long)query.getSingleResult();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<String> findEventIds() {
+        Query query = em.createNamedQuery("LogEntry.findEventIds");
+        return (List<String>)query.getResultList();
     }
 
 }

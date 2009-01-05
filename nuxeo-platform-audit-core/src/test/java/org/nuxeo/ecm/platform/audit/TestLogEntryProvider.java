@@ -210,4 +210,22 @@ public class TestLogEntryProvider extends TestCase {
         int count = providerUnderTest.removeEntries(eventId(), "/");
         assertEquals(3, count);
     }
+    
+    public void testCountEventsById() {
+        LogEntry one = doCreateEntryAndPersist("one");
+        String eventId = one.getEventId();
+        Long count = 
+            providerUnderTest.countEventsById(eventId);
+        assertEquals(new Long(1), count);
+    }
+    
+    public void testEventIds() {
+        String eventId = eventId();
+        LogEntry one = doCreateEntryAndPersist("one");
+        LogEntry two = doCreateEntryAndPersist("two");
+        List<String> eventIds =
+            providerUnderTest.findEventIds();
+        assertEquals(1, eventIds.size());
+        assertEquals(eventId, eventIds.get(0));
+    }
 }

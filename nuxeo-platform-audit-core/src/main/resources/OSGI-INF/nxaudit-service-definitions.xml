@@ -17,6 +17,8 @@
   <service>
     <provide interface="org.nuxeo.ecm.platform.audit.api.NXAuditEvents"/>
   </service>
+  
+  <require>org.nuxeo.runtime.management.ManagementService</require>
 
   <extension-point name="event">
     <documentation>
@@ -64,7 +66,7 @@
 
       <p />
       This service is used to evaluate EL expression using document as context
-      registering results into a map indexed by names.
+      regist:ering results into a map indexed by names.
     </documentation>
 
     <object
