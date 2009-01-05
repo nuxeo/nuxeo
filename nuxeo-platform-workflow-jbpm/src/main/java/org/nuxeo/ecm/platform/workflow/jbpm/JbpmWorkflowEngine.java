@@ -1239,58 +1239,57 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
     }
 
     public Set<WMWorkItemDefinition> getWorkItemDefinitionsFor(
-	  WMActivityInstance activityInstance) {
+            WMActivityInstance activityInstance) {
         Set<WMWorkItemDefinition> workItemDefinitions = new HashSet<WMWorkItemDefinition>();
-		
+
         // Task aware activityDefinition ?
         if (!activityInstance.getActivityDefinition().isTaskAwareActivity()) {
             return workItemDefinitions;
         }
-		
+
         JbpmWorkflowExecutionContext ctx = null;
-        
+
         try {
-        	ctx = getExecutionContext();
-			
-        	GraphSession graphSession = ctx.getGraphSession();
-			
-        	ProcessInstance pi = null;
-        	try {
-        		pi = graphSession.getProcessInstance(IDConverter.getJbpmIdentifier(activityInstance.getProcessInstance().getId()));
-        	} catch (JbpmException jbpme) {
-        		log.debug("Cannot find workflow instance.", jbpme);
-        	}
-			
-        	if (pi == null) {
-        		ctx.closeContext();
-        		return workItemDefinitions;
-        	}
-			
-        	Token token = pi.findToken(activityInstance.getRelativePath());
-        	if (token != null) {
-        		try {
-        			// http://www.mail-archive.com/jboss-user@lists.sourceforge.net/msg107722.html
-        			TaskNode taskNode = (TaskNode) ctx.getContext().getSession().load(
-																					  TaskNode.class, token.getNode().getId());
-        			for (Object taskOb : taskNode.getTasks()) {
-        				Task task = (Task) taskOb;
-        				WMWorkItemDefinition workItemDefinition = WAPIGenerator.createWorkItemDefinition(task);
-        				workItemDefinitions.add(workItemDefinition);
-        			}
-        		} catch (ClassCastException e) {
-        			log.debug("There is a node that is not a Task-Node");
-        		}
-        	} else {
-        		log.debug("Path does not exist anymore.");
-        	}
+            ctx = getExecutionContext();
+
+            GraphSession graphSession = ctx.getGraphSession();
+
+            ProcessInstance pi = null;
+            try {
+                pi = graphSession.getProcessInstance(IDConverter.getJbpmIdentifier(activityInstance.getProcessInstance().getId()));
+            } catch (JbpmException jbpme) {
+                log.debug("Cannot find workflow instance.", jbpme);
+            }
+
+            if (pi == null) {
+                ctx.closeContext();
+                return workItemDefinitions;
+            }
+
+            Token token = pi.findToken(activityInstance.getRelativePath());
+            if (token != null) {
+                try {
+                    // http://www.mail-archive.com/jboss-user@lists.sourceforge.net/msg107722.html
+                    TaskNode taskNode = (TaskNode) ctx.getContext().getSession().load(
+                            TaskNode.class, token.getNode().getId());
+                    for (Object taskOb : taskNode.getTasks()) {
+                        Task task = (Task) taskOb;
+                        WMWorkItemDefinition workItemDefinition = WAPIGenerator.createWorkItemDefinition(task);
+                        workItemDefinitions.add(workItemDefinition);
+                    }
+                } catch (ClassCastException e) {
+                    log.debug("There is a node that is not a Task-Node");
+                }
+            } else {
+                log.debug("Path does not exist anymore.");
+            }
         } finally {
-        	ctx.closeContext();
+            ctx.closeContext();
         }
-		
-		
+
         return workItemDefinitions;
     }
-	
+
     public void removeWorkItem(WMWorkItemInstance workItem) {
 
         if (workItem == null) {
@@ -1564,8 +1563,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
 
         String queryStr = "select si.processInstance, si.value "
                 + "from org.jbpm.context.exe.variableinstance.StringInstance si "
-                + "where si.name = :siName "
-                + "and si.value in (:groupNames) "
+                + "where si.name = :siName " + "and si.value in (:groupNames) "
                 + "and si.processInstance.end is null ";
         Query query;
         try {
