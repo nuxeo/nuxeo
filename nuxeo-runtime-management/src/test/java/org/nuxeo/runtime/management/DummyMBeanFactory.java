@@ -16,9 +16,6 @@
  */
 package org.nuxeo.runtime.management;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.management.ObjectName;
 
 /**
@@ -31,13 +28,9 @@ public class DummyMBeanFactory extends AbstractResourceFactory implements Resour
         super(descriptor);
     }
 
-    public Set<ResourceDescriptor> getDescriptors() {
-        Set<ResourceDescriptor> descriptors =
-            new HashSet<ResourceDescriptor>();
-        ObjectName factoryName = ObjectNameFactory.getObjectName(descriptor.getName());
-        ObjectName name = ObjectNameFactory.getObjectName(factoryName,"other","dummy");
-        descriptors.add(new ResourceDescriptor(name,DummyServiceImpl.class,DummyMBean.class,true));
-        return descriptors;
+    public void registerResources(Callback callback) {
+        ObjectName name = ObjectNameFactory.getObjectName("dummy");
+        callback.invokeFor(name,DummyMBean.class,new DummyServiceImpl());
     }
 
 }

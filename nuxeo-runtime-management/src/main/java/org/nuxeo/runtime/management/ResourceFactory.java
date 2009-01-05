@@ -2,6 +2,9 @@ package org.nuxeo.runtime.management;
 
 import java.util.Set;
 
+import javax.management.MBeanInfo;
+import javax.management.ObjectName;
+
 /*
  * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
@@ -21,8 +24,14 @@ import java.util.Set;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
+ * 
  */
 public interface ResourceFactory {
-    Set<ResourceDescriptor> getDescriptors();
+
+    interface Callback {
+        void invokeFor(ObjectName name, Class<?> classInfo, Object instance);
+    }
+
+    void registerResources(Callback callback);
+
 }

@@ -22,50 +22,33 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  * 
  */
-public class DummyServiceImpl extends DefaultComponent implements
-        DummyService, DummyMBean {
+public class DummyServiceImpl extends DefaultComponent implements DummyService,
+        DummyMBean {
 
     protected String message = "hello world";
-    /* (non-Javadoc)
-     * @see org.nuxeo.runtime.management.DummyManagedServiceManagement#getMessage()
-     */
+
     public String getMessage() {
-      return message;
+        return message;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.runtime.management.DummyManagedServiceManagement#sayHelloWorld()
-     */
     public String sayHelloWorld() {
-       return message;
+        return message;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.runtime.management.DummyManagedServiceManagement#setMessage(java.lang.String)
-     */
     public void setMessage(String message) {
-       this.message = message;
+        this.message = message;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.runtime.management.DummyManagedServiceManagement#getManagedMessage()
-     */
     public String getManagedMessage() {
-       return message;
+        return message;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.runtime.management.DummyManagedServiceManagement#sayManagedHelloWorld()
-     */
     public String sayManagedHelloWorld() {
-       return message;
+        return message;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.runtime.management.DummyManagedServiceManagement#setManagedMessage(java.lang.String)
-     */
     public void setManagedMessage(String message) {
-       this.message = message;
+        this.message = message;
     }
 
 }

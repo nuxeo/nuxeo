@@ -51,21 +51,22 @@ public class TestManagementService extends NXRuntimeTestCase {
                 ObjectNameFactory.getObjectName("dummy"),
                 DummyServiceImpl.class, DummyService.class, true);
         managementService.registerContribution(descriptor, "resources", null);
+        managementService.bindResources();
         String qualifiedName = ObjectNameFactory.formatName("dummy");
         ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
         Set<ObjectName> registeredNames = mbeanServer.queryNames(objectName,
                 null);
         assertNotNull(registeredNames);
-        assertEquals(registeredNames.size(), 1);
-        assertEquals(registeredNames.iterator().next(), objectName);
+        assertEquals(1,registeredNames.size());
+        assertEquals(objectName,registeredNames.iterator().next());
     }
 
     @SuppressWarnings("unchecked")
     public void testRegisterFactory() throws Exception {
         ResourceFactoryDescriptor descriptor = new ResourceFactoryDescriptor(
-                ObjectNameFactory.getObjectName("dummy"),
                 DummyMBeanFactory.class);
         managementService.registerContribution(descriptor, "factories", null);
+        managementService.bindResources();
         String qualifiedName = ObjectNameFactory.formatName("dummy");
         ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
         Set<ObjectName> registeredNames = mbeanServer.queryNames(objectName,
@@ -79,12 +80,13 @@ public class TestManagementService extends NXRuntimeTestCase {
     public void testXMLConfiguration() throws Exception {
         deployContrib(OSGI_BUNDLE_NAME_TESTS,
                 "OSGI-INF/management-tests-contrib.xml");
+        managementService.bindResources();
         String qualifiedName = ObjectNameFactory.formatTypeQuery("service");
         ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
         Set<ObjectName> registeredNames = mbeanServer.queryNames(objectName,
                 null);
         assertNotNull(registeredNames);
-        assertEquals(6, registeredNames.size());
+        assertEquals(1, registeredNames.size());
     }
 
 }

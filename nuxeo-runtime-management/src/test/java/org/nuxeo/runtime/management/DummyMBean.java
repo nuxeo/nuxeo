@@ -17,7 +17,7 @@
 package org.nuxeo.runtime.management;
 
 /**
- * @authorStephane Lacoin (Nuxeo EP Software Engineer)
+ * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  *
  */
 public interface DummyMBean {

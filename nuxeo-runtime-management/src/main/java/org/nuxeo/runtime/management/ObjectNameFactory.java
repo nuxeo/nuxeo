@@ -21,6 +21,8 @@ import java.util.regex.Pattern;
 
 import javax.management.ObjectName;
 
+import org.nuxeo.runtime.model.ComponentName;
+
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  * 
@@ -34,12 +36,16 @@ public class ObjectNameFactory {
 
     public static String formatName(String domainName, String typeName,
             String instanceName) {
-        return String.format("%s:type=%s,name=%s", domainName, typeName,
-                instanceName);
+        return String.format("%s:name=%s,type=%s", domainName, instanceName,
+                typeName);
     }
 
     public static String formatName(String typeName, String instanceName) {
         return formatName(NUXEO_DOMAIN_NAME, typeName, instanceName);
+    }
+
+    public static String formatName(ComponentName name) {
+        return formatName("nx", name.getType(), name.getName());
     }
 
     public static String formatName(String instanceName) {
@@ -60,33 +66,55 @@ public class ObjectNameFactory {
         Matcher matcher = namePattern.matcher(value);
         return matcher.matches();
     }
-    
+
     private static final Pattern avaPattern = Pattern.compile(".*=.*");
-    
+
     public static boolean hasAttributeValueAssertion(String value) {
         Matcher matcher = avaPattern.matcher(value);
         return matcher.matches();
     }
 
-    public static ObjectName getObjectName(String name) {
+    public static String getQualifiedName(String name) {
         String qualifiedName = name;
         if (!hasAttributeValueAssertion(qualifiedName)) {
-            qualifiedName = "nx:type=service,name=" + name;
+            qualifiedName = "nx:name=" + name + ",type=service";
         } else if (!hasDomain(qualifiedName)) {
             qualifiedName = NUXEO_DOMAIN_NAME + ":" + qualifiedName;
         }
-        
+        return qualifiedName;
+    }
+
+    public static ObjectName getObjectName(String name) {
+        String qualifiedName = getQualifiedName(name);
         try {
-           return new ObjectName(qualifiedName);
+            return new ObjectName(qualifiedName);
         } catch (Exception e) {
-            throw ManagementRuntimeException.wrap(name
-                    + " is not correct", e);
+            throw ManagementRuntimeException.wrap(name + " is not correct", e);
         }
     }
-    
-    public static ObjectName getObjectName(ObjectName name, String attribute, String value) {
+
+    public static ObjectName getObjectName(String name, String info) {
+        String qualifiedName = getQualifiedName(name);
         try {
-            return new ObjectName(name.getCanonicalName() + "," + attribute + "=" + value);
+            return new ObjectName(qualifiedName + ",info=" + info);
+        } catch (Exception e) {
+            throw ManagementRuntimeException.wrap(name + " is not correct", e);
+        }
+    }
+
+    public static ObjectName getObjectName(ObjectName parentName, String avas) {
+        try {
+            return new ObjectName(parentName.toString() + "," + avas);
+        } catch (Exception e) {
+            throw ManagementRuntimeException.wrap(e);
+        }
+    }
+
+    public static ObjectName getObjectName(ObjectName parentName,
+            String propertyName, String propertyValue) {
+        try {
+            return new ObjectName(parentName.toString() + "," + propertyName
+                    + "=" + propertyValue);
         } catch (Exception e) {
             throw ManagementRuntimeException.wrap(e);
         }

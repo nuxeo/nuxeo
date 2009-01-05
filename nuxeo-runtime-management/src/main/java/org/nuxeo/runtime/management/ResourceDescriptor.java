@@ -39,6 +39,20 @@ public class ResourceDescriptor implements Serializable {
         this.ifaceClassName = ifaceClass.getCanonicalName();
         this.isAdapted = isAdapted;
     }
+    
+    public ResourceDescriptor(ObjectName name, Class<?> implClass) {
+        this.name = name.getCanonicalName();
+        this.className = implClass.getCanonicalName();
+        this.ifaceClassName = null;
+        this.isAdapted = true;
+    }
+    
+    public ResourceDescriptor(ObjectName name, Class<?> implClass, boolean isAdapted) {
+        this.name = name.getCanonicalName();
+        this.className = implClass.getCanonicalName();
+        this.ifaceClassName = null;
+        this.isAdapted = isAdapted;
+    }
 
     public ResourceDescriptor() {
         ;

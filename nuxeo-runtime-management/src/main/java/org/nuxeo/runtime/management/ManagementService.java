@@ -16,27 +16,14 @@
  */
 package org.nuxeo.runtime.management;
 
-import java.util.Set;
-
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanInfo;
-import javax.management.ObjectName;
-
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  * 
  */
 public interface ManagementService {
 
-    Set<ObjectName> getResourcesName();
-
-    @Deprecated
-    ObjectName getObjectName(String name) throws ManagementException;
+    void bindResources();
     
-    @Deprecated
-    MBeanInfo getObjectInfo(ObjectName name);
+    void unbindResources();
     
-    @Deprecated
-    Object getObjectAttribute(ObjectName name, MBeanAttributeInfo info);
-
 }
