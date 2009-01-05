@@ -29,12 +29,11 @@ window.scrollTo(0,0);
   </#if>
 <td>
 
-
 <div class="preview" id="${preset_info.name}" title="${preset_info.value}">
 <ins class="model">
   {"id": "preset_${theme_name}_${preset_info.name}",
    "data": {
-     "id": "${preset_info.effectiveName}",
+     "id": "${preset_info.id}",
      "theme_name": "${theme_name}",
      "name": "${preset_info.name}",
      "value": "${preset_info.value}",
@@ -109,7 +108,7 @@ ${preset_info.preview}</div>
 <ins class="model">
   {"id": "preset_${group}_${preset_info.name}",
    "data": {
-     "id": "${preset_info.effectiveName}",   
+     "id": "${preset_info.id}",   
      "group": "${group}",
      "name": "${preset_info.name}",
      "editable": false,

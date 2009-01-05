@@ -314,19 +314,14 @@ public class Main extends DefaultModule {
       FormData form = ctx.getForm()
       String themeName = form.getString("theme_name")
       String newPresetName = form.getString("preset_name")    
-      String id = getClipboardPreset()
-      if (id == null) {
-          throw new ThemeEditorException("Nothing to paste")
-      }
-      
       String presetName = getClipboardPreset()
       if (presetName == null) {
-        return
+          throw new ThemeEditorException("Nothing to paste")
       }
       
       PresetType preset = PresetManager.getPresetByName(presetName)
       if (preset == null) {
-          return
+          throw new ThemeEditorException("Preset not found: " + presetName)
       }
      
       try {

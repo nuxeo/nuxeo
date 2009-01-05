@@ -21,7 +21,7 @@ import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.presets.PresetType;
 
 public class PresetInfo {
-    
+
     private static final String PREVIEW_PROPERTIES_RESOURCE = "/nxthemes/editor/styles/previews.properties";
 
     private final Properties previewProperties = new Properties();
@@ -35,9 +35,13 @@ public class PresetInfo {
     public String getName() {
         return preset.getName();
     }
-    
+
     public String getEffectiveName() {
         return preset.getEffectiveName();
+    }
+
+    public String getId() {
+        return preset.getTypeName();
     }
 
     public String getPreview() {
@@ -62,7 +66,7 @@ public class PresetInfo {
     public String getValue() {
         return preset.getValue();
     }
-    
+
     /* Load properties */
     private Properties getPreviewProperties() {
         Utils.loadProperties(previewProperties, PREVIEW_PROPERTIES_RESOURCE);
