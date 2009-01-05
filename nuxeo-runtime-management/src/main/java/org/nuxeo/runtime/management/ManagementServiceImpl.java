@@ -24,8 +24,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.modelmbean.ModelMBean;
@@ -361,4 +359,5 @@ public class ManagementServiceImpl extends DefaultComponent implements
                     "Cannot unbind management service from mbean server");
         }
     }
+    
 }

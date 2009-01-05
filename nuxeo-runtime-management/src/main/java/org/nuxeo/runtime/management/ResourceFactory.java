@@ -1,8 +1,5 @@
 package org.nuxeo.runtime.management;
 
-import java.util.Set;
-
-import javax.management.MBeanInfo;
 import javax.management.ObjectName;
 
 /*

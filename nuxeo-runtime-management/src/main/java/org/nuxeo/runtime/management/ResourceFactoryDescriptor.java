@@ -16,8 +16,6 @@
  */
 package org.nuxeo.runtime.management;
 
-import javax.management.ObjectName;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
