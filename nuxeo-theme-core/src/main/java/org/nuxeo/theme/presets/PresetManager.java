@@ -20,6 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
 
@@ -84,10 +85,11 @@ public class PresetManager {
         return presets;
     }
 
-    public static PresetType getCustomPreset(final String themeName, final String presetName) {
-        return getPresetByName(String.format("%s/%s",themeName, presetName));
+    public static PresetType getCustomPreset(final String themeName,
+            final String presetName) {
+        return getPresetByName(String.format("%s/%s", themeName, presetName));
     }
-    
+
     public static List<PresetType> getCustomPresets(final String themeName) {
         return getCustomPresets(themeName, null);
     }
@@ -135,17 +137,33 @@ public class PresetManager {
         return sb.toString();
     }
 
-    public static void createCustomPreset(String themeName, String presetName, String category, String value) {
-        CustomPresetType preset = new CustomPresetType(presetName, value, themeName, category);
+    public static void createCustomPreset(String themeName, String presetName,
+            String category, String value) {
+        CustomPresetType preset = new CustomPresetType(presetName, value,
+                themeName, category);
         Manager.getTypeRegistry().register(preset);
     }
 
     public static void editPreset(String themeName, String presetName,
             String value) {
-      PresetType preset = PresetManager.getCustomPreset(themeName, presetName);
-      preset.setValue(value);
+        PresetType preset = PresetManager.getCustomPreset(themeName, presetName);
+        preset.setValue(value);
     }
-    
+
+    public static void renamePreset(String themeName, String oldName,
+            String newName) throws ThemeException {
+        if (newName.equals("")) {
+            throw new ThemeException("Preset name cannot be empty");
+        }
+        PresetType preset = PresetManager.getCustomPreset(themeName, oldName);
+        if (PresetManager.getCustomPreset(themeName, newName) != null) {
+            throw new ThemeException("Preset name is already taken: " + newName);
+        }
+        Manager.getTypeRegistry().unregister(preset);
+        preset.setName(newName);
+        Manager.getTypeRegistry().register(preset);
+    }
+
     public static void clearCustomPresets(String themeName) {
         for (PresetType preset : getCustomPresets(themeName)) {
             Manager.getTypeRegistry().unregister(preset);

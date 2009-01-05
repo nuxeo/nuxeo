@@ -439,10 +439,23 @@ public class Main extends DefaultModule {
   public void editPreset() {
       FormData form = ctx.getForm()
       String themeName = form.getString("theme_name")
-      String presetName = form.getString("preset_name")      
-      String category = form.getString("category")     
+      String presetName = form.getString("preset_name")        
       String value = form.getString("value")           
       Editor.editPreset(themeName, presetName, value);
+  }
+  
+  @POST
+  @Path("rename_preset")
+  public void renamePreset() {
+      FormData form = ctx.getForm()
+      String themeName = form.getString("theme_name")
+      String oldName = form.getString("old_name")
+      String newName = form.getString("new_name")
+	  try {
+	      Editor.renamePreset(themeName, oldName, newName)
+      } catch (ThemeException e) {
+          throw new ThemeEditorException(e.getMessage(), e)
+      }           
   }
   
   @POST

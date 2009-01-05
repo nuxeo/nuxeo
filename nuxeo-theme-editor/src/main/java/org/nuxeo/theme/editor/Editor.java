@@ -571,6 +571,14 @@ public class Editor {
                 null, null));
     }
 
+    public static void renamePreset(String themeName, String oldName,
+            String newName) throws ThemeException {
+        PresetManager.renamePreset(themeName, oldName, newName);
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                null, null));
+    }
+
     public static void expireThemes() {
         Manager.getEventManager().notify(Events.THEME_MODIFIED_EVENT,
                 new EventContext(null, null));

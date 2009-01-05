@@ -890,6 +890,31 @@ NXThemesPresetManager.editPreset = function(info) {
     });          
 }
 
+NXThemesPresetManager.renamePreset = function(info) {
+    var target = Event.element(info);
+    var model = info.model;
+    var data = model.getData();
+    var themeName = data.get('theme_name');
+    var oldName = data.get('name');
+    var newName = prompt("Enter a preset name:", oldName);
+    var url = nxthemesBasePath + "/nxthemes-editor/rename_preset";
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             theme_name: themeName,
+             old_name: oldName,
+             new_name: newName
+         },
+         onSuccess: function(r) {
+             NXThemes.getViewById("preset manager").refresh();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }
+    });          
+}
+
 NXThemesPresetManager.copyPreset = function(info) {
     var target = Event.element(info);
     var model = info.model;
@@ -996,6 +1021,7 @@ NXThemes.addActions({
     'set area style': NXThemesEditor.setAreaStyle,
     'change element style': NXThemesEditor.changeElementStyle,
     'edit preset': NXThemesPresetManager.editPreset,
+    'rename preset': NXThemesPresetManager.renamePreset,    
     'copy preset': NXThemesPresetManager.copyPreset,
     'paste preset': NXThemesPresetManager.pastePreset,
     'delete preset': NXThemesPresetManager.deletePreset
