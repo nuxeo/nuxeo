@@ -12,10 +12,6 @@
     <directory>src/main/resources/platform</directory>
   </fileSet>
 
-  <fileSet id="platform-audit-template" profile="audit">
-    <directory>src/main/resources/audit</directory>
-  </fileSet>
-
   <fileSet id="webengine-template" profile="webengine">
     <directory>src/main/resources/webengine</directory>
   </fileSet>
@@ -66,18 +62,8 @@
 
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-versioning-api"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-versioning-core"/>
-    </artifacts>
-  </artifactSet>
-
-  <artifactSet id="platform-audit-bundles" profile="audit">
-    <artifacts>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-audit-api"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-audit-core"/>
-    </artifacts>
-  </artifactSet>
-
-  <artifactSet id="platform-el-bundles" profile="el">
-    <artifacts>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-el"/>
     </artifacts>
   </artifactSet>
@@ -140,7 +126,6 @@
     <set>template</set>
     <set>webengine-template</set>
     <set>platform-template</set>
-    <set>platform-audit-template</set>
     <outputFile>/</outputFile>
   </assemble>
 
@@ -154,8 +139,6 @@
   <assemble>
     <set>bundles</set>
     <set>platform-bundles</set>
-    <set>platform-el-bundles</set>
-    <set>platform-audit-bundles</set>
     <set>webengine-bundles</set>
     <outputFile>bundles</outputFile>
   </assemble>
