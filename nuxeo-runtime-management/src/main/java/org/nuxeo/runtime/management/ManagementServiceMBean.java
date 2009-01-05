@@ -26,10 +26,10 @@ import javax.management.ObjectName;
  */
 public interface ManagementServiceMBean {
 
-    public abstract Set<ObjectName> getResourcesName();
+    Set<ObjectName> getResourcesName();
 
-    public abstract void enable();
+    void enable();
 
-    public abstract void disable();
+    void disable();
 
 }
