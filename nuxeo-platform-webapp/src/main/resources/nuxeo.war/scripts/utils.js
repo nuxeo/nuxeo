@@ -61,3 +61,15 @@ function confirmAction(name) {
 
     return confirm(finalStringConfirm);
 }
+
+function blankSuggestionInput(parent) {
+  var children;
+  if (typeof parent.children == 'undefined') {
+    // mozilla
+    children = parent.childNodes;
+  } else {
+    // IE
+    children = parent.children;
+  }
+  children[0].value='';
+}

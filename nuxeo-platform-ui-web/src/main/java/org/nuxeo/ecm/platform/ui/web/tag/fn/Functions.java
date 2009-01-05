@@ -182,7 +182,7 @@ public final class Functions {
     }
 
     // this should be a method of the principal itself
-    protected static String principalFullName(NuxeoPrincipal principal) {
+    public static String principalFullName(NuxeoPrincipal principal) {
         String first = principal.getFirstName();
         String last = principal.getLastName();
         if (first == null || first.length() == 0) {
