@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.management.ManagementService">
+
+  <implementation class="org.nuxeo.runtime.management.ManagementServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.runtime.management.ManagementService" />
+  </service>
+
+  <extension-point name="resources">
+    <object class="org.nuxeo.runtime.management.ResourceDescriptor" />
+  </extension-point>
+
+  <extension-point name="factories">
+    <object class="org.nuxeo.runtime.management.ResourceFactoryDescriptor" />
+  </extension-point>
+
+
+</component>
