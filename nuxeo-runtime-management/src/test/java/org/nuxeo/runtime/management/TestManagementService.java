@@ -3,8 +3,11 @@ package org.nuxeo.runtime.management;
 import java.lang.management.ManagementFactory;
 import java.util.Set;
 
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import javax.management.ReflectionException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,69 +27,71 @@ public class TestManagementService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        
-        deployContrib(OSGI_BUNDLE_NAME, "OSGI-INF/management-contrib.xml");
+
+        deployBundle(OSGI_BUNDLE_NAME);
 
         managementService = (ManagementServiceImpl) Framework.getRuntime().getComponent(
                 ManagementServiceImpl.NAME);
     }
-    
+
     @Override
     public void tearDown() throws Exception {
         Framework.getRuntime().stop();
         super.tearDown();
     }
 
-    protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
-
+  
     private ManagementServiceImpl managementService = null;
 
     public void testRegisteredService() throws Exception {
         assertNotNull(Framework.getService(ManagementService.class));
     }
 
+    protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+
+    protected void doEnableManagement() throws InstanceNotFoundException,
+            ReflectionException, MBeanException {
+        String qualifiedName = ObjectNameFactory.formatName(ManagementServiceImpl.NAME);
+        ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
+        mbeanServer.invoke(objectName, "enable", null, null);
+    }
+
     @SuppressWarnings("unchecked")
+    protected Set<ObjectName> doQuery(String name) {
+        String qualifiedName = ObjectNameFactory.getQualifiedName(name);
+        ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
+        return mbeanServer.queryNames(objectName, null);
+    }
+
     public void testRegisterResource() throws Exception {
         ResourceDescriptor descriptor = new ResourceDescriptor(
                 ObjectNameFactory.getObjectName("dummy"),
                 DummyServiceImpl.class, DummyService.class, true);
         managementService.registerContribution(descriptor, "resources", null);
-        managementService.bindResources();
-        String qualifiedName = ObjectNameFactory.formatName("dummy");
-        ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
-        Set<ObjectName> registeredNames = mbeanServer.queryNames(objectName,
-                null);
+        doEnableManagement();
+        Set<ObjectName> registeredNames = doQuery("dummy");
         assertNotNull(registeredNames);
-        assertEquals(1,registeredNames.size());
-        assertEquals(objectName,registeredNames.iterator().next());
+        assertEquals(1, registeredNames.size());
     }
 
-    @SuppressWarnings("unchecked")
     public void testRegisterFactory() throws Exception {
         ResourceFactoryDescriptor descriptor = new ResourceFactoryDescriptor(
-                DummyMBeanFactory.class);
+                DummyFactory.class);
         managementService.registerContribution(descriptor, "factories", null);
-        managementService.bindResources();
-        String qualifiedName = ObjectNameFactory.formatName("dummy");
-        ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
-        Set<ObjectName> registeredNames = mbeanServer.queryNames(objectName,
-                null);
+        doEnableManagement();
+        Set<ObjectName> registeredNames = doQuery("dummy");
         assertNotNull(registeredNames);
         assertEquals(registeredNames.size(), 1);
-        assertEquals(registeredNames.iterator().next(), objectName);
     }
 
-    @SuppressWarnings("unchecked")
     public void testXMLConfiguration() throws Exception {
         deployContrib(OSGI_BUNDLE_NAME_TESTS,
                 "OSGI-INF/management-tests-contrib.xml");
-        managementService.bindResources();
+        doEnableManagement();
         String qualifiedName = ObjectNameFactory.formatTypeQuery("service");
-        ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
-        Set<ObjectName> registeredNames = mbeanServer.queryNames(objectName,
-                null);
+        Set<ObjectName> registeredNames =  doQuery(qualifiedName);
         assertNotNull(registeredNames);
-        assertEquals(1, registeredNames.size());
+        assertEquals(2, registeredNames.size());
     }
 
 }

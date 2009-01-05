@@ -22,9 +22,9 @@ import javax.management.ObjectName;
  * @author matic
  *
  */
-public class DummyMBeanFactory extends AbstractResourceFactory implements ResourceFactory {
+public class DummyFactory extends AbstractResourceFactory implements ResourceFactory {
 
-    public DummyMBeanFactory(ResourceFactoryDescriptor descriptor) {
+    public DummyFactory(ResourceFactoryDescriptor descriptor) {
         super(descriptor);
     }
 

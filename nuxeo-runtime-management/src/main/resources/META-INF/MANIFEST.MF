@@ -4,7 +4,7 @@ Bundle-Name: nuxeo-runtime-management
 Bundle-SymbolicName: org.nuxeo.runtime.management;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
-Provide-Package: org.nuxeo.runtime.management
+Export-Package: org.nuxeo.runtime.management
 Require-Bundle: org.nuxeo.common,
  org.nuxeo.runtime
 Nuxeo-Component: OSGI-INF/management-contrib.xml

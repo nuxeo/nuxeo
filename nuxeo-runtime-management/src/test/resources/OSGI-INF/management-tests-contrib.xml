@@ -10,7 +10,6 @@
   <require>org.nuxeo.runtime.management.ManagementService
   </require>
 
-<!-- 
   <extension target="org.nuxeo.runtime.management.ManagementService"
     point="resources">
 
@@ -27,13 +26,13 @@
     <resource isAdapted="true"
       class="org.nuxeo.runtime.management.RuntimeServiceMBeanAdapter" />
 
-  </extension> -->
+  </extension> 
 
   <extension target="org.nuxeo.runtime.management.ManagementService"
     point="factories">
 
     <factory name="dummy"
-      class="org.nuxeo.runtime.management.DummyServiceMBeanFactory" />
+      class="org.nuxeo.runtime.management.DummyFactory" />
 
   </extension>
 
