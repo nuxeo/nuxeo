@@ -1,0 +1,30 @@
+<process-definition name="approbation-validation">
+	<start-state>
+		<task swimlane='initiator' />
+		<transition to='for each section' />
+	</start-state>
+	<node  name="for each section">
+    <action class="org.nuxeo.ecm.platform.jbpm.core.node.ForeachFork">
+      <var>section</var>
+      <list>sections</list>
+    </action>
+    <transition to="need validation" />
+  </node>
+	<decision name="need validation">
+	  <transition condition="#{coreSession.hasPermission(section.getRef(), 'Write')}" to="publish document"/>
+	  <transition to="ask permission"/>
+	</decision>
+  <task-node name="ask permission">
+    <task name="give permission">
+      <assignment pooled-actor="#{publicationHelper.getValidators(section)}"/>
+    </task>
+    <transition to="publish document"/>
+  </task-node>
+  <node name="publish document">
+    <action expression="#{publicationHelper.publish(coreSession, document, section, token)}"/>
+  </node>
+	<join name="join section">
+		<transition to="end" />
+	</join>
+	<end-state name="end" />
+</process-definition>

@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.jbpm.core.jbpmManagerContrib">
-  <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmManager"
-    point="configurationPath">
-    <configuration name="prod" path="config/jbpm.cfg.xml" />
-    <configuration name="test" path="config/test-jbpm.cfg.xml" />
-  </extension>
-</component>

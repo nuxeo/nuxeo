@@ -68,10 +68,10 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         List<ProcessDefinition> pds = service.getProcessDefinitions(
                 administrator, dm);
         assertNotNull(pds);
-        assertEquals(2, pds.size());
+        assertEquals(3, pds.size());
         // create process instance
         ProcessInstance pd = service.createProcessInstance(administrator,
-                "parallel-validation", dm);
+                "parallel-review", dm, null, null);
         assertNotNull(pd);
         assertEquals(pd.getContextInstance().getVariable(
                 JbpmService.VariableName.documentId.name()), dm.getId());

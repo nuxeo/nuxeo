@@ -105,7 +105,9 @@ public class JbpmServiceImpl implements JbpmService {
     }
 
     public ProcessInstance createProcessInstance(final NuxeoPrincipal user,
-            final String processInstanceName, final DocumentModel dm)
+            final String processInstanceName, final DocumentModel dm,
+            final Map<String, Serializable> variables,
+            final Map<String, Serializable> transientVariables)
             throws NuxeoJbpmException {
         ProcessInstance pi = (ProcessInstance) executeJbpmOperation(new JbpmOperation() {
             public ProcessInstance run(JbpmContext context)
@@ -115,12 +117,20 @@ public class JbpmServiceImpl implements JbpmService {
                         processInstanceName);
                 if (dm != null) {
                     boolean permission = getPermission(pd,
-                            JbpmSecurityPolicy.Action.execute, dm) == Boolean.FALSE ? false : true;
+                            JbpmSecurityPolicy.Action.execute, dm) == Boolean.FALSE ? false
+                            : true;
                     if (!permission) {
                         throw new NuxeoJbpmSecurityException();
                     }
                 }
                 ProcessInstance pi = context.newProcessInstance(processInstanceName.toString());
+                if (variables != null) {
+                    pi.getContextInstance().addVariables(variables);
+                }
+                if (transientVariables != null) {
+                    pi.getContextInstance().setTransientVariables(
+                            transientVariables);
+                }
                 pi.getContextInstance().setVariable(
                         JbpmService.VariableName.documentId.name(), dm.getId());
                 pi.getContextInstance().setVariable(
@@ -271,12 +281,22 @@ public class JbpmServiceImpl implements JbpmService {
         });
     }
 
-    public void endTask(final Long taskInstanceId, final String transition)
+    public void endTask(final Long taskInstanceId, final String transition,
+            final Map<String, Serializable> variables,
+            final Map<String, Serializable> transientVariables)
             throws NuxeoJbpmException {
         executeJbpmOperation(new JbpmOperation() {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
                 TaskInstance ti = context.getTaskInstance(taskInstanceId);
+                if (variables != null) {
+                    ti.getProcessInstance().getContextInstance().addVariables(
+                            variables);
+                }
+                if (transientVariables != null) {
+                    ti.getProcessInstance().getContextInstance().setTransientVariables(
+                            transientVariables);
+                }
                 String docId = (String) ti.getVariable(JbpmService.VariableName.documentId.name());
                 String repoId = (String) ti.getVariable(JbpmService.VariableName.documentRepositoryName.name());
                 DocumentModel dm = getDocumentModel(

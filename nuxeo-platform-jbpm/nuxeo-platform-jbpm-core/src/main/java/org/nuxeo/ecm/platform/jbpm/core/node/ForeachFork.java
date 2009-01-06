@@ -18,44 +18,29 @@ package org.nuxeo.ecm.platform.jbpm.core.node;
 
 import java.util.List;
 
-import org.dom4j.Attribute;
-import org.dom4j.Element;
-import org.jbpm.graph.def.Node;
+import org.jbpm.graph.def.ActionHandler;
 import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.Token;
-import org.jbpm.jpdl.el.impl.JbpmExpressionEvaluator;
-import org.jbpm.jpdl.xml.JpdlXmlReader;
-import org.jbpm.jpdl.xml.Parsable;
 
 /**
  * @author arussel
  *
  */
-public class ForeachFork extends Node implements Parsable {
-    private String listExpression;
+public class ForeachFork implements ActionHandler {
+    private String list;
 
-    private String varName;
+    private String var;
 
     private static final long serialVersionUID = 1L;
 
-    @Override
-    public void read(Element forkElement, JpdlXmlReader jpdlXmlReader) {
-        Attribute listAttribute = forkElement.attribute("list");
-        listExpression = listAttribute.getValue();
-        Attribute varAttribute = forkElement.attribute("var");
-        varName = varAttribute.getValue();
-    }
-
     @SuppressWarnings("unchecked")
-    @Override
     public void execute(ExecutionContext executionContext) {
-        List list = (List) JbpmExpressionEvaluator.evaluate(listExpression, executionContext);
+        List l = (List) executionContext.getVariable(list);
         executionContext.getToken();
-        for (Object obj : list) {
+        for (Object obj : l) {
             Token childToken = new Token(executionContext.getToken(), obj.toString());
-            ExecutionContext childContext = new ExecutionContext(childToken);
-            childContext.setVariable(varName, obj);
-            leave(childContext);
+            executionContext.getContextInstance().setVariable(var, obj, childToken);
+            childToken.signal();
         }
     }
 }

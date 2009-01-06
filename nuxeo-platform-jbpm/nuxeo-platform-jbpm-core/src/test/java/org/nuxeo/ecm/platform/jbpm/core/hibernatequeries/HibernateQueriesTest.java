@@ -95,7 +95,6 @@ public class HibernateQueriesTest extends TestCase {
         session.save(ti1);
         session.save(tmi);
         session.flush();
-        List ll = session.createSQLQuery("select * from jbpm_variableinstance").list();
         List<TaskInstance> list = session.getNamedQuery(GET_TI).setParameter(
                 "docId", _1).setParameter("repoId", DEMO).list();
         assertEquals(2, list.size());

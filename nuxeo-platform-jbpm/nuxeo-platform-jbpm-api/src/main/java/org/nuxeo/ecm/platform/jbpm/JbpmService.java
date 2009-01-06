@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.jbpm;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
@@ -94,11 +95,14 @@ public interface JbpmService {
      *
      * @param taskInstanceId
      * @param transition
-     *
+     * @param variables A list a variables to add to the process instance.
+     * @param transientVariables the list of transient variables.
      * @throws NuxeoJbpmSecurityRuntimeException If a document is attached to
      *             the process and the transition is not allowed for user.
      */
-    void endTask(Long taskInstanceId, String transition)
+    void endTask(Long taskInstanceId, String transition,
+            Map<String, Serializable> variables,
+            Map<String, Serializable> transientVariables)
             throws NuxeoJbpmException;
 
     /**
@@ -147,13 +151,17 @@ public interface JbpmService {
      * @param processInstanceName the name of the process
      * @param user the initiator of the process.
      * @param dm the document attached to this process.
+     * @param variables A list a variables to add to the process instance.
+     * @param transientVariables the list of transient variables.
      * @return the created process instance.
      * @throws NuxeoJbpmException
      * @throws NuxeoJbpmSecurityException If the user is not allowed to create a
      *             process instance for this document.
      */
     ProcessInstance createProcessInstance(NuxeoPrincipal user,
-            String processInstanceName, DocumentModel dm)
+            String processInstanceName, DocumentModel dm,
+            Map<String, Serializable> variables,
+            Map<String, Serializable> transientVariables)
             throws NuxeoJbpmException;
 
     /**

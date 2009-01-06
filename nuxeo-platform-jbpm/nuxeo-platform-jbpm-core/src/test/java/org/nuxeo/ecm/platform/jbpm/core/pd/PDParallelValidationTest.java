@@ -16,35 +16,13 @@
  */
 package org.nuxeo.ecm.platform.jbpm.core.pd;
 
-import java.io.InputStream;
-
-import junit.framework.TestCase;
-
-import org.jbpm.JbpmConfiguration;
 import org.jbpm.JbpmContext;
-import org.jbpm.graph.def.ProcessDefinition;
 
 /**
  * @author arussel
  *
  */
-public class PDParallelValidationTest extends TestCase {
-    private JbpmConfiguration configuration;
-
-    private ProcessDefinition pd;
-
-    @Override
-    protected void setUp() throws Exception {
-        InputStream is = getClass().getResourceAsStream(
-                "/process/parallel-validation.xml");
-        assertNotNull(is);
-        pd = ProcessDefinition.parseXmlInputStream(is);
-        assertNotNull(pd);
-        InputStream isConf = getClass().getResourceAsStream("/config/test-jbpm.cfg.xml");
-        configuration = JbpmConfiguration.parseInputStream(isConf);
-        assertNotNull(configuration);
-    }
-
+public class PDParallelValidationTest extends AbstractProcessDefinitionTest {
     public void testPD() {
         JbpmContext context = null;
         try {
@@ -54,5 +32,10 @@ public class PDParallelValidationTest extends TestCase {
         } finally {
             context.close();
         }
+    }
+
+    @Override
+    public String getProcessDefinitionResource() {
+        return "/process/parallel-review.xml";
     }
 }
