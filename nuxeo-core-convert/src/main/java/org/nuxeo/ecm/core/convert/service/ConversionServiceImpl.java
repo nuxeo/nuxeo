@@ -35,6 +35,12 @@ import org.nuxeo.ecm.core.convert.extension.GlobalConfigDescriptor;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
+/**
+ * Runtime Component that also provides the POJO implementation of the {@link ConversionService}
+ *
+ * @author tiry
+ *
+ */
 public class ConversionServiceImpl extends DefaultComponent implements ConversionService {
 
     private static final Log log = LogFactory.getLog(ConversionServiceImpl.class);
