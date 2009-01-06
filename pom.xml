@@ -41,7 +41,7 @@
     <module>nuxeo-core-storage-sql-mbean</module>
     <module>nuxeo-core-convert-api</module>
     <module>nuxeo-core-convert</module>
-    <module>nuxeo-core-plugins</module>
+    <module>nuxeo-core-convert-plugins</module>
   </modules>
 
   <profiles>
