@@ -308,4 +308,31 @@ public interface Session {
 
     boolean isReadOnly() throws ClientException;
 
+    /**
+     * Returns true if session has an entry with given id.
+     *
+     * @throws ClientException
+     */
+    boolean hasEntry(String id) throws ClientException;
+
+    /**
+     * Returns a bare document model for this session.
+     * <p>
+     * Can be used for creation screen
+     *
+     * @throws ClientException
+     */
+    DocumentModel createEntryModel() throws ClientException;
+
+    /**
+     * Creates an entry in a directory.
+     *
+     * @param entry the document model representing the entry to create
+     * @return The new entry created in the directory
+     * @throws UnsupportedOperationException if the directory does not allow the
+     *             creation of new entries
+     * @throws DirectoryException if a communication exception occurs
+     */
+    DocumentModel createEntry(DocumentModel entry) throws ClientException;
+
 }

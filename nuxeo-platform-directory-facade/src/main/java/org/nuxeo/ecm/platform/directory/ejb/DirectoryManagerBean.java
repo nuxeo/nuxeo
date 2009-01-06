@@ -374,4 +374,31 @@ public class DirectoryManagerBean implements DirectoryManager {
         return directoryService.getParentDirectoryName(directoryName);
     }
 
+    public DocumentModel createEntry(long sessionId, DocumentModel entry)
+            throws DirectoryException {
+        try {
+            return getSession(sessionId).createEntry(entry);
+        } catch (Throwable e) {
+            throw DirectoryException.wrap(e);
+        }
+    }
+
+    public DocumentModel createEntryModel(long sessionId)
+            throws DirectoryException {
+        try {
+            return getSession(sessionId).createEntryModel();
+        } catch (Throwable e) {
+            throw DirectoryException.wrap(e);
+        }
+    }
+
+    public boolean hasEntry(long sessionId, String id)
+            throws DirectoryException {
+        try {
+            return getSession(sessionId).hasEntry(id);
+        } catch (Throwable e) {
+            throw DirectoryException.wrap(e);
+        }
+    }
+
 }

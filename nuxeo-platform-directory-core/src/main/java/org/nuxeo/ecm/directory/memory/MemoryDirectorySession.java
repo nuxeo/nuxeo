@@ -292,4 +292,24 @@ public class MemoryDirectorySession implements Session {
         }
         return results;
     }
+
+    public DocumentModel createEntry(DocumentModel entry)
+            throws ClientException {
+        Map<String, Object> fieldMap = entry.getProperties(directory.schemaName);
+        return createEntry(fieldMap);
+    }
+
+    public DocumentModel createEntryModel() throws ClientException {
+        String schema = directory.schemaName;
+        DocumentModelImpl entry = new DocumentModelImpl(null, schema, null,
+                null, null, null, new String[] { schema }, null);
+        entry.addDataModel(new DataModelImpl(schema,
+                Collections.<String, Object> emptyMap()));
+        return entry;
+    }
+
+    public boolean hasEntry(String id) throws ClientException {
+        return data.containsKey(id);
+    }
+
 }

@@ -69,8 +69,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
 
         Set<String> schemaSet = new HashSet<String>(Arrays.asList("i", "pw",
                 "a", "int", "b"));
-        memDir = new MemoryDirectory("mydir", SCHEMA_NAME,
-                schemaSet, "i", "pw");
+        memDir = new MemoryDirectory("mydir", SCHEMA_NAME, schemaSet, "i", "pw");
         dir = (MemoryDirectorySession) memDir.getSession();
         Map<String, Object> e1 = new HashMap<String, Object>();
         e1.put("i", "1");
@@ -85,19 +84,25 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
     public void createSchema() throws Exception {
         // XXX GR fair enough, but why not using an xsd file?
         SchemaImpl sch = new SchemaImpl(SCHEMA_NAME);
-        sch.addField(QName.valueOf("i"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
-        sch.addField(QName.valueOf("pw"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
-        sch.addField(QName.valueOf("a"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
-        sch.addField(QName.valueOf("b"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
-        sch.addField(QName.valueOf("x"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
-        sch.addField(QName.valueOf("int"), new TypeRef<Type>(SchemaNames.BUILTIN, DoubleType.ID));
+        sch.addField(QName.valueOf("i"), new TypeRef<Type>(SchemaNames.BUILTIN,
+                StringType.ID));
+        sch.addField(QName.valueOf("pw"), new TypeRef<Type>(
+                SchemaNames.BUILTIN, StringType.ID));
+        sch.addField(QName.valueOf("a"), new TypeRef<Type>(SchemaNames.BUILTIN,
+                StringType.ID));
+        sch.addField(QName.valueOf("b"), new TypeRef<Type>(SchemaNames.BUILTIN,
+                StringType.ID));
+        sch.addField(QName.valueOf("x"), new TypeRef<Type>(SchemaNames.BUILTIN,
+                StringType.ID));
+        sch.addField(QName.valueOf("int"), new TypeRef<Type>(
+                SchemaNames.BUILTIN, DoubleType.ID));
         Framework.getService(SchemaManager.class).registerSchema(sch);
     }
 
     public void testSchemaIntrospection() throws Exception {
         MemoryDirectory md = new MemoryDirectory("adir", SCHEMA_NAME, "i", "pw");
-        assertEquals(new HashSet<String>(Arrays.asList("i", "pw", "a", "int", "b", "x")),
-                md.schemaSet);
+        assertEquals(new HashSet<String>(Arrays.asList("i", "pw", "a", "int",
+                "b", "x")), md.schemaSet);
     }
 
     public void testCreate() throws Exception {
@@ -114,8 +119,36 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         try {
             entry = dir.createEntry(e2);
             fail("Should raise an error, entry already exists");
-        } catch(DirectoryException e){
+        } catch (DirectoryException e) {
         }
+    }
+
+    public void testCreateEntryModel() throws Exception {
+        DocumentModel entry = dir.createEntryModel();
+        assertNotNull(entry);
+        assertEquals(SCHEMA_NAME, entry.getType());
+    }
+
+    public void testCreateFromModel() throws Exception {
+        DocumentModel entry = dir.createEntryModel();
+        entry.setProperty(SCHEMA_NAME, "i", "yo");
+
+        assertNull(dir.getEntry("yo"));
+        dir.createEntry(entry);
+        assertNotNull(dir.getEntry("yo"));
+
+        // create one with existing same id, must fail
+        entry.setProperty(SCHEMA_NAME, "i", "1");
+        try {
+            entry = dir.createEntry(entry);
+            fail("Should raise an error, entry already exists");
+        } catch (DirectoryException e) {
+        }
+    }
+
+    public void testHasEntry() throws Exception {
+        assertTrue(dir.hasEntry("1"));
+        assertFalse(dir.hasEntry("foo"));
     }
 
     public void testAuthenticate() throws Exception {
@@ -149,9 +182,8 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         assertEquals("babar", e.getProperty(SCHEMA_NAME, "b"));
 
         String id = "no-such-entry";
-        DocumentModelImpl entry = new DocumentModelImpl(null,
-                SCHEMA_NAME, id, null, null, null,
-                new String[] {SCHEMA_NAME}, null);
+        DocumentModelImpl entry = new DocumentModelImpl(null, SCHEMA_NAME, id,
+                null, null, null, new String[] { SCHEMA_NAME }, null);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("i", id);
         entry.addDataModel(new DataModelImpl(SCHEMA_NAME, map));
@@ -228,7 +260,6 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         entries = dir.query(filter);
         assertEquals(0, entries.size());
     }
-
 
     public void testQueryFts() throws Exception {
         Map<String, Object> filter = new HashMap<String, Object>();

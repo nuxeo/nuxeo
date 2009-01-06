@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -168,6 +169,19 @@ public class DirectoryClientImpl implements DirectoryClient {
 
     public void updateEntry(DocumentModel docModel) throws DirectoryException {
         getDirectoryManager().updateEntry(sessionId, docModel);
+    }
+
+    public DocumentModel createEntry(DocumentModel entry)
+            throws ClientException {
+        return getDirectoryManager().createEntry(sessionId, entry);
+    }
+
+    public DocumentModel createEntryModel() throws ClientException {
+        return getDirectoryManager().createEntryModel(sessionId);
+    }
+
+    public boolean hasEntry(String id) throws ClientException {
+        return getDirectoryManager().hasEntry(sessionId, id);
     }
 
 }

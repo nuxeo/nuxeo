@@ -78,6 +78,7 @@ import org.nuxeo.ecm.directory.Session;
 public class LDAPSession implements Session, EntrySource {
 
     protected static final String MISSING_ID_LOWER_CASE = "lower";
+
     protected static final String MISSING_ID_UPPER_CASE = "upper";
 
     // directory connection parameters
@@ -715,7 +716,8 @@ public class LDAPSession implements Session, EntrySource {
         DocumentModelList list = new DocumentModelListImpl();
         while (results.hasMore()) {
             SearchResult result = results.next();
-            DocumentModel entry = ldapResultToDocumentModel(result, null, fetchReferences);
+            DocumentModel entry = ldapResultToDocumentModel(result, null,
+                    fetchReferences);
             if (entry != null) {
                 list.add(entry);
             }
@@ -895,6 +897,21 @@ public class LDAPSession implements Session, EntrySource {
     public String toString() {
         return String.format("LDAPSession '%s' for directory %s", sid,
                 directory.getName());
+    }
+
+    public DocumentModel createEntry(DocumentModel entry)
+            throws ClientException {
+        Map<String, Object> fieldMap = entry.getProperties(directory.getSchema());
+        return createEntry(fieldMap);
+    }
+
+    public DocumentModel createEntryModel() throws ClientException {
+        String schema = directory.getSchema();
+        DocumentModelImpl entry = new DocumentModelImpl(null, schema, null,
+                null, null, null, new String[] { schema }, null);
+        entry.addDataModel(new DataModelImpl(schema,
+                Collections.<String, Object> emptyMap()));
+        return entry;
     }
 
 }

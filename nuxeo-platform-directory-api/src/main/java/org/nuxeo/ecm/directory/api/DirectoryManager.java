@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -293,5 +294,33 @@ public interface DirectoryManager extends DirectoryService {
     String getPasswordField(long sessionId) throws DirectoryException;
 
     boolean isReadOnly(long sessionId) throws DirectoryException;
+
+    /**
+     * Returns true if session has an entry with given id.
+     *
+     * @throws ClientException
+     */
+    boolean hasEntry(long sessionId, String id) throws DirectoryException;
+
+    /**
+     * Returns a bare document model for this session.
+     * <p>
+     * Can be used for creation screen
+     *
+     * @throws ClientException
+     */
+    DocumentModel createEntryModel(long sessionId) throws DirectoryException;
+
+    /**
+     * Creates an entry in a directory.
+     *
+     * @param entry the document model representing the entry to create
+     * @return The new entry created in the directory
+     * @throws UnsupportedOperationException if the directory does not allow the
+     *             creation of new entries
+     * @throws DirectoryException if a communication exception occurs
+     */
+    DocumentModel createEntry(long sessionId, DocumentModel entry)
+            throws DirectoryException;
 
 }

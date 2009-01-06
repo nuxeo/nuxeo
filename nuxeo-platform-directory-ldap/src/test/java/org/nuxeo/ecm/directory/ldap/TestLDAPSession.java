@@ -32,6 +32,7 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 
 /**
@@ -83,7 +84,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 entry2.getProperty(USER_SCHEMANAME, "userPassword");
                 fail();
             } catch (ClientException ce) {
-                //expected
+                // expected
             }
             assertEquals(Arrays.asList("Boss"), entry2.getProperty(
                     USER_SCHEMANAME, "employeeType"));
@@ -931,4 +932,51 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             }
         }
     }
+
+    public void testCreateEntryModel() throws Exception {
+        Session dir = getLDAPDirectory("userDirectory").getSession();
+        try {
+            DocumentModel entry = dir.createEntryModel();
+            assertNotNull(entry);
+            assertEquals("user", entry.getType());
+        } finally {
+            dir.close();
+        }
+    }
+
+    public void testCreateFromModel() throws Exception {
+        if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            Session dir = getLDAPDirectory("userDirectory").getSession();
+            try {
+                DocumentModel entry = dir.createEntryModel();
+                entry.setProperty("user", "username", "omar");
+
+                assertNull(dir.getEntry("omar"));
+                dir.createEntry(entry);
+                assertNotNull(dir.getEntry("omar"));
+
+                // create one with existing same id, must fail
+                entry.setProperty("user", "username", "Administrator");
+                try {
+                    entry = dir.createEntry(entry);
+                    fail("Should raise an error, entry already exists");
+                } catch (DirectoryException e) {
+                }
+
+            } finally {
+                dir.close();
+            }
+        }
+    }
+
+    public void testHasEntry() throws Exception {
+        Session dir = getLDAPDirectory("userDirectory").getSession();
+        try {
+            assertTrue(dir.hasEntry("Administrator"));
+            assertFalse(dir.hasEntry("foo"));
+        } finally {
+            dir.close();
+        }
+    }
+
 }
