@@ -46,4 +46,7 @@ public class ChainedConverter implements Converter {
         steps.add(descriptor.getDestinationMimeType());
     }
 
+    public List<String> getSteps() {
+        return steps;
+    }
 }

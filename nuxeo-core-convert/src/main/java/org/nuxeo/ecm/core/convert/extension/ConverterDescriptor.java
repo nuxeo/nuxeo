@@ -19,10 +19,13 @@ package org.nuxeo.ecm.core.convert.extension;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
@@ -38,6 +41,10 @@ public class ConverterDescriptor implements Serializable {
      */
     private static final long serialVersionUID = 1L;
 
+    public static final String CUSTOM_CONVERTER_TYPE = "Custom";
+    public static final String CHAINED_CONVERTER_TYPE = "Chain";
+
+
     protected Converter instance = null;
 
     @XNode("@name")
@@ -50,9 +57,16 @@ public class ConverterDescriptor implements Serializable {
     protected String destinationMimeType;
 
     @XNode("@class")
-    private Class className;
+    protected Class className;
 
-    @XNodeList(value = "conversionStep", type = ArrayList.class, componentType = String.class)
+    @XNode("@type")
+    protected String converterType = CUSTOM_CONVERTER_TYPE;
+
+
+    @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
+    protected Map<String, String> parameters = new HashMap<String, String>();
+
+    @XNodeList(value = "conversionSteps/step", type = ArrayList.class, componentType = String.class)
     protected List<String> steps = new ArrayList<String>();
 
     public String getConverterName() {
@@ -73,8 +87,9 @@ public class ConverterDescriptor implements Serializable {
 
     public void initConverter() throws Exception {
         if (instance == null) {
-            if (className == null) {
+            if ((className == null) ||(converterType.equals(CHAINED_CONVERTER_TYPE))) {
                 instance = new ChainedConverter();
+                converterType = CHAINED_CONVERTER_TYPE;
             }
             else {
                 instance = (Converter) className.newInstance();
@@ -90,5 +105,10 @@ public class ConverterDescriptor implements Serializable {
             // TODO: handle exception
         }
         return instance;
+    }
+
+
+    public Map<String, String> getParameters() {
+        return parameters;
     }
 }

@@ -17,6 +17,8 @@
  */
 package org.nuxeo.ecm.core.convert.tests;
 
+import java.util.List;
+
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.extension.ChainedConverter;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -84,7 +86,14 @@ public class TestService extends NXRuntimeTestCase {
          assertNotNull(cv);
          boolean isChain = false;
          if (cv instanceof ChainedConverter) {
+             ChainedConverter ccv = (ChainedConverter) cv;
+             List<String> steps = ccv.getSteps();
+             assertNotNull(steps);
+             assertTrue(steps.size()==2);
+             assertTrue(steps.contains("test/me"));
+             assertTrue(steps.contains("foo/bar"));
              isChain=true;
+
          }
          assertTrue(isChain);
 
