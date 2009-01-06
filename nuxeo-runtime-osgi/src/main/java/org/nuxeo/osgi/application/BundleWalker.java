@@ -135,7 +135,7 @@ public class BundleWalker extends FileWalker.Visitor {
         String fileName = file.getName();
         if (patterns != null) {
             if (!acceptFile(fileName, patterns)) {
-                //System.out.println("###### Ignoring file: "+file);
+                //System.out.println("###### Ignoring file based on name: "+file);
                 return FileWalker.CONTINUE;
             }
         }
@@ -143,10 +143,13 @@ public class BundleWalker extends FileWalker.Visitor {
         try {
             JarFile jarFile = new JarFile(file);
             if (jarFile.getManifest() == null) {
+                //System.out.println("###### No manifest found: "+file);
                 return FileWalker.CONTINUE;
             }
             BundleFile bundleFile = new JarBundleFile(jarFile);
             if (bundleFile.getSymbolicName() != null) {
+                //System.out.println("###### Bundle sympbolic name: "+bundleFile.getSymbolicName());
+
                 // notify the callback about the new bundle
                 callback.visitBundle(bundleFile);
             } else {

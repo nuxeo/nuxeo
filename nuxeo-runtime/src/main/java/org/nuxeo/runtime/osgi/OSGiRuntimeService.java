@@ -75,6 +75,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     public static final Version VERSION = Version.parseString("1.4.0");
 
     private static final Log log = LogFactory.getLog(OSGiRuntimeService.class);
+    private static final Log componentDebugLog = LogFactory.getLog("nuxeo.bundle.debug");
 
     private final BundleContext bundleContext;
 
@@ -90,12 +91,15 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             properties.put(PROP_NUXEO_BIND_ADDRESS, bindAddress);
         }
         String homeDir = getProperty(PROP_HOME_DIR);
+        componentDebugLog.info("home directory : "+homeDir);
+        
         if (homeDir != null) {
             workingDir = new File(homeDir);
         } else {
             workingDir = bundleContext.getDataFile("/");
         }
         workingDir.mkdirs();
+        componentDebugLog.info("working directory : "+workingDir);
     }
 
     public String getName() {
@@ -153,6 +157,13 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     protected void loadComponents(Bundle bundle, RuntimeContext ctx)
             throws Exception {
         String list = getComponentsList(bundle);
+        String name= bundle.getSymbolicName();
+        boolean isNuxeo=OSGiComponentLoader.isNuxeoBundle(name);
+        if (isNuxeo) {
+        	componentDebugLog.debug("loadComponents : "+name+" : component list : "+list);
+        } else {
+        	componentDebugLog.info("loadComponents : "+name+" : component list : "+list);
+        }
         if (list == null) {
             return;
         }
@@ -160,6 +171,13 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         while (tok.hasMoreTokens()) {
             String desc = tok.nextToken();
             URL url = bundle.getEntry(desc);
+            if (isNuxeo) {
+            	componentDebugLog.debug("loadComponents : "+name+" : desc : "+desc);
+            	componentDebugLog.debug("loadComponents : "+name+" : url : "+url);
+            } else {
+            	componentDebugLog.info("loadComponents : "+name+" : desc : "+desc);
+            	componentDebugLog.info("loadComponents : "+name+" : url : "+url);
+            }
             if (url != null) {
                 try {
                     ctx.deploy(url);
@@ -185,11 +203,19 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     protected void loadConfig() throws Exception {
         Environment env = Environment.getDefault();
+        if (env!=null) {
+        	componentDebugLog.info("loadConfig : host application: "+
+        			env.getHostApplicationName());
+        } else {
+        	componentDebugLog.info("loadConfig : no host application");
+        }
         // TODO: in JBoss there is a deployer that will deploy nuxeo configuration files ..
         if (env != null && !"JBoss".equals(env.getHostApplicationName())) {
             File dir = env.getConfig() ;
             if (dir != null) {
                 log.debug(dir.getAbsolutePath());
+                componentDebugLog.info("loadConfig : "+dir.getAbsolutePath() +
+                		" (is directory? "+dir.isDirectory()+" )");
                 if (dir.isDirectory()) {
                     for (String name : dir.list()) {
                         if (name.endsWith("-config.xml") || name.endsWith("-bundle.xml")) {
@@ -199,26 +225,37 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                             // until fixing this we deploy config dir from
                             // NuxeoDeployer
                             File file = new File(dir, name);
+                            componentDebugLog.info("loadConfig : deploying to " +
+                            		"context : "+file.toURL());
                             context.deploy(file.toURL());
                         } else if (name.endsWith(".config")
                                 || name.endsWith(".ini")
                                 || name.endsWith(".properties")) {
                             File file = new File(dir, name);
+                            componentDebugLog.info("loadConfig : loading " +
+                            		"properties : "+name);
                             loadProperties(file);
+                        } else {
+                            componentDebugLog.info("loadConfig : ignoring " +
+                            	name);
                         }
                     }
                     return;
                 }
             }
-        }
+        } 
 
         String configDir = bundleContext.getProperty(PROP_CONFIG_DIR);
+        componentDebugLog.info("loadConfig : config dir " +
+            	configDir);
         if (configDir == null) {
             return;
         }
 
         if (configDir.contains(":/")) { // an url of a config file
             URL url = new URL(configDir);
+            componentDebugLog.info("loadConfig : loading url of proprties " +
+                	configDir);
             loadProperties(url);
             return;
         }
@@ -238,14 +275,22 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
                     // File file = new File(dir, name);
                     // context.deploy(file.toURL());
+                    componentDebugLog.info("loadConfig : ignoring config " +
+                        	"from config dir : "+name);
                 } else if (name.endsWith(".config") || name.endsWith(".ini")
                         || name.endsWith(".properties")) {
                     File file = new File(dir, name);
+                    componentDebugLog.info("loadConfig : loading proprties " +
+                        	"from config dir : "+name);
                     loadProperties(file);
+                } else {
+                    componentDebugLog.info("loadConfig : ignoring " + name);
                 }
             }
         } else { // a file - load it
             File file = new File(configDir);
+            componentDebugLog.info("loadConfig : loading proprties " +
+                	"from config dir as file "+file);
             loadProperties(file);
         }
         // context.getLocalResource("OSGI-INF/RuntimeService.xml");
@@ -339,6 +384,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     public Bundle findHostBundle(Bundle bundle) {
         String hostId = (String) bundle.getHeaders().get(Constants.FRAGMENT_HOST);
+        componentDebugLog.info("findHostBundle : "+ bundle.getSymbolicName()+
+        		" and hostId "+hostId);
         if (hostId != null) {
             int p = hostId.indexOf(';');
             if (p > -1) { // remove version or other extra information if any
@@ -346,7 +393,11 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             }
             RuntimeContext ctx = contexts.get(hostId);
             if (ctx != null) {
+                componentDebugLog.info("context found for host id "+hostId);
                 return ctx.getBundle();
+            } else {
+                componentDebugLog.info("no context found for : "+ hostId);
+
             }
         }
         return null;
@@ -357,7 +408,19 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         File file;
         String location = bundle.getLocation();
         String vendor = Framework.getProperty(Constants.FRAMEWORK_VENDOR);
+        String name=bundle.getSymbolicName();
+        boolean isNuxeo = OSGiComponentLoader.isNuxeoBundle(name);
+        
+
+
         if ("Eclipse".equals(vendor)) { // equinox framework
+            if (isNuxeo) {
+            	componentDebugLog.debug("getBundleFile (Eclipse): "+ name+
+            			"->"+location);
+            } else {
+            	componentDebugLog.info("getBundleFile (Eclipse): "+ name+
+            			"->"+location);
+            }
             //update@plugins/org.eclipse.equinox.launcher_1.0.0.v20070606.jar
             //initial@reference:file:plugins/org.eclipse.update.configurator_3.2.100.v20070615.jar/
             if (location.endsWith("/")) {
@@ -373,6 +436,9 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             try {
                 file = new File(new URI(location));
             } catch (Exception e) {
+            	componentDebugLog.error("getBundleFile : Unable to create "+
+            			" for bundle "+bundle.getSymbolicName()+ " as URI "+
+            			location);
                 return null;
             }
         } else { // may be a file path - this happens when using JarFileBundle
@@ -380,10 +446,31 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             try {
                 file = new File(location);
             } catch (Exception e) {
+            	componentDebugLog.error("getBundleFile : Unable to create "+
+            			" for bundle "+ name + " as file "+
+            			location);
                 return null;
             }
         }
-        return file != null && file.exists() ?  file : null;
+    	if ((file!=null) && file.exists()) {
+    		if (isNuxeo) {
+    			componentDebugLog.debug("getBundleFile : "+name +" bound to "+
+    					" file "+file);
+    		} else {
+    			componentDebugLog.info("getBundleFile : "+name +" bound to "+
+    					" file "+file);
+    		}
+        	return file;
+    	} else {
+    		if (isNuxeo) {
+            	componentDebugLog.debug("getBundleFile : "+name +" could not  "+
+            			" bound to a file : "+file);
+    		} else {
+        	componentDebugLog.info("getBundleFile : "+name +" could not  "+
+        			" bound to a file : "+file);
+    		}
+        	return null;
+    	}
     }
 
 }

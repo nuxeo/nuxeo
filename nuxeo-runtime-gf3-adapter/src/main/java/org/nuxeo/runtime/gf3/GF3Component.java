@@ -29,6 +29,8 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 // BUG:       in InjectionManager
 // if (!isOptional(inject)) { return always true - isOptional return always false
@@ -43,7 +45,7 @@ public class GF3Component extends DefaultComponent {
 
     public static final String XP_WEB_APP = "webapp";
     public static final String XP_DATA_SOURCE = "datasource";
-
+    private static final Log log = LogFactory.getLog("nuxeo.bundle.debug");
     protected GlassFishServer server;
 
     public GlassFishServer getServer() {
@@ -60,19 +62,23 @@ public class GF3Component extends DefaultComponent {
 //        System.setProperty(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY, gf3Root);
         File file = new File(env.getConfig(), "domain.xml");
         if (file.exists()) {
+        	log.warn("Starting GF3 server:"+file.toURI().toURL());
             server = new GlassFishServer(file.toURI().toURL());
         } else {
+        	log.warn("activate : Starting GF3 server with no domain.xml");
             server = new GlassFishServer(8080);
         }
         file = new File(env.getConfig(), "default-web.xml");
         if (file.exists()) {
+        	log.warn("activate : GF3 server using default-web.xml:"+file.toURI().toURL());
             server.setDefaultWebXml(file.toURI().toURL());
         }
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        server.stop();
+    	log.warn("deactivate : Stopping glassfish server");
+    	server.stop();
         server = null;
     }
 
@@ -81,25 +87,33 @@ public class GF3Component extends DefaultComponent {
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (XP_WEB_APP.equals(extensionPoint)) {
+        	log.warn("registerContribution : GF3 extension point is "+ XP_WEB_APP);
             WebApplication app = (WebApplication)contribution;
             File home = Environment.getDefault().getHome();
             File webRoot = new File(home, app.getWebRoot());
+            log.warn("registerContribution : GF3 home "+home);
+            log.warn("registerContribution : GF3 webRoot "+webRoot);
             File webXmlFile;
             String webXml = app.getConfigurationFile();
             if (webXml == null) {
                 webXmlFile = new File(webRoot, "WEB-INF/web.xml");
+                log.warn("registerContribution : GF3 trying to use web.xml: "+webXmlFile);
             } else {
                 webXmlFile = new File(home, webXml);
+                log.warn("registerContribution : GF3 trying using web.xml: "+webXmlFile);
             }
             File webClasses = new File(webRoot, "WEB-INF/classes");
+            log.warn("registerContribution : GF3 trying using web classes from: "+webClasses);
             ScatteredWar war = new ScatteredWar(
                     app.getName(),
                     webRoot,
                     webXmlFile,
                     Collections.singleton(webClasses.toURI().toURL()));
+            log.warn("registerContribution : GF3 deploying scattered war : "+app.getName()+
+            		" with context path : "+app.getContextPath());
             server.deployWar(war, app.getContextPath());
         } else if (XP_DATA_SOURCE.equals(extensionPoint)) {
-
+        	log.warn("registerContribution : GF3 ignoring extension point "+ XP_DATA_SOURCE);
         }
     }
 
