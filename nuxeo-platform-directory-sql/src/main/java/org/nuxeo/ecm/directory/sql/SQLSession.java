@@ -160,6 +160,17 @@ public class SQLSession implements Session, EntrySource {
         if (idGenerator != null) {
             Integer idValue = idGenerator.nextId();
             fieldMap.put(idField, idValue);
+        } else {
+            // check id that was given
+            Object rawId = fieldMap.get(idField);
+            if (rawId == null) {
+                throw new DirectoryException("Missing id");
+            }
+            String id = String.valueOf(rawId);
+            if (hasEntry(id)) {
+                throw new DirectoryException(String.format(
+                        "Entry with id %s already exists", id));
+            }
         }
 
         // first step: insert stored fields
@@ -235,8 +246,7 @@ public class SQLSession implements Session, EntrySource {
             throws DirectoryException {
         acquireConnection();
         // String sql = String.format("SELECT * FROM %s WHERE %s = ?",
-        // tableName,
-        // idField);
+        // tableName, idField);
         Select select = new Select(dialect);
         select.setFrom(table.getQuotedName(dialect));
         select.setWhat("*");
@@ -778,6 +788,39 @@ public class SQLSession implements Session, EntrySource {
     public DocumentModelList query(Map<String, Object> filter,
             Set<String> fulltext) throws ClientException {
         return query(filter, fulltext, new HashMap<String, String>());
+    }
+
+    public DocumentModel createEntry(DocumentModel entry)
+            throws ClientException {
+        Map<String, Object> fieldMap = entry.getProperties(schemaName);
+        return createEntry(fieldMap);
+    }
+
+    public DocumentModel createEntryModel() throws ClientException {
+        String schema = schemaName;
+        DocumentModelImpl entry = new DocumentModelImpl(null, schema, null,
+                null, null, null, new String[] { schema }, null);
+        entry.addDataModel(new DataModelImpl(schema,
+                Collections.<String, Object> emptyMap()));
+        return entry;
+    }
+
+    public boolean hasEntry(String id) throws ClientException {
+        acquireConnection();
+        Select select = new Select(dialect);
+        select.setFrom(table.getQuotedName(dialect));
+        select.setWhat("*");
+        select.setWhere(table.getPrimaryColumn().getQuotedName(dialect)
+                + " = ?");
+        String sql = select.getStatement();
+        try {
+            PreparedStatement ps = sqlConnection.prepareStatement(sql);
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            throw new DirectoryException("hasEntry failed", e);
+        }
     }
 
     /**

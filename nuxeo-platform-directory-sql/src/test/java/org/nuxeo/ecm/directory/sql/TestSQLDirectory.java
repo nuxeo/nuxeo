@@ -30,6 +30,7 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
 
@@ -344,7 +345,12 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
-    public void testDeleteEntryExtended() throws Exception {
+    // XXX AT: disabled because SQL directories do not accept anymore creation
+    // of a second entry with the same id. The goal here is to accept an entry
+    // with an existing id, as long as parent id is different - e.g full id is
+    // the (parent id, id) tuple. But this constraint does not appear the
+    // directory configuration, so drop it for now.
+    public void XXXtestDeleteEntryExtended() throws Exception {
         Session session = getSession();
         try {
             // create a second entry with user_1 as key but with
@@ -455,8 +461,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             DocumentModel docModel = list.get(0);
             assertNotNull(docModel);
             assertEquals("user_1", docModel.getProperty(SCHEMA, "username"));
-        }
-        finally {
+        } finally {
             session.close();
         }
     }
@@ -570,6 +575,51 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             // failed authentication: not existing user
             assertFalse(session.authenticate("NonExistingUser", "whatever"));
 
+        } finally {
+            session.close();
+        }
+    }
+
+    public void testCreateEntryModel() throws Exception {
+        Session session = getSession();
+        try {
+            DocumentModel entry = session.createEntryModel();
+            assertNotNull(entry);
+            assertEquals("user", entry.getType());
+        } finally {
+            session.close();
+        }
+    }
+
+    public void testCreateFromModel() throws Exception {
+        Session session = getSession();
+        try {
+            DocumentModel entry = session.createEntryModel();
+            entry.setProperty("user", "username", "yo");
+
+            assertNull(session.getEntry("yo"));
+            session.createEntry(entry);
+            assertNotNull(session.getEntry("yo"));
+
+            // create one with existing same id, must fail
+            entry.setProperty("user", "username", "Administrator");
+            try {
+                assertTrue(session.hasEntry("Administrator"));
+                entry = session.createEntry(entry);
+                session.getEntry("Administrator");
+                fail("Should raise an error, entry already exists");
+            } catch (DirectoryException e) {
+            }
+        } finally {
+            session.close();
+        }
+    }
+
+    public void testHasEntry() throws Exception {
+        Session session = getSession();
+        try {
+            assertTrue(session.hasEntry("Administrator"));
+            assertFalse(session.hasEntry("foo"));
         } finally {
             session.close();
         }

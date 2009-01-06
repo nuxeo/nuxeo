@@ -950,6 +950,10 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             try {
                 DocumentModel entry = dir.createEntryModel();
                 entry.setProperty("user", "username", "omar");
+                // XXX: some values are mandatory on real LDAP
+                entry.setProperty("user", "password", "sesame");
+                entry.setProperty("user", "employeeType",
+                        new String[] { "Slave" });
 
                 assertNull(dir.getEntry("omar"));
                 dir.createEntry(entry);

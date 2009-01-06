@@ -457,4 +457,32 @@ public class TestMultiDirectory extends NXRuntimeTestCase {
         assertEquals(Arrays.asList("bar1", "bar3"), list);
     }
 
+    public void testCreateEntryModel() throws Exception {
+        DocumentModel entry = dir.createEntryModel();
+        assertNotNull(entry);
+        assertEquals("schema3", entry.getType());
+    }
+
+    public void testCreateFromModel() throws Exception {
+        DocumentModel entry = dir.createEntryModel();
+        entry.setProperty("schema3", "uid", "yo");
+
+        assertNull(dir.getEntry("yo"));
+        dir.createEntry(entry);
+        assertNotNull(dir.getEntry("yo"));
+
+        // create one with existing same id, must fail
+        entry.setProperty("schema3", "uid", "1");
+        try {
+            entry = dir.createEntry(entry);
+            fail("Should raise an error, entry already exists");
+        } catch (DirectoryException e) {
+        }
+    }
+
+    public void testHasEntry() throws Exception {
+        assertTrue(dir.hasEntry("1"));
+        assertFalse(dir.hasEntry("foo"));
+    }
+
 }

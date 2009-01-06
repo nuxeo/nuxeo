@@ -826,4 +826,33 @@ public class MultiDirectorySession implements Session {
         }
         return results;
     }
+
+    public DocumentModel createEntry(DocumentModel entry)
+            throws ClientException {
+        Map<String, Object> fieldMap = entry.getProperties(schemaName);
+        return createEntry(fieldMap);
+    }
+
+    public DocumentModel createEntryModel() throws ClientException {
+        String schema = schemaName;
+        DocumentModelImpl entry = new DocumentModelImpl(null, schema, null,
+                null, null, null, new String[] { schema }, null);
+        entry.addDataModel(new DataModelImpl(schema,
+                Collections.<String, Object> emptyMap()));
+        return entry;
+    }
+
+    public boolean hasEntry(String id) throws ClientException {
+        init();
+        for (SourceInfo sourceInfo : sourceInfos) {
+            for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {
+                Session session = dirInfo.getSession();
+                if (session.hasEntry(id)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }

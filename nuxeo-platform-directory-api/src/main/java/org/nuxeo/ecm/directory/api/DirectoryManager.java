@@ -79,9 +79,9 @@ public interface DirectoryManager extends DirectoryService {
      * @return The new entry created in the directory
      * @throws UnsupportedOperationException if the directory does not allow the
      *             creation of new entries
-     * @throws DirectoryException if a communication exception occurs
+     * @throws DirectoryException if a communication exception occurs or if an
+     *             entry with the same id already exists.
      */
-
     DocumentModel createEntry(long sessionId, Map<String, Object> fieldMap)
             throws DirectoryException;
 
@@ -298,6 +298,7 @@ public interface DirectoryManager extends DirectoryService {
     /**
      * Returns true if session has an entry with given id.
      *
+     * @since 5.2M4
      * @throws ClientException
      */
     boolean hasEntry(long sessionId, String id) throws DirectoryException;
@@ -307,6 +308,7 @@ public interface DirectoryManager extends DirectoryService {
      * <p>
      * Can be used for creation screen
      *
+     * @since 5.2M4
      * @throws ClientException
      */
     DocumentModel createEntryModel(long sessionId) throws DirectoryException;
@@ -314,11 +316,13 @@ public interface DirectoryManager extends DirectoryService {
     /**
      * Creates an entry in a directory.
      *
+     * @since 5.2M4
      * @param entry the document model representing the entry to create
      * @return The new entry created in the directory
      * @throws UnsupportedOperationException if the directory does not allow the
      *             creation of new entries
-     * @throws DirectoryException if a communication exception occurs
+     * @throws DirectoryException if a communication exception occurs or if an
+     *             entry with the same id already exists.
      */
     DocumentModel createEntry(long sessionId, DocumentModel entry)
             throws DirectoryException;
