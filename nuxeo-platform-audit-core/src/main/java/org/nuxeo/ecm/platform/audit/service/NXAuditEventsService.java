@@ -338,7 +338,12 @@ public class NXAuditEventsService extends DefaultComponent implements
         entry.setDocUUID(document.getId());
         entry.setDocPath(document.getPathAsString());
         entry.setDocType(document.getType());
-        entry.setPrincipalName(principal.getName());
+        if (principal!=null) {
+        	entry.setPrincipalName(principal.getName());
+        } else {
+        	log.warn("Faking principal name to 'guest' in audit log");
+        	entry.setPrincipalName("guest");
+        }
         entry.setComment(event.getComment());
         try {
             if (document.isLifeCycleLoaded())
