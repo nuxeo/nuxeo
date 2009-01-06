@@ -10,9 +10,9 @@
     <div>
       <select id="stylePickerGroupName" onchange="NXThemesStyleEditor.setPresetGroup(this)">
         <#if !selected_preset_group>
-          <option value="" selected="selected">Custom presets</option>
+          <option value="" selected="selected">Theme presets (${current_theme_name})</option>
         <#else>
-          <option value="">Custom presets</option>
+          <option value="">Theme presets (${current_theme_name})</option>
         </#if>
         <#list preset_groups as preset_group>
           <#if preset_group == selected_preset_group>

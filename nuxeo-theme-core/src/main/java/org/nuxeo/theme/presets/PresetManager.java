@@ -171,15 +171,7 @@ public class PresetManager {
         if (getCustomPreset(themeName, presetName) == null) {
             throw new ThemeException("Preset unknown: " + presetName);
         }
-        if (isPresetUsed(preset)) {
-            throw new ThemeException("Preset used by a style: " + presetName);
-        }
         Manager.getTypeRegistry().unregister(preset);
-    }
-
-    public static boolean isPresetUsed(PresetType preset) {
-        // TODO
-        return false;
     }
 
     public static void clearCustomPresets(String themeName) {
