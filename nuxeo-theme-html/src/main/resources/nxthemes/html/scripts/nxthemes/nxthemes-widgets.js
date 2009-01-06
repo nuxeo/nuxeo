@@ -231,13 +231,14 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
   _renderFragment: function(container, fragment, data) {
     var noicon = this.def.widget.noIcon;
     var createNode = NXThemes.Canvas.createNode;
+    var newSeparator = false;
     fragment.items.each(function(item) {
       var type = item.type;
       var visible = item.visible;
       var disabled = false;
       if (data && visible) {
         if (!data.get(visible)) {
-          if (this.def.widget.showDisabled) {
+          if (this.def.widget.showDisabledItems) {
             disabled = true;
           } else {
             return;
@@ -284,6 +285,7 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
             parent: a
           });
           a.appendChild(document.createTextNode(item.label));
+          newSeparator = true;
           break;
 
         case "selection":
@@ -313,14 +315,18 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
               attributes: {src: nxthemesBasePath + noicon, alt: '', width: '16px', height: '16px'}
               }));
           });
+          newSeparator = true;
           break;
 
         case "separator":
-          var node = createNode({
-            tag: 'div',
-            classes: ['separator'],
-            parent: container
-          });
+          if (newSeparator) {
+            var node = createNode({
+              tag: 'div',
+              classes: ['separator'],
+              parent: container
+            });
+          }
+          newSeparator = false;
           break;
 
         case "submenu":
@@ -364,6 +370,7 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
           });
           submenuitem.appendChild(document.createTextNode(item.label));
           this._renderFragment(submenu, item, data);
+          newSeparator = true;
           break;
       }
     }.bind(this));
@@ -386,16 +393,13 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
     if (Math.abs(this.mouseX - this.startX) > 2 ||
         Math.abs(this.mouseY != this.startY) > 2) return;
 
-    var ignore = this.def.ignore;
     var element = Event.element(e);
-                
-    if (ignore && element.hasClassName(ignore)) return;
     
     // get the first node that is identifiable and that has a model
     var node = element;
     while (node) {
       var selected = NXThemes.Identifiable.getIdentifiable(node);
-      if (selected == null) {
+      if (selected === null) {
         return;
       }
       var model = NXThemes.Canvas.getModel(selected);
@@ -410,8 +414,17 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
       return;
     }
     
+    var target_type = this.def.widget.targetType;
+    if (target_type !== null) {
+      var model_type = model.getType();
+      if (model_type !== null && model_type != target_type) {
+        return;
+      }  
+    }
+    
     var data = model.getData();
-    if (data == null) return;
+    if (data === null) return;
+        
     if (!this._containVisibleItems(data)) return;
 
     var widget = this.widget;
@@ -423,7 +436,7 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
   },
 
   _containVisibleItems: function(data) {
-      if (this.def.widget.showDisabled) return true;
+      if (this.def.widget.showDisabledItems) return true;
       var items = this.def.widget.items;
       for (var i=0; i< items.length; i=i+1) {
         var visible = items[i].visible;

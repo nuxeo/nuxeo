@@ -32,6 +32,7 @@ window.scrollTo(0,0);
 <div class="preview" title="${preset_info.value}">
 <ins class="model">
   {"id": "preset_${theme_name}_${preset_info.name}",
+   "type": "preset",
    "data": {
      "id": "${preset_info.id}",
      "theme_name": "${theme_name}",
@@ -63,6 +64,7 @@ ${preset_info.preview}</div>
          &nbsp;
          <ins class="model">
          {"id": "paste_${theme_name}_${count}",
+          "type": "preset",
           "data": {
             "id": "",
             "theme_name": "${theme_name}",
@@ -107,6 +109,7 @@ ${preset_info.preview}</div>
 <div class="preview" title="${preset_info.value}">
 <ins class="model">
   {"id": "preset_${group}_${preset_info.name}",
+   "type": "preset",
    "data": {
      "id": "${preset_info.id}",   
      "group": "${group}",

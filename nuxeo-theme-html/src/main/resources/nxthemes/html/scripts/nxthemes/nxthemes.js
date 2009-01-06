@@ -832,6 +832,10 @@ NXThemes.Model.prototype = {
   hash: function() {
     return this.def.id;
   },
+  
+  getType: function() {
+    return this.def.type;
+  },
 
   getSessionId: function() {
     return 'nxthemes_model_' + this.hash();

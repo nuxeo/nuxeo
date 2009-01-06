@@ -134,10 +134,7 @@ NXThemesStyleEditor.getSelectorInContext = function(element, context) {
       name = classnames.replace(' ', '.');
     }
     selector = name ? tag + '.' + name : tag;
-    // ignore tags that have the "ignore" attribute set
-    if (!node.getAttribute("ignore")) {
-      selectors.push(selector);
-    }
+    selectors.push(selector);
     node = node.parentNode;
   }
 

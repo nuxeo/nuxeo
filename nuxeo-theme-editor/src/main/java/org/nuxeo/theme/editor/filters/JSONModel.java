@@ -110,7 +110,7 @@ public class JSONModel extends StandaloneFilter {
         }
 
         model.put("id", String.format("%s-%s", info.getUid(), viewMode));
-
+        model.put("type", "element");
         model.put("data", model_data);
 
         StringBuilder s = new StringBuilder();

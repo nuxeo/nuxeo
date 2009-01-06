@@ -4,7 +4,8 @@
        "type": "contextmenu",
        "noIcon": "/skin/nxthemes-editor/img/noicon-16.png",
        "arrow":  "/skin/nxthemes-editor/img/arrow-16.png",
-       "showDisabled": false,
+       "showDisabledItems": false,
+       "targetType": "preset",
        "items": [            
          {"type": "item",
           "label": "Edit",
