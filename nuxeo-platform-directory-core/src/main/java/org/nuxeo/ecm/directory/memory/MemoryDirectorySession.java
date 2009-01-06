@@ -33,11 +33,10 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.DataModelImpl;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 
@@ -47,7 +46,7 @@ import org.nuxeo.ecm.directory.Session;
  * @author Florent Guillaume
  *
  */
-public class MemoryDirectorySession implements Session {
+public class MemoryDirectorySession extends BaseSession implements Session {
 
     protected final MemoryDirectory directory;
 
@@ -119,15 +118,13 @@ public class MemoryDirectorySession implements Session {
         if (map == null) {
             return null;
         }
-        DataModel dataModel = new DataModelImpl(directory.schemaName, map);
-        // FIXME AT: document model is built using the schema name instead of
-        // the type name ; plus in default app, "User" is the type name and
-        // "user" is the schema name.
-        DocumentModelImpl entry = new DocumentModelImpl(null,
-                directory.schemaName, id, null, null, null,
-                new String[] { directory.schemaName }, null);
-        entry.addDataModel(dataModel);
-        return entry;
+        try {
+            DocumentModel entry = BaseSession.createEntryModel(null,
+                    directory.schemaName, id, map);
+            return entry;
+        } catch (PropertyException e) {
+            throw new DirectoryException(e);
+        }
     }
 
     public void updateEntry(DocumentModel docModel) throws DirectoryException {
@@ -297,15 +294,6 @@ public class MemoryDirectorySession implements Session {
             throws ClientException {
         Map<String, Object> fieldMap = entry.getProperties(directory.schemaName);
         return createEntry(fieldMap);
-    }
-
-    public DocumentModel createEntryModel() throws ClientException {
-        String schema = directory.schemaName;
-        DocumentModelImpl entry = new DocumentModelImpl(null, schema, null,
-                null, null, null, new String[] { schema }, null);
-        entry.addDataModel(new DataModelImpl(schema,
-                Collections.<String, Object> emptyMap()));
-        return entry;
     }
 
     public boolean hasEntry(String id) throws ClientException {

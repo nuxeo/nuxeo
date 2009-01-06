@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Reference;
@@ -580,21 +581,12 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
-    public void testCreateEntryModel() throws Exception {
-        Session session = getSession();
-        try {
-            DocumentModel entry = session.createEntryModel();
-            assertNotNull(entry);
-            assertEquals("user", entry.getType());
-        } finally {
-            session.close();
-        }
-    }
-
     public void testCreateFromModel() throws Exception {
         Session session = getSession();
         try {
-            DocumentModel entry = session.createEntryModel();
+            String schema = "user";
+            DocumentModel entry = BaseSession.createEntryModel(null, schema,
+                    null, null);
             entry.setProperty("user", "username", "yo");
 
             assertNull(session.getEntry("yo"));

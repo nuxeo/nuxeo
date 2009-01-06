@@ -343,6 +343,9 @@
         <row>
           <widget>password</widget>
         </row>
+        <row>
+          <widget>passwordVerification</widget>
+        </row>
       </rows>
       <widget name="username" type="text">
         <labels>
@@ -359,6 +362,9 @@
         <properties widgetMode="edit">
           <property name="required">true</property>
           <property name="styleClass">dataInputText</property>
+          <property name="validator">
+            #{userManagerActions.validateUserName}
+          </property>
         </properties>
       </widget>
       <widget name="firstname" type="text">
@@ -410,7 +416,23 @@
           <property name="styleClass">dataInputText</property>
         </properties>
       </widget>
-      <widget name="password" type="secret">
+      <widget name="password" type="template">
+        <widgetModes>
+          <mode value="create">edit</mode>
+          <mode value="any">hidden</mode>
+        </widgetModes>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">password</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="template">
+            /widgets/user_password_widget_template.xhtml
+          </property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="passwordVerification" type="template">
         <labels>
           <label mode="any">password</label>
         </labels>

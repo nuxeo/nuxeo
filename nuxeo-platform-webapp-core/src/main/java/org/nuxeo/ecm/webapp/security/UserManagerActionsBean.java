@@ -34,6 +34,9 @@ import java.util.Map;
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
 import javax.faces.application.FacesMessage;
+import javax.faces.component.EditableValueHolder;
+import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
@@ -60,7 +63,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
-import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -83,7 +85,9 @@ public class UserManagerActionsBean extends InputController implements
     private static final Log log = LogFactory.getLog(UserManagerActionsBean.class);
 
     private static final String ALL = "all";
+
     private static final String TABBED = "tabbed";
+
     private static final String SEARCH_ONLY = "search_only";
 
     public static final String VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789";
@@ -151,7 +155,6 @@ public class UserManagerActionsBean extends InputController implements
     public void initialize() throws ClientException {
         log.debug("Initializing...");
         principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
-        // principalIsAdmin = principal.isAdministrator();
         userListingMode = userManager.getUserListingMode();
     }
 
@@ -207,17 +210,6 @@ public class UserManagerActionsBean extends InputController implements
         } catch (Exception t) {
             throw ClientException.wrap(t);
         }
-    }
-
-    /**
-     * Gets the general type of User from the xml definition.
-     */
-    public Type getChangeableUserType() {
-        return typeManager.getType("User");
-    }
-
-    public Type getChangeableUserCreateType() {
-        return typeManager.getType("UserCreate");
     }
 
     public void refreshPrincipal(NuxeoPrincipal principal)
@@ -348,6 +340,56 @@ public class UserManagerActionsBean extends InputController implements
         }
     }
 
+    public void validateUserName(FacesContext context, UIComponent component,
+            Object value) {
+        if (!(value instanceof String)
+                || !StringUtils.containsOnly((String) value, VALID_CHARS)) {
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                            context, "label.userManager.wrong.username"), null);
+            ((EditableValueHolder) component).setValid(false);
+            context.addMessage(component.getClientId(context), message);
+            // also add global message
+            context.addMessage(null, message);
+        }
+    }
+
+    @RequestParameter
+    protected String firstPasswordInputId;
+
+    @RequestParameter
+    protected String secondPasswordInputId;
+
+    public void validatePassword(FacesContext context, UIComponent component,
+            Object value) {
+        UIInput firstPasswordComp = (UIInput) component.findComponent(firstPasswordInputId);
+        UIInput secondPasswordComp = (UIInput) component.findComponent(secondPasswordInputId);
+        String firstPassword = (String) firstPasswordComp.getLocalValue();
+        String secondPassword = (String) secondPasswordComp.getLocalValue();
+
+        if (!newUserPassword.equals(changed_password_verify)) {
+            String message = ComponentUtils.translate(context,
+                    "label.userManager.password.not.match");
+
+            facesMessages.addToControl("h_inputText_passwordCreate2",
+                    FacesMessage.SEVERITY_ERROR, message);
+
+            return null;
+        }
+
+
+        if (!(value instanceof String)
+                || !StringUtils.containsOnly((String) value, VALID_CHARS)) {
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                            context, "label.userManager.wrong.username"), null);
+            ((EditableValueHolder) component).setValid(false);
+            context.addMessage(component.getClientId(context), message);
+            // also add global message
+            context.addMessage(null, message);
+        }
+    }
+
     public String saveUser() throws ClientException {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
@@ -400,13 +442,14 @@ public class UserManagerActionsBean extends InputController implements
             // We need to put an appropriate datamodel in the user.
             // Find the schema name from the layout (which is
             // what the UI will use to fill it in).
-            Type userType = getChangeableUserCreateType();
+            // Type userType = getChangeableUserCreateType();
             String schemaName = userType.getLayout()[0].getSchemaName();
             DataModelImpl dm = new DataModelImpl(schemaName);
             DocumentModelImpl entry = new DocumentModelImpl(null,
                     userType.getId(), "", null, null, null,
                     new String[] { schemaName }, null);
             entry.addDataModel(dm);
+
             newUser.setModel(entry);
             newUser.getRoles().add("regular");
             sessionContext.set("newUser", newUser);

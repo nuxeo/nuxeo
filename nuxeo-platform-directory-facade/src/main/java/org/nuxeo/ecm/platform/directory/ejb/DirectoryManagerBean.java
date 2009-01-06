@@ -383,15 +383,6 @@ public class DirectoryManagerBean implements DirectoryManager {
         }
     }
 
-    public DocumentModel createEntryModel(long sessionId)
-            throws DirectoryException {
-        try {
-            return getSession(sessionId).createEntryModel();
-        } catch (Throwable e) {
-            throw DirectoryException.wrap(e);
-        }
-    }
-
     public boolean hasEntry(long sessionId, String id)
             throws DirectoryException {
         try {

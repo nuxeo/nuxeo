@@ -304,16 +304,6 @@ public interface DirectoryManager extends DirectoryService {
     boolean hasEntry(long sessionId, String id) throws DirectoryException;
 
     /**
-     * Returns a bare document model for this session.
-     * <p>
-     * Can be used for creation screen
-     *
-     * @since 5.2M4
-     * @throws ClientException
-     */
-    DocumentModel createEntryModel(long sessionId) throws DirectoryException;
-
-    /**
      * Creates an entry in a directory.
      *
      * @since 5.2M4

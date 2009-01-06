@@ -318,16 +318,6 @@ public interface Session {
     boolean hasEntry(String id) throws ClientException;
 
     /**
-     * Returns a bare document model for this session.
-     * <p>
-     * Can be used for creation screen
-     *
-     * @since 5.2M4
-     * @throws ClientException
-     */
-    DocumentModel createEntryModel() throws ClientException;
-
-    /**
      * Creates an entry in a directory.
      *
      * @since 5.2M4

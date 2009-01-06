@@ -44,11 +44,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.impl.DataModelImpl;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -67,8 +66,11 @@ public class UserManagerImpl implements UserManager {
     private static final Log log = LogFactory.getLog(UserManagerImpl.class);
 
     public static final String USERMANAGER_TOPIC = "usermanager";
+
     public static final String USERCHANGED_EVENT_ID = "user_changed";
+
     public static final String GROUPCHANGED_EVENT_ID = "group_changed";
+
     public static final String DEFAULT_ANONYMOUS_USER_ID = "Anonymous";
 
     private final DirectoryService dirService;
@@ -301,24 +303,18 @@ public class UserManagerImpl implements UserManager {
 
     protected DocumentModel makeVirtualUserEntry(String id, VirtualUser user)
             throws ClientException {
-        final DocumentModelImpl userEntry = new DocumentModelImpl(null,
-                userSchemaName, id, null, null, null,
-                new String[] { userSchemaName }, null);
-        userEntry.addDataModel(new DataModelImpl(userSchemaName,
-                Collections.<String, Object> emptyMap()));
+        final DocumentModel userEntry = BaseSession.createEntryModel(null,
+                userSchemaName, id, null);
         for (Entry<String, Serializable> prop : user.getProperties().entrySet()) {
             try {
                 userEntry.setProperty(userSchemaName, prop.getKey(),
                         prop.getValue());
             } catch (ClientException ce) {
-                log.error(
-                        "Property: " + prop.getKey()
-                                + " does not exists. Check your UserService configuration.",
-                        ce);
+                log.error("Property: " + prop.getKey()
+                        + " does not exists. Check your "
+                        + "UserService configuration.", ce);
             }
         }
-        userEntry.setProperty(userSchemaName,
-                NuxeoPrincipalImpl.USERNAME_COLUMN, id);
         return userEntry;
     }
 
@@ -532,8 +528,7 @@ public class UserManagerImpl implements UserManager {
             groupDir = dirService.open(groupDirectoryName);
 
             // check the group does not exist
-            NuxeoGroup oldGroup = getGroup(groupId);
-            if (oldGroup != null) {
+            if (groupDir.hasEntry(groupId)) {
                 throw new GroupAlreadyExistsException();
             }
 
@@ -561,16 +556,11 @@ public class UserManagerImpl implements UserManager {
             String principalName = principal.getName();
 
             // check the user does not exist
-            // TODO: use hasEntry
-            DocumentModel user = userDir.getEntry(principalName);
-            if (user != null) {
+            if (userDir.hasEntry(principalName)) {
                 throw new UserAlreadyExistsException();
             }
 
-            // TODO transform the model into a map
-            // XXX hack, principals have only one model
-            DataModel dm = principal.getModel().getDataModels().values().iterator().next();
-            userDir.createEntry(dm.getMap());
+            userDir.createEntry(principal.getModel());
 
             for (String roleName : principal.getRoles()) {
                 addPrincipalToRole(principalName, roleName);

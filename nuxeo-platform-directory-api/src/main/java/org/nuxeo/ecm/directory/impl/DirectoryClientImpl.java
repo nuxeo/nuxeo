@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryClient;
 import org.nuxeo.ecm.directory.api.DirectoryManager;
@@ -38,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  *
  */
-public class DirectoryClientImpl implements DirectoryClient {
+public class DirectoryClientImpl extends BaseSession implements DirectoryClient {
 
     private static final long serialVersionUID = -1170479958816244690L;
 
@@ -174,10 +175,6 @@ public class DirectoryClientImpl implements DirectoryClient {
     public DocumentModel createEntry(DocumentModel entry)
             throws ClientException {
         return getDirectoryManager().createEntry(sessionId, entry);
-    }
-
-    public DocumentModel createEntryModel() throws ClientException {
-        return getDirectoryManager().createEntryModel(sessionId);
     }
 
     public boolean hasEntry(String id) throws ClientException {

@@ -30,6 +30,7 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -457,14 +458,10 @@ public class TestMultiDirectory extends NXRuntimeTestCase {
         assertEquals(Arrays.asList("bar1", "bar3"), list);
     }
 
-    public void testCreateEntryModel() throws Exception {
-        DocumentModel entry = dir.createEntryModel();
-        assertNotNull(entry);
-        assertEquals("schema3", entry.getType());
-    }
-
     public void testCreateFromModel() throws Exception {
-        DocumentModel entry = dir.createEntryModel();
+        String schema = "schema3";
+        DocumentModel entry = BaseSession.createEntryModel(null, schema, null,
+                null);
         entry.setProperty("schema3", "uid", "yo");
 
         assertNull(dir.getEntry("yo"));

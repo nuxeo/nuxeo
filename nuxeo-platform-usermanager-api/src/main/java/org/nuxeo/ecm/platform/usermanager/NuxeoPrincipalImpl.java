@@ -48,23 +48,22 @@ import org.nuxeo.runtime.api.Framework;
 public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     // TODO: this should be moved to an extension point of the usermanager
-    // service
+    // service, and some of them already are (email, username e.g id) so
+    // configuration may differ
 
-    public static final String USERNAME_COLUMN = "username";
+    protected static final String USERNAME_COLUMN = "username";
 
-    public static final String FIRSTNAME_COLUMN = "firstName";
+    protected static final String FIRSTNAME_COLUMN = "firstName";
 
-    public static final String LASTNAME_COLUMN = "lastName";
+    protected static final String LASTNAME_COLUMN = "lastName";
 
-    public static final String COMPANY_COLUMN = "company";
+    protected static final String COMPANY_COLUMN = "company";
 
-    public static final String PASSWORD_COLUMN = "password";
+    protected static final String PASSWORD_COLUMN = "password";
 
-    public static final String EMAIL_COLUMN = "email";
+    protected static final String EMAIL_COLUMN = "email";
 
-    public static final String GROUPS_COLUMN = "groups";
-
-    private static final String TYPE_NAME = "User";
+    protected static final String GROUPS_COLUMN = "groups";
 
     private static final String SCHEMA_NAME = "user";
 
@@ -96,7 +95,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     public NuxeoPrincipalImpl(String name, boolean anonymous)
             throws ClientException {
-        DocumentModelImpl documentModelImpl = new DocumentModelImpl(TYPE_NAME);
+        DocumentModelImpl documentModelImpl = new DocumentModelImpl(SCHEMA_NAME);
         // schema name hardcoded default when setModel is never called
         // which happens when a principal is created just to encapsulate
         // a username

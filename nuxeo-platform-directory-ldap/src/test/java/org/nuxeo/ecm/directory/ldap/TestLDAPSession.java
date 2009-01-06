@@ -32,6 +32,7 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 
@@ -933,26 +934,17 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
-    public void testCreateEntryModel() throws Exception {
-        Session dir = getLDAPDirectory("userDirectory").getSession();
-        try {
-            DocumentModel entry = dir.createEntryModel();
-            assertNotNull(entry);
-            assertEquals("user", entry.getType());
-        } finally {
-            dir.close();
-        }
-    }
-
     public void testCreateFromModel() throws Exception {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             Session dir = getLDAPDirectory("userDirectory").getSession();
             try {
-                DocumentModel entry = dir.createEntryModel();
-                entry.setProperty("user", "username", "omar");
+                String schema = "user";
+                DocumentModel entry = BaseSession.createEntryModel(null,
+                        schema, null, null);
+                entry.setProperty(schema, "username", "omar");
                 // XXX: some values are mandatory on real LDAP
-                entry.setProperty("user", "password", "sesame");
-                entry.setProperty("user", "employeeType",
+                entry.setProperty(schema, "password", "sesame");
+                entry.setProperty(schema, "employeeType",
                         new String[] { "Slave" });
 
                 assertNull(dir.getEntry("omar"));
@@ -960,7 +952,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 assertNotNull(dir.getEntry("omar"));
 
                 // create one with existing same id, must fail
-                entry.setProperty("user", "username", "Administrator");
+                entry.setProperty(schema, "username", "Administrator");
                 try {
                     entry = dir.createEntry(entry);
                     fail("Should raise an error, entry already exists");

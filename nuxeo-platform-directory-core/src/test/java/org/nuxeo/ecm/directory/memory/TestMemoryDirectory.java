@@ -31,8 +31,6 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.DataModelImpl;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaNames;
 import org.nuxeo.ecm.core.schema.TypeRef;
@@ -41,6 +39,7 @@ import org.nuxeo.ecm.core.schema.types.SchemaImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -123,14 +122,9 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         }
     }
 
-    public void testCreateEntryModel() throws Exception {
-        DocumentModel entry = dir.createEntryModel();
-        assertNotNull(entry);
-        assertEquals(SCHEMA_NAME, entry.getType());
-    }
-
     public void testCreateFromModel() throws Exception {
-        DocumentModel entry = dir.createEntryModel();
+        DocumentModel entry = BaseSession.createEntryModel(null, SCHEMA_NAME,
+                null, null);
         entry.setProperty(SCHEMA_NAME, "i", "yo");
 
         assertNull(dir.getEntry("yo"));
@@ -182,11 +176,10 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         assertEquals("babar", e.getProperty(SCHEMA_NAME, "b"));
 
         String id = "no-such-entry";
-        DocumentModelImpl entry = new DocumentModelImpl(null, SCHEMA_NAME, id,
-                null, null, null, new String[] { SCHEMA_NAME }, null);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("i", id);
-        entry.addDataModel(new DataModelImpl(SCHEMA_NAME, map));
+        DocumentModel entry = BaseSession.createEntryModel(null,
+                SCHEMA_NAME, id, map);
         dir.updateEntry(entry); // silently ignore unknown entries
     }
 
