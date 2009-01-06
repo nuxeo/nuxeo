@@ -1,6 +1,7 @@
 package org.nuxeo.ecm.core.convert.cache;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
@@ -18,7 +19,8 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements Cachab
     }
 
     public void load(String path) {
-        this.blob = new FileBlob(new File(path));
+         blobs = new ArrayList<Blob>();
+         blobs.add(new FileBlob(new File(path)));
     }
 
     public String persist(String basePath) throws Exception{
