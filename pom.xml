@@ -41,6 +41,7 @@
     <module>nuxeo-core-storage-sql-mbean</module>
     <module>nuxeo-core-convert-api</module>
     <module>nuxeo-core-convert</module>
+    <module>nuxeo-core-plugins</module>
   </modules>
 
   <profiles>
@@ -128,6 +129,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-convert</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-convert-plugins</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>

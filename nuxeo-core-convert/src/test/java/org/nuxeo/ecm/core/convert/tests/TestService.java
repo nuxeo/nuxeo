@@ -70,6 +70,14 @@ public class TestService extends NXRuntimeTestCase {
              isChain=true;
          }
          assertTrue(isChain);
+
+         converterName = cs.getConverterName("something", "somethingelse");
+         assertEquals("custom", converterName);
+
+         converterName = cs.getConverterName("any", "somethingelse");
+         assertEquals("wildcard", converterName);
+
+
      }
 
 

@@ -16,6 +16,18 @@
     <step>test/me</step>
   </converter>
 
+
+  <converter name="custom" class="org.nuxeo.ecm.core.convert.tests.DummyTestConverter">
+    <sourceMimeType>something</sourceMimeType>
+    <destinationMimeType>somethingelse</destinationMimeType>
+  </converter>
+
+  <converter name="wildcard" class="org.nuxeo.ecm.core.convert.tests.DummyTestConverter">
+    <sourceMimeType>*</sourceMimeType>
+    <destinationMimeType>somethingelse</destinationMimeType>
+  </converter>
+
+
   </extension>
 
 

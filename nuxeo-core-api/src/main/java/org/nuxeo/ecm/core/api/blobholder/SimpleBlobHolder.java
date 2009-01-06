@@ -19,7 +19,9 @@
 package org.nuxeo.ecm.core.api.blobholder;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -33,17 +35,33 @@ import org.nuxeo.ecm.core.api.ClientException;
  */
 public class SimpleBlobHolder extends AbstractBlobHolder implements BlobHolder {
 
-    protected Blob blob;
+    protected List<Blob> blobs;
     protected Calendar creationDate;
 
+    public SimpleBlobHolder(List<Blob> blobs) {
+        init(blobs);
+    }
+
     public SimpleBlobHolder(Blob blob) {
-        this.blob=blob;
-        this.creationDate = Calendar.getInstance();
+        blobs = new ArrayList<Blob>();
+        blobs.add(blob);
+        init(blobs);
+    }
+
+    protected void init(List<Blob> blobs)
+    {
+           this.blobs=blobs;
+           this.creationDate = Calendar.getInstance();
     }
 
     @Override
     public Blob getBlob() throws ClientException {
-        return blob;
+        if (blobs.size()==0) {
+            return null;
+        }
+        else {
+            return blobs.get(0);
+        }
     }
 
     protected String getBasePath() {

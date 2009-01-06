@@ -44,16 +44,12 @@ public class MimeTypeTranslationHelper {
 
         List<ConvertOption> sco = srcMappings.get(sourceMimeType);
         if (sco==null) {
-            return null;
-        }
-        for (ConvertOption co : sco) {
-            if (co.mimeType.equals(destMimeType)) {
-                return co.getConverterName();
+            // use wildcard
+            sco = srcMappings.get("*");
+            if (sco==null) {
+                return null;
             }
         }
-
-        // try with wildcards
-        sco = srcMappings.get("*");
         for (ConvertOption co : sco) {
             if (co.mimeType.equals(destMimeType)) {
                 return co.getConverterName();
