@@ -13,32 +13,17 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
+package org.nuxeo.ecm.webengine.model;
 
-package org.nuxeo.ecm.webengine.model.impl;
-
-import org.nuxeo.ecm.webengine.loader.ClassProxy;
+import javax.ws.rs.WebApplicationException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ModuleTypeDescriptor extends TypeDescriptor {
+public interface ErrorHandler {
 
-    public ModuleTypeDescriptor(ClassProxy clazz, String name, String superType) {
-        super(clazz, name, superType);
-    }
-
-    @Override
-    public boolean isModule() {
-        return true;
-    }
-
-    @Override
-    public ModuleTypeDescriptor asModuleTypeDescriptor() {
-        return this;
-    }
-
+    Object handleError(WebContext ctx, WebApplicationException e);
+    
 }

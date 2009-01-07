@@ -74,29 +74,29 @@ public class WebEngineDispatcher extends SynchronousDispatcher {
 
     public void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String httpMethod = req.getMethod();
-        try {
+//        try {
             service(httpMethod, req, resp);
-        } catch (Failure f) {
-            if (f.getErrorCode() == 404) {
-                // retry - to be able to lazy load modules when first accessed we need to do a check here
-                // for first access on lazy modules
-                try {
-                    if (resourceReg.loadLazyModuleIfNeeded(req.getPathInfo())) {
-                        service(httpMethod, req, resp); // try again
-                    } else {
-                        resp.sendError(f.getErrorCode(), f.getMessage());
-                    }
-                } catch (Failure ff) { // failure again - give up
-                    if (ff.getErrorCode() > 0) {
-                        resp.sendError(ff.getErrorCode(), ff.getMessage());
-                    }
-                } catch (Exception e) {
-                    throw new ServletException(e);
-                }
-            } else { // should never happens
-                resp.sendError(f.getErrorCode() > 0 ? f.getErrorCode() : 500, f.getMessage());
-            }
-        }
+//        } catch (Failure f) {
+//            if (f.getErrorCode() == 404) {
+//                // retry - to be able to lazy load modules when first accessed we need to do a check here
+//                // for first access on lazy modules
+//                try {
+//                    if (resourceReg.loadLazyModuleIfNeeded(req.getPathInfo())) {
+//                        service(httpMethod, req, resp); // try again
+//                    } else {
+//                        resp.sendError(f.getErrorCode(), f.getMessage());
+//                    }
+//                } catch (Failure ff) { // failure again - give up
+//                    if (ff.getErrorCode() > 0) {
+//                        resp.sendError(ff.getErrorCode(), ff.getMessage());
+//                    }
+//                } catch (Exception e) {
+//                    throw new ServletException(e);
+//                }
+//            } else { // should never happens
+//                resp.sendError(f.getErrorCode() > 0 ? f.getErrorCode() : 500, f.getMessage());
+//            }
+//        }
     }
 
     public void service(String httpMethod, HttpServletRequest request,

@@ -38,14 +38,12 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 public interface Module extends MessagesProvider {
 
     String getName();
+    
+    File getRoot();
 
-    boolean isFragment();
-
+    Object getRootObject();
+    
     WebEngine getEngine();
-
-    String getModuleTitle();
-
-    File getModuleIcon();
 
     void flushCache();
 
@@ -58,17 +56,15 @@ public interface Module extends MessagesProvider {
     Map<String,String> getMessages(String language);
 
     Messages getMessages();
+    
+    ErrorHandler getErrorHandler();
+    
+    LinkProvider getLinkProvider();
 
-    /**
-     * The root resource type.
-     *
-     * @return
-     */
-    ModuleType getModuleType();
 
     /**
      * Gets the root binding of this module.
-     *
+     * @deprecated remove it after refactoring modules
      * @return
      */
     ResourceBinding getModuleBinding();

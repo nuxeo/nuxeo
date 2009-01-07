@@ -45,6 +45,7 @@ public class ResourceBinding {
     @XNode("@singleton")
     public boolean singleton = false;
 
+ 
     /**
      * Use this to specify the resource class.
      */
@@ -62,6 +63,17 @@ public class ResourceBinding {
     public Class<?> clazz;
 
 
+    
+    public ResourceBinding() {
+        
+    }
+ 
+    public ResourceBinding(String path, Class<?> clazz, boolean singleton) {
+        this.path = path;
+        this.clazz = clazz;
+        this.singleton = singleton;
+    }
+ 
     @Override
     public int hashCode() {
         return path.hashCode();

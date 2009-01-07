@@ -27,7 +27,7 @@ import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
-import org.nuxeo.ecm.webengine.model.ModuleResource;
+import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebDocumentException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
@@ -113,21 +113,19 @@ public class WebException extends WebApplicationException {
         if (!byPassAppResponse) {
             WebContext ctx = WebEngine.getActiveContext();
             if (ctx != null) {
-                ModuleResource rs = ctx.getModuleInstance();
-                if (rs == null) {
-                    // no context print error on screen
-                    return toResponse(this);
-                } else {
-                    Object result = rs.handleError(this);
+                Module module = ctx.getModule();
+                if (module != null) {
+                    Object result = module.getErrorHandler().handleError(ctx, this);
                     if (result instanceof Response) {
                         response  = (Response)result;
                     } else if (result != null) {
                         response = Response.fromResponse(response).entity(result).build();
                     }
+                    return response;
                 }
             }
         }
-        return response;
+        return toResponse(this);
     }
 
     public String getStackTraceString() {
@@ -174,4 +172,12 @@ public class WebException extends WebApplicationException {
         }
     }
 
+    public static Object handleError(WebApplicationException e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        pw.close();
+        return Response.status(500).entity(sw.toString()).build();
+    }
+    
 }

@@ -13,30 +13,17 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.webengine.model;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.nuxeo.runtime.annotations.loader.Indexable;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-@Indexable({"name", "base"})
-public @interface WebModule {
-    String name(); // application name
-    String fragment() default "";
-    String base() default "";
-    String guard() default "";
-    String[] facets() default {};
+public interface LinkProvider {
+
+    String getLink(WebContext ctx, DocumentModel doc);
+
 }

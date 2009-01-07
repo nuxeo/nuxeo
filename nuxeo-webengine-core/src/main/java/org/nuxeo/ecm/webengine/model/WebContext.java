@@ -284,7 +284,7 @@ public interface WebContext extends Adaptable {
 
     /** object stack API */
 
-    ModuleResource  getModuleInstance();
+    ModuleResource  getHead();
 
     Resource push(Resource obj);
 

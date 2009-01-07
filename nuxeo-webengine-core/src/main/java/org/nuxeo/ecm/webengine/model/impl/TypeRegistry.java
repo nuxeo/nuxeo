@@ -44,11 +44,11 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
 
     protected final Map<String, AbstractResourceType> types;
     protected final Map<String, AdapterType> adapters;
-    protected final AbstractModule module;
+    protected final ModuleImpl module;
     protected final WebEngine engine; // cannot use module.getEngine() since module may be null
     protected Class<?> docObjectClass;
 
-    public TypeRegistry(TypeRegistry parent, WebEngine engine, AbstractModule module) {
+    public TypeRegistry(TypeRegistry parent, WebEngine engine, ModuleImpl module) {
         super (parent);
         types = new ConcurrentHashMap<String, AbstractResourceType>();
         adapters = new ConcurrentHashMap<String, AdapterType>();
@@ -62,7 +62,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         }
     }
 
-    public TypeRegistry(WebEngine engine, AbstractModule module) {
+    public TypeRegistry(WebEngine engine, ModuleImpl module) {
         this (null, engine, module);
     }
 
@@ -71,24 +71,12 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         registerType(root);
     }
 
-    public void registerModuleType(AbstractModule m) {
-        TypeDescriptor td = new ModuleTypeDescriptor(
-                new StaticClassProxy(m.descriptor.binding.clazz),
-                m.descriptor.name,
-                ResourceType.ROOT_TYPE_NAME);
-        AbstractModule sm = m.getSuperModule();
-        if (sm != null) {
-            registerModuleType(sm);
-            td.superType = sm.getName();
-        }
-        registerType(td);
-    }
 
     public ResourceType getRootType() {
         return types.get(ResourceType.ROOT_TYPE_NAME);
     }
 
-    public AbstractModule getModule() {
+    public ModuleImpl getModule() {
         return module;
     }
 
@@ -282,11 +270,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
 
     protected void installTypeContribution(String key, TypeDescriptor object) {
         AbstractResourceType type = null;
-        if (object.isModule()) {
-            type = new ModuleTypeImpl(engine, module, null, object.type, object.clazz);
-        } else {
-            type = new ResourceTypeImpl(engine, module, null, object.type, object.clazz, object.visibility);
-        }
+        type = new ResourceTypeImpl(engine, module, null, object.type, object.clazz, object.visibility);
         if (object.superType != null) {
             type.superType = types.get(object.superType);
             assert type.superType != null; // must never be null since the object is resolved

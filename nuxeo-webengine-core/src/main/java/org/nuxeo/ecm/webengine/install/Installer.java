@@ -31,7 +31,6 @@ import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.exceptions.WebDeployException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RuntimeContext;
@@ -117,10 +116,11 @@ public class Installer {
                     append.run(this, bundleDir, installDir);
                 }
             }
-            if (module != null) {
-                WebEngine engine = Framework.getService(WebEngine.class);
-                engine.loadModule(new File(engine.getRootDirectory(), module));
-            }
+// TODO remove this modules are lazy loaded now
+//            if (module != null) {
+//                WebEngine engine = Framework.getService(WebEngine.class);
+//                engine.getModuleManager().loadModule(new File(engine.getRootDirectory(), module), module);
+//            }
         } catch (Exception e) {
             throw new WebDeployException("Installation failed for bundle: "+ctx.getBundle().getSymbolicName(), e);
         } finally {

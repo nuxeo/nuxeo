@@ -50,7 +50,8 @@ public class Scripting {
 
     private final ConcurrentMap<File, Entry> cache = new ConcurrentHashMap<File, Entry>();
 
-    protected final ScriptEngineManager scriptMgr = new ScriptEngineManager();
+    // this will be lazy initialized
+    private ScriptEngineManager scriptMgr;
 
     protected final GroovyScripting groovy;
 
@@ -61,7 +62,7 @@ public class Scripting {
     public Scripting(boolean isDebug) {
         groovy = new GroovyScripting(isDebug);
     }
-
+    
     public void addClassPath(String path) {
         groovy.addClasspath(path);
     }
@@ -94,12 +95,23 @@ public class Scripting {
         groovy.clearCache();
     }
 
+    /**
+     * Lazy init scripting manager to avoid loading script engines when
+     * no scripting is used. Javax Scripting is not used by default in WebWengine
+     * we are using directly the Groovy engine.
+     * This is also fixing an annoying pb on mac in java5 due to AppleScripting
+     * which is failing to register. 
+	 * @return the scriptMgr
+	 */
     public ScriptEngineManager getEngineManager() {
+		if (scriptMgr == null) {
+			scriptMgr = new ScriptEngineManager();	
+		}
         return scriptMgr;
     }
 
     public boolean isScript(String ext) {
-        return scriptMgr.getEngineByExtension(ext) != null;
+        return getEngineManager().getEngineByExtension(ext) != null;
     }
 
     public GroovyScripting getGroovyScripting() {
@@ -132,7 +144,7 @@ public class Scripting {
         }
         String ext = script.getExtension();
         // check for a script engine
-        ScriptEngine engine = scriptMgr.getEngineByExtension(ext);
+        ScriptEngine engine = getEngineManager().getEngineByExtension(ext);
         if (engine != null) {
             ScriptContext ctx = new SimpleScriptContext();
             ctx.setBindings(args, ScriptContext.ENGINE_SCOPE);

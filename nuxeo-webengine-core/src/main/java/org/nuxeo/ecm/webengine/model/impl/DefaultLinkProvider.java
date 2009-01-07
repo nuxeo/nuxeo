@@ -13,23 +13,24 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
-
-package org.nuxeo.ecm.webengine.model;
-
-import javax.ws.rs.WebApplicationException;
+package org.nuxeo.ecm.webengine.model.impl;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.webengine.model.LinkProvider;
+import org.nuxeo.ecm.webengine.model.WebContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ModuleResource extends Resource {
+public class DefaultLinkProvider implements LinkProvider {
 
-    Object handleError(WebApplicationException e);
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.webengine.model.LinkProvider#getLink(org.nuxeo.ecm.core.api.DocumentModel)
+     */
+    public String getLink(WebContext ctx, DocumentModel doc) {
+        return new StringBuilder().append(ctx.getModulePath()).append("/@nxdoc/").append(doc.getId()).toString();
+    }
 
-    String getLink(DocumentModel doc);
 }

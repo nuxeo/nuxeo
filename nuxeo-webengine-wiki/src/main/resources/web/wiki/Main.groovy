@@ -11,14 +11,21 @@ import org.nuxeo.ecm.webengine.*;
 import org.nuxeo.ecm.core.api.*;
 
 
-@WebModule(name="wiki", facets = ["mainWiki"], base="base")
-@Path("/wikis")
+@WebObject(type="wikis", facets = ["mainWiki"])
 @Produces(["text/html; charset=UTF-8", "*/*; charset=UTF-8"])
-public class Main extends DocumentModule {
+public class Main extends DefaultModule {
 
+  def doc;
+  
   public Main() {
-     super("/");
-     doc = getRootDocument();
+     //doc = getRootDocument();
+  }
+  
+  public DocumentModel getDocument() {
+  	if (doc == null) {
+    	doc = getRootDocument();
+  	}
+  	return doc;
   }
 
   public static DocumentModel getRootDocument(){
@@ -46,19 +53,19 @@ public class Main extends DocumentModule {
   @POST
   public Response doPost() {
       String name = ctx.getForm().getString("name");
-      DocumentModel newDoc = DocumentHelper.createDocument(ctx, doc, name);
+      DocumentModel newDoc = DocumentHelper.createDocument(ctx, getDocument(), name);
       return redirect(getPath()+'/'+newDoc.getName());
   }
 
   @GET
   public Object doGet() {
-    def docs = ctx.getCoreSession().getChildren(doc.getRef(), "Wiki");
+    def docs = ctx.getCoreSession().getChildren(getDocument().getRef(), "Wiki");
     return getView("index").arg("wikis", docs);
   }
 
   @Path("{segment}")
   public Object getWiki(@PathParam("segment") String segment) {
-    return DocumentFactory.newDocument(ctx, doc.getPath().append(segment).toString());
+    return DocumentFactory.newDocument(ctx, getDocument().getPath().append(segment).toString());
   }
 
   @GET
@@ -90,8 +97,8 @@ public class Main extends DocumentModule {
   }
 
   public String getLink(DocumentModel doc) {
-    println ">>>>>>>>>>>>>>>>>>>>> getLink  called "
-
+    //println ">>>>>>>>>>>>>>>>>>>>> getLink  called "
+	getDocument(); // force doc loading
     String type = doc.getType();
     if ("Wiki".equals(type)) {
       return getPath()+"/"+doc.getName();

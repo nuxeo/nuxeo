@@ -45,7 +45,7 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
  */
 public abstract class AbstractResourceType implements ResourceType {
 
-    protected final AbstractModule owner;
+    protected final ModuleImpl owner;
     protected final String name;
     protected int visibility = TypeVisibility.DEFAULT;
     protected AbstractResourceType superType;
@@ -55,7 +55,7 @@ public abstract class AbstractResourceType implements ResourceType {
     protected volatile ConcurrentMap<String, ScriptFile> templateCache;
 
 
-    protected AbstractResourceType(WebEngine engine, AbstractModule module, AbstractResourceType superType, String name, ClassProxy clazz, int visibility) {
+    protected AbstractResourceType(WebEngine engine, ModuleImpl module, AbstractResourceType superType, String name, ClassProxy clazz, int visibility) {
         templateCache = new ConcurrentHashMap<String, ScriptFile>();
         this.owner = module;
         this.superType = superType;

@@ -19,8 +19,8 @@ EOF
 cat <<EOF > .project
 <?xml version="1.0" encoding="utf-8" ?>
 <projectDescription>
-   <name>${PROJECT}</name>
-   <comment>${PROJECT} project</comment>
+   <name>${PROJECT_NAME}</name>
+   <comment>${PROJECT_NAME} project</comment>
    <projects/>
    <buildSpec>
        <buildCommand>

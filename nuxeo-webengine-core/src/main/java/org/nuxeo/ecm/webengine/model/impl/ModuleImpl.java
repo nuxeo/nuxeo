@@ -24,17 +24,31 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.ws.rs.core.MediaType;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.AdapterNotFoundException;
+import org.nuxeo.ecm.webengine.model.AdapterType;
+import org.nuxeo.ecm.webengine.model.ErrorHandler;
+import org.nuxeo.ecm.webengine.model.LinkDescriptor;
+import org.nuxeo.ecm.webengine.model.LinkProvider;
 import org.nuxeo.ecm.webengine.model.Messages;
+import org.nuxeo.ecm.webengine.model.Module;
+import org.nuxeo.ecm.webengine.model.Resource;
+import org.nuxeo.ecm.webengine.model.ResourceType;
+import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
+import org.nuxeo.ecm.webengine.model.Validator;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 /**
@@ -42,25 +56,231 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class ModuleImpl extends AbstractModule {
+public class ModuleImpl implements Module {
 
     private static final Log log = LogFactory.getLog(ModuleImpl.class);
 
-    protected final File root;
-
+    protected final String name;
+    protected final WebEngine engine;
+    protected final Object typeLock = new Object();
+    protected TypeRegistry typeReg;
+    protected ModuleConfiguration configuration;
+    protected final ModuleImpl superModule;
+    protected LinkRegistry linkReg;
+    protected final String skinPathPrefix;
+    protected ResourceType rootType; 
+    
     protected Messages messages;
-
     protected DirectoryStack dirStack;
+    protected LinkProvider linkProvider;    
+    protected ErrorHandler errorHandler;
 
     // cache used for resolved files
     protected ConcurrentMap<String, ScriptFile> fileCache;
+    
 
-    public ModuleImpl(WebEngine engine, File root, ModuleDescriptor descriptor) {
-        super (engine, descriptor);
+    //TODO remove this
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.webengine.model.Module#getModuleBinding()
+     */
+    public ResourceBinding getModuleBinding() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public ModuleImpl(WebEngine engine, String name, ModuleImpl superModule, ModuleConfiguration config) throws Exception {        
+        this.engine = engine;
+        this.name = name;
+        this.superModule = superModule;
+        this.configuration = config;
+        skinPathPrefix = new StringBuilder()
+            .append(engine.getSkinPathPrefix()).append('/').append(name).toString();
         fileCache = new ConcurrentHashMap<String, ScriptFile>();
-        this.root = root;
+        Class<LinkProvider> lpc = config.getLinkProviderClass();
+        if (lpc != null) {
+            linkProvider = lpc.newInstance();
+        } else {
+            linkProvider = new DefaultLinkProvider();
+        }
+        Class<ErrorHandler> ehc = config.getErrorHandlerClass();
+        if (lpc != null) {
+            errorHandler = ehc.newInstance();
+        } else {
+            errorHandler = new DefaultErrorHandler();
+        }        
+        loadConfiguration();
         reloadMessages();
-        loadDirectoryStack();
+        loadDirectoryStack();        
+    }
+
+    public ErrorHandler getErrorHandler() {
+        return errorHandler;
+    }
+    
+    public LinkProvider getLinkProvider() {
+        return linkProvider;
+    }
+    
+    public WebEngine getEngine() {
+        return engine;
+    }
+
+    public String getName() {
+        return name;
+    }
+    
+    public ModuleImpl getSuperModule() {
+        return superModule;
+    }
+
+    public ModuleConfiguration getModuleConfiguration() {
+        return configuration;
+    }
+
+    public ResourceType getRootType() {
+        // force type registry creation if needed
+        getTypeRegistry();
+        return rootType;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.webengine.model.Module#getRootObject()
+     */
+    public Object getRootObject() {
+        try {
+            AbstractWebContext ctx = (AbstractWebContext)WebEngine.getActiveContext();
+            ctx.setModule(this);
+            Resource obj = ctx.newObject(getRootType());
+            obj.setRoot(true);
+            return obj;
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to instantiate the root resource for module "+getName(),  e);
+        }
+    }
+
+    public String getSkinPathPrefix() {
+        return skinPathPrefix;
+    }
+
+    public TypeRegistry getTypeRegistry() {
+        if (typeReg == null) { // create type registry if not already created
+            synchronized (typeLock) {
+                if (typeReg == null) {
+                    typeReg = createTypeRegistry();
+                    rootType = getTypeRegistry().getType(configuration.rootType);
+                }
+            }
+        }
+        return typeReg;
+    }
+
+
+    public Class<?> loadClass(String className) throws ClassNotFoundException {
+        return engine.getScripting().loadClass(className);
+    }
+
+    public ResourceType getType(String typeName) {
+        ResourceType type = getTypeRegistry().getType(typeName);
+        if (type == null) {
+            throw new TypeNotFoundException(typeName);
+        }
+        return type;
+    }
+
+    public ResourceType[] getTypes() {
+        return getTypeRegistry().getTypes();
+    }
+
+    public AdapterType[] getAdapters() {
+        return getTypeRegistry().getAdapters();
+    }
+
+    public AdapterType getAdapter(Resource ctx, String name) {
+        AdapterType type = getTypeRegistry().getAdapter(ctx, name);
+        if (type == null) {
+            throw new AdapterNotFoundException(ctx, name);
+        }
+        return type;
+    }
+
+    public List<String> getAdapterNames(Resource ctx) {
+        return getTypeRegistry().getAdapterNames(ctx);
+    }
+
+    public List<AdapterType> getAdapters(Resource ctx) {
+        return getTypeRegistry().getAdapters(ctx);
+    }
+
+    public List<String> getEnabledAdapterNames(Resource ctx) {
+        return getTypeRegistry().getEnabledAdapterNames(ctx);
+    }
+
+    public List<AdapterType> getEnabledAdapters(Resource ctx) {
+        return getTypeRegistry().getEnabledAdapters(ctx);
+    }
+
+    public String getMediaTypeId(MediaType mt) {
+        if (configuration.mediatTypeRefs == null) {
+            return null;
+        }
+        MediaTypeRef[] refs = configuration.mediatTypeRefs;
+        for (MediaTypeRef ref : refs) {
+            String id = ref.match(mt);
+            if (id != null) {
+                return id;
+            }
+        }
+        return null;
+    }
+
+    public List<ResourceBinding> getResourceBindings() {
+        return configuration.resources;
+    }
+
+    public boolean isDerivedFrom(String moduleName) {
+        if (name.equals(moduleName)) {
+            return true;
+        }
+        if (superModule != null) {
+            return superModule.isDerivedFrom(moduleName);
+        }
+        return false;
+    }
+
+    public Validator getValidator(String docType) {
+        if (configuration.validators != null ){
+            return configuration.validators.get(docType);
+        }
+        return null;
+    }
+
+    
+    public void loadConfiguration() {
+        linkReg = new LinkRegistry();
+        if (configuration.links != null) {
+            for (LinkDescriptor link : configuration.links) {
+                linkReg.registerLink(link);
+            }
+        }
+        configuration.links = null; // avoid storing unused data
+    }
+    
+
+    public List<LinkDescriptor> getLinks(String category) {
+        return linkReg.getLinks(category);
+    }
+
+    public List<LinkDescriptor> getActiveLinks(Resource context, String category) {
+        return linkReg.getActiveLinks(context, category);
+    }
+
+    public LinkRegistry getLinkRegistry() {
+        return linkReg;
+    }
+
+
+    public String getTemplateFileExt() {
+        return configuration.templateFileExt;
     }
 
     public void flushSkinCache() {
@@ -68,10 +288,18 @@ public class ModuleImpl extends AbstractModule {
         fileCache = new ConcurrentHashMap<String, ScriptFile>();
     }
 
-    @Override
+    public void flushTypeCache() {
+        log.info("Flushing type cache for module: "+getName());
+        synchronized (typeLock) {
+            typeReg = null; // type registry will be recreated on first access
+        }
+    }
+
     public void flushCache() {
+        //TODO: reload module configuration or recreate module
         flushSkinCache();
-        super.flushCache();
+        flushTypeCache();
+        engine.getScripting().flushCache();
     }
 
     public static File getSkinDir(File moduleDir) {
@@ -81,7 +309,7 @@ public class ModuleImpl extends AbstractModule {
     protected void loadDirectoryStack() {
         dirStack = new DirectoryStack();
         try {
-            File skin = getSkinDir(root);
+            File skin = getSkinDir(configuration.directory);
             if (skin.isDirectory()) {
                 dirStack.addDirectory(skin);
             }
@@ -138,7 +366,12 @@ public class ModuleImpl extends AbstractModule {
         return null;
     }
 
-    @Override
+    /**
+     * TODO There are no more reasons to lazy load the type registry since module are lazy loaded.
+     * Type registry must be loaded at module creation 
+     * 
+     * @return
+     */
     public TypeRegistry createTypeRegistry() {
         //double s = System.currentTimeMillis();
         GlobalTypes gtypes = engine.getGlobalTypes();
@@ -149,15 +382,16 @@ public class ModuleImpl extends AbstractModule {
         } else {
             typeReg = new TypeRegistry(gtypes.getTypeRegistry(), engine, this);
         }
-        DirectoryTypeLoader loader = new DirectoryTypeLoader(engine, typeReg, root);
-        loader.load();
-        typeReg.registerModuleType(this);
+        if (configuration.directory.isDirectory()) {
+            DirectoryTypeLoader loader = new DirectoryTypeLoader(engine, typeReg, configuration.directory);
+            loader.load();
+        }
         //System.out.println(">>>>>>>>>>>>>"+((System.currentTimeMillis()-s)/1000));
         return typeReg;
     }
 
     public File getRoot() {
-        return root;
+        return configuration.directory;
     }
 
     public void reloadMessages() {
@@ -172,7 +406,7 @@ public class ModuleImpl extends AbstractModule {
     @SuppressWarnings("unchecked")
     public Map<String,String> getMessages(String language) {
         log.info("Loading i18n files");
-        File file = new File(root,  new StringBuilder()
+        File file = new File(configuration.directory,  new StringBuilder()
                     .append("/i18n/messages_")
                     .append(language)
                     .append(".properties").toString());
@@ -194,5 +428,12 @@ public class ModuleImpl extends AbstractModule {
             }
         }
     }
+    
+    
+    @Override
+    public String toString() {
+        return getName();
+    }
+
 
 }
