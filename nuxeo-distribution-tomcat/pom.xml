@@ -35,7 +35,7 @@
               <!--format>directory</format-->
               <format>zip</format>
               <outputDirectory>target</outputDirectory>
-              <targetFile>nuxeo_tomcat6</targetFile>
+              <targetFile>${application.name}</targetFile>
               <descriptor>
                 ${basedir}/src/main/assemble/assembly.xml
               </descriptor>
@@ -48,7 +48,7 @@
               <goal>attach</goal>
             </goals>
             <configuration>
-              <file>${basedir}/target/nuxeo_tomcat6.zip</file>
+              <file>${basedir}/target/${application.name}.zip</file>
               <type>zip</type>
             </configuration>
           </execution>
