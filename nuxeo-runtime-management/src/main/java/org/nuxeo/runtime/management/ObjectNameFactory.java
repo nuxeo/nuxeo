@@ -16,6 +16,8 @@
  */
 package org.nuxeo.runtime.management;
 
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,22 +36,56 @@ public class ObjectNameFactory {
 
     public static final String NUXEO_DOMAIN_NAME = "nx";
 
-    public static String formatName(String domainName, String typeName,
-            String instanceName) {
+    public static String formatQualifiedName(String domainName,
+            String typeName, String instanceName) {
         return String.format("%s:name=%s,type=%s", domainName, instanceName,
                 typeName);
     }
 
-    public static String formatName(String typeName, String instanceName) {
-        return formatName(NUXEO_DOMAIN_NAME, typeName, instanceName);
+    public static String formatQualifiedName(String typeName,
+            String instanceName) {
+        return formatQualifiedName(NUXEO_DOMAIN_NAME, typeName, instanceName);
     }
 
-    public static String formatName(ComponentName name) {
-        return formatName("nx", name.getType(), name.getName());
+    public static String formatQualifiedName(ComponentName name) {
+        return formatQualifiedName("nx", name.getType(), name.getName());
     }
 
-    public static String formatName(String instanceName) {
-        return formatName("service", instanceName);
+    public static String formatQualifiedName(String instanceName) {
+        return formatQualifiedName("service", instanceName);
+    }
+
+    public static String removeDotPart(String name) {
+        int lastDotPos = name.lastIndexOf('.');
+        if (lastDotPos != -1) {
+            name = name.substring(lastDotPos + 1);
+        }
+        return name;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static String formatShortName(ObjectName name) {
+        String shortName = removeDotPart(name.getKeyProperty("name"));
+        String typeName = name.getKeyProperty("type");
+        if (!typeName.equals("service")) {
+            shortName += "-" + typeName;
+        }
+        Hashtable<String, String> keys = name.getKeyPropertyList();
+        for (Map.Entry<String, String> keyEntry : keys.entrySet()) {
+            String key = keyEntry.getKey();
+            String value = keyEntry.getValue();
+            if (key.equals("name"))
+                continue;
+            if (key.equals("type") && value.equals("service"))
+                continue;
+            shortName += "-" + keyEntry.getValue();
+        }
+        return shortName;
+    }
+
+    public static String formatShortName(String name) {
+        ObjectName objectName = getObjectName(name);
+        return formatShortName(objectName);
     }
 
     public static String formatTypeQuery(String typeName) {
@@ -73,6 +109,10 @@ public class ObjectNameFactory {
         Matcher matcher = avaPattern.matcher(value);
         return matcher.matches();
     }
+    
+    public static boolean isQualified(String name) {
+        return hasDomain(name) && hasAttributeValueAssertion(name);
+    }
 
     public static String getQualifiedName(String name) {
         String qualifiedName = name;
@@ -93,30 +133,13 @@ public class ObjectNameFactory {
         }
     }
 
-    public static ObjectName getObjectName(String name, String info) {
-        String qualifiedName = getQualifiedName(name);
+    public static ObjectName getObjectName(String name, String avas) {
+        String qualifiedName = getQualifiedName(name) + "," + avas;
         try {
-            return new ObjectName(qualifiedName + ",info=" + info);
+            return new ObjectName(qualifiedName);
         } catch (Exception e) {
             throw ManagementRuntimeException.wrap(name + " is not correct", e);
         }
     }
 
-    public static ObjectName getObjectName(ObjectName parentName, String avas) {
-        try {
-            return new ObjectName(parentName.toString() + "," + avas);
-        } catch (Exception e) {
-            throw ManagementRuntimeException.wrap(e);
-        }
-    }
-
-    public static ObjectName getObjectName(ObjectName parentName,
-            String propertyName, String propertyValue) {
-        try {
-            return new ObjectName(parentName.toString() + "," + propertyName
-                    + "=" + propertyValue);
-        } catch (Exception e) {
-            throw ManagementRuntimeException.wrap(e);
-        }
-    }
 }

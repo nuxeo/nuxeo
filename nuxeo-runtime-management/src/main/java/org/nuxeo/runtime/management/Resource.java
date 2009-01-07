@@ -28,7 +28,9 @@ public class Resource {
 
     protected final Object instance;
 
-    protected final ObjectName name;
+    protected final String shortName;
+    
+    protected final ObjectName managementName;
 
     protected final Class<?> clazz;
 
@@ -43,10 +45,12 @@ public class Resource {
      * @param serviceInstance
      */
     public Resource(ResourceDescriptor descriptor,
+            String shortName,
             ObjectName managementName, Class<?> managementClass,
             Object serviceInstance) {
         this.descriptor = descriptor;
-        this.name = managementName;
+        this.shortName = shortName;
+        this.managementName = managementName;
         this.clazz = managementClass;
         this.instance = serviceInstance;
     }
@@ -55,8 +59,12 @@ public class Resource {
         return instance;
     }
 
-    public ObjectName getName() {
-        return name;
+    public String getShortName() {
+        return shortName;
+    }
+    
+    public ObjectName getManagementName() {
+        return managementName;
     }
 
     public Class<?> getClazz() {

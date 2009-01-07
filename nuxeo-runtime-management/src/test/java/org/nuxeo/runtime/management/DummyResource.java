@@ -20,7 +20,7 @@ package org.nuxeo.runtime.management;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  *
  */
-public interface DummyService  {
+public interface DummyResource  {
     String getMessage();
     void setMessage(String message);
     String sayHelloWorld();

@@ -1,7 +1,3 @@
-package org.nuxeo.runtime.management;
-
-import javax.management.ObjectName;
-
 /*
  * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
@@ -18,6 +14,7 @@ import javax.management.ObjectName;
  * Contributors:
  *     Stephane Lacoin (Nuxeo EP Software Engineer)
  */
+package org.nuxeo.runtime.management;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
@@ -25,10 +22,6 @@ import javax.management.ObjectName;
  */
 public interface ResourceFactory {
 
-    interface Callback {
-        void invokeFor(ObjectName name, Class<?> classInfo, Object instance);
-    }
-
-    void registerResources(Callback callback);
+    void register();
 
 }

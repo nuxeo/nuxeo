@@ -42,9 +42,10 @@ public class TestObjectNameFactory extends TestCase {
         assertEquals(name.getCanonicalName(), "foo:name=value");
     }
     
-    public void testFactoryForm() {
-        ObjectName name = ObjectNameFactory.getObjectName("simple");
-        ObjectName childName = ObjectNameFactory.getObjectName(name, "factory", "value");
-        assertEquals(childName.getCanonicalName(),"nx:factory=value,name=simple,type=service");
+    
+    public void testShortName() {
+        ObjectName name = ObjectNameFactory.getObjectName("foo:name=value,type=service,info=metric");
+        String shortName = ObjectNameFactory.formatShortName(name);
+        assertEquals("value-metric", shortName);
     }
 }

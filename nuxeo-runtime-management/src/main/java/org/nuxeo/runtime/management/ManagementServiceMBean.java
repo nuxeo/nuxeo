@@ -28,8 +28,8 @@ public interface ManagementServiceMBean {
 
     Set<ObjectName> getResourcesName();
 
-    void enable();
+    void bindResources();
 
-    void disable();
+    void unbindResources();
 
 }

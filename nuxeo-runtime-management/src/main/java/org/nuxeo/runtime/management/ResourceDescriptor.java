@@ -18,8 +18,6 @@ package org.nuxeo.runtime.management;
 
 import java.io.Serializable;
 
-import javax.management.ObjectName;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -32,26 +30,13 @@ public class ResourceDescriptor implements Serializable {
 
     private static final long serialVersionUID = 6338431911839779273L;
 
-    public ResourceDescriptor(ObjectName name, Class<?> implClass,
-            Class<?> ifaceClass, boolean isAdapted) {
-        this.name = name.getCanonicalName();
-        this.className = implClass.getCanonicalName();
-        this.ifaceClassName = ifaceClass.getCanonicalName();
-        this.isAdapted = isAdapted;
-    }
-    
-    public ResourceDescriptor(ObjectName name, Class<?> implClass) {
-        this.name = name.getCanonicalName();
+    protected ResourceDescriptor(String shortName, String qualifiedName,
+            Class<?> implClass) {
+        this.shortName = shortName;
+        this.qualifiedName = qualifiedName;
         this.className = implClass.getCanonicalName();
         this.ifaceClassName = null;
         this.isAdapted = true;
-    }
-    
-    public ResourceDescriptor(ObjectName name, Class<?> implClass, boolean isAdapted) {
-        this.name = name.getCanonicalName();
-        this.className = implClass.getCanonicalName();
-        this.ifaceClassName = null;
-        this.isAdapted = isAdapted;
     }
 
     public ResourceDescriptor() {
@@ -59,7 +44,13 @@ public class ResourceDescriptor implements Serializable {
     }
 
     @XNode("@name")
-    private String name;
+    private String shortName;
+
+    @XNode("@name")
+    private String qualifiedName;
+    
+    @XNode("@kind")
+    private String kind;
 
     @XNode("@class")
     private String className;
@@ -70,11 +61,16 @@ public class ResourceDescriptor implements Serializable {
     @XNode("@isAdapted")
     private boolean isAdapted;
 
-    public String getName() {
-        if (name == null) {
-            return name = className;
-        }
-        return name;
+    public String getShortName() {
+        return shortName;
+    }
+
+    public String getQualifiedName() {
+        return qualifiedName;
+    }
+
+    public String getKind() {
+        return kind;
     }
 
     public String getClassName() {
@@ -91,35 +87,10 @@ public class ResourceDescriptor implements Serializable {
 
     @Override
     public String toString() {
-        if (name != null)
-            return name;
+        if (shortName != null)
+            return shortName;
+        if (qualifiedName != null) 
+            return qualifiedName;
         return className;
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + getName().hashCode();
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        ResourceDescriptor other = (ResourceDescriptor) obj;
-        if (!this.getName().equals(other.getName())) {
-            return false;
-        }
-        return true;
-    }
-
 }

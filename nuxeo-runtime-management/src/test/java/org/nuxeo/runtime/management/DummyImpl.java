@@ -22,7 +22,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  * 
  */
-public class DummyServiceImpl extends DefaultComponent implements DummyService,
+public class DummyImpl extends DefaultComponent implements DummyResource,
         DummyMBean {
 
     protected String message = "hello world";

@@ -16,7 +16,6 @@
  */
 package org.nuxeo.runtime.management;
 
-import javax.management.ObjectName;
 
 /**
  * @author matic
@@ -24,13 +23,13 @@ import javax.management.ObjectName;
  */
 public class DummyFactory extends AbstractResourceFactory implements ResourceFactory {
 
-    public DummyFactory(ResourceFactoryDescriptor descriptor) {
-        super(descriptor);
+    
+    public DummyFactory(ManagementServiceImpl service, ResourceFactoryDescriptor descriptor) {
+        super(service, descriptor);
     }
 
-    public void registerResources(Callback callback) {
-        ObjectName name = ObjectNameFactory.getObjectName("dummy");
-        callback.invokeFor(name,DummyMBean.class,new DummyServiceImpl());
+    public void register() {
+        service.registerResource("dummy","nx:name=dummy",DummyMBean.class,new DummyImpl());
     }
 
 }

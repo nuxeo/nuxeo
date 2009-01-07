@@ -33,7 +33,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jsesoft.mmbi.NamedModelMBean;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.management.ResourceFactory.Callback;
 import org.nuxeo.runtime.management.inspector.ModelMBeanInfoFactory;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -57,7 +56,7 @@ public class ManagementServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (extensionPoint.equals("resources")) {
-            doRegister((ResourceDescriptor) contribution);
+            doRegisterResource((ResourceDescriptor) contribution, null);
         } else if (extensionPoint.equals("factories")) {
             doRegisterFactory((ResourceFactoryDescriptor) contribution);
         }
@@ -68,62 +67,64 @@ public class ManagementServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (extensionPoint.equals("resources")) {
-            doUnregister((ResourceDescriptor) contribution);
+            doUnregisterResource((ResourceDescriptor) contribution);
         } else {
             doUnregisterFactory((ResourceFactoryDescriptor) contribution);
         }
     }
 
-    protected final Map<ResourceFactoryDescriptor, ResourceFactory> factories = new HashMap<ResourceFactoryDescriptor, ResourceFactory>();
+    protected final Map<String, ResourceFactory> factories = new HashMap<String, ResourceFactory>();
 
     @SuppressWarnings("unchecked")
     protected void doRegisterFactory(ResourceFactoryDescriptor descriptor) {
         String factoryClassName = descriptor.getClassName();
         ResourceFactory factory = null;
+
+        Class<ResourceFactory> factoryClass;
         try {
-            Class<ResourceFactory> factoryClass = (Class<ResourceFactory>) getClass().getClassLoader().loadClass(
+            factoryClass = (Class<ResourceFactory>) getClass().getClassLoader().loadClass(
                     descriptor.getClassName());
-            try {
-                factory = factoryClass.getConstructor(
-                        new Class[] { ResourceFactoryDescriptor.class }).newInstance(
-                        descriptor);
-            } catch (NoSuchMethodException e) {
-                factory = factoryClass.newInstance();
-            }
+        } catch (Exception e) {
+            throw new ManagementRuntimeException("Cannot load factory "
+                    + factoryClassName, e);
+        }
+        try {
+            factory = factoryClass.getConstructor(
+                    new Class[] { ManagementServiceImpl.class,
+                            ResourceFactoryDescriptor.class, }).newInstance(
+                    this, descriptor);
         } catch (Exception e) {
             throw new ManagementRuntimeException("Cannot create factory "
                     + factoryClassName, e);
         }
-        factories.put(descriptor, factory);
-        factory.registerResources(new Callback() {
-            public void invokeFor(ObjectName name, Class<?> info,
-                    Object instance) {
-                doRegister(name, instance, info);
-            }
-        });
+        factory.register();
+        factories.put(descriptor.getClassName(), factory);
     }
 
     protected void doUnregisterFactory(ResourceFactoryDescriptor descriptor) {
         factories.remove(descriptor);
     }
 
-    protected final Map<ResourceDescriptor, Resource> resources = new HashMap<ResourceDescriptor, Resource>();
+    protected final Map<String, Resource> resources = new HashMap<String, Resource>();
 
-    protected void doRegister(ObjectName name, Object instance, Class<?> info) {
-        ResourceDescriptor descriptor = new ResourceDescriptor(name, info);
-        Resource resource = new Resource(descriptor, name, info, instance);
-        doRegister(resource);
+    protected void doRegisterResource(String shortName, String qualifiedName,
+            Class<?> info, Object instance) {
+        ResourceDescriptor descriptor = new ResourceDescriptor(shortName,
+                qualifiedName, info);
+        doRegisterResource(descriptor, instance);
     }
 
-    protected void doRegister(ResourceDescriptor descriptor) {
-        Resource resource = doResolve(descriptor);
-        doRegister(resource);
+    protected void doRegisterResource(ResourceDescriptor descriptor,
+            Object instance) {
+        Resource resource = doResolveResource(descriptor, instance);
+        doRegisterResource(resource);
+        doBind(resource);
         if (log.isInfoEnabled()) {
             log.info("registered management contribution for " + descriptor);
         }
     }
 
-    protected void doUnregister(ResourceDescriptor descriptor) {
+    protected void doUnregisterResource(ResourceDescriptor descriptor) {
         Resource resource = resources.remove(descriptor);
         if (resource == null) {
             throw new IllegalArgumentException(descriptor
@@ -176,45 +177,55 @@ public class ManagementServiceImpl extends DefaultComponent implements
         return resource;
     }
 
-    protected Resource doResolve(ResourceDescriptor descriptor) {
+    protected Resource doResolveResource(ResourceDescriptor descriptor,
+            Object resourceInstance) {
         Class<?> resourceClass = doLoadClass(descriptor.getClassName());
-        Object resourceInstance = doGetResourceInstance(resourceClass,
-                descriptor);
-        String resourceName = descriptor.getName();
-        if (resourceName == null) {
-            resourceName = resourceClass.getSimpleName();
+        if (resourceInstance == null) {
+            resourceInstance = doGetResourceInstance(resourceClass, descriptor);
         }
-        ObjectName managementName = ObjectNameFactory.getObjectName(resourceName);
+        String qualifiedName = descriptor.getQualifiedName();
+        if (qualifiedName == null) {
+            qualifiedName = ObjectNameFactory.getQualifiedName(resourceClass.getName());
+        }
+        ObjectName managementName = ObjectNameFactory.getObjectName(qualifiedName);
+        String shortName = descriptor.getShortName();
+        if (shortName == null) {
+            shortName = ObjectNameFactory.formatShortName(managementName);
+        }
         String ifaceClassName = descriptor.getIfaceClassName();
         Class<?> managementClass = ifaceClassName != null ? doLoadClass(ifaceClassName)
                 : resourceClass;
-        return new Resource(descriptor, managementName, managementClass,
-                resourceInstance);
+        return new Resource(descriptor, shortName, managementName,
+                managementClass, resourceInstance);
     }
 
     protected final ModelMBeanInfoFactory mbeanInfoFactory = new ModelMBeanInfoFactory();
 
     protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
-    public void register(ObjectName name, Object instance, Class<?> clazz) {
-        doRegister(name, instance, clazz);
+    public void registerResource(String shortName, String qualifiedName,
+            Class<?> managementClass, Object instance) {
+        doRegisterResource(shortName, qualifiedName, managementClass, instance);
     }
 
-    protected void doRegister(Resource resource) {
-        resources.put(resource.getDescriptor(), resource);
+    protected void doRegisterResource(Resource resource) {
+        resources.put(resource.shortName, resource);
         if (log.isDebugEnabled()) {
-            log.debug("registered " + resource.getName());
+            log.debug("registered " + resource.descriptor.getQualifiedName());
         }
     }
 
-    public void unregister(ObjectName name) {
-        doUnregister(name);
+    public void unregisterResource(String name) {
+        if (ObjectNameFactory.isQualified(name)) {
+            name = ObjectNameFactory.formatShortName(name);
+        }
+        doUnregisterResource(name);
     }
 
-    protected void doUnregister(ObjectName objectName) {
-        Resource resource = resources.remove(objectName);
+    protected void doUnregisterResource(String shortName) {
+        Resource resource = resources.remove(shortName);
         if (resource == null) {
-            throw new ManagementRuntimeException(objectName
+            throw new ManagementRuntimeException(shortName
                     + " is not registered");
         }
         if (resource.mbean != null) {
@@ -233,13 +244,12 @@ public class ManagementServiceImpl extends DefaultComponent implements
             mbean.setManagedResource(resource.getInstance(), "ObjectReference");
             mbean.setModelMBeanInfo(mbeanInfoFactory.getModelMBeanInfo(resource.getClazz()));
             mbean.setInstance(mbeanServer.registerMBean(mbean,
-                    resource.getName()));
+                    resource.getManagementName()));
             if (log.isDebugEnabled()) {
-                log.debug("bound " + resource.getName());
+                log.debug("bound " + resource.getShortName());
             }
         } catch (Exception e) {
-            log.error("Cannot bind "
-                    + resource.getDescriptor(), e);
+            log.error("Cannot bind " + resource.getDescriptor(), e);
         }
         resource.mbean = mbean;
     }
@@ -257,48 +267,53 @@ public class ManagementServiceImpl extends DefaultComponent implements
         } finally {
             resource.mbean = null;
             if (log.isDebugEnabled()) {
-                log.debug("unbound " + resource.getName());
+                log.debug("unbound " + resource.getShortName());
             }
         }
 
     }
 
+    public Set<String> getShortNames() {
+        Set<String> names = new HashSet<String>();
+        for (Resource resource:resources.values()) {
+            String name = resource.getDescriptor().getShortName();
+            if (resource.getDescriptor().getShortName() == null) continue;
+            names.add(name);
+        }
+        return names;
+    }
+    
+    
+    public Set<String> getQualifiedNames() {
+        Set<String> names = new HashSet<String>();
+        for (Resource resource:resources.values()) {
+            names.add(resource.descriptor.getQualifiedName());
+        }
+        return names;
+    }
+
+    public ObjectName lookupName(String name) {
+        if (!resources.containsKey(name))
+            return ObjectNameFactory.getObjectName(name);
+        return resources.get(name).getManagementName();
+    }
+
     public class ManagementAdapter implements ManagementServiceMBean {
+
+        public void bindResources() {
+            doBindResources();
+        }
+
+        public void unbindResources() {
+            doUnbindResources();
+        }
 
         public Set<ObjectName> getResourcesName() {
             Set<ObjectName> names = new HashSet<ObjectName>();
             for (Resource resource : resources.values()) {
-                names.add(resource.getName());
+                names.add(resource.getManagementName());
             }
             return names;
-        }
-
-        private boolean isEnabled = false;
-
-        public void enable() {
-            if (isEnabled) {
-                throw new IllegalStateException("already enabled");
-            }
-            try {
-                doBindResources();
-            } finally {
-                isEnabled = true;
-            }
-        }
-
-        public void disable() {
-            if (!isEnabled) {
-                throw new IllegalStateException("already disabled");
-            }
-            try {
-                doUnbindResources();
-            } finally {
-                isEnabled = false;
-            }
-        }
-
-        public boolean isEnabled() {
-            return resources != null;
         }
     }
 
@@ -343,9 +358,9 @@ public class ManagementServiceImpl extends DefaultComponent implements
 
     @Override
     public void deactivate(ComponentContext context) {
-        Iterator<Entry<ResourceDescriptor, Resource>> iterator = resources.entrySet().iterator();
+        Iterator<Entry<String, Resource>> iterator = resources.entrySet().iterator();
         while (iterator.hasNext()) {
-            Entry<ResourceDescriptor, Resource> entry = iterator.next();
+            Entry<String, Resource> entry = iterator.next();
             iterator.remove();
             Resource resource = entry.getValue();
             if (resource.mbean != null) {
@@ -359,5 +374,24 @@ public class ManagementServiceImpl extends DefaultComponent implements
                     "Cannot unbind management service from mbean server");
         }
     }
-    
+
+    public void bindResource(String name) {
+        if (ObjectNameFactory.isQualified(name)) {
+            name = ObjectNameFactory.formatShortName(name);
+        }
+        Resource resource = resources.get(name);
+        if (resource == null) {
+            throw new IllegalArgumentException(name + " is not registered");
+        }
+        doBind(resource);
+    }
+
+    public void unbindResource(String name) {
+        Resource resource = resources.get(name);
+        if (resource == null) {
+            throw new IllegalArgumentException(name + " is not registered");
+        }
+        doUnbind(resource);
+    }
+
 }

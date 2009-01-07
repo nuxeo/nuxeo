@@ -16,14 +16,15 @@
  */
 package org.nuxeo.runtime.management;
 
+import java.util.Set;
+
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  * 
  */
 public interface ManagementService {
 
-    void bindResources();
-    
-    void unbindResources();
-    
+    Set<String> getShortNames();
+    Set<String> getQualifiedNames();
+
 }

@@ -38,7 +38,7 @@ public class TestMBeanInfoFactory extends TestCase {
         MBeanAttributeInfo ifaceAttribute = ifaceInfo.getAttributes()[0];
         assertEquals("managedMessage", ifaceAttribute.getName());
         ModelMBeanInfo classInfo =
-            factoryUnderTest.getModelMBeanInfo(DummyServiceImpl.class);
+            factoryUnderTest.getModelMBeanInfo(DummyImpl.class);
         MBeanAttributeInfo classAttribute = classInfo.getAttributes()[0];
         assertEquals("message", classAttribute.getName());
     }
