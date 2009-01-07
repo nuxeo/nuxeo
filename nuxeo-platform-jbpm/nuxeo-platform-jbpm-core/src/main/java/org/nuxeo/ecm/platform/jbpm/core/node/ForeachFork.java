@@ -35,11 +35,20 @@ public class ForeachFork implements ActionHandler {
 
     @SuppressWarnings("unchecked")
     public void execute(ExecutionContext executionContext) {
-        List l = (List) executionContext.getVariable(list);
+        assert list != null;
+        assert var != null;
+        List l = (List) executionContext.getContextInstance().getTransientVariable(
+                list);
+        if (l == null) {
+            l = (List) executionContext.getVariable(list);
+        }
         executionContext.getToken();
         for (Object obj : l) {
-            Token childToken = new Token(executionContext.getToken(), obj.toString());
-            executionContext.getContextInstance().setVariable(var, obj, childToken);
+            Token childToken = new Token(executionContext.getToken(),
+                    obj.toString());
+            //executionContext.getContextInstance().setVariable(var, obj,
+            //        childToken);
+            executionContext.getContextInstance().setTransientVariable(var, obj);
             childToken.signal();
         }
     }

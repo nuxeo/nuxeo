@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.jbpm.JbpmConfiguration;
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
@@ -57,6 +58,12 @@ public interface JbpmService {
     public enum HibernateQueries {
         NuxeoHibernateQueries_getProcessInstancesForDoc, NuxeoHibernateQueries_getTaskInstancesForDoc
     }
+
+    /**
+     * Return the configuration.
+     */
+
+    JbpmConfiguration getConfiguration();
 
     /**
      * Execute a JbpmOperation.

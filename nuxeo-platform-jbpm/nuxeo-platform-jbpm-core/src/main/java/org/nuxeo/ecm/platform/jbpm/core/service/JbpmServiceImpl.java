@@ -59,6 +59,7 @@ public class JbpmServiceImpl implements JbpmService {
 
     private final List<JbpmSecurityPolicy> securityPolicies = new ArrayList<JbpmSecurityPolicy>();
 
+
     public Serializable executeJbpmOperation(JbpmOperation operation)
             throws NuxeoJbpmException {
         JbpmContext context = configuration.createJbpmContext();
@@ -136,7 +137,12 @@ public class JbpmServiceImpl implements JbpmService {
                 pi.getContextInstance().setVariable(
                         JbpmService.VariableName.documentRepositoryName.name(),
                         dm.getRepositoryName());
-                pi.signal();
+                TaskInstance ti = pi.getTaskMgmtInstance().createStartTaskInstance();
+                if(ti == null) {
+                    pi.signal();
+                } else {
+                    ti.end();
+                }
                 return pi;
             }
         });

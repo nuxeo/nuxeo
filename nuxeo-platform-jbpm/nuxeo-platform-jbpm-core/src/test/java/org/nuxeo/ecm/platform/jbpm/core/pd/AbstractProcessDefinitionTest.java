@@ -1,12 +1,16 @@
 package org.nuxeo.ecm.platform.jbpm.core.pd;
 
 import java.io.InputStream;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.jbpm.JbpmConfiguration;
 import org.jbpm.JbpmContext;
 import org.jbpm.graph.def.ProcessDefinition;
+import org.nuxeo.ecm.core.api.SimplePrincipal;
 
 public abstract class AbstractProcessDefinitionTest extends TestCase {
 
@@ -47,5 +51,12 @@ public abstract class AbstractProcessDefinitionTest extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         jbpmContext.close();
+    }
+
+    public List<Principal> getPrincipalsList() {
+        List<Principal> pList = new ArrayList<Principal>();
+        pList.add(new SimplePrincipal("bob"));
+        pList.add(new SimplePrincipal("trudy"));
+        return pList;
     }
 }

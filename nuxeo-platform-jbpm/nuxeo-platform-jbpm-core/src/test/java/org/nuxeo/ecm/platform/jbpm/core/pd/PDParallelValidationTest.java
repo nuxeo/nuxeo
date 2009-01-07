@@ -16,19 +16,55 @@
  */
 package org.nuxeo.ecm.platform.jbpm.core.pd;
 
+import java.security.Principal;
+import java.util.List;
+import java.util.Set;
+
 import org.jbpm.JbpmContext;
+import org.jbpm.graph.exe.ProcessInstance;
+import org.jbpm.taskmgmt.exe.TaskInstance;
 
 /**
  * @author arussel
  *
  */
 public class PDParallelValidationTest extends AbstractProcessDefinitionTest {
+    @SuppressWarnings("unchecked")
     public void testPD() {
         JbpmContext context = null;
         try {
             context = configuration.createJbpmContext();
+            context.setActorId("bob");
             assertNotNull(context);
             context.deployProcessDefinition(pd);
+            ProcessInstance pi = context.newProcessInstanceForUpdate("parallel-review");
+            TaskInstance ti = pi.getTaskMgmtInstance().createStartTaskInstance();
+            ti.end();
+            assertNotNull(pi);
+            assertEquals("bob", pi.getTaskMgmtInstance().getSwimlaneInstance(
+                    "initiator").getActorId());
+            Set<TaskInstance> tis = (Set<TaskInstance>) pi.getTaskMgmtInstance().getTaskInstances();
+            assertNotNull(tis);
+            assertEquals(2, tis.size());
+            List bobstask = context.getTaskList("bob");
+            assertEquals(1, bobstask.size());
+            assertEquals("bob",
+                    tis.toArray(new TaskInstance[] {})[0].getActorId());
+            // bob finish choosing the participants
+            List<Principal> list = getPrincipalsList();
+            pi.getContextInstance().setVariable("participants", list);
+            ti = (TaskInstance) context.getTaskList("bob").get(0);
+            ti.end();
+            // bob and trudy have tasks
+            assertEquals(1, context.getTaskList("bob").size());
+            assertEquals(1, context.getTaskList("trudy").size());
+            for (String actorId : new String[] { "bob", "trudy" }) {
+                ti = (TaskInstance) context.getTaskList(actorId).get(0);
+                ti.end();
+            }
+            List l = pi.findAllTokens();
+            // process finished
+            assertTrue(pi.hasEnded());
         } finally {
             context.close();
         }

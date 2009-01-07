@@ -1,24 +1,23 @@
 <process-definition name="validation-review">
+  <swimlane name="initiator"/>
   <start-state>
     <task swimlane='initiator' />
     <transition to='choose participants node' />
   </start-state>
   <task-node name="choose participants node">
-    <task name="choose participant">
-      <assignment swinlane="initiator"/>
-    </task>
+    <task name="choose participant" swimlane="initiator"/>
     <transition to="condition on participants"/>
   </task-node>
   <decision name="condition on participants">
-    <transition condition="#{participants.size == 0}" to="end"/>
     <transition to="validate node"/>
+    <transition condition="#{empty participants}" to="end"/>
   </decision>
   <task-node name="validate node">
     <task name="validate">
-      <assignement actor-id="participants.get(0)"/>
+      <assignment actor-id="#{participants[0].name}"/>
     </task>
-    <transition to="contition on participants">
-      <action expression="#{participants.remove(0)}"/>
+    <transition to="condition on participants">
+      <script>participants.remove(0);</script>
     </transition>
   </task-node>
   <end-state name="end"/>

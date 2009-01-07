@@ -1,4 +1,4 @@
-<process-definition name="approbation-validation">
+<process-definition name="publication">
 	<start-state>
 		<task swimlane='initiator' />
 		<transition to='for each section' />
@@ -11,17 +11,23 @@
     <transition to="need validation" />
   </node>
 	<decision name="need validation">
-	  <transition condition="#{coreSession.hasPermission(section.getRef(), 'Write')}" to="publish document"/>
-	  <transition to="ask permission"/>
+	  <handler class="org.nuxeo.ecm.platform.jbpm.core.helper.PublicationHelperImpl"/>
+	  <transition name="can publish" to="publish document"/>
+	  <transition name="need permission" to="ask permission"/>
 	</decision>
   <task-node name="ask permission">
     <task name="give permission">
-      <assignment pooled-actor="#{publicationHelper.getValidators(section)}"/>
+      <assignment class="org.nuxeo.ecm.platform.jbpm.core.helper.PublicationHelperImpl"/>
     </task>
     <transition to="publish document"/>
   </task-node>
   <node name="publish document">
-    <action expression="#{publicationHelper.publish(coreSession, document, section, token)}"/>
+     <script><![CDATA[
+         publicationHelper.publishDocument(executionContext.getContextInstance().getTransientVariable("session"),
+                                           executionContext.getContextInstance().getTransientVariable("document"),
+                                           executionContext.getContextInstance().getTransientVariable("section"));
+     ]]></script>
+     <transition to="join section"/>
   </node>
 	<join name="join section">
 		<transition to="end" />

@@ -1,27 +1,29 @@
+<?xml version="1.0"?>
 <process-definition name="parallel-review">
-	<start-state>
-    <task swimlane="initiator" />
-		<transition to="choose participants node" />
+	<swimlane name="initiator"/>
+	<start-state name="start state">
+	  <task swimlane="initiator"/>
+		<transition name="start process" to="choose participants node" />
 	</start-state>
 	<task-node name="choose participants node">
-		<task name="choose participant" swinlane="initiator"/>
+		<task name="choose participant" swimlane="initiator" />
 		<transition name="to fork each participant" to="fork each participant" />
 	</task-node>
 	<node name="fork each participant">
-    <action class="org.nuxeo.ecm.platform.jbpm.core.node.ForeachFork">
-      <var>participant</var>
-      <list>participants</list>
-    </action>
-    <transition to="validate node" />
-  </node>
+		<action class="org.nuxeo.ecm.platform.jbpm.core.node.ForeachFork">
+			<var>participant</var>
+			<list>participants</list>
+		</action>
+		<transition to="validate node" />
+	</node>
 	<task-node name="validate node">
 		<task name="validate">
-			<assignement actor-id="participant.actorId" />
+			<assignment actor-id="#{participant.name}" />
 		</task>
-		<transition to="participants join"/>
+		<transition to="participants join" />
 	</task-node>
 	<join name="participants join">
 		<transition to="end" />
 	</join>
-	<end-state name="end"/>
+	<end-state name="end" />
 </process-definition>
