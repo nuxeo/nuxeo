@@ -76,13 +76,17 @@
   		<artifactId>nuxeo-core</artifactId>
   	</dependency>
   	<dependency>
-  		<groupId>org.nuxeo.ecm.platform</groupId>
-  		<artifactId>nuxeo-runtime-management</artifactId>
-      <version>${nuxeo.runtime.version}</version>
-  	</dependency>
-  	<dependency>
   		<groupId>org.nuxeo.ecm.webengine</groupId>
   		<artifactId>nuxeo-webengine-core</artifactId>
+  	</dependency>
+  	<dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-jcr-connector-test</artifactId>
+    </dependency>
+  	<dependency>
+  		<groupId>org.nuxeo.runtime</groupId>
+  		<artifactId>nuxeo-runtime-management</artifactId>
+      <version>${nuxeo.runtime.version}</version>
   	</dependency>
     <!--  DEPENDENCIES ===========================
     <dependency>
@@ -99,12 +103,6 @@
       <artifactId>nuxeo-platform-webapp-core</artifactId>
       <type>ejb</type>
     </dependency>-->
-
-    
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-jcr-connector-test</artifactId>
-    </dependency>
 
   </dependencies>
 

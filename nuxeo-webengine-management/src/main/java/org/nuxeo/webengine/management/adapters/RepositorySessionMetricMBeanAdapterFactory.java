@@ -17,8 +17,6 @@ package org.nuxeo.webengine.management.adapters;
  *     matic
  */
 
-import javax.management.ObjectName;
-
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManagerImpl;
 import org.nuxeo.ecm.core.model.Repository;
@@ -26,6 +24,7 @@ import org.nuxeo.ecm.core.repository.RepositoryManager;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.AbstractResourceFactory;
+import org.nuxeo.runtime.management.ManagementServiceImpl;
 import org.nuxeo.runtime.management.ObjectNameFactory;
 import org.nuxeo.runtime.management.ResourceFactory;
 import org.nuxeo.runtime.management.ResourceFactoryDescriptor;
@@ -38,11 +37,16 @@ public class RepositorySessionMetricMBeanAdapterFactory extends
         AbstractResourceFactory implements ResourceFactory {
 
     public RepositorySessionMetricMBeanAdapterFactory(
-            ResourceFactoryDescriptor descriptor) {
-        super(descriptor);
+            ManagementServiceImpl service, ResourceFactoryDescriptor descriptor) {
+        super(service, descriptor);
     }
 
+    protected RepositoryManager manager;
+    
     protected RepositoryManager repositoryManager() {
+        if (manager != null) {
+            return manager;
+        }
         RepositoryService service = null;
         try {
             service = (RepositoryService) Framework.getRuntime().getComponent(
@@ -54,7 +58,7 @@ public class RepositorySessionMetricMBeanAdapterFactory extends
         if (service == null) {
             throw new ClientRuntimeException("Cannot get repository service");
         }
-        return service.getRepositoryManager();
+        return manager = service.getRepositoryManager();
     }
 
     protected Repository repository(RepositoryManager manager, String name) {
@@ -72,23 +76,21 @@ public class RepositorySessionMetricMBeanAdapterFactory extends
         return repository;
     }
 
-    public void registerResources(Callback callback) {
+    public void register() {
         RepositoryManager manager = repositoryManager();
-        String qualifiedName = ObjectNameFactory.getQualifiedName(RepositoryManagerImpl.NAME.getName());
+        String qualifiedName = ObjectNameFactory.formatQualifiedName(RepositoryManagerImpl.NAME);
 
-        callback.invokeFor(ObjectNameFactory.getObjectName(qualifiedName,
-                "metric"), WholeRepositoriesSessionMetricMBean.class,
+        service.registerResource(null, qualifiedName + ",info=metric",
+                WholeRepositoriesSessionMetricMBean.class,
                 new WholeRepositoriesSessionMetricMBeanAdapter(manager));
 
         for (String repositoryName : manager.getRepositoryNames()) {
-            ObjectName objectName = ObjectNameFactory.getObjectName(
-                    qualifiedName + ",repository=" + repositoryName, "metric");
-            Object objectInstance = new RepositorySessionMetricMBeanAdapter(
-                    repository(manager, repositoryName));
-            callback.invokeFor(objectName, RepositorySessionMetricMBean.class,
-                    objectInstance);
+            service.registerResource(null, qualifiedName + ",repository="
+                    + repositoryName + ",info=metric",
+                    RepositorySessionMetricMBean.class,
+                    new RepositorySessionMetricMBeanAdapter(repository(manager,
+                            repositoryName)));
             ;
         }
-        ;
     }
 }

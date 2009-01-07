@@ -33,16 +33,21 @@ import org.nuxeo.runtime.model.RegistrationInfo;
  */
 public class RuntimeInventoryMBeanAdapter implements RuntimeInventoryMBean {
 
-    protected RuntimeService runtimeService() {
-        return Framework.getRuntime();
+    public RuntimeInventoryMBeanAdapter(
+            RuntimeInventoryMBeanAdapterFactory factory) {
+        this.factory = factory;
     }
 
+    protected final RuntimeService runtimeService = Framework.getRuntime();
+
+    protected final RuntimeInventoryMBeanAdapterFactory factory;
+
     protected Collection<RegistrationInfo> availableComponents() {
-        return runtimeService().getComponentManager().getRegistrations();
+        return runtimeService.getComponentManager().getRegistrations();
     }
 
     protected Collection<ComponentName> pendingComponentsName() {
-        return runtimeService().getComponentManager().getActivatingRegistrations();
+        return runtimeService.getComponentManager().getActivatingRegistrations();
     }
 
     public Set<String> getAvailableComponents() {
@@ -54,7 +59,7 @@ public class RuntimeInventoryMBeanAdapter implements RuntimeInventoryMBean {
     }
 
     public Integer getAvailableComponentsCount() {
-        return runtimeService().getComponentManager().getRegistrations().size();
+        return runtimeService.getComponentManager().getRegistrations().size();
     }
 
     public Integer getPendingComponentsCount() {
@@ -70,23 +75,45 @@ public class RuntimeInventoryMBeanAdapter implements RuntimeInventoryMBean {
     }
 
     public String getDescription() {
-        return runtimeService().getDescription();
+        return runtimeService.getDescription();
     }
 
     public String getHome() {
         try {
-            return runtimeService().getHome().getCanonicalPath();
+            return runtimeService.getHome().getCanonicalPath();
         } catch (IOException e) {
             throw new ClientRuntimeException("cannot get path", e);
         }
     }
 
     public String getName() {
-        return runtimeService().getName();
+        return runtimeService.getName();
     }
 
     public String getVersion() {
-        return runtimeService().getVersion().toString();
+        return runtimeService.getVersion().toString();
+    }
+
+    protected boolean isTreeBound = false;
+
+    public boolean isTreeBound() {
+        return isTreeBound;
+    }
+
+    public void bindTree() {
+        if (isTreeBound == true) {
+            throw new IllegalArgumentException("tree already bound");
+        }
+        isTreeBound = true;
+        factory.bindTree();
+    }
+
+    public void unbindTree() {
+        if (isTreeBound == false) {
+            throw new IllegalArgumentException("tree not bound");
+        }
+        isTreeBound = false;
+        factory.unbindTree();
     }
 
 }

@@ -32,7 +32,6 @@ public interface RuntimeInventoryMBean {
 
     String getHome();
 
-   
     Set<String> getAvailableComponents();
 
     Integer getAvailableComponentsCount();
@@ -40,5 +39,11 @@ public interface RuntimeInventoryMBean {
     Set<String> getPendingComponentsName();
 
     Integer getPendingComponentsCount();
+
+    void bindTree();
+
+    void unbindTree();
+    
+    boolean isTreeBound();
 
 }
