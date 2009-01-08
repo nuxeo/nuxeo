@@ -22,6 +22,7 @@ import org.nuxeo.runtime.management.ManagementServiceImpl;
 import org.nuxeo.runtime.management.ObjectNameFactory;
 import org.nuxeo.runtime.management.ResourceFactory;
 import org.nuxeo.runtime.management.ResourceFactoryDescriptor;
+import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.RegistrationInfo;
@@ -39,37 +40,37 @@ public class RuntimeInventoryMBeanAdapterFactory extends
     }
 
     public void register() {
-        service.registerResource("inventory", ObjectNameFactory.formatQualifiedName("factory",
+        service.registerResource("runtime-inventory", ObjectNameFactory.formatQualifiedName("factory",
                 "RuntimeInventory"), RuntimeInventoryMBean.class,
                 new RuntimeInventoryMBeanAdapter(this));
     }
 
     public void bindTree() {
         doVisitInventory(new Callback() {
-            public void invokeFor(String name, Class<?> info, Object instance) {
-                service.registerResource(null, name + ",info=inventory", info, instance);
+            public void invokeFor(String name, String qualifiedName, Class<?> info, Object instance) {
+                service.registerResource("runtime-" + name + "-inventory", qualifiedName + ",info=inventory", info, instance);
             }
         });
     }
     
     public void unbindTree() {
         doVisitInventory(new Callback() {
-            public void invokeFor(String name, Class<?> info, Object instance) {
-                service.unregisterResource(ObjectNameFactory.formatShortName(name + ",info=inventory"));
+            public void invokeFor(String name, String qualifiedName, Class<?> info, Object instance) {
+                service.unregisterResource("runtime-" + name + "-inventory", qualifiedName + ",info=inventory");
             }
         });
     }
 
     private interface Callback {
-        void invokeFor(String name, Class<?> info, Object instance);
+        void invokeFor(String name, String qualifiedName, Class<?> info, Object instance);
     }
 
     protected void doVisitInventory(Callback callback) {
         for (RegistrationInfo info : Framework.getRuntime().getComponentManager().getRegistrations()) {
             doVisitInventoryComponent(new Callback() {
-                public void invokeFor(String name, Class<?> info,
+                public void invokeFor(String name, String qualifiedName, Class<?> info,
                         Object instance) {
-                    service.registerResource(null, name + ",info=inventory", info,
+                    service.registerResource("runtime-" + name + "-inventory", qualifiedName + ",info=inventory", info,
                             instance);
                 }
             }, info);
@@ -78,41 +79,48 @@ public class RuntimeInventoryMBeanAdapterFactory extends
 
     protected void doVisitInventoryComponent(Callback callback,
             RegistrationInfo info) {
-        String formattedName = ObjectNameFactory.formatQualifiedName(info.getName());
-        callback.invokeFor(formattedName, ComponentInventoryMBean.class,
+        ComponentName componentName= info.getName();
+        String name = componentName.getName();
+        String qualifiedName = ObjectNameFactory.formatQualifiedName(componentName);
+        callback.invokeFor(name, qualifiedName, ComponentInventoryMBean.class,
                 new ComponentInventoryMBeanAdapter(info));
         for (ExtensionPoint extensionPoint : info.getExtensionPoints()) {
-            doVisitInventoryExtensionPoint(callback, formattedName,
+            doVisitInventoryExtensionPoint(callback, name, qualifiedName,
                     extensionPoint);
         }
         for (Extension extension : info.getExtensions()) {
-            doVisitInventoryExtension(callback, formattedName, extension);
+            doVisitInventoryExtension(callback, name, qualifiedName, extension);
         }
     }
 
     protected void doVisitInventoryExtensionPoint(Callback callback,
-            String formattedName, ExtensionPoint extensionPoint) {
-        callback.invokeFor(formattedName + ",extensionPoint="
-                + extensionPoint.getName(), ExtensionPointInventoryMBean.class,
+            String name, String qualifiedName, ExtensionPoint extensionPoint) {
+        name += "-" + extensionPoint.getName();
+        qualifiedName += ",extensionPoint=" + extensionPoint.getName();
+        callback.invokeFor(name, qualifiedName, ExtensionPointInventoryMBean.class,
                 new ExtensionPointInventoryMBeanAdapter(extensionPoint));
 
     }
 
     protected void doVisitInventoryExtension(Callback callback,
-            String formattedName, Extension extension) {
-        formattedName += ",extensionPoint=" + extension.getExtensionPoint();
+            String name,
+            String qualifiedName, Extension extension) {
+        qualifiedName += ",extensionPoint=" + extension.getExtensionPoint();
         Object[] contributions = extension.getContributions();
         if (contributions == null)
             return;
         for (Object contribution : contributions) {
-            doVisitInventoryContribution(callback, formattedName, contribution);
+            doVisitInventoryContribution(callback, name, qualifiedName, contribution);
         }
     }
 
     private void doVisitInventoryContribution(Callback callback,
-            String formattedName, Object contribution) {
-        formattedName += ",contribution="
-                + Integer.toHexString(contribution.hashCode());
-        callback.invokeFor(formattedName, contribution.getClass(), contribution);
+            String name,
+            String qualifiedName, Object contribution) {
+        String hexName = Integer.toHexString(contribution.hashCode());
+        name = name + "-" + hexName;
+        qualifiedName += ",contribution="
+                + hexName;
+        callback.invokeFor(name,qualifiedName, contribution.getClass(), contribution);
     }
 }

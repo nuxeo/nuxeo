@@ -2,7 +2,7 @@
 
 <#assign logic = Context.tail() />
 
-<resource name="${name}" qname="${qualifiedName}" path="${path}" >
+<resource name="${name}" >
 
 <#list objectInfo.attributes as attributeInfo>
   <attribute name="${attributeInfo.name}" value="${logic.getObjectAttribute(objectName, attributeInfo)}"/>

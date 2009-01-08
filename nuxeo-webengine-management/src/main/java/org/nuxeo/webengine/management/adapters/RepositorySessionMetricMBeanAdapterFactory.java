@@ -80,12 +80,12 @@ public class RepositorySessionMetricMBeanAdapterFactory extends
         RepositoryManager manager = repositoryManager();
         String qualifiedName = ObjectNameFactory.formatQualifiedName(RepositoryManagerImpl.NAME);
 
-        service.registerResource(null, qualifiedName + ",info=metric",
+        service.registerResource("repository-metric", qualifiedName + ",info=metric",
                 WholeRepositoriesSessionMetricMBean.class,
                 new WholeRepositoriesSessionMetricMBeanAdapter(manager));
 
         for (String repositoryName : manager.getRepositoryNames()) {
-            service.registerResource(null, qualifiedName + ",repository="
+            service.registerResource("repository-" + repositoryName + "-metric", qualifiedName + ",repository="
                     + repositoryName + ",info=metric",
                     RepositorySessionMetricMBean.class,
                     new RepositorySessionMetricMBeanAdapter(repository(manager,

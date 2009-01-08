@@ -30,7 +30,7 @@ public class Main extends DefaultModule {
 	@GET
 	@Produces(["text/xml; charset=UTF-8"])
 	public Object doGetShortNamesXML() {
-		return getTemplate("list-short-names.xml.ftl");
+		return getTemplate("list-shortcuts.xml.ftl");
 	}
 	
 	@GET
@@ -41,7 +41,6 @@ public class Main extends DefaultModule {
 		return getTemplate("list-attributes.xml.ftl").
 		    arg("name", name).
 		    arg("qualifiedName", objectName.toString()).
-		    arg("path", getPath(name)).
 	        arg("objectName",objectName).
 	        arg("objectInfo",objectInfo);
 	}
@@ -66,8 +65,8 @@ public class Main extends DefaultModule {
 		return mbeanServer.getAttribute(objectName,attributeInfo.getName()).toString();
 	}
 	
-	public Set<String> getShortNames() {
-		return service.getShortNames();
+	public Set<String> getShortcutsName() {
+		return service.getShortcutsName();
 	}
 	
 	public String getQualifiedName(String name) {
