@@ -71,6 +71,11 @@ public class SimpleBlobHolder extends AbstractBlobHolder implements BlobHolder {
         }
     }
 
+    @Override
+    public List<Blob> getBlobs() throws ClientException {
+        return blobs;
+    }
+
     protected String getBasePath() {
         return "";
     }

@@ -82,8 +82,8 @@ public class TestBlobHolderPersistence extends TestCase {
         mainBlob = subBlobs.remove(0);
 
         for (Blob subBlob : subBlobs ) {
-            assertTrue(mainBlob.getFilename().startsWith("subFile"));
-            assertTrue(mainBlob.getString().startsWith("FileContent_0"));
+            assertTrue(subBlob.getFilename().startsWith("subFile"));
+            assertTrue(subBlob.getString().startsWith("FileContent_"));
         }
 
     }

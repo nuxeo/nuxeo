@@ -98,8 +98,8 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements Cachab
             Path subDirPath = path.append("subFiles");
             File subDir = new File(subDirPath.toString());
             subDir.mkdir();
-            blobs.remove(0);
-            for (Blob blob : blobs) {
+            for (int i = 1; i< blobs.size(); i++ ) {
+                Blob blob = blobs.get(i);
                 File file = new File((subDirPath.append(blob.getFilename())).toString());
                 blob.transferTo(file);
             }
