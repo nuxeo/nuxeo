@@ -55,8 +55,11 @@ public class AuditEventMetricMBeanAdapter implements AuditEventMetricMBean {
     private static final Log log = LogFactory.getLog(AuditEventMetricMBeanAdapter.class);
 
     public static void register(NXAuditEventsService service, String name) {
-        managementService = (ManagementServiceImpl) Framework.getRuntime().getComponent(
-                ManagementServiceImpl.NAME);
+       
+        if (managementService == null) {
+            managementService = (ManagementServiceImpl) Framework.getRuntime().getComponent(
+                    ManagementServiceImpl.NAME);
+        }
         if (managementService == null) {
             if (log.isWarnEnabled()) {
                 log.warn("cannot register event metric mbean for " + name
@@ -64,14 +67,14 @@ public class AuditEventMetricMBeanAdapter implements AuditEventMetricMBean {
             }
             return;
         }
-        managementService.registerResource(name,getQualifiedName(name),
+        managementService.registerResource("event-" + name + "-metric",getQualifiedName(name),
                 AuditEventMetricMBean.class, new AuditEventMetricMBeanAdapter(service, name));
     }
 
     public static void unregister(String name) {
         if (managementService == null)
             return;
-        managementService.unregisterResource(getQualifiedName(name));
+        managementService.unregisterResource(name, getQualifiedName(name));
     }
 
     public Long getCount() {
