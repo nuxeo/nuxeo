@@ -22,7 +22,7 @@ package org.nuxeo.ecm.core.api.tree;
 import org.nuxeo.ecm.core.api.Sorter;
 
 /**
- * Interface for document tree sorter
+ * Interface for document tree sorter.
  *
  * @author Anahide Tchertchian
  */

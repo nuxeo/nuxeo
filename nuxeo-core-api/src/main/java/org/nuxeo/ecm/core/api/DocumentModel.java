@@ -65,8 +65,9 @@ import org.nuxeo.ecm.core.schema.DocumentType;
  * }
  * </code></pre>
  *
+ * @see CoreSession
+ * @see DataModel
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface DocumentModel extends Serializable {
 
@@ -179,7 +180,7 @@ public interface DocumentModel extends Serializable {
     Set<String> getDeclaredFacets();
 
     /**
-     * Gets a list with the actual fetched data models.
+     * Gets a list with the currently fetched data models.
      *
      * @return the data models that are already fetched as a collection
      */
@@ -598,14 +599,16 @@ public interface DocumentModel extends Serializable {
     DocumentPart getPart(String schema) throws ClientException;
 
     /**
-     * Get this document parts
+     * Gets this document's parts.
+     *
      * @return
      * @throws ClientException
      */
     DocumentPart[] getParts() throws ClientException;
 
     /**
-     * Get a property given a xpath
+     * Gets a property given a xpath.
+     *
      * @param xpath
      * @return
      * @throws PropertyException
@@ -641,8 +644,9 @@ public interface DocumentModel extends Serializable {
     long getFlags();
 
     /**
-     * Clear any prefetched or cached document data. This will force the document to lazy update
-     * it's data when required.
+     * Clears any prefetched or cached document data.
+     * <p>
+     * This will force the document to lazily update its data when required.
      */
     void reset();
 

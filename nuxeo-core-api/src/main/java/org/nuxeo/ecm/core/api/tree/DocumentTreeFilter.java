@@ -24,7 +24,7 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.Filter;
 
 /**
- * Interface for document tree filter
+ * Interface for document tree filter.
  *
  * @author Anahide Tchertchian
  */

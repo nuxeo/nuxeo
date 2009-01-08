@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.tree.DocumentTreeFilter;
 
 /**
- * Default filter for tree elements
+ * Default filter for tree elements.
  * <p>
  * Filters using facets and types criteria. Also filters documents that are in
  * the "deleted" life cycle state.
