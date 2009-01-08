@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,24 +12,21 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     george
+ *     bstefanescu
  *
  * $Id$
  */
 
-package org.nuxeo.ecm.webapp.tree;
+package org.nuxeo.ecm.platform.gwt.client.ui;
 
-import org.nuxeo.ecm.core.api.Sorter;
+import com.smartgwt.client.widgets.Canvas;
 
 /**
- * Interface for document tree sorter
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
- * @author Anahide Tchertchian
  */
-public interface DocumentTreeSorter extends Sorter {
+public interface ControlContainer {
 
-    String getSortPropertyPath();
-
-    void setSortPropertyPath(String sortPropertyPath);
-
+    public Canvas[] getControls();
+    
 }

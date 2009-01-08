@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -190,7 +189,7 @@ public class NXAuditEventsService extends DefaultComponent implements
     }
 
     protected void doPutExtendedInfos(LogEntry entry, DocumentMessage message,
-            DocumentModel source, NuxeoPrincipal principal) {
+            DocumentModel source, Principal principal) {
         ExpressionContext context = new ExpressionContext();
         if (message != null) {
             expressionEvaluator.bindValue(context, "message", message);
@@ -213,36 +212,27 @@ public class NXAuditEventsService extends DefaultComponent implements
         }
     }
 
-    protected NuxeoPrincipal doCastPrincipal(Principal principal) {
-        if (!(principal instanceof NuxeoPrincipal)) {
-            if (log.isWarnEnabled())
-                log.warn("not a nuxeo principal " + principal);
-            return null;
-        }
-        return (NuxeoPrincipal) principal;
-    }
-
-    protected NuxeoPrincipal guardedPrincipal(DocumentMessage message) {
+    protected Principal guardedPrincipal(DocumentMessage message) {
         try {
-            return doCastPrincipal(message.getPrincipal());
+            return message.getPrincipal();
         } catch (Exception e) {
             throw new AuditRuntimeException("Cannot get principal from "
                     + message, e);
         }
     }
 
-    protected NuxeoPrincipal guardedPrincipal(CoreSession session) {
+    protected Principal guardedPrincipal(CoreSession session) {
         try {
-            return doCastPrincipal(session.getPrincipal());
+            return session.getPrincipal();
         } catch (Exception e) {
             throw new AuditRuntimeException("Cannot get principal from "
                     + session, e);
         }
     }
 
-    protected NuxeoPrincipal guardedPrincipal(CoreEvent event) {
+    protected Principal guardedPrincipal(CoreEvent event) {
         try {
-            return doCastPrincipal(event.getPrincipal());
+            return event.getPrincipal();
         } catch (Exception e) {
             throw new AuditRuntimeException("Cannot get principal from "
                     + event, e);
@@ -310,7 +300,7 @@ public class NXAuditEventsService extends DefaultComponent implements
             DocumentMessage message) throws AuditException {
 
         DocumentModel source = guardedDocument(session, message);
-        NuxeoPrincipal principal = guardedPrincipal(message);
+        Principal principal = guardedPrincipal(message);
 
         LogEntry entry = new LogEntry();
         entry.setEventId(message.getEventId());
@@ -330,7 +320,7 @@ public class NXAuditEventsService extends DefaultComponent implements
 
     protected LogEntry doCreateAndFillEntryFromEvent(CoreEvent event)
             throws AuditException {
-        NuxeoPrincipal principal = guardedPrincipal(event);
+        Principal principal = guardedPrincipal(event);
         DocumentModel document = (DocumentModel) event.getSource();
         LogEntry entry = new LogEntry();
         entry.setEventId(event.getEventId());
@@ -358,7 +348,7 @@ public class NXAuditEventsService extends DefaultComponent implements
     }
 
     protected LogEntry doCreateAndFillEntryFromDocument(DocumentModel doc,
-            NuxeoPrincipal principal) throws AuditException {
+            Principal principal) throws AuditException {
         LogEntry entry = new LogEntry();
         entry.setDocPath(doc.getPathAsString());
         entry.setDocType(doc.getType());
@@ -557,7 +547,7 @@ public class NXAuditEventsService extends DefaultComponent implements
 
         long nbSynchedEntries = 1;
 
-        NuxeoPrincipal principal = guardedPrincipal(session);
+        Principal principal = guardedPrincipal(session);
         List<DocumentModel> folderishChildren = new ArrayList<DocumentModel>();
 
         provider.addLogEntry(doCreateAndFillEntryFromDocument(node,
