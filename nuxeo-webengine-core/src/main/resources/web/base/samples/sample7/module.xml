@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <module>
 
 <links>
@@ -17,6 +16,7 @@
     <type>Document</type>
     <category>TOOLS</category>
   </link>
+
   <!-- this is only demonstrating link conditions - this is not a real link...
        This link will be enabled only for WebObject derived from Workspace
   -->
@@ -27,4 +27,3 @@
 </links>
 
 </module>
-
