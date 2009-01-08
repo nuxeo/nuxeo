@@ -192,8 +192,9 @@ public abstract class AbstractResourceType implements ResourceType {
     }
 
     protected ScriptFile findSkinTemplate(Module module, String name) {
-        return module.getFile(new StringBuilder().append("views/")
-                .append(this.name).append("/").append(name).toString());
+        return module.getFile(new StringBuilder().append("views").
+                append(File.separatorChar).append(this.name)
+                .append(File.separatorChar).append(name).toString());
     }
 
     protected ScriptFile findTypeTemplate(Module module, String name) throws IOException {
@@ -212,8 +213,9 @@ public abstract class AbstractResourceType implements ResourceType {
         if (p > -1) {
             path = path.substring(0, p);
         }
-        path = path.replace('.', '/');
-        return new StringBuilder().append("/").append(path).append('/')
+        path = path.replace('.', File.separatorChar);
+        return new StringBuilder().append(File.separatorChar).append(path)
+                .append(File.separatorChar)
                 .append(fileName).toString();
     }
 
