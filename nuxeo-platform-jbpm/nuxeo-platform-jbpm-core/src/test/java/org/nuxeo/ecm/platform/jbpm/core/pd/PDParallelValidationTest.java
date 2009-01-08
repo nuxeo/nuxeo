@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.platform.jbpm.core.pd;
 
-import java.security.Principal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -51,8 +51,7 @@ public class PDParallelValidationTest extends AbstractProcessDefinitionTest {
             assertEquals("bob",
                     tis.toArray(new TaskInstance[] {})[0].getActorId());
             // bob finish choosing the participants
-            List<Principal> list = getPrincipalsList();
-            pi.getContextInstance().setVariable("participants", list);
+            pi.getContextInstance().setVariable("participants", Arrays.asList(new String[]{"bob", "trudy"}));
             ti = (TaskInstance) context.getTaskList("bob").get(0);
             ti.end();
             // bob and trudy have tasks

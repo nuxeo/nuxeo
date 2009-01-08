@@ -1,0 +1,34 @@
+<div xmlns:nxthemes="http://nuxeo.org/nxthemes"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:nxu="http://nuxeo.org/nxweb/util"><h:form>
+	<table class="dataInput">
+		<tbody>
+			<tr>
+				<td class="labelColumn"><h:outputText
+					value="#{messages['label.review.select.reviewers']}" /></td>
+				<td class="labelField">
+				<div><ui:include src="/incl/select_users_search.xhtml" /></div>
+				<table class="rightsAddManager">
+					<tr>
+						<td valign="top"><ui:include
+							src="/incl/select_users_results.xhtml" /></td>
+						<td valign="top"><ui:include
+							src="/incl/select_users_selection.xhtml" /></td>
+					</tr>
+				</table>
+				</td>
+			</tr>
+			<tr>
+			  <c:set var="tasksubmitlabel" value="label.task.#{task.name}.submit"/>
+				<h:commandButton type="submit"
+					value="#{messages[tasksubmitlabel]}"
+					styleClass="button"
+					action="#{jbpmHelper.endTask(task, principalListManager)}" />
+			</tr>
+		</tbody>
+	</table>
+</h:form></div>

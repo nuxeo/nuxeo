@@ -5,7 +5,7 @@
     <transition to='choose participants node' />
   </start-state>
   <task-node name="choose participants node">
-    <task name="choose participant" swimlane="initiator"/>
+    <task name="choose-participant" swimlane="initiator"/>
     <transition to="condition on participants"/>
   </task-node>
   <decision name="condition on participants">
@@ -14,7 +14,7 @@
   </decision>
   <task-node name="validate node">
     <task name="validate">
-      <assignment actor-id="#{participants[0].name}"/>
+      <assignment actor-id="#{participants[0]}"/>
     </task>
     <transition to="condition on participants">
       <script>participants.remove(0);</script>

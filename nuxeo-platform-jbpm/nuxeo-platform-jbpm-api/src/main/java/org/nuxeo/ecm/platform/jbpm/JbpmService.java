@@ -222,7 +222,7 @@ public interface JbpmService {
      * @return
      * @throws NuxeoJbpmException
      */
-    List<TaskInstance> getTaskInstances(DocumentModel dm, NuxeoPrincipal user)
+    List<TaskInstance> getTaskInstances(DocumentModel dm, NuxeoPrincipal user, JbpmListFilter jbpmListFilter)
             throws NuxeoJbpmException;
 
     /**
@@ -234,5 +234,5 @@ public interface JbpmService {
      * @throws NuxeoJbpmException
      */
     List<ProcessInstance> getProcessInstances(DocumentModel dm,
-            NuxeoPrincipal user) throws NuxeoJbpmException;
+            NuxeoPrincipal user, JbpmListFilter jbpmListFilter) throws NuxeoJbpmException;
 }

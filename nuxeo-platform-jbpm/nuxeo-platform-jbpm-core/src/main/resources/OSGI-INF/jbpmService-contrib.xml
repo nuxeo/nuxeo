@@ -15,8 +15,8 @@
 			deployer="ifChanged" />
 		<processDefinition path="process/validation-review.xml"
 			deployer="ifChanged" />
-		<processDefinition path="process/publication.xml"
-			deployer="ifChanged" />
+		<!-- processDefinition path="process/publication.xml"
+			deployer="ifChanged" / -->
 	</extension>
 	<extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService"
 		point="configurationPath">

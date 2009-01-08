@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.jbpm.core.pd;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.jbpm.JbpmContext;
@@ -51,7 +53,8 @@ public class ValidationReviewTest extends AbstractProcessDefinitionTest {
             //choosing participant task
             List<TaskInstance> bobstask = context.getTaskList("bob");
             assertEquals(1, bobstask.size());
-            pi.getContextInstance().setVariable("participants", getPrincipalsList());
+            ArrayList<String> list = new ArrayList<String>(Arrays.asList(new String[]{"bob", "trudy"}));
+            pi.getContextInstance().setVariable("participants", list);
             bobstask.get(0).end();
             //first evaluation
             bobstask = context.getTaskList("bob");

@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.security.SecurityService;
+import org.nuxeo.ecm.platform.jbpm.JbpmListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmOperation;
 import org.nuxeo.ecm.platform.jbpm.JbpmSecurityPolicy;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
@@ -58,7 +59,6 @@ public class JbpmServiceImpl implements JbpmService {
     private UserManager userManager;
 
     private final List<JbpmSecurityPolicy> securityPolicies = new ArrayList<JbpmSecurityPolicy>();
-
 
     public Serializable executeJbpmOperation(JbpmOperation operation)
             throws NuxeoJbpmException {
@@ -87,7 +87,10 @@ public class JbpmServiceImpl implements JbpmService {
             return (List<TaskInstance>) executeJbpmOperation(new JbpmOperation() {
                 public ArrayList<TaskInstance> run(JbpmContext context)
                         throws NuxeoJbpmException {
+                    List<String> groups = currentUser.getAllGroups();
+                    groups.add(currentUser.getName());
                     context.setActorId(currentUser.getName());
+                    context.getTaskMgmtSession().findTaskInstances(groups);
                     return toArrayList(context.getTaskList(currentUser.getName()));
                 }
 
@@ -138,7 +141,7 @@ public class JbpmServiceImpl implements JbpmService {
                         JbpmService.VariableName.documentRepositoryName.name(),
                         dm.getRepositoryName());
                 TaskInstance ti = pi.getTaskMgmtInstance().createStartTaskInstance();
-                if(ti == null) {
+                if (ti == null) {
                     pi.signal();
                 } else {
                     ti.end();
@@ -221,7 +224,8 @@ public class JbpmServiceImpl implements JbpmService {
 
     @SuppressWarnings("unchecked")
     public List<ProcessInstance> getProcessInstances(final DocumentModel dm,
-            final NuxeoPrincipal user) throws NuxeoJbpmException {
+            final NuxeoPrincipal user, final JbpmListFilter jbpmListFilter)
+            throws NuxeoJbpmException {
         return (List<ProcessInstance>) executeJbpmOperation(new JbpmOperation() {
             public ArrayList<ProcessInstance> run(JbpmContext context)
                     throws NuxeoJbpmException {
@@ -235,6 +239,9 @@ public class JbpmServiceImpl implements JbpmService {
                 for (ProcessInstance pi : list) {
                     result.add(pi);
                 }
+                if (jbpmListFilter != null) {
+                    result = jbpmListFilter.filter(context, dm, result, user);
+                }
                 return result;
             }
         });
@@ -242,19 +249,51 @@ public class JbpmServiceImpl implements JbpmService {
 
     @SuppressWarnings("unchecked")
     public List<TaskInstance> getTaskInstances(final DocumentModel dm,
-            final NuxeoPrincipal user) throws NuxeoJbpmException {
+            final NuxeoPrincipal user, final JbpmListFilter filter)
+            throws NuxeoJbpmException {
+        assert dm != null;
+        assert user != null;
         return (List<TaskInstance>) executeJbpmOperation(new JbpmOperation() {
             public ArrayList<TaskInstance> run(JbpmContext context)
                     throws NuxeoJbpmException {
-                context.setActorId(user.getName());
+                if (user != null) {
+                    context.setActorId(user.getName());
+                }
+                List<String> groups = user.getAllGroups();
+                groups.add(user.getName());
+                List<TaskInstance> tis = context.getTaskMgmtSession().findTaskInstances(
+                        groups);
+                List<Long> donePi = new ArrayList<Long>();
+                List<Long> useDocument = new ArrayList<Long>();
                 ArrayList<TaskInstance> result = new ArrayList<TaskInstance>();
-                Session session = context.getSession();
-                List<TaskInstance> list = session.getNamedQuery(
-                        JbpmService.HibernateQueries.NuxeoHibernateQueries_getTaskInstancesForDoc.name()).setParameter(
-                        "docId", dm.getId()).setParameter("repoId",
-                        dm.getRepositoryName()).list();
-                for (TaskInstance pi : list) {
-                    result.add(pi);
+                // we need to look at the variables of the process instance of
+                // the task.
+                for (TaskInstance ti : tis) {
+                    ProcessInstance pi = ti.getProcessInstance();
+                    if (pi == null) {// task created outside a process
+                        String docId = (String) ti.getVariable(JbpmService.VariableName.documentId.name());
+                        String repoId = (String) ti.getVariable(JbpmService.VariableName.documentRepositoryName.name());
+                        if (docId == dm.getId()
+                                && repoId == dm.getRepositoryName()) {
+                            result.add(ti);
+                        }
+                    } else if (!donePi.contains(pi.getId())) {
+                        String docId = (String) pi.getContextInstance().getVariable(
+                                JbpmService.VariableName.documentId.name());
+                        String repoId = (String) pi.getContextInstance().getVariable(
+                                JbpmService.VariableName.documentRepositoryName.name());
+                        donePi.add(pi.getId());
+                        if (docId.equals(dm.getId())
+                                && repoId.equals(dm.getRepositoryName())) {
+                            useDocument.add(pi.getId());
+                        }
+                        if (useDocument.contains(pi.getId())) {
+                            result.add(ti);
+                        }
+                    }
+                }
+                if (filter != null) {
+                    result = filter.filter(context, dm, result, user);
                 }
                 return result;
             }
@@ -317,7 +356,7 @@ public class JbpmServiceImpl implements JbpmService {
                         throw new NuxeoJbpmSecurityException();
                     }
                 }
-                if (transition == null) {
+                if (transition == null || transition.equals("")) {
                     ti.end();
                 } else {
                     ti.end(transition);
@@ -330,7 +369,7 @@ public class JbpmServiceImpl implements JbpmService {
     protected NuxeoPrincipal getPrincipal(String user)
             throws NuxeoJbpmException {
         try {
-            return userManager.getPrincipal(user);
+            return getUserManager().getPrincipal(user);
         } catch (ClientException e) {
             throw new NuxeoJbpmException(e);
         }
@@ -458,6 +497,6 @@ public class JbpmServiceImpl implements JbpmService {
                 return perm;
             }
         }
-        return null;
+        return Boolean.TRUE;
     }
 }

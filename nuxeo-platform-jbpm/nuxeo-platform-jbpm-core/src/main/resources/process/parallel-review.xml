@@ -6,7 +6,7 @@
 		<transition name="start process" to="choose participants node" />
 	</start-state>
 	<task-node name="choose participants node">
-		<task name="choose participant" swimlane="initiator" />
+		<task name="choose-participant" swimlane="initiator" />
 		<transition name="to fork each participant" to="fork each participant" />
 	</task-node>
 	<node name="fork each participant">
@@ -18,7 +18,7 @@
 	</node>
 	<task-node name="validate node">
 		<task name="validate">
-			<assignment actor-id="#{participant.name}" />
+			<assignment actor-id="#{participant}" />
 		</task>
 		<transition to="participants join" />
 	</task-node>

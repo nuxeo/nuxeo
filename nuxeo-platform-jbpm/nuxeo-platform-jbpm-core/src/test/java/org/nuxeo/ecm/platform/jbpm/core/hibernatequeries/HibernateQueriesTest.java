@@ -56,21 +56,47 @@ public class HibernateQueriesTest extends TestCase {
 
     @Override
     public void setUp() throws Exception {
-        if (factory == null) {
-            URL url = getClass().getResource("/config/test-hibernate.cfg.xml");
-            factory = new Configuration().configure(url).buildSessionFactory();
-        }
-
+        URL url = getClass().getResource("/config/test-hibernate.cfg.xml");
+        factory = new Configuration().configure(url).buildSessionFactory();
         session = factory.openSession();
         assertNotNull(session);
     }
 
     @SuppressWarnings("unchecked")
     public void testGetProcessInstancesForDoc() {
+        ProcessDefinition pd = new ProcessDefinition();
         List<ProcessInstance> list = session.getNamedQuery(GET_PI).setParameter(
                 "docId", _1).setParameter("repoId", DEMO).list();
         assertNotNull(list);
         assertTrue(list.isEmpty());
+        ProcessInstance pi = new ProcessInstance();
+        pi.setProcessDefinition(pd);
+        Token token = new Token();
+        pi.setRootToken(token);
+        token.setProcessInstance(pi);
+        pi.getContextInstance().setVariable(
+                JbpmService.VariableName.documentId.name(), _1);
+        pi.getContextInstance().setVariable(
+                JbpmService.VariableName.documentRepositoryName.name(), DEMO);
+        session.save(pi.getContextInstance());
+        session.save(token);
+        session.save(pi);
+        session.save(pd);
+        session.flush();
+        list = session.getNamedQuery(GET_PI).setParameter("docId", _1).setParameter(
+                "repoId", DEMO).list();
+        assertEquals(1, list.size());
+        // pi.end();
+        pi.setEnd(new Date());
+        session.save(pi.getContextInstance());
+        session.save(token);
+        session.save(pi);
+        session.save(pd);
+        session.flush();
+        list = session.getNamedQuery(GET_PI).setParameter("docId", _1).setParameter(
+                "repoId", DEMO).list();
+        assertNotNull(pi.getEnd());
+        assertEquals(0, list.size());
 
     }
 

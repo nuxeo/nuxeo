@@ -16,7 +16,10 @@
  */
 package org.nuxeo.ecm.platform.jbpm.core;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
@@ -26,6 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -68,7 +72,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         List<ProcessDefinition> pds = service.getProcessDefinitions(
                 administrator, dm);
         assertNotNull(pds);
-        assertEquals(3, pds.size());
+        assertEquals(2, pds.size());
         // create process instance
         ProcessInstance pd = service.createProcessInstance(administrator,
                 "parallel-review", dm, null, null);
@@ -79,9 +83,23 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
                 JbpmService.VariableName.documentRepositoryName.name()),
                 dm.getRepositoryName());
         // get tasks
-        List<TaskInstance> tasks = service.getTaskInstances(dm, administrator);
+        List<TaskInstance> tasks = service.getTaskInstances(dm, administrator, null);
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
+    }
+
+    public void testTaskManagement() throws Exception {
+        DocumentModel dm = getDocument();
+        TaskInstance ti = new TaskInstance();
+        ti.setName("publication task");
+        ti.setActorId("bob");
+        Map<String, Object> variables = new HashMap<String, Object>();
+        variables.put(JbpmService.VariableName.documentId.name(), dm.getId());
+        variables.put(JbpmService.VariableName.documentRepositoryName.name(), "demo");
+        ti.addVariables(variables);
+        service.persistTaskInstances(Collections.singletonList(ti));
+        List<TaskInstance> lists = service.getTaskInstances(dm, new NuxeoPrincipalImpl("bob"), null);
+        assertNotNull(lists);
     }
 
     protected DocumentModel getDocument() throws Exception {

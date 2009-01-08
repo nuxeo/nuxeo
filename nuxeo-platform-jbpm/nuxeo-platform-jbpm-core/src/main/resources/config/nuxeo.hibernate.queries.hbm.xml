@@ -11,13 +11,14 @@
       from org.jbpm.context.exe.variableinstance.StringInstance si1,
            org.jbpm.context.exe.variableinstance.StringInstance si2
       where si1.token = si2.token
-      and si1.name = 'documentId'
-      and si2.name = 'documentRepositoryName'
       and si1.value = :docId
       and si2.value = :repoId
+      and si1.name = 'documentId'
+      and si2.name = 'documentRepositoryName'
+      and si1.token.processInstance.end is null
     ]]>
 	</query>
-	
+
 	 <query name="NuxeoHibernateQueries_getTaskInstancesForDoc">
     <![CDATA[
       select t
