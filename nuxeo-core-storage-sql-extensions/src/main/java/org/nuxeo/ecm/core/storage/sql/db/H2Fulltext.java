@@ -27,14 +27,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexModifier;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hit;
-import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TermQuery;
@@ -54,7 +53,7 @@ import org.h2.value.DataType;
  */
 public class H2Fulltext {
 
-    private static Map<String, IndexModifier> indexModifiers = new ConcurrentHashMap<String, IndexModifier>();
+    private static Map<String, IndexWriter> indexWriters = new ConcurrentHashMap<String, IndexWriter>();
 
     private static final String FT_SCHEMA = "NXFT";
 
@@ -94,7 +93,7 @@ public class H2Fulltext {
     public static void init(Connection conn) throws SQLException {
         try {
             // fail early if paths are incorrect
-            getIndexModifier(conn, null);
+            getIndexWriter(conn, null);
         } catch (Exception e) {
             throw convertException(e);
         }
@@ -274,7 +273,7 @@ public class H2Fulltext {
             query.add(new TermQuery(new Term(FIELD_TABLE, table)),
                     BooleanClause.Occur.MUST);
 
-            getIndexModifier(conn, indexPath).flush();
+            getIndexWriter(conn, indexPath).flush();
             Searcher searcher = new IndexSearcher(indexPath);
             Iterator<Hit> it = searcher.search(query).iterator();
             for (; it.hasNext();) {
@@ -337,33 +336,33 @@ public class H2Fulltext {
         return path + ".lucene";
     }
 
-    private static IndexModifier getIndexModifier(Connection conn,
-            String indexPath) throws SQLException {
+    private static IndexWriter getIndexWriter(Connection conn, String indexPath)
+            throws SQLException {
         if (indexPath == null) {
             indexPath = getIndexPath(conn);
         }
-        IndexModifier indexModifier;
-        indexModifier = (IndexModifier) indexModifiers.get(indexPath);
-        if (indexModifier == null) {
-            synchronized (indexModifiers) {
-                if (!indexModifiers.containsKey(indexPath)) {
+        IndexWriter indexWriter;
+        indexWriter = indexWriters.get(indexPath);
+        if (indexWriter == null) {
+            synchronized (indexWriters) {
+                if (!indexWriters.containsKey(indexPath)) {
                     try {
                         boolean recreate = !IndexReader.indexExists(indexPath);
-                        indexModifier = new IndexModifier(indexPath,
-                                getAnalyzer(), recreate);
+                        indexWriter = new IndexWriter(indexPath, getAnalyzer(),
+                                recreate);
                     } catch (IOException e) {
                         throw convertException(e);
                     }
-                    indexModifiers.put(indexPath, indexModifier);
+                    indexWriters.put(indexPath, indexWriter);
                 }
             }
         }
-        return indexModifier;
+        return indexWriter;
     }
 
     private static void removeIndexFiles(Connection conn) throws SQLException {
         String path = getIndexPath(conn);
-        IndexModifier index = (IndexModifier) indexModifiers.remove(path);
+        IndexWriter index = indexWriters.remove(path);
         if (index != null) {
             try {
                 index.flush();
@@ -461,7 +460,7 @@ public class H2Fulltext {
 
         private String indexPath;
 
-        private IndexModifier indexModifier;
+        private IndexWriter indexWriter;
 
         /** Starting at 0. */
         private int primaryKeyIndex;
@@ -480,7 +479,7 @@ public class H2Fulltext {
             this.schema = schema;
             this.table = table;
             indexPath = getIndexPath(conn);
-            indexModifier = getIndexModifier(conn, indexPath);
+            indexWriter = getIndexWriter(conn, indexPath);
             DatabaseMetaData meta = conn.getMetaData();
 
             // find primary key name
@@ -580,7 +579,7 @@ public class H2Fulltext {
                     Field.Index.TOKENIZED));
 
             try {
-                indexModifier.addDocument(doc);
+                indexWriter.addDocument(doc);
             } catch (IOException e) {
                 throw convertException(e);
             }
@@ -589,19 +588,19 @@ public class H2Fulltext {
         private void delete(Object[] row) throws SQLException {
             String primaryKey = asString(row[primaryKeyIndex], primaryKeyType);
             try {
-                indexModifier.deleteDocuments(new Term(FIELD_KEY, primaryKey));
+                indexWriter.deleteDocuments(new Term(FIELD_KEY, primaryKey));
             } catch (IOException e) {
                 throw convertException(e);
             }
         }
 
         public void close() throws SQLException {
-            if (indexModifier != null) {
+            if (indexWriter != null) {
                 try {
-                    indexModifier.flush();
-                    indexModifier.close();
-                    indexModifier = null;
-                    indexModifiers.remove(indexPath);
+                    indexWriter.flush();
+                    indexWriter.close();
+                    indexWriter = null;
+                    indexWriters.remove(indexPath);
                 } catch (Exception e) {
                     throw convertException(e);
                 }

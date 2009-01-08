@@ -36,10 +36,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Delete;
-import org.nuxeo.ecm.core.storage.sql.db.DerbyFunctions;
 import org.nuxeo.ecm.core.storage.sql.db.Dialect;
-import org.nuxeo.ecm.core.storage.sql.db.H2Fulltext;
-import org.nuxeo.ecm.core.storage.sql.db.H2Functions;
 import org.nuxeo.ecm.core.storage.sql.db.Insert;
 import org.nuxeo.ecm.core.storage.sql.db.Select;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
@@ -1131,7 +1128,7 @@ public class SQLInfo {
 
         public final String methodSuffix;
 
-        public final String className = DerbyFunctions.class.getName();
+        public final String className = "org.nuxeo.ecm.core.storage.sql.db.DerbyFunctions";
 
         public DerbyStoredProcedureInfoMaker() {
             switch (model.idGenPolicy) {
@@ -1255,9 +1252,9 @@ public class SQLInfo {
 
         public final String methodSuffix;
 
-        public final String h2Functions = H2Functions.class.getName();
+        public static final String h2Functions = "org.nuxeo.ecm.core.storage.sql.db.H2Functions";
 
-        public final String h2Fulltext = H2Fulltext.class.getName();
+        public static final String h2Fulltext = "org.nuxeo.ecm.core.storage.sql.db.H2Fulltext";
 
         public H2StoredProcedureInfoMaker() {
             switch (model.idGenPolicy) {
