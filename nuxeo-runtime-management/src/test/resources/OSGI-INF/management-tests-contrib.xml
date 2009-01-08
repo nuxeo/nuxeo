@@ -32,5 +32,9 @@
       qualifiedName="nx:type=service,name=rg.nuxeo.runtime.management.DummyService" />
   </extension>
 
+  <extension targets="org.nuxeo.runtime.management.ManagementService"
+    point="locators">
+     <locator domainName="DEFAULT_DOMAIN"/>
+  </extension>
 </component>
 

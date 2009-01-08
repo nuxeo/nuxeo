@@ -2,11 +2,11 @@ package org.nuxeo.runtime.management;
 
 import java.lang.management.ManagementFactory;
 import java.util.Set;
-import java.util.jar.Attributes.Name;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
 import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
@@ -64,7 +64,8 @@ public class TestManagementService extends NXRuntimeTestCase {
     }
 
     public void testRegisterResource() throws Exception {
-        managementService.registerResource("dummy", "nx:name=dummy", DummyMBean.class, new DummyImpl());
+        managementService.registerResource("dummy", "nx:name=dummy",
+                DummyMBean.class, new DummyImpl());
         Set<ObjectName> registeredNames = doQuery("nx:name=dummy");
         assertNotNull(registeredNames);
         assertEquals(1, registeredNames.size());
@@ -79,17 +80,31 @@ public class TestManagementService extends NXRuntimeTestCase {
         assertEquals(registeredNames.size(), 1);
     }
 
+    @SuppressWarnings("unchecked")
+    public void testMBeanLocator() throws Exception {
+        MBeanServer myServer = MBeanServerFactory.createMBeanServer("test");
+        managementService.registerContribution(
+                new MBeanServerLocatorDescriptor("test"), "locators",
+                null);
+        managementService.registerResource("dummy", "nx:name=dummy",
+                DummyMBean.class, new DummyImpl());
+        Set<ObjectName> registeredNames = myServer.queryNames(
+                ObjectNameFactory.getObjectName("nx:name=dummy"), null);
+        assertNotNull(registeredNames);
+        assertEquals(1, registeredNames.size());
+        assertEquals(registeredNames.iterator().next().getCanonicalName(),
+                "nx:name=dummy");
+    }
+
     public void testXMLConfiguration() throws Exception {
-        deployContrib(OSGI_BUNDLE_NAME, 
-                "OSGI-INF/management-tests-service.xml");
-        deployContrib(OSGI_BUNDLE_NAME,
-                "OSGI-INF/management-tests-contrib.xml");
+        deployContrib(OSGI_BUNDLE_NAME, "OSGI-INF/management-tests-service.xml");
+        deployContrib(OSGI_BUNDLE_NAME, "OSGI-INF/management-tests-contrib.xml");
         String qualifiedName = ObjectNameFactory.formatTypeQuery("service");
 
         Set<ObjectName> registeredNames = doQuery(qualifiedName);
         assertNotNull(registeredNames);
         assertEquals(4, registeredNames.size());
-        
+
         Set<String> shortcutsName = managementService.getShortcutsName();
         assertNotNull(shortcutsName);
         assertEquals(1, shortcutsName.size());

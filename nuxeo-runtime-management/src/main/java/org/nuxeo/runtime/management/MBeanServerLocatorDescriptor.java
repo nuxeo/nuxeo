@@ -23,29 +23,17 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author matic
  * 
  */
-@XObject("shortcut")
-public class ShortcutDescriptor {
+@XObject("locator")
+public class MBeanServerLocatorDescriptor {
 
-    public ShortcutDescriptor() {
-        ;
+    public MBeanServerLocatorDescriptor(String domainName) {
+        this.domainName = domainName;
     }
 
-    public ShortcutDescriptor(String shortName, String qualifiedName) {
-        this.shortName = shortName;
-        this.qualifiedName = qualifiedName;
-    }
+    @XNode("@domainName")
+    private String domainName;
 
-    @XNode("@name")
-    private String shortName;
-
-    @XNode("@qualifiedName")
-    private String qualifiedName;
-
-    public String getShortName() {
-        return shortName;
-    }
-
-    public String getQualifiedName() {
-        return qualifiedName;
+    public String getDomainName() {
+        return domainName;
     }
 }

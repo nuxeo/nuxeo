@@ -19,12 +19,14 @@ package org.nuxeo.runtime.management;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 import javax.management.modelmbean.ModelMBean;
 import javax.management.modelmbean.RequiredModelMBean;
@@ -61,6 +63,8 @@ public class ManagementServiceImpl extends DefaultComponent implements
             doRegisterFactory((ResourceFactoryDescriptor) contribution);
         } else if (extensionPoint.equals("shortcuts")) {
             doRegisterShortcut((ShortcutDescriptor) contribution);
+        } else if (extensionPoint.equals("locators")) {
+            doRegisterServerLocator((MBeanServerLocatorDescriptor) contribution);
         }
     }
 
@@ -119,7 +123,7 @@ public class ManagementServiceImpl extends DefaultComponent implements
     protected void doRegisterShortcut(String shortName, String qualifiedName) {
         shortcuts.put(shortName, ObjectNameFactory.getObjectName(qualifiedName));
     }
-    
+
     public void registerShortcut(String name, String qualifiedName) {
         doRegisterShortcut(name, qualifiedName);
     }
@@ -127,11 +131,11 @@ public class ManagementServiceImpl extends DefaultComponent implements
     protected void doUnregisterShortcut(ShortcutDescriptor descriptor) {
         doUnregisterShortcut(descriptor.getShortName());
     }
-    
+
     protected void doUnregisterShortcut(String name) {
         shortcuts.remove(name);
     }
-    
+
     public void unregisterShortcut(String name) {
         doUnregisterShortcut(name);
     }
@@ -157,7 +161,7 @@ public class ManagementServiceImpl extends DefaultComponent implements
             log.debug("registered " + resource.getManagementName());
         }
     }
-    
+
     protected ObjectName doResolveResourceName(ResourceDescriptor descriptor) {
         String qualifiedName = descriptor.getName();
         if (qualifiedName == null) {
@@ -165,7 +169,7 @@ public class ManagementServiceImpl extends DefaultComponent implements
         }
         return ObjectNameFactory.getObjectName(qualifiedName);
     }
-    
+
     protected Resource doResolveResource(ResourceDescriptor descriptor) {
         Class<?> resourceClass = doResolveResourceClass(descriptor.getClassName());
         Object resourceInstance = doResolveResourceInstance(resourceClass,
@@ -215,7 +219,24 @@ public class ManagementServiceImpl extends DefaultComponent implements
 
     protected final ModelMBeanInfoFactory mbeanInfoFactory = new ModelMBeanInfoFactory();
 
-    protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+    protected MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+
+    protected void doRegisterServerLocator(
+            MBeanServerLocatorDescriptor descriptor) {
+        mbeanServer = doLocateServer(descriptor);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected MBeanServer doLocateServer(MBeanServerLocatorDescriptor descriptor) {
+        String domainName = descriptor.getDomainName();
+        for (MBeanServer server : (List<MBeanServer>) MBeanServerFactory.findMBeanServer(null)) {
+            if (server.getDefaultDomain().equals(domainName)) {
+                return mbeanServer = server;
+            }
+        }
+        throw new ManagementRuntimeException(
+                "cannot locate mbean server containing domain " + domainName);
+    }
 
     public void registerResource(String shortName, String qualifiedName,
             Class<?> managementClass, Object instance) {
@@ -242,8 +263,7 @@ public class ManagementServiceImpl extends DefaultComponent implements
 
     protected void doBind(Resource resource) {
         if (resource.mbean != null) {
-            throw new IllegalStateException(resource
-                    + " is already bound");
+            throw new IllegalStateException(resource + " is already bound");
         }
         NamedModelMBean mbean = null;
         try {
@@ -263,14 +283,13 @@ public class ManagementServiceImpl extends DefaultComponent implements
 
     protected void doUnbind(Resource resource) {
         if (resource.mbean == null) {
-            throw new IllegalStateException(resource
-                    + " is not bound");
+            throw new IllegalStateException(resource + " is not bound");
         }
         try {
             mbeanServer.unregisterMBean(resource.mbean.getName());
         } catch (Exception e) {
-            throw ManagementRuntimeException.wrap("Cannot unbind "
-                    + resource, e);
+            throw ManagementRuntimeException.wrap("Cannot unbind " + resource,
+                    e);
         } finally {
             resource.mbean = null;
             if (log.isDebugEnabled()) {
@@ -382,5 +401,4 @@ public class ManagementServiceImpl extends DefaultComponent implements
         }
         doUnbind(resource);
     }
-
 }
