@@ -1,9 +1,12 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.runtime.server">
+
   <implementation class="org.nuxeo.runtime.jetty.JettyComponent"/>
+
   <documentation>
+    Jetty Server.
+
     @author Bogdan Stefanescu (bs@nuxeo.com)
-    Jetty Server
   </documentation>
 
   <service>
