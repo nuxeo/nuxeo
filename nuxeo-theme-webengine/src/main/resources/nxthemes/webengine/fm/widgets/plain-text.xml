@@ -1,1 +1,1 @@
-<div>${nxthemesInfo.model.body}</div>
+<div>${nxthemesInfo.model.body?html}</div>

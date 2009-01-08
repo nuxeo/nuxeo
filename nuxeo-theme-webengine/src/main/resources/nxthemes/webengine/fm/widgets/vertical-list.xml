@@ -2,7 +2,11 @@
 <ul>
   <#list nxthemesInfo.model.items as item>
     <li>
-      <a href="${item.url}">${item.title}</a>
+      <#if item.selected>
+        <a class="selected" href="${item.url}">${item.title}</a>
+      <#else>  
+        <a href="${item.url}">${item.title}</a>
+      </#if>
     </li>
   </#list>
 </ul>

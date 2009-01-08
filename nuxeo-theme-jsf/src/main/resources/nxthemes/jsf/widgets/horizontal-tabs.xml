@@ -1,5 +1,5 @@
 <div xmlns:ui="http://java.sun.com/jsf/facelets">
-  <ui:repeat value="#{nxthemesInfo.model.children}" var="item">
+  <ui:repeat value="#{nxthemesInfo.model.items}" var="item">
     <a href="#{item.url}">#{item.title}</a>
   </ui:repeat>
 </div>

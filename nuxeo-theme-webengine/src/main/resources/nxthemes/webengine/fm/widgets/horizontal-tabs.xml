@@ -1,5 +1,9 @@
 <div>
 <#list nxthemesInfo.model.items as item>
-  <a href="${item.url}">${item.title}</a>
+  <#if item.selected>
+    <a class="selected" href="${item.url}">${item.title}</a>
+  <#else>
+    <a href="${item.url}">${item.title}</a>
+  </#if>
 </#list>
 </div>
