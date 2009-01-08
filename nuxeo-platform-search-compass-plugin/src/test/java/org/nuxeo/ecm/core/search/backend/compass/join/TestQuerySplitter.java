@@ -41,7 +41,7 @@ public class TestQuerySplitter extends NXRuntimeTestCase {
 
     protected String ENGINE_NAME;
 
-    class IntrospectableSplitter extends QuerySplitter {
+    private static class IntrospectableSplitter extends QuerySplitter {
 
         IntrospectableSplitter(SQLQuery query) {
             super(query);
@@ -59,20 +59,18 @@ public class TestQuerySplitter extends NXRuntimeTestCase {
         public String[] getJoinFor(String resourceName) {
             return joins.get(resourceName);
         }
-
     }
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
+
         deployContrib("org.nuxeo.runtime", "OSGI-INF/EventService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
-                "CoreService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
-                "SecurityService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
-                "RepositoryService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/SecurityService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/RepositoryService.xml");
+
         deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
                 "test-CoreExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.search.test",
@@ -88,7 +86,7 @@ public class TestQuerySplitter extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
                 "PlatformService.xml");
         deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
-                "DefaultPlatform.xml");
+                "DefauTestJMSProducerServiceltPlatform.xml");
 
         deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
                 "nxtransform-framework.xml");
@@ -110,10 +108,11 @@ public class TestQuerySplitter extends NXRuntimeTestCase {
     }
 
     /**
-     * shortcut to include parsing of incoming query string *
+     * Shortcut to include parsing of incoming query string.
+     *
      * @return the split query.
      * @throws QueryException
-     * */
+     */
     private SplitQuery split(String query) throws QueryException {
         return makeSplitter(query).split();
     }
@@ -122,7 +121,7 @@ public class TestQuerySplitter extends NXRuntimeTestCase {
         return SQLQueryParser.parse(query);
     }
 
-    private IntrospectableSplitter makeSplitter(String query) {
+    private static IntrospectableSplitter makeSplitter(String query) {
         return new IntrospectableSplitter(SQLQueryParser.parse(query));
     }
 
@@ -144,7 +143,6 @@ public class TestQuerySplitter extends NXRuntimeTestCase {
         assertNotNull(rConf);
         rConf = service.getIndexableResourceConfByPrefix("ecm", false);
         assertNotNull(rConf);
-
     }
 
     //
@@ -359,7 +357,6 @@ public class TestQuerySplitter extends NXRuntimeTestCase {
 
             assertEquals(ResourceType.SCHEMA, subQuery.getResourceType());
         }
-
     }
 
 }

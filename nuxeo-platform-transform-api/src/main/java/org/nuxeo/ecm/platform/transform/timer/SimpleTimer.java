@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
  * Simple timer used to measure execution time within code.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class SimpleTimer {
 

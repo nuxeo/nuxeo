@@ -82,7 +82,6 @@ public abstract class AbstractJRBasedTextExtractorPlugin extends AbstractPlugin 
         File f = null;
         OutputStream fas = null;
         Reader reader = null;
-
         try {
             TextExtractor extractor = getExtractor();
 
@@ -103,7 +102,6 @@ public abstract class AbstractJRBasedTextExtractorPlugin extends AbstractPlugin 
                     log.error("Error when closing reader", e);
                 }
             }
-            blob = null;
             if (fas != null) {
                 try {
                     fas.close();

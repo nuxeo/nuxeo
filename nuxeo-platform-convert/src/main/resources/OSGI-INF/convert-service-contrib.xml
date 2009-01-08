@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.convert.plugins">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+    point="converter">
+
+    <converter name="pdf2html" class="org.nuxeo.ecm.platform.convert.plugins.PDF2HtmlConverter">
+      <sourceMimeType>application/pdf</sourceMimeType>
+      <destinationMimeType>text/html</destinationMimeType>
+      <parameters>
+        <parameter name="CommandLineName">pdftohtml</parameter>
+      </parameters>
+    </converter>
+
+  </extension>
+
+</component>

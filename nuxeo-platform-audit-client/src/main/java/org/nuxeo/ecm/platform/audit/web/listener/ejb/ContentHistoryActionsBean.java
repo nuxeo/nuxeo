@@ -36,14 +36,15 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
-import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.platform.audit.api.AuditEventTypes;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
@@ -52,16 +53,16 @@ import org.nuxeo.ecm.platform.audit.api.Logs;
 import org.nuxeo.ecm.platform.audit.api.delegate.AuditLogsServiceDelegate;
 import org.nuxeo.ecm.platform.audit.web.listener.ContentHistoryActions;
 import org.nuxeo.ecm.platform.audit.web.listener.events.EventNames;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
 /**
  * Content history actions bean.
- * <p>
+ * <p/>
  * :XXX: http://jira.nuxeo.org/browse/NXP-514
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-
 @Name("contentHistoryActions")
 @Scope(CONVERSATION)
 public class ContentHistoryActionsBean implements ContentHistoryActions {
@@ -83,14 +84,14 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
     // @Out(required = false)
     private List<LogEntry> latestLogEntries;
 
-    @In(required = false)
-    protected DocumentModel currentDocument;
-
     // :FIXME: Hardcoded. See interface for more details about the reason
     protected final int nbLogEntries = 5;
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
+
+    @In(create = true)
+    private transient NavigationContext navigationContext;
 
     @RequestParameter("sortColumn")
     protected String newSortColumn;
@@ -108,91 +109,100 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
 
     @Destroy
     public void destroy() {
-        log.debug("Removing Audit Seam component...");
+        if (log.isDebugEnabled()) log.debug("Removing Audit Seam component...");
     }
 
-    @Observer(value = { EventNames.CONTENT_ROOT_SELECTION_CHANGED,
+    @Observer(value = {EventNames.CONTENT_ROOT_SELECTION_CHANGED,
             EventNames.DOCUMENT_CHANGED, EventNames.DOCUMENT_SELECTION_CHANGED,
             EventNames.DOMAIN_SELECTION_CHANGED,
             EventNames.LOCATION_SELECTION_CHANGED,
-            AuditEventTypes.HISTORY_CHANGED }, create = false, inject=false)
+            AuditEventTypes.HISTORY_CHANGED}, create = false, inject = false)
+    @BypassInterceptors
     public void invalidateLogEntries() {
-        log.debug("Invalidate log entries.................");
+        if (log.isDebugEnabled()) log.debug("Invalidate log entries.................");
         logEntries = null;
         latestLogEntries = null;
-        logEntriesComments = null; // new HashMap<Long,String>();
-        logEntriesLinkedDocs = null; // new HashMap<Long,LinkedDocument>();
+        logEntriesComments = null;
+        logEntriesLinkedDocs = null;
     }
 
     @Factory(value = "latestLogEntries", scope = EVENT)
     public List<LogEntry> computeLatestLogEntries() throws AuditException {
-        if (logEntries == null) {
-            compute();
+        if (latestLogEntries == null) {
+            if (logEntries == null) {
+                logEntries = computeLogEntries(navigationContext.getCurrentDocument());
+            }
+            if (logEntries != null) {
+                if (logEntries.size() > nbLogEntries) {
+                    latestLogEntries = new ArrayList<LogEntry>(
+                            logEntries.subList(0, nbLogEntries));
+                } else {
+                    latestLogEntries = logEntries;
+                }
+            }
         }
         return latestLogEntries;
     }
 
     @Factory(value = "logEntries", scope = EVENT)
     public List<LogEntry> computeLogEntries() throws AuditException {
-        compute();
+        if (logEntries == null) {
+            logEntries = computeLogEntries(navigationContext.getCurrentDocument());
+        }
         return logEntries;
     }
 
     @Factory(value = "logEntriesComments", scope = EVENT)
-    public Map<Long, String> computeLogEntriesComments() {
-        postProcessComments();
+    public Map<Long, String> computeLogEntriesComments() throws AuditException {
+        if (logEntriesComments == null) {
+            computeLogEntries();
+            postProcessComments(logEntries);
+        }
         return logEntriesComments;
     }
 
     @Factory(value = "logEntriesLinkedDocs", scope = EVENT)
-    public Map<Long, LinkedDocument> computeLogEntrieslinkedDocs() {
+    public Map<Long, LinkedDocument> computeLogEntrieslinkedDocs()
+            throws AuditException {
         if (logEntriesLinkedDocs == null) {
-            postProcessComments();
+            computeLogEntries();
+            postProcessComments(logEntries);
         }
         return logEntriesLinkedDocs;
     }
 
-    public void compute() throws AuditException {
-        if (currentDocument == null) {
-            log.error("Selected document has not been injected !............");
+    public List<LogEntry> computeLogEntries(DocumentModel document)
+            throws AuditException {
+        if (document == null) {
+            return null;
         } else {
             try {
                 Logs logsBean = AuditLogsServiceDelegate.getRemoteAuditLogsService();
-                /**
-                 * in case the document is a proxy,meaning is the result of a
+                /*
+                 * In case the document is a proxy,meaning is the result of a
                  * publishing,to have the history of the document from which
                  * this proxy was created,first we have to get to the version
                  * that was created when the document was publish,and to which
                  * the proxy document indicates,and then from that version we
                  * have to get to the root document.
                  */
-                boolean doDefaultSort = comparator == null ? true : false;
-                if (currentDocument.isProxy()) {
-                    DocumentModel version = documentManager.getSourceDocument(currentDocument.getRef());
-                    // logEntries =
-                    // logsBean.getLogEntriesFor(documentManager.getSourceDocument(version.getRef()).getId());
+                boolean doDefaultSort = comparator == null;
+                if (document.isProxy()) {
+                    DocumentModel version = documentManager.getSourceDocument(document.getRef());
                     logEntries = logsBean.getLogEntriesFor(
                             documentManager.getSourceDocument(version.getRef()).getId(),
                             filterMap, doDefaultSort);
                 } else {
-                    // logEntries =
-                    // logsBean.getLogEntriesFor(currentDocument.getId());
-                    logEntries = logsBean.getLogEntriesFor(
-                            currentDocument.getId(), filterMap, doDefaultSort);
+                    logEntries = logsBean.getLogEntriesFor(document.getId(),
+                            filterMap, doDefaultSort);
                 }
 
-                log.debug("logEntries computed .................!");
+                if (log.isDebugEnabled()) log.debug("logEntries computed .................!");
             } catch (Exception e) {
-                log.error("An error occurred while grabbing log entries for "
-                        + currentDocument.getId());
-                throw new AuditException(e);
+                String message = "An error occurred while grabbing log entries for " + document.getId();
+                throw new AuditException(message, e);
             }
-            if (logEntries.size() > nbLogEntries) {
-                latestLogEntries = new ArrayList<LogEntry>(logEntries.subList(
-                        0, nbLogEntries));
-            } else {
-                latestLogEntries = logEntries;
-            }
+            return logEntries;
         }
     }
 
@@ -210,9 +220,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
             sortAscending = true;
         }
         sortInfo = new SortInfo(sortColumn, sortAscending);
-
         logEntries = null;
-
         return null;
     }
 
@@ -220,78 +228,86 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
      * Post-process log entries comments to add links.
      * e5e7b4ba-0ffb-492d-8bf2-f2f2e6683ae2
      */
-    private void postProcessComments() {
+    private void postProcessComments(List<LogEntry> logEntries) {
         logEntriesComments = new HashMap<Long, String>();
         logEntriesLinkedDocs = new HashMap<Long, LinkedDocument>();
 
-        // Check if logEntries have been computed because required
-        // XXX JA : workaround. Need to cleanup the whole action listener here.
         if (logEntries == null) {
-            try {
-                compute();
-            } catch (AuditException ae) {
-                log.error(
-                        "An error occured while trying to compute log entries...",
-                        ae);
-                return;
-            }
+            return;
         }
 
         for (LogEntry entry : logEntries) {
-            String newComment = null;
-            String oldComment = entry.getComment();
-            if (oldComment == null) {
-                continue;
+            logEntriesComments.put(entry.getId(), getLogComment(entry));
+            LinkedDocument linkedDoc = getLogLinkedDocument(entry);
+            if (linkedDoc != null) {
+                logEntriesLinkedDocs.put(entry.getId(), linkedDoc);
             }
+        }
+    }
 
-            DocumentRef docRef = null;
-            RepositoryLocation repoLoc = null;
+    public String getLogComment(LogEntry entry) {
+        String oldComment = entry.getComment();
+        if (oldComment == null) {
+            return null;
+        }
 
-            try {
-                String repoName = oldComment.split(":")[0];
-                String strDocRef = oldComment.split(":")[1];
+        String newComment = oldComment;
+        DocumentModel targetDoc = null;
+        try {
+            String strDocRef = oldComment.split(":")[1];
 
-                docRef = new IdRef(strDocRef);
-                repoLoc = new RepositoryLocation(repoName);
-            } catch (Exception e) {
-                // not the expected format : continue to next entry
-                logEntriesComments.put(entry.getId(), oldComment);
-                continue;
+            DocumentRef docRef = new IdRef(strDocRef);
+            targetDoc = documentManager.getDocument(docRef);
+        } catch (Exception e) {
+        }
+
+        if (targetDoc != null) {
+            String eventId = entry.getEventId();
+            // update comment
+            if (DocumentEventTypes.DOCUMENT_DUPLICATED.equals(eventId)) {
+                newComment = "audit.duplicated_to";
+            } else if (DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(eventId)) {
+                newComment = "audit.copied_from";
+            } else if (DocumentEventTypes.DOCUMENT_MOVED.equals(eventId)) {
+                newComment = "audit.moved_from";
             }
+        }
 
-            // init the LinkedDoc object
-            LinkedDocument linkedDoc = new LinkedDocument();
+        return newComment;
+    }
+
+    public LinkedDocument getLogLinkedDocument(LogEntry entry) {
+        String oldComment = entry.getComment();
+        if (oldComment == null) {
+            return null;
+        }
+
+        LinkedDocument linkedDoc = null;
+
+        try {
+            String repoName = oldComment.split(":")[0];
+            String strDocRef = oldComment.split(":")[1];
+
+            DocumentRef docRef = new IdRef(strDocRef);
+            RepositoryLocation repoLoc = new RepositoryLocation(repoName);
+
+            // create linked doc, broken by default
+            linkedDoc = new LinkedDocument();
             linkedDoc.setDocumentRef(docRef);
             linkedDoc.setRepository(repoLoc);
 
             // try to resolve target document
-            try {
-                // XXX multi-repository management
-                DocumentModel targetDoc = documentManager.getDocument(docRef);
+            // XXX multi-repository management
+            DocumentModel targetDoc = documentManager.getDocument(docRef);
+            if (targetDoc != null) {
                 linkedDoc.setDocument(targetDoc);
                 linkedDoc.setBrokenDocument(false);
-            } catch (ClientException e) {
-                // error or broken document
-                linkedDoc.setBrokenDocument(true);
             }
-
-            // update comment
-            if (entry.getEventId().equals("documentDuplicated")) {
-                newComment = "audit.duplicated_to";
-            } else if (entry.getEventId().equals("documentCreatedByCopy")) {
-                newComment = "audit.copied_from";
-            } else if (entry.getEventId().equals("documentMoved")) {
-                newComment = "audit.moved_from";
-            }
-
-            if (newComment != null) {
-                logEntriesComments.put(entry.getId(), newComment);
-                logEntriesLinkedDocs.put(entry.getId(), linkedDoc);
-            } else {
-                logEntriesComments.put(entry.getId(), oldComment);
-            }
-
+        } catch (Exception e) {
+            // not the expected format or broken document
         }
+
+        return linkedDoc;
     }
 
     public SortInfo getSortInfo() {

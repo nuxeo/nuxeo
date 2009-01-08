@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.forum.web;
 
 import java.io.Serializable;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.application.FacesMessage;
+import javax.security.auth.login.LoginContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,11 +36,12 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -52,7 +53,6 @@ import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.api.ECM;
-import org.nuxeo.ecm.platform.api.login.SystemSession;
 import org.nuxeo.ecm.platform.comment.web.CommentManagerActions;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
@@ -75,6 +75,7 @@ import org.nuxeo.ecm.platform.workflow.api.common.WorkflowEventTypes;
 import org.nuxeo.ecm.platform.workflow.web.api.WorkflowBeansDelegate;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.dashboard.DashboardActions;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * This action listener is used to create a Post inside a Thread and also to
@@ -82,14 +83,15 @@ import org.nuxeo.ecm.webapp.dashboard.DashboardActions;
  *
  * @author <a href="bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
  */
-
 @Name("postAction")
 @Scope(ScopeType.CONVERSATION)
 public class PostActionBean extends InputController implements PostAction {
 
-    private static final long serialVersionUID = 1L;
+    static final String WRITE = "ReadWrite";
 
     private static final Log log = LogFactory.getLog(PostActionBean.class);
+
+    private static final long serialVersionUID = 2948023661103514559L;
 
     @In(required = false)
     protected RepositoryLocation currentServerLocation;
@@ -98,16 +100,16 @@ public class PostActionBean extends InputController implements PostAction {
     protected WorkflowBeansDelegate workflowBeansDelegate;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected Principal currentUser;
+    protected transient Principal currentUser;
 
     @In(create = true)
-    protected CommentManagerActions commentManagerActions;
+    protected transient CommentManagerActions commentManagerActions;
 
     @In(create = true, required = false)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true)
     protected ThreadAction threadAction;
@@ -127,8 +129,6 @@ public class PostActionBean extends InputController implements PostAction {
     private String filename;
 
     private Blob fileContent;
-
-    static final String WRITE = "ReadWrite";
 
     @Destroy
     public void destroy() {
@@ -165,14 +165,14 @@ public class PostActionBean extends InputController implements PostAction {
             allowed = documentManager.hasPermission(
                     navigationContext.getCurrentDocument().getRef(), WRITE);
         } catch (ClientException e) {
-            e.printStackTrace();
+            log.error(e);
             allowed = false;
         }
         return allowed;
     }
 
     /**
-     * Add the post to the thread and start the WF the moderation on the post
+     * Adds the post to the thread and starts the moderation WF on the post
      * created.
      */
     public String addPost() throws ClientException, WMWorkflowException {
@@ -195,7 +195,6 @@ public class PostActionBean extends InputController implements PostAction {
          * facesMessages.add(FacesMessage.SEVERITY_INFO,
          * resourcesAccessor.getMessages().get( "label.comment.added.sucess"));
          */
-
         boolean publish = false;
 
         // We start the moderation, only if the thread has the moderated
@@ -234,8 +233,7 @@ public class PostActionBean extends InputController implements PostAction {
                 try {
                     // Here user only granted with read rights should be able to
                     // create a post.
-                    SystemSession session = new SystemSession();
-                    session.login();
+                    LoginContext loginContext = Framework.login();
 
                     // Open a new repository session which will be
                     // unrestricted. We need to do this here since the
@@ -254,12 +252,11 @@ public class PostActionBean extends InputController implements PostAction {
                     // Logout the system session.
                     // Note, this is not necessary to take further actions
                     // here regarding the user session.
-                    session.logout();
+                    loginContext.logout();
 
                 } catch (Exception e) {
-                    throw new ClientException(e.getMessage());
+                    throw new ClientException(e.getMessage(), e);
                 }
-
             }
         }
 
@@ -316,19 +313,12 @@ public class PostActionBean extends InputController implements PostAction {
     }
 
     /**
-     * Start the moderation on given Post.
-     *
-     * @param post
-     * @return
-     * @throws WMWorkflowException
-     * @throws ClientException
+     * Starts the moderation on given Post.
      */
     public WMActivityInstance startModeration(DocumentModel post)
             throws WMWorkflowException, ClientException {
 
         List<String> moderators = getModeratorsOnParentThread();
-
-        WMActivityInstance workflowPath = null;
 
         WAPI wapi = workflowBeansDelegate.getWAPIBean();
 
@@ -338,13 +328,12 @@ public class PostActionBean extends InputController implements PostAction {
             log.error("Error : No moderators are defined on parent thread. Moderation won't start");
             return null;
         }
+        WMActivityInstance workflowPath = null;
         try {
             Map<String, Serializable> vars = new HashMap<String, Serializable>();
 
             vars.put(WorkflowConstants.DOCUMENT_REF, post.getRef());
-
             vars.put(ForumConstants.THREAD_REF, getParentThread().getRef());
-
             vars.put(ForumConstants.FORUM_MODERATORS_LIST,
                     threadAction.getModerators().toArray());
 
@@ -352,12 +341,10 @@ public class PostActionBean extends InputController implements PostAction {
 
             vars.put(WorkflowConstants.DOCUMENT_LOCATION_URI,
                     post.getRepositoryName());
-
             workflowPath = wapi.startProcess(processId, vars, null);
-
         } catch (WMWorkflowException we) {
-            log.error("An error occurred while grabbing workflow definitions");
-            we.printStackTrace();
+            log.error("An error occurred while grabbing workflow definitions", we);
+            // XXX then what?
         }
         if (workflowPath != null) {
             WMProcessDefinition def = wapi.getProcessDefinitionById(processId);
@@ -365,12 +352,12 @@ public class PostActionBean extends InputController implements PostAction {
             notifyEvent(post, WorkflowEventTypes.WORKFLOW_STARTED, name, name);
             Events.instance().raiseEvent(EventNames.WORKFLOW_NEW_STARTED);
         }
-        return workflowPath;
 
+        return workflowPath;
     }
 
     /**
-     * Get the WF id associated to the moderation process.
+     * Gets the WF id associated to the moderation process.
      */
     public String getModerationWorkflowId() throws WMWorkflowException {
         WAPI wapi = workflowBeansDelegate.getWAPIBean();
@@ -379,10 +366,7 @@ public class PostActionBean extends InputController implements PostAction {
     }
 
     /**
-     * Get the current task Id.
-     *
-     * @return
-     * @throws WMWorkflowException
+     * Gets the current task Id.
      */
     public Collection<WMWorkItemInstance> getCurrentTasksForPrincipal(
             String name) throws WMWorkflowException {
@@ -442,25 +426,16 @@ public class PostActionBean extends InputController implements PostAction {
     }
 
     public List<String> getModeratorsOnParentThread() {
-
-        ArrayList<String> moderators = (ArrayList<String>) getParentThread().getProperty(
-                "thread", "moderators");
-        if (moderators != null) {
-            return moderators;
+        try {
+            return (List<String>) getParentThread().getProperty("thread",
+                    "moderators");
+        } catch (ClientException ce) {
+            throw new ClientRuntimeException(ce);
         }
-
-        return null;
     }
 
     /**
      * Notify event to Core.
-     *
-     * @param doc
-     * @param eventId
-     * @param comment
-     * @param category
-     * @throws WMWorkflowException
-     * @throws ClientException
      */
     protected void notifyEvent(DocumentModel doc, String eventId,
             String comment, String category) throws WMWorkflowException,
@@ -491,9 +466,9 @@ public class PostActionBean extends InputController implements PostAction {
     }
 
     /**
-     * Get the title of the post for creation purpose. If the post to be created
-     * reply to a previous post, the title of the new post comes with the
-     * previous title, and a prefix (i.e : Re : Previous Title)
+     * Gets the title of the post for creation purpose. If the post to be
+     * created reply to a previous post, the title of the new post comes with
+     * the previous title, and a prefix (i.e : Re : Previous Title).
      */
     public String getTitle() throws ClientException {
 
@@ -571,13 +546,12 @@ public class PostActionBean extends InputController implements PostAction {
     private String getWorkItemIdFor(DocumentModel post)
             throws WMWorkflowException {
 
-        String weed = null;
-
         if (post == null) {
-            return weed;
+            return null;
         }
 
         WMWorkItemInstance item = getWorkItemFor(post);
+        String weed = null;
         if (item != null) {
             weed = item.getId();
         }
@@ -615,7 +589,7 @@ public class PostActionBean extends InputController implements PostAction {
             try {
                 dashboardActions.invalidateDashboardItems();
             } catch (ClientException e) {
-                throw new WMWorkflowException(e.getMessage());
+                throw new WMWorkflowException(e.getMessage(), e);
             }
         }
 

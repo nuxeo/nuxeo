@@ -46,13 +46,13 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -60,7 +60,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
@@ -79,14 +78,12 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 public class UserManagerActionsBean extends InputController implements
         UserManagerActions, Serializable {
 
-    private static final long serialVersionUID = -3828954056351924772L;
+    private static final long serialVersionUID = 2160735474991874750L;
 
     private static final Log log = LogFactory.getLog(UserManagerActionsBean.class);
 
     private static final String ALL = "all";
-
     private static final String TABBED = "tabbed";
-
     private static final String SEARCH_ONLY = "search_only";
 
     public static final String VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789";
@@ -98,10 +95,15 @@ public class UserManagerActionsBean extends InputController implements
     protected transient CoreSession documentManager;
 
     protected String searchString = "";
+
     protected String searchUsername = "";
+
     protected String searchLastname = "";
+
     protected String searchFirstname = "";
+
     protected String searchCompany = "";
+
     protected String searchEmail = "";
 
     protected boolean doSearch = false;
@@ -121,9 +123,10 @@ public class UserManagerActionsBean extends InputController implements
     private NuxeoPrincipal principal;
 
     private String changed_password;
+
     private String changed_password_verify;
 
-    //@In(required = false)
+    // @In(required = false)
     @DataModelSelection("userList")
     protected NuxeoPrincipal selectedUser;
 
@@ -144,13 +147,11 @@ public class UserManagerActionsBean extends InputController implements
 
     protected String userListingMode;
 
-
     @Create
     public void initialize() throws ClientException {
         log.debug("Initializing...");
-        principal = (NuxeoPrincipal) FacesContext.getCurrentInstance()
-                .getExternalContext().getUserPrincipal();
-        //principalIsAdmin = principal.isAdministrator();
+        principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
+        // principalIsAdmin = principal.isAdministrator();
         userListingMode = userManager.getUserListingMode();
     }
 
@@ -171,8 +172,8 @@ public class UserManagerActionsBean extends InputController implements
                 allUsers = Collections.emptyList();
                 users = Collections.emptyList();
                 searchOverflow = true;
-            } catch (Throwable t) {
-                throw EJBExceptionHandler.wrapException(t);
+            } catch (Exception t) {
+                throw ClientException.wrap(t);
             }
         }
     }
@@ -190,8 +191,8 @@ public class UserManagerActionsBean extends InputController implements
         try {
             sessionContext.set("selectedUser", selectedUser);
             return "view_user";
-        } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+        } catch (Exception t) {
+            throw ClientException.wrap(t);
         }
     }
 
@@ -203,15 +204,13 @@ public class UserManagerActionsBean extends InputController implements
             refreshPrincipal(selectedUser);
             sessionContext.set("selectedUser", selectedUser);
             return "view_user";
-        } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+        } catch (Exception t) {
+            throw ClientException.wrap(t);
         }
     }
 
     /**
      * Gets the general type of User from the xml definition.
-     *
-     * @return
      */
     public Type getChangeableUserType() {
         return typeManager.getType("User");
@@ -223,8 +222,7 @@ public class UserManagerActionsBean extends InputController implements
 
     public void refreshPrincipal(NuxeoPrincipal principal)
             throws ClientException {
-        NuxeoPrincipal freshPrincipal = userManager.getPrincipal(
-                principal.getName());
+        NuxeoPrincipal freshPrincipal = userManager.getPrincipal(principal.getName());
         principal.setGroups(freshPrincipal.getGroups());
         principal.setRoles(freshPrincipal.getRoles());
         principal.setModel(freshPrincipal.getModel());
@@ -235,8 +233,8 @@ public class UserManagerActionsBean extends InputController implements
             refreshPrincipal(selectedUser);
             sessionContext.set("selectedUser", selectedUser);
             return "edit_user";
-        } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+        } catch (Exception t) {
+            throw ClientException.wrap(t);
         }
     }
 
@@ -250,12 +248,12 @@ public class UserManagerActionsBean extends InputController implements
                 users.remove(selectedUser);
             }
 
-
-            Events.instance().raiseEvent(EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
+            Events.instance().raiseEvent(
+                    EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
 
             return viewUsers();
-        } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+        } catch (Exception t) {
+            throw ClientException.wrap(t);
         }
     }
 
@@ -333,22 +331,20 @@ public class UserManagerActionsBean extends InputController implements
     public String updateUser() throws ClientException {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
-/*            if (selectedUser.getPassword() != null) {
-                if (!selectedUser.getPassword().equals(retypedPassword)) {
-                    String message = ComponentUtils.translate(context,
-                            "error.userManager.passwordMismatch");
-                    FacesMessages.instance().add(message);
-                    return null;
-                }
-            }
-*/
+            /*
+             * if (selectedUser.getPassword() != null) { if
+             * (!selectedUser.getPassword().equals(retypedPassword)) { String
+             * message = ComponentUtils.translate(context,
+             * "error.userManager.passwordMismatch");
+             * FacesMessages.instance().add(message); return null; } }
+             */
             if ("".equals(selectedUser.getPassword())) {
                 selectedUser.setPassword(null);
             }
             userManager.updatePrincipal(selectedUser);
             return viewUser(selectedUser.getName());
-        } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+        } catch (Exception t) {
+            throw ClientException.wrap(t);
         }
     }
 
@@ -363,7 +359,8 @@ public class UserManagerActionsBean extends InputController implements
                 String message = ComponentUtils.translate(context,
                         "label.userManager.wrong.username");
 
-                FacesMessages.instance().add(FacesMessage.SEVERITY_ERROR, message, (Object[]) null);
+                FacesMessages.instance().add(FacesMessage.SEVERITY_ERROR,
+                        message, (Object[]) null);
                 return null;
             }
 
@@ -372,8 +369,8 @@ public class UserManagerActionsBean extends InputController implements
                 String message = ComponentUtils.translate(context,
                         "label.userManager.password.not.match");
 
-                FacesMessages.instance().add("h_inputText_passwordCreate2",
-                        FacesMessage.SEVERITY_ERROR, message, (Object[]) null);
+                facesMessages.addToControl("h_inputText_passwordCreate2",
+                        FacesMessage.SEVERITY_ERROR, message);
 
                 return null;
             }
@@ -390,8 +387,8 @@ public class UserManagerActionsBean extends InputController implements
             facesMessages.add(FacesMessage.SEVERITY_WARN, message);
             return null;
 
-        } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+        } catch (Exception t) {
+            throw ClientException.wrap(t);
         }
     }
 
@@ -406,15 +403,16 @@ public class UserManagerActionsBean extends InputController implements
             Type userType = getChangeableUserCreateType();
             String schemaName = userType.getLayout()[0].getSchemaName();
             DataModelImpl dm = new DataModelImpl(schemaName);
-            DocumentModelImpl entry = new DocumentModelImpl(null, userType.getId(), "",
-                    null, null, null, new String[] { schemaName }, null);
+            DocumentModelImpl entry = new DocumentModelImpl(null,
+                    userType.getId(), "", null, null, null,
+                    new String[] { schemaName }, null);
             entry.addDataModel(dm);
-            ((NuxeoPrincipalImpl) newUser).setModel(entry);
+            newUser.setModel(entry);
             newUser.getRoles().add("regular");
             sessionContext.set("newUser", newUser);
             return "create_user";
-        } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+        } catch (Exception t) {
+            throw ClientException.wrap(t);
         }
     }
 
@@ -454,7 +452,12 @@ public class UserManagerActionsBean extends InputController implements
         }
 
         if (SEARCH_ONLY.equals(userListingMode)) {
-            if (StringUtils.isEmpty(searchString) && StringUtils.isEmpty(searchUsername) && StringUtils.isEmpty(searchFirstname) && StringUtils.isEmpty(searchLastname) && StringUtils.isEmpty(searchEmail) && StringUtils.isEmpty(searchCompany)) {
+            if (StringUtils.isEmpty(searchString)
+                    && StringUtils.isEmpty(searchUsername)
+                    && StringUtils.isEmpty(searchFirstname)
+                    && StringUtils.isEmpty(searchLastname)
+                    && StringUtils.isEmpty(searchEmail)
+                    && StringUtils.isEmpty(searchCompany)) {
                 allUsers = Collections.emptyList();
                 users = Collections.emptyList();
                 return "view_users";
@@ -565,33 +568,35 @@ public class UserManagerActionsBean extends InputController implements
     public String searchUsersAdvanced() throws ClientException {
         searchOverflow = false;
         try {
-        Map<String, Object> filter = new HashMap<String, Object>();
-        if ((searchUsername + searchLastname + searchFirstname + searchEmail + searchCompany).trim()
-                .compareTo("*")==0) {
-            allUsers = userManager.getAvailablePrincipals();
+            Map<String, Object> filter = new HashMap<String, Object>();
+            if ((searchUsername + searchLastname + searchFirstname
+                    + searchEmail + searchCompany).trim().compareTo("*") == 0) {
+                allUsers = userManager.getAvailablePrincipals();
 
-        } else
-        {
-        if (searchUsername != null && !"".equals(searchUsername)) {
-            filter.put(NuxeoPrincipalImpl.USERNAME_COLUMN, searchUsername);
-        }
-        if (searchLastname != null && !"".equals(searchLastname)) {
-            filter.put(NuxeoPrincipalImpl.LASTNAME_COLUMN, searchLastname);
-        }
-        if (searchFirstname != null && !"".equals(searchFirstname)) {
-            filter.put(NuxeoPrincipalImpl.FIRSTNAME_COLUMN, searchFirstname);
-        }
-        if (searchEmail != null && !"".equals(searchEmail)) {
-            filter.put(NuxeoPrincipalImpl.EMAIL_COLUMN, searchEmail);
-        }
-        if (searchCompany != null && !"".equals(searchCompany)) {
-            filter.put(NuxeoPrincipalImpl.COMPANY_COLUMN, searchCompany);
-        }
+            } else {
+                if (searchUsername != null && !"".equals(searchUsername)) {
+                    filter.put(NuxeoPrincipalImpl.USERNAME_COLUMN,
+                            searchUsername);
+                }
+                if (searchLastname != null && !"".equals(searchLastname)) {
+                    filter.put(NuxeoPrincipalImpl.LASTNAME_COLUMN,
+                            searchLastname);
+                }
+                if (searchFirstname != null && !"".equals(searchFirstname)) {
+                    filter.put(NuxeoPrincipalImpl.FIRSTNAME_COLUMN,
+                            searchFirstname);
+                }
+                if (searchEmail != null && !"".equals(searchEmail)) {
+                    filter.put(NuxeoPrincipalImpl.EMAIL_COLUMN, searchEmail);
+                }
+                if (searchCompany != null && !"".equals(searchCompany)) {
+                    filter.put(NuxeoPrincipalImpl.COMPANY_COLUMN, searchCompany);
+                }
 
-        // create a new set because a HashMap.KeySet is not serializable
-        allUsers = userManager.searchByMap(filter, new HashSet<String>(
-                filter.keySet()));
-        }
+                // create a new set because a HashMap.KeySet is not serializable
+                allUsers = userManager.searchByMap(filter, new HashSet<String>(
+                        filter.keySet()));
+            }
         } catch (SizeLimitExceededException e) {
             searchOverflow = true;
             allUsers = Collections.emptyList();
@@ -601,7 +606,6 @@ public class UserManagerActionsBean extends InputController implements
 
         doSearch = true;
         return viewUsers();
-
     }
 
     public String clearSearchAdvanced() throws ClientException {
@@ -674,8 +678,8 @@ public class UserManagerActionsBean extends InputController implements
         String message = ComponentUtils.translate(context,
                 "label.userManager.password.not.match");
 
-        FacesMessages.instance().add("h_inputText_password1",
-                FacesMessage.SEVERITY_ERROR, message, (Object[]) null);
+        facesMessages.addToControl("h_inputText_password1",
+                FacesMessage.SEVERITY_ERROR, message);
 
         return null;
     }

@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -60,8 +58,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class TestListener extends RepositoryTestCase {
 
-    private static final Log log = LogFactory.getLog(TestListener.class);
-
     private static final String ENGINE_NAME = "compass";
 
     protected CoreSession remote;
@@ -77,25 +73,12 @@ public class TestListener extends RepositoryTestCase {
         super.setUp();
 
         deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
-                "ServiceManagement.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
                 "LoginComponent.xml");
         deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
                 "RepositoryManager.xml");
 
         deployContrib("org.nuxeo.runtime", "OSGI-INF/EventService.xml");
 
-        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
-                "CoreService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
-                "TypeService.xml");
-        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/PolicyService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
-                "SecurityService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
-                "RepositoryService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
-                "test-CoreExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
                 "CoreTestExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
@@ -137,9 +120,9 @@ public class TestListener extends RepositoryTestCase {
 
         DocumentModelImpl documentModelImpl = new DocumentModelImpl("User");
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("accessLevel", Long.valueOf(3));
+        data.put("accessLevel", 3L);
         documentModelImpl.addDataModel(new DataModelImpl("user", data));
-        ((NuxeoPrincipal)remote.getPrincipal()).setModel(documentModelImpl);
+        ((NuxeoPrincipal) remote.getPrincipal()).setModel(documentModelImpl);
     }
 
     private String generateUnique() {
@@ -175,7 +158,7 @@ public class TestListener extends RepositoryTestCase {
         dm.setProperty("dublincore", "title", "Indexable data");
         dm.setProperty("dublincore", "description", "Indexable description");
         dm.setProperty("file", "filename", "foo.pdf");
-        String[] contributors = new String[] { "a", "b" };
+        String[] contributors = { "a", "b" };
         dm.setProperty("dublincore", "contributors", contributors);
 
         // add a blob
@@ -204,10 +187,8 @@ public class TestListener extends RepositoryTestCase {
         prefetchInfo.put("dc.title", "title");
         prefetchInfo.put("dc.modified", new GregorianCalendar());
         prefetchInfo.put("dc.contributors", new String[0]);
-        if (prefetchInfo != null) {
-            for (String k : prefetchInfo.keySet()) {
-                dm.prefetchProperty(k, prefetchInfo.get(k));
-            }
+        for (String k : prefetchInfo.keySet()) {
+            dm.prefetchProperty(k, prefetchInfo.get(k));
         }
 
         assertFalse(dm.getPrefetch().isEmpty());

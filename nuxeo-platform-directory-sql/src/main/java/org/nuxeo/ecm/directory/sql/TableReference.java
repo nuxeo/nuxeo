@@ -70,7 +70,7 @@ public class TableReference extends AbstractReference {
     @XNode("@dataFile")
     protected String dataFileName;
 
-    private Table table = null;
+    private Table table;
 
     private Dialect dialect;
 
@@ -240,7 +240,6 @@ public class TableReference extends AbstractReference {
                 ids.add(rs.getString(valueColumn));
             }
             return ids;
-
         } catch (SQLException e) {
             throw new DirectoryException("error fetching reference values: ", e);
         } finally {
@@ -272,7 +271,6 @@ public class TableReference extends AbstractReference {
         } catch (SQLException e) {
             throw new DirectoryException("error remove links to " + entryId, e);
         }
-
     }
 
     public void removeLinksForSource(String sourceId, SQLSession session)
@@ -456,7 +454,6 @@ public class TableReference extends AbstractReference {
                 column = new Column(columnName,
                         FieldMapper.getSqlField("string"), columnName);
                 table.addColumn(column);
-
             } catch (ConfigurationException e) {
                 throw new DirectoryException(e);
             }

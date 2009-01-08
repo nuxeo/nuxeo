@@ -55,7 +55,7 @@ public class UserService extends DefaultComponent {
             return;
         }
         UserManagerDescriptor merged = new UserManagerDescriptor();
-        merged.userListingMode = "search_only"; // SEARCH_ONLY
+        merged.userListingMode = "search_only";
         // BBB backward compatibility defaults
         merged.userDirectoryName = "userDirectory";
         merged.userEmailField = "email";
@@ -93,22 +93,7 @@ public class UserService extends DefaultComponent {
                         + klass, e);
             }
         }
-        // TODO just put the descriptor in the userManager
-        userManager.setDefaultGroup(merged.defaultGroup);
-        userManager.setRootLogin(merged.rootLogin);
-        userManager.setUserSortField(merged.userSortField);
-        userManager.setGroupSortField(merged.groupSortField);
-        userManager.setUserListingMode(merged.userListingMode);
-        userManager.setGroupListingMode(merged.groupListingMode);
-        userManager.setUserDirectoryName(merged.userDirectoryName);
-        userManager.setUserEmailField(merged.userEmailField);
-        userManager.setUserSearchFields(merged.userSearchFields);
-        userManager.setUserPasswordPattern(merged.userPasswordPattern);
-        userManager.setGroupDirectoryName(merged.groupDirectoryName);
-        userManager.setGroupMembersField(merged.groupMembersField);
-        userManager.setGroupSubGroupsField(merged.groupSubGroupsField);
-        userManager.setGroupParentGroupsField(merged.groupParentGroupsField);
-        userManager.setAnonymousUser(merged.anonymousUser);
+        userManager.setConfiguration(merged);
     }
 
     @Override
@@ -148,4 +133,5 @@ public class UserService extends DefaultComponent {
         descriptors.remove(contribution);
         recomputeUserManager(true);
     }
+
 }

@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo Platform Expression Language
+Bundle-SymbolicName: org.nuxeo.ecm.platform.el;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: plugin
+Export-Package: org.nuxeo.ecm.platform.el
+Require-Bundle: org.nuxeo.ecm.core.api

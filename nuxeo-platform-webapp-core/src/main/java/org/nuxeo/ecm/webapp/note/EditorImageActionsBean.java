@@ -21,7 +21,7 @@ package org.nuxeo.ecm.webapp.note;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
-import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,18 +33,16 @@ import javax.faces.application.FacesMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.myfaces.trinidad.model.UploadedFile;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.ListDiff;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
@@ -56,8 +54,8 @@ import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.core.search.api.client.search.results.document.SearchPageProvider;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
+import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.webapp.base.InputController;
 
 /**
@@ -67,13 +65,12 @@ import org.nuxeo.ecm.webapp.base.InputController;
  * The uploaded image is stored in the <code>files</code> schema of the
  * document.
  * <p>
- * After uploading an image, the rest url for this image can be retrieve through
+ * After uploading an image, the REST URL for this image can be retrieve through
  * the appropriate method.
  * <p>
  * The search method retrieves only the Picture document of the repository.
- * 
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * 
  */
 @Name("editorImageActions")
 @Scope(CONVERSATION)
@@ -114,7 +111,9 @@ public class EditorImageActionsBean extends InputController implements
 
     private String oldSelectedTab;
 
-    private UploadedFile uploadedImage;
+    private InputStream uploadedImage;
+
+    private String uploadedImageName;
 
     private String imageUrl;
 
@@ -144,17 +143,25 @@ public class EditorImageActionsBean extends InputController implements
         return isImageUploaded;
     }
 
-    public void setUploadedImage(final UploadedFile uploadedImage) {
+    public void setUploadedImage(InputStream uploadedImage) {
         this.uploadedImage = uploadedImage;
     }
 
-    public UploadedFile getUploadedImage() {
+    public InputStream getUploadedImage() {
         return uploadedImage;
+    }
+
+    public String getUploadedImageName() {
+        return uploadedImageName;
+    }
+
+    public void setUploadedImageName(String uploadedImageName) {
+        this.uploadedImageName = uploadedImageName;
     }
 
     @SuppressWarnings("unchecked")
     public String uploadImage() throws ClientException {
-        if (uploadedImage == null) {
+        if (uploadedImage == null || uploadedImageName == null) {
             return "";
         }
         final DocumentModel doc = navigationContext.getCurrentDocument();
@@ -162,16 +169,12 @@ public class EditorImageActionsBean extends InputController implements
         final List<Map<String, Object>> filesList = (List<Map<String, Object>>) doc.getProperty(
                 "files", "files");
         final int fileIndex = filesList == null ? 0 : filesList.size();
-        final String filename = uploadedImage.getFilename();
 
         final Map<String, Object> props = new HashMap<String, Object>();
-        props.put("filename", filename);
-        try {
-            props.put("file", new FileBlob(uploadedImage.getInputStream(),
-                    uploadedImage.getContentType()));
-        } catch (IOException e) {
-            throw EJBExceptionHandler.wrapException(e);
-        }
+        uploadedImageName = FileUtils.getCleanFileName(uploadedImageName);
+        props.put("filename", uploadedImageName);
+        props.put("file", FileUtils.createSerializableBlob(uploadedImage,
+                uploadedImageName, null));
         final ListDiff listDiff = new ListDiff();
         listDiff.add(props);
         doc.setProperty("files", "files", listDiff);
@@ -180,7 +183,7 @@ public class EditorImageActionsBean extends InputController implements
         documentManager.save();
 
         imageUrl = DocumentModelFunctions.complexFileUrl("downloadFile", doc,
-                fileIndex, filename);
+                fileIndex, uploadedImageName);
 
         isImageUploaded = true;
 
@@ -253,7 +256,7 @@ public class EditorImageActionsBean extends InputController implements
                             "label.search.service.wrong.query"));
             log.error("QueryParseException in search popup : " + e.getMessage());
         } catch (SearchException e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
         return "editor_image_upload";
     }

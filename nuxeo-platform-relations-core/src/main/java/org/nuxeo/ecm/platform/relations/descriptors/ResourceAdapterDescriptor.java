@@ -30,7 +30,6 @@ import org.nuxeo.ecm.platform.relations.api.QNameResource;
  * type.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 @XObject("adapter")
 public class ResourceAdapterDescriptor {
@@ -45,16 +44,8 @@ public class ResourceAdapterDescriptor {
         return namespace;
     }
 
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
-
     public String getClassName() {
         return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
     }
 
 }

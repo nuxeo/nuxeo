@@ -33,7 +33,6 @@ public class TrashManagerBean implements TrashManager {
     ConversationTrashManager conversationTrashManager;
 
     public void destroy() {
-
     }
 
     public void initTrashManager() {

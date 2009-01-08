@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public interface CommentConverter {
 
     /**
-     * This method should transform the comment object into the document model.
+     * Transforms the comment object into the document model.
      *
      * @param docModel
      * @param comment
@@ -38,7 +38,7 @@ public interface CommentConverter {
     void updateDocumentModel(DocumentModel docModel, DocumentModel comment) throws ClientException;
 
     /**
-     * This method should transform a documentModel into a comment.
+     * Transforms a documentModel into a comment.
      *
      * @param docModel
      * @return
@@ -47,7 +47,7 @@ public interface CommentConverter {
     //public Comment getComment(DocumentModel docModel) throws ClientException;
 
     /**
-     * This method should return the type for comment document models.
+     * Returns the type for comment document models.
      *
      * @return
      */

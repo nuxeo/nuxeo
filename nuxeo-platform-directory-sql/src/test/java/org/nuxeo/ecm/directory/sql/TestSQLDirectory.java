@@ -241,7 +241,6 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void testGetEntries() throws Exception {
         Session session = getSession();
         try {
@@ -261,11 +260,8 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertEquals(getCalendar(2007, 9, 7, 14, 36, 28, 0),
                     dm.getProperty(SCHEMA, "dateField"));
             assertEquals(Long.valueOf(3), dm.getProperty(SCHEMA, "intField"));
-            List<String> groups = (List<String>) dm.getProperty(SCHEMA,
-                    "groups");
-            assertEquals(2, groups.size());
-            assertTrue(groups.contains("group_1"));
-            assertTrue(groups.contains("members"));
+            // XXX: getEntries does not fetch references anymore => groups is
+            // null
 
             dm = entryMap.get("Administrator");
             assertNotNull(dm);
@@ -274,10 +270,6 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertEquals(Long.valueOf(10), dm.getProperty(SCHEMA, "intField"));
             assertEquals(getCalendar(1982, 3, 25, 16, 30, 47, 123),
                     dm.getProperty(SCHEMA, "dateField"));
-            groups = (List<String>) dm.getProperty(SCHEMA, "groups");
-            assertEquals(1, groups.size());
-            assertTrue(groups.contains("administrators"));
-            // assertTrue(groups.contains("members"));
 
         } finally {
             session.close();
@@ -427,9 +419,21 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertEquals("user_1", docModel.getProperty(SCHEMA, "username"));
             assertEquals("pass_1", docModel.getProperty(SCHEMA, "password"));
 
-            // test that the groups (reference) of user_1 were fetched as well
+            // simple query does not fetch references by default => restart with
+            // an explicit fetch request
             List<String> groups = (List<String>) docModel.getProperty(SCHEMA,
                     "groups");
+            assertTrue(groups.isEmpty());
+
+            list = session.query(filter, null, null, true);
+            assertEquals(1, list.size());
+            docModel = list.get(0);
+            assertNotNull(docModel);
+            assertEquals("user_1", docModel.getProperty(SCHEMA, "username"));
+            assertEquals("pass_1", docModel.getProperty(SCHEMA, "password"));
+
+            // test that the groups (reference) of user_1 were fetched as well
+            groups = (List<String>) docModel.getProperty(SCHEMA, "groups");
             assertEquals(2, groups.size());
             assertTrue(groups.contains("members"));
             assertTrue(groups.contains("group_1"));

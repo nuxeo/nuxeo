@@ -44,40 +44,20 @@ public class DocumentViewCodecDescriptor {
         return className;
     }
 
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
     public boolean getEnabled() {
         return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public boolean getDefaultCodec() {
         return defaultCodec;
     }
 
-    public void setDefaultCodec(boolean defaultCodec) {
-        this.defaultCodec = defaultCodec;
-    }
-
     public String getPrefix() {
         return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
     }
 
 }

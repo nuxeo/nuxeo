@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.transform.api;
 
-import java.io.Serializable;
-
 import org.nuxeo.ecm.platform.transform.interfaces.TransformServiceCommon;
 import org.nuxeo.runtime.api.Framework;
 
@@ -28,12 +26,10 @@ import org.nuxeo.runtime.api.Framework;
  * Stateless transform service delegate.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
-public final class TransformServiceDelegate implements Serializable {
+public final class TransformServiceDelegate {
 
-    private static final long serialVersionUID = -8140952341564417509L;
-
+    // Utility class.
     private TransformServiceDelegate() {
     }
 

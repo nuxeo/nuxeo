@@ -74,72 +74,36 @@ public class DocModifierEPDescriptor {
         return new String[] { documentType };
     }
 
-    public void setDocumentType(String documentType) {
-        this.documentType = documentType;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getPluginName() {
         return pluginName;
     }
 
-    public void setPluginName(String pluginName) {
-        this.pluginName = pluginName;
-    }
-
     public int getOrder() {
         return order;
-    }
-
-    public void setOrder(int order) {
-        this.order = order;
     }
 
     public CustomField[] getCustomFields() {
         return customFields;
     }
 
-    public void setCustomFields(CustomField[] customFields) {
-        this.customFields = customFields;
-    }
-
     public CustomOutputField[] getCustomOutputFields() {
         return customOutputFields;
-    }
-
-    public void setCustomOutputFields(CustomOutputField[] customOutputFields) {
-        this.customOutputFields = customOutputFields;
     }
 
     public String getSrcFieldName() {
         return srcFieldName;
     }
 
-    public void setSrcFieldName(String srcFieldName) {
-        this.srcFieldName = srcFieldName;
-    }
-
     public String getDestFieldName() {
         return destFieldName;
     }
 
-    public void setDestFieldName(String destFieldName) {
-        this.destFieldName = destFieldName;
-    }
-
     public String[] getCoreEvents() {
         return coreEvents;
-    }
-
-    public void setCoreEvents(String[] coreEvents) {
-        this.coreEvents = coreEvents;
     }
 
 }

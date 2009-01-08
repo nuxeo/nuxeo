@@ -9,7 +9,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- * 
+ *
  */
 class ReindexingAllTask extends IndexingBrowseTask {
 
@@ -21,10 +21,9 @@ class ReindexingAllTask extends IndexingBrowseTask {
         super(docRef, repositoryName);
     }
 
+    @Override
     public void run() {
-
         final String errorMsg = "Reindexing all documents failed...";
-
         final int current_batch_size = searchService.getIndexingDocBatchSize();
 
         try {
@@ -38,12 +37,9 @@ class ReindexingAllTask extends IndexingBrowseTask {
             super.run();
 
             while (searchService.getActiveIndexingTasks() > 0) {
-
                 Thread.sleep(5000);
-
                 long nbIndexedDocs = searchService.getTotalCompletedIndexingTasks()
                         - initialIndexingThreadNumber;
-
                 log.info("indexed docs : " + nbIndexedDocs);
             }
 
@@ -63,7 +59,6 @@ class ReindexingAllTask extends IndexingBrowseTask {
         } finally {
             searchService.setIndexingDocBatchSize(current_batch_size);
         }
-
     }
 
     @Override
@@ -87,4 +82,5 @@ class ReindexingAllTask extends IndexingBrowseTask {
                 + (repositoryName == null ? 0 : repositoryName.hashCode());
         return result;
     }
+
 }

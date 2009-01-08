@@ -83,7 +83,7 @@ public class TestVersioningDocEdit extends VersioningBaseTestCase {
         // req.setWfStateInitial("assigned");
         // req.setWfStateFinal("inprogress");
 
-        final VersioningService service = ServiceHelper.getVersioningService();
+        final VersioningService service = getVersioningService();
 
         checkVersion(doc, 1L, 0L);
 
@@ -162,7 +162,7 @@ public class TestVersioningDocEdit extends VersioningBaseTestCase {
         checkVersion(docModel, 1L, 0L);
 
         docModel = coreSession.saveDocument(docModel);
-        
+
         DocumentModel readDocModel = coreSession.getDocument(docModel.getRef());
         checkVersion(readDocModel, 1L, 1L);
 
@@ -181,7 +181,7 @@ public class TestVersioningDocEdit extends VersioningBaseTestCase {
         VersioningChangeListenerForTesting.setVersionsToCheck(1L, 1L, 2L, 0L);
 
         docModel = coreSession.saveDocument(docModel);
-        
+
         DocumentModel docVersion = coreSession.getVersions(docModel.getRef()).get(
                 0);
         checkVersion(docVersion, 1L, 1L);
@@ -196,7 +196,7 @@ public class TestVersioningDocEdit extends VersioningBaseTestCase {
     }
 
     // FIXME
-    public void XXXtestDefinedRules() throws DocumentException, ClientException {
+    public void XXXtestDefinedRules() throws ClientException {
         DocumentModel rootDM = coreSession.getRootDocument();
 
         DocumentModel childFile = coreSession.createDocumentModel(

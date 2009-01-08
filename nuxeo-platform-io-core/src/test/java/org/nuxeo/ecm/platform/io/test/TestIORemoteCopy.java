@@ -53,7 +53,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * A test/sample class for remote copying of documents and resources.
- *
+ * <p>
  * Warning : this test is deactivated from autorun unit tests as it needs a particular configuration
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
@@ -89,10 +89,9 @@ public class TestIORemoteCopy extends NXRuntimeTestCase {
         super.setUp();
 
         // the core bundle
-        deployContrib("org.nuxeo.ecm.platform.io.core.tests", "CoreService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
         deployContrib("org.nuxeo.ecm.platform.io.core.tests", "TypeService.xml");
-        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
-                "SecurityService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/SecurityService.xml");
         deployContrib("org.nuxeo.ecm.platform.io.core.tests",
                 "RepositoryService.xml");
         deployContrib("org.nuxeo.ecm.platform.io.core.tests",

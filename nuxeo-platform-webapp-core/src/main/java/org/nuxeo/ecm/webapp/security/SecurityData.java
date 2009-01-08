@@ -48,16 +48,13 @@ import org.nuxeo.common.utils.i18n.Labeler;
  *
  * parent doc denies:<br>
  * ...<br>
- *
- *
  * <p>
  * Also has methods that allow manipulation of the contained data, such as
  * add/remove security privileges. The end result after add/remove has been
  * called will be converted to a backend security DTO and then submitted on
  * backend.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
+ * @author Razvan Caraghin
  */
 public class SecurityData implements Serializable {
 
@@ -83,15 +80,11 @@ public class SecurityData implements Serializable {
 
     protected boolean needSave=false;
 
-
-
-    public void setNeedSave(boolean needSave)
-    {
-        this.needSave=needSave;
+    public void setNeedSave(boolean needSave) {
+        this.needSave = needSave;
     }
 
-    public boolean getNeedSave()
-    {
+    public boolean getNeedSave() {
         return needSave;
     }
 
@@ -191,7 +184,7 @@ public class SecurityData implements Serializable {
             return;
         }
 
-        needSave=true;
+        needSave = true;
         if (grant) {
             // if we already have the user stored with rights we dont add the
             // user again, just update the list if needed
@@ -251,12 +244,10 @@ public class SecurityData implements Serializable {
      * Removes a privilege from the displayed list. This does not submit anything
      * to backend.
      *
-     * returns true if a privilege was indeed removed
+     * @return true if a privilege was indeed removed
      */
     public boolean removeModifiablePrivilege(String principalName,
             String permissionName, boolean grant) {
-
-        boolean removed=false;
 
         if (null == principalName || null == permissionName) {
             log.error("Null params received, returning...");
@@ -264,6 +255,7 @@ public class SecurityData implements Serializable {
         }
 
         needSave=true;
+        boolean removed = false;
         if (grant) {
             if (null != currentDocGrant.get(principalName)) {
                 // we have the specified user, check if we have the right
@@ -298,7 +290,7 @@ public class SecurityData implements Serializable {
 
     /**
      * Removes all privileges for a given user. This does not edit the
-     * backend
+     * backend.
      */
     public void removeModifiablePrivilege(String principalName) {
         if (null == principalName) {

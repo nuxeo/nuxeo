@@ -38,8 +38,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 /**
  * Lists the available permission actions. Hardcoded. ATM Grant/Deny supported.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
+ * @author Razvan Caraghin
  */
 @Name("permissionActionListManager")
 @Scope(SESSION)
@@ -57,7 +56,6 @@ public class PermissionActionListManager implements Serializable {
     private transient ResourcesAccessor resourcesAccessor;
 
     public SelectItem[] getPermissionActionItems() {
-
         List<String> permissionActions = new ArrayList<String>();
         List<SelectItem> jsfModelList = new ArrayList<SelectItem>();
 
@@ -72,7 +70,6 @@ public class PermissionActionListManager implements Serializable {
         }
 
         SelectItem[] permissionActionItems = jsfModelList.toArray(new SelectItem[0]);
-
         return permissionActionItems;
     }
 

@@ -31,7 +31,6 @@ import org.nuxeo.common.utils.StringUtils;
  * An {@code INSERT} statement.
  *
  * @author Florent Guillaume
- *
  */
 public class Insert implements Serializable {
 
@@ -63,7 +62,7 @@ public class Insert implements Serializable {
     }
 
     /**
-     * Get the insert statement, and fill in {@code keys} with free parameter
+     * Gets the insert statement, and fills in {@code keys} with free parameter
      * names.
      *
      * @return the SQL insert statement.

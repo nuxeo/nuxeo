@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.api.security.PolicyService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -79,7 +78,6 @@ import org.nuxeo.ecm.core.search.api.internals.IndexingThreadPoolDescriptor;
 import org.nuxeo.ecm.core.search.api.internals.SearchPolicyDescriptor;
 import org.nuxeo.ecm.core.search.api.internals.SearchServiceInternals;
 import org.nuxeo.ecm.core.search.api.security.SearchPolicy;
-import org.nuxeo.ecm.core.search.api.security.SearchPolicyService;
 import org.nuxeo.ecm.core.search.backend.SearchEngineBackendDescriptor;
 import org.nuxeo.ecm.core.search.threading.IndexingThreadPool;
 import org.nuxeo.ecm.core.search.transaction.Transactions;
@@ -449,8 +447,10 @@ public class SearchServiceImpl extends DefaultComponent implements
                     log.debug("Registered search engine descriptor: " + name);
                     defaultBackendName = name;
                     // log.debug(name + " registered as DEFAULT backend");
+                // FIXME: wrong exception to catch
                 } catch (NullPointerException ne) {
-                    ne.printStackTrace();
+                    log.error(ne);
+                    // FIXME: then what?
                 }
             } else {
                 log.error("No name for the supplied search engine plugin "
@@ -458,7 +458,6 @@ public class SearchServiceImpl extends DefaultComponent implements
             }
 
         } else if (extensionPoint.equals(PT_RESOURCE)) {
-
             IndexableResourceConf conf = (IndexableResourceConf) contribution;
 
             String resourceName = conf.getName();
@@ -486,9 +485,7 @@ public class SearchServiceImpl extends DefaultComponent implements
             }
 
         } else if (extensionPoint.equals(PT_DOCTYPE_INDEX)) {
-
             // Doctype to indexable resources mapping registration
-
             IndexableDocTypeDescriptor desc = (IndexableDocTypeDescriptor) contribution;
 
             String docType = desc.getType();
@@ -504,10 +501,12 @@ public class SearchServiceImpl extends DefaultComponent implements
             FulltextFieldDescriptor desc = (FulltextFieldDescriptor) contribution;
             log.info("Registered fulltext: " + desc.getName());
             fullTextDescriptors.put(desc.getName(), desc);
+
         } else if (extensionPoint.equals(PT_EVENTS)) {
             IndexingEventDescriptor desc = (IndexingEventDescriptor) contribution;
             log.info("Registered event: " + desc.getName());
             indexingEvents.put(desc.getName(), desc);
+
         } else if (extensionPoint.equals(PT_BLOB_EXTRACTOR_DESC)) {
             BlobExtractorDescriptor desc = (BlobExtractorDescriptor) contribution;
             try {
@@ -518,13 +517,16 @@ public class SearchServiceImpl extends DefaultComponent implements
             } catch (IllegalAccessException e) {
                 log.error(e.getMessage());
             }
+
         } else if (extensionPoint.equals(PT_INDEXING_THREAD_POOL)) {
             IndexingThreadPoolDescriptor desc = (IndexingThreadPoolDescriptor) contribution;
             setNumberOfIndexingThreads(desc.getMaxPoolSize());
             setIndexingDocBatchSize(desc.getDocBatchSize());
+
         } else if (extensionPoint.equals(PT_POLICIES)) {
             SearchPolicyDescriptor desc = (SearchPolicyDescriptor) contribution;
             registerSearchPolicyDescriptor(desc);
+
         } else {
             log.error("Wrong extension point name for registration..."
                     + " Check your fragments...=>" + extensionPoint);
@@ -536,9 +538,7 @@ public class SearchServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor) {
 
         if (extensionPoint.equals(PT_BACKEND)) {
-
             // Search engine backend unregistration
-
             SearchEngineBackendDescriptor desc = (SearchEngineBackendDescriptor) contribution;
 
             if (desc.getName() != null) {
@@ -551,9 +551,7 @@ public class SearchServiceImpl extends DefaultComponent implements
             }
 
         } else if (extensionPoint.equals(PT_RESOURCE)) {
-
             // Indexable schema configuration registration
-
             IndexableResourceDescriptor schema = (IndexableResourceDescriptor) contribution;
 
             namedResources.remove(schema.getName());
@@ -575,9 +573,7 @@ public class SearchServiceImpl extends DefaultComponent implements
             }
 
         } else if (extensionPoint.equals(PT_DOCTYPE_INDEX)) {
-
             // Doctype to indexable resources mapping registration.
-
             IndexableDocTypeDescriptor desc = (IndexableDocTypeDescriptor) contribution;
 
             String docType = desc.getType();
@@ -596,14 +592,17 @@ public class SearchServiceImpl extends DefaultComponent implements
                         + desc.getName());
                 fullTextDescriptors.remove(desc.getName());
             }
+
         } else if (extensionPoint.equals(PT_BLOB_EXTRACTOR_DESC)) {
             BlobExtractorDescriptor desc = (BlobExtractorDescriptor) contribution;
             blobExtractors.remove(desc.getName());
             log.debug("Full text extractor with name : " + desc.getName()
                     + " has been unregistered");
+
         } else if (extensionPoint.equals(PT_POLICIES)) {
             SearchPolicyDescriptor desc = (SearchPolicyDescriptor) contribution;
             unregisterSearchPolicyDescriptor(desc);
+
         } else {
             log.debug("Nothing to do to unregister contrib=" + extensionPoint);
         }
@@ -614,7 +613,6 @@ public class SearchServiceImpl extends DefaultComponent implements
 
         IndexableResourceConf conf = namedResources.get(name);
         if (full) {
-
             // Take it from the cache if already generated.
             if (cNamedResources.containsKey(name)) {
                 return cNamedResources.get(name);
@@ -629,7 +627,6 @@ public class SearchServiceImpl extends DefaultComponent implements
                 conf = computedConf;
                 setToCache(conf);
             }
-
         }
         return conf;
     }
@@ -640,7 +637,6 @@ public class SearchServiceImpl extends DefaultComponent implements
         IndexableResourceConf conf = prefixedResources.get(prefix);
 
         if (full) {
-
             // Take it from the cache if already generated.
             if (cPrefixedResources.containsKey(prefix)) {
                 return computeResourceConfByPrefix(prefix);
@@ -655,7 +651,6 @@ public class SearchServiceImpl extends DefaultComponent implements
                 setToCache(conf);
             }
         }
-
         return conf;
     }
 
@@ -677,7 +672,7 @@ public class SearchServiceImpl extends DefaultComponent implements
         if (backend != null) {
             return backend.getSupportedAnalyzersFor();
         }
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @SuppressWarnings("unchecked")
@@ -686,7 +681,7 @@ public class SearchServiceImpl extends DefaultComponent implements
         if (backend != null) {
             return backend.getSupportedFieldTypes();
         }
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     public ResultSet searchQuery(ComposedNXQuery nxqlQuery, int offset,
@@ -696,15 +691,6 @@ public class SearchServiceImpl extends DefaultComponent implements
             String backendName = defaultBackendName;
             SearchEngineBackend backend = getSearchEngineBackendByName(backendName);
             if (backend != null) {
-                // old search policy
-                PolicyService policyService = Framework.getLocalService(PolicyService.class);
-                if (policyService != null) {
-                    SearchPolicyService searchPolicyService = (SearchPolicyService) policyService.getSearchPolicy();
-                    if (searchPolicyService != null) {
-                        nxqlQuery = searchPolicyService.applyPolicy(nxqlQuery);
-                    }
-                }
-                // new search policy
                 List<SearchPolicy> policies = getSearchPolicies();
                 for (SearchPolicy policy : policies) {
                     nxqlQuery = policy.applyPolicy(nxqlQuery);
@@ -761,7 +747,6 @@ public class SearchServiceImpl extends DefaultComponent implements
 
     public final IndexableResourceDataConf getIndexableDataConfFor(
             String dataName) {
-
         String[] split = dataName.split(":", 2);
         if (split.length < 2) {
             return null;
@@ -1047,9 +1032,9 @@ public class SearchServiceImpl extends DefaultComponent implements
     }
 
     public void setNumberOfIndexingThreads(int numberOfIndexingThreads) {
-        log.info("Setting indexing thread pool size: "
-                + Integer.toString(numberOfIndexingThreads));
-        this.threadPoolSizeMax = numberOfIndexingThreads;
+        log.info("Setting indexing thread pool size: " +
+                Integer.toString(numberOfIndexingThreads));
+        threadPoolSizeMax = numberOfIndexingThreads;
     }
 
     public void saveAllSessions() throws IndexingException {
@@ -1085,11 +1070,10 @@ public class SearchServiceImpl extends DefaultComponent implements
     public void reindexAll(String repoName, String path, boolean fulltext)
             throws IndexingException {
 
-        DocumentModel dm = null;
-
         try {
             CoreSession core = getCoreSession(repoName);
 
+            DocumentModel dm;
             if (path == null || path.length() == 0) {
                 dm = core.getRootDocument();
             } else {
@@ -1162,7 +1146,6 @@ public class SearchServiceImpl extends DefaultComponent implements
             // TODO: what should we *really* do here??
             throw new IllegalStateException("Could not commit transaction", e);
         }
-
     }
 
     // search policy methods

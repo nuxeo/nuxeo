@@ -23,7 +23,6 @@ package org.nuxeo.ecm.directory.sql.repository;
  * Exception raised for illegal configurations.
  *
  * @author Florent Guillaume
- *
  */
 public class ConfigurationException extends Exception {
 
@@ -32,10 +31,13 @@ public class ConfigurationException extends Exception {
     public ConfigurationException(String message) {
         super(message);
     }
+
     public ConfigurationException(String message, Throwable cause) {
         super(message, cause);
     }
+
     public ConfigurationException(Throwable cause) {
         super(cause);
     }
+
 }

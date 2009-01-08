@@ -26,7 +26,6 @@ import java.util.List;
  * This class holds data about the notifications.
  *
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
- *
  */
 public interface NotificationRegistry extends Serializable {
 
@@ -41,4 +40,5 @@ public interface NotificationRegistry extends Serializable {
     List<Notification> getNotifications();
 
     List<Notification> getNotificationsForSubscriptions(String parentType);
+
 }

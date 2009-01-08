@@ -33,6 +33,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * <p>
  * To decide whether or not a rule of this type is a candidate, the service
  * checks for the following document properties:
+ * <ul>
  * <li>lifecycleState : the document has to be in the specified state. The
  * wildcard '*' can be used to specify any lifecycle state.</li>
  * <li>document type
@@ -43,6 +44,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * doc types </li>
  * </ul>
  * </li>
+ * </ul>
  *
  * @author DM
  *
@@ -76,7 +78,6 @@ public class EditBasedRuleDescriptor implements RuleDescriptor {
 
     /**
      * Default constructor - used normally when created as an XObject.
-     *
      */
     public EditBasedRuleDescriptor() {
         log.debug("<EditBasedRuleDescriptor:init>");
@@ -86,44 +87,23 @@ public class EditBasedRuleDescriptor implements RuleDescriptor {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getAction() {
         return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
     }
 
     public String getLifecycleState() {
         return lifecycleState;
     }
 
-    public void setLifecycleState(String lifecycleState) {
-        this.lifecycleState = lifecycleState;
-    }
-
     public RuleOptionDescriptor[] getOptions() {
         return options;
-    }
-
-    public void setOptions(RuleOptionDescriptor[] options) {
-        this.options = options;
     }
 
     public String[] getExcludeDocTypes() {
         return excludeDocTypes;
     }
 
-    public void setExcludeDocTypes(String[] excludeDocTypes) {
-        this.excludeDocTypes = excludeDocTypes;
-    }
-
     public boolean isDocTypeExcluded(String docType) {
-
         for (String excludedDocType : excludeDocTypes) {
             if (excludedDocType.equals(docType)) {
                 return true;
@@ -156,9 +136,7 @@ public class EditBasedRuleDescriptor implements RuleDescriptor {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append(getClass().getSimpleName());
-        sb.append(" {name=");
-        sb.append(name);
-        sb.append('}');
+        sb.append(" {name=").append(name).append('}');
         return sb.toString();
     }
 

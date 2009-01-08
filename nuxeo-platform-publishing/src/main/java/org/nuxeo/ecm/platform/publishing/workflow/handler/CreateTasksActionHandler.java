@@ -33,7 +33,6 @@ import org.nuxeo.ecm.platform.workflow.jbpm.handlers.api.client.AbstractWorkflow
  * Create one task per workflow side declared reviewers.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class CreateTasksActionHandler extends
         AbstractWorkflowDocumentActionHandler {

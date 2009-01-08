@@ -24,6 +24,7 @@ import java.text.NumberFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -52,10 +53,6 @@ public class VersioningDocumentAdapter implements VersioningDocument {
 
     /**
      * Constructor.
-     *
-     * @param doc
-     * @param propMajorVersion
-     * @param propMinorVersion
      */
     VersioningDocumentAdapter(DocumentModel doc, String propMajorVersion,
             String propMinorVersion) {
@@ -88,20 +85,33 @@ public class VersioningDocumentAdapter implements VersioningDocument {
     }
 
     public void setMajorVersion(Long value) {
-        doc.setProperty(DocumentModelUtils.getSchemaName(majorVersionProperty),
-                DocumentModelUtils.getFieldName(majorVersionProperty), value);
+        try {
+            doc.setProperty(DocumentModelUtils.getSchemaName(majorVersionProperty),
+                    DocumentModelUtils.getFieldName(majorVersionProperty), value);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public void setMinorVersion(Long value) {
-        doc.setProperty(DocumentModelUtils.getSchemaName(minorVersionProperty),
-                DocumentModelUtils.getFieldName(minorVersionProperty), value);
+        try {
+            doc.setProperty(DocumentModelUtils.getSchemaName(minorVersionProperty),
+                    DocumentModelUtils.getFieldName(minorVersionProperty), value);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     private long getValidVersionNumber(String propName)
             throws DocumentException {
-        final Object propVal = doc.getProperty(
-                DocumentModelUtils.getSchemaName(propName),
-                DocumentModelUtils.getFieldName(propName));
+        Object propVal;
+        try {
+            propVal = doc.getProperty(
+                    DocumentModelUtils.getSchemaName(propName),
+                    DocumentModelUtils.getFieldName(propName));
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
 
         long ver = 0L;
         if (null == propVal) {
@@ -109,7 +119,7 @@ public class VersioningDocumentAdapter implements VersioningDocument {
             // could be the case that defaultMajorVersion & defaultMajorVersion
             // are not correctly specifying the properties names for versioning
             log.warn("Versioning field not initialized (property: " + propName
-                    + ") for doc: " + doc.getTitle());
+                    + ") for doc: " + doc.getId());
         } else {
             if (!(propVal instanceof Long)) {
                 throw new DocumentException("Property " + propName
@@ -156,17 +166,13 @@ public class VersioningDocumentAdapter implements VersioningDocument {
             coreSession = repo.open();
             return coreSession.getDocument(docRef);
         } catch (Exception e) {
-            // log.error("cannot retrieve document for ref: " + docRef ,e);
             throw new DocumentException("cannot retrieve document for ref: "
                     + docRef, e);
         } finally {
             if (coreSession != null) {
-                try {
-                    CoreInstance.getInstance().close(coreSession);
-                } catch (ClientException e) {
-                    log.error("cannot close coreSession", e);
-                }
+                CoreInstance.getInstance().close(coreSession);
             }
         }
     }
+
 }

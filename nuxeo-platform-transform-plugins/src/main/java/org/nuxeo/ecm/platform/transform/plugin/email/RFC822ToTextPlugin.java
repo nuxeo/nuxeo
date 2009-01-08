@@ -96,55 +96,56 @@ public class RFC822ToTextPlugin extends AbstractPlugin {
         return trs;
     }
 
-    protected Blob extractTextFromMessage(Blob blob) throws IOException {
-        if (blob != null) {
-            File f = null;
-            OutputStream fo = null;
-            try {
-                TransformServiceCommon service = Framework.getService(TransformServiceCommon.class);
-                if (service == null) {
-                    log.error("Could not retrieve transform service");
-                    return null;
+    protected Blob extractTextFromMessage(Blob blob) {
+        if (blob == null) {
+            return null;
+        }
+        File f = null;
+        OutputStream fo = null;
+        try {
+            TransformServiceCommon service = Framework.getService(TransformServiceCommon.class);
+            if (service == null) {
+                log.error("Could not retrieve transform service");
+                return null;
+            }
+            MimeMessage msg = new MimeMessage((Session) null,
+                    blob.getStream());
+            f = File.createTempFile("rfc822totext", ".txt");
+            fo = new FileOutputStream(f);
+            List<Part> parts = getAttachmentParts(msg);
+            writeInfo(fo, msg.getSubject());
+            writeInfo(fo, msg.getFrom());
+            writeInfo(fo, msg.getRecipients(RecipientType.TO));
+            writeInfo(fo, msg.getRecipients(RecipientType.CC));
+            for (Part part : parts) {
+                writeInfo(fo, part.getFileName());
+                writeInfo(fo, part.getDescription());
+                byte[] extracted = extractTextFromMessagePart(service, part);
+                if (extracted != null) {
+                    writeInfo(fo, extracted);
                 }
-                MimeMessage msg = new MimeMessage((Session) null,
-                        blob.getStream());
-                f = File.createTempFile("rfc822totext", ".txt");
-                fo = new FileOutputStream(f);
-                List<Part> parts = getAttachmentParts(msg);
-                writeInfo(fo, msg.getSubject());
-                writeInfo(fo, msg.getFrom());
-                writeInfo(fo, msg.getRecipients(RecipientType.TO));
-                writeInfo(fo, msg.getRecipients(RecipientType.CC));
-                for (Part part : parts) {
-                    writeInfo(fo, part.getFileName());
-                    writeInfo(fo, part.getDescription());
-                    byte[] extracted = extractTextFromMessagePart(service, part);
-                    if (extracted != null) {
-                        writeInfo(fo, extracted);
-                    }
+            }
+            Blob outblob = new FileBlob(new FileInputStream(f));
+            outblob.setMimeType(getDestinationMimeType());
+            return outblob;
+        } catch (Exception e) {
+            log.error(e);
+        } finally {
+            if (fo != null) {
+                try {
+                    fo.close();
+                } catch (IOException e) {
+                    log.error(e);
                 }
-                Blob outblob = new FileBlob(new FileInputStream(f));
-                outblob.setMimeType(getDestinationMimeType());
-                return outblob;
-            } catch (Exception e) {
-                log.error(e);
-            } finally {
-                if (fo != null) {
-                    try {
-                        fo.close();
-                    } catch (IOException e) {
-                        log.error(e);
-                    }
-                }
-                if (f != null) {
-                    f.delete();
-                }
+            }
+            if (f != null) {
+                f.delete();
             }
         }
         return null;
     }
 
-    protected void writeInfo(OutputStream stream, Address address) {
+    protected static void writeInfo(OutputStream stream, Address address) {
         if (address != null) {
             try {
                 stream.write(address.toString().getBytes());
@@ -155,7 +156,7 @@ public class RFC822ToTextPlugin extends AbstractPlugin {
         }
     }
 
-    protected void writeInfo(OutputStream stream, Address[] addresses) {
+    protected static void writeInfo(OutputStream stream, Address[] addresses) {
         if (addresses != null) {
             for (Address address : addresses) {
                 writeInfo(stream, address);
@@ -163,7 +164,7 @@ public class RFC822ToTextPlugin extends AbstractPlugin {
         }
     }
 
-    protected void writeInfo(OutputStream stream, String info) {
+    protected static void writeInfo(OutputStream stream, String info) {
         if (info != null) {
             try {
                 stream.write(info.getBytes());
@@ -174,7 +175,7 @@ public class RFC822ToTextPlugin extends AbstractPlugin {
         }
     }
 
-    protected void writeInfo(OutputStream stream, byte[] info) {
+    protected static void writeInfo(OutputStream stream, byte[] info) {
         if (info != null) {
             try {
                 stream.write(info);
@@ -185,7 +186,7 @@ public class RFC822ToTextPlugin extends AbstractPlugin {
         }
     }
 
-    protected byte[] extractTextFromMessagePart(TransformServiceCommon service,
+    protected static byte[] extractTextFromMessagePart(TransformServiceCommon service,
             Part p) throws Exception {
         ContentType contentType = new ContentType(p.getContentType());
         String baseType = contentType.getBaseType();
@@ -208,7 +209,7 @@ public class RFC822ToTextPlugin extends AbstractPlugin {
         return null;
     }
 
-    protected List<Part> getAttachmentParts(Part p) throws Exception {
+    protected static List<Part> getAttachmentParts(Part p) throws Exception {
         List<Part> res = new ArrayList<Part>();
         if (p.isMimeType(MESSAGE_RFC822_MIMETYPE)) {
             res.addAll(getAttachmentParts((Part) p.getContent()));
@@ -242,4 +243,5 @@ public class RFC822ToTextPlugin extends AbstractPlugin {
         }
         return res;
     }
+
 }

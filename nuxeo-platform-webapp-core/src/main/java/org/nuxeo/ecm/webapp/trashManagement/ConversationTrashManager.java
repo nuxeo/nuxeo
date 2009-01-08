@@ -31,7 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 
 @Name("conversationTrashManager")
 @Scope(APPLICATION)
-public class ConversationTrashManager implements Serializable{
+public class ConversationTrashManager implements Serializable {
 
     private static final long serialVersionUID = 9876098763432L;
     private static final Log log = LogFactory.getLog(ConversationTrashManager.class);
@@ -42,7 +42,7 @@ public class ConversationTrashManager implements Serializable{
         log.debug("Initialize");
     }
 
-    public boolean isTrashManagementEnabled(){
+    public static boolean isTrashManagementEnabled() {
         return getService().isTrashManagementEnabled();
     }
 

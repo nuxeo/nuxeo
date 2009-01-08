@@ -57,24 +57,12 @@ public class AutoBasedRuleDescriptor implements RuleDescriptor {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getAction() {
         return action;
     }
 
-    public void setAction(String action) {
-        this.action = action;
-    }
-
     public String getLifecycleState() {
         return lifecycleState;
-    }
-
-    public void setLifecycleState(String lifecycleState) {
-        this.lifecycleState = lifecycleState;
     }
 
     public boolean isEnabled() {
@@ -85,9 +73,7 @@ public class AutoBasedRuleDescriptor implements RuleDescriptor {
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append(getClass().getSimpleName());
-        buf.append(" {lifecycle=");
-        buf.append(lifecycleState);
-        buf.append('}');
+        buf.append(" {lifecycle=").append(lifecycleState).append('}');
 
         return buf.toString();
     }

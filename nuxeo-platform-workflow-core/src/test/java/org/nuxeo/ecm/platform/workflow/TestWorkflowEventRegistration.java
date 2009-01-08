@@ -23,11 +23,13 @@ import java.util.Set;
 
 import org.nuxeo.ecm.platform.audit.NXAudit;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
+import org.nuxeo.ecm.platform.audit.service.PersistenceProvider;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * Test the workflow service.
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class TestWorkflowEventRegistration extends NXRuntimeTestCase {
@@ -37,11 +39,14 @@ public class TestWorkflowEventRegistration extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        
+        NXAuditEventsService.persistenceProvider.setHibernateConfiguration(new TestAuditHibernateConfiguration());
         deployContrib("org.nuxeo.ecm.platform.workflow.tests",
                 "nxaudit-event-service.xml");
         deployContrib("org.nuxeo.ecm.platform.workflow.tests",
                 "nxaudit-events-workflow.xml");
 
+        
         service = NXAudit.getNXAuditEventsService();
         assertNotNull(service);
     }

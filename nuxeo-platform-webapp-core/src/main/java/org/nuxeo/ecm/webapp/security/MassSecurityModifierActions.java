@@ -40,7 +40,7 @@ public class MassSecurityModifierActions implements Serializable {
 
     private static final long serialVersionUID = 4978984433628773791L;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected transient NavigationContext navigationContext;
 
     @In(create = true)
@@ -70,7 +70,6 @@ public class MassSecurityModifierActions implements Serializable {
     public void setBlockRightInheritance(Boolean blockRightInheritance) {
         this.blockRightInheritance = blockRightInheritance;
     }
-
 
     public String applySecurity(String listName) throws ClientException {
         // get the list

@@ -59,7 +59,7 @@ public final class DirectoryHelper {
     private final DirectoryService service;
 
     private DirectoryHelper() {
-        DirectoryService dirService= Framework.getLocalService(DirectoryService.class);
+        DirectoryService dirService = Framework.getLocalService(DirectoryService.class);
         if (dirService==null) {
             try {
                 dirService= Framework.getService(DirectoryService.class);
@@ -67,7 +67,7 @@ public final class DirectoryHelper {
                 log.error("Can't find Directory Service",e);
             }
         }
-        service=dirService;
+        service = dirService;
     }
 
     public static DirectoryHelper instance() {
@@ -92,9 +92,9 @@ public final class DirectoryHelper {
     public DirectorySelectItem getSelectItem(String directoryName, Map<String, Object> filter) {
         List<DirectorySelectItem> items = getSelectItems(directoryName, filter);
         if (items.size() > 1) {
-            throw new RuntimeException("Too many entries found in directory " + directoryName);
+            throw new IllegalStateException("More than one entry found in directory " + directoryName);
         } else if (items.isEmpty()) {
-            throw new RuntimeException("Entry not found in directory " + directoryName + " filter=" + filter);
+            throw new IllegalStateException("Entry not found in directory " + directoryName + " filter=" + filter);
         }
         return items.get(0);
     }
@@ -157,11 +157,6 @@ public final class DirectoryHelper {
         return instance().service;
     }
 
-    /**
-     * @param directoryValues
-     * @param parentValue
-     * @return
-     */
     public static List<DirectorySelectItem> getSelectItems(
             VocabularyEntryList directoryValues, Map<String, Object> filter) {
         List<DirectorySelectItem> list = new ArrayList<DirectorySelectItem>();
@@ -237,10 +232,11 @@ public final class DirectoryHelper {
     }
 
     /**
-     * Return the entry with given id from specified directory.
-     *
-     * method to use from components, since JSF base class that we extend don't allow
+     * Returns the entry with given id from specified directory.
+     * <p>
+     * Method to use from components, since JSF base class that we extend don't allow
      * to throw proper exceptions.
+     *
      * @param directoryName
      * @param entryId
      * @return the entry, or null in case of exception in callees.

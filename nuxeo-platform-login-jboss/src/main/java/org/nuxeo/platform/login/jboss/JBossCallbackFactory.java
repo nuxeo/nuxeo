@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.platform.login.jboss;
 
 import java.io.IOException;
@@ -20,7 +39,7 @@ public class JBossCallbackFactory implements CallbackFactory {
 
     public CallbackResult handleSpecificCallbacks(
             CallbackHandler callbackHandler) {
-        boolean cb_handled=false;
+        boolean cb_handled = false;
 
         CallbackResult result = new CallbackResult();
 
@@ -31,7 +50,7 @@ public class JBossCallbackFactory implements CallbackFactory {
         try {
             // If this is a SecurityAssociationCBH
             // try to get UserInfo from objectCB
-            callbackHandler.handle(new Callback[] { oc });
+            callbackHandler.handle(new Callback[]{oc});
             Object cred = oc.getCredential();
             cb_handled = true;
             if (cred instanceof UserIdentificationInfo) {
@@ -50,7 +69,7 @@ public class JBossCallbackFactory implements CallbackFactory {
             try {
                 // If this is a SecurityAssociationCBH
                 // try to get UserInfo from objectCB
-                callbackHandler.handle(new Callback[] { ac });
+                callbackHandler.handle(new Callback[]{ac});
                 result.principal = ac.getPrincipal();
                 result.credential = ac.getCredential();
                 cb_handled = true;
@@ -62,7 +81,7 @@ public class JBossCallbackFactory implements CallbackFactory {
             }
         }
 
-        result.cb_handled=cb_handled;
+        result.cb_handled = cb_handled;
         return result;
     }
 

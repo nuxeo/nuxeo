@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -53,17 +54,19 @@ import org.restlet.data.Response;
  */
 @Name("uploadRestlet")
 @Scope(EVENT)
-public class UploadRestlet extends BaseNuxeoRestlet {
+public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
 
     private static final Log log = LogFactory.getLog(UploadRestlet.class);
 
+    private static final long serialVersionUID = -7858792615823015193L;
+
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     protected CoreSession documentManager;
 
     @In(create = true)
-    protected SimpleFileManager FileManageActions;
+    protected transient SimpleFileManager FileManageActions;
 
     @Override
     public void handle(Request req, Response res) {
@@ -110,7 +113,7 @@ public class UploadRestlet extends BaseNuxeoRestlet {
             } else {
                 // multiple file upload
                 Element uploads = result.addElement("uploads");
-                for (Blob blob: blobs) {
+                for (Blob blob : blobs) {
                     String outcome;
                     try {
                         outcome = FileManageActions.addBinaryFileFromPlugin(

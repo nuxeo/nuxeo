@@ -24,11 +24,20 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * Interface to make Session behave as a source for a DirectoryCache instance
  *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
- *
  */
 public interface EntrySource {
 
-    DocumentModel getEntryFromSource(String entryId)
+    /**
+     * @deprecated use {@link #getEntryFromSource(String, boolean)}
+     *   Not used. Will be removed in 5.2.
+     * @param entryId
+     * @return
+     * @throws DirectoryException
+     */
+    @Deprecated
+    DocumentModel getEntryFromSource(String entryId) throws DirectoryException;
+
+    DocumentModel getEntryFromSource(String entryId, boolean fetchReferences)
             throws DirectoryException;
 
 }

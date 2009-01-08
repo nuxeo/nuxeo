@@ -19,28 +19,31 @@
 
 package org.nuxeo.ecm.platform.actions;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
-import org.jboss.seam.core.Pageflow;
+import org.jboss.seam.pageflow.Pageflow;
+import org.jbpm.graph.def.Transition;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+// Not used?
 public class PageFlowActionFilter extends AbstractActionFilter {
 
-    public static final Map EMPTY_TRANSITION_MAP = new HashMap();
+    public static final Map<String, Transition> EMPTY_TRANSITION_MAP = Collections.emptyMap();
 
     private static final long serialVersionUID = 3003327715065315406L;
 
-    private Map pageFlowTransitions;
+    private Map<String, Transition> pageFlowTransitions;
 
     public PageFlowActionFilter() {
         super("PAGE_FLOW_FILTER", Action.EMPTY_CATEGORIES);
     }
 
-    public Map getPageflowTransitions() {
+    @SuppressWarnings("unchecked")
+    public Map<String, Transition> getPageflowTransitions() {
         if (pageFlowTransitions == null) {
             try {
                 pageFlowTransitions = Pageflow.instance()
@@ -54,7 +57,7 @@ public class PageFlowActionFilter extends AbstractActionFilter {
     }
 
     public boolean accept(Action action, ActionContext context) {
-        Map leavingTransitions = getPageflowTransitions();
+        Map<String, Transition> leavingTransitions = getPageflowTransitions();
         return leavingTransitions.containsKey(action.getId());
     }
 

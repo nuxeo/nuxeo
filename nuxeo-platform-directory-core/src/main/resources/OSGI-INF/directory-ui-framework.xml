@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.ui.DirectoryUIManager">
+
+  <implementation class="org.nuxeo.ecm.directory.ui.DirectoryUIManagerImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.directory.api.ui.DirectoryUIManager" />
+  </service>
+
+  <extension-point name="directories">
+    <object class="org.nuxeo.ecm.directory.ui.DirectoryUIDescriptor" />
+  </extension-point>
+
+</component>

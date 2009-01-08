@@ -3,6 +3,10 @@
 
 	<implementation class="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"/>
 
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.audit.api.NXAuditEvents"/>
+  </service>
+  
 	<extension-point name="event">
 		<object class="org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor"/>
 	</extension-point>

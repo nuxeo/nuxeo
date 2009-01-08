@@ -51,7 +51,7 @@ public enum VersioningActions implements Serializable {
     @Deprecated
     private boolean isDefault;
 
-    private VersioningActions(String name) {
+    VersioningActions(String name) {
         this.name = name;
         this.isDefault = false;
     }

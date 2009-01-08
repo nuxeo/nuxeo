@@ -71,6 +71,7 @@ public class NotificationDescriptor implements Notification {
         return autoSubscribed;
     }
 
+    // Not used.
     public void setAutoSubscribed(Boolean autoSubscribed) {
         this.autoSubscribed = autoSubscribed;
     }
@@ -79,6 +80,7 @@ public class NotificationDescriptor implements Notification {
         return availableIn;
     }
 
+    // Not used.
     public void setAvailableIn(String availableIn) {
         this.availableIn = availableIn;
     }
@@ -87,6 +89,7 @@ public class NotificationDescriptor implements Notification {
         return channel;
     }
 
+    // Not used.
     public void setChannel(String channel) {
         this.channel = channel;
     }
@@ -95,6 +98,7 @@ public class NotificationDescriptor implements Notification {
         return enabled;
     }
 
+    // Not used.
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
@@ -103,6 +107,7 @@ public class NotificationDescriptor implements Notification {
         return events;
     }
 
+    // Not used.
     public void setEvents(List<NotificationEventDescriptor> events) {
         this.events = events;
     }
@@ -111,6 +116,7 @@ public class NotificationDescriptor implements Notification {
         return label;
     }
 
+    // Not used.
     public void setLabel(String label) {
         this.label = label;
     }
@@ -119,6 +125,7 @@ public class NotificationDescriptor implements Notification {
         return name;
     }
 
+    // Not used.
     public void setName(String name) {
         this.name = name;
     }
@@ -127,6 +134,7 @@ public class NotificationDescriptor implements Notification {
         return subject;
     }
 
+    // Not used.
     public void setSubject(String subject) {
         this.subject = subject;
     }
@@ -135,6 +143,7 @@ public class NotificationDescriptor implements Notification {
         return template;
     }
 
+    // Not used.
     public void setTemplate(String template) {
         this.template = template;
     }
@@ -143,6 +152,7 @@ public class NotificationDescriptor implements Notification {
         return subjectTemplate;
     }
 
+    // Not used.
     public void setSubjectTemplate(String subjectTemplate) {
         this.subjectTemplate = subjectTemplate;
     }

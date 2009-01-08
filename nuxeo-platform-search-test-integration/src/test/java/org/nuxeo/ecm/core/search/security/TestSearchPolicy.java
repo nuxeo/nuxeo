@@ -126,7 +126,7 @@ public class TestSearchPolicy extends RepositoryOSGITestCase {
         return file;
     }
 
-    private DocumentModel getUserModel(Long accessLevel) {
+    private static DocumentModel getUserModel(Long accessLevel) {
         DocumentModelImpl documentModelImpl = new DocumentModelImpl("User");
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("accessLevel", Long.valueOf(3));
@@ -151,16 +151,9 @@ public class TestSearchPolicy extends RepositoryOSGITestCase {
         CoreSession remote = getCoreSession();
 
         // put lower access level => too low for this doc
-        ((NuxeoPrincipal) remote.getPrincipal()).setModel(getUserModel(Long.valueOf(2)));
+        ((NuxeoPrincipal) remote.getPrincipal()).setModel(getUserModel(2L));
         spp = query(query, remote.getPrincipal());
         assertEquals(0, spp.getResultsCount());
-    }
-
-    public void testOldSearchPolicy() throws Exception {
-        // setup old secu policy
-        deployContrib(SearchTestConstants.SEARCH_INTEGRATION_TEST_BUNDLE,
-                "nxsearch-old-policy-test-contrib.xml");
-        checkPolicy();
     }
 
     public void testSearchPolicy() throws Exception {

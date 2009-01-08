@@ -18,10 +18,11 @@ package org.nuxeo.ecm.platform.filemanager.ejb.interfaces.local;
 import javax.ejb.Local;
 
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
+
 /**
  * FileManager local interface.
  *
- * @see org.nuxeo.ecm.platform.filemanager.interfaces.FileManagerCommon
+ * @see FileManager
  *
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas Kalogeropoulos</a>
  */

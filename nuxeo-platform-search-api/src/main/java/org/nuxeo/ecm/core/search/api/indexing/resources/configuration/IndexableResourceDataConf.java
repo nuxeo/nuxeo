@@ -24,28 +24,23 @@ import java.util.Map;
 
 /**
  * Indexable resource data configuration.
- *
  * <p>
  * Holds the properties specifying the way data from a given resource will be
  * indexed. An indexable resource data configuration is bound to an
  * <code>IndexableResourceConf</code> instance.
- * </p>
  *
- * @see org.nuxeo.ecm.core.search.api.client.indexing.configuration.IndexableResourceConf
+ * @see IndexableResourceConf
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public interface IndexableResourceDataConf extends Serializable {
 
     /**
      * Returns the name of the target indexable data once indexed.
-     *
      * <p>
      * The name here is not necessarily bound to the resource data key(s).This
      * is the name that aimed at being used at backend level for the target
      * index.
-     * </p>
      *
      * @return the name of the target indexable data index in the backend
      */
@@ -76,7 +71,7 @@ public interface IndexableResourceDataConf extends Serializable {
     /**
      * Returns if whether or not the value will be indexed.
      *
-     * @return true if indexed false if unindexed.
+     * @return true if indexed, false if unindexed.
      */
     boolean isIndexed();
 
@@ -95,7 +90,7 @@ public interface IndexableResourceDataConf extends Serializable {
      * sortability being potentially very costly, it should be applied only to
      * fields for which isSortable() is true.
      * <p>
-     * a false value doesn't forbid sortability for fields whose indexing
+     * A false value doesn't forbid sortability for fields whose indexing
      * digestion doesn't technically prevent sortability.
      *
      * @return a boolean
@@ -105,8 +100,8 @@ public interface IndexableResourceDataConf extends Serializable {
     /**
      * Get a string describing behaviour of this data with respect to sort queries,
      * e.g., case insensitivity.
-     *
-     * <p><strong>Compatibility issues</strong>
+     * <p>
+     * <strong>Compatibility issues</strong>
      * This is new in 5.1.2. Customized implementations of this interface can
      * simply return null, the behavior will then be exactly the same as before.
      *

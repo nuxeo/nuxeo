@@ -6,3 +6,7 @@ bin
 target
 *~
 *.orig
+*.ipr
+*.iml
+*.iws
+.DS_Store

@@ -2,11 +2,9 @@
 <fragment>
 
   <extension target="application#MODULE">
-
     <module>
       <ejb>${bundle.fileName}</ejb>
     </module>
-
   </extension>
 
 </fragment>
