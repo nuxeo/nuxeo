@@ -1,6 +1,7 @@
 #!/bin/sh
 
 PROJECT_NAME="nuxeo-platform-gwt-ui"
+PROJECT="nuxeo-platform-gwt-ui"
 MAIN_HTML="org.nuxeo.ecm.platform.gwt.SmartClient/Main.html"
 
 cat <<EOF > .classpath

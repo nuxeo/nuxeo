@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.gwt.deployment">
+
+	<extension
+		target="org.nuxeo.ecm.webengine.WebEngineComponent"
+		point="install">
+
+	    <install module="gwt">
+	      <copy path="web/gwt" target="/" />
+	    </install>
+
+	</extension>
+
+</component>
