@@ -12,43 +12,16 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *      Stephane Lacoin (Nuxeo EP Software Engineer)
+ *    Stephane Lacoin (Nuxeo EP Software Engineer)ne Lacoin (Nuxeo EP Software Engineer)
  */
 package org.nuxeo.runtime.management;
 
-import org.nuxeo.runtime.model.DefaultComponent;
-
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ *
  */
-public class DummyImpl extends DefaultComponent implements DummyService,
-        DummyMBean {
-
-    protected String message = "hello world";
-
-    public String getMessage() {
-        return message;
-    }
-
-    public String sayHelloWorld() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getManagedMessage() {
-        return message;
-    }
-
-    public String sayManagedHelloWorld() {
-        return message;
-    }
-
-    public void setManagedMessage(String message) {
-        this.message = message;
-    }
-
+public interface DummyService  {
+    String getMessage();
+    void setMessage(String message);
+    String sayHelloWorld();
 }

@@ -28,13 +28,9 @@ public class Resource {
 
     protected final Object instance;
 
-    protected final String shortName;
-    
     protected final ObjectName managementName;
 
     protected final Class<?> clazz;
-
-    protected final ResourceDescriptor descriptor;
 
     protected NamedModelMBean mbean;
 
@@ -44,12 +40,8 @@ public class Resource {
      * @param managementClass
      * @param serviceInstance
      */
-    public Resource(ResourceDescriptor descriptor,
-            String shortName,
-            ObjectName managementName, Class<?> managementClass,
-            Object serviceInstance) {
-        this.descriptor = descriptor;
-        this.shortName = shortName;
+    public Resource(ObjectName managementName,
+            Class<?> managementClass, Object serviceInstance) {
         this.managementName = managementName;
         this.clazz = managementClass;
         this.instance = serviceInstance;
@@ -59,10 +51,6 @@ public class Resource {
         return instance;
     }
 
-    public String getShortName() {
-        return shortName;
-    }
-    
     public ObjectName getManagementName() {
         return managementName;
     }
@@ -71,9 +59,6 @@ public class Resource {
         return clazz;
     }
 
-    public ResourceDescriptor getDescriptor() {
-        return descriptor;
-    }
 
     public boolean isRegistered() {
         return mbean != null;

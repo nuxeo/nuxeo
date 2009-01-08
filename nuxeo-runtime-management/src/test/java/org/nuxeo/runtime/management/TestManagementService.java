@@ -2,6 +2,7 @@ package org.nuxeo.runtime.management;
 
 import java.lang.management.ManagementFactory;
 import java.util.Set;
+import java.util.jar.Attributes.Name;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -79,12 +80,20 @@ public class TestManagementService extends NXRuntimeTestCase {
     }
 
     public void testXMLConfiguration() throws Exception {
+        deployContrib(OSGI_BUNDLE_NAME, 
+                "OSGI-INF/management-tests-service.xml");
         deployContrib(OSGI_BUNDLE_NAME,
                 "OSGI-INF/management-tests-contrib.xml");
         String qualifiedName = ObjectNameFactory.formatTypeQuery("service");
+
         Set<ObjectName> registeredNames = doQuery(qualifiedName);
         assertNotNull(registeredNames);
-        assertEquals(1, registeredNames.size());
+        assertEquals(4, registeredNames.size());
+        
+        Set<String> shortcutsName = managementService.getShortcutsName();
+        assertNotNull(shortcutsName);
+        assertEquals(1, shortcutsName.size());
+        assertEquals("dummy", shortcutsName.iterator().next());
     }
 
 }

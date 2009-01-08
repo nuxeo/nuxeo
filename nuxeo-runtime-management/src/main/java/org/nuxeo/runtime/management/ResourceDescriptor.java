@@ -30,13 +30,11 @@ public class ResourceDescriptor implements Serializable {
 
     private static final long serialVersionUID = 6338431911839779273L;
 
-    protected ResourceDescriptor(String shortName, String qualifiedName,
+    protected ResourceDescriptor(String qualifiedName,
             Class<?> implClass) {
-        this.shortName = shortName;
-        this.qualifiedName = qualifiedName;
+        this.name = qualifiedName;
         this.className = implClass.getCanonicalName();
         this.ifaceClassName = null;
-        this.isAdapted = true;
     }
 
     public ResourceDescriptor() {
@@ -44,13 +42,7 @@ public class ResourceDescriptor implements Serializable {
     }
 
     @XNode("@name")
-    private String shortName;
-
-    @XNode("@name")
-    private String qualifiedName;
-    
-    @XNode("@kind")
-    private String kind;
+    private String name;
 
     @XNode("@class")
     private String className;
@@ -58,19 +50,8 @@ public class ResourceDescriptor implements Serializable {
     @XNode("@iface")
     private String ifaceClassName;
 
-    @XNode("@isAdapted")
-    private boolean isAdapted;
-
-    public String getShortName() {
-        return shortName;
-    }
-
-    public String getQualifiedName() {
-        return qualifiedName;
-    }
-
-    public String getKind() {
-        return kind;
+    public String getName() {
+        return name;
     }
 
     public String getClassName() {
@@ -81,16 +62,10 @@ public class ResourceDescriptor implements Serializable {
         return ifaceClassName;
     }
 
-    public boolean isAdapted() {
-        return isAdapted;
-    }
-
     @Override
     public String toString() {
-        if (shortName != null)
-            return shortName;
-        if (qualifiedName != null) 
-            return qualifiedName;
+        if (name != null)
+            return name;
         return className;
     }
 }

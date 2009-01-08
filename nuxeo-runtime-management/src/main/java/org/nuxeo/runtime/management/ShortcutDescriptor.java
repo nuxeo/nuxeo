@@ -12,16 +12,40 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *    Stephane Lacoin (Nuxeo EP Software Engineer)ne Lacoin (Nuxeo EP Software Engineer)
+ *     matic
  */
 package org.nuxeo.runtime.management;
 
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
+
 /**
- * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
+ * @author matic
+ * 
  */
-public interface DummyResource  {
-    String getMessage();
-    void setMessage(String message);
-    String sayHelloWorld();
+@XObject("shortcuts")
+public class ShortcutDescriptor {
+
+    public ShortcutDescriptor() {
+        ;
+    }
+
+    public ShortcutDescriptor(String shortName, String qualifiedName) {
+        this.shortName = shortName;
+        this.qualifiedName = qualifiedName;
+    }
+
+    @XNode("@name")
+    private String shortName;
+
+    @XNode("@qualifiedName")
+    private String qualifiedName;
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public String getQualifiedName() {
+        return qualifiedName;
+    }
 }

@@ -18,13 +18,16 @@ package org.nuxeo.runtime.management;
 
 import java.util.Set;
 
+import javax.management.ObjectName;
+
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  * 
  */
 public interface ManagementService {
 
-    Set<String> getShortNames();
-    Set<String> getQualifiedNames();
+    Set<String> getShortcutsName();
+
+    Set<ObjectName> getResourcesName();
 
 }
