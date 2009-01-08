@@ -31,9 +31,7 @@ import org.nuxeo.theme.uids.*
 import org.nuxeo.theme.views.*
 import org.nuxeo.theme.editor.*
 
-@WebModule(name="nxthemes-editor", guard="user=Administrator")
-
-@Path("/nxthemes-editor")
+@WebObject(type="nxthemes-editor", guard="user=Administrator")
 @Produces(["text/html", "*/*"])
 public class Main extends DefaultModule {
     
