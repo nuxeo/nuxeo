@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -31,6 +31,7 @@ import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
+import javax.ejb.Remove;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,33 +49,31 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
+ * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
  */
 @Stateful
-// XXX OG+GR: this bean is definitely not thread-safe.
-// think of it while removing the jboss specific annotation
 @SerializedConcurrentAccess
 @Remote(DirectoryManager.class)
 @Local(DirectoryManager.class)
 public class DirectoryManagerBean implements DirectoryManager {
-    @SuppressWarnings("unused")
+
     private static final Log log = LogFactory.getLog(DirectoryManagerBean.class);
 
-    private static final Map<Long, Session> sessionMap = new HashMap<Long, Session>();
+    // do not forget to make the following maps thread-safe with
+    // Collections.synchronizedMap if the @SerializedConcurrentAccess annotation 
+    // is ever removed
 
-    private static final Map<Long, String> sessionDirectoryNames = new HashMap<Long, String>();
+    private final Map<Long, Session> sessionMap = new HashMap<Long, Session>();
+
+    private final Map<Long, String> sessionDirectoryNames = new HashMap<Long, String>();
+
+    private final AtomicLong sessionIdCounter = new AtomicLong(0);
 
     private transient DirectoryService directoryService;
-
-    private AtomicLong sessionIdCounter = new AtomicLong(0);
 
     @PostActivate
     @PostConstruct
     public void initialize() {
-        // UserService userService = (UserService) Framework.getRuntime()
-        // .getComponent(UserService.NAME);
-        // userManager = userService.getUserManager();
-        // sessionMap = new HashMap<Long, Session>();
         getService();
     }
 
@@ -82,21 +81,31 @@ public class DirectoryManagerBean implements DirectoryManager {
         if (directoryService == null) {
             directoryService = Framework.getLocalService(DirectoryService.class);
         }
-
         return directoryService;
     }
 
     @PrePassivate
-    public void cleanup() {
-        directoryService = null;
+    @Remove
+    public void cleanupOpenSessions() {
+        // close any open directory sessions upon passivation or removal
+        // the sessionMap should be empty anyway since the client code should
+        // only use short lived directory clients in try / finally blocks
+        if (!sessionMap.isEmpty()) {
+            log.warn(String.format(
+                    "about to close directory %d directory sessions:"
+                            + " client code should not keep open directory session",
+                    sessionMap.size()));
+        }
         for (Session session : sessionMap.values()) {
             try {
                 session.close();
             } catch (DirectoryException e) {
-                // ignore
+                log.error("failed to close directory session properly: "
+                        + e.getMessage(), e);
             }
         }
         sessionMap.clear();
+        sessionDirectoryNames.clear();
     }
 
     private Session getSession(long sessionId) throws DirectoryException {
@@ -108,7 +117,7 @@ public class DirectoryManagerBean implements DirectoryManager {
                         "Could not find directory name while rebuilding session with id: "
                                 + sessionId);
             }
-            session = directoryService.open(directoryName);
+            session = getService().open(directoryName);
         }
         return session;
     }
@@ -330,26 +339,26 @@ public class DirectoryManagerBean implements DirectoryManager {
 
     public String getDirectoryIdField(String directoryName)
             throws DirectoryException {
-        return directoryService.getDirectoryIdField(directoryName);
+        return getService().getDirectoryIdField(directoryName);
     }
 
     public String getDirectoryPasswordField(String directoryName)
             throws DirectoryException {
-        return directoryService.getDirectoryPasswordField(directoryName);
+        return getService().getDirectoryPasswordField(directoryName);
     }
 
     public void registerDirectory(String directoryName, DirectoryFactory factory) {
-        directoryService.registerDirectory(directoryName, factory);
+        getService().registerDirectory(directoryName, factory);
     }
 
     public void unregisterDirectory(String directoryName,
             DirectoryFactory factory) {
-        directoryService.unregisterDirectory(directoryName, factory);
+        getService().unregisterDirectory(directoryName, factory);
     }
 
     public String getParentDirectoryName(String directoryName)
             throws DirectoryException {
-        return directoryService.getParentDirectoryName(directoryName);
+        return getService().getParentDirectoryName(directoryName);
     }
 
 }
