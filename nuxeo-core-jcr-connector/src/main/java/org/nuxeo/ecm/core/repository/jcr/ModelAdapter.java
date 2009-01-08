@@ -20,15 +20,15 @@
 package org.nuxeo.ecm.core.repository.jcr;
 
 
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.apache.jackrabbit.core.ItemImpl;
 import org.apache.jackrabbit.core.NodeImpl;
 import org.apache.jackrabbit.core.nodetype.NodeTypeImpl;
-import org.apache.jackrabbit.name.MalformedPathException;
-import org.apache.jackrabbit.name.Path;
-import org.apache.jackrabbit.name.Path.PathElement;
+import org.apache.jackrabbit.spi.Path;
+import org.apache.jackrabbit.spi.Path.Element;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -62,7 +62,12 @@ public final class ModelAdapter {
     }
 
     public static Node getParentNode(Node node) throws RepositoryException {
-        return node.getParent().getParent();
+        try {
+            return node.getParent().getParent();
+        } catch (ItemNotFoundException e) {
+            // root
+            return null;
+        }
     }
 
     public static Node addChild(Node node, String name, String type) throws RepositoryException {
@@ -105,9 +110,9 @@ public final class ModelAdapter {
     }
 
     public static String getPath(String wsName, Node node)
-            throws MalformedPathException, RepositoryException {
+            throws RepositoryException {
         Path path = ((ItemImpl) node).getPrimaryPath().getCanonicalPath();
-        PathElement[] elements = path.getElements();
+        Element[] elements = path.getElements();
         if (elements.length < 3) {
             return "/"; // the root
         }
