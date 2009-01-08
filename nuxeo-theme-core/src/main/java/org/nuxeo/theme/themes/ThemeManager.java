@@ -704,7 +704,7 @@ public final class ThemeManager implements Registrable {
         }
     }
 
-    public static String renderElement(URL url) {
+    public static String renderElement(URL url) throws ThemeException {
         String result = null;
         InputStream is = null;
         try {
@@ -719,14 +719,14 @@ public final class ThemeManager implements Registrable {
                 }
                 result = rendered.toString();
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new ThemeException(e);
             } finally {
                 if (in != null) {
                     in.close();
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new ThemeException(e);
         } finally {
             if (is != null) {
                 try {

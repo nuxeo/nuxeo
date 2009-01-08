@@ -20,7 +20,6 @@
 package org.nuxeo.theme.webengine.fm.extensions;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
@@ -32,16 +31,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
-import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
 import org.nuxeo.theme.negotiation.NegotiationException;
+import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.webengine.negotiation.WebNegotiator;
@@ -82,24 +78,33 @@ public class ThemeDirective implements TemplateDirectiveModel {
         if (body == null) {
             throw new TemplateModelException("Expecting a body");
         }
-        
+
         WebContext ctx = WebEngine.getActiveContext();
         if (ctx == null) {
             throw new IllegalStateException("Not In a Web Context");
         }
-        
+
         env.setGlobalVariable("nxthemesInfo",
                 BeansWrapper.getDefaultInstance().wrap(Manager.getInfoPool()));
 
         final URL themeUrl = getThemeUrlAndSetupRequest(ctx);
-        StringReader sr = new StringReader(renderTheme(themeUrl));
-        BufferedReader reader = new BufferedReader(sr);
+        if (themeUrl == null) {
+            return;
+        }
+        String rendered;
+        try {
+            rendered = renderTheme(themeUrl);
+        } catch (ThemeException e) {
+            log.error("Theme rendering failed: " + e.getMessage());
+            return;
+        }
+        BufferedReader reader = new BufferedReader(new StringReader(rendered));
         Template tpl = new Template(themeUrl.toString(), reader,
                 env.getConfiguration(), env.getTemplate().getEncoding());
         env.include(tpl);
     }
 
-    public String renderTheme(URL themeUrl) {
+    public String renderTheme(URL themeUrl) throws ThemeException {
         if (!needsToBeRefreshed(themeUrl) && cachedThemes.containsKey(themeUrl)) {
             return cachedThemes.get(themeUrl);
         }

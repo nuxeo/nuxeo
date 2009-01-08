@@ -25,9 +25,12 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
 
 import freemarker.core.Environment;
@@ -45,6 +48,8 @@ import freemarker.template.TemplateModelException;
  */
 public class NXThemesFragmentDirective implements TemplateDirectiveModel {
 
+    private static final Log log = LogFactory.getLog(NXThemesFragmentDirective.class);
+    
     final String templateEngine = "freemarker";
 
     @SuppressWarnings("unchecked")
@@ -72,8 +77,14 @@ public class NXThemesFragmentDirective implements TemplateDirectiveModel {
                 "nxtheme://element/%s/%s/%s/%s", attributes.get("engine"),
                 attributes.get("mode"), templateEngine, attributes.get("uid")));
 
-        StringReader sr = new StringReader(
-                ThemeManager.renderElement(elementUrl));
+        StringReader sr;
+        try {
+            sr = new StringReader(
+                    ThemeManager.renderElement(elementUrl));
+        } catch (ThemeException e) {
+            log.error("Element rendering failed: " + e.getMessage());
+            return;
+        }
         BufferedReader reader = new BufferedReader(sr);
         Template tpl = new Template(elementUrl.toString(), reader,
                 env.getConfiguration(), env.getTemplate().getEncoding());
