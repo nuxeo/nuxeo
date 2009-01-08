@@ -189,9 +189,9 @@ NXThemesWebWidgets.renderPreferenceEditForm = function(widget) {
       } else if (type == 'list') {
         control = '<select name="' + name + '">';
         var options = pref.options;
-        for (var i=0; i<options.length; i++) {
-          var v = options[i].value;
-          var l = options[i].label;
+        for (var j=0; j<options.length; j++) {
+          var v = options[j].value;
+          var l = options[j].label;
           if (value == v) {
             control += '<option value="' + v + '" selected="selected">' + l + '</option>';
           } else {
