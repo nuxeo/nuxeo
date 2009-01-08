@@ -40,9 +40,10 @@ public interface CachableBlobHolder extends BlobHolder {
     public String persist(String basePath) throws Exception;
 
     /**
-     * Reload the {@link BlobHolder} from a file
+     * Reload the {@link BlobHolder} from a file.
      *
      * @param path
+     *
      */
     public void load(String path);
 

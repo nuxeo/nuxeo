@@ -36,10 +36,11 @@ public abstract class AbstractBlobHolder implements BlobHolder {
     public abstract Blob getBlob() throws ClientException;
 
     public List<Blob> getBlobs() throws ClientException {
-        List<Blob> blobs = new ArrayList<Blob>();
+        List<Blob> blobs = null;
 
         Blob blob = getBlob();
         if (blob!=null) {
+            blobs = new ArrayList<Blob>();
             blobs.add(blob);
         }
 

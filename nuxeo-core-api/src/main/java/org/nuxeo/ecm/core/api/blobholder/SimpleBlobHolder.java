@@ -38,6 +38,10 @@ public class SimpleBlobHolder extends AbstractBlobHolder implements BlobHolder {
     protected List<Blob> blobs;
     protected Calendar creationDate;
 
+    public SimpleBlobHolder() {
+        // Empty constructor
+    }
+
     public SimpleBlobHolder(List<Blob> blobs) {
         init(blobs);
     }
@@ -56,6 +60,9 @@ public class SimpleBlobHolder extends AbstractBlobHolder implements BlobHolder {
 
     @Override
     public Blob getBlob() throws ClientException {
+        if (blobs==null) {
+            return null;
+        }
         if (blobs.size()==0) {
             return null;
         }

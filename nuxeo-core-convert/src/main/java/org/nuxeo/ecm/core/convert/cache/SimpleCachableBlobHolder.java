@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.convert.cache;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
@@ -33,9 +34,17 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
  */
 public class SimpleCachableBlobHolder extends SimpleBlobHolder implements CachableBlobHolder{
 
+    public SimpleCachableBlobHolder() {
+        super();
+    }
     public SimpleCachableBlobHolder(Blob blob) {
         super(blob);
     }
+
+    public SimpleCachableBlobHolder(List<Blob> blobs) {
+        super(blobs);
+    }
+
 
     public SimpleCachableBlobHolder(String path) {
         super(new FileBlob(new File(path)));
@@ -43,15 +52,60 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements Cachab
 
     public void load(String path) {
          blobs = new ArrayList<Blob>();
-         blobs.add(new FileBlob(new File(path)));
+         File base = new File(path);
+         if (base.isDirectory()) {
+             File[] files = base.listFiles();
+             for (File file : files) {
+                 if (file.isDirectory()) {
+                     for (File subFile : file.listFiles()) {
+                         Blob subBlob = new FileBlob(subFile);
+                         subBlob.setFilename(subFile.getName());
+                         blobs.add(subBlob);
+                     }
+                 }
+                 else {
+                     Blob mainBlob = new FileBlob(file);
+                     mainBlob.setFilename(file.getName());
+                     blobs.add(0, mainBlob);
+                 }
+             }
+         }
+         else {
+             File file = new File(path);
+             Blob mainBlob = new FileBlob(file);
+             mainBlob.setFilename(file.getName());
+             blobs.add(mainBlob);
+         }
     }
 
     public String persist(String basePath) throws Exception{
+        if ((blobs==null) || (blobs.size()==0)) {
+            return null;
+        }
         Path path = new Path(basePath);
         path = path.append(getHash());
-        File file = new File(path.toString());
-        getBlob().transferTo(file);
-        return file.getAbsolutePath();
+        if (blobs.size()==1) {
+            File file = new File(path.toString());
+            getBlob().transferTo(file);
+            return file.getAbsolutePath();
+        }
+        else {
+            File dir = new File(path.toString());
+            dir.mkdir();
+            Blob mainBlob = blobs.get(0);
+            File mainFile = new File((path.append(mainBlob.getFilename())).toString());
+            mainBlob.transferTo(mainFile);
+            Path subDirPath = path.append("subFiles");
+            File subDir = new File(subDirPath.toString());
+            subDir.mkdir();
+            blobs.remove(0);
+            for (Blob blob : blobs) {
+                File file = new File((subDirPath.append(blob.getFilename())).toString());
+                blob.transferTo(file);
+            }
+            return dir.getAbsolutePath();
+        }
+
     }
 
 
