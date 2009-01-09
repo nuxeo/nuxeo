@@ -10,7 +10,7 @@
 
 <body>
   <h1>Admin ${Root.title}'s Pages</h1>
-    
+
   <table id="pages" style="display:none"></table>
 
   <script>
@@ -38,7 +38,7 @@ function deleteDoc(com, grid) {
       });
     }
   };
-  reloadDocs()
+  reloadDocs();
 }
 
 $("#pages").flexigrid({
@@ -68,7 +68,7 @@ $("#pages").flexigrid({
   width: 750,
   height: 300
 });
-      
+
 </script>
 
 </@block>

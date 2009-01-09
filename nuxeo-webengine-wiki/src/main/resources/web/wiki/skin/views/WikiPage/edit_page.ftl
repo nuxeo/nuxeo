@@ -19,10 +19,10 @@
 
 <script>
 function launchEditor() {
-  $('#wiki_editor').markItUp(myWikiSettings)
+  $('#wiki_editor').markItUp(myWikiSettings);
 }
 
 $('#wiki_editor').ready(function() {
-  setTimeout(launchEditor, 10)
-})
+  setTimeout(launchEditor, 10);
+});
 </script>

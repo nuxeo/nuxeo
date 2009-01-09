@@ -11,21 +11,21 @@
 <textarea name="bp:content" cols="75" rows="30" class="entryEdit"></textarea>
 
 <p class="entryEditOptions">
-    Allow Trackbacks:
-    <input type="radio" name="trackback" value="yes" checked /> Yes
-    <input type="radio" name="trackback" value="yes" /> No
+  Allow Trackbacks:
+  <input type="radio" name="trackback" value="yes" checked /> Yes
+  <input type="radio" name="trackback" value="yes" /> No
 </p>
 
 <p class="entryEditOptions">
-    Allow Comments:
-    <input type="radio" name="comment" value="yes" checked /> Yes
-    <input type="radio" name="comment" value="yes" /> No
+  Allow Comments:
+  <input type="radio" name="comment" value="yes" checked /> Yes
+  <input type="radio" name="comment" value="yes" /> No
 </p>
 
 
 <input type="hidden" name="doctype" value="BlogPost" id="doctype">
 <p class="buttonsGadget">
-<input type="submit" class="button"/> 
+<input type="submit" class="button"/>
 </p>
 </form>
 

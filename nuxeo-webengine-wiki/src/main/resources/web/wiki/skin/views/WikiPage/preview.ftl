@@ -15,16 +15,17 @@
   <div id="main">
     <div class="closeWindow">
       <form>
-        <input type="button" value=" Close this window " onclick="self.close()" />
+        <input type="button" value=" Close this window " onclick="self.close();" />
       </form>
     </div>
     <div class="main-content">
       <h1>${This.title}</h1>
+
       <@wiki>${Context.request.getParameter('wiki_editor')}</@wiki>
     </div>
     <div class="closeWindow">
       <form>
-        <input type="button" value=" Close this window " onclick="self.close()" />
+        <input type="button" value=" Close this window " onclick="self.close();" />
       </form>
     </div>
   </div>

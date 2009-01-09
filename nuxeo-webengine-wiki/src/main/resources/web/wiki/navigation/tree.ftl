@@ -13,8 +13,8 @@
       control: "#navtreecontrol",
       //collapsed: false,
       cookieId: "nxnavtree",
-    })
-  })
+    });
+  });
 </script>
 
 <div class="sideblock general">
@@ -26,6 +26,6 @@
   </div>
   <div class="treeroot"><a href="${rooturl}">${rootdoc.title}</a></div>
   <ul id="treenav" class="treeview"></ul>
-</div>  
+</div>
 <!-- End Navigation Tree -->
 </#macro>

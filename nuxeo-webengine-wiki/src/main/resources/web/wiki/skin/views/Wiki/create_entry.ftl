@@ -8,12 +8,12 @@
 
 <script>
 function launchEditor() {
-  $('#content').markItUp(myWikiSettings)
+  $('#content').markItUp(myWikiSettings);
 }
 
 $('#content').ready(function() {
-  setTimeout(launchEditor, 10)
-})
+  setTimeout(launchEditor, 10);
+});
 </script>
 
 <h2>Create Wiki Page</h2>
