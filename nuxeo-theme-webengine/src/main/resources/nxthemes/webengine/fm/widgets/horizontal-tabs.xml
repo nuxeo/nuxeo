@@ -1,5 +1,8 @@
 <div>
 <#list nxthemesInfo.model.items as item>
+  <#if item.icon>
+    <img src="${item.icon}" />
+  </#if>
   <#if item.selected>
     <a class="selected" href="${item.url}">${item.title}</a>
   <#else>
