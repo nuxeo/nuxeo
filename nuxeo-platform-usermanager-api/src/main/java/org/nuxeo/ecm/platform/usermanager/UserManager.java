@@ -26,22 +26,26 @@ import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
+import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 
+/**
+ * @author Anahide Tchertchian
+ *
+ */
 public interface UserManager {
 
     enum MatchType {
-        EXACT, //
-        SUBSTRING
+        EXACT, SUBSTRING
     }
 
     boolean checkUsernamePassword(String username, String password)
             throws ClientException;
 
     boolean validatePassword(String password) throws ClientException;
-
-    List<NuxeoPrincipal> getAvailablePrincipals() throws ClientException;
 
     /**
      * Retrieves the principal with the given username.
@@ -55,32 +59,45 @@ public interface UserManager {
      */
     NuxeoPrincipal getPrincipal(String username) throws ClientException;
 
-    void createPrincipal(NuxeoPrincipal principal) throws ClientException;
-
-    void updatePrincipal(NuxeoPrincipal principal) throws ClientException;
-
-    void deletePrincipal(NuxeoPrincipal principal) throws ClientException;
-
-    List<NuxeoPrincipal> searchPrincipals(String name) throws ClientException;
-
-    List<NuxeoPrincipal> searchByMap(Map<String, Object> filter,
-            Set<String> pattern) throws ClientException;
-
-    List<NuxeoGroup> searchGroups(String pattern) throws ClientException;
-
-    List<NuxeoGroup> getAvailableGroups() throws ClientException;
-
     NuxeoGroup getGroup(String groupName) throws ClientException;
 
-    void createGroup(NuxeoGroup group) throws ClientException;
+    /**
+     * @deprecated see {@link #searchUsers(String)}
+     */
+    @Deprecated
+    List<NuxeoPrincipal> searchPrincipals(String pattern)
+            throws ClientException;
 
-    void deleteGroup(NuxeoGroup group) throws ClientException;
+    /**
+     * @deprecated see {@link #searchGroups(String)}
+     */
+    List<NuxeoGroup> searchGroups(String pattern) throws ClientException;
 
-    void updateGroup(NuxeoGroup group) throws ClientException;
+    List<String> getUserIds() throws ClientException;
 
-    void remove() throws ClientException;
+    DocumentModel createUser(DocumentModel userModel) throws ClientException,
+            UserAlreadyExistsException;
 
-    String getDefaultGroup();
+    void updateUser(DocumentModel userModel) throws ClientException;
+
+    void deleteUser(DocumentModel userModel) throws ClientException;
+
+    void deleteUser(String userId) throws ClientException;
+
+    /**
+     * Returns a bare user model.
+     *
+     * <p>
+     * Can be used for user creation/search screens.
+     */
+    DocumentModel getBareUserModel() throws ClientException;
+
+    DocumentModel getUserModel(String userName) throws ClientException;
+
+    DocumentModelList searchUsers(String pattern) throws ClientException;
+
+    DocumentModelList searchUsers(Map<String, Object> filter,
+            Set<String> fulltext) throws ClientException;
 
     String getUserListingMode() throws ClientException;
 
@@ -88,9 +105,33 @@ public interface UserManager {
 
     Pattern getUserPasswordPattern() throws ClientException;
 
-    String getGroupListingMode() throws ClientException;
+    List<String> getGroupIds() throws ClientException;
 
-    DocumentModel getModelForUser(String name) throws ClientException;
+    DocumentModelList searchGroups(Map<String, Object> filter,
+            Set<String> fulltext) throws ClientException;
+
+    DocumentModel createGroup(DocumentModel groupModel) throws ClientException,
+            GroupAlreadyExistsException;
+
+    void updateGroup(DocumentModel groupModel) throws ClientException;
+
+    void deleteGroup(DocumentModel groupModel) throws ClientException;
+
+    void deleteGroup(String groupId) throws ClientException;
+
+    /**
+     * Returns a bare group model.
+     *
+     * <p>
+     * Can be used for group creation/search screens.
+     */
+    DocumentModel getBareGroupModel() throws ClientException;
+
+    DocumentModel getGroupModel(String groupName) throws ClientException;
+
+    String getDefaultGroup();
+
+    String getGroupListingMode() throws ClientException;
 
     /**
      * Returns the list of groups that belong to this group.

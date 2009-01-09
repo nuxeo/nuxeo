@@ -229,50 +229,6 @@
       </layout>
     </type>
 
-    <type id="User" coretype="User">
-      <label>User</label>
-      <icon>/icons/user.gif</icon>
-      <default-view>view_user</default-view>
-      <!-- new layout config -->
-      <layouts mode="any">
-        <layout>user</layout>
-      </layouts>
-      <!-- old layout config, to remove so that layout "user" is used -->
-      <layout>
-        <widget schemaname="user" fieldname="username"
-          jsfcomponent="h:inputTextReadOnly" required="true" />
-        <widget schemaname="user" fieldname="firstName"
-          jsfcomponent="h:inputText" required="false" />
-        <widget schemaname="user" fieldname="lastName"
-          jsfcomponent="h:inputText" required="false" />
-        <widget schemaname="user" fieldname="company" jsfcomponent="h:inputText"
-          required="false" />
-        <widget schemaname="user" fieldname="email" jsfcomponent="h:inputText"
-          required="true" />
-      </layout>
-    </type>
-
-    <type id="UserCreate" coretype="UserCreate">
-      <label>UserCreate</label>
-      <icon>/icons/user.gif</icon>
-      <default-view>create_user</default-view>
-      <!-- old layout config, to remove so that layout "user" is used -->
-      <layout>
-        <widget schemaname="user" fieldname="username"
-          jsfcomponent="h:inputText" required="true" />
-        <widget schemaname="user" fieldname="firstName"
-          jsfcomponent="h:inputText" required="false" />
-        <widget schemaname="user" fieldname="lastName"
-          jsfcomponent="h:inputText" required="false" />
-        <widget schemaname="user" fieldname="company" jsfcomponent="h:inputText"
-          required="false" />
-        <widget schemaname="user" fieldname="email" jsfcomponent="h:inputText"
-          required="true" />
-        <widget schemaname="user" fieldname="password"
-          jsfcomponent="h:inputSecret" required="true" />
-      </layout>
-    </type>
-
     <type id="AdvancedSearch" coretype="AdvancedSearch">
       <label>Advanced Search</label>
       <icon>/icons/folder.gif</icon>

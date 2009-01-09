@@ -33,4 +33,10 @@ import javax.ejb.Remote;
 @Remote
 public interface UserManagerActions extends Serializable {
 
+    public static final String TABBED = "tabbed";
+
+    public static final String SEARCH_ONLY = "search_only";
+
+    public static final String VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789";
+
 }

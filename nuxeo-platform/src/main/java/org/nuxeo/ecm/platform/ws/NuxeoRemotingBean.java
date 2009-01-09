@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -194,28 +193,16 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
     public String[] listUsers(String sid, int from, int to)
             throws ClientException {
         WSRemotingSession rs = initSession(sid);
-
-        List<NuxeoPrincipal> principals = rs.getUserManager().getAvailablePrincipals();
-        String[] users = new String[principals.size()];
-        int i = 0;
-        for (NuxeoPrincipal user : principals) {
-            users[i++] = user.getName();
-        }
-        return users;
+        List<String> userIds = rs.getUserManager().getUserIds();
+        return userIds.toArray(new String[userIds.size()]);
     }
 
     @WebMethod
     public String[] listGroups(String sid, int from, int to)
             throws ClientException {
         WSRemotingSession rs = initSession(sid);
-
-        List<NuxeoGroup> ngroups = rs.getUserManager().getAvailableGroups();
-        String[] groups = new String[ngroups.size()];
-        int i = 0;
-        for (NuxeoGroup group : ngroups) {
-            groups[i++] = group.getName();
-        }
-        return groups;
+        List<String> groupIds = rs.getUserManager().getGroupIds();
+        return groupIds.toArray(new String[groupIds.size()]);
     }
 
     @WebMethod
@@ -510,11 +497,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         List<String> users;
         // FIXME: parentGroup is always non-null here
         if (parentGroup == null) {
-            List<NuxeoPrincipal> principals = rs.getUserManager().getAvailablePrincipals();
-            users = new ArrayList<String>(principals.size());
-            for (NuxeoPrincipal principal : principals) {
-                users.add(principal.getName());
-            }
+            users = rs.getUserManager().getUserIds();
         } else {
             NuxeoGroup group = rs.getUserManager().getGroup(parentGroup);
             if (group == null) {

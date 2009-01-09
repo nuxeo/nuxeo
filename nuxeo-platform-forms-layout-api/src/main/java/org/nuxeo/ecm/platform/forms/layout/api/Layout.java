@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.forms.layout.api;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Layout interface.
@@ -69,5 +70,9 @@ public interface Layout extends Serializable {
      * Returns the maximum number of columns.
      */
     int getColumns();
+
+    Widget getWidget(String name);
+
+    Map<String, Widget> getWidgetMap();
 
 }

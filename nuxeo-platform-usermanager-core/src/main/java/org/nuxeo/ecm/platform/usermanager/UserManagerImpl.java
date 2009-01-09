@@ -20,13 +20,10 @@
 package org.nuxeo.ecm.platform.usermanager;
 
 import java.io.Serializable;
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -38,21 +35,18 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
-import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventService;
@@ -60,6 +54,7 @@ import org.nuxeo.runtime.services.event.EventService;
 /**
  * @author George Lefter
  * @author Florent Guillaume
+ * @author Anahide Tchertchian
  */
 public class UserManagerImpl implements UserManager {
 
@@ -93,6 +88,8 @@ public class UserManagerImpl implements UserManager {
 
     private String groupParentGroupsField;
 
+    private String groupSortField;
+
     private String defaultGroup;
 
     private String defaultRootLogin;
@@ -118,6 +115,7 @@ public class UserManagerImpl implements UserManager {
         defaultGroup = descriptor.defaultGroup;
         defaultRootLogin = descriptor.rootLogin;
         userSortField = descriptor.userSortField;
+        groupSortField = descriptor.groupSortField;
         userListingMode = descriptor.userListingMode;
         groupListingMode = descriptor.groupListingMode;
         userEmailField = descriptor.userEmailField;
@@ -149,14 +147,6 @@ public class UserManagerImpl implements UserManager {
 
     public String getUserEmailField() {
         return userEmailField;
-    }
-
-    // Not used.
-    private void setUserSearchFields(Set<String> userSearchFields) {
-        this.userSearchFields = new LinkedHashMap<String, MatchType>();
-        for (String searchField : userSearchFields) {
-            this.userSearchFields.put(searchField, MatchType.SUBSTRING);
-        }
     }
 
     public Set<String> getUserSearchFields() {
@@ -216,14 +206,11 @@ public class UserManagerImpl implements UserManager {
         return anonymousUserId;
     }
 
-    public void setVirtualUsers(Map<String, VirtualUserDescriptor> virtualUsers) {
+    private void setVirtualUsers(Map<String, VirtualUserDescriptor> virtualUsers) {
         this.virtualUsers.clear();
         if (virtualUsers != null) {
             this.virtualUsers.putAll(virtualUsers);
         }
-    }
-
-    public void remove() throws ClientException {
     }
 
     public boolean checkUsernamePassword(String username, String password)
@@ -288,23 +275,26 @@ public class UserManagerImpl implements UserManager {
         }
     }
 
-    protected NuxeoPrincipal makeAnonymousPrincipal() throws ClientException {
+    private NuxeoPrincipal makeAnonymousPrincipal() throws ClientException {
         DocumentModel userEntry = makeVirtualUserEntry(getAnonymousUserId(),
                 anonymousUser);
         // XXX: pass anonymous user groups, but they will be ignored
         return makePrincipal(userEntry, true, anonymousUser.getGroups());
     }
 
-    protected NuxeoPrincipal makeVirtualPrincipal(VirtualUser user)
+    private NuxeoPrincipal makeVirtualPrincipal(VirtualUser user)
             throws ClientException {
         DocumentModel userEntry = makeVirtualUserEntry(user.getId(), user);
         return makePrincipal(userEntry, false, user.getGroups());
     }
 
-    protected DocumentModel makeVirtualUserEntry(String id, VirtualUser user)
+    private DocumentModel makeVirtualUserEntry(String id, VirtualUser user)
             throws ClientException {
         final DocumentModel userEntry = BaseSession.createEntryModel(null,
                 userSchemaName, id, null);
+        String idField = dirService.getDirectoryIdField(userDirectoryName);
+        // at least fill id field
+        userEntry.setProperty(userSchemaName, idField, id);
         for (Entry<String, Serializable> prop : user.getProperties().entrySet()) {
             try {
                 userEntry.setProperty(userSchemaName, prop.getKey(),
@@ -318,12 +308,12 @@ public class UserManagerImpl implements UserManager {
         return userEntry;
     }
 
-    protected NuxeoPrincipal makePrincipal(DocumentModel userEntry)
+    private NuxeoPrincipal makePrincipal(DocumentModel userEntry)
             throws ClientException {
         return makePrincipal(userEntry, false, null);
     }
 
-    protected NuxeoPrincipal makePrincipal(DocumentModel userEntry,
+    private NuxeoPrincipal makePrincipal(DocumentModel userEntry,
             boolean anonymous, List<String> groups) throws ClientException {
         NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(
                 userEntry.getId(), anonymous);
@@ -369,14 +359,21 @@ public class UserManagerImpl implements UserManager {
         if (virtualUsers.containsKey(username)) {
             return makeVirtualPrincipal(virtualUsers.get(username));
         }
+        DocumentModel userModel = getUserModel(username);
+        if (userModel != null) {
+            return makePrincipal(userModel);
+        }
+        return null;
+    }
+
+    public DocumentModel getUserModel(String userName) throws ClientException {
+        if (userName == null) {
+            return null;
+        }
         Session userDir = null;
         try {
             userDir = dirService.open(userDirectoryName);
-            DocumentModel userEntry = userDir.getEntry(username);
-            if (userEntry == null) {
-                return null;
-            }
-            return makePrincipal(userEntry);
+            return userDir.getEntry(userName);
         } finally {
             if (userDir != null) {
                 userDir.close();
@@ -384,102 +381,24 @@ public class UserManagerImpl implements UserManager {
         }
     }
 
-    @Deprecated
-    public DocumentModel getModelForUser(String name) throws ClientException {
-        Session userDir = null;
-        try {
-
-            if (name == null) {
-                return null;
-            }
-
-            // check if the user exists
-            userDir = dirService.open(userDirectoryName);
-            DocumentModel docModel = userDir.getEntry(name);
-
-            if (docModel == null) {
-                userDir.close();
-                return null;
-            }
-            return docModel;
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
-        }
-    }
-
-    public void updatePrincipal(NuxeoPrincipal principal)
-            throws ClientException {
-        Session userDir = null;
-        String principalName = principal.getName();
-        try {
-            userDir = dirService.open(userDirectoryName);
-
-            // check if the user exists
-            NuxeoPrincipal oldPrincipal = getPrincipal(principalName);
-            if (oldPrincipal == null) {
-                throw new DirectoryException("No entry found for username: "
-                        + principalName);
-            }
-
-            userDir.updateEntry(principal.getModel());
-            userDir.commit();
-
-            // update the roles for the user (YAGNI?)
-            List<String> newRoles = principal.getRoles();
-            List<String> oldRoles = oldPrincipal.getRoles();
-            List<String> addedRoles = new ArrayList<String>(newRoles);
-            addedRoles.removeAll(oldRoles);
-            List<String> removedRoles = new ArrayList<String>(oldRoles);
-            removedRoles.removeAll(newRoles);
-
-            for (String roleName : addedRoles) {
-                addPrincipalToRole(principalName, roleName);
-            }
-            for (String roleName : removedRoles) {
-                removePrincipalFromRole(principalName, roleName);
-            }
-            notifyUserChanged(principal);
-
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
-        }
-    }
-
-    public void updateGroup(NuxeoGroup group) throws ClientException {
-        String groupName = group.getName();
-        Session groupDir = null;
-        try {
-            groupDir = dirService.open(groupDirectoryName);
-            DocumentModel groupEntry = groupDir.getEntry(groupName);
-            groupEntry.setProperty(groupSchemaName, groupMembersField,
-                    group.getMemberUsers());
-            groupEntry.setProperty(groupSchemaName, groupSubGroupsField,
-                    group.getMemberGroups());
-            groupDir.updateEntry(groupEntry);
-            groupDir.commit();
-            notifyGroupChanged(group);
-
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
-        }
+    public DocumentModel getBareUserModel() throws ClientException {
+        String schema = dirService.getDirectorySchema(userDirectoryName);
+        return BaseSession.createEntryModel(null, schema, null, null);
     }
 
     public NuxeoGroup getGroup(String groupName) throws ClientException {
+        DocumentModel groupEntry = getGroupModel(groupName);
+        if (groupEntry != null) {
+            return makeGroup(groupEntry);
+        }
+        return null;
+    }
+
+    public DocumentModel getGroupModel(String groupName) throws ClientException {
         Session groupDir = null;
         try {
             groupDir = dirService.open(groupDirectoryName);
-
-            DocumentModel groupEntry = groupDir.getEntry(groupName);
-            if (groupEntry == null) {
-                return null;
-            }
-            return getGroup(groupEntry);
+            return groupDir.getEntry(groupName);
         } finally {
             if (groupDir != null) {
                 groupDir.close();
@@ -488,7 +407,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     @SuppressWarnings("unchecked")
-    public NuxeoGroup getGroup(DocumentModel groupEntry) {
+    private NuxeoGroup makeGroup(DocumentModel groupEntry) {
         NuxeoGroup group = new NuxeoGroupImpl(groupEntry.getId());
         List<String> list;
         try {
@@ -519,130 +438,6 @@ public class UserManagerImpl implements UserManager {
             group.setParentGroups(list);
         }
         return group;
-    }
-
-    public void createGroup(NuxeoGroup group) throws ClientException {
-        Session groupDir = null;
-        try {
-            String groupId = group.getName();
-            groupDir = dirService.open(groupDirectoryName);
-
-            // check the group does not exist
-            if (groupDir.hasEntry(groupId)) {
-                throw new GroupAlreadyExistsException();
-            }
-
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put(groupDir.getIdField(), groupId);
-            map.put(groupMembersField, group.getMemberUsers());
-            map.put(groupSubGroupsField, group.getMemberGroups());
-            groupDir.createEntry(map);
-
-            groupDir.commit();
-            notifyGroupChanged(group);
-
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
-        }
-    }
-
-    public void createPrincipal(NuxeoPrincipal principal)
-            throws ClientException {
-        Session userDir = null;
-        try {
-            userDir = dirService.open(userDirectoryName);
-            String principalName = principal.getName();
-
-            // check the user does not exist
-            if (userDir.hasEntry(principalName)) {
-                throw new UserAlreadyExistsException();
-            }
-
-            userDir.createEntry(principal.getModel());
-
-            for (String roleName : principal.getRoles()) {
-                addPrincipalToRole(principalName, roleName);
-            }
-            userDir.commit();
-            notifyUserChanged(principal);
-
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
-        }
-    }
-
-    public void deleteGroup(NuxeoGroup group) throws ClientException {
-        Session groupDir = null;
-
-        try {
-            String groupId = group.getName();
-            groupDir = dirService.open(groupDirectoryName);
-
-            DocumentModel docModel = groupDir.getEntry(groupId);
-            if (docModel == null) {
-                throw new DirectoryException("group does not exist: " + groupId);
-            }
-            groupDir.deleteEntry(docModel);
-            groupDir.commit();
-            notifyGroupChanged(group);
-
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
-        }
-    }
-
-    public void deletePrincipal(NuxeoPrincipal principal)
-            throws ClientException {
-        Session userDir = null;
-
-        try {
-            userDir = dirService.open(userDirectoryName);
-
-            String userId = principal.getName();
-
-            // remove user
-            DocumentModel entry = userDir.getEntry(userId);
-            if (entry == null) {
-                throw new DirectoryException("principal does not exist: "
-                        + userId);
-            }
-            userDir.deleteEntry(entry);
-            userDir.commit();
-            notifyUserChanged(principal);
-
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
-        }
-    }
-
-    public List<NuxeoGroup> getAvailableGroups() throws ClientException {
-        Session groupDir = null;
-        try {
-            groupDir = dirService.open(groupDirectoryName);
-
-            // XXX retrieve all entries with references, can be costly.
-            DocumentModelList groupEntries = groupDir.query(
-                    Collections.<String, Object> emptyMap(), null, null, true);
-            List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>(
-                    groupEntries.size());
-            for (DocumentModel entry : groupEntries) {
-                groups.add(getGroup(entry.getId()));
-            }
-            sortGroups(groups);
-            return groups;
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -679,50 +474,17 @@ public class UserManagerImpl implements UserManager {
         return getGroup(groupId).getMemberUsers();
     }
 
-    private void addPrincipalToRole(String principalName, String roleName)
-            throws ClientException {
-        // XXX: YAGNI
-    }
-
-    private void removePrincipalFromRole(String principalId, String roleId)
-            throws ClientException {
-        // XXX: YAGNI
-    }
-
-    // TODO: if this code has to be generalized, then it would be simpler
-    // to use a MemoryDirectory to hold the anonymous user and just do
-    // the normal query on it.
-    /**
-     * Specific matching for Anonymous, which is not in a directory. (Matches
-     * using fulltext rules.)
-     */
-    protected boolean isAnonymousMatching(String pattern) {
+    private boolean isAnonymousMatching(Map<String, Object> filter,
+            Set<String> fulltext) throws DirectoryException {
         String anonymousUserId = getAnonymousUserId();
         if (anonymousUserId == null) {
             return false;
         }
-        pattern = pattern.toLowerCase();
-        Map<String, Serializable> anonymousUserMap = anonymousUser.getProperties();
-        // XXX hack: match id
-        anonymousUserMap.put(NuxeoPrincipalImpl.USERNAME_COLUMN,
-                anonymousUserId);
-        for (Object value : anonymousUserMap.values()) {
-            if (value != null
-                    && value.toString().toLowerCase().startsWith(pattern)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected boolean isAnonymousMatching(Map<String, Object> filter,
-            Set<String> fulltext) {
-        String anonymousUserId = getAnonymousUserId();
-        if (anonymousUserId == null) {
-            return false;
+        if (filter == null || filter.isEmpty()) {
+            return true;
         }
         Map<String, Serializable> anonymousUserMap = anonymousUser.getProperties();
-        anonymousUserMap.put(NuxeoPrincipalImpl.USERNAME_COLUMN,
+        anonymousUserMap.put(dirService.getDirectoryIdField(userDirectoryName),
                 anonymousUserId);
         for (Entry<String, Object> e : filter.entrySet()) {
             String fieldName = e.getKey();
@@ -733,7 +495,7 @@ public class UserManagerImpl implements UserManager {
                     return false;
                 }
             } else {
-                if (fulltext.contains(fieldName)) {
+                if (fulltext != null && fulltext.contains(fieldName)) {
                     if (!value.toString().toLowerCase().startsWith(
                             expected.toString().toLowerCase())) {
                         return false;
@@ -750,202 +512,36 @@ public class UserManagerImpl implements UserManager {
 
     public List<NuxeoPrincipal> searchPrincipals(String pattern)
             throws ClientException {
-        if (pattern == null) {
-            throw new IllegalArgumentException("pattern cannot be null");
+        DocumentModelList entries = searchUsers(pattern);
+        List<NuxeoPrincipal> principals = new ArrayList<NuxeoPrincipal>(
+                entries.size());
+        for (DocumentModel entry : entries) {
+            principals.add(makePrincipal(entry));
         }
-
-        Session userDir = null;
-        try {
-            userDir = dirService.open(userDirectoryName);
-            Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
-
-            for (Map.Entry<String, MatchType> fieldEntry : userSearchFields.entrySet()) {
-                Map<String, Object> filter = new HashMap<String, Object>();
-                filter.put(fieldEntry.getKey(), pattern);
-                DocumentModelList fetchedEntries;
-                if (fieldEntry.getValue() == MatchType.SUBSTRING) {
-                    fetchedEntries = userDir.query(filter, filter.keySet());
-                } else {
-                    fetchedEntries = userDir.query(filter);
-                }
-                for (DocumentModel entry : fetchedEntries) {
-                    uniqueEntries.put(entry.getId(), entry);
-                }
-            }
-
-            log.debug(String.format("found %d unique entries",
-                    uniqueEntries.size()));
-
-            List<NuxeoPrincipal> principals = new ArrayList<NuxeoPrincipal>(
-                    uniqueEntries.size());
-            for (DocumentModel entry : uniqueEntries.values()) {
-                principals.add(makePrincipal(entry));
-            }
-
-            if (isAnonymousMatching(pattern)) {
-                principals.add(makeAnonymousPrincipal());
-            }
-
-            // TODO: match searchable virtual users
-
-            sortPrincipals(principals, userDir.getIdField());
-            return principals;
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
-        }
-    }
-
-    private void sortPrincipals(List<NuxeoPrincipal> principals,
-            String defaultSortField) {
-        String sortField = userSortField != null ? userSortField
-                : defaultSortField;
-        Collections.sort(principals, new PrincipalComparator(sortField));
-    }
-
-    /**
-     * Comparator for two principals, uses case- and accent-insensitive
-     * comparison on a specific field.
-     *
-     * @author Florent Guillaume
-     */
-    static class PrincipalComparator implements Comparator<NuxeoPrincipal>,
-            Serializable {
-
-        private static final long serialVersionUID = -8369584979443796622L;
-
-        static final Collator collator = Collator.getInstance(); // use
-        // locale?
-
-        static {
-            collator.setStrength(Collator.PRIMARY); // case+accent independent
-        }
-
-        private final String fieldName;
-
-        PrincipalComparator(String fieldName) {
-            this.fieldName = fieldName;
-        }
-
-        public int compare(NuxeoPrincipal p1, NuxeoPrincipal p2) {
-            // XXX hack, principals have only one model
-            DataModel m1 = p1.getModel().getDataModels().values().iterator().next();
-            DataModel m2 = p1.getModel().getDataModels().values().iterator().next();
-            String s1 = null;
-            String s2 = null;
-            try {
-                s1 = (String) m1.getData(fieldName);
-                s2 = (String) m2.getData(fieldName);
-            } catch (PropertyException e) {
-                throw new ClientRuntimeException(e);
-            }
-            if (s1 == null && s2 != null) {
-                return -1;
-            } else if (s1 != null && s2 == null) {
-                return 1;
-            } else if (s1 != null && s2 != null) {
-                int cmp = collator.compare(s1, s2);
-                if (cmp != 0) {
-                    return cmp;
-                }
-            }
-            // strings are equal, provide consistent ordering
-            if (p1.hashCode() == p2.hashCode()) {
-                return 0;
-            } else if (p1.hashCode() < p2.hashCode()) {
-                return -1;
-            } else {
-                return 1;
-            }
-        }
-    }
-
-    protected static final Comparator<NuxeoGroup> groupComparator = new Comparator<NuxeoGroup>() {
-        public int compare(NuxeoGroup g1, NuxeoGroup g2) {
-            return g1.getName().compareTo(g2.getName());
-        }
-    };
-
-    protected static void sortGroups(List<NuxeoGroup> groups) {
-        Collections.sort(groups, groupComparator);
-    }
-
-    public List<NuxeoPrincipal> searchByMap(Map<String, Object> filter,
-            Set<String> pattern) throws ClientException {
-
-        Session userDir = null;
-        try {
-            userDir = dirService.open(userDirectoryName);
-
-            DocumentModelList entries = userDir.query(filter, pattern);
-            List<NuxeoPrincipal> principals = new ArrayList<NuxeoPrincipal>(
-                    entries.size());
-            for (DocumentModel entry : entries) {
-                principals.add(makePrincipal(entry));
-            }
-            if (isAnonymousMatching(filter, pattern)) {
-                principals.add(makeAnonymousPrincipal());
-            }
-
-            // TODO: match searchable virtual users
-
-            return principals;
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
-        }
+        return principals;
     }
 
     public List<NuxeoGroup> searchGroups(String pattern) throws ClientException {
-        if (pattern == null) {
-            throw new IllegalArgumentException("pattern cannot be null");
-        }
-
         Session groupDir = null;
         try {
             groupDir = dirService.open(groupDirectoryName);
-
             Map<String, Object> filter = new HashMap<String, Object>();
-            filter.put(groupDir.getIdField(), pattern);
-            DocumentModelList groupEntries = groupDir.query(filter,
+            if (pattern != null && pattern != "") {
+                filter.put(groupDir.getIdField(), pattern);
+            }
+            DocumentModelList groupEntries = searchGroups(filter,
                     filter.keySet());
 
             List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>(
                     groupEntries.size());
             for (DocumentModel groupEntry : groupEntries) {
-                groups.add(getGroup(groupEntry));
+                groups.add(makeGroup(groupEntry));
             }
-            sortGroups(groups);
             return groups;
+
         } finally {
             if (groupDir != null) {
                 groupDir.close();
-            }
-        }
-    }
-
-    // XXX: this is potentially a performance killing method
-    @Deprecated
-    public List<NuxeoPrincipal> getAvailablePrincipals() throws ClientException {
-        Session userDir = null;
-        try {
-            userDir = dirService.open(userDirectoryName);
-            // XXX retrieve all entries with references, can be costly.
-            DocumentModelList entries = userDir.query(
-                    Collections.<String, Object> emptyMap(), null, null, true);
-
-            List<NuxeoPrincipal> principalList = new ArrayList<NuxeoPrincipal>(
-                    entries.size());
-            for (DocumentModel entry : entries) {
-                principalList.add(makePrincipal(entry));
-            }
-            sortPrincipals(principalList, userDir.getIdField());
-            return principalList;
-        } finally {
-            if (userDir != null) {
-                userDir.close();
             }
         }
     }
@@ -954,26 +550,40 @@ public class UserManagerImpl implements UserManager {
         return userSortField;
     }
 
+    private Map<String, String> getUserSortMap() throws DirectoryException {
+        String idField = dirService.getDirectoryIdField(userDirectoryName);
+        String sortField = userSortField != null ? userSortField : idField;
+        Map<String, String> orderBy = new HashMap<String, String>();
+        orderBy.put(sortField, DocumentModelComparator.ORDER_ASC);
+        return orderBy;
+    }
+
     /**
      * Notifies user has changed so that the JaasCacheFlusher listener can make
      * sure principals cache is reset.
      */
-    private void notifyUserChanged(NuxeoPrincipal principal) {
-        EventService eventService = (EventService) Framework.getRuntime().getComponent(
-                EventService.NAME);
-        eventService.sendEvent(new Event(USERMANAGER_TOPIC,
-                USERCHANGED_EVENT_ID, this, principal.getName()));
+    private void notifyUserChanged(String userName) throws ClientException {
+        try {
+            EventService eventService = Framework.getService(EventService.class);
+            eventService.sendEvent(new Event(USERMANAGER_TOPIC,
+                    USERCHANGED_EVENT_ID, this, userName));
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
     }
 
     /**
      * Notifies group has changed so that the JaasCacheFlusher listener can make
      * sure principals cache is reset.
      */
-    private void notifyGroupChanged(NuxeoGroup group) {
-        EventService eventService = (EventService) Framework.getRuntime().getComponent(
-                EventService.NAME);
-        eventService.sendEvent(new Event(USERMANAGER_TOPIC,
-                GROUPCHANGED_EVENT_ID, this, group.getName()));
+    private void notifyGroupChanged(String groupName) throws ClientException {
+        try {
+            EventService eventService = Framework.getService(EventService.class);
+            eventService.sendEvent(new Event(USERMANAGER_TOPIC,
+                    GROUPCHANGED_EVENT_ID, this, groupName));
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
     }
 
     public Boolean areGroupsReadOnly() throws ClientException {
@@ -1010,6 +620,282 @@ public class UserManagerImpl implements UserManager {
             } catch (Exception e) {
             }
         }
+    }
+
+    private String getGroupId(DocumentModel groupModel) throws ClientException {
+        String idField = dirService.getDirectoryIdField(groupDirectoryName);
+        Object groupIdValue = groupModel.getProperty(groupSchemaName, idField);
+        if (groupIdValue != null && !(groupIdValue instanceof String)) {
+            throw new ClientException("Invalid group id " + groupIdValue);
+        }
+        return (String) groupIdValue;
+    }
+
+    private String getUserId(DocumentModel userModel) throws ClientException {
+        String idField = dirService.getDirectoryIdField(userDirectoryName);
+        Object userIdValue = userModel.getProperty(userSchemaName, idField);
+        if (userIdValue != null && !(userIdValue instanceof String)) {
+            throw new ClientException("Invalid user id " + userIdValue);
+        }
+        return (String) userIdValue;
+    }
+
+    public DocumentModel createGroup(DocumentModel groupModel)
+            throws ClientException {
+        Session groupDir = null;
+        try {
+            groupDir = dirService.open(groupDirectoryName);
+            String groupId = getGroupId(groupModel);
+
+            // check the group does not exist
+            if (groupDir.hasEntry(groupId)) {
+                throw new ClientException("Group already exists: " + groupId);
+            }
+            groupModel = groupDir.createEntry(groupModel);
+            groupDir.commit();
+            notifyGroupChanged(groupId);
+            return groupModel;
+
+        } finally {
+            if (groupDir != null) {
+                groupDir.close();
+            }
+        }
+    }
+
+    public DocumentModel createUser(DocumentModel userModel)
+            throws ClientException {
+        Session userDir = null;
+        try {
+            userDir = dirService.open(userDirectoryName);
+            String userId = getUserId(userModel);
+
+            // check the user does not exist
+            if (userDir.hasEntry(userId)) {
+                throw new ClientException("User already exists: " + userId);
+            }
+
+            userModel = userDir.createEntry(userModel);
+            userDir.commit();
+            notifyUserChanged(userId);
+            return userModel;
+
+        } finally {
+            if (userDir != null) {
+                userDir.close();
+            }
+        }
+    }
+
+    public void deleteGroup(String groupId) throws ClientException {
+        Session groupDir = null;
+        try {
+            groupDir = dirService.open(groupDirectoryName);
+            if (!groupDir.hasEntry(groupId)) {
+                throw new DirectoryException("Group does not exist: " + groupId);
+            }
+            groupDir.deleteEntry(groupId);
+            groupDir.commit();
+            notifyGroupChanged(groupId);
+
+        } finally {
+            if (groupDir != null) {
+                groupDir.close();
+            }
+        }
+    }
+
+    public void deleteGroup(DocumentModel groupModel) throws ClientException {
+        String groupId = getGroupId(groupModel);
+        deleteGroup(groupId);
+    }
+
+    public void deleteUser(String userId) throws ClientException {
+        Session userDir = null;
+        try {
+            userDir = dirService.open(userDirectoryName);
+            if (!userDir.hasEntry(userId)) {
+                throw new DirectoryException("User does not exist: " + userId);
+            }
+            userDir.deleteEntry(userId);
+            userDir.commit();
+            notifyUserChanged(userId);
+
+        } finally {
+            if (userDir != null) {
+                userDir.close();
+            }
+        }
+    }
+
+    public void deleteUser(DocumentModel userModel) throws ClientException {
+        String userId = getUserId(userModel);
+        deleteUser(userId);
+    }
+
+    public List<String> getGroupIds() throws ClientException {
+        Session groupDir = null;
+        try {
+            groupDir = dirService.open(groupDirectoryName);
+            List<String> groupIds = groupDir.getProjection(
+                    Collections.<String, Object> emptyMap(),
+                    groupDir.getIdField());
+            Collections.sort(groupIds);
+            return groupIds;
+        } finally {
+            if (groupDir != null) {
+                groupDir.close();
+            }
+        }
+    }
+
+    public List<String> getUserIds() throws ClientException {
+        Session userDir = null;
+        try {
+            userDir = dirService.open(userDirectoryName);
+            List<String> userIds = userDir.getProjection(
+                    Collections.<String, Object> emptyMap(),
+                    userDir.getIdField());
+            Collections.sort(userIds);
+            return userIds;
+        } finally {
+            if (userDir != null) {
+                userDir.close();
+            }
+        }
+    }
+
+    public DocumentModelList searchGroups(Map<String, Object> filter,
+            Set<String> fulltext) throws ClientException {
+        Session groupDir = null;
+        try {
+            groupDir = dirService.open(groupDirectoryName);
+
+            String sortField = groupSortField != null ? groupSortField
+                    : groupDir.getIdField();
+            Map<String, String> orderBy = new HashMap<String, String>();
+            orderBy.put(sortField, DocumentModelComparator.ORDER_ASC);
+            // XXX: do not fetch references, can be costly
+            DocumentModelList entries = groupDir.query(filter, fulltext,
+                    orderBy, false);
+
+            return entries;
+        } finally {
+            if (groupDir != null) {
+                groupDir.close();
+            }
+        }
+    }
+
+    private DocumentModelList searchUsers(Map<String, Object> filter,
+            Set<String> fulltext, Map<String, String> orderBy)
+            throws ClientException {
+        Session userDir = null;
+        try {
+            userDir = dirService.open(userDirectoryName);
+
+            // XXX: do not fetch references, can be costly
+            DocumentModelList entries = userDir.query(filter, fulltext, null,
+                    false);
+            if (isAnonymousMatching(filter, fulltext)) {
+                entries.add(makeVirtualUserEntry(getAnonymousUserId(),
+                        anonymousUser));
+            }
+
+            // TODO: match searchable virtual users
+
+            if (orderBy != null && !orderBy.isEmpty()) {
+                // sort: cannot sort before virtual users are added
+                Collections.sort(entries, new DocumentModelComparator(
+                        userSchemaName, orderBy));
+            }
+
+            return entries;
+        } finally {
+            if (userDir != null) {
+                userDir.close();
+            }
+        }
+    }
+
+    public DocumentModelList searchUsers(String pattern) throws ClientException {
+        DocumentModelList entries = new DocumentModelListImpl();
+        if (pattern == null || pattern.equals("")) {
+            entries = searchUsers(Collections.<String, Object> emptyMap(), null);
+        } else {
+            Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
+
+            for (Map.Entry<String, MatchType> fieldEntry : userSearchFields.entrySet()) {
+                Map<String, Object> filter = new HashMap<String, Object>();
+                filter.put(fieldEntry.getKey(), pattern);
+                DocumentModelList fetchedEntries;
+                if (fieldEntry.getValue() == MatchType.SUBSTRING) {
+                    fetchedEntries = searchUsers(filter, filter.keySet(), null);
+                } else {
+                    fetchedEntries = searchUsers(filter, null, null);
+                }
+                for (DocumentModel entry : fetchedEntries) {
+                    uniqueEntries.put(entry.getId(), entry);
+                }
+            }
+            log.debug(String.format("found %d unique entries",
+                    uniqueEntries.size()));
+            entries.addAll(uniqueEntries.values());
+        }
+        // sort
+        Collections.sort(entries, new DocumentModelComparator(userSchemaName,
+                getUserSortMap()));
+
+        return entries;
+    }
+
+    public DocumentModelList searchUsers(Map<String, Object> filter,
+            Set<String> fulltext) throws ClientException {
+        return searchUsers(filter, fulltext, getUserSortMap());
+    }
+
+    public void updateGroup(DocumentModel groupModel) throws ClientException {
+        Session groupDir = null;
+        try {
+            groupDir = dirService.open(groupDirectoryName);
+            String groupId = getGroupId(groupModel);
+
+            if (!groupDir.hasEntry(groupId)) {
+                throw new DirectoryException("group does not exist: " + groupId);
+            }
+            groupDir.updateEntry(groupModel);
+            groupDir.commit();
+            notifyGroupChanged(groupId);
+        } finally {
+            if (groupDir != null) {
+                groupDir.close();
+            }
+        }
+    }
+
+    public void updateUser(DocumentModel userModel) throws ClientException {
+        Session userDir = null;
+        try {
+            userDir = dirService.open(userDirectoryName);
+            String userId = getUserId(userModel);
+
+            if (!userDir.hasEntry(userId)) {
+                throw new DirectoryException("user does not exist: " + userId);
+            }
+            userDir.updateEntry(userModel);
+            userDir.commit();
+            notifyUserChanged(userId);
+
+        } finally {
+            if (userDir != null) {
+                userDir.close();
+            }
+        }
+    }
+
+    public DocumentModel getBareGroupModel() throws ClientException {
+        String schema = dirService.getDirectorySchema(groupDirectoryName);
+        return BaseSession.createEntryModel(null, schema, null, null);
     }
 
 }

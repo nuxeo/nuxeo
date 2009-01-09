@@ -19,12 +19,9 @@
 
 package org.nuxeo.ecm.webapp.security;
 
-import java.util.List;
+import java.io.Serializable;
 
 import javax.ejb.Local;
-import javax.faces.model.SelectItem;
-
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Provides user manager related operations.
@@ -32,44 +29,11 @@ import org.nuxeo.ecm.core.api.ClientException;
  * @author Razvan Caraghin
  */
 @Local
-public interface GroupManagerActions {
+public interface GroupManagerActions extends Serializable {
 
-    void initialize() throws ClientException;
+    public static final String ALL = "all";
 
-    String createGroup() throws ClientException;
-
-    String deleteGroup() throws ClientException;
-
-    void destroy();
-
-    void recomputeGroupList() throws ClientException;
-
-    String editGroup() throws ClientException;
-
-    String viewGroup() throws ClientException;
-
-    String updateGroup() throws ClientException;
-
-    String viewGroup(String groupName) throws ClientException;
-
-    String saveGroup() throws ClientException;
-
-    List<SelectItem> getAvailableGroups() throws ClientException;
-
-    boolean getAllowCreateGroup() throws ClientException;
-
-    boolean getAllowDeleteGroup() throws ClientException;
-
-    boolean getAllowEditGroup() throws ClientException;
-
-    String getSearchString() throws ClientException;
-
-    void setSearchString(String searchString) throws ClientException;
-
-    String searchGroups() throws ClientException;
-
-    String clearSearch() throws ClientException;
-
-    boolean isSearchOverflow();
+    public static final String VALID_CHARS = "0123456789_-"
+            + "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 }

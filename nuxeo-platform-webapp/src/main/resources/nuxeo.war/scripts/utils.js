@@ -59,7 +59,7 @@ function confirmAction(name) {
   var confirmEnd = "#{messages['label.documents.confirmActionEnd']}";
   var finalStringConfirm = confirmBegin + name + confirmEnd;
 
-    return confirm(finalStringConfirm);
+  return confirm(finalStringConfirm);
 }
 
 function blankSuggestionInput(parent) {
@@ -73,3 +73,35 @@ function blankSuggestionInput(parent) {
   }
   children[0].value='';
 }
+
+function trapEnter(evt, submitButtonId) {
+  var keycode;
+  if (evt)
+      ;
+  else if (window.event)
+      evt = window.event;
+  else if (event)
+      evt = event;
+  else
+      return true;
+
+  if (evt.charCode)
+      keycode = evt.charCode;
+  else if (evt.keyCode)
+      keycode = evt.keyCode;
+  else if (evt.which)
+      keycode = evt.which;
+  else
+      keycode = 0;
+
+  if (keycode == 13) {     
+      var button = document.getElementById(submitButtonId);
+      if (button != null) {
+        document.click();
+      }
+      return false;
+  } else {
+      return true;
+  }
+}
+

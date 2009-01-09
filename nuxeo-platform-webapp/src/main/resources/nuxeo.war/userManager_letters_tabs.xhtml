@@ -8,21 +8,22 @@
     <c:set var="selectedLetter" value="#{userManagerActions.selectedLetter}" />
     <c:forEach var="letter" items="#{userManagerActions.catalogLetters}">
 
-        <c:set var="cssClass" value=""/>
-        <c:if test="${letter == selectedLetter}">
-        <c:set var="cssClass" value="selected"/>
-        </c:if>
-
-        <li class="${cssClass}">
+      <c:set var="cssClass" value="" />
+      <c:if test="${letter == selectedLetter}">
+        <c:set var="cssClass" value="selected" />
+      </c:if>
+  
+      <li class="${cssClass}">
         <h:commandLink action="#{userManagerActions.viewUsers}">
-            <h:outputText value="${letter}" />
-            <f:param name="newSelectedLetter" value="${letter}"/>
+          <h:outputText value="${letter}" />
+          <f:param name="newSelectedLetter" value="${letter}"/>
         </h:commandLink>
-        </li>
+      </li>
 
-     </c:forEach>
+   </c:forEach>
 
   </ul>
+
 </div>
 
 

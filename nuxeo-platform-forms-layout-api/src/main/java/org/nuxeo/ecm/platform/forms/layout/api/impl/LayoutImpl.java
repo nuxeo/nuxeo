@@ -19,10 +19,14 @@
 
 package org.nuxeo.ecm.platform.forms.layout.api.impl;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
+import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 
 /**
  * Implementation for layouts.
@@ -44,6 +48,8 @@ public class LayoutImpl implements Layout {
 
     LayoutRow[] rows;
 
+    final Map<String, Widget> widgetMap;
+
     final int columns;
 
     private LayoutImpl(String name, String mode, String template, int columns) {
@@ -51,12 +57,29 @@ public class LayoutImpl implements Layout {
         this.mode = mode;
         this.template = template;
         this.columns = columns;
+        this.widgetMap = new HashMap<String, Widget>();
     }
 
     public LayoutImpl(String name, String mode, String template,
             List<LayoutRow> rows, int columns) {
         this(name, mode, template, columns);
-        this.rows = rows.toArray(new LayoutRow[]{});
+        this.rows = rows.toArray(new LayoutRow[] {});
+        computeWidgetMap();
+    }
+
+    protected void computeWidgetMap() {
+        if (rows == null || rows.length == 0) {
+            return;
+        }
+        for (LayoutRow row : rows) {
+            Widget[] widgets = row.getWidgets();
+            if (widgets == null || widgets.length == 0) {
+                continue;
+            }
+            for (Widget widget : widgets) {
+                widgetMap.put(widget.getName(), widget);
+            }
+        }
     }
 
     public String getId() {
@@ -85,6 +108,14 @@ public class LayoutImpl implements Layout {
 
     public int getColumns() {
         return columns;
+    }
+
+    public Widget getWidget(String name) {
+        return widgetMap.get(name);
+    }
+
+    public Map<String, Widget> getWidgetMap() {
+        return Collections.unmodifiableMap(widgetMap);
     }
 
 }
