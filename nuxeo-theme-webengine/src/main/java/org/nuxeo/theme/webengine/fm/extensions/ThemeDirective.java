@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriter;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.ApplicationType;
@@ -98,6 +99,14 @@ public class ThemeDirective implements TemplateDirectiveModel {
             log.error("Theme rendering failed: " + e.getMessage());
             return;
         }
+
+        // Render <@block> content
+        BlockWriter writer = (BlockWriter) env.getOut();
+        writer.setSuppressOutput(true);
+        body.render(writer);
+        writer.setSuppressOutput(false);
+        
+        // Apply the theme template
         BufferedReader reader = new BufferedReader(new StringReader(rendered));
         Template tpl = new Template(themeUrl.toString(), reader,
                 env.getConfiguration(), env.getTemplate().getEncoding());
