@@ -6,8 +6,6 @@
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
   <version>5.1.7-SNAPSHOT</version>
-  <!-- IMPORTANT: change this file version when it's modified -->
-
   <packaging>pom</packaging>
   <name>Nuxeo ECM Projects</name>
   <url>http://maven.nuxeo.org/</url>
