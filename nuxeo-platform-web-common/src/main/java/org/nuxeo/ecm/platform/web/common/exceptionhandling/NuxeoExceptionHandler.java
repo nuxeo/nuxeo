@@ -98,12 +98,12 @@ public class NuxeoExceptionHandler {
     public void handleException(HttpServletRequest request,
             HttpServletResponse response, Throwable t) throws IOException,
             ServletException {
-        if (request.getAttribute(NUXEO_EXCEPTION_HANDLER_SET) != null) {
+        /*if (request.getAttribute(NUXEO_EXCEPTION_HANDLER_SET) != null) {
             request.getRequestDispatcher(
                     (String) request.getAttribute(NUXEO_EXCEPTION_HANDLER_SET)).forward(
                     request, response);
             return;
-        }
+        }*/
         ErrorHandler handler = getHandler(t);
         listener.startHandling(t, request, response);
         Throwable unwrappedException = unwrapException(t);
@@ -132,7 +132,7 @@ public class NuxeoExceptionHandler {
         }
         String errorPage = handler.getPage();
         errorPage = (errorPage == null) ? defaultErrorPage : errorPage;
-        request.setAttribute(NUXEO_EXCEPTION_HANDLER_SET, errorPage);
+        //request.setAttribute(NUXEO_EXCEPTION_HANDLER_SET, errorPage);
         request.getRequestDispatcher(errorPage).forward(request, response);
         listener.afterDispatch(unwrappedException, request, response);
     }

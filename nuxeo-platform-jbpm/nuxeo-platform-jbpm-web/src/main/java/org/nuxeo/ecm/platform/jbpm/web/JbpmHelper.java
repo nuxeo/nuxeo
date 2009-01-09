@@ -62,7 +62,7 @@ public class JbpmHelper {
     public String endTask(TaskInstance ti, PrincipalListManager plm) throws NuxeoJbpmException, Exception {
         Map<String, Serializable> variables = new HashMap<String, Serializable>();
         ArrayList<String> selectedUser = new ArrayList<String>(plm.getSelectedUsers());
-        variables.put("participants", selectedUser);
+        variables.put("participants", selectedUser.toArray(new String[]{}));
         getJbpmService().endTask(ti.getId(), null, variables, null);
         return null;
     }
