@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
-  <version>5.1.7-SNAPSHOT</version>
+  <version>5.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Nuxeo ECM Projects</name>
   <url>http://maven.nuxeo.org/</url>
@@ -47,6 +47,7 @@
     <module>nuxeo-theme</module>
     <module>nuxeo-platform</module>
     <module>nuxeo-shell</module>
+    <module>nuxeo-webengine</module>
     <module>nuxeo-distribution</module>
   </modules>
 
@@ -60,73 +61,7 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>cssparser</groupId>
-        <artifactId>cssparser</artifactId>
-        <version>0.9.4-fix</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.facelets</groupId>
-        <artifactId>jsf-facelets</artifactId>
-        <version>1.1.11</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>commons-collections</groupId>
-        <artifactId>commons-collections</artifactId>
-        <version>3.1</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>commons-fileupload</groupId>
-        <artifactId>commons-fileupload</artifactId>
-        <version>1.1.1</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>commons-io</groupId>
-        <artifactId>commons-io</artifactId>
-        <version>1.2</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>commons-lang</groupId>
-        <artifactId>commons-lang</artifactId>
-        <version>2.2</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging</artifactId>
-        <version>1.1</version>
-        <scope>provided</scope>
-      </dependency>
-      <!-- be careful using this dependency as it breaks unit tests logging -->
-      <dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging-api</artifactId>
-        <version>1.1</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.freemarker</groupId>
-        <artifactId>freemarker</artifactId>
-        <version>2.3.11</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>concurrent</groupId>
-        <artifactId>concurrent</artifactId>
-        <version>1.3.4</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>hsqldb</groupId>
-        <artifactId>hsqldb</artifactId>
-        <version>1.8.0.1</version>
-        <scope>provided</scope>
-      </dependency>
+      <!-- javax -->
       <dependency>
         <groupId>javax.ejb</groupId>
         <artifactId>ejb-api</artifactId>
@@ -134,15 +69,16 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>javax.ejb</groupId>
-        <artifactId>ejb</artifactId>
-        <version>${jboss.ejb.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
         <groupId>javax.annotation</groupId>
         <artifactId>jsr250-api</artifactId>
         <version>1.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <!-- TODO: remove. It's the same as the two preceding ones -->
+      <dependency>
+        <groupId>javax.ejb</groupId>
+        <artifactId>ejb</artifactId>
+        <version>${jboss.ejb.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -160,13 +96,13 @@
       <dependency>
         <groupId>javax.faces</groupId>
         <artifactId>jsf-api</artifactId>
-        <version>1.2_04</version>
+        <version>1.2_09_jboss</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.faces</groupId>
         <artifactId>jsf-impl</artifactId>
-        <version>1.2_04</version>
+        <version>1.2_09_jboss</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -217,6 +153,183 @@
         <version>1.0.1B</version>
         <scope>provided</scope>
       </dependency>
+      <dependency>
+        <groupId>javax.jcr</groupId>
+        <artifactId>jcr</artifactId>
+        <version>1.0.1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.script</groupId>
+        <artifactId>script-api</artifactId>
+        <version>1.0</version>
+      </dependency>
+
+      <!-- commons -->
+      <dependency>
+        <groupId>commons-collections</groupId>
+        <artifactId>commons-collections</artifactId>
+        <version>3.1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>1.1.1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>1.2</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>2.2</version>
+        <scope>provided</scope>
+      </dependency>
+      <!-- used in jboss patch -->
+      <dependency>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>1.6</version>
+        <scope>provided</scope>
+      </dependency>
+      <!-- used in jboss patch -->
+      <dependency>
+        <groupId>commons-digester</groupId>
+        <artifactId>commons-digester</artifactId>
+        <version>1.8</version>
+        <scope>provided</scope>
+      </dependency>
+      <!-- used in jboss patch -->
+      <dependency>
+        <groupId>commons-el</groupId>
+        <artifactId>commons-el</artifactId>
+        <version>1.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>1.1</version>
+        <scope>provided</scope>
+      </dependency>
+      <!-- be careful using this dependency as it breaks unit tests logging -->
+      <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging-api</artifactId>
+        <version>1.1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>commons-jexl</groupId>
+        <artifactId>commons-jexl</artifactId>
+        <version>1.1</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- apache -->
+      <dependency>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>derby</artifactId>
+        <version>10.4.1.3</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>derbyclient</artifactId>
+        <version>10.4.1.3</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-core</artifactId>
+        <version>2.0.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.shared</groupId>
+        <artifactId>shared-asn1</artifactId>
+        <version>${apachedshared.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.shared</groupId>
+        <artifactId>shared-ldap-constants</artifactId>
+        <version>${apachedshared.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi</artifactId>
+        <version>3.0.2-FINAL</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-scratchpad</artifactId>
+        <version>3.0.2-FINAL</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-text-extractors</artifactId>
+        <version>1.3.3</version>
+        <scope>provided</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>poi</groupId>
+            <artifactId>poi</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.shared</groupId>
+        <artifactId>shared-ldap</artifactId>
+        <version>${apachedshared.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-protocol-shared</artifactId>
+        <version>${apacheds.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-core</artifactId>
+        <version>${apacheds.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-core-shared</artifactId>
+        <version>${apacheds.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-bootstrap-partition</artifactId>
+        <version>${apacheds.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>xerces</groupId>
+        <artifactId>xmlParserAPIs</artifactId>
+        <scope>provided</scope>
+        <version>2.6.2</version>
+      </dependency>
+      <dependency>
+        <groupId>xml-apis</groupId>
+        <artifactId>xml-apis</artifactId>
+        <scope>provided</scope>
+        <version>1.0.b2</version>
+      </dependency>
+
+      <!-- jboss (+ hibernate, richfaces...) -->
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>ejb3</artifactId>
@@ -286,26 +399,49 @@
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-remoting</artifactId>
-        <version>${jboss.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <!-- BBB old version for the benefit of dependent poms -->
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-seam</artifactId>
-        <version>1.1.5.NX3</version>
+        <version>2.2.2.SP1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam</artifactId>
-        <version>1.1.5.NX3</version>
+        <version>2.0.3.CR1-NX2</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam</groupId>
+        <artifactId>jboss-seam-remoting</artifactId>
+        <version>2.0.3.CR1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam</groupId>
+        <artifactId>jboss-seam-ui</artifactId>
+        <version>2.0.3.CR1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam</groupId>
+        <artifactId>jboss-seam-mail</artifactId>
+        <version>2.0.3.CR1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam</groupId>
+        <artifactId>jboss-seam-debug</artifactId>
+        <version>2.0.3.CR1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.el</groupId>
+        <artifactId>jboss-el</artifactId>
+        <version>2.0.1.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-serialization</artifactId>
-        <version>1.0.0-RC1</version>
+        <version>1.0.3.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -344,60 +480,7 @@
         <version>4.0.2</version>
         <scope>provided</scope>
       </dependency>
-      <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>1.2.13</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>3.8.2</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.intellij</groupId>
-        <artifactId>annotations</artifactId>
-        <version>6.0.5</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>opensymphony</groupId>
-        <artifactId>quartz-all</artifactId>
-        <version>1.5.2</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-core</artifactId>
-        <version>2.0.0</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.myfaces.trinidad</groupId>
-        <artifactId>trinidad-api</artifactId>
-        <version>1.0.1-incubating-NXEP51M2</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.myfaces.trinidad</groupId>
-        <artifactId>trinidad-impl</artifactId>
-        <version>1.0.1-incubating-NXEP51M2</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.myfaces.tomahawk</groupId>
-        <artifactId>tomahawk</artifactId>
-        <version>1.1.5</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.myfaces.tomahawk</groupId>
-        <artifactId>tomahawk-sandbox</artifactId>
-        <version>1.1.5</version>
-        <scope>provided</scope>
-      </dependency>
+
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate</artifactId>
@@ -414,6 +497,113 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
         <version>3.2.0.ga</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.richfaces.framework</groupId>
+        <artifactId>richfaces-api</artifactId>
+        <scope>provided</scope>
+        <version>3.2.1.GA</version>
+      </dependency>
+      <dependency>
+        <groupId>org.richfaces.framework</groupId>
+        <artifactId>richfaces-impl</artifactId>
+        <scope>provided</scope>
+        <version>3.2.1.GA-NX</version>
+      </dependency>
+      <dependency>
+        <groupId>org.richfaces.ui</groupId>
+        <artifactId>richfaces-ui</artifactId>
+        <scope>provided</scope>
+        <version>3.2.1.GA</version>
+      </dependency>
+
+      <!-- OpenOffice.org -->
+      <dependency>
+        <groupId>org.openoffice</groupId>
+        <artifactId>juh</artifactId>
+        <version>2.2.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.openoffice</groupId>
+        <artifactId>jurt</artifactId>
+        <version>2.2.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.openoffice</groupId>
+        <artifactId>ridl</artifactId>
+        <version>2.2.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.openoffice</groupId>
+        <artifactId>unoil</artifactId>
+        <version>2.2.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.artofsolving</groupId>
+        <artifactId>jodconverter</artifactId>
+        <version>2.1.1</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- others -->
+      <dependency>
+      <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <version>1.1.104</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>cssparser</groupId>
+        <artifactId>cssparser</artifactId>
+        <version>0.9.4-fix</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.facelets</groupId>
+        <artifactId>jsf-facelets</artifactId>
+        <version>1.1.11</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.freemarker</groupId>
+        <artifactId>freemarker</artifactId>
+        <version>2.3.11</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>concurrent</groupId>
+        <artifactId>concurrent</artifactId>
+        <version>1.3.4</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <version>1.8.0.1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>1.2.13</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>3.8.2</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>opensymphony</groupId>
+        <artifactId>quartz-all</artifactId>
+        <version>1.5.2</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -491,48 +681,6 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>org.apache.directory.shared</groupId>
-        <artifactId>shared-asn1</artifactId>
-        <version>${apachedshared.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.directory.shared</groupId>
-        <artifactId>shared-ldap-constants</artifactId>
-        <version>${apachedshared.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.directory.shared</groupId>
-        <artifactId>shared-ldap</artifactId>
-        <version>${apachedshared.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.directory.server</groupId>
-        <artifactId>apacheds-protocol-shared</artifactId>
-        <version>${apacheds.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.directory.server</groupId>
-        <artifactId>apacheds-core</artifactId>
-        <version>${apacheds.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.directory.server</groupId>
-        <artifactId>apacheds-core-shared</artifactId>
-        <version>${apacheds.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.directory.server</groupId>
-        <artifactId>apacheds-bootstrap-partition</artifactId>
-        <version>${apacheds.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
         <groupId>postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <version>8.2-507.jdbc3</version>
@@ -551,69 +699,21 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>com.artofsolving</groupId>
-        <artifactId>jodconverter</artifactId>
-        <version>2.1.1</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.openoffice</groupId>
-        <artifactId>juh</artifactId>
-        <version>2.2.0</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.openoffice</groupId>
-        <artifactId>jurt</artifactId>
-        <version>2.2.0</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.openoffice</groupId>
-        <artifactId>ridl</artifactId>
-        <version>2.2.0</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.openoffice</groupId>
-        <artifactId>unoil</artifactId>
-        <version>2.2.0</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
         <version>1.1.3</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>org.apache.poi</groupId>
-        <artifactId>poi</artifactId>
-        <version>3.0.2-FINAL</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.poi</groupId>
-        <artifactId>poi-scratchpad</artifactId>
-        <version>3.0.2-FINAL</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>jackrabbit-text-extractors</artifactId>
-        <version>1.3.3</version>
-        <scope>provided</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>poi</groupId>
-            <artifactId>poi</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>org.dojotoolkit</groupId>
         <artifactId>custom_rhino</artifactId>
         <version>0.4.3</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>cglib</groupId>
+        <artifactId>cglib-nodep</artifactId>
+        <version>2.1_3</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -641,9 +741,21 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>javax.jcr</groupId>
-        <artifactId>jcr</artifactId>
-        <version>1.0.1</version>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-all</artifactId>
+        <version>1.5.7</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.resteasy</groupId>
+        <artifactId>resteasy-jaxrs</artifactId>
+        <version>1.0-beta-8-nx</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.resteasy</groupId>
+        <artifactId>jaxrs-api</artifactId>
+        <version>1.0-beta-8</version>
         <scope>provided</scope>
       </dependency>
       
@@ -651,16 +763,27 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-jbossws-wrapper</artifactId>
         <version>4.0.5.GA</version>
+        <scope>provided</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
+    <!-- needed by APT for annotation processing -->
     <dependency>
-      <groupId>com.intellij</groupId>
-      <artifactId>annotations</artifactId>
-      <scope>provided</scope>
+      <groupId>org.nuxeo.build</groupId>
+      <artifactId>nuxeo-apt-extensions</artifactId>
+      <version>1.0</version>
+      <scope>compile</scope>
+      <!-- workaround for Mac OS X -->
+      <exclusions>
+        <exclusion>
+          <groupId>sun.jdk</groupId>
+          <artifactId>tools</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
@@ -670,11 +793,6 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -701,6 +819,26 @@
           <target>1.5</target>
         </configuration>
       </plugin>
+      <!-- APT plugin for annotation preprocessing -->
+      <plugin>
+        <groupId>org.apache.myfaces.tobago</groupId>
+        <artifactId>maven-apt-plugin</artifactId>
+        <version>1.0.12</version>
+        <configuration>
+          <generated>/target/generated/</generated>
+          <nocompile>true</nocompile>
+          <target>1.5</target>
+        </configuration>
+        <executions>
+          <execution>
+            <id>generate-bindings</id>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- end APT plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -779,7 +917,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jboss-packaging-maven-plugin</artifactId>
-      	<extensions>true</extensions>
+        <extensions>true</extensions>
       </plugin>
     </plugins>
     <pluginManagement>
@@ -953,12 +1091,12 @@
                 ${basedir}/src/site/resources/css/jdstyle.css
                 </stylesheetfile-->
               <windowtitle>
-                Nuxeo Enterprise Platform 5.1 API Documentation
+                Nuxeo Enterprise Platform 5.2 API Documentation
               </windowtitle>
               <doctitle>
-                Nuxeo Enterprise Platform 5.1 API Documentation
+                Nuxeo Enterprise Platform 5.2 API Documentation
               </doctitle>
-              <header>Nuxeo Enterprise Platform 5.1</header>
+              <header>Nuxeo Enterprise Platform 5.2</header>
               <links>
                 <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
                 <link>http://java.sun.com/javaee/5/docs/api/</link>
@@ -980,7 +1118,6 @@
                 </link>
                 <link>http://jackrabbit.apache.org/api-1/</link>
                 <link>http://www.day.com/maven/jsr170/javadocs/jcr-1.0/</link>
-                <link>http://myfaces.apache.org/tomahawk/apidocs/</link>
                 <link>http://www.restlet.org/documentation/1.0/api/</link>
                 <link>http://www.hibernate.org/hib_docs/v3/api/</link>
                 <link>http://docs.jboss.com/seam/1.1.5.GA/api/</link>
@@ -1083,12 +1220,12 @@
           <url>scpexe://gironde.nuxeo.com/home/mavenweb/site/</url>
         </site>
         <repository>
-          <id>nuxeo_release</id>
-          <url>file:///home/archiva/repositories/nuxeo_release</url>
+          <id>nuxeo-release</id>
+          <url>file:///home/nexus/repositories/nuxeo-release</url>
         </repository>
         <snapshotRepository>
-          <id>nuxeo_snapshot</id>
-          <url>file:///home/archiva/repositories/nuxeo_snapshot</url>
+          <id>nuxeo-snapshot</id>
+          <url>file:///home/nexus/repositories/nuxeo-snapshot</url>
         </snapshotRepository>
       </distributionManagement>
     </profile>
@@ -1165,6 +1302,7 @@
         </pluginManagement>
       </build>
     </profile>
+
     <!-- activating the build number generation in plugins manifest for apogee -->
     <profile>
       <id>svn-rev-in-mf</id>
@@ -1300,6 +1438,6 @@
         <enabled>true</enabled>
       </snapshots>
     </pluginRepository>
-  </pluginRepositories> 
- 
+  </pluginRepositories>
+
 </project>
