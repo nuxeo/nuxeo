@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.webengine.core.lifecycles">
-  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="lifecycle">
 
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="lifecycle">
     <lifecycle name="BlogPost" lifecyclemanager="jcrlifecyclemanager" initial="draft">
       <transitions>
         <transition name="publish" destinationState="published">
