@@ -176,7 +176,10 @@
     <negotiation object="engine" strategy="web">
       <scheme>
         org.nuxeo.theme.webengine.negotiation.engine.RequestParameter
-      </scheme> 
+      </scheme>
+      <scheme>
+        org.nuxeo.theme.webengine.negotiation.engine.RequestAttribute
+      </scheme>       
       <scheme>
         org.nuxeo.theme.webengine.negotiation.engine.CookieValue
       </scheme>
@@ -191,7 +194,10 @@
     <negotiation object="mode" strategy="web">
       <scheme>
         org.nuxeo.theme.webengine.negotiation.mode.RequestParameter
-      </scheme>     
+      </scheme>
+      <scheme>
+        org.nuxeo.theme.webengine.negotiation.mode.RequestAttribute
+      </scheme>        
       <scheme>
         org.nuxeo.theme.webengine.negotiation.mode.CookieValue
       </scheme>
@@ -206,7 +212,10 @@
     <negotiation object="theme" strategy="web">
       <scheme>
         org.nuxeo.theme.webengine.negotiation.theme.RequestParameter
-      </scheme>     
+      </scheme>
+      <scheme>
+        org.nuxeo.theme.webengine.negotiation.theme.RequestAttribute
+      </scheme>           
       <scheme>
         org.nuxeo.theme.webengine.negotiation.theme.CookieValue
       </scheme>
@@ -221,7 +230,10 @@
     <negotiation object="perspective" strategy="web">
       <scheme>
         org.nuxeo.theme.webengine.negotiation.perspective.RequestParameter
-      </scheme>    
+      </scheme>
+      <scheme>
+        org.nuxeo.theme.webengine.negotiation.perspective.RequestAttribute
+      </scheme>       
       <scheme>
         org.nuxeo.theme.webengine.negotiation.perspective.CookieValue
       </scheme>
