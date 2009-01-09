@@ -2,7 +2,6 @@
 
 import org.nuxeo.ecm.core.api.IdRef
 
-
 uuid = Request.getParameter('uuid')
 
 if (uuid) {

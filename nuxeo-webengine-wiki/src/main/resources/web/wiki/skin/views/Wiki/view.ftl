@@ -1,6 +1,6 @@
 <@extends src="Wiki/base.ftl">
-
 <@block name="content">
+
 <div class="summary-entries">
 <#list Document.children?reverse as entry>
   <div class="summary-entry">  

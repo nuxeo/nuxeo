@@ -21,7 +21,7 @@
   <script type="text/javascript" src="${skinPath}/script/webengine.js"></script>
   <#if Document??> <#-- we are in a document context: search is enabled -->
     <script>
-     $(document).ready(function(){
+     $(document).ready(function() {
        $('#query').focus(function() {
          if (this.value == "Search") {
            this.value = ""
