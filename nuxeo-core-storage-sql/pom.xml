@@ -37,6 +37,10 @@
       <artifactId>nuxeo-core-query</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
     </dependency>
@@ -80,18 +84,18 @@
       <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-transform-api</artifactId>
-      <version>5.2-SNAPSHOT</version>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-transform-core</artifactId>
-      <version>5.2-SNAPSHOT</version>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert-plugins</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
