@@ -22,8 +22,15 @@ import org.nuxeo.theme.negotiation.Scheme;
 public class CookieValue implements Scheme {
 
     public String getOutcome(final Object context) {
-        final WebContext webContext =  (WebContext) context;
-        final String path = webContext.getCookie("nxthemes.theme");
+        final WebContext webContext = (WebContext) context;
+        String path = null;
+        // FIXME AbstractContext.getCookie triggers a NullPointerException
+        // (WEB-157)
+        try {
+            path = webContext.getCookie("nxthemes.theme");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (path == null) {
             return null;
         }

@@ -22,8 +22,15 @@ import org.nuxeo.theme.types.TypeFamily;
 public class CookieValue implements Scheme {
 
     public String getOutcome(final Object context) {
-        final WebContext webContext =  (WebContext) context;
-        final String engineName = webContext.getCookie("nxthemes.engine");
+        final WebContext webContext = (WebContext) context;
+        String engineName = null;
+        // FIXME AbstractContext.getCookie triggers a NullPointerException
+        // (WEB-157)
+        try {
+            engineName = webContext.getCookie("nxthemes.engine");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (engineName == null) {
             return null;
         }

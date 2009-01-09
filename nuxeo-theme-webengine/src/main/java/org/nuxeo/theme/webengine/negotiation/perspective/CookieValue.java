@@ -21,8 +21,15 @@ import org.nuxeo.theme.perspectives.PerspectiveManager;
 public class CookieValue implements Scheme {
 
     public String getOutcome(final Object context) {
-        final WebContext webContext =  (WebContext) context;
-        final String perspectiveName = webContext.getCookie("nxthemes.perspective");
+        final WebContext webContext = (WebContext) context;
+        String perspectiveName = null;
+        // FIXME AbstractContext.getCookie triggers a NullPointerException
+        // (WEB-157)
+        try {
+            perspectiveName = webContext.getCookie("nxthemes.perspective");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (perspectiveName == null) {
             return null;
         }
