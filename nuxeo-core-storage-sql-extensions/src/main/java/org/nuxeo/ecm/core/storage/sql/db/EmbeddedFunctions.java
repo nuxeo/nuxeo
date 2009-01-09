@@ -23,9 +23,13 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -226,6 +230,106 @@ public class EmbeddedFunctions {
         }
     }
 
+    /**
+     * Extracts the words from a string for simple fulltext indexing.
+     *
+     * @param string1 the first string
+     * @param string2 the second string
+     * @param a string with extracted words
+     */
+    public static String parseFullText(String string1, String string2)
+            throws SQLException {
+        Set<String> set = new HashSet<String>();
+        set.addAll(parseFullText(string1));
+        set.addAll(parseFullText(string2));
+        List<String> words = new ArrayList<String>(set);
+        Collections.sort(words);
+        return join(words, ' ');
+    }
+
+    protected static Set<String> parseFullText(String string)
+            throws SQLException {
+        if (string == null) {
+            return Collections.emptySet();
+        }
+        Set<String> set = new HashSet<String>();
+        for (String word : wordPattern.split(string)) {
+            String w = parseWord(word);
+            if (w != null) {
+                set.add(w);
+            }
+        }
+        return set;
+    }
+
+    /**
+     * Checks if the passed query expression matches the fulltext.
+     *
+     * @param fulltext the fulltext, space-separated words
+     * @param query a list of space-separated words
+     * @return {@code true} if all the words are in the fulltext
+     */
+    protected static boolean matchesFullText(String fulltext, String query) {
+        if (fulltext == null || query == null) {
+            return false;
+        }
+        Set<String> words = split(query, ' ');
+        if (words.isEmpty()) {
+            return false;
+        }
+        Set<String> fulltextWords = split(fulltext, ' ');
+        for (String word : words) {
+            if (!fulltextWords.contains(word)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // ----- simple parsing, don't try to be exhaustive -----
+
+    private static final Pattern wordPattern = Pattern.compile("[\\s\\p{Punct}]+");
+
+    private static final String UNACCENTED = "aaaaaaaceeeeiiii\u00f0nooooo\u00f7ouuuuy\u00fey";
+
+    private static final String STOPWORDS = "a an are and as at be by for from how "
+            + "i in is it of on or that the this to was what when where who will with "
+            + "car donc est il ils je la le les mais ni nous or ou pour tu un une vous "
+            + "www com net org";
+
+    private static final Set<String> stopWords = new HashSet<String>(split(
+            STOPWORDS, ' '));
+
+    public static final String parseWord(String string) {
+        int len = string.length();
+        if (len < 3) {
+            return null;
+        }
+        StringBuilder buf = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            char c = Character.toLowerCase(string.charAt(i));
+            if (c == '\u00e6') {
+                buf.append("ae");
+            } else if (c >= '\u00e0' && c <= '\u00ff') {
+                buf.append(UNACCENTED.charAt(((int) c) - 0xe0));
+            } else if (c == '\u0153') {
+                buf.append("oe");
+            } else {
+                buf.append(c);
+            }
+        }
+        // simple heuristic to remove plurals
+        int l = buf.length();
+        if (l > 3 && buf.charAt(l - 1) == 's') {
+            buf.setLength(l - 1);
+        }
+        String word = buf.toString();
+        if (stopWords.contains(word)) {
+            return null;
+        }
+        return word;
+    }
+
     // ----- utility functions -----
 
     public static Set<String> split(String string) {
@@ -255,6 +359,23 @@ public class EmbeddedFunctions {
             set.add("");
         }
         return set;
+    }
+
+    private static final String join(Collection<String> strings, char sep) {
+        if (strings == null || strings.isEmpty()) {
+            return "";
+        }
+        int size = 0;
+        for (String word : strings) {
+            size += word.length() + 1;
+        }
+        StringBuilder buf = new StringBuilder(size);
+        for (String word : strings) {
+            buf.append(word);
+            buf.append(sep);
+        }
+        buf.setLength(size - 1);
+        return buf.toString();
     }
 
 }
