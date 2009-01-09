@@ -20,6 +20,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementRenderer;
@@ -27,6 +29,8 @@ import org.nuxeo.theme.rendering.RenderingInfo;
 import org.nuxeo.theme.themes.ThemeManager;
 
 public final class Connection extends URLConnection {
+
+    private static final Log log = LogFactory.getLog(Connection.class);
 
     private final URL url;
 
@@ -84,9 +88,10 @@ public final class Connection extends URLConnection {
                     host, url.toString()));
         }
 
-        RenderingInfo info = new RenderingInfo(rendered, url);
-        String content = ElementRenderer.render(info, cache).getMarkup();
-        //log.debug("NXThemes output:\n" + content + "\n");
+        final RenderingInfo info = new RenderingInfo(rendered, url);
+        final String content = ElementRenderer.render(info, cache).getMarkup();
+        log.debug(String.format("NXThemes output for %s: \n%s\n",
+                url.toString(), content));
         return new ByteArrayInputStream(content.getBytes());
     }
 
