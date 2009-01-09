@@ -58,18 +58,27 @@ public class JbpmServiceImpl implements JbpmService {
 
     private UserManager userManager;
 
+    public static final ThreadLocal<JbpmContext> contexts = new ThreadLocal<JbpmContext>();
+
     private final List<JbpmSecurityPolicy> securityPolicies = new ArrayList<JbpmSecurityPolicy>();
 
     public Serializable executeJbpmOperation(JbpmOperation operation)
             throws NuxeoJbpmException {
-        JbpmContext context = configuration.createJbpmContext();
-        Serializable object;
-        try {
-            object = operation.run(context);
-        } finally {
-            context.close();
+        JbpmContext context = getContext();
+        return operation.run(context);
+    }
+
+    //we open the first call in the thread
+    // and close it on the session complete of hibernate.
+    protected JbpmContext getContext() {
+        JbpmContext context = contexts.get();
+        if (context == null) {
+            context = configuration.createJbpmContext();
+            contexts.set(context);
+            context.getSession().getTransaction().registerSynchronization(
+                    new JbpmSynchronization(context));
         }
-        return object;
+        return context;
     }
 
     public JbpmConfiguration getConfiguration() {

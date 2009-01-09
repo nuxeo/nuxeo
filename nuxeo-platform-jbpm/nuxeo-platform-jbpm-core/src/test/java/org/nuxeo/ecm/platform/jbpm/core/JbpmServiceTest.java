@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
+import org.nuxeo.ecm.platform.jbpm.core.service.JbpmServiceImpl;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -48,6 +49,8 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
 
     @Override
     protected void setUp() throws Exception {
+        //clean up previous test.
+        JbpmServiceImpl.contexts.set(null);
         super.setUp();
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
@@ -73,6 +76,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
                 administrator, dm);
         assertNotNull(pds);
         assertEquals(2, pds.size());
+        //service.getConfiguration().getCurrentJbpmContext().close();
         // create process instance
         ProcessInstance pd = service.createProcessInstance(administrator,
                 "parallel-review", dm, null, null);
@@ -112,5 +116,10 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         session.saveDocument(doc);
         session.save();
         return doc;
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        JbpmServiceImpl.contexts.set(null);
     }
 }
