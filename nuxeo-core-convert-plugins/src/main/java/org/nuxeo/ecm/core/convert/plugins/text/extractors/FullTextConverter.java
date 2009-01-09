@@ -55,7 +55,7 @@ public class FullTextConverter implements Converter {
             throw new ConversionException("Unable to get source MimeType",e);
         }
 
-        if (TEXT_PLAIN_MT.equals(TEXT_PLAIN_MT)) {
+        if (TEXT_PLAIN_MT.equals(srcMT)) {
             // no need to convert !
             return blobHolder;
         }
