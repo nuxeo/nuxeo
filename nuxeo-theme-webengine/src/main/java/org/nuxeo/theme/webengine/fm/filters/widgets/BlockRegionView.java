@@ -24,20 +24,20 @@ public final class BlockRegionView extends AbstractView {
     public String render(final RenderingInfo info) {
         final Region region = (Region) info.getModel();
         final StringBuilder s = new StringBuilder();
-        if (region.name != "") {
-            s.append("<div class=\"nxthemesRegion\">");
+        if ("".equals(region.name)) {
+            s.append("<div class=\"nxthemesRegionNotSet\">").append(
+                    "No region name is set...").append("</div>");
+        } else {
+            s.append("<div>");
             s.append("<@block name=\"").append(region.name).append("\">");
-            if (!region.defaultSrc.equals("")) {
+            if ("".equals(region.defaultSrc)) {
+                s.append(region.defaultBody);
+            } else {
                 s.append("<#include \"").append(region.defaultSrc).append(
                         "\" />");
-            } else {
-                s.append(region.defaultBody);
             }
             s.append("</@block>");
             s.append("</div>");
-        } else {
-            s.append("<div class=\"nxthemesRegionNotSet\">").append(
-                    "No region name is set...").append("</div>");
         }
         return s.toString();
     }

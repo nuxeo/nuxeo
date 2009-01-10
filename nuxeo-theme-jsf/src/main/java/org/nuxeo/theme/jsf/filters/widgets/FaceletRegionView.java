@@ -25,20 +25,20 @@ public final class FaceletRegionView extends AbstractView {
         final Region region = (Region) info.getModel();
         final StringBuilder s = new StringBuilder();
 
-        if (region.name != "") {
-            s.append("<div class=\"faceletRegion\" xmlns:ui=\"http://java.sun.com/jsf/facelets\">");
+        if ("".equals(region.name)) {
+            s.append("<div class=\"nxthemesRegionNotSet\">").append(
+                    "No facelet region name is set...").append("</div>");
+        } else {
+            s.append("<div xmlns:ui=\"http://java.sun.com/jsf/facelets\">");
             s.append("<ui:insert name=\"").append(region.name).append("\">");
-            if (!region.defaultSrc.equals("")) {
+            if ("".equals(region.defaultSrc)) {
+                s.append(region.defaultBody);
+            } else {
                 s.append("<ui:include src=\"").append(region.defaultSrc).append(
                         "\" />");
-            } else {
-                s.append(region.defaultBody);
             }
             s.append("</ui:insert>");
             s.append("</div>");
-        } else {
-            s.append("<div class=\"nxthemesRegionNotSet\">").append(
-                    "No facelet region name is set...").append("</div>");
         }
         return s.toString();
     }
