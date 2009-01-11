@@ -33,16 +33,16 @@ public class User extends DefaultObject {
   public Response doPut() {
     def userManager = Framework.getService(UserManager.class);
     def req = ctx.getRequest();
-            // update
-            principal.firstName = req.getParameter("firstName")
-            principal.lastName = req.getParameter("lastName")
-            principal.password = req.getParameter("password")
-            
-            def selectedGroups = req.getParameterValues("groups")
-            def listGroups = Arrays.asList(selectedGroups)
-            principal.setGroups(listGroups)
-            
-            userManager.updatePrincipal(principal)        
+    // update
+    principal.firstName = req.getParameter("firstName")
+    principal.lastName = req.getParameter("lastName")
+    principal.password = req.getParameter("password")
+    
+    def selectedGroups = req.getParameterValues("groups")
+    def listGroups = Arrays.asList(selectedGroups)
+    principal.setGroups(listGroups)
+    
+    userManager.updatePrincipal(principal)        
     return redirect(getPath());
   }
 
