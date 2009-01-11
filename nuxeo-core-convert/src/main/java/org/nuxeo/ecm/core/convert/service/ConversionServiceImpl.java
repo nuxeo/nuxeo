@@ -59,17 +59,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
 
         if (CONVERTER_EP.equals(extensionPoint)) {
             ConverterDescriptor desc = (ConverterDescriptor) contribution;
-
-            try {
-                desc.initConverter();
-                MimeTypeTranslationHelper.addConverter(desc);
-            }
-            catch (Exception e) {
-                log.error("Unable to init converter " + desc.getConverterName(), e);
-                return;
-            }
-
-            converterDescriptors.put(desc.getConverterName(), desc);
+            registerConverter(desc);
         }
         else if (CONFIG_EP.equals(extensionPoint)) {
             GlobalConfigDescriptor desc = (GlobalConfigDescriptor) contribution;
@@ -103,6 +93,23 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         return config.getGCInterval();
     }
 
+    public static void registerConverter(ConverterDescriptor desc) {
+
+        if (converterDescriptors.containsKey(desc.getConverterName())) {
+
+            ConverterDescriptor existing = converterDescriptors.get(desc.getConverterName());
+            desc = existing.merge(desc);
+        }
+        try {
+            desc.initConverter();
+        }
+        catch (Exception e) {
+            log.error("Unable to init converter " + desc.getConverterName(), e);
+            return;
+        }
+        MimeTypeTranslationHelper.addConverter(desc);
+        converterDescriptors.put(desc.getConverterName(), desc);
+    }
 
     public static int getMaxCacheSizeInKB() {
         return config.getDiskCacheSize();
