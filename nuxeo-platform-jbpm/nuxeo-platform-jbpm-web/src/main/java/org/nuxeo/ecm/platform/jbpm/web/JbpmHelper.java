@@ -18,12 +18,14 @@ package org.nuxeo.ecm.platform.jbpm.web;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -59,11 +61,31 @@ public class JbpmHelper {
         return null;
     }
 
-    public String endTask(TaskInstance ti, PrincipalListManager plm) throws NuxeoJbpmException, Exception {
+    public String endTask(TaskInstance ti, PrincipalListManager plm)
+            throws NuxeoJbpmException, Exception {
         Map<String, Serializable> variables = new HashMap<String, Serializable>();
-        ArrayList<String> selectedUser = new ArrayList<String>(plm.getSelectedUsers());
-        variables.put("participants", selectedUser.toArray(new String[]{}));
+        ArrayList<String> users = new ArrayList<String>(plm.getSelectedUsers());
+        variables.put("participants", users);
         getJbpmService().endTask(ti.getId(), null, variables, null);
         return null;
+    }
+
+    public String updateProcessVariable(ProcessInstance pi,
+            String variableName, Object variableValue)
+            throws NuxeoJbpmException, Exception {
+        pi.getContextInstance().setVariable(variableName, variableValue);
+        getJbpmService().persistProcessInstance(pi);
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean processHasRunningTask(ProcessInstance pi, String taskName) {
+        Collection<TaskInstance> tis = pi.getTaskMgmtInstance().getTaskInstances();
+        for(TaskInstance ti : tis) {
+            if(!ti.hasEnded() && ti.getName().equals(taskName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -1,0 +1,22 @@
+<div xmlns:nxthemes="http://nuxeo.org/nxthemes"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:nxu="http://nuxeo.org/nxweb/util"><h:dataTable var="task"
+	value="${process.getTaskMgmtInstance().getTaskInstances().toArray()}"
+	class="dataOutput" rowClasses="dataRowEven,dataRowOdd"
+	rendered="#{documentTasks.size > 0}">
+	<h:column>
+		<f:facet name="header">#{messages['label.workflow.task.name']}</f:facet>#{task.name}</h:column>
+	<h:column>
+		<f:facet name="header">#{messages['label.workflow.task.actorId']}</f:facet>#{task.actorId}</h:column>
+	<h:column>
+		<f:facet name="header">#{messages['label.workflow.task.description']}</f:facet>#{task.description}</h:column>
+	<h:column>
+		<f:facet name="header">#{messages['label.workflow.task.start']}</f:facet>#{task.start}</h:column>
+	<h:column>
+		<f:facet name="header">#{messages['label.workflow.task.end']}</f:facet>#{task.end}</h:column>
+</h:dataTable>
+</div>

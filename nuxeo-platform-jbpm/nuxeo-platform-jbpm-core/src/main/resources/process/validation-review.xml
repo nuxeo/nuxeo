@@ -10,7 +10,7 @@
 	</task-node>
 	<decision name="condition on participants">
 		<transition to="validate node" />
-		<transition condition="#{empty participants}" to="end" />
+		<transition condition="#{empty participants}" to="follow transition" />
 	</decision>
 	<task-node name="validate node">
 		<task name="validate">
@@ -19,17 +19,13 @@
 		<transition to="condition on participants">
 			<script>
 			  <variable name="participants"/>
-			  <!-- not very elegant, needs to fix a list in variable instance to improve -->
-			  <expression>
-				if(participants.length > 1) {
-				Object[] newarray = new Object[participants.length - 1];
-				System.arraycopy(participants, 1, newarray, 0, participants.length
-				-1);
-				participants = newarray;
-				} else {participants = null;}
-				</expression>
+			  <expression><![CDATA[!participants.isEmpty() && participants.remove(0) != null]]></expression>
 			</script>
 		</transition>
 	</task-node>
+  <node name="follow transition">
+    <action class="org.nuxeo.ecm.platform.jbpm.core.helper.ValidationReviewHelper"/>
+    <transition to="end"/>
+  </node>
 	<end-state name="end" />
 </process-definition>

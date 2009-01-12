@@ -1,33 +1,30 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
-	xmlns:nxu="http://nuxeo.org/nxweb/util"
-	xmlns:nxd="http://nuxeo.org/nxweb/document">
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
 <div class="foldableBox">
 
 <h3 class="unfolded"><a href="#nogo"
-	onclick="return toggleBox(this)"> <h:outputText value="#{messages['jbpm.dashboard.pd']}" /> </a></h3>
+  onclick="return toggleBox(this)"> <h:outputText
+  value="#{messages['jbpm.dashboard.pd']}" /> </a></h3>
 
-  <div class="boxBody">
-    <h:dataTable value="#{jbpmService.getCurrentProcessInstances(currentUser)}" var="pdInstance">
-      <h:column>
-        <f:facet name="header">#{messages['jbpm.dashboard.tabe.pdName']}</f:facet>
+<div class="boxBody"><h:dataTable
+  value="#{jbpmService.getCurrentProcessInstances(currentUser)}"
+  var="pdInstance">
+  <h:column>
+    <f:facet name="header">#{messages['jbpm.dashboard.table.pdName']}</f:facet>
         #{pdInstance.processDefinition.name}
       </h:column>
-    </h:dataTable>
-    <div class="buttonsGroup">
-      <h:form>
-        <h:selectOneMenu id="selectedPd" value="#{selectedPd}">
-          <c:forEach var="pd" items="#{jbpmService.getProcessDefinitions(currentUser)}">
-            <f:selectItem itemLabel="#{pd.name}" itemValue="#{pd.name}" />
-          </c:forEach>
-        </h:selectOneMenu>
-        <h:commandButton style="button"
-                         value="#{messages['jbpm.dashboard.newpdInstance']}"
-                         action="#{jbpmService.createProcessInstance(currentUser, selectedPd, selectedPd)}"/>
-      </h:form>
-    </div>
-  </div>
+      <h:column>
+          <f:facet name="header">#{messages['jbpm.dashboard.table.docTitle']}</f:facet>
+              <h:form>
+      <nxd:documentLink
+        document="#{jbpmService.getDocumentModel(pdInstance, currentUser)}"
+        view="PROCESS" title="#{jbpmService.getDocumentModel(pdInstance, currentUser).title}"/>
+    </h:form>
+      </h:column>
+</h:dataTable></div>
 </div>
 </div>

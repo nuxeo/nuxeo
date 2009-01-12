@@ -120,6 +120,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
 
     @Override
     protected void tearDown() throws Exception {
+        super.tearDown();
         JbpmServiceImpl.contexts.set(null);
     }
 }

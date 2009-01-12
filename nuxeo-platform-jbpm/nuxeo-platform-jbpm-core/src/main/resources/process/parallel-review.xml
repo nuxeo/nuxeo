@@ -23,7 +23,11 @@
 		<transition to="participants join" />
 	</task-node>
 	<join name="participants join">
-		<transition to="end" />
+		<transition to="follow transition" />
 	</join>
+	<node name="follow transition">
+	  <action class="org.nuxeo.ecm.platform.jbpm.core.helper.ParallelReviewHelper"/>
+	  <transition to="end"/>
+	</node>
 	<end-state name="end" />
 </process-definition>

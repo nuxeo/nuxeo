@@ -46,8 +46,6 @@ public class ForeachFork implements ActionHandler {
         for (Object obj : l) {
             Token childToken = new Token(executionContext.getToken(),
                     obj.toString());
-            //executionContext.getContextInstance().setVariable(var, obj,
-            //        childToken);
             executionContext.getContextInstance().setTransientVariable(var, obj);
             childToken.signal();
         }

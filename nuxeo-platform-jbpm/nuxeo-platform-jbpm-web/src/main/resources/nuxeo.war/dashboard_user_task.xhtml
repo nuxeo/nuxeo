@@ -3,36 +3,37 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 <div class="foldableBox">
 
 <h3 class="unfolded"><a href="#nogo"
-  onclick="return toggleBox(this)"> <h:outputText value="#{messages['jbpm.dashboard.pd']}" /> </a></h3>
+  onclick="return toggleBox(this)"> <h:outputText
+  value="#{messages['jbpm.dashboard.pd']}" /> </a></h3>
 
-  <div class="boxBody">
-    <h:dataTable value="#{jbpmService.getCurrentTaskInstances(currentUser)}"
-                 var="ti"
-                 rowClasses="dataRowEven,dataRowOdd"
-                  styleClass="dataList">
-      <h:column>
-        <f:facet name="header">#{messages['jbpm.dashboard.table.tiName']}</f:facet>
+<div class="boxBody"><h:dataTable
+  value="#{jbpmService.getCurrentTaskInstances(currentUser)}" var="ti"
+  rowClasses="dataRowEven,dataRowOdd" styleClass="dataList">
+  <h:column>
+    <f:facet name="header">#{messages['jbpm.dashboard.table.tiName']}</f:facet>
         #{ti.name} #{ti.id}
       </h:column>
-      <h:column>
-        <f:facet name="header">#{messages['jbpm.dashboard.table.tiStatus']}</f:facet>
-        <c:choose>
-          <c:when test="#{ti.started == null}">#{messages['jbpm.dashboard.table.tiStatus.created']}</c:when>
-          <c:when test="#{ti.done == null}">#{messages['jbpm.dashboard.table.tiStatus.started']}</c:when>
-          <c:otherwise>#{messages['jbpm.dashboard.table.tiStatus.done']}</c:otherwise>
-        </c:choose>
-      </h:column>
-      <h:column>
-        <f:facet name="header">#{messages['jbpm.dashboard.table.tiStatus.documents']}</f:facet>
-        <h:dataTable value="jbpmService.getDocumentModels(ti, currentUser)" var="dm">
-          <h:column><nxd:documentLink document="#{dm}" view="PROCESS"/></h:column>
-        </h:dataTable>
-      </h:column>
-    </h:dataTable>
-  </div>
-  </div>
+  <h:column>
+    <f:facet name="header">#{messages['jbpm.dashboard.table.tiStatus']}</f:facet>
+    <c:choose>
+      <c:when test="#{ti.started == null}">#{messages['jbpm.dashboard.table.tiStatus.created']}</c:when>
+      <c:when test="#{ti.done == null}">#{messages['jbpm.dashboard.table.tiStatus.started']}</c:when>
+      <c:otherwise>#{messages['jbpm.dashboard.table.tiStatus.done']}</c:otherwise>
+    </c:choose>
+  </h:column>
+  <h:column>
+    <f:facet name="header">#{messages['jbpm.dashboard.table.tiStatus.documents']}</f:facet>
+    <h:form>
+      <nxd:documentLink
+        document="#{jbpmService.getDocumentModel(ti, currentUser)}"
+        view="PROCESS" title="#{jbpmService.getDocumentModel(ti, currentUser).title}"/>
+    </h:form>
+  </h:column>
+</h:dataTable></div>
+</div>
 </div>

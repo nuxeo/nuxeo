@@ -52,7 +52,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 public interface JbpmService {
 
     public enum VariableName {
-        documentId, documentRepositoryName
+        documentId, documentRepositoryName, endLifeCycle, initiator
     }
 
     public enum HibernateQueries {
@@ -190,6 +190,11 @@ public interface JbpmService {
      * @throws NuxeoJbpmException
      */
     void endProcessInstance(Long processId) throws NuxeoJbpmException;
+
+    /**
+     * Persist a process instance.
+     */
+    void persistProcessInstance(ProcessInstance pi) throws NuxeoJbpmException;
 
     // DOCUMENT
 

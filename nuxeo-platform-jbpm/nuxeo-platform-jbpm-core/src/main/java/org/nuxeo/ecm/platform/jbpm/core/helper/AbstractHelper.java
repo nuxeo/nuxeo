@@ -16,22 +16,37 @@
  */
 package org.nuxeo.ecm.platform.jbpm.core.helper;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jbpm.graph.def.ActionHandler;
 import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.node.DecisionHandler;
 import org.jbpm.taskmgmt.def.AssignmentHandler;
 import org.jbpm.taskmgmt.exe.Assignable;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
+import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
  *
  */
-public abstract class AbstractHelper implements ActionHandler, AssignmentHandler, DecisionHandler {
+public abstract class AbstractHelper implements ActionHandler,
+        AssignmentHandler, DecisionHandler {
 
     private static final long serialVersionUID = 1L;
+
     protected transient JbpmService jbpmService;
+
+    protected ExecutionContext executionContext;
 
     public void execute(ExecutionContext executionContext) throws Exception {
     }
@@ -45,9 +60,53 @@ public abstract class AbstractHelper implements ActionHandler, AssignmentHandler
     }
 
     public JbpmService getJbpmService() throws Exception {
-        if(jbpmService == null) {
+        if (jbpmService == null) {
             jbpmService = Framework.getService(JbpmService.class);
         }
         return jbpmService;
+    }
+
+    /**
+     * @param user
+     * @return
+     * @throws NuxeoJbpmException
+     */
+    protected CoreSession getCoreSession(String user) throws NuxeoJbpmException {
+        String repositoryName = (String) executionContext.getContextInstance().getVariable(
+                JbpmService.VariableName.documentRepositoryName.name());
+        Map<String, Serializable> context = new HashMap<String, Serializable>();
+        context.put("principal", user);
+        try {
+            return CoreInstance.getInstance().open(repositoryName, context);
+        } catch (ClientException e) {
+            throw new NuxeoJbpmException(e);
+        }
+    }
+
+    protected String getSwimlaneUser(String swimlaneName) {
+        return executionContext.getTaskMgmtInstance().getSwimlaneInstance(
+                swimlaneName).getActorId();
+    }
+
+    protected void closeCoreSession(CoreSession session) {
+        CoreInstance.getInstance().close(session);
+    }
+
+    protected void followTransition(String user, String transition)
+            throws NuxeoJbpmException, ClientException {
+        CoreSession coreSession = getCoreSession(user);
+        String docId = (String) executionContext.getContextInstance().getVariable(
+                JbpmService.VariableName.documentId.name());
+        DocumentRef docRef = new IdRef(docId);
+        DocumentModel model = coreSession.getDocument(docRef);
+        model.followTransition(transition);
+    }
+
+    protected String getStringVariable(String name) {
+        return (String) executionContext.getContextInstance().getVariable(name);
+    }
+
+    protected boolean nuxeHasStarted() throws Exception {
+        return Framework.getRuntime() != null;
     }
 }

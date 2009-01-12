@@ -1,10 +1,12 @@
-<div xmlns:nxthemes="http://nuxeo.org/nxthemes"
+<div xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
 	xmlns:c="http://java.sun.com/jstl/core"
-	xmlns:nxu="http://nuxeo.org/nxweb/util" class="closedContent"><h:form>
+	xmlns:a4j="https://ajax4jsf.dev.java.net/ajax" class="closedContent">
+#{principalListManager.setSelectedUsers(participants)}
+#{participants}
+<h:form>
 	<h3><h:outputText
 		value="#{messages['label.workflow.task.choose-participant']}" /></h3>
 	<table class="dataInput">
@@ -13,13 +15,13 @@
 				<td class="labelColumn"><h:outputText
 					value="#{messages['label.review.select.reviewers']}" /></td>
 				<td class="labelField">
-				<div><ui:include src="/incl/select_users_search.xhtml" /></div>
+				<div><ui:include src="/process/tmp/select_users_search.xhtml" /></div>
 				<table class="rightsAddManager">
 					<tr>
 						<td valign="top"><ui:include
-							src="/incl/select_users_results.xhtml" /></td>
+							src="/process/tmp/select_users_results.xhtml" /></td>
 						<td valign="top"><ui:include
-							src="/incl/select_users_selection.xhtml" /></td>
+							src="/process/tmp/select_users_selection.xhtml" /></td>
 					</tr>
 				</table>
 				</td>
@@ -27,10 +29,10 @@
 			<tr>
 				<td></td>
 				<td><c:set var="tasksubmitlabel"
-					value="label.task.#{task.name}.submit" /> <h:commandButton
-					type="submit" disabled="#{empty principalListManager}"
-					value="#{messages[tasksubmitlabel]}" styleClass="button"
-					action="#{jbpmHelper.endTask(task, principalListManager)}" /></td>
+					value="label.variable.participants.update" /> <h:commandButton
+					type="submit" value="#{messages[tasksubmitlabel]}"
+					styleClass="button"
+					action="#{jbpmHelper.updateProcessVariable(process, 'participants', principalListManager.selectedUsers)}" /></td>
 			</tr>
 		</tbody>
 	</table>

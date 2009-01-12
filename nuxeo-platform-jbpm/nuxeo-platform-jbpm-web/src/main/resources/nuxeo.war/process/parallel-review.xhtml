@@ -3,6 +3,10 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:c="http://java.sun.com/jstl/core"
-	xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
-  #{principalListManager}	
+	xmlns:a4j="https://ajax4jsf.dev.java.net/ajax" class="closedContent">
+<h3><h:outputText
+  value="#{messages['label.workflow.task.choose-participant']}" /></h3>
+  <ui:decorate template="/process/show_tasks_table.xhtml">
+    <ui:param name="process" value="#{process}"/>
+  </ui:decorate>
 </div>

@@ -4,13 +4,16 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
 	xmlns:c="http://java.sun.com/jstl/core"
-	xmlns:nxu="http://nuxeo.org/nxweb/util"><h:form>
+	xmlns:nxu="http://nuxeo.org/nxweb/util" class="closedContent"><h:form>
+	<h3><h:outputText
+		value="#{messages['label.workflow.task.validate']}" /></h3>
 	<table class="dataInput">
 		<tbody>
 			<tr>
 				<c:set var="tasksubmitlabel" value="label.task.#{task.name}.submit" />
 				<h:commandButton type="submit" value="#{messages[tasksubmitlabel]}"
-					styleClass="button" action="#{jbpmService.endTask(task.id, null, null, null)}" />
+					styleClass="button"
+					action="#{jbpmService.endTask(task.id, null, null, null)}" />
 			</tr>
 		</tbody>
 	</table>

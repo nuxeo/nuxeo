@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.jbpm.core.pd;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.jbpm.JbpmContext;
@@ -28,8 +30,11 @@ import org.jbpm.taskmgmt.exe.TaskInstance;
  */
 public class ValidationReviewTest extends AbstractProcessDefinitionTest {
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.jbpm.core.pd.AbstractProcessDefinitionTest#getProcessDefinitionResource()
+    /*
+     * (non-Javadoc)
+     *
+     * @seeorg.nuxeo.ecm.platform.jbpm.core.pd.AbstractProcessDefinitionTest#
+     * getProcessDefinitionResource()
      */
     @Override
     public String getProcessDefinitionResource() {
@@ -48,27 +53,29 @@ public class ValidationReviewTest extends AbstractProcessDefinitionTest {
             TaskInstance ti = pi.getTaskMgmtInstance().createStartTaskInstance();
             ti.end();
             assertNotNull(pi);
-            //choosing participant task
+            // choosing participant task
             List<TaskInstance> bobstask = context.getTaskList("bob");
             assertEquals(1, bobstask.size());
-            pi.getContextInstance().setVariable("participants",new String[]{"bob", "trudy"});
+            pi.getContextInstance().setVariable(
+                    "participants",
+                    new ArrayList<String>(Arrays.asList(new String[] { "bob",
+                            "trudy" })));
             bobstask.get(0).end();
-            //first evaluation
+            // first evaluation
             bobstask = context.getTaskList("bob");
             assertEquals(1, bobstask.size());
             List<TaskInstance> trudystask = context.getTaskList("trudy");
-            assertEquals(0,trudystask.size());
+            assertEquals(0, trudystask.size());
             bobstask.get(0).end();
-            //second evaluation
+            // second evaluation
             trudystask = context.getTaskList("trudy");
-            assertEquals(1,trudystask.size());
+            assertEquals(1, trudystask.size());
             bobstask = context.getTaskList("bob");
             assertEquals(0, bobstask.size());
             trudystask.get(0).end();
-            //finished
+            // finished
             assertTrue(pi.hasEnded());
-        }
-        finally {
+        } finally {
             context.close();
         }
     }

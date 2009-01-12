@@ -452,7 +452,7 @@ public class JbpmServiceImpl implements JbpmService {
                     throws NuxeoJbpmException {
                 Session session = context.getSession();
                 for (TaskInstance ti : taskInstances) {
-                    session.save(ti);
+                    session.saveOrUpdate(ti);
                 }
                 return null;
             }
@@ -507,5 +507,18 @@ public class JbpmServiceImpl implements JbpmService {
             }
         }
         return Boolean.TRUE;
+    }
+
+    public void persistProcessInstance(final ProcessInstance pi)
+            throws NuxeoJbpmException {
+        executeJbpmOperation(new JbpmOperation(){
+            public Serializable run(JbpmContext context)
+                    throws NuxeoJbpmException {
+                Session session = context.getSession();
+                session.update(pi);
+                return null;
+            }
+
+        });
     }
 }
