@@ -16,10 +16,17 @@ public class SimpleBlobHolderWithProperties extends SimpleBlobHolder implements
         this.properties = properties;
     }
 
+    @Override
     public Serializable getProperty(String name) throws ClientException {
         if (properties==null) {
             return null;
         }
         return properties.get(name);
     }
+
+    @Override
+    public Map<String, Serializable> getProperties() throws ClientException {
+        return properties;
+    }
+
 }
