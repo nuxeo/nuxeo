@@ -32,7 +32,7 @@ import org.nuxeo.theme.uids.*
 import org.nuxeo.theme.views.*
 import org.nuxeo.theme.webwidgets.*
 
-@WebObject(type="nxthemes-webwidgets", guard="user=Administrator")
+@WebObject(type="nxthemes-webwidgets")
 
 @Produces(["text/html", "*/*"])
 public class Main extends DefaultModule {
