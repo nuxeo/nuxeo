@@ -8,14 +8,6 @@
        "targetType": "element",
        "items": [
          {"type": "item",
-          "label": "Add fragment",
-          "icon": "/skin/nxthemes-editor/img/add-16.png",
-          "action": "insert fragment",
-          "visible": "can add fragment"
-         },             
-         {"type": "separator"
-         },
-         {"type": "item",
           "label": "Edit",
           "icon": "/skin/nxthemes-editor/img/edit-16.png",
           "action": "edit element",
@@ -40,6 +32,14 @@
          },
          {"type": "separator"
          },
+         {"type": "item",
+          "label": "Add fragment",
+          "icon": "/skin/nxthemes-editor/img/add-16.png",
+          "action": "insert fragment",
+          "visible": "can add fragment"
+         },             
+         {"type": "separator"
+         },         
          {"type": "item",
           "label": "Duplicate",
           "icon": "/skin/nxthemes-editor/img/duplicate-16.png",
