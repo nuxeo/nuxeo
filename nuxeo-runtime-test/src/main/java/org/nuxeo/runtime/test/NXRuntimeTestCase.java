@@ -42,6 +42,8 @@ import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.osgi.application.StandaloneBundleLoader;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
 import org.osgi.framework.Bundle;
 
 /**
@@ -275,6 +277,26 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
      */
     public void deployContrib(String bundle, String contrib) throws Exception {
         deployContrib(lookupBundle(bundle), contrib);
+    }
+    
+    /**
+     * Deploy an XML contribution from outside a bundle. This should be used by tests 
+     * wiling to deploy test contribution as part of a real bundle.
+     * The bundle owner is important since the contribution may depend on resources deployed in that bundle.
+     * Note that the owner bundle MUST be an already deployed bundle. 
+     * @param bundle the bundle that becomes the contribution owner 
+     * @param contrib the contribution to deploy as part of the given bundle
+     * @throws Exception 
+     */
+    public RuntimeContext deployTestContrib(String bundle, String contrib) throws Exception {
+        Bundle b = bundleLoader.getOSGi().getRegistry().getBundle(bundle);        
+       if (b != null) {
+           OSGiRuntimeContext ctx = new OSGiRuntimeContext(runtime, b);
+           ctx.deploy(contrib);
+           return ctx;
+       } else {
+           throw new IllegalArgumentException("Bundle not deployed "+bundle);
+       }
     }
 
     /**

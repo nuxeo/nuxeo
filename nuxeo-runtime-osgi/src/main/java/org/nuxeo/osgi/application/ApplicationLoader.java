@@ -61,6 +61,10 @@ public abstract class ApplicationLoader {
         return tmpDir;
     }
 
+    public OSGiAdapter getOSGi() {
+        return osgi;
+    }
+    
     public void setExtractNestedJARs(boolean extractNestedJARs) {
         this.extractNestedJARs = extractNestedJARs;
     }
