@@ -299,6 +299,17 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
        }
     }
 
+    public RuntimeContext deployTestContrib(String bundle, URL contrib) throws Exception {
+        Bundle b = bundleLoader.getOSGi().getRegistry().getBundle(bundle);        
+       if (b != null) {
+           OSGiRuntimeContext ctx = new OSGiRuntimeContext(runtime, b);
+           ctx.deploy(contrib);
+           return ctx;
+       } else {
+           throw new IllegalArgumentException("Bundle not deployed "+bundle);
+       }
+    }
+
     /**
      * @deprecated use {@link #undeployContrib(String, String)} instead
      */
