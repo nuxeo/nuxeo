@@ -1,90 +1,37 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:nxthemes="http://nuxeo.org/nxthemes"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core">
 
-  <ui:define name="page title">Nuxeo 5 EP</ui:define>
+  <ui:decorate template="view_users_template.xhtml">
+  
+    <ui:param name="userListStyleClass" value="tabsContent" />
 
-  <ui:define name="body">
-
-    <div>
-      <ui:include src="/userManager_action_tabs.xhtml"/>
+    <ui:define name="letters">
+      <div class="tabsBar subtabsBar">
+        <h:form>
+          <ul>
+            <c:set var="selectedLetter" value="#{userManagerActions.selectedLetter}" />
+            <c:forEach var="letter" items="#{userManagerActions.catalogLetters}">
+        
+              <c:set var="cssClass" value="" />
+              <c:if test="#{letter == selectedLetter}">
+                <c:set var="cssClass" value="selected" />
+              </c:if>
+          
+              <li class="#{cssClass}">
+                <h:commandLink action="#{userManagerActions.viewUsers}">
+                  <h:outputText value="#{letter}" />
+                  <f:param name="newSelectedLetter" value="#{letter}"/>
+                </h:commandLink>
+              </li>        
+           </c:forEach>        
+          </ul>
+        </h:form>
+      </div>
       <div style="clear:both"></div>
-    </div>
+    </ui:define>
 
-    <div class="tabsContent">
-
-<h:form rendered="#{userManagerActions.allowCreateUser}">
-  <div class="action_bar">
-    <ul>
-      <li class="selected">
-        <h:commandLink action="#{userManagerActions.createUser}"
-          immediate="true">
-          <h:graphicImage value="/icons/action_add_user.gif" />
-          <h:outputText value="#{messages['command.createUser']}"  />
-        </h:commandLink>
-      </li>
-    </ul>
-  </div>
-</h:form>
-
-<ui:include src="/incl/message_banner.xhtml"/>
-
-<div style="clear:both" />
-
-<h:form id="searchForm" onkeypress="trapEnter(event, 'searchForm:searchButton');" >
-  <h:inputText id="searchText" value="#{userManagerActions.searchString}" class="directoryFilter"/>
-  &nbsp;
-  <h:commandButton id="searchButton" value="#{messages['command.search']}"
-    action="#{userManagerActions.searchUsers}" styleClass="button"/>
-  <h:commandButton id="clearButton" value="#{messages['command.clearSearch']}"
-    action="#{userManagerActions.clearSearch}" styleClass="button"/>
-</h:form>
-
-<h:form>
-  <div>
-    <ui:include src="/userManager_letters_tabs.xhtml"/>
-    <div style="clear:both"></div>
-  </div>
-</h:form>
-
-<div class="tabsContent">
-
-  <h:form>
-    <h:dataTable var="user" value="#{userList}"
-      rendered="#{userList.rowCount > 0}"
-      styleClass="dataOutput">
-      <h:column>
-        <f:facet name="header">
-          <h:outputText value="#{messages['label.userManager.user']}" />
-        </f:facet>
-        <h:commandLink value="#{user.name}"
-          action="#{userManagerActions.viewUser}" />
-      </h:column>
-      <h:column>
-        <f:facet name="header">
-          <h:outputText value="#{messages['label.userManager.firstName']}" />
-        </f:facet>
-        <h:outputText value="#{user.firstName}" />
-      </h:column>
-      <h:column>
-        <f:facet name="header">
-          <h:outputText value="#{messages['label.userManager.lastName']}" />
-        </f:facet>
-        <h:outputText value="#{user.lastName}" />
-      </h:column>
-    </h:dataTable>
-  </h:form>
-
+  </ui:decorate>
+  
 </div>
-
-    </div>
-
-  </ui:define>
-
-</nxthemes:composition>
-

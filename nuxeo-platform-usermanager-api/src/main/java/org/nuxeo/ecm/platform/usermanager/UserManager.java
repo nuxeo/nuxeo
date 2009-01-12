@@ -183,6 +183,10 @@ public interface UserManager {
      */
     String getUserDirectoryName() throws ClientException;
 
+    String getUserSchemaName() throws ClientException;
+
+    String getUserIdField() throws ClientException;
+
     /**
      * Gets the user email field.
      *
@@ -207,6 +211,10 @@ public interface UserManager {
      * @throws ClientException
      */
     String getGroupDirectoryName() throws ClientException;
+
+    String getGroupSchemaName() throws ClientException;
+
+    String getGroupIdField() throws ClientException;
 
     /**
      * Gets the group members field.

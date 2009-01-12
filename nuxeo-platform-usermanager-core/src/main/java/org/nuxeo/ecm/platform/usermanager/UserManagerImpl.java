@@ -74,6 +74,8 @@ public class UserManagerImpl implements UserManager {
 
     private String userSchemaName;
 
+    private String userIdField;
+
     private String userEmailField;
 
     private Map<String, MatchType> userSearchFields;
@@ -81,6 +83,8 @@ public class UserManagerImpl implements UserManager {
     private String groupDirectoryName;
 
     private String groupSchemaName;
+
+    private String groupIdField;
 
     private String groupMembersField;
 
@@ -135,6 +139,7 @@ public class UserManagerImpl implements UserManager {
         this.userDirectoryName = userDirectoryName;
         try {
             userSchemaName = dirService.getDirectorySchema(userDirectoryName);
+            userIdField = dirService.getDirectoryIdField(userDirectoryName);
         } catch (ClientException e) {
             throw new RuntimeException("Unkown user directory "
                     + userDirectoryName, e);
@@ -143,6 +148,14 @@ public class UserManagerImpl implements UserManager {
 
     public String getUserDirectoryName() {
         return userDirectoryName;
+    }
+
+    public String getUserIdField() throws ClientException {
+        return userIdField;
+    }
+
+    public String getUserSchemaName() throws ClientException {
+        return userSchemaName;
     }
 
     public String getUserEmailField() {
@@ -157,6 +170,7 @@ public class UserManagerImpl implements UserManager {
         this.groupDirectoryName = groupDirectoryName;
         try {
             groupSchemaName = dirService.getDirectorySchema(groupDirectoryName);
+            groupIdField = dirService.getDirectoryIdField(groupDirectoryName);
         } catch (ClientException e) {
             throw new RuntimeException("Unkown group directory "
                     + groupDirectoryName, e);
@@ -165,6 +179,14 @@ public class UserManagerImpl implements UserManager {
 
     public String getGroupDirectoryName() {
         return groupDirectoryName;
+    }
+
+    public String getGroupIdField() throws ClientException {
+        return groupIdField;
+    }
+
+    public String getGroupSchemaName() throws ClientException {
+        return groupSchemaName;
     }
 
     public String getGroupMembersField() {
@@ -292,9 +314,8 @@ public class UserManagerImpl implements UserManager {
             throws ClientException {
         final DocumentModel userEntry = BaseSession.createEntryModel(null,
                 userSchemaName, id, null);
-        String idField = dirService.getDirectoryIdField(userDirectoryName);
         // at least fill id field
-        userEntry.setProperty(userSchemaName, idField, id);
+        userEntry.setProperty(userSchemaName, userIdField, id);
         for (Entry<String, Serializable> prop : user.getProperties().entrySet()) {
             try {
                 userEntry.setProperty(userSchemaName, prop.getKey(),
@@ -484,8 +505,7 @@ public class UserManagerImpl implements UserManager {
             return true;
         }
         Map<String, Serializable> anonymousUserMap = anonymousUser.getProperties();
-        anonymousUserMap.put(dirService.getDirectoryIdField(userDirectoryName),
-                anonymousUserId);
+        anonymousUserMap.put(userIdField, anonymousUserId);
         for (Entry<String, Object> e : filter.entrySet()) {
             String fieldName = e.getKey();
             Object expected = e.getValue();
@@ -551,8 +571,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     private Map<String, String> getUserSortMap() throws DirectoryException {
-        String idField = dirService.getDirectoryIdField(userDirectoryName);
-        String sortField = userSortField != null ? userSortField : idField;
+        String sortField = userSortField != null ? userSortField : userIdField;
         Map<String, String> orderBy = new HashMap<String, String>();
         orderBy.put(sortField, DocumentModelComparator.ORDER_ASC);
         return orderBy;
@@ -623,8 +642,8 @@ public class UserManagerImpl implements UserManager {
     }
 
     private String getGroupId(DocumentModel groupModel) throws ClientException {
-        String idField = dirService.getDirectoryIdField(groupDirectoryName);
-        Object groupIdValue = groupModel.getProperty(groupSchemaName, idField);
+        Object groupIdValue = groupModel.getProperty(groupSchemaName,
+                groupIdField);
         if (groupIdValue != null && !(groupIdValue instanceof String)) {
             throw new ClientException("Invalid group id " + groupIdValue);
         }
@@ -632,8 +651,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     private String getUserId(DocumentModel userModel) throws ClientException {
-        String idField = dirService.getDirectoryIdField(userDirectoryName);
-        Object userIdValue = userModel.getProperty(userSchemaName, idField);
+        Object userIdValue = userModel.getProperty(userSchemaName, userIdField);
         if (userIdValue != null && !(userIdValue instanceof String)) {
             throw new ClientException("Invalid user id " + userIdValue);
         }

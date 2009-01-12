@@ -363,6 +363,7 @@
         </fields>
         <widgetModes>
           <mode value="create">edit</mode>
+          <mode value="editPassword">hidden</mode>
           <mode value="any">view</mode>
         </widgetModes>
         <properties widgetMode="edit">
@@ -447,7 +448,7 @@
           <mode value="editPassword">edit</mode>
           <mode value="any">hidden</mode>
         </widgetModes>
-        <properties widgetMode="any">
+        <properties widgetMode="edit">
           <property name="required">true</property>
           <property name="styleClass">dataInputText</property>
         </properties>
@@ -462,7 +463,7 @@
           <mode value="editPassword">edit</mode>
           <mode value="any">hidden</mode>
         </widgetModes>
-        <properties widgetMode="any">
+        <properties widgetMode="edit">
           <property name="required">true</property>
           <property name="styleClass">dataInputText</property>
         </properties>
@@ -524,11 +525,11 @@
       </rows>
       <widget name="groupname" type="text">
         <labels>
-          <label mode="any">label.userManager.userGroups</label>
+          <label mode="any">label.groupManager.groupName</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field schema="user">groups</field>
+          <field schema="group">groupname</field>
         </fields>
         <widgetModes>
           <mode value="create">edit</mode>

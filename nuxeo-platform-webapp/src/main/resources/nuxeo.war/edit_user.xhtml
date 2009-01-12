@@ -3,11 +3,11 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
   <ui:decorate template="view_user_template.xhtml">
-    <ui:param name="currentSubTab" value="edit" />
+    <ui:param name="currentUserSubTab" value="edit" />
 
     <ui:define name="mainContent">
 
-      <h:form id="editUser">
+      <h:form id="editUser" rendered="#{userManagerActions.allowEditUser}">
         <nxl:layout name="user" mode="edit" value="#{userManagerActions.selectedUser}" />
   
         <table class="dataInput">

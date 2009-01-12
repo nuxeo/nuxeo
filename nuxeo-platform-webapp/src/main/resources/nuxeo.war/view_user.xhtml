@@ -1,13 +1,8 @@
 <div xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  xmlns:nxdir="http://nuxeo.org/nxdirectory">
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
   <ui:decorate template="view_user_template.xhtml">
-    <ui:param name="currentSubTab" value="view" />
+    <ui:param name="currentUserSubTab" value="view" />
 
     <ui:define name="mainContent">
       <nxl:layout name="user" mode="view" value="#{userManagerActions.selectedUser}" />

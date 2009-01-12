@@ -16,7 +16,7 @@
 
     <div>
       <ui:include src="/userManager_action_tabs.xhtml">
-        <ui:param name="currentUserTab" value="users" />
+        <ui:param name="currentUserTab" value="groups" />
       </ui:include>
       <div style="clear: both"></div>
     </div>
@@ -28,7 +28,7 @@
         <p class="directoryBack">
           <h:commandLink type="submit" immediate="true"
             value="#{messages['command.directoryBack']}"
-            action="view_users" />
+            action="view_groups" />
         </p>
       </h:form>
 
@@ -38,21 +38,21 @@
 
       <h1>
         <h:outputText styleClass="label"
-          value="#{userManagerActions.selectedUser.id}" />
+          value="#{groupManagerActions.selectedGroup.id}" />
       </h1>
 
-      <h:form id="deleteUserForm" rendered="#{userManagerActions.allowDeleteUser}">
+      <h:form id="deleteGroupForm" rendered="#{groupManagerActions.allowDeleteGroup}">
         <script type="text/javascript">
-        function confirmDeleteUser() {
-          return confirm("#{messages['label.userManager.confirmDeleteUser']}");
+        function confirmDeleteGroup() {
+          return confirm("#{messages['label.userManager.confirmDeleteGroup']}");
         }
         </script>
         <div class="action_bar">
           <ul>
             <li class="selected">
               <h:commandLink
-                action="#{userManagerActions.deleteUser}"
-                onclick="return confirmDeleteUser();">
+                action="#{groupManagerActions.deleteGroup}"
+                onclick="return confirmDeleteGroup();">
                 <h:graphicImage value="/icons/action_delete.gif" />
                 <h:outputText value="#{messages['command.delete']}" />
               </h:commandLink>
@@ -65,32 +65,19 @@
       <div class="tabsBar subtabsBar">
         <h:form>
           <ul>
-          
-            <li class="#{nxu:test(currentUserSubTab == 'view', 'selected', '')}">
-              <h:commandLink action="#{userManagerActions.viewUser}"
-                immediate="true">
-                <h:outputText value="#{messages['label.userManager.viewUser']}" />
+            <li class="#{nxu:test(currentGroupSubTab == 'view', 'selected', '')}">
+              <h:commandLink action="view_group">
+                 <h:outputText value="#{messages['label.groupManager.viewGroup']}" />
               </h:commandLink>
             </li>
-          
-            <f:subview rendered="#{userManagerActions.allowEditUser}">
-              <li class="#{nxu:test(currentUserSubTab == 'edit', 'selected', '')}">
-                <h:commandLink
-                  action="#{userManagerActions.editUser}" immediate="true">
-                  <h:outputText value="#{messages['label.userManager.editUser']}" />
+            <f:subview rendered="#{groupManagerActions.allowEditGroup}">
+              <li class="#{nxu:test(currentGroupSubTab == 'edit', 'selected', '')}">
+                <h:commandLink action="#{groupManagerActions.editGroup}">
+                   <h:outputText value="#{messages['label.groupManager.editGroup']}" />
                 </h:commandLink>
               </li>
             </f:subview>
-          
-            <f:subview rendered="#{userManagerActions.allowChangePassword}">
-              <li class="#{nxu:test(currentUserSubTab == 'editPassword', 'selected', '')}">
-                <h:commandLink action="edit_user_password" immediate="true">
-                  <h:outputText value="#{messages['command.change.password']}" />
-                </h:commandLink>
-              </li>
-            </f:subview>
-          
-          </ul>
+          </ul>          
         </h:form>
       </div>
       <div style="clear: both" />

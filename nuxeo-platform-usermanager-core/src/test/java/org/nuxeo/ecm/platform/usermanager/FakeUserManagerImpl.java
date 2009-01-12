@@ -348,4 +348,20 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
+    public String getGroupIdField() throws ClientException {
+        return "groupname";
+    }
+
+    public String getGroupSchemaName() throws ClientException {
+        return "group";
+    }
+
+    public String getUserIdField() throws ClientException {
+        return "username";
+    }
+
+    public String getUserSchemaName() throws ClientException {
+        return "user";
+    }
+
 }

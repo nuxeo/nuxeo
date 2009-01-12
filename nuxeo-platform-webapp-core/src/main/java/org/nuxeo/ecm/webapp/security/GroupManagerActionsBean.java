@@ -24,6 +24,8 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.security.Principal;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.EditableValueHolder;
@@ -62,6 +64,7 @@ public class GroupManagerActionsBean implements GroupManagerActions {
 
     private static final long serialVersionUID = 1L;
 
+    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(GroupManagerActionsBean.class);
 
     @In(create = true)
@@ -76,9 +79,7 @@ public class GroupManagerActionsBean implements GroupManagerActions {
     @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;
 
-    private DocumentModelList allGroups;
-
-    @DataModel("groupList")
+    @DataModel(value = "groupList")
     private DocumentModelList groups;
 
     @DataModelSelection("groupList")
@@ -94,8 +95,6 @@ public class GroupManagerActionsBean implements GroupManagerActions {
 
     private boolean searchOverflow;
 
-    private boolean allGroupsOverflow;
-
     private String getGroupListingMode() throws ClientException {
         if (groupListingMode == null) {
             groupListingMode = userManager.getGroupListingMode();
@@ -103,61 +102,71 @@ public class GroupManagerActionsBean implements GroupManagerActions {
         return groupListingMode;
     }
 
-    @Factory("groupList")
-    public void recomputeGroupList() throws ClientException {
-        groups = new DocumentModelListImpl();
-        allGroups = new DocumentModelListImpl();
-        if (!StringUtils.isEmpty(searchString) && !"*".equals(searchString)) {
+    @Factory(value = "groupList")
+    public DocumentModelList getGroups() throws ClientException {
+        if (groups == null) {
+            searchOverflow = false;
             try {
-                searchOverflow = false;
-                groups = userManager.searchGroups(
-                        Collections.<String, Object> emptyMap(), null);
+                String groupListingMode = getGroupListingMode();
+                if (ALL.equals(groupListingMode) || "*".equals(searchString)) {
+                    groups = userManager.searchGroups(
+                            Collections.<String, Object> emptyMap(), null);
+                } else if (!StringUtils.isEmpty(searchString)) {
+                    Map<String, Object> filter = new HashMap<String, Object>();
+                    // XXX: search only on id, better conf should be set in user
+                    // manager interface
+                    filter.put(userManager.getGroupIdField(), searchString);
+                    groups = userManager.searchGroups(filter, filter.keySet());
+                }
             } catch (SizeLimitExceededException e) {
                 searchOverflow = true;
             }
-        } else if (ALL.equals(getGroupListingMode())
-                || "*".equals(searchString)) {
-            if (allGroups == null) {
-                try {
-                    allGroupsOverflow = false;
-                    allGroups = userManager.searchGroups(
-                            Collections.<String, Object> emptyMap(), null);
-                } catch (SizeLimitExceededException e) {
-                    allGroupsOverflow = true;
-                }
-            }
-            searchOverflow = allGroupsOverflow;
-        } else {
-            searchOverflow = false;
         }
+        if (groups == null) {
+            groups = new DocumentModelListImpl();
+        }
+        return groups;
+    }
+
+    public void resetGroups() throws ClientException {
+        groups = null;
+    }
+
+    // refresh to get references
+    protected DocumentModel refreshGroup(String groupName)
+            throws ClientException {
+        return userManager.getGroupModel(groupName);
+    }
+
+    protected String viewGroup(DocumentModel group, boolean refresh)
+            throws ClientException {
+        if (group != null) {
+            selectedGroup = group;
+            if (refresh) {
+                selectedGroup = refreshGroup(group.getId());
+            }
+            if (selectedGroup != null) {
+                return "view_group";
+            }
+        }
+        return null;
+    }
+
+    public String viewGroups() throws ClientException {
+        return "view_groups";
     }
 
     public String viewGroup() throws ClientException {
-        refreshGroup(selectedGroup);
-        return "view_group";
+        return viewGroup(selectedGroup, true);
     }
 
     public String viewGroup(String groupName) throws ClientException {
-        try {
-            selectedGroup = userManager.getGroupModel(groupName);
-            return viewGroup();
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
-    }
-
-    public DocumentModel refreshGroup(DocumentModel groupModel)
-            throws ClientException {
-        return userManager.getGroupModel(groupModel.getId());
+        return viewGroup(userManager.getGroupModel(groupName), false);
     }
 
     public String editGroup() throws ClientException {
-        try {
-            selectedGroup = refreshGroup(selectedGroup);
-            return "edit_group";
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
+        selectedGroup = refreshGroup(selectedGroup.getId());
+        return "edit_group";
     }
 
     public DocumentModel getSelectedGroup() throws ClientException {
@@ -174,13 +183,9 @@ public class GroupManagerActionsBean implements GroupManagerActions {
     public String deleteGroup() throws ClientException {
         try {
             userManager.deleteGroup(selectedGroup);
-            if (groups != null && !groups.isEmpty()) {
-                groups.remove(selectedGroup);
-            }
-            if (allGroups != null && !allGroups.isEmpty()) {
-                allGroups.remove(selectedGroup);
-            }
-            return "view_groups";
+            // reset users and groups
+            resetGroups();
+            return viewGroups();
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
@@ -189,7 +194,9 @@ public class GroupManagerActionsBean implements GroupManagerActions {
     public String updateGroup() throws ClientException {
         try {
             userManager.updateGroup(selectedGroup);
-            return viewGroup(selectedGroup.getName());
+            // reset users and groups
+            resetGroups();
+            return viewGroup(selectedGroup.getId());
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
@@ -211,11 +218,11 @@ public class GroupManagerActionsBean implements GroupManagerActions {
 
     public String createGroup() throws ClientException {
         try {
-            userManager.createGroup(newGroup);
-
-            allGroups = null; // recompute it
-            recomputeGroupList();
-            return viewGroup(newGroup.getName());
+            selectedGroup = userManager.createGroup(newGroup);
+            newGroup = null;
+            // reset so that group list is computed again
+            resetGroups();
+            return viewGroup(selectedGroup, false);
         } catch (GroupAlreadyExistsException e) {
             String message = resourcesAccessor.getMessages().get(
                     "error.groupManager.groupAlreadyExists");
@@ -257,15 +264,16 @@ public class GroupManagerActionsBean implements GroupManagerActions {
 
     public void setSearchString(String searchString) {
         this.searchString = searchString;
-        groups = null; // recomputed through factory
     }
 
     public String searchGroups() throws ClientException {
-        return "view_groups";
+        // reset so that groups are recomputed
+        resetGroups();
+        return viewGroups();
     }
 
     public String clearSearch() throws ClientException {
-        setSearchString("");
+        searchString = null;
         return searchGroups();
     }
 

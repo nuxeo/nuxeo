@@ -408,4 +408,36 @@ public class UserManagerBean implements UserManager {
         }
     }
 
+    public String getGroupIdField() throws ClientException {
+        try {
+            return getUserManager().getGroupIdField();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public String getGroupSchemaName() throws ClientException {
+        try {
+            return getUserManager().getGroupSchemaName();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public String getUserIdField() throws ClientException {
+        try {
+            return getUserManager().getUserIdField();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public String getUserSchemaName() throws ClientException {
+        try {
+            return getUserManager().getUserSchemaName();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
 }

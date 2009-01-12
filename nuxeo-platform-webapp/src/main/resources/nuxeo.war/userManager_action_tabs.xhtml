@@ -4,13 +4,13 @@
 
 <h:form>
   <ul>
-    <li class="selected">
+    <li class="#{nxu:test(currentUserTab == 'users', 'selected', '')}">
       <h:commandLink action="#{userManagerActions.viewUsers}" immediate="true">
         <h:outputText value="#{messages['label.userManager.users']}" />
       </h:commandLink>
     </li>
   
-    <li>
+    <li class="#{nxu:test(currentUserTab == 'groups', 'selected', '')}">
       <h:commandLink action="view_groups" immediate="true">
         <h:outputText value="#{messages['label.groupManager.groups']}" />
       </h:commandLink>

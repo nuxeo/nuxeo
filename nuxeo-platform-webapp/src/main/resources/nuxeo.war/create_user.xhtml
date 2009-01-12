@@ -16,7 +16,9 @@
     <ui:include src="/incl/message_banner.xhtml" />
 
     <div>
-      <ui:include src="/userManager_action_tabs.xhtml" />
+      <ui:include src="/userManager_action_tabs.xhtml">
+        <ui:param name="currentUserTab" value="users" />
+      </ui:include>
       <div style="clear: both"></div>
     </div>
 
@@ -26,8 +28,8 @@
         <h:outputText value="#{messages['title.createUser']}" />
       </h3>
 
-      <h:form id="createUser">
-        <nxl:layout name="user" mode="create" value="#{userManagerActions.newUserModel}" />
+      <h:form id="createUser" rendered="#{userManagerActions.allowCreateUser}">
+        <nxl:layout name="user" mode="create" value="#{userManagerActions.newUser}" />
         <table class="dataInput">
           <tbody>
             <tr>
@@ -42,7 +44,7 @@
             </tr>
           </tbody>
         </table>
-     </h:form>
+      </h:form>
 
     </div>
 

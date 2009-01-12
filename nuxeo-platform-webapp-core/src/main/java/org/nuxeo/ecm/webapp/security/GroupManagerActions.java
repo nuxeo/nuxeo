@@ -19,9 +19,18 @@
 
 package org.nuxeo.ecm.webapp.security;
 
+import static org.jboss.seam.ScopeType.EVENT;
+
 import java.io.Serializable;
 
 import javax.ejb.Local;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+
+import org.jboss.seam.annotations.Factory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
  * Provides user manager related operations.
@@ -35,5 +44,47 @@ public interface GroupManagerActions extends Serializable {
 
     public static final String VALID_CHARS = "0123456789_-"
             + "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+    @Factory(value = "groupList", scope = EVENT)
+    public DocumentModelList getGroups() throws ClientException;
+
+    public void resetGroups() throws ClientException;
+
+    public String viewGroups() throws ClientException;
+
+    public String viewGroup() throws ClientException;
+
+    public String viewGroup(String groupName) throws ClientException;
+
+    public String editGroup() throws ClientException;
+
+    public DocumentModel getSelectedGroup() throws ClientException;
+
+    public DocumentModel getNewGroup() throws ClientException;
+
+    public String deleteGroup() throws ClientException;
+
+    public String updateGroup() throws ClientException;
+
+    public void validateGroupName(FacesContext context, UIComponent component,
+            Object value);
+
+    public String createGroup() throws ClientException;
+
+    public boolean getAllowCreateGroup() throws ClientException;
+
+    public boolean getAllowDeleteGroup() throws ClientException;
+
+    public boolean getAllowEditGroup() throws ClientException;
+
+    public String getSearchString();
+
+    public void setSearchString(String searchString);
+
+    public String searchGroups() throws ClientException;
+
+    public String clearSearch() throws ClientException;
+
+    public boolean isSearchOverflow();
 
 }

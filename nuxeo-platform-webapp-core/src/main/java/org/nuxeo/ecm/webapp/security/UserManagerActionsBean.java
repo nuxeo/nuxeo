@@ -48,7 +48,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
 import org.jboss.seam.annotations.web.RequestParameter;
-import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.web.Session;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -61,7 +60,6 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
-import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
@@ -92,8 +90,6 @@ public class UserManagerActionsBean implements UserManagerActions {
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
-    private DocumentModelList allUsers;
-
     /**
      * Map with first letter as key and users list as value
      */
@@ -102,7 +98,7 @@ public class UserManagerActionsBean implements UserManagerActions {
     /**
      * Current viewable users (on the selected letter tab)
      */
-    @DataModel("userList")
+    @DataModel(value="userList")
     private DocumentModelList users;
 
     @DataModelSelection("userList")
@@ -110,13 +106,11 @@ public class UserManagerActionsBean implements UserManagerActions {
 
     private String userListingMode;
 
-    private DocumentModel newUserModel;
+    private DocumentModel newUser;
 
     private DocumentModel searchUserModel;
 
     private String searchString = "";
-
-    private boolean doSearch = false;
 
     @RequestParameter("newSelectedLetter")
     private String newSelectedLetter;
@@ -132,77 +126,71 @@ public class UserManagerActionsBean implements UserManagerActions {
         return userListingMode;
     }
 
-    @Factory("userList")
-    public void getUsers() throws ClientException {
-        if (SEARCH_ONLY.equals(getUserListingMode())) {
-            allUsers = new DocumentModelListImpl();
-            users = new DocumentModelListImpl();
-        } else {
+    @Factory(value = "userList")
+    public DocumentModelList getUsers() throws ClientException {
+        if (users == null) {
+            searchOverflow = false;
             try {
-                allUsers = userManager.searchUsers(null);
-                updateUserCatalog();
+                String userListingMode = getUserListingMode();
+                if (SEARCH_ONLY.equals(userListingMode)
+                        || !StringUtils.isEmpty(searchString)) {
+                    if ("*".equals(searchString)) {
+                        users = userManager.searchUsers(null);
+                    } else if (!StringUtils.isEmpty(searchString)) {
+                        users = userManager.searchUsers(searchString);
+                    }
+                } else if (TABBED.equals(userListingMode)) {
+                    if (userCatalog == null) {
+                        updateUserCatalog();
+                    }
+                    if (StringUtils.isEmpty(selectedLetter)
+                            || !userCatalog.containsKey(selectedLetter)) {
+                        Collection<String> catalogLetters = getCatalogLetters();
+                        if (!catalogLetters.isEmpty()) {
+                            selectedLetter = catalogLetters.iterator().next();
+                        }
+                    }
+                    users = userCatalog.get(selectedLetter);
+                }
             } catch (SizeLimitExceededException e) {
-                allUsers = new DocumentModelListImpl();
-                users = new DocumentModelListImpl();
                 searchOverflow = true;
             } catch (Exception t) {
                 throw ClientException.wrap(t);
             }
         }
+        if (users == null) {
+            users = new DocumentModelListImpl();
+        }
+        return users;
+    }
+
+    public void resetUsers() throws ClientException {
+        users = null;
     }
 
     private void updateUserCatalog() throws ClientException {
-        if (allUsers == null) {
-            allUsers = userManager.searchUsers(searchString);
-        }
-
-        if (StringUtils.isEmpty(searchString)
-                && TABBED.equals(getUserListingMode())) {
-            userCatalog = new HashMap<String, DocumentModelList>();
-            String userSortField = userManager.getUserSortField();
-            for (DocumentModel user : allUsers) {
-                // FIXME: this should use a "display name" dedicated API
-                String displayName = null;
-                if (userSortField != null) {
-                    // XXX hack, principals have only one model
-                    org.nuxeo.ecm.core.api.DataModel dm = user.getDataModels().values().iterator().next();
-                    displayName = (String) dm.getData(userSortField);
-                }
-                if (displayName == null) {
-                    displayName = user.getId();
-                }
-                String firstLetter = displayName.substring(0, 1).toUpperCase();
-                DocumentModelList list = userCatalog.get(firstLetter);
-                if (list == null) {
-                    list = new DocumentModelListImpl();
-                    userCatalog.put(firstLetter, list);
-                }
-                list.add(user);
+        // XXX: should filter all users on searchString?
+        DocumentModelList allUsers = userManager.searchUsers(null);
+        userCatalog = new HashMap<String, DocumentModelList>();
+        String userSortField = userManager.getUserSortField();
+        for (DocumentModel user : allUsers) {
+            // FIXME: this should use a "display name" dedicated API
+            String displayName = null;
+            if (userSortField != null) {
+                // XXX hack, principals have only one model
+                org.nuxeo.ecm.core.api.DataModel dm = user.getDataModels().values().iterator().next();
+                displayName = (String) dm.getData(userSortField);
             }
-
-            if (StringUtils.isEmpty(selectedLetter)
-                    || !userCatalog.containsKey(selectedLetter)) {
-                selectedLetter = getCatalogLetters().iterator().next();
+            if (StringUtils.isEmpty(displayName)) {
+                displayName = user.getId();
             }
-
-            users = userCatalog.get(selectedLetter);
-            if (users == null) {
-                users = new DocumentModelListImpl();
+            String firstLetter = displayName.substring(0, 1).toUpperCase();
+            DocumentModelList list = userCatalog.get(firstLetter);
+            if (list == null) {
+                list = new DocumentModelListImpl();
+                userCatalog.put(firstLetter, list);
             }
-
-        } else {
-            userCatalog = null;
-            users = new DocumentModelListImpl(allUsers);
-        }
-    }
-
-    public String viewUser(String userName) throws ClientException {
-        final NuxeoPrincipal principal = userManager.getPrincipal(userName);
-        if (principal == null) {
-            log.error("No principal for username: " + userName);
-            return null;
-        } else {
-            return viewUser(principal.getModel());
+            list.add(user);
         }
     }
 
@@ -210,75 +198,39 @@ public class UserManagerActionsBean implements UserManagerActions {
         return selectedUser;
     }
 
-    public String viewUser() throws ClientException {
-        refreshUser(selectedUser);
-        return viewUser(selectedUser);
+    // refresh to get references
+    protected DocumentModel refreshUser(String userName) throws ClientException {
+        return userManager.getUserModel(userName);
     }
 
-    protected String viewUser(DocumentModel user) throws ClientException {
-        selectedUser = refreshUser(user);
-        if (user != null) {
-            return "view_user";
-        } else {
-            return null;
-        }
-    }
-
-    protected DocumentModel refreshUser(DocumentModel user)
+    protected String viewUser(DocumentModel user, boolean refresh)
             throws ClientException {
-        return userManager.getUserModel(user.getId());
-    }
-
-    public String editUser() throws ClientException {
-        selectedUser = refreshUser(selectedUser);
-        return "edit_user";
-    }
-
-    public String deleteUser() throws ClientException {
-        try {
-            userManager.deleteUser(selectedUser);
-            if (allUsers != null) {
-                allUsers.remove(selectedUser);
+        if (user != null) {
+            selectedUser = user;
+            if (refresh) {
+                selectedUser = refreshUser(user.getId());
             }
-            if (users != null) {
-                users.remove(selectedUser);
+            if (selectedUser != null) {
+                return "view_user";
             }
-
-            // XXX: Why?
-            Events.instance().raiseEvent(
-                    EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
-
-            return viewUsers();
-        } catch (Exception t) {
-            throw ClientException.wrap(t);
         }
+        return null;
+
+    }
+
+    public String viewUser() throws ClientException {
+        return viewUser(selectedUser, true);
+    }
+
+    public String viewUser(String userName) throws ClientException {
+        return viewUser(userManager.getUserModel(userName), false);
     }
 
     public String searchUsers() throws ClientException {
         searchOverflow = false;
-        try {
-            if (searchString.compareTo("*") == 0) {
-                allUsers = userManager.searchUsers(null);
-            } else {
-                allUsers = userManager.searchUsers(searchString);
-            }
-        } catch (SizeLimitExceededException e) {
-            searchOverflow = true;
-            allUsers = new DocumentModelListImpl();
-            users = new DocumentModelListImpl();
-            return "view_users";
-        }
-        doSearch = true;
+        // just reset users so that users list is refreshed
+        resetUsers();
         return viewUsers();
-    }
-
-    public String updateUser() throws ClientException {
-        try {
-            userManager.updateUser(selectedUser);
-            return viewUser(selectedUser.getName());
-        } catch (Exception t) {
-            throw ClientException.wrap(t);
-        }
     }
 
     public void validateUserName(FacesContext context, UIComponent component,
@@ -295,21 +247,30 @@ public class UserManagerActionsBean implements UserManagerActions {
         }
     }
 
-    @RequestParameter
-    protected String firstPasswordInputId;
-
-    @RequestParameter
-    protected String secondPasswordInputId;
-
     public void validatePassword(FacesContext context, UIComponent component,
             Object value) {
         Map<String, Object> attributes = component.getAttributes();
-        firstPasswordInputId = (String) attributes.get("firstPasswordInputId");
-        secondPasswordInputId = (String) attributes.get("secondPasswordInputId");
+        String firstPasswordInputId = (String) attributes.get("firstPasswordInputId");
+        String secondPasswordInputId = (String) attributes.get("secondPasswordInputId");
+        if (firstPasswordInputId == null || secondPasswordInputId == null) {
+            log.error("Cannot validate passwords: input id(s) not found");
+            return;
+        }
+
         UIInput firstPasswordComp = (UIInput) component.findComponent(firstPasswordInputId);
         UIInput secondPasswordComp = (UIInput) component.findComponent(secondPasswordInputId);
-        String firstPassword = (String) firstPasswordComp.getLocalValue();
-        String secondPassword = (String) secondPasswordComp.getLocalValue();
+        if (firstPasswordComp == null || secondPasswordComp == null) {
+            log.error("Cannot validate passwords: input(s) not found");
+            return;
+        }
+
+        Object firstPassword = firstPasswordComp.getLocalValue();
+        Object secondPassword = secondPasswordComp.getLocalValue();
+
+        if (firstPassword == null || secondPassword == null) {
+            log.error("Cannot validate passwords: value(s) not found");
+            return;
+        }
 
         if (!firstPassword.equals(secondPassword)) {
             FacesMessage message = new FacesMessage(
@@ -321,12 +282,54 @@ public class UserManagerActionsBean implements UserManagerActions {
         }
     }
 
+    public String editUser() throws ClientException {
+        selectedUser = refreshUser(selectedUser.getId());
+        return "edit_user";
+    }
+
+    public String deleteUser() throws ClientException {
+        try {
+            userManager.deleteUser(selectedUser);
+            // refresh users and groups list
+            resetUsers();
+            return viewUsers();
+        } catch (Exception t) {
+            throw ClientException.wrap(t);
+        }
+    }
+
+    public String updateUser() throws ClientException {
+        try {
+            userManager.updateUser(selectedUser);
+            // refresh users and groups list
+            resetUsers();
+            return viewUser(selectedUser.getId());
+        } catch (Exception t) {
+            throw ClientException.wrap(t);
+        }
+    }
+
+    public String changePassword() throws ClientException {
+        updateUser();
+
+        String message = resourcesAccessor.getMessages().get(
+                "label.userManager.password.changed");
+        facesMessages.add(FacesMessage.SEVERITY_INFO, message);
+
+        if (selectedUser.getId().equals(currentUser.getName())) {
+            // If user changed HIS password, reset session
+            Session.instance().invalidate();
+            return navigationContext.goHome();
+        } else {
+            return "view_user";
+        }
+    }
+
     public String createUser() throws ClientException,
             UserAlreadyExistsException {
         try {
-            newUserModel = userManager.createUser(newUserModel);
-            selectedUser = newUserModel;
-            newUserModel = null;
+            selectedUser = userManager.createUser(newUser);
+            newUser = null;
             return viewUser();
         } catch (UserAlreadyExistsException e) {
             facesMessages.add(FacesMessage.SEVERITY_WARN,
@@ -336,11 +339,11 @@ public class UserManagerActionsBean implements UserManagerActions {
         }
     }
 
-    public DocumentModel getNewUserModel() throws ClientException {
-        if (newUserModel == null) {
-            newUserModel = userManager.getBareUserModel();
+    public DocumentModel getNewUser() throws ClientException {
+        if (newUser == null) {
+            newUser = userManager.getBareUserModel();
         }
-        return newUserModel;
+        return newUser;
     }
 
     public String getSearchString() {
@@ -366,24 +369,16 @@ public class UserManagerActionsBean implements UserManagerActions {
     }
 
     public String viewUsers() throws ClientException {
-        if (newSelectedLetter != null) {
+        if (newSelectedLetter != null
+                && !newSelectedLetter.equals(selectedLetter)) {
             selectedLetter = newSelectedLetter;
+            // just reset users so that users list is refreshed
+            resetUsers();
         }
-
-        try {
-            updateUserCatalog();
-        } catch (SizeLimitExceededException e) {
-            allUsers = new DocumentModelListImpl();
-            users = new DocumentModelListImpl();
-            searchOverflow = true;
-            return "view_users";
-        }
-
-        if (userCatalog != null) {
-            // "TABBED"
+        String userListingMode = getUserListingMode();
+        if (TABBED.equals(userListingMode)) {
             return "view_many_users";
         } else {
-            // "ALL"
             return "view_users";
         }
     }
@@ -399,7 +394,7 @@ public class UserManagerActionsBean implements UserManagerActions {
                 return true;
             }
             if (allowCurrentUser && selectedUser != null) {
-                if (pal.getName().equals(selectedUser.getName())) {
+                if (pal.getName().equals(selectedUser.getId())) {
                     return true;
                 }
             }
@@ -424,11 +419,16 @@ public class UserManagerActionsBean implements UserManagerActions {
     }
 
     public String clearSearch() throws ClientException {
+        searchString = null;
         searchUserModel = null;
-        doSearch = false;
         return searchUsers();
     }
 
+    public boolean isSearchOverflow() {
+        return searchOverflow;
+    }
+
+    // XXX: never used, not tested
     public DocumentModel getSearchUserModel() throws ClientException {
         if (searchUserModel == null) {
             searchUserModel = userManager.getBareUserModel();
@@ -436,6 +436,7 @@ public class UserManagerActionsBean implements UserManagerActions {
         return searchUserModel;
     }
 
+    // XXX: never used, not tested
     public String searchUsersAdvanced() throws ClientException {
         searchOverflow = false;
         try {
@@ -443,54 +444,20 @@ public class UserManagerActionsBean implements UserManagerActions {
             org.nuxeo.ecm.core.api.DataModel dm = searchUserModel.getDataModels().values().iterator().next();
             Map<String, Object> filter = dm.getMap();
             // create a new set because a HashMap.KeySet is not serializable
-            allUsers = userManager.searchUsers(filter, new HashSet<String>(
+            users = userManager.searchUsers(filter, new HashSet<String>(
                     filter.keySet()));
         } catch (SizeLimitExceededException e) {
             searchOverflow = true;
-            allUsers = new DocumentModelListImpl();
             users = new DocumentModelListImpl();
             return "view_users";
         }
-
-        doSearch = true;
         return viewUsers();
     }
 
+    // XXX: never used, not tested
     public String clearSearchAdvanced() throws ClientException {
         searchUserModel = null;
-        doSearch = false;
         return viewUsers();
     }
 
-    public boolean getDoSearch() {
-        return doSearch;
-    }
-
-    public void setDoSearch(boolean doSearch) {
-        this.doSearch = doSearch;
-    }
-
-    public boolean isSearchOverflow() {
-        return searchOverflow;
-    }
-
-    public void setSearchOverflow(boolean searchOverflow) {
-        this.searchOverflow = searchOverflow;
-    }
-
-    public String changePassword() throws ClientException {
-        updateUser();
-
-        String message = resourcesAccessor.getMessages().get(
-                "label.userManager.password.changed");
-        facesMessages.add(FacesMessage.SEVERITY_INFO, message);
-
-        if (selectedUser.getName().equals(currentUser.getName())) {
-            // If user changed HIS password, reset session
-            Session.instance().invalidate();
-            return navigationContext.goHome();
-        } else {
-            return "view_user";
-        }
-    }
 }
