@@ -12,7 +12,7 @@
 
 <div class="boxBody"><h:dataTable
   value="#{jbpmService.getCurrentProcessInstances(currentUser)}"
-  var="pdInstance">
+  var="pdInstance" styleClass="dataList">
   <h:column>
     <f:facet name="header">#{messages['jbpm.dashboard.table.pdName']}</f:facet>
         #{pdInstance.processDefinition.name}

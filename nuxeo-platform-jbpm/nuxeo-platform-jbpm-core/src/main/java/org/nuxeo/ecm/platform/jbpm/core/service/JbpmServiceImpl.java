@@ -99,8 +99,7 @@ public class JbpmServiceImpl implements JbpmService {
                     List<String> groups = currentUser.getAllGroups();
                     groups.add(currentUser.getName());
                     context.setActorId(currentUser.getName());
-                    context.getTaskMgmtSession().findTaskInstances(groups);
-                    return toArrayList(context.getTaskList(currentUser.getName()));
+                    return toArrayList(context.getTaskMgmtSession().findTaskInstances(groups));
                 }
 
             });
@@ -169,7 +168,7 @@ public class JbpmServiceImpl implements JbpmService {
                     throws NuxeoJbpmException {
                 context.setActorId(principal.getName());
                 Map<Long, ProcessInstance> maps = new HashMap<Long, ProcessInstance>();
-                for (TaskInstance ti : (List<TaskInstance>) context.getTaskList(principal.getName())) {
+                for (TaskInstance ti : getCurrentTaskInstances(principal)) {
                     maps.put(ti.getProcessInstance().getId(),
                             ti.getProcessInstance());
                 }
