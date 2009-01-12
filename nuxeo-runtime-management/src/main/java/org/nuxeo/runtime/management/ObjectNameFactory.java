@@ -54,6 +54,18 @@ public class ObjectNameFactory {
     public static String formatQualifiedName(String instanceName) {
         return formatQualifiedName("service", instanceName);
     }
+    
+    public static String formatMetricQualifiedName(ComponentName name, String metricName) {
+        return formatQualifiedName(name) + ",metric=" + metricName + ",management=metric";
+    }
+    
+    public static String formatInventoryQualifiedName(ComponentName name) {
+        return formatQualifiedName(name) + ",management=inventory";
+    }
+    
+    public static String formatUsecaseQualifiedName(ComponentName name) {
+        return formatQualifiedName(name) + ",management=usecase";
+    }
 
     public static String removeDotPart(String name) {
         int lastDotPos = name.lastIndexOf('.');
@@ -140,6 +152,19 @@ public class ObjectNameFactory {
         } catch (Exception e) {
             throw ManagementRuntimeException.wrap(name + " is not correct", e);
         }
+    }
+
+
+    public static String formatMetricShortName(String name) {
+        return name + "-metric";
+    }
+    
+    public static String formatInventoryShortName(String name) {
+        return name + "-inventory";
+    }
+    
+    public static String formatUsecaseShortName(String name) {
+        return name + "-usecase";
     }
 
 }

@@ -23,10 +23,10 @@ package org.nuxeo.runtime.management;
  */
 public abstract class AbstractResourceFactory implements ResourceFactory {
 
-    protected final ManagementServiceImpl service;
-    protected final ResourceFactoryDescriptor descriptor;
+    protected ResourcePublisherService service;
+    protected ResourceFactoryDescriptor descriptor;
 
-    public AbstractResourceFactory(ManagementServiceImpl service, ResourceFactoryDescriptor descriptor) {
+    public void configure(ResourcePublisherService service, ResourceFactoryDescriptor descriptor) {
         this.service = service;
         this.descriptor = descriptor;
     }

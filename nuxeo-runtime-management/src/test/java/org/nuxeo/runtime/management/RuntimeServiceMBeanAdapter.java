@@ -29,6 +29,7 @@ import org.apache.commons.collections.map.TransformedMap;
 import org.apache.commons.collections.set.TransformedSet;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.ManagementRuntimeException;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RegistrationInfo;
 

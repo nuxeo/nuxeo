@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.runtime.management.ManagementService">
+<component name="org.nuxeo.runtime.management.ResourcePublisher">
 
-  <implementation class="org.nuxeo.runtime.management.ManagementServiceImpl" />
+  <implementation class="org.nuxeo.runtime.management.ResourcePublisherService" />
 
   <service>
-    <provide interface="org.nuxeo.runtime.management.ManagementService" />
+    <provide interface="org.nuxeo.runtime.management.ResourcePublisher" />
   </service>
 
   <extension-point name="resources">

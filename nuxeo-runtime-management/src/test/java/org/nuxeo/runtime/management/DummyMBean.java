@@ -21,7 +21,6 @@ package org.nuxeo.runtime.management;
  *
  */
 public interface DummyMBean {
-
     String getManagedMessage();
     void setManagedMessage(String message);
     String sayManagedHelloWorld();

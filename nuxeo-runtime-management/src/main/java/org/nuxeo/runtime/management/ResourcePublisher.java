@@ -24,7 +24,7 @@ import javax.management.ObjectName;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  * 
  */
-public interface ManagementService {
+public interface ResourcePublisher {
 
     Set<String> getShortcutsName();
 

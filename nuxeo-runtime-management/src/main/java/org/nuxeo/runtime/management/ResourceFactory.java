@@ -22,6 +22,8 @@ package org.nuxeo.runtime.management;
  */
 public interface ResourceFactory {
 
-    void register();
+    void configure(ResourcePublisherService service, ResourceFactoryDescriptor descriptor);
+    
+    void registerResources();
 
 }

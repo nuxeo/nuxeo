@@ -28,7 +28,7 @@ public class ResourceFactoryDescriptor {
 
     public ResourceFactoryDescriptor(
             Class<? extends ResourceFactory> factoryClass) {
-        this.className = factoryClass.getCanonicalName();
+        this.factoryClass = factoryClass;
     }
 
     public ResourceFactoryDescriptor() {
@@ -36,10 +36,10 @@ public class ResourceFactoryDescriptor {
     }
 
     @XNode("@class")
-    private String className;
+    private Class<? extends ResourceFactory> factoryClass;
 
-    public String getClassName() {
-        return className;
+    public Class<? extends ResourceFactory> getFactoryClass() {
+        return factoryClass;
     }
 
 }

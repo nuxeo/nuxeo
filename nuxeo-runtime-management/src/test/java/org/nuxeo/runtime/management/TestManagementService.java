@@ -9,6 +9,8 @@ import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,8 +33,8 @@ public class TestManagementService extends NXRuntimeTestCase {
 
         deployContrib(OSGI_BUNDLE_NAME, "OSGI-INF/management-service.xml");
 
-        managementService = (ManagementServiceImpl) Framework.getRuntime().getComponent(
-                ManagementServiceImpl.NAME);
+        managementService = (ResourcePublisherService) Framework.getRuntime().getComponent(
+                ResourcePublisherService.NAME);
     }
 
     @Override
@@ -41,17 +43,17 @@ public class TestManagementService extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    private ManagementServiceImpl managementService = null;
+    private ResourcePublisherService managementService = null;
 
     public void testRegisteredService() throws Exception {
-        assertNotNull(Framework.getService(ManagementService.class));
+        assertNotNull(Framework.getService(ResourcePublisher.class));
     }
 
     protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
     protected void doBindResources() throws InstanceNotFoundException,
             ReflectionException, MBeanException {
-        String qualifiedName = ObjectNameFactory.formatQualifiedName(ManagementServiceImpl.NAME);
+        String qualifiedName = ObjectNameFactory.formatQualifiedName(ResourcePublisherService.NAME);
         ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
         mbeanServer.invoke(objectName, "bindResources", null, null);
     }
@@ -63,6 +65,12 @@ public class TestManagementService extends NXRuntimeTestCase {
         return mbeanServer.queryNames(objectName, null);
     }
 
+    public void testLogin() throws LoginException {
+        LoginContext context =
+            Framework.loginAs("test");
+        assertNotNull(context);
+    }
+    
     public void testRegisterResource() throws Exception {
         managementService.registerResource("dummy", "nx:name=dummy",
                 DummyMBean.class, new DummyImpl());

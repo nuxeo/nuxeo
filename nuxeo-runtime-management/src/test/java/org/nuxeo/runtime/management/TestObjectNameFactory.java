@@ -18,6 +18,8 @@ package org.nuxeo.runtime.management;
 
 import javax.management.ObjectName;
 
+import org.nuxeo.runtime.management.ObjectNameFactory;
+
 import junit.framework.TestCase;
 
 /**

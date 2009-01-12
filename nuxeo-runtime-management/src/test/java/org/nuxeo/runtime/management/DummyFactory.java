@@ -17,18 +17,14 @@
 package org.nuxeo.runtime.management;
 
 
+
 /**
  * @author matic
  *
  */
 public class DummyFactory extends AbstractResourceFactory implements ResourceFactory {
 
-    
-    public DummyFactory(ManagementServiceImpl service, ResourceFactoryDescriptor descriptor) {
-        super(service, descriptor);
-    }
-
-    public void register() {
+    public void registerResources() {
         service.registerResource("dummy","nx:name=dummy",DummyMBean.class,new DummyImpl());
     }
 

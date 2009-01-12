@@ -33,8 +33,8 @@ public class ResourceDescriptor implements Serializable {
     protected ResourceDescriptor(String qualifiedName,
             Class<?> implClass) {
         this.name = qualifiedName;
-        this.className = implClass.getCanonicalName();
-        this.ifaceClassName = null;
+        this.resourceClass = implClass;
+        this.ifaceClass = null;
     }
 
     public ResourceDescriptor() {
@@ -45,27 +45,28 @@ public class ResourceDescriptor implements Serializable {
     private String name;
 
     @XNode("@class")
-    private String className;
+    private Class<?> resourceClass;
+
 
     @XNode("@iface")
-    private String ifaceClassName;
+    private Class<?> ifaceClass;
 
     public String getName() {
         return name;
     }
 
-    public String getClassName() {
-        return className;
+    public Class<?> getResourceClass() {
+        return resourceClass;
     }
 
-    public String getIfaceClassName() {
-        return ifaceClassName;
+    public Class<?> getIfaceClass() {
+        return ifaceClass;
     }
 
     @Override
     public String toString() {
         if (name != null)
             return name;
-        return className;
+        return resourceClass.getCanonicalName();
     }
 }

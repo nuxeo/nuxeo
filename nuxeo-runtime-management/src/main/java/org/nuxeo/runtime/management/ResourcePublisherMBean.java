@@ -24,7 +24,7 @@ import javax.management.ObjectName;
  * @authorStephane Lacoin (Nuxeo EP Software Engineer)
  *
  */
-public interface ManagementServiceMBean {
+public interface ResourcePublisherMBean {
 
     Set<ObjectName> getResourcesName();
 
