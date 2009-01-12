@@ -8,7 +8,7 @@
   <nxu:dataList id="#{widget.id}_list" var="listItem" value="#{field_0}"
     layout="simple" styleClass="standardList">
     <h:graphicImage value="/icons/html.png" />
-    <h:commandLink value="#{nxu:userFullName(listItem)}" immediate="true"
+    <h:commandLink value="#{nxu:userFullName(listItem)}"
       action="#{userManagerActions.viewUser(listItem)}"
       id="#{widget.id}_user" immediate="true" />
     <br />

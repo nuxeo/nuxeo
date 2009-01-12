@@ -68,47 +68,47 @@ public class UserManagerImpl implements UserManager {
 
     public static final String DEFAULT_ANONYMOUS_USER_ID = "Anonymous";
 
-    private final DirectoryService dirService;
+    protected final DirectoryService dirService;
 
-    private String userDirectoryName;
+    protected String userDirectoryName;
 
-    private String userSchemaName;
+    protected String userSchemaName;
 
-    private String userIdField;
+    protected String userIdField;
 
-    private String userEmailField;
+    protected String userEmailField;
 
-    private Map<String, MatchType> userSearchFields;
+    protected Map<String, MatchType> userSearchFields;
 
-    private String groupDirectoryName;
+    protected String groupDirectoryName;
 
-    private String groupSchemaName;
+    protected String groupSchemaName;
 
-    private String groupIdField;
+    protected String groupIdField;
 
-    private String groupMembersField;
+    protected String groupMembersField;
 
-    private String groupSubGroupsField;
+    protected String groupSubGroupsField;
 
-    private String groupParentGroupsField;
+    protected String groupParentGroupsField;
 
-    private String groupSortField;
+    protected String groupSortField;
 
-    private String defaultGroup;
+    protected String defaultGroup;
 
-    private String defaultRootLogin;
+    protected String defaultRootLogin;
 
-    private String userSortField;
+    protected String userSortField;
 
-    private String userListingMode;
+    protected String userListingMode;
 
-    private String groupListingMode;
+    protected String groupListingMode;
 
-    private Pattern userPasswordPattern;
+    protected Pattern userPasswordPattern;
 
-    private VirtualUser anonymousUser;
+    protected VirtualUser anonymousUser;
 
-    private final Map<String, VirtualUserDescriptor> virtualUsers;
+    protected final Map<String, VirtualUserDescriptor> virtualUsers;
 
     public UserManagerImpl() {
         dirService = Framework.getLocalService(DirectoryService.class);
@@ -135,7 +135,7 @@ public class UserManagerImpl implements UserManager {
         setVirtualUsers(descriptor.virtualUsers);
     }
 
-    private void setUserDirectoryName(String userDirectoryName) {
+    protected void setUserDirectoryName(String userDirectoryName) {
         this.userDirectoryName = userDirectoryName;
         try {
             userSchemaName = dirService.getDirectorySchema(userDirectoryName);
@@ -166,7 +166,7 @@ public class UserManagerImpl implements UserManager {
         return Collections.unmodifiableSet(userSearchFields.keySet());
     }
 
-    private void setGroupDirectoryName(String groupDirectoryName) {
+    protected void setGroupDirectoryName(String groupDirectoryName) {
         this.groupDirectoryName = groupDirectoryName;
         try {
             groupSchemaName = dirService.getDirectorySchema(groupDirectoryName);
@@ -228,7 +228,7 @@ public class UserManagerImpl implements UserManager {
         return anonymousUserId;
     }
 
-    private void setVirtualUsers(Map<String, VirtualUserDescriptor> virtualUsers) {
+    protected void setVirtualUsers(Map<String, VirtualUserDescriptor> virtualUsers) {
         this.virtualUsers.clear();
         if (virtualUsers != null) {
             this.virtualUsers.putAll(virtualUsers);
@@ -297,20 +297,20 @@ public class UserManagerImpl implements UserManager {
         }
     }
 
-    private NuxeoPrincipal makeAnonymousPrincipal() throws ClientException {
+    protected NuxeoPrincipal makeAnonymousPrincipal() throws ClientException {
         DocumentModel userEntry = makeVirtualUserEntry(getAnonymousUserId(),
                 anonymousUser);
         // XXX: pass anonymous user groups, but they will be ignored
         return makePrincipal(userEntry, true, anonymousUser.getGroups());
     }
 
-    private NuxeoPrincipal makeVirtualPrincipal(VirtualUser user)
+    protected NuxeoPrincipal makeVirtualPrincipal(VirtualUser user)
             throws ClientException {
         DocumentModel userEntry = makeVirtualUserEntry(user.getId(), user);
         return makePrincipal(userEntry, false, user.getGroups());
     }
 
-    private DocumentModel makeVirtualUserEntry(String id, VirtualUser user)
+    protected DocumentModel makeVirtualUserEntry(String id, VirtualUser user)
             throws ClientException {
         final DocumentModel userEntry = BaseSession.createEntryModel(null,
                 userSchemaName, id, null);
@@ -329,12 +329,12 @@ public class UserManagerImpl implements UserManager {
         return userEntry;
     }
 
-    private NuxeoPrincipal makePrincipal(DocumentModel userEntry)
+    protected NuxeoPrincipal makePrincipal(DocumentModel userEntry)
             throws ClientException {
         return makePrincipal(userEntry, false, null);
     }
 
-    private NuxeoPrincipal makePrincipal(DocumentModel userEntry,
+    protected NuxeoPrincipal makePrincipal(DocumentModel userEntry,
             boolean anonymous, List<String> groups) throws ClientException {
         NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(
                 userEntry.getId(), anonymous);
@@ -428,7 +428,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     @SuppressWarnings("unchecked")
-    private NuxeoGroup makeGroup(DocumentModel groupEntry) {
+    protected NuxeoGroup makeGroup(DocumentModel groupEntry) {
         NuxeoGroup group = new NuxeoGroupImpl(groupEntry.getId());
         List<String> list;
         try {
@@ -495,7 +495,7 @@ public class UserManagerImpl implements UserManager {
         return getGroup(groupId).getMemberUsers();
     }
 
-    private boolean isAnonymousMatching(Map<String, Object> filter,
+    protected boolean isAnonymousMatching(Map<String, Object> filter,
             Set<String> fulltext) throws DirectoryException {
         String anonymousUserId = getAnonymousUserId();
         if (anonymousUserId == null) {
@@ -570,7 +570,7 @@ public class UserManagerImpl implements UserManager {
         return userSortField;
     }
 
-    private Map<String, String> getUserSortMap() throws DirectoryException {
+    protected Map<String, String> getUserSortMap() throws DirectoryException {
         String sortField = userSortField != null ? userSortField : userIdField;
         Map<String, String> orderBy = new HashMap<String, String>();
         orderBy.put(sortField, DocumentModelComparator.ORDER_ASC);
@@ -581,7 +581,7 @@ public class UserManagerImpl implements UserManager {
      * Notifies user has changed so that the JaasCacheFlusher listener can make
      * sure principals cache is reset.
      */
-    private void notifyUserChanged(String userName) throws ClientException {
+    protected void notifyUserChanged(String userName) throws ClientException {
         try {
             EventService eventService = Framework.getService(EventService.class);
             eventService.sendEvent(new Event(USERMANAGER_TOPIC,
@@ -595,7 +595,7 @@ public class UserManagerImpl implements UserManager {
      * Notifies group has changed so that the JaasCacheFlusher listener can make
      * sure principals cache is reset.
      */
-    private void notifyGroupChanged(String groupName) throws ClientException {
+    protected void notifyGroupChanged(String groupName) throws ClientException {
         try {
             EventService eventService = Framework.getService(EventService.class);
             eventService.sendEvent(new Event(USERMANAGER_TOPIC,
@@ -641,7 +641,7 @@ public class UserManagerImpl implements UserManager {
         }
     }
 
-    private String getGroupId(DocumentModel groupModel) throws ClientException {
+    protected String getGroupId(DocumentModel groupModel) throws ClientException {
         Object groupIdValue = groupModel.getProperty(groupSchemaName,
                 groupIdField);
         if (groupIdValue != null && !(groupIdValue instanceof String)) {
@@ -650,7 +650,7 @@ public class UserManagerImpl implements UserManager {
         return (String) groupIdValue;
     }
 
-    private String getUserId(DocumentModel userModel) throws ClientException {
+    protected String getUserId(DocumentModel userModel) throws ClientException {
         Object userIdValue = userModel.getProperty(userSchemaName, userIdField);
         if (userIdValue != null && !(userIdValue instanceof String)) {
             throw new ClientException("Invalid user id " + userIdValue);
@@ -805,7 +805,7 @@ public class UserManagerImpl implements UserManager {
         }
     }
 
-    private DocumentModelList searchUsers(Map<String, Object> filter,
+    protected DocumentModelList searchUsers(Map<String, Object> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws ClientException {
         Session userDir = null;

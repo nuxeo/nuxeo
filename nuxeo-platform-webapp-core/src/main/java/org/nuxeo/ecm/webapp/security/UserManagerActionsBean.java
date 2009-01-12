@@ -76,7 +76,7 @@ public class UserManagerActionsBean implements UserManagerActions {
     private static final Log log = LogFactory.getLog(UserManagerActionsBean.class);
 
     @In(create = true)
-    private transient UserManager userManager;
+    protected transient UserManager userManager;
 
     @In(create = true)
     protected Principal currentUser;
@@ -93,31 +93,31 @@ public class UserManagerActionsBean implements UserManagerActions {
     /**
      * Map with first letter as key and users list as value
      */
-    private Map<String, DocumentModelList> userCatalog;
+    protected Map<String, DocumentModelList> userCatalog;
 
     /**
      * Current viewable users (on the selected letter tab)
      */
     @DataModel(value="userList")
-    private DocumentModelList users;
+    protected DocumentModelList users;
 
     @DataModelSelection("userList")
-    private DocumentModel selectedUser;
+    protected DocumentModel selectedUser;
 
-    private String userListingMode;
+    protected String userListingMode;
 
-    private DocumentModel newUser;
+    protected DocumentModel newUser;
 
-    private DocumentModel searchUserModel;
+    protected DocumentModel searchUserModel;
 
-    private String searchString = "";
+    protected String searchString = "";
 
     @RequestParameter("newSelectedLetter")
-    private String newSelectedLetter;
+    protected String newSelectedLetter;
 
-    private String selectedLetter;
+    protected String selectedLetter;
 
-    private boolean searchOverflow = false;
+    protected boolean searchOverflow = false;
 
     public String getUserListingMode() throws ClientException {
         if (userListingMode == null) {
@@ -168,7 +168,7 @@ public class UserManagerActionsBean implements UserManagerActions {
         users = null;
     }
 
-    private void updateUserCatalog() throws ClientException {
+    protected void updateUserCatalog() throws ClientException {
         // XXX: should filter all users on searchString?
         DocumentModelList allUsers = userManager.searchUsers(null);
         userCatalog = new HashMap<String, DocumentModelList>();
