@@ -75,6 +75,7 @@
           <excludes>
             <exclude>**/TestPPTConverter*.class</exclude>
             <exclude>**/TestWordConverter*.class</exclude>
+            <exclude>**/TestMailConverter*.class</exclude>
           </excludes>
         </configuration>
       </plugin>
