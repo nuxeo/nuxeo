@@ -1,0 +1,3 @@
+<?xml version="1.0"?>
+
+<module root-type="sites" path="/sites" extends="base"/>
