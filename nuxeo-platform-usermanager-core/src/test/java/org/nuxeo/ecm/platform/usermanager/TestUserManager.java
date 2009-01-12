@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -386,92 +387,92 @@ public class TestUserManager extends NXRuntimeTestCase {
                 || "test_u1".equals(name2) && "test_u2".equals(name1));
     }
 
-//    public void testUpdatePrincipal() throws Exception {
-//        deleteTestObjects();
-//        NuxeoPrincipal u1 = new NuxeoPrincipalImpl("test_u1");
-//        u1.setFirstName("fname1");
-//        u1.setLastName("lname1");
-//        u1.setCompany("company1");
-//        userManager.createPrincipal(u1);
-//
-//        NuxeoGroup g1 = new NuxeoGroupImpl("test_g1");
-//        g1.setMemberUsers(Arrays.asList("test_u1"));
-//        userManager.createGroup(g1);
-//
-//        NuxeoGroup g2 = new NuxeoGroupImpl("test_g2");
-//        g2.setMemberUsers(Arrays.asList("test_u1"));
-//        userManager.createGroup(g2);
-//
-//        NuxeoGroup g3 = new NuxeoGroupImpl("test_g3");
-//        userManager.createGroup(g3);
-//
-//        // refresh u1
-//        u1 = userManager.getPrincipal("test_u1");
-//        List<String> expectedGroups = Arrays.asList("defgr", "test_g1",
-//                "test_g2");
-//        List<String> groups = u1.getGroups();
-//        Collections.sort(groups);
-//        assertEquals(expectedGroups, groups);
-//
-//        u1.setFirstName("fname2");
-//        u1.setLastName("lname2");
-//        u1.setCompany("company2");
-//        u1.getGroups().remove("test_g2"); // ???!!!
-//        u1.getGroups().add("test_g3");
-//        userManager.updatePrincipal(u1);
-//
-//        NuxeoPrincipal newU1 = userManager.getPrincipal("test_u1");
-//        assertNotNull(newU1);
-//        assertEquals("test_u1", newU1.getName());
-//        assertEquals("fname2", newU1.getFirstName());
-//        assertEquals("lname2", newU1.getLastName());
-//        assertEquals("company2", newU1.getCompany());
-//        assertEquals(newU1.getName(), u1.getName());
-//        assertEquals(newU1.getGroups(), u1.getGroups());
-//        assertEquals(newU1.getRoles(), u1.getRoles());
-//    }
-//
-//    public void testUpdateGroup() throws Exception {
-//        deleteTestObjects();
-//        // setup group g
-//        NuxeoPrincipal u1 = new NuxeoPrincipalImpl("test_u1");
-//        userManager.createPrincipal(u1);
-//
-//        NuxeoPrincipal u2 = new NuxeoPrincipalImpl("test_u2");
-//        userManager.createPrincipal(u2);
-//
-//        NuxeoPrincipal u3 = new NuxeoPrincipalImpl("test_u3");
-//        userManager.createPrincipal(u3);
-//
-//        NuxeoGroup g1 = new NuxeoGroupImpl("test_g1");
-//        userManager.createGroup(g1);
-//        NuxeoGroup g2 = new NuxeoGroupImpl("test_g2");
-//        userManager.createGroup(g2);
-//        NuxeoGroup g3 = new NuxeoGroupImpl("test_g3");
-//        userManager.createGroup(g3);
-//
-//        List<String> gUsers = Arrays.asList("test_u1", "test_u2");
-//        List<String> gGroups = Arrays.asList("test_g1", "test_g2");
-//
-//        NuxeoGroup g = new NuxeoGroupImpl("test_g");
-//        g.setMemberUsers(gUsers);
-//        g.setMemberGroups(gGroups);
-//        userManager.createGroup(g);
-//
-//        // update group g
-//        g.getMemberUsers().remove("test_u2");
-//        g.getMemberUsers().add("test_u3");
-//        g.getMemberGroups().remove("test_g2");
-//        g.getMemberGroups().add("test_g3");
-//        userManager.updateGroup(g);
-//
-//        // check new group
-//        NuxeoGroup newG = userManager.makeGroup("test_g");
-//        List<String> newGUsers = Arrays.asList("test_u1", "test_u3");
-//        List<String> newGGroups = Arrays.asList("test_g1", "test_g3");
-//        assertEquals(newGUsers, newG.getMemberUsers());
-//        assertEquals(newGGroups, newG.getMemberGroups());
-//        assertEquals(newG, g);
-//    }
+    public void testUpdatePrincipal() throws Exception {
+        deleteTestObjects();
+        NuxeoPrincipal u1 = new NuxeoPrincipalImpl("test_u1");
+        u1.setFirstName("fname1");
+        u1.setLastName("lname1");
+        u1.setCompany("company1");
+        userManager.createPrincipal(u1);
+
+        NuxeoGroup g1 = new NuxeoGroupImpl("test_g1");
+        g1.setMemberUsers(Arrays.asList("test_u1"));
+        userManager.createGroup(g1);
+
+        NuxeoGroup g2 = new NuxeoGroupImpl("test_g2");
+        g2.setMemberUsers(Arrays.asList("test_u1"));
+        userManager.createGroup(g2);
+
+        NuxeoGroup g3 = new NuxeoGroupImpl("test_g3");
+        userManager.createGroup(g3);
+
+        // refresh u1
+        u1 = userManager.getPrincipal("test_u1");
+        List<String> expectedGroups = Arrays.asList("defgr", "test_g1",
+                "test_g2");
+        List<String> groups = u1.getGroups();
+        Collections.sort(groups);
+        assertEquals(expectedGroups, groups);
+
+        u1.setFirstName("fname2");
+        u1.setLastName("lname2");
+        u1.setCompany("company2");
+        u1.getGroups().remove("test_g2"); // ???!!!
+        u1.getGroups().add("test_g3");
+        userManager.updatePrincipal(u1);
+
+        NuxeoPrincipal newU1 = userManager.getPrincipal("test_u1");
+        assertNotNull(newU1);
+        assertEquals("test_u1", newU1.getName());
+        assertEquals("fname2", newU1.getFirstName());
+        assertEquals("lname2", newU1.getLastName());
+        assertEquals("company2", newU1.getCompany());
+        assertEquals(newU1.getName(), u1.getName());
+        assertEquals(newU1.getGroups(), u1.getGroups());
+        assertEquals(newU1.getRoles(), u1.getRoles());
+    }
+
+    public void testUpdateGroup() throws Exception {
+        deleteTestObjects();
+        // setup group g
+        NuxeoPrincipal u1 = new NuxeoPrincipalImpl("test_u1");
+        userManager.createPrincipal(u1);
+
+        NuxeoPrincipal u2 = new NuxeoPrincipalImpl("test_u2");
+        userManager.createPrincipal(u2);
+
+        NuxeoPrincipal u3 = new NuxeoPrincipalImpl("test_u3");
+        userManager.createPrincipal(u3);
+
+        NuxeoGroup g1 = new NuxeoGroupImpl("test_g1");
+        userManager.createGroup(g1);
+        NuxeoGroup g2 = new NuxeoGroupImpl("test_g2");
+        userManager.createGroup(g2);
+        NuxeoGroup g3 = new NuxeoGroupImpl("test_g3");
+        userManager.createGroup(g3);
+
+        List<String> gUsers = Arrays.asList("test_u1", "test_u2");
+        List<String> gGroups = Arrays.asList("test_g1", "test_g2");
+
+        NuxeoGroup g = new NuxeoGroupImpl("test_g");
+        g.setMemberUsers(gUsers);
+        g.setMemberGroups(gGroups);
+        userManager.createGroup(g);
+
+        // update group g
+        g.getMemberUsers().remove("test_u2");
+        g.getMemberUsers().add("test_u3");
+        g.getMemberGroups().remove("test_g2");
+        g.getMemberGroups().add("test_g3");
+        userManager.updateGroup(g);
+
+        // check new group
+        NuxeoGroup newG = userManager.getGroup("test_g");
+        List<String> newGUsers = Arrays.asList("test_u1", "test_u3");
+        List<String> newGGroups = Arrays.asList("test_g1", "test_g3");
+        assertEquals(newGUsers, newG.getMemberUsers());
+        assertEquals(newGGroups, newG.getMemberGroups());
+        assertEquals(newG, g);
+    }
 
 }

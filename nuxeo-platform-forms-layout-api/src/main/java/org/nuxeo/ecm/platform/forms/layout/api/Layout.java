@@ -71,8 +71,18 @@ public interface Layout extends Serializable {
      */
     int getColumns();
 
+    /**
+     * Returns widget with given name.
+     * <p>
+     * Only widgets of the first level are retrieved.
+     */
     Widget getWidget(String name);
 
+    /**
+     * Returns a widget map, with widget name as key.
+     * <p>
+     * Only widgets of the first level are retrieved.
+     */
     Map<String, Widget> getWidgetMap();
 
 }

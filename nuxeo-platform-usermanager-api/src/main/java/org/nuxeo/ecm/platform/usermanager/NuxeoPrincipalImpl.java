@@ -51,19 +51,47 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     // service, and some of them already are (email, username e.g id) so
     // configuration may differ
 
-    protected static final String USERNAME_COLUMN = "username";
+    /**
+     * @deprecated: harcoded
+     */
+    @Deprecated
+    public static final String USERNAME_COLUMN = "username";
 
-    protected static final String FIRSTNAME_COLUMN = "firstName";
+    /**
+     * @deprecated: harcoded
+     */
+    @Deprecated
+    public static final String FIRSTNAME_COLUMN = "firstName";
 
-    protected static final String LASTNAME_COLUMN = "lastName";
+    /**
+     * @deprecated: harcoded
+     */
+    @Deprecated
+    public static final String LASTNAME_COLUMN = "lastName";
 
-    protected static final String COMPANY_COLUMN = "company";
+    /**
+     * @deprecated: harcoded
+     */
+    @Deprecated
+    public static final String COMPANY_COLUMN = "company";
 
-    protected static final String PASSWORD_COLUMN = "password";
+    /**
+     * @deprecated: harcoded
+     */
+    @Deprecated
+    public static final String PASSWORD_COLUMN = "password";
 
-    protected static final String EMAIL_COLUMN = "email";
+    /**
+     * @deprecated: harcoded
+     */
+    @Deprecated
+    public static final String EMAIL_COLUMN = "email";
 
-    protected static final String GROUPS_COLUMN = "groups";
+    /**
+     * @deprecated: harcoded
+     */
+    @Deprecated
+    public static final String GROUPS_COLUMN = "groups";
 
     private static final String SCHEMA_NAME = "user";
 

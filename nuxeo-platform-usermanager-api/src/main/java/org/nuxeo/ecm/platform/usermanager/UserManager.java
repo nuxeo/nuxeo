@@ -48,17 +48,21 @@ public interface UserManager {
     boolean validatePassword(String password) throws ClientException;
 
     /**
-     * Retrieves the principal with the given username.
+     * Retrieves the principal with the given username or null if it does not
+     * exist.
      * <p>
      * Can build principals for anonymous and virtual users as well as for users
      * defined in the users directory.
      *
-     * @param username the username.
-     * @return the principal, or null if doesn't exist.
      * @throws ClientException
      */
     NuxeoPrincipal getPrincipal(String username) throws ClientException;
 
+    /**
+     * Returns the nuxeo group with given name or null if it does not exist.
+     *
+     * @throws ClientException
+     */
     NuxeoGroup getGroup(String groupName) throws ClientException;
 
     /**
@@ -73,11 +77,28 @@ public interface UserManager {
      */
     List<NuxeoGroup> searchGroups(String pattern) throws ClientException;
 
+    /**
+     * Returns the list of all user ids.
+     *
+     * @throws ClientException
+     */
     List<String> getUserIds() throws ClientException;
 
+    /**
+     * Creates user with given model.
+     *
+     * @throws ClientException
+     * @throws UserAlreadyExistsException
+     */
     DocumentModel createUser(DocumentModel userModel) throws ClientException,
             UserAlreadyExistsException;
 
+    /**
+     * Updates
+     *
+     * @param userModel
+     * @throws ClientException
+     */
     void updateUser(DocumentModel userModel) throws ClientException;
 
     void deleteUser(DocumentModel userModel) throws ClientException;
@@ -256,5 +277,68 @@ public interface UserManager {
      */
     void setConfiguration(UserManagerDescriptor descriptor)
             throws ClientException;
+
+    // DEPRECATED API
+
+    /**
+     * @deprecated use {@link #getUserModel(String)}
+     */
+    @Deprecated
+    DocumentModel getModelForUser(String name) throws ClientException;
+
+    /**
+     * @deprecated use {@link #getUserIds()} or {@link #searchUsers(null)}
+     */
+    @Deprecated
+    List<NuxeoPrincipal> getAvailablePrincipals() throws ClientException;
+
+    /**
+     * @deprecated use {@link #createUser(DocumentModel)}
+     */
+    @Deprecated
+    void createPrincipal(NuxeoPrincipal principal) throws ClientException;
+
+    /**
+     * @deprecated use {@link #updateUser(DocumentModel)}
+     */
+    @Deprecated
+    void updatePrincipal(NuxeoPrincipal principal) throws ClientException;
+
+    /**
+     * @deprecated use {@link #deleteUser(DocumentModel)}
+     */
+    @Deprecated
+    void deletePrincipal(NuxeoPrincipal principal) throws ClientException;
+
+    /**
+     * @deprecated use {@link #searchUsers(Map, Set)}
+     */
+    @Deprecated
+    List<NuxeoPrincipal> searchByMap(Map<String, Object> filter,
+            Set<String> pattern) throws ClientException;
+
+    /**
+     * @deprecated use {@link #getGroupIds()} or {@link #searchGroups(Map, Set)}
+     */
+    @Deprecated
+    List<NuxeoGroup> getAvailableGroups() throws ClientException;
+
+    /**
+     * @deprecated use {@link #createGroup(DocumentModel)}
+     */
+    @Deprecated
+    void createGroup(NuxeoGroup group) throws ClientException;
+
+    /**
+     * @deprecated use {@link #deleteGroup(DocumentModel)}
+     */
+    @Deprecated
+    void deleteGroup(NuxeoGroup group) throws ClientException;
+
+    /**
+     * @deprecated use {@link #updateGroup(DocumentModel)}
+     */
+    @Deprecated
+    void updateGroup(NuxeoGroup group) throws ClientException;
 
 }

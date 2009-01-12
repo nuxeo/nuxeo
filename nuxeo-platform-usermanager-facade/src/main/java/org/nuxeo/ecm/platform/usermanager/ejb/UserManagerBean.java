@@ -440,4 +440,88 @@ public class UserManagerBean implements UserManager {
         }
     }
 
+    public void createGroup(NuxeoGroup group) throws ClientException {
+        try {
+            getUserManager().createGroup(group);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public void createPrincipal(NuxeoPrincipal principal)
+            throws ClientException {
+        try {
+            getUserManager().createPrincipal(principal);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public void deleteGroup(NuxeoGroup group) throws ClientException {
+        try {
+            getUserManager().deleteGroup(group);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public void deletePrincipal(NuxeoPrincipal principal)
+            throws ClientException {
+        try {
+            getUserManager().deletePrincipal(principal);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public List<NuxeoGroup> getAvailableGroups() throws ClientException {
+        try {
+            return getUserManager().getAvailableGroups();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public List<NuxeoPrincipal> getAvailablePrincipals() throws ClientException {
+        try {
+            return getUserManager().getAvailablePrincipals();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public DocumentModel getModelForUser(String name) throws ClientException {
+        try {
+            return getUserManager().getModelForUser(name);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public List<NuxeoPrincipal> searchByMap(Map<String, Object> filter,
+            Set<String> pattern) throws ClientException {
+        try {
+            return getUserManager().searchByMap(filter, pattern);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public void updateGroup(NuxeoGroup group) throws ClientException {
+        try {
+            getUserManager().updateGroup(group);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public void updatePrincipal(NuxeoPrincipal principal)
+            throws ClientException {
+        try {
+            getUserManager().updatePrincipal(principal);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
 }

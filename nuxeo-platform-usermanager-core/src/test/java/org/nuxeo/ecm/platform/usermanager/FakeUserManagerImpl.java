@@ -364,4 +364,48 @@ public class FakeUserManagerImpl implements UserManager {
         return "user";
     }
 
+    public void createGroup(NuxeoGroup group) throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    public void createPrincipal(NuxeoPrincipal principal)
+            throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    public void deleteGroup(NuxeoGroup group) throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    public void deletePrincipal(NuxeoPrincipal principal)
+            throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<NuxeoGroup> getAvailableGroups() throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<NuxeoPrincipal> getAvailablePrincipals() throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    public DocumentModel getModelForUser(String name) throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<NuxeoPrincipal> searchByMap(Map<String, Object> filter,
+            Set<String> pattern) throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    public void updateGroup(NuxeoGroup group) throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    public void updatePrincipal(NuxeoPrincipal principal)
+            throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
 }

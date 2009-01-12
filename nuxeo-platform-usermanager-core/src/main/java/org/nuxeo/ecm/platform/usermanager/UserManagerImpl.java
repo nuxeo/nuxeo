@@ -68,47 +68,47 @@ public class UserManagerImpl implements UserManager {
 
     public static final String DEFAULT_ANONYMOUS_USER_ID = "Anonymous";
 
-    protected final DirectoryService dirService;
+    private final DirectoryService dirService;
 
-    protected String userDirectoryName;
+    private String userDirectoryName;
 
-    protected String userSchemaName;
+    private String userSchemaName;
 
-    protected String userIdField;
+    private String userIdField;
 
-    protected String userEmailField;
+    private String userEmailField;
 
-    protected Map<String, MatchType> userSearchFields;
+    private Map<String, MatchType> userSearchFields;
 
-    protected String groupDirectoryName;
+    private String groupDirectoryName;
 
-    protected String groupSchemaName;
+    private String groupSchemaName;
 
-    protected String groupIdField;
+    private String groupIdField;
 
-    protected String groupMembersField;
+    private String groupMembersField;
 
-    protected String groupSubGroupsField;
+    private String groupSubGroupsField;
 
-    protected String groupParentGroupsField;
+    private String groupParentGroupsField;
 
-    protected String groupSortField;
+    private String groupSortField;
 
-    protected String defaultGroup;
+    private String defaultGroup;
 
-    protected String defaultRootLogin;
+    private String defaultRootLogin;
 
-    protected String userSortField;
+    private String userSortField;
 
-    protected String userListingMode;
+    private String userListingMode;
 
-    protected String groupListingMode;
+    private String groupListingMode;
 
-    protected Pattern userPasswordPattern;
+    private Pattern userPasswordPattern;
 
-    protected VirtualUser anonymousUser;
+    private VirtualUser anonymousUser;
 
-    protected final Map<String, VirtualUserDescriptor> virtualUsers;
+    private final Map<String, VirtualUserDescriptor> virtualUsers;
 
     public UserManagerImpl() {
         dirService = Framework.getLocalService(DirectoryService.class);
@@ -228,7 +228,8 @@ public class UserManagerImpl implements UserManager {
         return anonymousUserId;
     }
 
-    protected void setVirtualUsers(Map<String, VirtualUserDescriptor> virtualUsers) {
+    protected void setVirtualUsers(
+            Map<String, VirtualUserDescriptor> virtualUsers) {
         this.virtualUsers.clear();
         if (virtualUsers != null) {
             this.virtualUsers.putAll(virtualUsers);
@@ -641,7 +642,8 @@ public class UserManagerImpl implements UserManager {
         }
     }
 
-    protected String getGroupId(DocumentModel groupModel) throws ClientException {
+    protected String getGroupId(DocumentModel groupModel)
+            throws ClientException {
         Object groupIdValue = groupModel.getProperty(groupSchemaName,
                 groupIdField);
         if (groupIdValue != null && !(groupIdValue instanceof String)) {
@@ -903,7 +905,6 @@ public class UserManagerImpl implements UserManager {
             userDir.updateEntry(userModel);
             userDir.commit();
             notifyUserChanged(userId);
-
         } finally {
             if (userDir != null) {
                 userDir.close();
@@ -914,6 +915,96 @@ public class UserManagerImpl implements UserManager {
     public DocumentModel getBareGroupModel() throws ClientException {
         String schema = dirService.getDirectorySchema(groupDirectoryName);
         return BaseSession.createEntryModel(null, schema, null, null);
+    }
+
+    public void createGroup(NuxeoGroup group) throws ClientException {
+        DocumentModel newGroupModel = getBareGroupModel();
+        newGroupModel.setProperty(groupSchemaName, groupIdField,
+                group.getName());
+        newGroupModel.setProperty(groupSchemaName, groupMembersField,
+                group.getMemberUsers());
+        newGroupModel.setProperty(groupSchemaName, groupSubGroupsField,
+                group.getMemberGroups());
+        createGroup(newGroupModel);
+    }
+
+    public void createPrincipal(NuxeoPrincipal principal)
+            throws ClientException {
+        createUser(principal.getModel());
+    }
+
+    public void deleteGroup(NuxeoGroup group) throws ClientException {
+        deleteGroup(group.getName());
+    }
+
+    public void deletePrincipal(NuxeoPrincipal principal)
+            throws ClientException {
+        deleteUser(principal.getName());
+    }
+
+    public List<NuxeoGroup> getAvailableGroups() throws ClientException {
+        DocumentModelList groupModels = searchGroups(
+                Collections.<String, Object> emptyMap(), null);
+        List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>(groupModels.size());
+        for (DocumentModel groupModel : groupModels) {
+            groups.add(makeGroup(groupModel));
+        }
+        return groups;
+    }
+
+    public List<NuxeoPrincipal> getAvailablePrincipals() throws ClientException {
+        DocumentModelList userModels = searchUsers(
+                Collections.<String, Object> emptyMap(), null);
+        List<NuxeoPrincipal> users = new ArrayList<NuxeoPrincipal>(
+                userModels.size());
+        for (DocumentModel userModel : userModels) {
+            users.add(makePrincipal(userModel));
+        }
+        return users;
+    }
+
+    public DocumentModel getModelForUser(String name) throws ClientException {
+        return getUserModel(name);
+    }
+
+    public List<NuxeoPrincipal> searchByMap(Map<String, Object> filter,
+            Set<String> pattern) throws ClientException {
+        Session userDir = null;
+        try {
+            userDir = dirService.open(userDirectoryName);
+            DocumentModelList entries = userDir.query(filter, pattern);
+            List<NuxeoPrincipal> principals = new ArrayList<NuxeoPrincipal>(
+                    entries.size());
+            for (DocumentModel entry : entries) {
+                principals.add(makePrincipal(entry));
+            }
+            if (isAnonymousMatching(filter, pattern)) {
+                principals.add(makeAnonymousPrincipal());
+            }
+            return principals;
+        } finally {
+            if (userDir != null) {
+                userDir.close();
+            }
+        }
+    }
+
+    public void updateGroup(NuxeoGroup group) throws ClientException {
+        // XXX: need to refetch it for tests to pass, i don't get why (session
+        // id is used maybe?)
+        DocumentModel newGroupModel = getGroupModel(group.getName());
+        newGroupModel.setProperty(groupSchemaName, groupIdField,
+                group.getName());
+        newGroupModel.setProperty(groupSchemaName, groupMembersField,
+                group.getMemberUsers());
+        newGroupModel.setProperty(groupSchemaName, groupSubGroupsField,
+                group.getMemberGroups());
+        updateGroup(newGroupModel);
+    }
+
+    public void updatePrincipal(NuxeoPrincipal principal)
+            throws ClientException {
+        updateUser(principal.getModel());
     }
 
 }
