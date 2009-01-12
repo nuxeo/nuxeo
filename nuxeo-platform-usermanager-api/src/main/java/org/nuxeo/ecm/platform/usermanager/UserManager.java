@@ -80,13 +80,15 @@ public interface UserManager {
     /**
      * Returns the list of all user ids.
      *
+     * @since 5.2M4
      * @throws ClientException
      */
     List<String> getUserIds() throws ClientException;
 
     /**
-     * Creates user with given model.
+     * Creates user from given model.
      *
+     * @since 5.2M4
      * @throws ClientException
      * @throws UserAlreadyExistsException
      */
@@ -94,29 +96,71 @@ public interface UserManager {
             UserAlreadyExistsException;
 
     /**
-     * Updates
+     * Updates user represented by given model
      *
      * @param userModel
+     * @since 5.2M4
      * @throws ClientException
      */
     void updateUser(DocumentModel userModel) throws ClientException;
 
+    /**
+     * Deletes user represented by given model
+     *
+     * @since 5.2M4
+     * @throws DirectoryException if given entry does not exist
+     * @throws ClientException
+     */
     void deleteUser(DocumentModel userModel) throws ClientException;
 
+    /**
+     * Deletes user with given id
+     *
+     * @since 5.2M4
+     * @throws DirectoryException if given entry does not exist
+     * @throws ClientException
+     */
     void deleteUser(String userId) throws ClientException;
 
     /**
      * Returns a bare user model.
-     *
      * <p>
      * Can be used for user creation/search screens.
+     *
+     * @since 5.2M4
+     * @throws ClientException
      */
     DocumentModel getBareUserModel() throws ClientException;
 
+    /**
+     * Returns the document model representing user with given id or null if it
+     * does not exist.
+     *
+     * @since 5.2M4
+     * @throws ClientException
+     */
     DocumentModel getUserModel(String userName) throws ClientException;
 
+    /**
+     * Returns users matching given pattern
+     * <p>
+     * Pattern is used to field a filter and fulltext map according to users
+     * search fields configuration. Search is performed on each of these fields
+     * (OR).
+     *
+     * @since 5.2M4
+     * @throws ClientException
+     */
     DocumentModelList searchUsers(String pattern) throws ClientException;
 
+    /**
+     * Returns users matching given criteria
+     *
+     * @param filter filter with field names as keys
+     * @param fulltext field names used for fulltext match
+     * @since 5.2M4
+     * @throws ClientException
+     */
     DocumentModelList searchUsers(Map<String, Object> filter,
             Set<String> fulltext) throws ClientException;
 
@@ -126,28 +170,83 @@ public interface UserManager {
 
     Pattern getUserPasswordPattern() throws ClientException;
 
+    /**
+     * Returns the list of all groups ids.
+     *
+     * @since 5.2M4
+     * @throws ClientException
+     */
     List<String> getGroupIds() throws ClientException;
 
+    /**
+     * Returns groups matching given criteria
+     *
+     * @param filter filter with field names as keys
+     * @param fulltext field names used for fulltext match
+     * @since 5.2M4
+     * @throws ClientException
+     */
     DocumentModelList searchGroups(Map<String, Object> filter,
             Set<String> fulltext) throws ClientException;
 
+    /**
+     * Creates a group from given model
+     *
+     * @return the created group model
+     * @since 5.2M4
+     * @throws ClientException
+     * @throws GroupAlreadyExistsException
+     */
     DocumentModel createGroup(DocumentModel groupModel) throws ClientException,
             GroupAlreadyExistsException;
 
+    /**
+     * Updates group represented by given model
+     *
+     * @since 5.2M4
+     * @throws DirectoryException if given entry does not exist
+     * @throws ClientException
+     */
     void updateGroup(DocumentModel groupModel) throws ClientException;
 
+    /**
+     * Deletes group represented by given model
+     *
+     * @param groupModel
+     * @since 5.2M4
+     * @throws DirectoryException if given entry does not exist
+     * @throws ClientException
+     */
     void deleteGroup(DocumentModel groupModel) throws ClientException;
 
+    /**
+     * Deletes group with given id
+     *
+     * @param groupId
+     * @since 5.2M4
+     * @throws DirectoryException if given entry does not exist
+     * @throws ClientException
+     */
     void deleteGroup(String groupId) throws ClientException;
 
     /**
      * Returns a bare group model.
-     *
      * <p>
      * Can be used for group creation/search screens.
+     *
+     * @since 5.2M4
+     * @throws ClientException
      */
     DocumentModel getBareGroupModel() throws ClientException;
 
+    /**
+     * Return the group document model with this id or null if group does not
+     * exist.
+     *
+     * @param groupName the group identifier
+     * @since 5.2M4
+     * @throws ClientException
+     */
     DocumentModel getGroupModel(String groupName) throws ClientException;
 
     String getDefaultGroup();
@@ -204,8 +303,20 @@ public interface UserManager {
      */
     String getUserDirectoryName() throws ClientException;
 
+    /**
+     * Returns the user directory schema name
+     *
+     * @since 5.2M4
+     * @throws ClientException
+     */
     String getUserSchemaName() throws ClientException;
 
+    /**
+     * Returns the user directory id field
+     *
+     * @since 5.2M4
+     * @throws ClientException
+     */
     String getUserIdField() throws ClientException;
 
     /**
@@ -233,8 +344,20 @@ public interface UserManager {
      */
     String getGroupDirectoryName() throws ClientException;
 
+    /**
+     * Returns the group directory schema name
+     *
+     * @since 5.2M4
+     * @throws ClientException
+     */
     String getGroupSchemaName() throws ClientException;
 
+    /**
+     * Returns the group directory id field
+     *
+     * @since 5.2M4
+     * @throws ClientException
+     */
     String getGroupIdField() throws ClientException;
 
     /**

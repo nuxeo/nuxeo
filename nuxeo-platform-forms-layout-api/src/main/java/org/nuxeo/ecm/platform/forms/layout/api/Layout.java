@@ -75,6 +75,8 @@ public interface Layout extends Serializable {
      * Returns widget with given name.
      * <p>
      * Only widgets of the first level are retrieved.
+     *
+     * @since 5.2M4
      */
     Widget getWidget(String name);
 
@@ -82,6 +84,8 @@ public interface Layout extends Serializable {
      * Returns a widget map, with widget name as key.
      * <p>
      * Only widgets of the first level are retrieved.
+     *
+     * @since 5.2M4
      */
     Map<String, Widget> getWidgetMap();
 
