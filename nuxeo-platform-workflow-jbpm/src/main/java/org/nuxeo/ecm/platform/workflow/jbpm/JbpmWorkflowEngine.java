@@ -1284,6 +1284,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
             ctx.closeContext();
         }
 
+
         return workItemDefinitions;
     }
 
@@ -1558,7 +1559,8 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
 
         String queryStr = "select si.processInstance, si.value "
                 + "from org.jbpm.context.exe.variableinstance.StringInstance si "
-                + "where si.name = :siName " + "and si.value in (:groupNames) "
+                + "where si.name = :siName "
+                + "and si.value in (:groupNames) "
                 + "and si.processInstance.end is null ";
         Query query;
         try {

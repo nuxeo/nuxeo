@@ -114,14 +114,14 @@
         <layout>file</layout>
       </layouts>
       <!-- old layout config, to remove so that new layout is used -->
-      <layout>
+      <!-- layout>
         <widget jsfcomponent="h:inputText" schemaname="dublincore"
           fieldname="title" required="true" />
         <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
           fieldname="description" />
         <widget jsfcomponent="t:inputFileUpload" schemaname="file"
           fieldname="content" />
-      </layout>
+      </layout-->
     </type>
 
     <type id="SectionRoot" coretype="SectionRoot">
