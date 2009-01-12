@@ -7,5 +7,6 @@ Provide-Package: org.nuxeo.ecm.platform.webengine.jsf
 Nuxeo-Component: OSGI-INF/webengine-layouts-contrib.xml,
  OSGI-INF/webengine-types-contrib.xml,
  OSGI-INF/sites-deployment-contrib.xml
+Require-Bundle: org.nuxeo.ecm.webapp.core
 Nuxeo-RequiredBy: org.nuxeo.ecm.war
 Export-Package: org.nuxeo.webengine.site
