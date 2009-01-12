@@ -57,6 +57,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
+    <gwt.version>1.5.3</gwt.version>
   </properties>
 
   <dependencyManagement>
@@ -765,6 +766,34 @@
         <version>4.0.5.GA</version>
         <scope>provided</scope>
       </dependency>
+      
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-user</artifactId>
+        <version>${gwt.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-dev</artifactId>
+        <version>${gwt.version}</version>
+        <scope>provided</scope>
+        <classifier>windows</classifier>
+      </dependency>
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-dev</artifactId>
+        <version>${gwt.version}</version>
+        <scope>provided</scope>
+        <classifier>mac</classifier>
+      </dependency>
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-dev</artifactId>
+        <version>${gwt.version}</version>
+        <scope>provided</scope>
+        <classifier>linux</classifier>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -1015,6 +1044,12 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-eclipse-plugin</artifactId>
           <version>2.4</version>
+        </plugin>
+            
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>gwt-maven-plugin</artifactId>
+          <version>1.0</version>
         </plugin>
       </plugins>
     </pluginManagement>
