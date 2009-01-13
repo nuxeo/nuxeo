@@ -35,6 +35,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * XXX : this not actually serializable because Bean Proxy is not serializable.
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  *
  */

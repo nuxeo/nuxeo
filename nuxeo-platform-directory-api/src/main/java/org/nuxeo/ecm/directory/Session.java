@@ -275,7 +275,7 @@ public interface Session {
     /**
      * Checks that the credentials provided by the UserManager match those
      * registered in the directory. If username is not in the directory,
-     * this should return false instead of throrwing an exception.
+     * this should return false instead of throwing an exception.
      *
      * @param username
      * @param password

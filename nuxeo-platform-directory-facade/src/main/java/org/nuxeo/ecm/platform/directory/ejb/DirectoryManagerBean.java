@@ -19,23 +19,19 @@
 
 package org.nuxeo.ecm.platform.directory.ejb;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Local;
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
 import javax.ejb.Remote;
-import javax.ejb.Stateful;
-import javax.ejb.Remove;
+import javax.ejb.Stateless;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Directory;
@@ -48,30 +44,27 @@ import org.nuxeo.ecm.directory.impl.DirectoryClientImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Facade Bean provide Remoting API for DirectoryService
+ * 
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
  */
-@Stateful
-@SerializedConcurrentAccess
+@Stateless
 @Remote(DirectoryManager.class)
 @Local(DirectoryManager.class)
 public class DirectoryManagerBean implements DirectoryManager {
+	
+    @SuppressWarnings("unused")
+	private static final Log log = LogFactory.getLog(DirectoryManagerBean.class);
 
-    private static final Log log = LogFactory.getLog(DirectoryManagerBean.class);
+    private static final Map<Long, Session> sessionMap = new ConcurrentHashMap<Long, Session>();
 
-    // do not forget to make the following maps thread-safe with
-    // Collections.synchronizedMap if the @SerializedConcurrentAccess annotation 
-    // is ever removed
+    private static final Map<Long, String> sessionDirectoryNames = new ConcurrentHashMap<Long, String>();
 
-    private final Map<Long, Session> sessionMap = new HashMap<Long, Session>();
-
-    private final Map<Long, String> sessionDirectoryNames = new HashMap<Long, String>();
-
-    private final AtomicLong sessionIdCounter = new AtomicLong(0);
+    private static final AtomicLong sessionIdCounter = new AtomicLong(0);
 
     private transient DirectoryService directoryService;
 
-    @PostActivate
     @PostConstruct
     public void initialize() {
         getService();
@@ -82,30 +75,6 @@ public class DirectoryManagerBean implements DirectoryManager {
             directoryService = Framework.getLocalService(DirectoryService.class);
         }
         return directoryService;
-    }
-
-    @PrePassivate
-    @Remove
-    public void cleanupOpenSessions() {
-        // close any open directory sessions upon passivation or removal
-        // the sessionMap should be empty anyway since the client code should
-        // only use short lived directory clients in try / finally blocks
-        if (!sessionMap.isEmpty()) {
-            log.warn(String.format(
-                    "about to close directory %d directory sessions:"
-                            + " client code should not keep open directory session",
-                    sessionMap.size()));
-        }
-        for (Session session : sessionMap.values()) {
-            try {
-                session.close();
-            } catch (DirectoryException e) {
-                log.error("failed to close directory session properly: "
-                        + e.getMessage(), e);
-            }
-        }
-        sessionMap.clear();
-        sessionDirectoryNames.clear();
     }
 
     private Session getSession(long sessionId) throws DirectoryException {
@@ -320,7 +289,7 @@ public class DirectoryManagerBean implements DirectoryManager {
     public Session open(String directoryName) throws DirectoryException {
         try {
             Session session = getService().open(directoryName);
-            long id =sessionIdCounter.incrementAndGet();
+            long id = sessionIdCounter.incrementAndGet();
             sessionMap.put(id, session);
             sessionDirectoryNames.put(id, directoryName);
             return new DirectoryClientImpl(id);
