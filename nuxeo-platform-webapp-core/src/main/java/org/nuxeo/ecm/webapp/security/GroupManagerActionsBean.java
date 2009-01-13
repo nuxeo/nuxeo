@@ -226,8 +226,8 @@ public class GroupManagerActionsBean implements GroupManagerActions {
         } catch (GroupAlreadyExistsException e) {
             String message = resourcesAccessor.getMessages().get(
                     "error.groupManager.groupAlreadyExists");
-            facesMessages.addToControl("groupName", FacesMessage.SEVERITY_INFO,
-                    message);
+            facesMessages.addToControl("groupName",
+                    FacesMessage.SEVERITY_ERROR, message);
             return null;
         }
     }

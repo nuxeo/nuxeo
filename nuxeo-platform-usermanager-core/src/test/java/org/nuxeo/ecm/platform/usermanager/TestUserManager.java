@@ -31,6 +31,8 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
+import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
+import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -253,6 +255,13 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertEquals(groupNamesWithDefault, groups);
         assertEquals(roleNames, newPrincipal.getRoles());
         assertEquals("test_u1", newPrincipal.getName());
+
+        try {
+            userManager.createUser(user);
+            fail("Should have raised UserAlreadyExistsException");
+        } catch (UserAlreadyExistsException e) {
+            // ok
+        }
     }
 
     public void testCreateGroup() throws Exception {
@@ -289,13 +298,12 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertEquals(g2Groups, newG2.getMemberGroups());
 
         // try to create the group again and test if an exception is thrown
-        boolean gotException = false;
         try {
             userManager.createGroup(g1);
-        } catch (ClientException e) {
-            gotException = true;
+            fail("Should have raised GroupAlreadyExistsException");
+        } catch (GroupAlreadyExistsException e) {
+            // ok
         }
-        assertTrue(gotException);
     }
 
     public void testGetTopLevelGroups() throws Exception {
