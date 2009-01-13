@@ -18,7 +18,9 @@
 package org.nuxeo.ecm.core.convert.service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -36,53 +38,56 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Runtime Component that also provides the POJO implementation of the {@link ConversionService}
+ * Runtime Component that also provides the POJO implementation of the
+ * {@link ConversionService}
  *
  * @author tiry
  *
  */
-public class ConversionServiceImpl extends DefaultComponent implements ConversionService {
+public class ConversionServiceImpl extends DefaultComponent implements
+        ConversionService {
 
-    private static final Log log = LogFactory.getLog(ConversionServiceImpl.class);
+    private static final Log log = LogFactory
+            .getLog(ConversionServiceImpl.class);
 
-    public static final String CONVERTER_EP ="converter";
-    public static final String CONFIG_EP ="configuration";
+    public static final String CONVERTER_EP = "converter";
+    public static final String CONFIG_EP = "configuration";
 
-    protected static Map<String , ConverterDescriptor> converterDescriptors = new HashMap<String, ConverterDescriptor>();
+    protected static Map<String, ConverterDescriptor> converterDescriptors = new HashMap<String, ConverterDescriptor>();
 
     protected static GlobalConfigDescriptor config = new GlobalConfigDescriptor();
 
-    /** Component implementation **/
+    /** Component implementation * */
 
-    public void registerContribution(Object contribution, String extensionPoint,
-            ComponentInstance contributor) throws Exception {
+    public void registerContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
 
         if (CONVERTER_EP.equals(extensionPoint)) {
             ConverterDescriptor desc = (ConverterDescriptor) contribution;
             registerConverter(desc);
-        }
-        else if (CONFIG_EP.equals(extensionPoint)) {
+        } else if (CONFIG_EP.equals(extensionPoint)) {
             GlobalConfigDescriptor desc = (GlobalConfigDescriptor) contribution;
             config.update(desc);
-        }
-        else {
-            log.error("Unable to handle unknown extensionPoint " + extensionPoint);
+        } else {
+            log.error("Unable to handle unknown extensionPoint "
+                    + extensionPoint);
         }
     }
 
-    public void unregisterContribution(Object contribution, String extensionPoint,
-            ComponentInstance contributor) throws Exception {
+    public void unregisterContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
     }
 
-
-    /** Component API **/
+    /** Component API * */
 
     public static Converter getConverter(String converterName) {
-        ConverterDescriptor desc =  converterDescriptors.get(converterName);
+        ConverterDescriptor desc = converterDescriptors.get(converterName);
         if (desc == null) {
             return null;
         }
-        return  desc.getConverterInstance();
+        return desc.getConverterInstance();
     }
 
     public static ConverterDescriptor getConverterDesciptor(String converterName) {
@@ -97,13 +102,13 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
 
         if (converterDescriptors.containsKey(desc.getConverterName())) {
 
-            ConverterDescriptor existing = converterDescriptors.get(desc.getConverterName());
+            ConverterDescriptor existing = converterDescriptors.get(desc
+                    .getConverterName());
             desc = existing.merge(desc);
         }
         try {
             desc.initConverter();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Unable to init converter " + desc.getConverterName(), e);
             return;
         }
@@ -119,31 +124,35 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         return config.isCacheEnabled();
     }
 
-
     public static String getCacheBasePath() {
         return config.getCachingDirectory();
     }
 
-    /** Service API ****/
+    /** Service API *** */
 
+    public List<String> getRegistredConverters() {
+        List<String> converterNames = new ArrayList<String>();
+        converterNames.addAll(converterDescriptors.keySet());
+        return converterNames;
+    }
 
     public BlobHolder convert(String converterName, BlobHolder blobHolder,
-            Map<String, Serializable> parameters)  throws ConversionException{
+            Map<String, Serializable> parameters) throws ConversionException {
 
-        ConverterDescriptor desc =  converterDescriptors.get(converterName);
+        ConverterDescriptor desc = converterDescriptors.get(converterName);
         if (desc == null) {
-            throw new ConversionException("Converter " + converterName + " can not be found");
+            throw new ConversionException("Converter " + converterName
+                    + " can not be found");
         }
 
-
-        String cacheKey = CacheKeyGenerator.computeKey(converterName, blobHolder, parameters);
+        String cacheKey = CacheKeyGenerator.computeKey(converterName,
+                blobHolder, parameters);
 
         BlobHolder cachedResult = ConversionCacheHolder.getFromCache(cacheKey);
 
-        if (cachedResult!=null) {
+        if (cachedResult != null) {
             return cachedResult;
-        }
-        else {
+        } else {
             Converter converter = desc.getConverterInstance();
 
             BlobHolder result = converter.convert(blobHolder, parameters);
@@ -159,19 +168,22 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     }
 
     public BlobHolder convertToMimeType(String destinationMimeType,
-            BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
+            BlobHolder blobHolder, Map<String, Serializable> parameters)
+            throws ConversionException {
 
         String converterName = null;
         try {
             String srcMt = blobHolder.getBlob().getMimeType();
-            converterName = MimeTypeTranslationHelper.getConverterName(srcMt, destinationMimeType);
-        }
-        catch (ClientException e) {
-            throw new ConversionException("error while trying to determine converter name", e);
+            converterName = MimeTypeTranslationHelper.getConverterName(srcMt,
+                    destinationMimeType);
+        } catch (ClientException e) {
+            throw new ConversionException(
+                    "error while trying to determine converter name", e);
         }
 
-        if (converterName==null) {
-            throw new ConversionException("unable to find converter for target mime type");
+        if (converterName == null) {
+            throw new ConversionException(
+                    "unable to find converter for target mime type");
         }
 
         return convert(converterName, blobHolder, parameters);
@@ -179,9 +191,8 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
 
     public String getConverterName(String sourceMimeType,
             String destinationMimeType) {
-        return MimeTypeTranslationHelper.getConverterName(sourceMimeType, destinationMimeType);
+        return MimeTypeTranslationHelper.getConverterName(sourceMimeType,
+                destinationMimeType);
     }
-
-
 
 }
