@@ -21,7 +21,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 
 /**
  * Event implementation.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -33,62 +33,59 @@ public class EventImpl implements Event {
     protected int flags;
     protected long time;
     protected EventContext ctx;
-    
-    
+
+
     public EventImpl(String name, EventContext ctx) {
-        this (name, ctx, 0);
+        this(name, ctx, 0);
     }
-    
+
     public EventImpl(String name, EventContext ctx, int flags) {
         this.name = name;
         this.ctx = ctx;
         this.time = System.currentTimeMillis();
         this.flags = flags;
     }
-    
+
     public void setFlags(int flags) {
         this.flags |= flags;
     }
-    
+
     public int getFlags() {
         return flags;
     }
-    
+
     public boolean isFlagSet(int flags) {
         return (this.flags & flags) == flags;
     }
-    
-    public void clearFlags(int flags) {
-        this.flags &= ~flags; 
-    }
 
+    public void clearFlags(int flags) {
+        this.flags &= ~flags;
+    }
 
     public EventContext getContext() {
         return ctx;
     }
 
-
-    public String getName() {        
+    public String getName() {
         return name;
     }
-
 
     public long getTime() {
         return time;
     }
-    
+
     public void cancel() {
         setFlags(CANCEL);
     }
-    
+
     public boolean isCanceled() {
         return isFlagSet(CANCEL);
     }
-    
+
     public boolean isInline() {
         return isFlagSet(INLINE);
     }
-    
+
     public void setInline(boolean inline) {
         if (inline) {
             setFlags(INLINE);
@@ -96,11 +93,11 @@ public class EventImpl implements Event {
             clearFlags(INLINE);
         }
     }
-    
+
     public boolean isCommitEvent() {
         return isFlagSet(COMMIT);
     }
-    
+
     public void setIsCommitEvent(boolean isCommit) {
         if (isCommit) {
             setFlags(COMMIT);
@@ -108,11 +105,11 @@ public class EventImpl implements Event {
             clearFlags(COMMIT);
         }
     }
-    
+
     public boolean isLocal() {
         return isFlagSet(LOCAL);
     }
-    
+
     public void setLocal(boolean isLocal) {
         if (isLocal) {
             setFlags(LOCAL);
@@ -120,13 +117,13 @@ public class EventImpl implements Event {
             clearFlags(LOCAL);
         }
     }
-    
+
     public boolean isPublic() {
         return !isLocal();
     }
-    
+
     public void setPublic(boolean isPublic) {
         setLocal(!isPublic);
     }
-    
+
 }

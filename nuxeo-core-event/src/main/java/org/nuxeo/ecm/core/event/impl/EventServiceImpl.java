@@ -32,33 +32,32 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 
 /**
- * 
  * This implementation is always recording the event even if no transaction was started.
  * If the transaction was not started the SAVE event is used to flush the event bundle.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class EventServiceImpl implements EventService {
 
     private static final Log log  = LogFactory.getLog(EventServiceImpl.class);
-    
+
     protected final static ThreadLocal<EventBundleImpl> bundle = new ThreadLocal<EventBundleImpl>() {
         protected EventBundleImpl initialValue() { return new EventBundleImpl(); };
     };
-    
+
     protected ListenerList listeners;
     protected ListenerList postCommitListeners;
     protected AssocMap eventDups;
-    
-    
+
+
     public EventServiceImpl() {
         EntryComparator cmp = new EntryComparator();
         this.listeners = new ListenerList(cmp);
         this.postCommitListeners = new ListenerList(cmp);
         eventDups = new AssocMap();
     }
-    
+
     public void addEventListener(EventListenerDescriptor listener) {
         try {
             EventListener el = listener.asEventListener();
@@ -66,13 +65,14 @@ public class EventServiceImpl implements EventService {
                 listeners.add(new Entry<EventListener>(el, listener.getPriority(), listener.getEvents()));
             } else {
                 PostCommitEventListener pcel = listener.asPostCommitListener();
-                postCommitListeners.add(new Entry<PostCommitEventListener>(pcel, listener.getPriority(), listener.getEvents()));
+                postCommitListeners.add(
+                        new Entry<PostCommitEventListener>(pcel, listener.getPriority(), listener.getEvents()));
             }
         } catch (Exception e) {
             log.error("Failed to register event listener", e);
         }
     }
-    
+
     public void removeEventListener(EventListenerDescriptor listener) {
         try {
             EventListener el = listener.asEventListener();
@@ -80,14 +80,14 @@ public class EventServiceImpl implements EventService {
                 listeners.remove(new Entry<EventListener>(el, listener.getPriority(), listener.getEvents()));
             } else {
                 PostCommitEventListener pcel = listener.asPostCommitListener();
-                postCommitListeners.remove(new Entry<PostCommitEventListener>(pcel, listener.getPriority(), listener.getEvents()));
+                postCommitListeners.remove(
+                        new Entry<PostCommitEventListener>(pcel, listener.getPriority(), listener.getEvents()));
             }
         } catch (Exception e) {
             log.error("Failed to register event listener", e);
         }
     }
-    
-    
+
     public void fireEvent(String name, EventContext context) throws ClientException {
         fireEvent(new EventImpl(name, context));
     }
@@ -95,7 +95,7 @@ public class EventServiceImpl implements EventService {
     @SuppressWarnings("unchecked")
     public void fireEvent(Event event) throws ClientException {
         Object[] ar = listeners.getListeners();
-        if (!event.isInline()) { // record the event       
+        if (!event.isInline()) { // record the event
             EventBundleImpl b = bundle.get();
             b.push(event);
             // check for commit events to flush the event bundle
@@ -114,21 +114,19 @@ public class EventServiceImpl implements EventService {
             }
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     public void fireEventBundle(EventBundle event) throws ClientException {
         Object[] ar = postCommitListeners.getListeners();
         for (Object obj : ar) {
-            (((Entry<PostCommitEventListener>)obj).listener).handleEvent(event);
+            ((Entry<PostCommitEventListener>) obj).listener.handleEvent(event);
         }
     }
-    
 
-    
     public void transactionStarted() {
         bundle.get().setTransacted(true);
     }
-    
+
     public void transactionCommited() throws ClientException {
         EventBundleImpl b = bundle.get();
         bundle.remove();
@@ -136,22 +134,19 @@ public class EventServiceImpl implements EventService {
             fireEventBundle(b);
         }
     }
-    
+
     public void transactionRollbacked() {
         bundle.remove();
     }
-    
+
     public boolean isTransactionStarted() {
         return bundle.get().isTransacted();
     }
-    
-    
+
+
     protected boolean isSaveEvent(Event event) {
         return event.getName().equals(DocumentEventTypes.SESSION_SAVED);
     }
-    
-    
-    
 
     /**
      * A listener entry having a priority
@@ -167,25 +162,24 @@ public class EventServiceImpl implements EventService {
             this.listener = listener;
             this.priority = priority;
             this.events = events;
-        }        
+        }
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof Entry<?>) {
-                return listener.getClass() == (((Entry<?>)obj).listener.getClass());    
+                return listener.getClass() == ((Entry<?>) obj).listener.getClass();
             }
             return false;
         }
-        
+
         public final boolean acceptEvent(String eventName) {
-            return events == null || events.contains(eventName); 
+            return events == null || events.contains(eventName);
         }
     }
-    
+
     static class EntryComparator implements Comparator<Entry<?>> {
         public int compare(Entry<?> o1, Entry<?> o2) {
             return o1.priority - o2.priority;
         }
     }
 
-    
 }

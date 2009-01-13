@@ -29,21 +29,20 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class EventServiceComponent extends DefaultComponent {
 
     public final static String EVENT_LISTENER_XP = "listener";
-    
+
 
     protected EventServiceImpl service;
-    
+
     @Override
     public void activate(ComponentContext context) throws Exception {
         this.service = new EventServiceImpl();
     }
-    
-    
+
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         service = null;
     }
-    
+
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
@@ -56,7 +55,7 @@ public class EventServiceComponent extends DefaultComponent {
             }
         }
     }
-    
+
     @Override
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
@@ -65,7 +64,7 @@ public class EventServiceComponent extends DefaultComponent {
             service.removeEventListener((EventListenerDescriptor)contribution);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getAdapter(Class<T> adapter) {
@@ -74,5 +73,5 @@ public class EventServiceComponent extends DefaultComponent {
         }
         return null;
     }
-    
+
 }

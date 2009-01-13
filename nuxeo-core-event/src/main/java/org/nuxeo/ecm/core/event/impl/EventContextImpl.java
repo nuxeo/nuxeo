@@ -31,26 +31,24 @@ import org.nuxeo.ecm.core.event.EventContext;
  */
 public class EventContextImpl implements EventContext {
 
-
     private static final long serialVersionUID = 1L;
 
-    protected final static Object[] EMPTY = new Object[0];
+    protected static final Object[] EMPTY = new Object[0];
     protected Object[] args;
     protected HashMap<String, Serializable> properties;
-    
+
     protected transient CoreSession session;
     protected transient NuxeoPrincipal principal;
-    
-    
+
+
     /**
      * Constructor to be used by derived classes
      */
     protected EventContextImpl() {
-        
     }
 
     public EventContextImpl(Object ... args) {
-        this (null, null, args);
+        this(null, null, args);
     }
 
     public EventContextImpl(CoreSession session, NuxeoPrincipal principal, Object ... args) {
@@ -58,22 +56,19 @@ public class EventContextImpl implements EventContext {
         this.session = session;
         this.principal = principal;
     }
-    
-    
+
+
     public Object[] getArguments() {
         return args;
     }
 
-    
     public CoreSession getCoreSession() {
         return session;
     }
 
-
     public NuxeoPrincipal getPrincipal() {
         return principal;
     }
-
 
     public Map<String, Serializable> getProperties() {
         if (properties == null) {
@@ -82,14 +77,12 @@ public class EventContextImpl implements EventContext {
         return properties;
     }
 
-
     public Serializable getProperty(String key) {
         if (properties == null) {
             properties = new HashMap<String, Serializable>();
         }
         return properties.get(key);
     }
-
 
     public boolean hasProperty(String key) {
         if (properties == null) {
@@ -98,28 +91,27 @@ public class EventContextImpl implements EventContext {
         return properties.containsKey(key);
     }
 
-
     public void setProperty(String key, Serializable value) {
         if (properties == null) {
             properties = new HashMap<String, Serializable>();
         }
         properties.put(key, value);
     }
-    
+
     public void setCoreSession(CoreSession session) {
         this.session = session;
     }
-    
+
     public void setPrincipal(NuxeoPrincipal principal) {
         this.principal = principal;
     }
-    
+
     public Event event(String name) {
         return new EventImpl(name, this);
     }
-    
+
     public Event event(String name, int flags) {
         return new EventImpl(name, this, flags);
     }
-    
+
 }

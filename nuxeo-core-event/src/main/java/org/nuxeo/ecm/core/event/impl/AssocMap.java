@@ -23,15 +23,15 @@ import java.util.Set;
 
 /**
  * A map used to track duplicates.
- * This class is not synchronized on read this means you need to populate the map before using it.
- * 
+ * This class is not synchronized on read; this means you need to populate the map before using it.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class AssocMap {
-    
+
     protected Map<String, Set<String>> peers = new HashMap<String, Set<String>>();
-    
+
 
     public synchronized void put(String x, String y) {
         Set<String> px = peers.get(x);
@@ -48,11 +48,11 @@ public class AssocMap {
               peers.put(y, set);
             } else {
                 py.add(x);
-                peers.put(x, py);  
+                peers.put(x, py);
             }
         } else if (py == null) {
             px.add(y);
-            peers.put(y, px);              
+            peers.put(y, px);
         } else { // both members are already in relation with other members
             Set<String> set = new HashSet<String>();
             set.addAll(px);
@@ -62,11 +62,11 @@ public class AssocMap {
             }
         }
     }
-    
+
     public boolean isPeerOf(String x, String y) {
         Set<String> set = peers.get(x);
         return set != null && set.contains(y);
     }
-    
-    
+
+
 }
