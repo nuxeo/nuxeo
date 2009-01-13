@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
 <component name="default-repository-config">
 
-	<documentation>
-	Defines the default JackRabbit repository used for development and testing.
-	</documentation>
+        <documentation>
+        Defines the default JackRabbit repository used for development and testing.
+        </documentation>
 
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService" point="repository">
-  	<documentation>
-  	Declare a JackRabbit repository to be used for development and tests.
-  	The extension content is the jackrabbit XML configuration of the repository.
-  	</documentation>
+        <documentation>
+        Declare a JackRabbit repository to be used for development and tests.
+        The extension content is the jackrabbit XML configuration of the repository.
+        </documentation>
 <repository name="default" factory="org.nuxeo.ecm.core.repository.jcr.JCRRepositoryFactory" securityManager="org.nuxeo.ecm.core.repository.jcr.JCRSecurityManager"
-		forceReloadTypes="false">
+                forceReloadTypes="false">
       <Repository>
         <!--
         virtual file system where the repository stores global state
@@ -70,7 +70,7 @@
             Search index and the file system it uses.
             class: FQN of class implementing the QueryHandler interface
           -->
-          <SearchIndex class="org.apache.jackrabbit.core.query.lucene.SearchIndex">
+          <SearchIndex class="org.nuxeo.ecm.core.repository.jcr.jackrabbit.SearchIndex">
             <param name="path" value="${wsp.home}/index"/>
           </SearchIndex>
         </Workspace>
