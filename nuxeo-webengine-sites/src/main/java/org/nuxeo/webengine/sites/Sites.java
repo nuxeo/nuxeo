@@ -49,17 +49,21 @@ public class Sites extends DefaultObject {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
 
-        DocumentModelList list  = session.query("SELECT * FROM Workspace WHERE webc:isWebContainer = true");
-        List<Object> sites = new ArrayList<Object>();
+//        DocumentModelList list  = session.query("SELECT * FROM Workspace WHERE webc:isWebContainer = null");
+        DocumentModelList list  = session.query("SELECT * FROM Workspace");
 
+        // filter by hand ( avoiding some core search issues )
+        List<Object> sites = new ArrayList<Object>();
         for ( DocumentModel d : list ){
-            try {
-                Map<String , String> site = new HashMap<String, String>();
-                site.put("href", SiteHelper.getString(d, "webc:url"));
-                site.put("name", SiteHelper.getString(d, "webc:name"));
-                sites.add(site);
-            } catch (Exception e){
-                System.out.println("ignore site :" + d);
+            if ( SiteHelper.getBoolean(d, "webc:isWebContainer", false)) {
+                try {
+                    Map<String , String> site = new HashMap<String, String>();
+                    site.put("href", SiteHelper.getString(d, "webc:url"));
+                    site.put("name", SiteHelper.getString(d, "webc:name"));
+                    sites.add(site);
+                } catch (Exception e){
+                    System.out.println("ignore site :" + d);
+                }
             }
         }
         return sites;

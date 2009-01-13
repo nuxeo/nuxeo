@@ -2,6 +2,7 @@ package org.nuxeo.webengine.sites;
 
 import java.io.Serializable;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -27,15 +28,34 @@ public class SiteHelper {
         return "";
     }
 
-    public static Object getBlob(DocumentModel d, String xpath) throws  ClientException{
+    public static Blob getBlob(DocumentModel d, String xpath) throws  ClientException{
         Property p = d.getProperty(xpath);
         if ( p != null) {
             Serializable v = p.getValue();
             if ( v != null ) {
-                return v;
+                return (Blob) v;
             }
         }
-        return "";
+        return null;
+    }
+
+    public static boolean getBoolean(DocumentModel d, String xpath, boolean defaultValue) {
+        try {
+            return  getBoolean(d, xpath);
+        } catch (ClientException e) {
+            return defaultValue;
+        }
+    }
+
+    public static boolean getBoolean(DocumentModel d, String xpath) throws  ClientException{
+        Property p = d.getProperty(xpath);
+        if ( p != null) {
+            Serializable v = p.getValue();
+            if ( v != null ) {
+                return ((Boolean) v).booleanValue();
+            }
+        }
+        throw new ClientException("value is null");
     }
 
 

@@ -97,7 +97,8 @@ public class Site extends DefaultObject{
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
         try {
-            DocumentModelList list  = session.query(String.format("SELECT * FROM Workspace WHERE web:url = '%s'", url));
+            DocumentModelList list  = session.query(String.format("SELECT * FROM Workspace WHERE webc:url = \"%s\"", url));
+//            DocumentModelList list  = session.query(String.format("SELECT * FROM Workspace ", url));
             if ( list.size() != 0 ){
                 return list.get(0);
             }
