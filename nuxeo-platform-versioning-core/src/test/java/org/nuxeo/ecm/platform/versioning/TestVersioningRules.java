@@ -32,14 +32,13 @@ import org.nuxeo.ecm.core.utils.DocumentModelUtils;
 import org.nuxeo.ecm.platform.versioning.VersionChangeRequest.RequestSource;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.platform.versioning.service.VersioningService;
-import org.nuxeo.ecm.platform.versioning.wfintf.WFState;
 
 /**
  * Test cases for versioning component. Tests the versions are incremented
  * accordingly to defined rules.
  * <p>
  * Document (JCRDocument) objects are used in this test (at the core level).
- * 
+ *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
 public class TestVersioningRules extends VersioningBaseTestCase {
@@ -80,7 +79,7 @@ public class TestVersioningRules extends VersioningBaseTestCase {
 
     /**
      * Tests with lifecycle.
-     * 
+     *
      * @throws Exception
      */
     public void testVersionWFRequestRuleIncMinor() throws Exception {
@@ -241,10 +240,10 @@ public class TestVersioningRules extends VersioningBaseTestCase {
     /**
      * Test incrementation rules when a workflow process is in progress for the
      * document.
-     * 
+     *
      * @throws ClientException
      */
-    public void testWithWorkflowInProgress() throws DocumentException,
+    /*public void testWithWorkflowInProgress() throws DocumentException,
             LifeCycleException, ClientException {
         Document verfile = root.addChild("testfile", "VerFile");
         session.save();
@@ -262,12 +261,12 @@ public class TestVersioningRules extends VersioningBaseTestCase {
         }
 
         // TODO start a workflow process for the doc
-    }
+    }*/
 
     /**
      * Tests edit option (inc major/minor) with lifecycle transition specified
      * by major inc option.
-     * 
+     *
      * @throws DocumentException
      * @throws ClientException
      * @throws LifeCycleException
