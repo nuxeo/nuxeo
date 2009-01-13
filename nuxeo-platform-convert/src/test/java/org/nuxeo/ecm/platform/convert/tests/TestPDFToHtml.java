@@ -9,6 +9,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.runtime.api.Framework;
@@ -46,6 +47,16 @@ public class TestPDFToHtml extends NXRuntimeTestCase {
         CommandLineExecutorService cles = Framework
                 .getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
+
+
+        ConverterCheckResult check =  cs.isConverterAvailable(converterName);
+        assertNotNull(check);
+        if (!check.isAvailable()) {
+            System.out.println("Skipping PDF2Html tests since commandLine is not installed");
+            System.out.println(" converter check output : " + check.getInstallationMessage());
+            System.out.println(" converter check output : " + check.getErrorMessage());
+            return;
+        }
 
         CommandAvailability ca = cles.getCommandAvailability("pdftohtml");
 

@@ -29,9 +29,12 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
+import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
+import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
@@ -44,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author tiry
  *
  */
-public abstract class CommandLineBasedConverter implements Converter {
+public abstract class CommandLineBasedConverter implements ExternalConverter {
 
 
     protected static final String CMD_NAME_PARAMETER = "CommandLineName";
@@ -192,4 +195,21 @@ public abstract class CommandLineBasedConverter implements Converter {
 
     }
 
+    public ConverterCheckResult isConverterAvailable() {
+
+        String commandName = getCommandName(null, null);
+        if (commandName==null) {
+            // can not check
+            return new ConverterCheckResult();
+        }
+
+        CommandAvailability ca = cls.getCommandAvailability(commandName);
+
+        if (ca.isAvailable()) {
+            return new ConverterCheckResult();
+        }
+        else {
+            return new ConverterCheckResult(ca.getInstallMessage(), ca.getErrorMessage());
+        }
+    }
 }

@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.runtime.api.Framework;
 
 
@@ -19,6 +20,15 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         String converterName = cs.getConverterName(srcMT, "application/pdf");
         assertEquals("any2pdf", converterName);
 
+        ConverterCheckResult check =  cs.isConverterAvailable(converterName);
+        assertNotNull(check);
+        if (!check.isAvailable()) {
+            System.out.println("Skipping JOD based converter tests since OOo is not installed");
+            System.out.println(" converter check output : " + check.getInstallationMessage());
+            System.out.println(" converter check output : " + check.getErrorMessage());
+            return;
+        }
+
         BlobHolder hg = getBlobFromPath("test-docs/" + fileName, srcMT);
 
         BlobHolder result = cs.convert(converterName, hg, null);
@@ -32,6 +42,17 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
 
 
     public void testAnyToTextConverter() throws Exception {
+
+        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        ConverterCheckResult check =  cs.isConverterAvailable("any2pdf");
+        assertNotNull(check);
+        if (!check.isAvailable()) {
+            System.out.print("Skipping JOD based converter tests since OOo is not installed");
+            System.out.print(" converter check output : " + check.getInstallationMessage());
+            System.out.print(" converter check output : " + check.getErrorMessage());
+            return;
+        }
+
         //doTestPDFConverter("text/html",  "hello.html");
         //doTestPDFConverter("text/xml",  "hello.xml");
         doTestPDFConverter("application/vnd.ms-excel",  "hello.xls");

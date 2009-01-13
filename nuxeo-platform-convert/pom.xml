@@ -94,7 +94,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <excludes>
-            <exclude>**/TestAnyToPDFConverters*.class</exclude>
           </excludes>
         </configuration>
       </plugin>

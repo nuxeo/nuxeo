@@ -16,9 +16,11 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
+import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
+import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
@@ -31,7 +33,7 @@ import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
 import com.artofsolving.jodconverter.openoffice.connection.SocketOpenOfficeConnection;
 import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConverter;
 
-public class JODBasedConverter implements Converter {
+public class JODBasedConverter implements ExternalConverter {
 
 
     private static final Log log = LogFactory.getLog(JODBasedConverter.class);
@@ -350,5 +352,31 @@ public class JODBasedConverter implements Converter {
         this.descriptor=descriptor;
 
     }
+    public ConverterCheckResult isConverterAvailable() {
+        acquireLock();
+        try {
+            getOOoConnection();
+            connection.connect();
+            getOOoDocumentConverter();
 
+            if (connection.isConnected()) {
+                return new ConverterCheckResult();
+            }
+            else {
+                return new ConverterCheckResult("OOo must be running in Listen mode", "Can not open connection");
+            }
+        }
+        catch (Exception e) {
+            return new ConverterCheckResult("OOo must be running in Listen mode", e.getMessage());
+        }
+        finally {
+            try {
+                releaseOOoConnection();
+            }
+            finally {
+                releaseLock();
+            }
+
+        }
+    }
 }
