@@ -19,7 +19,12 @@ package org.nuxeo.ecm.core.convert.tests;
 
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
+import org.nuxeo.ecm.core.convert.api.ConverterNotAvailable;
+import org.nuxeo.ecm.core.convert.api.ConverterNotRegistred;
 import org.nuxeo.ecm.core.convert.extension.ChainedConverter;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
@@ -74,7 +79,13 @@ public class TestService extends NXRuntimeTestCase {
          converterName = cs.getConverterName("text/plain2", "test/me");
          assertNull(converterName);
 
+
+
          deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib2.xml");
+
+         if (true) {
+             return;
+         }
 
          converterName = cs.getConverterName("test/me", "foo/bar");
          assertEquals("dummy2", converterName);
@@ -119,6 +130,96 @@ public class TestService extends NXRuntimeTestCase {
          assertTrue(isChain);
 
 
+     }
+
+     public void testAvailability() throws Exception{
+
+         deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib2.xml");
+         deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib4.xml");
+         ConversionService cs = Framework.getLocalService(ConversionService.class);
+
+         ConverterCheckResult result =null;
+
+         // ** not existing converter
+         // check registration check
+         boolean notRegistred=false;
+         boolean notAvailable=false;
+
+         try {
+             result = cs.isConverterAvailable("toto");
+         }
+         catch (ConverterNotRegistred e) {
+             notRegistred=true;
+         }
+         assertTrue(notRegistred);
+
+
+         // check call
+         notRegistred=false;
+         try {
+             cs.convert("toto", new SimpleBlobHolder(new StringBlob("")), null);
+         }
+         catch (ConverterNotRegistred e) {
+             notRegistred=true;
+         }
+         assertTrue(notRegistred);
+
+         // ** not available converter
+
+         notRegistred=false;
+         try {
+             result = cs.isConverterAvailable("NotAvailableConverter");
+         }
+         catch (ConverterNotRegistred e) {
+             notRegistred=true;
+         }
+         assertFalse(notRegistred);
+         assertFalse(result.isAvailable());
+         assertNotNull(result.getErrorMessage());
+         assertNotNull(result.getInstallationMessage());
+
+         notRegistred=false;
+         notAvailable=false;
+         try {
+             cs.convert("NotAvailableConverter", new SimpleBlobHolder(new StringBlob("")), null);
+         }
+         catch (ConverterNotRegistred e) {
+             notRegistred=true;
+         }
+         catch (ConverterNotAvailable e) {
+             notAvailable=true;
+         }
+         assertFalse(notRegistred);
+         assertTrue(notAvailable);
+
+
+         // ** available converter
+         notRegistred=false;
+         notAvailable=false;
+         try {
+             result = cs.isConverterAvailable("dummy2");
+         }
+         catch (ConverterNotRegistred e) {
+             notRegistred=true;
+         }
+         assertFalse(notRegistred);
+         assertTrue(result.isAvailable());
+         assertNull(result.getErrorMessage());
+         assertNull(result.getInstallationMessage());
+         assertTrue(result.getSupportedInputMimeTypes().size()==2);
+
+         notRegistred=false;
+         try {
+             cs.convert("dummy2", new SimpleBlobHolder(new StringBlob("")), null);
+         }
+         catch (ConverterNotRegistred e) {
+             notRegistred=true;
+         }
+         catch (ConverterNotAvailable e) {
+             notAvailable=true;
+         }
+         assertFalse(notRegistred);
+         assertFalse(notAvailable);
      }
 
 

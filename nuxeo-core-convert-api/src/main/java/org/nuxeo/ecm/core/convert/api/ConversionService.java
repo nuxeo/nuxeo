@@ -69,4 +69,34 @@ public interface ConversionService {
      * @return
      */
      List<String> getRegistredConverters();
+
+
+
+     /**
+      * Checks for converter availability.
+      * Result can be :
+      *  {@link ConverterNotRegistred} if converter is not registred
+      *  Error Message / Installation message if converter dependecies are not available
+      *  an successful check
+      *
+      * @param converterName
+      * @param refresh
+      * @return
+      */
+     ConverterCheckResult isConverterAvailable(String converterName, boolean refresh) throws ConversionException;
+
+
+     /**
+      * Checks for converter availability.
+      * Result can be :
+      *  {@link ConverterNotRegistred} if converter is not registred
+      *  Error Message / Installation message if converter dependecies are not available
+      *  an successful check
+      *
+      * Result can be taken from an internal cache
+      *
+      * @param converterName
+      * @return
+      */
+     ConverterCheckResult isConverterAvailable(String converterName) throws ConversionException;
 }

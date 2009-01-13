@@ -29,10 +29,14 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
+import org.nuxeo.ecm.core.convert.api.ConverterNotAvailable;
+import org.nuxeo.ecm.core.convert.api.ConverterNotRegistred;
 import org.nuxeo.ecm.core.convert.cache.CacheKeyGenerator;
 import org.nuxeo.ecm.core.convert.cache.ConversionCacheHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
+import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
 import org.nuxeo.ecm.core.convert.extension.GlobalConfigDescriptor;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -139,6 +143,14 @@ public class ConversionServiceImpl extends DefaultComponent implements
     public BlobHolder convert(String converterName, BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
+
+        // exist if not registred
+        ConverterCheckResult check = isConverterAvailable(converterName);
+        if (!check.isAvailable()) {
+            // exist is not installed / configured
+            throw new ConverterNotAvailable(converterName);
+        }
+
         ConverterDescriptor desc = converterDescriptors.get(converterName);
         if (desc == null) {
             throw new ConversionException("Converter " + converterName
@@ -160,9 +172,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
             if (config.isCacheEnabled()) {
                 ConversionCacheHolder.addToCache(cacheKey, result);
             }
-
             return result;
-
         }
 
     }
@@ -193,6 +203,44 @@ public class ConversionServiceImpl extends DefaultComponent implements
             String destinationMimeType) {
         return MimeTypeTranslationHelper.getConverterName(sourceMimeType,
                 destinationMimeType);
+    }
+
+    public ConverterCheckResult isConverterAvailable(String converterName)
+            throws ConversionException {
+        return isConverterAvailable(converterName, false);
+    }
+
+    protected Map<String, ConverterCheckResult> checkResultCache = new HashMap<String, ConverterCheckResult>();
+
+    public ConverterCheckResult isConverterAvailable(String converterName,
+            boolean refresh) throws ConversionException {
+
+        if (!refresh) {
+            if (checkResultCache.containsKey(converterName)) {
+                return checkResultCache.get(converterName);
+            }
+        }
+
+        ConverterDescriptor descriptor = converterDescriptors.get(converterName);
+        if (descriptor==null) {
+            throw new ConverterNotRegistred(converterName);
+        }
+
+        Converter converter = descriptor.getConverterInstance();
+
+        ConverterCheckResult result=null;
+        if (converter instanceof ExternalConverter) {
+            ExternalConverter exConverter = (ExternalConverter) converter;
+            result= exConverter.isConverterAvailable();
+        } else {
+            // return success since there is nothing to test
+            result =  new ConverterCheckResult();
+        }
+
+        result.setSupportedInputMimeTypes(descriptor.getSourceMimeTypes());
+        checkResultCache.put(converterName, result);
+
+        return result;
     }
 
 }

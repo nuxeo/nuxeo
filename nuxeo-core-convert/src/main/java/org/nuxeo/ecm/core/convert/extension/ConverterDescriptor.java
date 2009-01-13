@@ -142,7 +142,13 @@ public class ConverterDescriptor implements Serializable {
             this.className=other.className;
         }
         if (other.sourceMimeTypes!=null) {
-            sourceMimeTypes.addAll(other.sourceMimeTypes);
+            for (String mt : other.sourceMimeTypes) {
+                if (!sourceMimeTypes.contains(mt)) {
+                    sourceMimeTypes.add(mt);
+                }
+
+            }
+            //sourceMimeTypes.addAll(other.sourceMimeTypes);
         }
         if (other.destinationMimeType!=null) {
             destinationMimeType = other.destinationMimeType;
@@ -157,4 +163,7 @@ public class ConverterDescriptor implements Serializable {
         return this;
     }
 
+    public String getConverterType() {
+        return converterType;
+    }
 }
