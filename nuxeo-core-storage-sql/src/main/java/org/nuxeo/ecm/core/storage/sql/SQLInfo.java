@@ -36,9 +36,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Delete;
-import org.nuxeo.ecm.core.storage.sql.db.DerbyFunctions;
 import org.nuxeo.ecm.core.storage.sql.db.Dialect;
-import org.nuxeo.ecm.core.storage.sql.db.H2Functions;
 import org.nuxeo.ecm.core.storage.sql.db.Insert;
 import org.nuxeo.ecm.core.storage.sql.db.Select;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
@@ -315,7 +313,7 @@ public class SQLInfo {
 
     // ----- update -----
 
-    public SQLInfoSelect getUpdateById(String tableName, List<String> keys) {
+    public SQLInfoSelect getUpdateById(String tableName, Collection<String> keys) {
         Table table = database.getTable(tableName);
         List<String> values = new LinkedList<String>();
         List<Column> columns = new LinkedList<Column>();
@@ -1130,7 +1128,7 @@ public class SQLInfo {
 
         public final String methodSuffix;
 
-        public final String className = DerbyFunctions.class.getName();
+        public final String className = "org.nuxeo.ecm.core.storage.sql.db.DerbyFunctions";
 
         public DerbyStoredProcedureInfoMaker() {
             switch (model.idGenPolicy) {
@@ -1151,6 +1149,66 @@ public class SQLInfo {
             return makeFunction("NX_IN_TREE",
                     "(ID %s, BASEID %<s) RETURNS SMALLINT", "isInTree" +
                             methodSuffix, "READS SQL DATA");
+        }
+
+        public StoredProcedureInfo makeParseFullText() {
+            return makeFunction(
+                    "NX_PARSE_FULLTEXT",
+                    "(S1 VARCHAR(10000), S2 VARCHAR(10000)) RETURNS VARCHAR(10000)",
+                    "parseFullText", "");
+        }
+
+        public StoredProcedureInfo makeContainsFullText() {
+            return makeFunction(
+                    "NX_CONTAINS",
+                    "(FT VARCHAR(10000), QUERY VARCHAR(10000)) RETURNS SMALLINT",
+                    "matchesFullTextDerby", "");
+        }
+
+        public StoredProcedureInfo makeFTInsertTrigger() {
+            Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+            Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY);
+            Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY);
+            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY);
+            Column ftid = ft.getColumn(model.MAIN_KEY);
+            return makeTrigger(
+                    "NX_TRIG_FT_INSERT", //
+                    String.format(
+                            "AFTER INSERT ON %1$s "//
+                                    + "REFERENCING NEW AS NEW " //
+                                    + "FOR EACH ROW "//
+                                    + "UPDATE %1$s " //
+                                    + "SET %2$s = NX_PARSE_FULLTEXT(CAST(%3$s AS VARCHAR(10000)), CAST(%4$s AS VARCHAR(10000))) " //
+                                    + "WHERE %5$s = NEW.%5$s", //
+                            ft.getQuotedName(), // 1 table "FULLTEXT"
+                            ftft.getQuotedName(), // 2 column "TEXT"
+                            ftst.getQuotedName(), // 3 column "SIMPLETEXT"
+                            ftbt.getQuotedName(), // 4 column "BINARYTEXT"
+                            ftid.getQuotedName() // 5 column "ID"
+                    ));
+        }
+
+        public StoredProcedureInfo makeFTUpdateTrigger() {
+            Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+            Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY);
+            Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY);
+            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY);
+            Column ftid = ft.getColumn(model.MAIN_KEY);
+            return makeTrigger(
+                    "NX_TRIG_FT_UPDATE", //
+                    String.format(
+                            "AFTER UPDATE OF %3$s, %4$s ON %1$s "//
+                                    + "REFERENCING NEW AS NEW " //
+                                    + "FOR EACH ROW "//
+                                    + "UPDATE %1$s " //
+                                    + "SET %2$s = NX_PARSE_FULLTEXT(CAST(%3$s AS VARCHAR(10000)), CAST(%4$s AS VARCHAR(10000))) " //
+                                    + "WHERE %5$s = NEW.%5$s", //
+                            ft.getQuotedName(), // 1 table "FULLTEXT"
+                            ftft.getQuotedName(), // 2 column "TEXT"
+                            ftst.getQuotedName(), // 3 column "SIMPLETEXT"
+                            ftbt.getQuotedName(), // 4 column "BINARYTEXT"
+                            ftid.getQuotedName() // 5 column "ID"
+                    ));
         }
 
         public StoredProcedureInfo makeAccessAllowed() {
@@ -1177,13 +1235,26 @@ public class SQLInfo {
                             functionName, proto, //
                             className, methodName, info));
         }
+
+        public StoredProcedureInfo makeTrigger(String triggerName, String body) {
+            return new StoredProcedureInfo(
+                    null, // do a drop check
+                    String.format(
+                            "SELECT TRIGGERNAME FROM SYS.SYSTRIGGERS WHERE TRIGGERNAME = '%s'",
+                            triggerName), //
+                    String.format("DROP TRIGGER %s", triggerName), //
+                    String.format("CREATE TRIGGER %s %s", triggerName, body));
+
+        }
     }
 
     public class H2StoredProcedureInfoMaker {
 
         public final String methodSuffix;
 
-        public final String className = H2Functions.class.getName();
+        public static final String h2Functions = "org.nuxeo.ecm.core.storage.sql.db.H2Functions";
+
+        public static final String h2Fulltext = "org.nuxeo.ecm.core.storage.sql.db.H2Fulltext";
 
         public H2StoredProcedureInfoMaker() {
             switch (model.idGenPolicy) {
@@ -1207,14 +1278,33 @@ public class SQLInfo {
                     methodSuffix);
         }
 
+        public StoredProcedureInfo makeFTInit() {
+            return new StoredProcedureInfo(Boolean.FALSE, null, null,
+                    String.format(
+                            "CREATE ALIAS IF NOT EXISTS NXFT_INIT FOR \"%s.init\"; "
+                                    + "CALL NXFT_INIT()", h2Fulltext));
+        }
+
+        public StoredProcedureInfo makeFTIndex() {
+            Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+            Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY);
+            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY);
+            return new StoredProcedureInfo(
+                    Boolean.FALSE,
+                    null,
+                    null, //
+                    String.format(
+                            "CALL NXFT_CREATE_INDEX('PUBLIC', '%s', ('%s', '%s'))", //
+                            ft.getName(), ftst.getPhysicalName(),
+                            ftbt.getPhysicalName()));
+        }
+
         protected StoredProcedureInfo makeFunction(String functionName,
                 String methodName) {
-            return new StoredProcedureInfo(//
-                    Boolean.TRUE, // always drop
-                    null, //
+            return new StoredProcedureInfo(Boolean.TRUE, null, //
                     String.format("DROP ALIAS IF EXISTS %s", functionName), //
                     String.format("CREATE ALIAS %s FOR \"%s.%s\"",
-                            functionName, className, methodName));
+                            functionName, h2Functions, methodName));
         }
     }
 
@@ -1303,6 +1393,14 @@ public class SQLInfo {
                                     + "STABLE " //
                             , idType));
         }
+
+        public StoredProcedureInfo makeParseFullText() {
+            throw new UnsupportedOperationException();
+        }
+
+        public StoredProcedureInfo makeContainsFullText() {
+            throw new UnsupportedOperationException();
+        }
     }
 
     /**
@@ -1315,6 +1413,8 @@ public class SQLInfo {
             DerbyStoredProcedureInfoMaker maker = new DerbyStoredProcedureInfoMaker();
             spis.add(maker.makeInTree());
             spis.add(maker.makeAccessAllowed());
+            spis.add(maker.makeParseFullText());
+            spis.add(maker.makeContainsFullText());
         } else if ("H2".equals(databaseName)) {
             H2StoredProcedureInfoMaker maker = new H2StoredProcedureInfoMaker();
             spis.add(maker.makeInTree());
@@ -1323,7 +1423,30 @@ public class SQLInfo {
             PostgreSQLstoredProcedureInfoMaker maker = new PostgreSQLstoredProcedureInfoMaker();
             spis.add(maker.makeInTree());
             spis.add(maker.makeAccessAllowed());
+            spis.add(maker.makeParseFullText());
+            spis.add(maker.makeContainsFullText());
         }
         return spis;
     }
+
+    /**
+     * Gets the statements creating the appropriate triggers.
+     */
+    public Collection<StoredProcedureInfo> getTriggersSqls() {
+        List<StoredProcedureInfo> spis = new LinkedList<StoredProcedureInfo>();
+        String databaseName = dialect.getDatabaseName();
+        if ("Apache Derby".equals(databaseName)) {
+            DerbyStoredProcedureInfoMaker maker = new DerbyStoredProcedureInfoMaker();
+            spis.add(maker.makeFTInsertTrigger());
+            spis.add(maker.makeFTUpdateTrigger());
+        } else if ("H2".equals(databaseName)) {
+            H2StoredProcedureInfoMaker maker = new H2StoredProcedureInfoMaker();
+            spis.add(maker.makeFTInit());
+            spis.add(maker.makeFTIndex());
+        } else if ("PostgreSQL".equals(databaseName)) {
+            PostgreSQLstoredProcedureInfoMaker maker = new PostgreSQLstoredProcedureInfoMaker();
+        }
+        return spis;
+    }
+
 }
