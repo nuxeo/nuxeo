@@ -9,9 +9,6 @@
         <template mode="any">/layouts/workspace_layout_template.xhtml</template>
       </templates>
       <rows>
-      	<row>
-          <widget>isWebContainer</widget>
-        </row>
         <row>
           <widget>name</widget>
         </row>
@@ -37,16 +34,6 @@
           <widget>useCaptcha</widget>
         </row>
       </rows>
-
-      <widget name="isWebContainer" type="checkbox">
-        <translated>true</translated>
-        <fields>
-          <field>webc:isWebContainer</field>
-        </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
-      </widget>
 
       <widget name="name" type="text">
         <translated>true</translated>

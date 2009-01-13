@@ -1,4 +1,4 @@
-<H1>Blog template</H1>
+<H1>WIKI template</H1>
 <hr>
 Logo : <img src="${This.path}/logo" alt="logo">
 <hr>
