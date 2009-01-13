@@ -332,7 +332,7 @@ public class UserManagerActionsBean implements UserManagerActions {
             newUser = null;
             return viewUser();
         } catch (UserAlreadyExistsException e) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
+            facesMessages.add(FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
                             "error.userManager.userAlreadyExists"));
             return null;
