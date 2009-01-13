@@ -47,4 +47,8 @@ public class DerbyFunctions extends EmbeddedFunctions {
                 : (short) 0;
     }
 
+    public static short matchesFullTextDerby(String fulltext, String query) {
+        return matchesFullText(fulltext, query) ? (short) 1 : (short) 0;
+    }
+
 }

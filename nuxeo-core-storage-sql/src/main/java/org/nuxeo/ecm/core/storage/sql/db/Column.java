@@ -107,6 +107,10 @@ public class Column implements Serializable {
                 column.key, column.model);
     }
 
+    public Table getTable() {
+        return table;
+    }
+
     public String getPhysicalName() {
         return physicalName;
     }
