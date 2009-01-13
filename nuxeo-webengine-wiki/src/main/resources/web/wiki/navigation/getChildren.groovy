@@ -1,3 +1,5 @@
+package wiki.navigation;
+
 import org.nuxeo.ecm.core.api.IdRef
 import org.nuxeo.ecm.core.api.DocumentModel
 import net.sf.json.JSONArray

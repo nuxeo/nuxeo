@@ -95,8 +95,6 @@
       <version>2.0.2</version>
     </dependency>
 
-
-
     <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
