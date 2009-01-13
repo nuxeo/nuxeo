@@ -7,7 +7,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core">
 
-  <ui:define name="page title">Nuxeo 5 EP - Groups</ui:define>
+  <ui:define name="page title">Nuxeo 5 EP - #{messages['label.groupManager.groups']}</ui:define>
 
   <ui:define name="body">
 
@@ -24,11 +24,10 @@
         <div class="action_bar">
           <ul>
             <li class="selected">
-              <h:commandLink
-                action="create_group">
+              <h:commandLink action="create_group"
+                immediate="true">
                 <h:graphicImage value="/icons/action_add_group.gif" />
-                <h:outputText
-                  value="#{messages['command.createGroup']}" />
+                <h:outputText value="#{messages['command.createGroup']}" />
               </h:commandLink>
             </li>
           </ul>
@@ -36,9 +35,9 @@
       </h:form>
       
       <ui:include src="/incl/message_banner.xhtml"/>
-      
+
       <div style="clear:both" />
-      
+
       <h:form id="searchForm" onkeypress="trapEnter(event, 'searchForm:searchButton');" >
         <h:inputText id="searchText"
           value="#{groupManagerActions.searchString}"
@@ -46,10 +45,10 @@
         &nbsp;
         <h:commandButton id="searchButton"
           value="#{messages['command.search']}"
-          action="#{groupManagerActions.searchGroups}" class="button" />
+          action="#{groupManagerActions.searchGroups}" styleClass="button" />
         <h:commandButton id="clearButton"
           value="#{messages['command.clearSearch']}"
-          action="#{groupManagerActions.clearSearch}" class="button" />
+          action="#{groupManagerActions.clearSearch}" styleClass="button" />
       </h:form>
       
       <div>
@@ -63,10 +62,9 @@
           class="infoFeedback"
           rendered="#{groupManagerActions.searchOverflow}" />
       
-        <h:form>
+        <h:form rendered="#{groupList.rowCount > 0}">
         
           <h:dataTable var="group" value="#{groupList}"
-            rendered="#{groupList.rowCount > 0}"
             styleClass="dataOutput">
             <h:column>
               <f:facet name="header">
@@ -78,7 +76,7 @@
             </h:column>
           </h:dataTable>
         </h:form>
-      
+
       </div>
 
     </div>

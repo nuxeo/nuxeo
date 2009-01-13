@@ -9,7 +9,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-  <ui:define name="page title">Nuxeo 5 EP</ui:define>
+  <ui:define name="page title">Nuxeo 5 EP - #{messages['label.userManager.users']}</ui:define>
 
   <ui:define name="body">
 
@@ -39,13 +39,17 @@
       <ui:include src="/incl/message_banner.xhtml"/>
 
       <div style="clear:both" />
-      
+
       <h:form id="searchForm" onkeypress="trapEnter(event, 'searchForm:searchButton');" >
-        <h:inputText id="searchText" value="#{userManagerActions.searchString}" class="directoryFilter"/>
+        <h:inputText id="searchText"
+          value="#{userManagerActions.searchString}"
+          class="directoryFilter" />
         &nbsp;
-        <h:commandButton id="searchButton" value="#{messages['command.search']}"
+        <h:commandButton id="searchButton"
+          value="#{messages['command.search']}"
           action="#{userManagerActions.searchUsers}" styleClass="button"/>
-        <h:commandButton id="clearButton" value="#{messages['command.clearSearch']}"
+        <h:commandButton id="clearButton"
+          value="#{messages['command.clearSearch']}"
           action="#{userManagerActions.clearSearch}" styleClass="button"/>
       </h:form>
 
@@ -85,7 +89,7 @@
             </h:column>
           </h:dataTable>
         </h:form>
-  
+
       </div>
 
     </div>

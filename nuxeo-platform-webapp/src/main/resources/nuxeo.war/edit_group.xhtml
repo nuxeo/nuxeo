@@ -2,7 +2,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-  <ui:decorate template="/view_group_template.xhtml">
+  <ui:composition template="/view_group_template.xhtml">
     <ui:param name="currentGroupSubTab" value="edit" />
 
     <ui:define name="mainContent">
@@ -27,6 +27,6 @@
 
     </ui:define>
 
-  </ui:decorate>
+  </ui:composition>
   
 </div>
