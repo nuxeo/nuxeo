@@ -29,8 +29,8 @@ import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
- * TODO add tests on post commit. 
- * 
+ * TODO add tests on post commit.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -41,7 +41,7 @@ public class EventListenerTest extends NXRuntimeTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.event");
     }
-    
+
     public void testFlags() throws Exception {
         EventImpl event = new EventImpl("test", null);
         assertTrue(event.isPublic());
@@ -58,7 +58,7 @@ public class EventListenerTest extends NXRuntimeTestCase {
         event.clearFlags(~0); // clear all flags
         assertTrue(event.isPublic());
         assertFalse(event.isLocal());
-        
+
         event.setPublic(false);
         assertFalse(event.isPublic());
         assertTrue(event.isLocal());
@@ -70,19 +70,19 @@ public class EventListenerTest extends NXRuntimeTestCase {
         assertFalse(event.isLocal());
         assertFalse(event.isInline());
         assertFalse(event.isCommitEvent());
-        
+
         event.setInline(true);
         assertTrue(event.isPublic());
         assertFalse(event.isLocal());
         assertTrue(event.isInline());
         assertFalse(event.isCommitEvent());
-        
+
         event.setIsCommitEvent(true);
         assertTrue(event.isPublic());
         assertFalse(event.isLocal());
         assertTrue(event.isInline());
         assertTrue(event.isCommitEvent());
-                
+
         event.setIsCommitEvent(false);
         assertTrue(event.isPublic());
         assertFalse(event.isLocal());
@@ -101,31 +101,31 @@ public class EventListenerTest extends NXRuntimeTestCase {
         assertFalse(event.isInline());
         assertFalse(event.isCommitEvent());
     }
-    
+
     public void testEventCreation() {
         EventContextImpl ctx = new EventContextImpl();
         Event event = ctx.event("test");
         assertEquals("test", event.getName());
         assertEquals(ctx, event.getContext());
         assertEquals(0, event.getFlags());
-        
-        event = ctx.event("test2", Event.COMMIT | Event.INLINE);        
+
+        event = ctx.event("test2", Event.COMMIT | Event.INLINE);
         assertEquals("test2", event.getName());
         assertEquals(ctx, event.getContext());
         assertEquals(Event.COMMIT | Event.INLINE, event.getFlags());
     }
-    
+
     public void testTimestamp() {
         long tm = System.currentTimeMillis();
         EventContextImpl ctx = new EventContextImpl();
         Event event = ctx.event("test");
         assertTrue(tm <= event.getTime());
     }
-    
+
     /**
      * The script listener will update this counter
      */
-    public static int SCRIPT_CNT = 0; 
+    public static int SCRIPT_CNT = 0;
     public void testScripts() throws Exception {
         URL url = EventListenerTest.class.getClassLoader().getResource("test-listeners.xml");
         RuntimeContext rc = deployTestContrib("org.nuxeo.ecm.core.event", url);
@@ -139,14 +139,12 @@ public class EventListenerTest extends NXRuntimeTestCase {
         assertEquals(1, SCRIPT_CNT);
         rc = deployTestContrib("org.nuxeo.ecm.core.event", url);
         service.fireEvent("test1", new EventContextImpl(null, null));
-        assertEquals(2, SCRIPT_CNT);        
+        assertEquals(2, SCRIPT_CNT);
         // test not accepted event
         service.fireEvent("some-event", new EventContextImpl(null, null));
-        assertEquals(2, SCRIPT_CNT);        
+        assertEquals(2, SCRIPT_CNT);
     }
 
-    
-    
     public void testEventContext() throws Exception {
         EventContextImpl ctx = new EventContextImpl("arg1", "arg2");
         CoreSession cs = new LocalSession();
@@ -161,5 +159,5 @@ public class EventListenerTest extends NXRuntimeTestCase {
         assertEquals(0, ctx.getProperties().size());
         assertNull(ctx.getPrincipal());
     }
-    
+
 }
