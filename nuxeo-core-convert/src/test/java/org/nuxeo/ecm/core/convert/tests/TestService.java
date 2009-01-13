@@ -104,6 +104,21 @@ public class TestService extends NXRuntimeTestCase {
          assertEquals("wildcard", converterName);
 
 
+         converterName = cs.getConverterName("text/plain", "jacky/chan");
+         assertEquals("dummyChain2", converterName);
+         Converter cv2 =  ConversionServiceImpl.getConverter("dummyChain2");
+         assertNotNull(cv2);
+         isChain = false;
+         if (cv2 instanceof ChainedConverter) {
+             ChainedConverter ccv = (ChainedConverter) cv2;
+             List<String> steps = ccv.getSteps();
+             assertNull(steps);
+             isChain=true;
+
+         }
+         assertTrue(isChain);
+
+
      }
 
 

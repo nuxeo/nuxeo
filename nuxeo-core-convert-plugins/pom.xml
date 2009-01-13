@@ -12,21 +12,21 @@
   <description>Nuxeo Core Blob conversion plugins</description>
 
   <dependencies>
-   <dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
 
-   <dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert-api</artifactId>
     </dependency>
-   <dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert</artifactId>
     </dependency>
 
-  <dependency>
+    <dependency>
       <groupId>pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
     </dependency>
@@ -34,9 +34,10 @@
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-scratchpad</artifactId>
     </dependency>
-
-
-
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core</artifactId>
@@ -46,7 +47,24 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jcr-connector-test</artifactId>
       <scope>test</scope>
-     </dependency>
+    </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xmlParserAPIs</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>nekohtml</groupId>
+      <artifactId>nekohtml</artifactId>
+      <version>0.9.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.8.1</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -57,6 +75,7 @@
           <excludes>
             <exclude>**/TestPPTConverter*.class</exclude>
             <exclude>**/TestWordConverter*.class</exclude>
+            <exclude>**/TestMailConverter*.class</exclude>
           </excludes>
         </configuration>
       </plugin>

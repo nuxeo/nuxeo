@@ -42,6 +42,7 @@
     <module>nuxeo-core-convert-api</module>
     <module>nuxeo-core-convert</module>
     <module>nuxeo-core-convert-plugins</module>
+    <module>nuxeo-core-event</module>
   </modules>
 
   <profiles>
