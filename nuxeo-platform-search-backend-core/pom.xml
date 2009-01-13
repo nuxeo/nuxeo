@@ -42,6 +42,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>javax.ressource</groupId>
       <artifactId>jca-api</artifactId>
       <version>1.5</version>
