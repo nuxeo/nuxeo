@@ -40,7 +40,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class Html2TextConverter implements Converter {
 
@@ -49,36 +48,35 @@ public class Html2TextConverter implements Converter {
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
+        InputStream stream = null;
+        try {
+            stream = blobHolder.getBlob().getStream();
+            TransformerFactory factory = TransformerFactory.newInstance();
+            Transformer transformer = factory.newTransformer();
+            HtmlParser parser = new HtmlParser();
 
-          InputStream stream = null;
-          try {
-              stream = blobHolder.getBlob().getStream();
-              TransformerFactory factory = TransformerFactory.newInstance();
-              Transformer transformer = factory.newTransformer();
-              HtmlParser parser = new HtmlParser();
+            SAXResult result = new SAXResult(new DefaultHandler());
 
-              SAXResult result = new SAXResult(new DefaultHandler());
+            SAXSource source = new SAXSource(parser, new InputSource(stream));
+            transformer.transform(source, result);
 
-              SAXSource source = new SAXSource(parser, new InputSource(stream));
-              transformer.transform(source, result);
+            //HtmlHandler html2text = new HtmlHandler();
+            //String text = html2text.parse(stream);
+            String text = parser.getContents();
 
-              //HtmlHandler html2text = new HtmlHandler();
-              //String text = html2text.parse(stream);
-              String text = parser.getContents();
-
-              return new SimpleCachableBlobHolder(new StringBlob(text,
-                      "text/plain"));
-          } catch (Exception e) {
-              throw new ConversionException("Error during Html2Text conversion", e);
-          } finally {
-              if (stream != null) {
-                  try {
-                      stream.close();
-                  } catch (IOException e) {
-                      log.error("Error while closing Blob stream", e);
-                  }
-              }
-          }
+            return new SimpleCachableBlobHolder(new StringBlob(text,
+                    "text/plain"));
+        } catch (Exception e) {
+            throw new ConversionException("Error during Html2Text conversion", e);
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    log.error("Error while closing Blob stream", e);
+                }
+            }
+        }
     }
 
     public void init(ConverterDescriptor descriptor) {

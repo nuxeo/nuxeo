@@ -40,10 +40,8 @@ import org.pdfbox.pdmodel.encryption.PDStandardEncryption;
 import org.pdfbox.util.PDFTextStripper;
 
 /**
-*
-* @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
-*
-*/
+ * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ */
 public class PDF2TextConverter implements Converter {
 
     private static final Log log = LogFactory.getLog(PDF2TextConverter.class);
@@ -52,12 +50,11 @@ public class PDF2TextConverter implements Converter {
             Map<String, Serializable> parameters) throws ConversionException {
 
         PDDocument document = null;
-        PDFTextStripper textStripper = null;
         File f = null;
         OutputStream fas = null;
         try {
             document = PDDocument.load(blobHolder.getBlob().getStream());
-            textStripper = new PDFTextStripper();
+            PDFTextStripper textStripper = new PDFTextStripper();
 
             // NXP-1556: if document is protected an IOException will be raised
             // Instead of catching the exception based on its message string
@@ -110,7 +107,6 @@ public class PDF2TextConverter implements Converter {
 
     public void init(ConverterDescriptor descriptor) {
         // TODO Auto-generated method stub
-
     }
 
 }

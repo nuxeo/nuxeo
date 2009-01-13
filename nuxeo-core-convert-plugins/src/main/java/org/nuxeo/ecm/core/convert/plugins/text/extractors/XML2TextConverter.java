@@ -61,7 +61,6 @@ public class XML2TextConverter implements Converter {
 
     public void init(ConverterDescriptor descriptor) {
         // TODO Auto-generated method stub
-
     }
 
 }

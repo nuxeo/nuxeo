@@ -142,10 +142,9 @@ public class RFC822ToTextConverter implements Converter {
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
         String converterName = cs.getConverterName(baseType, TXT_MT);
-        if (converterName==null) {
+        if (converterName == null) {
             return null;
-        }
-        else {
+        } else {
             BlobHolder result = cs.convert(converterName, new SimpleBlobHolder(new FileBlob(p.getInputStream())), null);
             return result.getBlob().getByteArray();
         }
@@ -186,7 +185,6 @@ public class RFC822ToTextConverter implements Converter {
         return res;
     }
 
-
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
@@ -194,7 +192,7 @@ public class RFC822ToTextConverter implements Converter {
         Blob outblob = null;
 
         try {
-        inputBlob = blobHolder.getBlob();
+            inputBlob = blobHolder.getBlob();
         }
         catch (Exception e) {
             throw new ConversionException("Error while getting blob from Holder", e);
@@ -208,10 +206,8 @@ public class RFC822ToTextConverter implements Converter {
         return new SimpleCachableBlobHolder(outblob);
     }
 
-
-
     public void init(ConverterDescriptor descriptor) {
-        this.desciptor=descriptor;
+        this.desciptor = descriptor;
     }
 
 }
