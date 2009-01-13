@@ -120,44 +120,9 @@
       group="platform/directory">
       <locator>%DirectoryManagerBean</locator>
     </service>
-    <service class="org.nuxeo.ecm.platform.workflow.api.client.wfmc.WAPI"
-      group="platform">
-      <locator>%WAPIBean</locator>
-    </service>
-    <service
-      class="org.nuxeo.ecm.platform.workflow.document.api.lifecycle.WorkflowDocumentLifeCycleManager"
-      group="platform">
-      <locator>%WorkflowDocumentLifeCycleBean</locator>
-    </service>
-    <service
-      class="org.nuxeo.ecm.platform.workflow.document.api.versioning.WorkflowDocumentVersioningPolicyManager"
-      group="platform">
-      <locator>%WorkflowDocumentVersioningPolicyBean</locator>
-    </service>
-    <service
-      class="org.nuxeo.ecm.platform.workflow.document.api.relation.WorkflowDocumentRelationManager"
-      group="platform">
-      <locator>%WorkflowDocumentRelationBean</locator>
-    </service>
-    <service
-      class="org.nuxeo.ecm.platform.workflow.document.api.security.WorkflowDocumentSecurityManager"
-      group="platform">
-      <locator>%WorkflowDocumentSecurityBean</locator>
-    </service>
-    <service
-      class="org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicyManager"
-      group="platform">
-      <locator>%WorkflowDocumentSecurityPolicyBean</locator>
-    </service>
-    <service
-      class="org.nuxeo.ecm.platform.workflow.document.api.rules.WorkflowRulesManager"
-      group="platform">
-      <locator>%WorkflowRulesBean</locator>
-    </service>
-    <service
-      class="org.nuxeo.ecm.platform.workflow.document.api.workitem.WorkItemsListsManager"
-      group="platform">
-      <locator>%WorkItemsListsBean</locator>
+    <service class="org.nuxeo.ecm.platform.jbpm.JbpmService"
+        group="platform">
+      <locator>%JbpmServiceBean</locator>
     </service>
     <service class="org.nuxeo.ecm.platform.notification.api.NotificationManager"
       group="platform">
