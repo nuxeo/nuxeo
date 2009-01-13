@@ -55,7 +55,7 @@ public class JbpmHelper {
         Map<String, Serializable> map = null;
         if (endLifeCycle != null && !endLifeCycle.equals("")) {
             map = new HashMap<String, Serializable>();
-            map.put("endLifecycle", endLifeCycle);
+            map.put(JbpmService.VariableName.endLifecycle.name(), endLifeCycle);
         }
         getJbpmService().createProcessInstance(principal, pd, dm, map, null);
         return null;

@@ -31,8 +31,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -69,13 +71,15 @@ public abstract class AbstractHelper implements ActionHandler,
     /**
      * @param user
      * @return
-     * @throws NuxeoJbpmException
+     * @throws Exception
      */
-    protected CoreSession getCoreSession(String user) throws NuxeoJbpmException {
+    protected CoreSession getCoreSession(String user) throws Exception {
         String repositoryName = (String) executionContext.getContextInstance().getVariable(
                 JbpmService.VariableName.documentRepositoryName.name());
         Map<String, Serializable> context = new HashMap<String, Serializable>();
-        context.put("principal", user);
+        UserManager userManager = Framework.getService(UserManager.class);
+        NuxeoPrincipal principal = userManager.getPrincipal(user);
+        context.put("principal", principal);
         try {
             return CoreInstance.getInstance().open(repositoryName, context);
         } catch (ClientException e) {
@@ -93,13 +97,15 @@ public abstract class AbstractHelper implements ActionHandler,
     }
 
     protected void followTransition(String user, String transition)
-            throws NuxeoJbpmException, ClientException {
+            throws Exception {
         CoreSession coreSession = getCoreSession(user);
         String docId = (String) executionContext.getContextInstance().getVariable(
                 JbpmService.VariableName.documentId.name());
         DocumentRef docRef = new IdRef(docId);
         DocumentModel model = coreSession.getDocument(docRef);
         model.followTransition(transition);
+        coreSession.saveDocument(model);
+        coreSession.save();
     }
 
     protected String getStringVariable(String name) {

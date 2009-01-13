@@ -52,7 +52,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 public interface JbpmService {
 
     public enum VariableName {
-        documentId, documentRepositoryName, endLifeCycle, initiator
+        documentId, documentRepositoryName, endLifecycle, initiator
     }
 
     public enum HibernateQueries {

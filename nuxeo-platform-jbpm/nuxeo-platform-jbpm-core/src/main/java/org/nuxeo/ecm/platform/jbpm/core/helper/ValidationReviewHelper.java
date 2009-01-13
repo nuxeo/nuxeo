@@ -32,7 +32,7 @@ public class ValidationReviewHelper extends AbstractHelper {
         if (nuxeHasStarted()) {
             followTransition(
                     getSwimlaneUser(JbpmService.VariableName.initiator.name()),
-                    getStringVariable(JbpmService.VariableName.endLifeCycle.name()));
+                    getStringVariable(JbpmService.VariableName.endLifecycle.name()));
         }
         executionContext.getToken().signal();
     }
