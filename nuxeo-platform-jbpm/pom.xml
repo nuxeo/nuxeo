@@ -18,10 +18,14 @@
     <module>nuxeo-platform-jbpm-core</module>
     <module>nuxeo-platform-jbpm-web</module>
     <module>nuxeo-platform-jbpm-api</module>
-    <module>nuxeo-platform-jbpm-facade</module>
   </modules>
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.jbpm.jbpm3</groupId>
+        <artifactId>jbpm-jpdl</artifactId>
+        <version>3.3.0.GA</version>
+      </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-jbpm-api</artifactId>

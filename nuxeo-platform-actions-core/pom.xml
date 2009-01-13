@@ -34,8 +34,8 @@
       <artifactId>jboss-seam</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jbpm.jbpm3</groupId>
-      <artifactId>jbpm-jpdl</artifactId>
+      <groupId>jboss</groupId>
+      <artifactId>jbpm</artifactId>
     </dependency>
     <dependency>
       <groupId>jboss</groupId>

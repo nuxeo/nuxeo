@@ -45,6 +45,7 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.platform.versioning.api.VersioningException;
 import org.nuxeo.ecm.platform.versioning.service.ServiceHelper;
 import org.nuxeo.ecm.platform.versioning.service.VersioningService;
+import org.nuxeo.ecm.platform.versioning.wfintf.WFVersioningPolicyProvider;
 
 /**
  * Core event listener performing version increment based on rules and/or user
@@ -336,14 +337,13 @@ public class DocVersioningListener extends AbstractEventListener implements
 
         // check with document Workflow
         log.debug(logPrefix + "checking versioning policy in document workflow");
-        //not supported anymore
-        /*final VersioningActions wfvaction = WFVersioningPolicyProvider.getVersioningPolicyFor(doc);
+        final VersioningActions wfvaction = WFVersioningPolicyProvider.getVersioningPolicyFor(doc);
         if (wfvaction != null) {
             if (wfvaction == VersioningActions.ACTION_CASE_DEPENDENT) {
                 log.debug(logPrefix + "WF case dependent...");
                 return true;
             }
-        }*/
+        }
 
         return false;
     }

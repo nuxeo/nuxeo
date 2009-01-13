@@ -44,6 +44,8 @@ import org.nuxeo.ecm.platform.versioning.api.VersionIncEditOptions;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.platform.versioning.api.VersioningException;
 import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
+import org.nuxeo.ecm.platform.versioning.wfintf.WFState;
+import org.nuxeo.ecm.platform.versioning.wfintf.WFVersioningPolicyProvider;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -212,13 +214,13 @@ public class VersioningService extends DefaultComponent implements
             return vincOpt;
         }
 
-        /*final boolean wfInProgress = WFState.hasWFProcessInProgress(docModel);
+        final boolean wfInProgress = WFState.hasWFProcessInProgress(docModel);
 
         // FIXME hardcoded state
         if (wfInProgress) {
             log.debug("workflow in progress");
             lifecycleState = "review";
-        }*/
+        }
 
         if (lifecycleState == null) {
             final VersionIncEditOptions vincOpt = new VersionIncEditOptions();
@@ -233,7 +235,7 @@ public class VersioningService extends DefaultComponent implements
         if (versIncOpts.getVersioningAction() == VersioningActions.ACTION_QUERY_WORKFLOW) {
             versIncOpts.addInfo("check versioning policy in document workflow");
 
-            /*final VersioningActions wfvaction = WFVersioningPolicyProvider.getVersioningPolicyFor(docModel);
+            final VersioningActions wfvaction = WFVersioningPolicyProvider.getVersioningPolicyFor(docModel);
             versIncOpts.addInfo("wfvaction = " + wfvaction);
 
             if (wfvaction != null) {
@@ -252,7 +254,7 @@ public class VersioningService extends DefaultComponent implements
                 }
 
                 versIncOpts.setVersioningAction(wfvaction);
-            } else*/ {
+            } else {
                 log.error("wf action is null");
                 versIncOpts.addInfo("wf action is null");
                 versIncOpts.setVersioningAction(null);
