@@ -126,8 +126,7 @@
           ${org.nuxeo.ecm.platform.transform.ooo.host.port}
         </parameter>
     </parameters>
-
-    </converter>
+   </converter>
 
   </extension>
 

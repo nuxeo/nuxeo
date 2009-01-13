@@ -66,7 +66,6 @@
     <module>nuxeo-platform-mimetype-api</module>
     <module>nuxeo-platform-mimetype-core</module>
     <module>nuxeo-platform-mimetype-facade</module>
-    <module>nuxeo-platform-modifier</module>
     <module>nuxeo-platform-notification-api</module>
     <module>nuxeo-platform-notification-core</module>
     <module>nuxeo-platform-notification-facade</module>
@@ -90,11 +89,12 @@
     <module>nuxeo-platform-search-core-listener</module>
     <module>nuxeo-platform-search-facade</module>
     <module>nuxeo-platform-search-test</module>
-    <module>nuxeo-platform-search-test-integration</module>
+<!--    <module>nuxeo-platform-search-test-integration</module>-->
     <module>nuxeo-platform-syndication</module>
     <module>nuxeo-platform-transform-api</module>
-    <module>nuxeo-platform-transform-core</module>
-    <module>nuxeo-platform-transform-plugins</module>
+    <module>nuxeo-platform-transform-compat</module>
+<!--    <module>nuxeo-platform-transform-core</module>
+    <module>nuxeo-platform-transform-plugins</module>-->
     <module>nuxeo-platform-types-api</module>
     <module>nuxeo-platform-types-core</module>
     <module>nuxeo-platform-types-facade</module>
@@ -468,11 +468,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-modifier</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-mimetype-core</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
@@ -616,6 +611,16 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-transform-compat</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-convert</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency><!--
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-transform-core</artifactId>
         <version>${nuxeo.platform.version}</version>
         <type>ejb</type>
@@ -624,7 +629,7 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-transform-plugins</artifactId>
         <version>${nuxeo.platform.version}</version>
-      </dependency>
+      </dependency>-->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-types-api</artifactId>
