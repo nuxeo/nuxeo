@@ -19,7 +19,9 @@
 
 package org.nuxeo.ecm.core.repository.jcr;
 
-import org.apache.jackrabbit.name.QName;
+import org.apache.jackrabbit.spi.Name;
+import org.apache.jackrabbit.spi.NameFactory;
+import org.apache.jackrabbit.spi.commons.name.NameFactoryImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -27,7 +29,9 @@ import org.apache.jackrabbit.name.QName;
  */
 public final class JCRName {
 
-    public final QName qname;     // the JCR QName
+    public static NameFactory NAME_FACTORY = NameFactoryImpl.getInstance();
+
+    public final Name qname;      // the JCR Name
     public final String uri;      // the uri (ex: 'http://nuxeo.org/ecm/names/')
     public final String prefix;   // the prefix (ex: 'ecm')
     public final String prefixwc; // the prefix with colon (ex: 'ecm:')
@@ -41,11 +45,11 @@ public final class JCRName {
         if (prefix.length() == 0) {
             prefixwc = "";
             rawname = (prefixwc + this.name).intern();
-            qname = new QName(QName.NS_DEFAULT_URI, name);
+            qname = NAME_FACTORY.create(Name.NS_DEFAULT_URI, name);
         } else {
             prefixwc = prefix + ':';
             rawname = (prefixwc + this.name).intern();
-            qname = new QName(uri, name);
+            qname = NAME_FACTORY.create(uri, name);
         }
     }
 

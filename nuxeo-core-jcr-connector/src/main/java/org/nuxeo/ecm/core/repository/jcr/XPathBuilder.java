@@ -487,8 +487,8 @@ public class XPathBuilder implements QueryConstants {
                 name = JcrConstants.JCR_PATH;
             } else if (ECM_ID.equals(name)) {
                 name = JcrConstants.JCR_UUID;
-                // } else if (ECM_SCHEMA.equals(name)) {
-                // name = JcrConstants.JCR_MIXINTYPES;
+            } else if ("ecm:currentLifeCycleState".equals(name)) {
+                name = NodeConstants.ECM_LIFECYCLE_STATE.rawname;
             }
             buf.append("@").append(name);
         }

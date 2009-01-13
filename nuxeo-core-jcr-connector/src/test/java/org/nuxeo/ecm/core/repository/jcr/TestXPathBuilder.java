@@ -96,7 +96,7 @@ public class TestXPathBuilder extends TestCase {
         //x = "/jcr:root/ecm:root/ecm:children/default-domain/ecm:children/workspaces/ecm:children//element(*,ecmnt:document)[((@dc:created <> xs:dateTime('1003-02-10T10:00:00.000+00:09:21'))) and (@my:urgency = 2)] order by @jcr:path ascending";
         //assertEquals(x, XPathBuilder.fromNXQL(q));
 
-        System.out.println(">>>> " + ((System.currentTimeMillis() - s) / 1000) + " sec.");
+        // System.out.println(">>>> " + ((System.currentTimeMillis() - s) / 1000) + " sec.");
     }
 
 }

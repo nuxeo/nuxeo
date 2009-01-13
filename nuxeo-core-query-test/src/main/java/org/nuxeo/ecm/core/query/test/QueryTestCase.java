@@ -146,7 +146,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
                 "testfile1", "File");
         file1.setPropertyValue("dc:title", "testfile1_Title");
         file1.setPropertyValue("dc:description", "testfile1_description");
-        String content = "This is a file.\nCaf\u00e9.";
+        String content = "Some caf\u00e9 in a restaurant.\nDrink!.\n";
         String filename = "testfile.txt";
         ByteArrayBlob blob1 = new ByteArrayBlob(content.getBytes("UTF-8"),
                 "text/plain");
@@ -440,13 +440,6 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(1, dml.size());
     }
 
-    public void TODOtestSQLFulltextAndSubpath() throws Exception {
-        createDocs();
-        String sql = "SELECT * FROM document WHERE content LIKE '% Nuxeo%' AND ecm:path STARTSWITH '/'";
-        DocumentModelList dml = session.query(sql);
-        assertEquals(1, dml.size());
-    }
-
     // from TestSQLWithDate
 
     public void testSQLWithDate() throws Exception {
@@ -720,7 +713,76 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         dml = session.query("SELECT * FROM Document WHERE ecm:versionLabel = '1'");
         assertIdSet(dml, version.getId());
 
-        // ecm:fulltext
-
+        // ecm:fulltext tested below
     }
+
+    public void testSQLFulltext() throws Exception {
+        createDocs();
+        String query;
+        DocumentModelList dml;
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        DocumentModel file2 = session.getDocument(new PathRef(
+                "/testfolder1/testfile2"));
+        DocumentModel file3 = session.getDocument(new PathRef(
+                "/testfolder1/testfile3"));
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'world'";
+
+        dml = session.query(query);
+        assertEquals(0, dml.size());
+
+        file1.setProperty("dublincore", "title", "hello world");
+        session.saveDocument(file1);
+        session.save();
+
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId());
+
+        file2.setProperty("dublincore", "description", "the world is my oyster");
+        session.saveDocument(file2);
+        session.save();
+
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId(), file2.getId());
+
+        file3.setProperty("dublincore", "title", "brave new world");
+        session.saveDocument(file3);
+        session.save();
+
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId(), file2.getId()); // file3 is a Note
+
+        query = "SELECT * FROM Note WHERE ecm:fulltext = 'world'";
+        dml = session.query(query);
+        assertIdSet(dml, file3.getId());
+
+        query = "SELECT * FROM Document WHERE ecm:fulltext = 'world' "
+                + "AND dc:contributors = 'pete'";
+        dml = session.query(query);
+        assertIdSet(dml, file2.getId());
+
+        // multi-valued field
+        query = "SELECT * FROM Document WHERE ecm:fulltext = 'bzzt'";
+        dml = session.query(query);
+        assertEquals(0, dml.size());
+        file1.setProperty("dublincore", "subjects", new String[] { "bzzt" });
+        session.saveDocument(file1);
+        session.save();
+        query = "SELECT * FROM Document WHERE ecm:fulltext = 'bzzt'";
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId());
+    }
+
+    public void testSQLFulltextBlob() throws Exception {
+        createDocs();
+        String query;
+        DocumentModelList dml;
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant'";
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId());
+    }
+
 }

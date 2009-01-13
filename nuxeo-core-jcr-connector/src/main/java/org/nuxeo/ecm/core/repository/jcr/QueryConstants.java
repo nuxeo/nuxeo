@@ -26,6 +26,7 @@ package org.nuxeo.ecm.core.repository.jcr;
 public interface QueryConstants {
 
     static final String ECM_TYPE = "ecm:type";
+    static final String ECM_MIXINTYPE = "ecm:mixinType";
     static final String ECM_PATH = "ecm:path";
     static final String ECM_SCHEMA = "ecm:schema";
     static final String ECM_ID = "ecm:id";

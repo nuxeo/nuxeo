@@ -224,6 +224,33 @@ public class HierarchyContext extends Context {
     }
 
     /**
+     * Finds the id of the enclosing non-complex-property node.
+     *
+     * @param id the id
+     * @return the id of the containing document, or {@code null} if there is no
+     *         parent or the parent has been deleted.
+     */
+    protected Serializable getContainingDocument(Serializable id)
+            throws StorageException {
+        Serializable pid = id;
+        while (true) {
+            if (pid == null) {
+                // no parent
+                return null;
+            }
+            SimpleFragment p = (SimpleFragment) get(pid, false);
+            if (p == null) {
+                // can happen if the fragment has been deleted
+                return null;
+            }
+            if (!complexProp(p)) {
+                return pid;
+            }
+            pid = p.get(model.HIER_PARENT_KEY);
+        }
+    }
+
+    /**
      * Checks that we don't move/copy under ourselves.
      */
     protected void checkNotUnder(Serializable parentId, Serializable id,
