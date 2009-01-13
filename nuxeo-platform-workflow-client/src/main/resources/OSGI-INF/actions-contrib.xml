@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <component name="org.nuxeo.ecm.platform.workflow.web">
 
   <documentation>
     Workflow client action contributions.
 
-    @version 1.0 @author
-    <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+    @version 1.0 @author Julien Anguenot
   </documentation>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"

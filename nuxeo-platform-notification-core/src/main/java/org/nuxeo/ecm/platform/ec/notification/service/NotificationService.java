@@ -177,9 +177,6 @@ public class NotificationService extends DefaultComponent implements
         }
     }
 
-    /**
-     * @return the notificationRegistry.
-     */
     public NotificationRegistry getNotificationRegistry() {
         return notificationRegistry;
     }

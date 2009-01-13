@@ -44,7 +44,7 @@ public class NuxeoRequestControllerFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         rcm = Framework.getLocalService(RequestControllerManager.class);
 
-        if (rcm==null) {
+        if (rcm == null) {
             log.error("Unable to get RequestControlerManager service");
             throw new ServletException("RequestControlerManager can not be found");
         }
@@ -128,7 +128,7 @@ public class NuxeoRequestControllerFilter implements Filter {
     }
 
     /**
-     * Commits or rollbacks the {@link UserTransaction} depending on the Transaction status
+     * Commits or rollbacks the {@link UserTransaction} depending on the Transaction status.
      */
     protected void commitOrRollBackUserTransaction() {
         try {
@@ -147,14 +147,10 @@ public class NuxeoRequestControllerFilter implements Filter {
     }
 
     /**
-     * Synchronize the HttpSession.
+     * Synchronizes the HttpSession.
      * <p>
-     * Use a {@link Lock} object in Http Session and lock's it.
-     *
-     * If HttpSession is not created, exists without locking anything.
-     *
-     * @param request
-     * @return
+     * Uses a {@link Lock} object in the HttpSession and locks it.
+     * If HttpSession is not created, exits without locking anything.
      */
     protected boolean simpleSyncOnSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
@@ -191,8 +187,6 @@ public class NuxeoRequestControllerFilter implements Filter {
 
     /**
      * Releases the {@link Lock} if present in the HttpSession.
-     *
-     * @param request
      */
     protected void simpleReleaseSyncOnSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);

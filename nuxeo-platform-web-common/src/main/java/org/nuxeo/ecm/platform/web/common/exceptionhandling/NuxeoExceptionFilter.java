@@ -38,7 +38,7 @@ public class NuxeoExceptionFilter implements Filter {
     private NuxeoExceptionHandler exceptionHandler;
 
     public void init(FilterConfig filterConfig) throws ServletException {
-        ExceptionHandlingService service = null;
+        ExceptionHandlingService service;
         try {
             service = Framework.getService(ExceptionHandlingService.class);
         } catch (Exception e) {
@@ -52,7 +52,6 @@ public class NuxeoExceptionFilter implements Filter {
             ServletException {
         exceptionHandler.handleException(request, response, t);
     }
-
 
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {

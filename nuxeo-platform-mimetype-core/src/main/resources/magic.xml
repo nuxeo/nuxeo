@@ -1929,7 +1929,7 @@
   <description>(Corel/WP)</description>
   <test offset="1" type="string" comparator="=">WPC</test>
   <match-list>
-      <match>
+    <match>
       <mimetype>???</mimetype>
       <extension>???</extension>
       <description>Mail</description>

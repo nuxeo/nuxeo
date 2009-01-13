@@ -114,14 +114,14 @@
         <layout>file</layout>
       </layouts>
       <!-- old layout config, to remove so that new layout is used -->
-      <layout>
+      <!-- layout>
         <widget jsfcomponent="h:inputText" schemaname="dublincore"
           fieldname="title" required="true" />
         <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
           fieldname="description" />
         <widget jsfcomponent="t:inputFileUpload" schemaname="file"
           fieldname="content" />
-      </layout>
+      </layout-->
     </type>
 
     <type id="SectionRoot" coretype="SectionRoot">
@@ -226,50 +226,6 @@
         <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
           fieldname="description" />
         <widget jsfcomponent="nxu:editor" schemaname="note" fieldname="note" />
-      </layout>
-    </type>
-
-    <type id="User" coretype="User">
-      <label>User</label>
-      <icon>/icons/user.gif</icon>
-      <default-view>view_user</default-view>
-      <!-- new layout config -->
-      <layouts mode="any">
-        <layout>user</layout>
-      </layouts>
-      <!-- old layout config, to remove so that layout "user" is used -->
-      <layout>
-        <widget schemaname="user" fieldname="username"
-          jsfcomponent="h:inputTextReadOnly" required="true" />
-        <widget schemaname="user" fieldname="firstName"
-          jsfcomponent="h:inputText" required="false" />
-        <widget schemaname="user" fieldname="lastName"
-          jsfcomponent="h:inputText" required="false" />
-        <widget schemaname="user" fieldname="company" jsfcomponent="h:inputText"
-          required="false" />
-        <widget schemaname="user" fieldname="email" jsfcomponent="h:inputText"
-          required="true" />
-      </layout>
-    </type>
-
-    <type id="UserCreate" coretype="UserCreate">
-      <label>UserCreate</label>
-      <icon>/icons/user.gif</icon>
-      <default-view>create_user</default-view>
-      <!-- old layout config, to remove so that layout "user" is used -->
-      <layout>
-        <widget schemaname="user" fieldname="username"
-          jsfcomponent="h:inputText" required="true" />
-        <widget schemaname="user" fieldname="firstName"
-          jsfcomponent="h:inputText" required="false" />
-        <widget schemaname="user" fieldname="lastName"
-          jsfcomponent="h:inputText" required="false" />
-        <widget schemaname="user" fieldname="company" jsfcomponent="h:inputText"
-          required="false" />
-        <widget schemaname="user" fieldname="email" jsfcomponent="h:inputText"
-          required="true" />
-        <widget schemaname="user" fieldname="password"
-          jsfcomponent="h:inputSecret" required="true" />
       </layout>
     </type>
 

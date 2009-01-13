@@ -59,12 +59,6 @@ public class NotificationImpl implements Notification {
 
     private Boolean enabled;
 
-    /**
-     * @param name
-     * @param template
-     * @param channel
-     * @param subjectTemplate
-     */
     public NotificationImpl(String name, String template, String channel, String subjectTemplate,
             Boolean autoSubscribed, String subject, String availableIn, String label) {
         this.name = name;
@@ -77,51 +71,30 @@ public class NotificationImpl implements Notification {
         this.label = label;
     }
 
-    /**
-     * @return the name.
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * @return the channel.
-     */
     public String getChannel() {
         return channel;
     }
 
-    /**
-     * @return the template.
-     */
     public String getTemplate() {
         return template;
     }
 
-    /**
-     * @return the autoSubscribed.
-     */
     public Boolean getAutoSubscribed() {
         return autoSubscribed;
     }
 
-    /**
-     * @return the subject.
-     */
     public String getSubject() {
         return subject;
     }
 
-    /**
-     * @return the subject template.
-     */
     public String getSubjectTemplate() {
         return subjectTemplate;
     }
 
-    /**
-     * @return the availableIn.
-     */
     public String getAvailableIn() {
         return availableIn;
     }

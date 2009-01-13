@@ -56,7 +56,6 @@ public class PermissionActionListManager implements Serializable {
     private transient ResourcesAccessor resourcesAccessor;
 
     public SelectItem[] getPermissionActionItems() {
-
         List<String> permissionActions = new ArrayList<String>();
         List<SelectItem> jsfModelList = new ArrayList<SelectItem>();
 
@@ -71,7 +70,6 @@ public class PermissionActionListManager implements Serializable {
         }
 
         SelectItem[] permissionActionItems = jsfModelList.toArray(new SelectItem[0]);
-
         return permissionActionItems;
     }
 

@@ -22,19 +22,19 @@ package org.nuxeo.ecm.webapp.security;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
-import java.io.Serializable;
-import java.util.ArrayList;
+import java.security.Principal;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.component.EditableValueHolder;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.faces.model.SelectItem;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -42,17 +42,16 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
-import org.jboss.seam.contexts.Context;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
-import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
@@ -61,20 +60,18 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 @Name("groupManagerActions")
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
-public class GroupManagerActionsBean extends InputController implements
-        GroupManagerActions, Serializable {
+public class GroupManagerActionsBean implements GroupManagerActions {
 
-    private static final long serialVersionUID = 5592973087289772720L;
+    private static final long serialVersionUID = 1L;
 
+    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(GroupManagerActionsBean.class);
 
-    private static final String ALL = "all";
+    @In(create = true)
+    protected transient UserManager userManager;
 
-    public static final String VALID_CHARS = "0123456789_-"
-            + "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
-    @In
-    protected transient Context conversationContext;
+    @In(create = true)
+    protected Principal currentUser;
 
     @In(create = true, required = false)
     protected transient FacesMessages facesMessages;
@@ -82,226 +79,183 @@ public class GroupManagerActionsBean extends InputController implements
     @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;
 
-    @In(create = true)
-    transient UserManager userManager;
-
-    @In(create = true, required = false)
-    transient CoreSession documentManager;
-
-    @DataModel("groupList")
-    List<NuxeoGroup> groups;
+    @DataModel(value = "groupList")
+    private DocumentModelList groups;
 
     @DataModelSelection("groupList")
-    NuxeoGroup selectedGroup;
+    private DocumentModel selectedGroup;
 
-    @In(required = false)
-    NuxeoGroupImpl newGroup;
+    private DocumentModel newGroup;
 
-    @In(create = true)
-    PrincipalListManager principalListManager;
+    private String groupListingMode;
 
-    // private boolean principalIsAdmin;
-    private NuxeoPrincipal principal;
+    private Boolean canEditGroups;
 
-    protected String groupListingMode;
-
-    protected String searchString = "";
+    private String searchString = "";
 
     private boolean searchOverflow;
 
-    private List<NuxeoGroup> allGroups;
-
-    private boolean allGroupsOverflow;
-
-    @Create
-    public void initialize() throws ClientException {
-        log.debug("Initializing...");
-        principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
-        groupListingMode = userManager.getGroupListingMode();
+    private String getGroupListingMode() throws ClientException {
+        if (groupListingMode == null) {
+            groupListingMode = userManager.getGroupListingMode();
+        }
+        return groupListingMode;
     }
 
-    public void destroy() {
-        log.debug("destroy");
-    }
-
-    @Factory("groupList")
-    public void recomputeGroupList() throws ClientException {
-        if (!StringUtils.isEmpty(searchString) && !"*".equals(searchString)) {
+    @Factory(value = "groupList")
+    public DocumentModelList getGroups() throws ClientException {
+        if (groups == null) {
+            searchOverflow = false;
             try {
-                searchOverflow = false;
-                groups = userManager.searchGroups(searchString);
+                String groupListingMode = getGroupListingMode();
+                if (ALL.equals(groupListingMode) || "*".equals(searchString)) {
+                    groups = userManager.searchGroups(
+                            Collections.<String, Object> emptyMap(), null);
+                } else if (!StringUtils.isEmpty(searchString)) {
+                    Map<String, Object> filter = new HashMap<String, Object>();
+                    // XXX: search only on id, better conf should be set in user
+                    // manager interface
+                    filter.put(userManager.getGroupIdField(), searchString);
+                    groups = userManager.searchGroups(filter, filter.keySet());
+                }
             } catch (SizeLimitExceededException e) {
                 searchOverflow = true;
-                groups = Collections.emptyList();
             }
-        } else if (ALL.equals(groupListingMode) || "*".equals(searchString)) {
-            if (allGroups == null) {
-                try {
-                    allGroupsOverflow = false;
-                    allGroups = userManager.getAvailableGroups();
-                } catch (SizeLimitExceededException e) {
-                    allGroupsOverflow = true;
-                    allGroups = Collections.emptyList();
-                }
-            }
-            searchOverflow = allGroupsOverflow;
-            groups = new ArrayList<NuxeoGroup>(allGroups);
-        } else {
-            searchOverflow = false;
-            groups = Collections.emptyList();
         }
+        if (groups == null) {
+            groups = new DocumentModelListImpl();
+        }
+        return groups;
+    }
+
+    public void resetGroups() throws ClientException {
+        groups = null;
+    }
+
+    // refresh to get references
+    protected DocumentModel refreshGroup(String groupName)
+            throws ClientException {
+        return userManager.getGroupModel(groupName);
+    }
+
+    protected String viewGroup(DocumentModel group, boolean refresh)
+            throws ClientException {
+        if (group != null) {
+            selectedGroup = group;
+            if (refresh) {
+                selectedGroup = refreshGroup(group.getId());
+            }
+            if (selectedGroup != null) {
+                return "view_group";
+            }
+        }
+        return null;
+    }
+
+    public String viewGroups() throws ClientException {
+        return "view_groups";
     }
 
     public String viewGroup() throws ClientException {
-        try {
-            refreshGroup(selectedGroup);
-            conversationContext.set("selectedGroup", selectedGroup);
-            return "view_group";
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
+        return viewGroup(selectedGroup, true);
     }
 
     public String viewGroup(String groupName) throws ClientException {
-        try {
-            selectedGroup = userManager.getGroup(groupName);
-            return viewGroup();
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
-    }
-
-    public void refreshGroup(NuxeoGroup group) throws ClientException {
-        NuxeoGroup freshGroup = userManager.getGroup(group.getName());
-        group.setMemberGroups(freshGroup.getMemberGroups());
-        group.setMemberUsers(freshGroup.getMemberUsers());
-        principalListManager.setSelectedUsers(freshGroup.getMemberUsers());
+        return viewGroup(userManager.getGroupModel(groupName), false);
     }
 
     public String editGroup() throws ClientException {
-        try {
-            refreshGroup(selectedGroup);
-            conversationContext.set("selectedGroup", selectedGroup);
-            return "edit_group";
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
+        selectedGroup = refreshGroup(selectedGroup.getId());
+        return "edit_group";
+    }
+
+    public DocumentModel getSelectedGroup() throws ClientException {
+        return selectedGroup;
+    }
+
+    public DocumentModel getNewGroup() throws ClientException {
+        if (newGroup == null) {
+            newGroup = userManager.getBareGroupModel();
         }
+        return newGroup;
     }
 
     public String deleteGroup() throws ClientException {
         try {
             userManager.deleteGroup(selectedGroup);
-            if (groups != null && !groups.isEmpty()) {
-                groups.remove(selectedGroup);
-            }
-            if (allGroups != null && !allGroups.isEmpty()) {
-                allGroups.remove(selectedGroup);
-            }
-            return "view_groups";
+            // reset users and groups
+            resetGroups();
+            return viewGroups();
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
-    }
-
-    public List<SelectItem> getAvailableGroups() throws ClientException {
-        List<SelectItem> selectItemList = new ArrayList<SelectItem>();
-        for (NuxeoGroup group : userManager.getAvailableGroups()) {
-            String groupName = group.getName();
-            selectItemList.add(new SelectItem(groupName, groupName));
-        }
-        return selectItemList;
     }
 
     public String updateGroup() throws ClientException {
         try {
-            selectedGroup.setMemberUsers(principalListManager.getSelectedUsers());
             userManager.updateGroup(selectedGroup);
-
-            principalListManager.setSelectedUsers(new ArrayList<String>());
-
-            return viewGroup(selectedGroup.getName());
+            // reset users and groups
+            resetGroups();
+            return viewGroup(selectedGroup.getId());
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
     }
 
-    public String saveGroup() throws ClientException {
+    public void validateGroupName(FacesContext context, UIComponent component,
+            Object value) {
+        if (!(value instanceof String)
+                || !StringUtils.containsOnly((String) value, VALID_CHARS)) {
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                            context, "label.groupManager.wrongGroupName"), null);
+            ((EditableValueHolder) component).setValid(false);
+            context.addMessage(component.getClientId(context), message);
+            // also add global message
+            context.addMessage(null, message);
+        }
+    }
+
+    public String createGroup() throws ClientException {
         try {
-            if (StringUtils.isEmpty(newGroup.getName())) {
-                String message = resourcesAccessor.getMessages().get(
-                        "label.groupManager.emptyGroupName");
-                facesMessages.addToControl("groupName",
-                        FacesMessage.SEVERITY_INFO, message);
-                return null;
-            }
-            if (!StringUtils.containsOnly(newGroup.getName(), VALID_CHARS)) {
-                String message = resourcesAccessor.getMessages().get(
-                        "label.groupManager.wrongGroupName");
-                facesMessages.addToControl("groupName",
-                        FacesMessage.SEVERITY_ERROR, message);
-                return null;
-            }
-
-            newGroup.setMemberUsers(principalListManager.getSelectedUsers());
-            userManager.createGroup(newGroup);
-            principalListManager.setSelectedUsers(new ArrayList<String>());
-
-            // do not add default permission since user is already in member
-            // group which have default permissions
-            // documentManager.applyDefaultPermissions(newGroup.getName());
-
-            allGroups = null; // recompute it
-            recomputeGroupList();
-            return viewGroup(newGroup.getName());
+            selectedGroup = userManager.createGroup(newGroup);
+            newGroup = null;
+            // reset so that group list is computed again
+            resetGroups();
+            return viewGroup(selectedGroup, false);
         } catch (GroupAlreadyExistsException e) {
             String message = resourcesAccessor.getMessages().get(
                     "error.groupManager.groupAlreadyExists");
             facesMessages.addToControl("groupName", FacesMessage.SEVERITY_INFO,
                     message);
             return null;
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
         }
     }
 
-    public String createGroup() throws ClientException {
-        try {
-            newGroup = new NuxeoGroupImpl("");
-            conversationContext.set("newGroup", newGroup);
-
-            principalListManager.setSelectedUsers(new ArrayList<String>());
-
-            return "create_group";
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
+    protected boolean getCanEditGroups() throws ClientException {
+        if (canEditGroups == null) {
+            canEditGroups = false;
+            if (!userManager.areGroupsReadOnly()
+                    && currentUser instanceof NuxeoPrincipal) {
+                NuxeoPrincipal pal = (NuxeoPrincipal) currentUser;
+                if (pal.isAdministrator()) {
+                    canEditGroups = true;
+                }
+            }
         }
+        return canEditGroups;
     }
 
     public boolean getAllowCreateGroup() throws ClientException {
-        try {
-            return principal.isAdministrator()
-                    && !userManager.areGroupsReadOnly();
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
+        return getCanEditGroups();
     }
 
     public boolean getAllowDeleteGroup() throws ClientException {
-        try {
-            return principal.isAdministrator()
-                    && !userManager.areGroupsReadOnly();
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
+        return getCanEditGroups();
     }
 
     public boolean getAllowEditGroup() throws ClientException {
-        try {
-            return principal.isAdministrator()
-                    && !userManager.areGroupsReadOnly();
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
+        return getCanEditGroups();
     }
 
     public String getSearchString() {
@@ -310,15 +264,16 @@ public class GroupManagerActionsBean extends InputController implements
 
     public void setSearchString(String searchString) {
         this.searchString = searchString;
-        groups = null; // recomputed through factory
     }
 
     public String searchGroups() throws ClientException {
-        return "view_groups";
+        // reset so that groups are recomputed
+        resetGroups();
+        return viewGroups();
     }
 
     public String clearSearch() throws ClientException {
-        setSearchString("");
+        searchString = null;
         return searchGroups();
     }
 

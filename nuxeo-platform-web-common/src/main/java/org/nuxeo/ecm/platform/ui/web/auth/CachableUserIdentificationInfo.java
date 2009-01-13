@@ -32,7 +32,7 @@ public class CachableUserIdentificationInfo implements Serializable {
 
     protected UserIdentificationInfo userInfo;
 
-    protected Boolean alreadyAuthenticated;
+    protected boolean alreadyAuthenticated;
 
     protected Principal principal;
 
@@ -52,7 +52,7 @@ public class CachableUserIdentificationInfo implements Serializable {
         return alreadyAuthenticated;
     }
 
-    public void setAlreadyAuthenticated(Boolean alreadyAuthenticated) {
+    public void setAlreadyAuthenticated(boolean alreadyAuthenticated) {
         this.alreadyAuthenticated = alreadyAuthenticated;
     }
 
@@ -74,10 +74,6 @@ public class CachableUserIdentificationInfo implements Serializable {
 
     public UserIdentificationInfo getUserInfo() {
         return userInfo;
-    }
-
-    public void setUserInfo(UserIdentificationInfo userInfo) {
-        this.userInfo = userInfo;
     }
 
 }

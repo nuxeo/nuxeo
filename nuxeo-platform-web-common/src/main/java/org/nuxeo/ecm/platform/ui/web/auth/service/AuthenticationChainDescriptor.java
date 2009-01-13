@@ -38,8 +38,4 @@ public class AuthenticationChainDescriptor implements Serializable {
         return pluginsNames;
     }
 
-    public void setPluginsNames(List<String> pluginsNames) {
-        this.pluginsNames = pluginsNames;
-    }
-
 }

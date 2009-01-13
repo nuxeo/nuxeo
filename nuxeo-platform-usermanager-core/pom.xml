@@ -51,6 +51,10 @@
       <artifactId>hibernate</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>net.sf.opencsv</groupId>
+      <artifactId>opencsv</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

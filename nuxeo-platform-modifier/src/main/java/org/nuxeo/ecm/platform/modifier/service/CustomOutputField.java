@@ -44,16 +44,8 @@ public class CustomOutputField {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getOutputParamName() {
         return outputParamName;
-    }
-
-    public void setOutputParamName(String outputParamName) {
-        this.outputParamName = outputParamName;
     }
 
     @Override

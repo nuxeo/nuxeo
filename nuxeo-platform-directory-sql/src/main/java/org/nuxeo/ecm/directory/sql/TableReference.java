@@ -70,7 +70,7 @@ public class TableReference extends AbstractReference {
     @XNode("@dataFile")
     protected String dataFileName;
 
-    private Table table = null;
+    private Table table;
 
     private Dialect dialect;
 

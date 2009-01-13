@@ -45,8 +45,7 @@ public class DocumentVersioningBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = -3782178155516634239L;
 
-    private static final Log log = LogFactory
-            .getLog(DocumentVersioningBusinessDelegate.class);
+    private static final Log log = LogFactory.getLog(DocumentVersioningBusinessDelegate.class);
 
     protected VersioningManager versioningManager;
 

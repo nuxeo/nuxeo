@@ -21,21 +21,25 @@ package org.nuxeo.ecm.platform.audit.api;
 
 import java.util.Set;
 
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.event.CoreEvent;
+import org.nuxeo.ecm.platform.events.api.DocumentMessage;
+
 /**
  * NXAuditEvents interface.
  * <p>
  * Allows to query for auditable events.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public interface NXAuditEvents extends Logs {
 
     /**
      * Returns the list of auditable event names.
-     * 
+     *
      * Is there any no reason to expose event names outside of audit service ? If
      * not, we will remove that API.
-     * 
+     *
      * @return list of String representing event names.
      */
     @Deprecated

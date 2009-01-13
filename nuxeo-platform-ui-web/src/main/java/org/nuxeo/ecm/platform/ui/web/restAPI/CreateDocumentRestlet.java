@@ -55,7 +55,7 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements
     private static final long serialVersionUID = -7223939557577366747L;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     protected CoreSession documentManager;
 

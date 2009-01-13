@@ -80,15 +80,11 @@ public class SecurityData implements Serializable {
 
     protected boolean needSave=false;
 
-
-
-    public void setNeedSave(boolean needSave)
-    {
-        this.needSave=needSave;
+    public void setNeedSave(boolean needSave) {
+        this.needSave = needSave;
     }
 
-    public boolean getNeedSave()
-    {
+    public boolean getNeedSave() {
         return needSave;
     }
 
@@ -188,7 +184,7 @@ public class SecurityData implements Serializable {
             return;
         }
 
-        needSave=true;
+        needSave = true;
         if (grant) {
             // if we already have the user stored with rights we dont add the
             // user again, just update the list if needed
@@ -248,7 +244,7 @@ public class SecurityData implements Serializable {
      * Removes a privilege from the displayed list. This does not submit anything
      * to backend.
      *
-     * returns true if a privilege was indeed removed
+     * @return true if a privilege was indeed removed
      */
     public boolean removeModifiablePrivilege(String principalName,
             String permissionName, boolean grant) {
@@ -294,7 +290,7 @@ public class SecurityData implements Serializable {
 
     /**
      * Removes all privileges for a given user. This does not edit the
-     * backend
+     * backend.
      */
     public void removeModifiablePrivilege(String principalName) {
         if (null == principalName) {

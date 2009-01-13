@@ -31,7 +31,6 @@ public class ForumEndPublishActionHandler extends
     private static final long serialVersionUID = 1L;
 
     public void execute(ExecutionContext executionContext) throws Exception {
-
         log.debug("Moderation process end");
         // FIXME: get rid of these two try/except blocks?
         try {

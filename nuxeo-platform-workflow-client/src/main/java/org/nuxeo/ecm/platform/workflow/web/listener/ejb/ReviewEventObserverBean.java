@@ -99,11 +99,9 @@ public class ReviewEventObserverBean implements ReviewEventObserver {
         }*/
     }
 
-
-    @Observer( value={ EventNames.DOCUMENT_SELECTION_CHANGED}, create=false)
+    @Observer(value = {EventNames.DOCUMENT_SELECTION_CHANGED}, create = false)
     @BypassInterceptors
-    public void onDocumentChanged()
-    {
+    public void onDocumentChanged() {
         invalidateContextVariables();
         invalidateTasksContextVariables();
         try {
@@ -189,49 +187,43 @@ public class ReviewEventObserverBean implements ReviewEventObserver {
     }
 
     protected NavigationContext getNavigationContext() {
-        if (navigationContext==null)
-        {
-            navigationContext = (NavigationContext) Component.getInstance("navigationContext",ScopeType.CONVERSATION);
+        if (navigationContext == null) {
+            navigationContext = (NavigationContext) Component.getInstance("navigationContext", ScopeType.CONVERSATION);
         }
         return navigationContext;
     }
 
     protected WorkflowBeansDelegate getWorkflowBeansDelegate() {
-        if (workflowBeansDelegate==null)
-        {
-            workflowBeansDelegate  = (WorkflowBeansDelegate) Component.getInstance("workflowBeansDelegate");
+        if (workflowBeansDelegate == null) {
+            workflowBeansDelegate = (WorkflowBeansDelegate) Component.getInstance("workflowBeansDelegate");
         }
         return workflowBeansDelegate;
     }
 
     protected DocumentWorkflowActions getDocumentWorkflowActions() {
-        if (documentWorkflowActions==null)
-        {
-            documentWorkflowActions  = (DocumentWorkflowActions) Component.getInstance("documentWorkflowActions");
+        if (documentWorkflowActions == null) {
+            documentWorkflowActions = (DocumentWorkflowActions) Component.getInstance("documentWorkflowActions");
         }
         return documentWorkflowActions;
     }
 
     protected DocumentTaskActions getDocumentTaskActions() {
-        if (documentTaskActions==null)
-        {
-            documentTaskActions  = (DocumentTaskActions) Component.getInstance("documentTaskActions");
+        if (documentTaskActions == null) {
+            documentTaskActions = (DocumentTaskActions) Component.getInstance("documentTaskActions");
         }
         return documentTaskActions;
     }
 
     protected WorkItemsListsActions getWorkItemsListsActions() {
-        if (workItemsListsActions==null)
-        {
-            workItemsListsActions  = (WorkItemsListsActions) Component.getInstance("workItemsListsActions");
+        if (workItemsListsActions == null) {
+            workItemsListsActions = (WorkItemsListsActions) Component.getInstance("workItemsListsActions");
         }
         return workItemsListsActions;
     }
 
     protected DashboardActions getDashboardActions() {
-        if (dashboardActions==null)
-        {
-            dashboardActions  = (DashboardActions) Component.getInstance("dashboardActions");
+        if (dashboardActions == null) {
+            dashboardActions = (DashboardActions) Component.getInstance("dashboardActions");
         }
         return dashboardActions;
     }

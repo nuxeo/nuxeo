@@ -46,17 +46,11 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class PluggableAuthenticationService extends DefaultComponent {
 
     public static final String NAME = "org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService";
-
     public static final String EP_AUTHENTICATOR = "authenticators";
-
     public static final String EP_SESSIONMANAGER = "sessionManager";
-
     public static final String EP_CHAIN = "chain";
-
     public static final String EP_PROPAGATOR = "propagator";
-
     public static final String EP_CBFACTORY = "JbossCallbackfactory";
-
     public static final String EP_STARTURL = "startURL";
 
     private static final Log log = LogFactory.getLog(PluggableAuthenticationService.class);
@@ -67,11 +61,12 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     private Map<String, NuxeoAuthenticationSessionManager> sessionManagers;
 
+    // NB: not used. Remove?
     private NuxeoAuthenticationSessionManager defaultSessionManager;
 
-    private NuxeoAuthenticationPropagator propagator = null;
+    private NuxeoAuthenticationPropagator propagator;
 
-    private NuxeoCallbackHandlerFactory cbhFactory = null;
+    private NuxeoCallbackHandlerFactory cbhFactory;
 
     private List<String> authChain;
 
@@ -120,13 +115,11 @@ public class PluggableAuthenticationService extends DefaultComponent {
             } catch (InstantiationException e) {
                 log.error("Unable to create AuthPlugin for : "
                         + actualDescriptor.getName() + "Error : "
-                        + e.getMessage());
-                e.printStackTrace();
+                        + e.getMessage(), e);
             } catch (IllegalAccessException e) {
                 log.error("Unable to create AuthPlugin for : "
                         + actualDescriptor.getName() + "Error : "
-                        + e.getMessage());
-                e.printStackTrace();
+                        + e.getMessage(), e);
             }
 
         } else if (extensionPoint.equals(EP_CHAIN)) {
@@ -199,8 +192,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
         oldDescriptor.setParameters(oldParameters);
 
         // override LoginLModule
-        if ((newContrib.getLoginModulePlugin() != null)
-                && (newContrib.getLoginModulePlugin().length() > 0)) {
+        if (newContrib.getLoginModulePlugin() != null
+                && newContrib.getLoginModulePlugin().length() > 0) {
             oldDescriptor.setLoginModulePlugin(newContrib.getLoginModulePlugin());
         }
     }
@@ -234,8 +227,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
         List<NuxeoAuthenticationPlugin> result = new ArrayList<NuxeoAuthenticationPlugin>();
 
         for (String pluginName : authChain) {
-            if ((authenticatorsDescriptors.containsKey(pluginName))
-                    && (authenticatorsDescriptors.get(pluginName).getEnabled())) {
+            if (authenticatorsDescriptors.containsKey(pluginName)
+                    && authenticatorsDescriptors.get(pluginName).getEnabled()) {
                 if (authenticators.containsKey(pluginName)) {
                     result.add(authenticators.get(pluginName));
                 }
@@ -278,7 +271,6 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
     public HttpSession reinitSession(HttpServletRequest httpRequest) {
-
         if (!sessionManagers.isEmpty()) {
             for (String smName : sessionManagers.keySet()) {
                 NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);

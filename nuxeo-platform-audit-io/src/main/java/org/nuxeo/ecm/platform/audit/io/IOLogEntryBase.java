@@ -157,8 +157,6 @@ public class IOLogEntryBase {
 
     /**
      * Specifies date-string conversion.
-     *
-     * @return
      */
     protected static DateFormat getDateFormat() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -197,10 +195,6 @@ public class IOLogEntryBase {
 
     /**
      * Should be overridden if log data structure is changed.
-     *
-     * @param logEntry
-     * @param newRef
-     * @return
      */
     private static LogEntry translate(LogEntry logEntry, DocumentRef newRef) {
         LogEntry newLogEntry;

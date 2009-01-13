@@ -24,6 +24,7 @@ import java.util.Map;
 /**
  * This class is used to build the summary file in a Zip export. It can displays
  * a summary in two ways:
+ *
  * <ul>
  * <li>Flat with for all entries the full path to document
  * <li>Hierarchical.

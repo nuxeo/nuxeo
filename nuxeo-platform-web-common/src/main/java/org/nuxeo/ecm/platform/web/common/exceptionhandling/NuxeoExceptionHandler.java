@@ -42,7 +42,7 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.RequestDumper
  */
 public class NuxeoExceptionHandler {
 
-    private static final String NUXEO_EXCEPTION_HANDLER_SET = "NUXEO_EXCEPTION_HANDLER_SET";
+    //private static final String NUXEO_EXCEPTION_HANDLER_SET = "NUXEO_EXCEPTION_HANDLER_SET";
 
     private static final Log log = LogFactory.getLog(NuxeoExceptionHandler.class);
 

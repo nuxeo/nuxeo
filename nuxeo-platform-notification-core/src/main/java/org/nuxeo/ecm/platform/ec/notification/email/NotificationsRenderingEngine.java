@@ -50,7 +50,6 @@ public class NotificationsRenderingEngine extends DocumentRenderingEngine {
         return cfg;
     }
 
-
     @Override
     protected FreemarkerRenderingJob createJob(RenderingContext ctx)
             throws RenderingException {
@@ -66,11 +65,11 @@ public class NotificationsRenderingEngine extends DocumentRenderingEngine {
 
         private static final long serialVersionUID = -7133062841713259967L;
 
+        final Writer strWriter = new StringWriter();
+
         NotifsRenderingJob(String formatName) {
             super(formatName);
         }
-
-        final Writer strWriter = new StringWriter();
 
         @Override
         public Object getOutcome() {

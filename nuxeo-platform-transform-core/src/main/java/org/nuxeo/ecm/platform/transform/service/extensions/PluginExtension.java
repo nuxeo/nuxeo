@@ -41,21 +41,21 @@ public class PluginExtension implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @XNode("@name")
-    String name;
+    private String name;
 
     @XNode("@class")
-    String className;
+    private String className;
 
     @XNodeList(value = "sourceMimeType", type = ArrayList.class, componentType = String.class)
-    List<String> sourceMimeTypes = DEFAULT_MIMETYPES;
+    private List<String> sourceMimeTypes = DEFAULT_MIMETYPES;
 
     @XNode("@sourceMimeType")
-    String sourceMimeType;
+    private String sourceMimeType;
 
     @XNode("@destinationMimeType")
-    String destinationMimeType;
+    private String destinationMimeType;
 
-    Map<String, Serializable> defaultOptions = new HashMap<String, Serializable>();
+    private Map<String, Serializable> defaultOptions = new HashMap<String, Serializable>();
 
     public PluginExtension() {
     }
@@ -72,32 +72,16 @@ public class PluginExtension implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getClassName() {
         return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
     }
 
     public List<String> getSourceMimeTypes() {
         return sourceMimeTypes;
     }
 
-    public void setSourceMimeTypes(List<String> sourceMimeTypes) {
-        this.sourceMimeTypes = sourceMimeTypes;
-    }
-
     public String getDestinationMimeType() {
         return destinationMimeType;
-    }
-
-    public void setDestinationMimeType(String destinationMimeType) {
-        this.destinationMimeType = destinationMimeType;
     }
 
     public void setDefaultOptions(Map<String, Serializable> defaultOptions) {
@@ -120,4 +104,5 @@ public class PluginExtension implements Serializable {
 
         return buf.toString();
     }
+
 }

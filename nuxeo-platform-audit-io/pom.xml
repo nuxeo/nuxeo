@@ -50,6 +50,10 @@
       <groupId>javax.persistence</groupId>
       <artifactId>persistence</artifactId>
     </dependency>
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

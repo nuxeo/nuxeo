@@ -107,8 +107,8 @@ public class MimetypeRegistryBean implements MimetypeRegistry {
         return getService().getMimetypeEntryByName(name);
     }
 
-    public MimetypeEntry getMimetypeEntryByMimeType(String normalized) {
-        return getService().getMimetypeEntryByMimeType(normalized);
+    public MimetypeEntry getMimetypeEntryByMimeType(String mimetype) {
+        return getService().getMimetypeEntryByMimeType(mimetype);
     }
 
     // make it easier to test the bean API

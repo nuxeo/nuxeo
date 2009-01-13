@@ -34,7 +34,6 @@ public class StartURLPatternDescriptor implements Serializable {
     @XNodeList(value = "patterns/pattern", type = ArrayList.class, componentType = String.class)
     private List<String> startURLPatterns;
 
-
     List<String> getStartURLPatterns() {
         return startURLPatterns;
     }

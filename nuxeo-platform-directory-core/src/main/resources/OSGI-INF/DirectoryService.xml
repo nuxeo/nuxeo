@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.ecm.directory.DirectoryServiceImpl">
+
   <implementation class="org.nuxeo.ecm.directory.DirectoryServiceImpl" />
+
   <service>
     <provide interface="org.nuxeo.ecm.directory.api.DirectoryService" />
   </service>
@@ -13,6 +14,7 @@
     Directory Factory represents an implementation of such data
     sources, e.g. using SQL, LDAP, etc.
   </documentation>
+
   <extension-point name="factoryDescriptor">
     <documentation>
       This extension point can be used to register directory
@@ -22,8 +24,8 @@
       declarations of the form:
       <factoryDescriptor component="org.pkg.Foo" />
       Here, Foo must be a class that implements the org.nuxeo.ecm.directory.DirectoryFactory interface
-
     </documentation>
+
     <object
       class="org.nuxeo.ecm.directory.DirectoryFactoryDescriptor" />
   </extension-point>

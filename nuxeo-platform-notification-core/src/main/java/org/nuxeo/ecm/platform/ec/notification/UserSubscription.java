@@ -55,6 +55,7 @@ public class UserSubscription extends Annotation {
         return usId;
     }
 
+    // Not used.
     public void setId(int id) {
         usId = id;
     }
@@ -63,36 +64,27 @@ public class UserSubscription extends Annotation {
         return notification;
     }
 
+    // Not used.
     public void setNotification(String notif) {
         notification = notif;
     }
 
-    /**
-     * @return the docId.
-     */
     public String getDocId() {
         return docId;
     }
 
-    /**
-     * @param docId the docId to set.
-     */
+    // Not used.
     public void setDocId(String docId) {
         this.docId = docId;
     }
 
-    /**
-     * @return the user.
-     */
     public String getUserId() {
         return userId;
     }
 
-    /**
-     * @param user the user to set.
-     */
-    public void setUserId(String user) {
-        userId = user;
+    // Not used.
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
 }

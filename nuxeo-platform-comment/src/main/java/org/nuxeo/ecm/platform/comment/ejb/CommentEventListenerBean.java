@@ -81,7 +81,7 @@ public class CommentEventListenerBean implements MessageListener {
     private static final Log log = LogFactory.getLog(CommentEventListenerBean.class);
 
     public void onMessage(Message message) {
-        DocumentMessage doc = null;
+        DocumentMessage doc;
         try {
             Object obj = ((ObjectMessage) message).getObject();
             if (!(obj instanceof DocumentMessage)) {

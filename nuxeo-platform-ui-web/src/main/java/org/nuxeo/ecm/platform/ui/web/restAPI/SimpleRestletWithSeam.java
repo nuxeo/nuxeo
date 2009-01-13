@@ -49,7 +49,7 @@ public class SimpleRestletWithSeam extends Restlet implements Serializable {
     private static final long serialVersionUID = -5264946092445282305L;
 
     @In(create = true)
-    NavigationContext navigationContext;
+    transient NavigationContext navigationContext;
 
     CoreSession documentManager;
 

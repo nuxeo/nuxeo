@@ -135,8 +135,7 @@ public class SearchServiceBean implements SearchService {
             resultSet = getSearchService().searchQuery(nativeQuery, offset,
                     range);
         } else {
-            log.error("Cannot find core search service....");
-            log.error("Returning an empty result set....");
+            log.error("Cannot find core search service, returning an empty result set....");
         }
         return resultSet;
     }
@@ -149,8 +148,7 @@ public class SearchServiceBean implements SearchService {
             nxqlQuery.setSearchPrincipal(getSearchPrincipal());
             resultSet = getSearchService().searchQuery(nxqlQuery, offset, range);
         } else {
-            log.error("Cannot find core search service....");
-            log.error("Returning an empty result set....");
+            log.error("Cannot find core search service, returning an empty result set....");
         }
         return resultSet;
     }
@@ -165,8 +163,7 @@ public class SearchServiceBean implements SearchService {
             resultSet = getSearchService().searchQuery(queryString,
                     backendName, offset, range);
         } else {
-            log.error("Cannot find core search service....");
-            log.error("Returning an empty result set....");
+            log.error("Cannot find core search service, returning an empty result set....");
         }
         return resultSet;
     }

@@ -60,7 +60,7 @@ public class ExportRestlet extends BaseNuxeoRestlet implements Serializable {
     private static final long serialVersionUID = 7831287875548588711L;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @Override
     public void handle(Request req, Response res) {

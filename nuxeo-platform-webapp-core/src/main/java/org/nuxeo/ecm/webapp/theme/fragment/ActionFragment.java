@@ -29,8 +29,10 @@ import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.fragments.AbstractFragment;
+import org.nuxeo.theme.models.Menu;
 import org.nuxeo.theme.models.MenuItem;
 import org.nuxeo.theme.models.Model;
+import org.nuxeo.theme.models.ModelException;
 import org.nuxeo.theme.properties.FieldInfo;
 
 public final class ActionFragment extends AbstractFragment {
@@ -51,7 +53,7 @@ public final class ActionFragment extends AbstractFragment {
     }
 
     @Override
-    public Model getModel() {
+    public Model getModel() throws ModelException {
         ResourcesAccessor resourcesAccessor = (ResourcesAccessor) Component.getInstance("resourcesAccessor");
         Map<String, String> messages = resourcesAccessor.getMessages();
 
@@ -70,15 +72,15 @@ public final class ActionFragment extends AbstractFragment {
             ctx.setCurrentDocument(navigationContext.getCurrentDocument());
         }
 
-        // Create menu items
-        MenuItem root = new MenuItem("", "", "", true, "");
+        // Create menu
+        Menu menu = new Menu();
         for (Action action : actionService.getActions(category, ctx)) {
             final String label = action.getLabel();
             // FIXME: use the actual link url, not a JSF view id
             final String url = action.getLink();
-            root.addChild(new MenuItem(messages.get(label), "", url, true,
+            menu.addItem(new MenuItem(messages.get(label), "", url, true,
                     action.getIcon()));
         }
-        return root;
+        return menu;
     }
 }

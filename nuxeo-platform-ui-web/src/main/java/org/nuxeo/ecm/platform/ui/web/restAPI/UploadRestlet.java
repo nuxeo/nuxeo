@@ -61,12 +61,12 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
     private static final long serialVersionUID = -7858792615823015193L;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     protected CoreSession documentManager;
 
     @In(create = true)
-    protected SimpleFileManager FileManageActions;
+    protected transient SimpleFileManager FileManageActions;
 
     @Override
     public void handle(Request req, Response res) {

@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *     Stephane Lacoin (Nuxeo EP Software Engineer)
  */
 package org.nuxeo.ecm.platform.workflow;
 

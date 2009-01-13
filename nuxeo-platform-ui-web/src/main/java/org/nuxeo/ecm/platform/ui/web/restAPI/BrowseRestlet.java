@@ -52,7 +52,7 @@ public class BrowseRestlet extends BaseNuxeoRestlet implements Serializable {
     private static final long serialVersionUID = -4518256101431979971L;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     protected CoreSession documentManager;
 

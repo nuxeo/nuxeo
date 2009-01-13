@@ -59,10 +59,10 @@ public class RestHelper implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @In(create = true)
-    NavigationContext navigationContext;
+    transient NavigationContext navigationContext;
 
     @In(create = true)
-    WebActions webActions;
+    transient WebActions webActions;
 
     private DocumentView docView;
 
@@ -78,24 +78,6 @@ public class RestHelper implements Serializable {
         }
 
         return outcome;
-    }
-
-    /**
-     * @deprecated should use an api on WebActionsBean
-     */
-    @Deprecated
-    public String getCurrentTab() {
-        String cTab = webActions.getCurrentTabAction().getId();
-        log.debug("Retrieve currentTab :" + cTab);
-        return cTab;
-    }
-
-    /**
-     * @deprecated should use an api on WebActionBean
-     */
-    @Deprecated
-    public void setCurrentTab(String currentTab) {
-        log.debug("setting curentTab from URL:" + currentTab);
     }
 
     public void setDocumentView(DocumentView docView) {

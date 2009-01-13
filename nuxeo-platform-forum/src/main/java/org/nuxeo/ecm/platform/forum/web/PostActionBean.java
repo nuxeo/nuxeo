@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.application.FacesMessage;
+import javax.security.auth.login.LoginContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,7 +53,6 @@ import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.api.ECM;
-import org.nuxeo.ecm.platform.api.login.SystemSession;
 import org.nuxeo.ecm.platform.comment.web.CommentManagerActions;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
@@ -75,6 +75,7 @@ import org.nuxeo.ecm.platform.workflow.api.common.WorkflowEventTypes;
 import org.nuxeo.ecm.platform.workflow.web.api.WorkflowBeansDelegate;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.dashboard.DashboardActions;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * This action listener is used to create a Post inside a Thread and also to
@@ -232,8 +233,7 @@ public class PostActionBean extends InputController implements PostAction {
                 try {
                     // Here user only granted with read rights should be able to
                     // create a post.
-                    SystemSession session = new SystemSession();
-                    session.login();
+                    LoginContext loginContext = Framework.login();
 
                     // Open a new repository session which will be
                     // unrestricted. We need to do this here since the
@@ -252,12 +252,11 @@ public class PostActionBean extends InputController implements PostAction {
                     // Logout the system session.
                     // Note, this is not necessary to take further actions
                     // here regarding the user session.
-                    session.logout();
+                    loginContext.logout();
 
                 } catch (Exception e) {
-                    throw new ClientException(e.getMessage());
+                    throw new ClientException(e.getMessage(), e);
                 }
-
             }
         }
 

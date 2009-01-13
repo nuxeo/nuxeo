@@ -26,34 +26,23 @@ package org.nuxeo.ecm.platform.ec.notification;
  */
 public class NotificationConstants {
 
-    public static final String SENDER_KEY = "mail.from";
-
+    // Only these 3 keys are currently used.
     public static final String SUBJECT_KEY = "subject";
-
     public static final String TEMPLATE_KEY = "template";
-
     public static final String SUBJECT_TEMPLATE_KEY = "subjectTemplate";
 
+    // Not used.
+    public static final String SENDER_KEY = "mail.from";
     public static final String RECIPIENTS_KEY = "recipients";
-
     public static final String DOCUMENT_KEY = "document";
-
     public static final String DESTINATION_KEY = "destination";
-
     public static final String NOTIFICATION_KEY = "notification";
-
     public static final String DOCUMENT_ID_KEY = "docId";
-
     public static final String DATE_TIME_KEY = "dateTime";
-
     public static final String AUTHOR_KEY = "author";
-
     public static final String PRINCIPAL_AUTHOR_KEY = "principalAuthor";
-
     public static final String DOCUMENT_URL_KEY = "docUrl";
-
     public static final String DOCUMENT_TITLE_KEY = "docTitle";
-
     public static final String EVENT_ID_KEY = "eventId";
 
     private NotificationConstants() {

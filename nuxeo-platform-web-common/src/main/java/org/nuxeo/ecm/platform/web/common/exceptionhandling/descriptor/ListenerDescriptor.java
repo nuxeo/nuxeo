@@ -34,8 +34,4 @@ public class ListenerDescriptor {
         return klass;
     }
 
-    public void setKlass(Class<? extends ExceptionHandlingListener> klass) {
-        this.klass = klass;
-    }
-
 }

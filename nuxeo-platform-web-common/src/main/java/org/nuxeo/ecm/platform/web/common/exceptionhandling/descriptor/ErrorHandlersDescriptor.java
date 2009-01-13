@@ -46,10 +46,6 @@ public class ErrorHandlersDescriptor {
         return bundle;
     }
 
-    public void setBundle(String bundle) {
-        this.bundle = bundle;
-    }
-
     public List<ErrorHandler> getMessages() {
         return messages;
     }
@@ -60,14 +56,6 @@ public class ErrorHandlersDescriptor {
 
     public String getDefaultPage() {
         return defaultPage;
-    }
-
-    public void setDefaultPage(String defaultPage) {
-        this.defaultPage = defaultPage;
-    }
-
-    public void setLoggerName(String loggerName) {
-        this.loggerName = loggerName;
     }
 
 }

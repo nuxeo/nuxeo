@@ -29,6 +29,7 @@ import org.jbpm.graph.def.Transition;
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+// Not used?
 public class PageFlowActionFilter extends AbstractActionFilter {
 
     public static final Map<String, Transition> EMPTY_TRANSITION_MAP = Collections.emptyMap();

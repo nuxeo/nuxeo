@@ -42,17 +42,15 @@ public class TestMultiThreadingFSDir extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
-        // deploy("ServiceManagement.xml");
+
         deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
                 "LoginComponent.xml");
 
         deployContrib("org.nuxeo.runtime", "OSGI-INF/EventService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
-                "CoreService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
-                "SecurityService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
-                "RepositoryService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/SecurityService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/RepositoryService.xml");
+
         deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
                 "test-CoreExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.search.test",

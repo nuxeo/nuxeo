@@ -53,7 +53,7 @@ public final class NotificationServiceHelper {
 
     public static EJBPlacefulService getPlacefulServiceBean()
             throws ClientException {
-        EJBPlacefulService placefulService = null;
+        EJBPlacefulService placefulService;
         try {
             placefulService = Framework.getService(
                     EJBPlacefulService.class);

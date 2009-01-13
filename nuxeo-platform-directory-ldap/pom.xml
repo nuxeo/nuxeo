@@ -17,10 +17,6 @@
     Management Service.
   </description>
 
-  <properties>
-    <apacheds.version>1.5.1</apacheds.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -46,12 +42,14 @@
     <dependency>
       <groupId>org.apache.directory.server</groupId>
       <artifactId>apacheds-core</artifactId>
-      <version>${apacheds.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-core-shared</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.directory.shared</groupId>
       <artifactId>shared-ldap</artifactId>
-      <version>0.9.7</version>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
@@ -92,7 +90,6 @@
     <dependency>
       <groupId>org.apache.directory.server</groupId>
       <artifactId>apacheds-protocol-shared</artifactId>
-      <version>${apacheds.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -103,13 +100,6 @@
     <dependency>
       <groupId>org.apache.directory.server</groupId>
       <artifactId>apacheds-bootstrap-partition</artifactId>
-      <version>${apacheds.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.directory.server</groupId>
-      <artifactId>apacheds-core-shared</artifactId>
-      <version>${apacheds.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -126,6 +116,10 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.opencsv</groupId>
+      <artifactId>opencsv</artifactId>
     </dependency>
   </dependencies>
 

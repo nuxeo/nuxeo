@@ -2,7 +2,6 @@
 <component
     name="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContrib">
 
-
   <extension
       target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
       point="factory">
@@ -29,17 +28,17 @@
       </acl>
       <template>
         <templateItem typeName="Domain" id="default-domain" title="Default domain"
-                      description="Nuxeo 5 default domain"/>
+            description="Nuxeo 5 default domain"/>
       </template>
     </factoryBinding>
 
     <factoryBinding name="DomainFactory" factoryName="SimpleTemplateFactory" targetType="Domain">
       <template>
         <templateItem typeName="WorkspaceRoot" id="workspaces" title="Workspaces"
-                      description="Workspaces"/>
+            description="Workspaces"/>
         <templateItem typeName="SectionRoot" id="sections" title="Sections" description="Sections"/>
         <templateItem typeName="TemplateRoot" id="templates" title="Templates"
-                      description="Root of workspaces templates"/>
+            description="Root of workspaces templates"/>
       </template>
     </factoryBinding>
 

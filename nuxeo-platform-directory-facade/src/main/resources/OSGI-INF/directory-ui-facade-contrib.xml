@@ -7,6 +7,7 @@
     <documentation>
       Define the directory ui service bean as a platform service.
     </documentation>
+
     <service class="org.nuxeo.ecm.directory.api.ui.DirectoryUIManager"
         group="platform/directoryui">
       <locator>%DirectoryUIManagerBean</locator>

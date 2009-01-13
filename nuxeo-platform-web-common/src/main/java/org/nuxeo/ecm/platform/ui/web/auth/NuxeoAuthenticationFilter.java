@@ -204,9 +204,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         LoginContext loginContext;
         try {
-
             CallbackHandler handler = service.getCallbackHandler(cachableUserIdent.getUserInfo());
-
             loginContext = new LoginContext(securityDomain, handler);
 
             synchronized (NuxeoAuthenticationFilter.class) {
@@ -215,7 +213,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
             Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
             cachableUserIdent.setPrincipal(principal);
-            cachableUserIdent.setAlreadyAuthenticated(Boolean.TRUE);
+            cachableUserIdent.setAlreadyAuthenticated(true);
             // re-set the userName since for some SSO based on token,
             // the userName is not known before login is completed
             cachableUserIdent.getUserInfo().setUserName(principal.getName());
@@ -278,7 +276,6 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         Principal principal = doAuthenticate(newCachableUserIdent, httpRequest);
         if (principal != null) {
-
             NuxeoPrincipal nxUser = (NuxeoPrincipal) principal;
             nxUser.setOriginatingUser(originatingUser);
             propagateUserIdentificationInformation(cachableUserIdent);

@@ -58,10 +58,6 @@ public class AuthenticationPluginDescriptor implements Serializable {
         return className;
     }
 
-    public void setClassName(Class<NuxeoAuthenticationPlugin> className) {
-        this.className = className;
-    }
-
     public Boolean getEnabled() {
         return enabled;
     }
@@ -82,10 +78,6 @@ public class AuthenticationPluginDescriptor implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Map<String, String> getParameters() {
         return parameters;
     }
@@ -98,16 +90,8 @@ public class AuthenticationPluginDescriptor implements Serializable {
         return needStartingURLSaving;
     }
 
-    public void setNeedStartingURLSaving(Boolean needStartingURLSaving) {
-        this.needStartingURLSaving = needStartingURLSaving;
-    }
-
     public Boolean getStateful() {
         return stateful;
-    }
-
-    public void setStateful(Boolean stateful) {
-        this.stateful = stateful;
     }
 
 }

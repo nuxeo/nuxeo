@@ -13,14 +13,11 @@
     </listener>
   </extension>
 
-
   <!-- AT: mixing filters and mappings for clarity, does not change
     resulting web.xml file -->
 
   <extension target="web#STD-AUTH-FILTER">
-
     <!-- auth filter configuration, filter is defined in web-common -->
-
     <filter-mapping>
       <filter-name>NuxeoAuthenticationFilter</filter-name>
       <url-pattern>*.faces</url-pattern>
@@ -79,7 +76,6 @@
   </extension>
 
   <extension target="web#FIRST-FILTER">
-
     <filter>
       <display-name>Nuxeo Fancy URL Filter</display-name>
       <filter-name>NuxeoFancyURLFilter</filter-name>
@@ -100,11 +96,9 @@
       <filter-name>NuxeoFancyURLFilter</filter-name>
       <url-pattern>/*</url-pattern>
     </filter-mapping>
-
   </extension>
 
   <extension target="web#FILTER">
-
     <filter>
       <filter-name>Seam Filter</filter-name>
       <filter-class>org.jboss.seam.servlet.SeamFilter</filter-class>
@@ -178,13 +172,11 @@
       <filter-name>simpleCacheFilter</filter-name>
       <url-pattern>/a4j_3_2_1-SNAPSHOT*</url-pattern>
     </filter-mapping>
-
   </extension>
 
   <!-- AT: mixing servlets and mappings for clarity, does not change
     resulting web.xml file -->
   <extension target="web#SERVLET">
-
     <servlet>
       <servlet-name>Faces Servlet</servlet-name>
       <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
@@ -223,12 +215,9 @@
       <servlet-name>Nuxeo Restlet Servlet</servlet-name>
       <url-pattern>/restAPI/*</url-pattern>
     </servlet-mapping>
-
   </extension>
 
-
   <extension target="web#CONTEXT-PARAM">
-
     <context-param>
       <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
       <!-- XXX warning: before changing this value, note that some libraries may
@@ -290,11 +279,9 @@
       <param-name>com.sun.faces.numberOfLogicalViews</param-name>
       <param-value>50</param-value>
     </context-param>
-
   </extension>
 
   <extension target="faces-config#APPLICATION">
-
     <view-handler>
       org.nuxeo.theme.jsf.facelets.NXThemesFaceletViewHandler
     </view-handler>
@@ -310,30 +297,24 @@
     <!-- This line should not strictly speaking be necessary, but it works
       around a minor bug in the RI.) -->
     <el-resolver>org.jboss.seam.el.SeamELResolver</el-resolver>
-
   </extension>
 
   <extension target="faces-config#FACTORY">
-
     <lifecycle-factory>
       org.nuxeo.ecm.platform.ui.web.lifecycle.NuxeoLifeCycleFactory
     </lifecycle-factory>
-
   </extension>
 
   <extension target="faces-config#PHASE-LISTENER">
-
     <!-- This is registered after SeamPhaseListener because
       JSF-RI reads /WEB-INF/faces-config.xml after
       lib jar's META-INF/faces-config.xml -->
     <phase-listener>
       org.nuxeo.ecm.platform.ui.web.rest.RestfulPhaseListener
     </phase-listener>
-
   </extension>
 
   <extension target="faces-config#COMPONENT">
-
     <component>
       <component-type>
         org.nuxeo.ecm.platform.ui.web.component.UISelectItems
@@ -491,11 +472,9 @@
         org.nuxeo.ecm.platform.ui.web.component.DisabledComponent
       </component-class>
     </component>
-
   </extension>
 
   <extension target="faces-config#RENDERER">
-
     <renderer>
       <component-family>javax.faces.Input</component-family>
       <renderer-type>
@@ -553,7 +532,6 @@
         org.nuxeo.ecm.platform.ui.web.directory.ChainSelectListboxRenderer
       </renderer-class>
     </renderer>
-
   </extension>
 
   <!-- uncomment that to enable filter based auth
@@ -589,7 +567,6 @@
   -->
 
   <extension target="faces-config#CONVERTER">
-
     <converter>
       <converter-id>DateConverter</converter-id>
       <converter-class>
@@ -608,11 +585,9 @@
         org.nuxeo.ecm.platform.ui.web.converter.DateTimeConverter
       </converter-class>
     </converter>
-
   </extension>
 
   <extension target="faces-config#VALIDATOR">
-
     <validator>
       <validator-id>InputFileSizeValidator</validator-id>
       <validator-class>
@@ -625,11 +600,9 @@
         org.nuxeo.ecm.platform.ui.web.component.file.InputFileMimetypeValidator
       </validator-class>
     </validator>
-
   </extension>
 
   <extension target="faces-config#MANAGED-BEAN">
-
     <managed-bean>
       <managed-bean-name>editableListBean</managed-bean-name>
       <managed-bean-class>
@@ -637,38 +610,25 @@
       </managed-bean-class>
       <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
-
   </extension>
 
   <install>
-
     <!--  create a temp dir -->
     <!--  be sure no directory with that name exists -->
     <delete path="nxwebplatform.tmp" />
     <mkdir path="nxwebplatform.tmp" />
 
     <unzip from="${bundle.fileName}" to="nxwebplatform.tmp">
-      <include>OSGI-INF/**</include>
       <include>WEB/**</include>
       <include>tiny_mce/**</include>
       <include>jscalendar/**</include>
     </unzip>
-
-    <append from="nxwebplatform.tmp/OSGI-INF/l10n/messages_en.properties"
-      to="nuxeo.war/WEB-INF/classes/messages.properties" addNewLine="true" />
-    <append from="nxwebplatform.tmp/OSGI-INF/l10n/messages_en.properties"
-      to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
-    <append from="nxwebplatform.tmp/OSGI-INF/l10n/messages_fr.properties"
-      to="nuxeo.war/WEB-INF/classes/messages_fr.properties" addNewLine="true" />
-    <append from="nxwebplatform.tmp/OSGI-INF/l10n/messages_it.properties"
-      to="nuxeo.war/WEB-INF/classes/messages_it.properties" addNewLine="true" />
 
     <copy from="nxwebplatform.tmp/WEB/" to="nuxeo.war/WEB-INF/" />
     <copy from="nxwebplatform.tmp/tiny_mce/" to="nuxeo.war/tiny_mce/" />
     <copy from="nxwebplatform.tmp/jscalendar/" to="nuxeo.war/jscalendar/" />
 
     <delete path="nxwebplatform.tmp" />
-
   </install>
 
 </fragment>

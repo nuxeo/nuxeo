@@ -38,8 +38,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -51,9 +51,11 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
 import org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
+import org.nuxeo.ecm.platform.audit.service.extension.HibernateOptionsDescriptor;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
+import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
@@ -69,24 +71,27 @@ import com.sun.el.ExpressionFactoryImpl;
  */
 public class NXAuditEventsService extends DefaultComponent implements
         NXAuditEvents {
-
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.audit.service.NXAuditEventsService");
 
-    private static final Set<String> eventNames = new HashSet<String>();
-
-    private static final long serialVersionUID = -7945111177284985820L;
-
-    private static final Log log = LogFactory.getLog(NXAuditEventsService.class);
-    // Default.
-
     private static final String EVENT_EXT_POINT = "event";
+
+    private static final Set<String> eventNames = new HashSet<String>();
 
     private static final String EXTENDED_INFO_EXT_POINT = "extendedInfo";
 
     protected static final Set<ExtendedInfoDescriptor> extendedInfoDescriptors = new HashSet<ExtendedInfoDescriptor>();
 
-    public static final PersistenceProvider persistenceProvider = new PersistenceProvider();
+    private static final long serialVersionUID = -7945111177284985820L;
+
+    private static final Log log = LogFactory.getLog(NXAuditEventsService.class);
+
+    private static final String HIBERNATE_OPTIONS_EXT_POINT = "hibernateOptions";
+
+    protected static final ContainerManagedHibernateConfiguration hibernateConfiguration = new ContainerManagedHibernateConfiguration();
+
+    public static final PersistenceProvider persistenceProvider = new PersistenceProvider(
+            hibernateConfiguration);
 
     private static final ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(
             new ExpressionFactoryImpl());
@@ -94,7 +99,6 @@ public class NXAuditEventsService extends DefaultComponent implements
     @Override
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
-        persistenceProvider.openPersistenceUnit();
     }
 
     @Override
@@ -117,24 +121,41 @@ public class NXAuditEventsService extends DefaultComponent implements
                     }
                     if (eventEnabled) {
                         eventNames.add(eventName);
-                        if (log.isDebugEnabled()) log.debug("Registered event: " + eventName);
+                        if (log.isDebugEnabled())
+                            log.debug("Registered event: " + eventName);
                     } else if (eventNames.contains(eventName) && !eventEnabled) {
                         eventNames.remove(eventName);
-                        if (log.isDebugEnabled()) log.debug("Unregistered event: " + eventName);
+                        if (log.isDebugEnabled())
+                            log.debug("Unregistered event: " + eventName);
                     }
                 }
             }
 
             // TODO add append and enabling behaviours
-            if (extension.getExtensionPoint().equals(EXTENDED_INFO_EXT_POINT)) {
+            else if (extension.getExtensionPoint().equals(
+                    EXTENDED_INFO_EXT_POINT)) {
                 for (Object contribution : contributions) {
                     ExtendedInfoDescriptor desc = (ExtendedInfoDescriptor) contribution;
-                    if (log.isDebugEnabled()) log.debug("Registered extended info mapping : "
-                            + desc.getKey());
+                    if (log.isDebugEnabled())
+                        log.debug("Registered extended info mapping : "
+                                + desc.getKey());
 
                     extendedInfoDescriptors.add(desc);
 
                 }
+                return;
+            }
+
+            else if (extension.getExtensionPoint().equals(
+                    HIBERNATE_OPTIONS_EXT_POINT)) {
+                for (Object contribution : contributions) {
+                    HibernateOptionsDescriptor desc = (HibernateOptionsDescriptor) contribution;
+                    if (log.isDebugEnabled())
+                        log.debug("Registered hibernate datasource : "
+                                + desc.getDatasource());
+                    hibernateConfiguration.setDescriptor(desc);
+                }
+                return;
             }
         }
     }
@@ -147,14 +168,17 @@ public class NXAuditEventsService extends DefaultComponent implements
                 for (Object contribution : contributions) {
                     EventDescriptor desc = (EventDescriptor) contribution;
                     eventNames.remove(desc.getName());
-                    if (log.isDebugEnabled()) log.debug("Unregistered event: " + desc.getName());
+                    if (log.isDebugEnabled())
+                        log.debug("Unregistered event: " + desc.getName());
                 }
             }
             if (extension.getExtensionPoint().equals(EXTENDED_INFO_EXT_POINT)) {
                 for (Object contribution : contributions) {
                     ExtendedInfoDescriptor desc = (ExtendedInfoDescriptor) contribution;
                     extendedInfoDescriptors.remove(desc.getKey());
-                    if (log.isDebugEnabled()) log.debug("Unregistered extended info: " + desc.getKey());
+                    if (log.isDebugEnabled())
+                        log.debug("Unregistered extended info: "
+                                + desc.getKey());
                 }
             }
         }
@@ -165,7 +189,7 @@ public class NXAuditEventsService extends DefaultComponent implements
     }
 
     protected void doPutExtendedInfos(LogEntry entry, DocumentMessage message,
-            DocumentModel source, NuxeoPrincipal principal) {
+            DocumentModel source, Principal principal) {
         ExpressionContext context = new ExpressionContext();
         if (message != null) {
             expressionEvaluator.bindValue(context, "message", message);
@@ -188,17 +212,30 @@ public class NXAuditEventsService extends DefaultComponent implements
         }
     }
 
-    protected NuxeoPrincipal guardedPrincipal(CoreSession session,
-            DocumentMessage message) throws AuditException {
+    protected Principal guardedPrincipal(DocumentMessage message) {
         try {
-            Principal principal = message.getPrincipal();
-            if (!(principal instanceof NuxeoPrincipal)) {
-                if (log.isWarnEnabled()) log.warn("not a nuxeo principal " + principal);
-                return null;
-            }
-            return (NuxeoPrincipal) principal;
+            return message.getPrincipal();
         } catch (Exception e) {
-            throw new AuditException("Cannot get principal from " + message, e);
+            throw new AuditRuntimeException("Cannot get principal from "
+                    + message, e);
+        }
+    }
+
+    protected Principal guardedPrincipal(CoreSession session) {
+        try {
+            return session.getPrincipal();
+        } catch (Exception e) {
+            throw new AuditRuntimeException("Cannot get principal from "
+                    + session, e);
+        }
+    }
+
+    protected Principal guardedPrincipal(CoreEvent event) {
+        try {
+            return event.getPrincipal();
+        } catch (Exception e) {
+            throw new AuditRuntimeException("Cannot get principal from "
+                    + event, e);
         }
     }
 
@@ -263,36 +300,55 @@ public class NXAuditEventsService extends DefaultComponent implements
             DocumentMessage message) throws AuditException {
 
         DocumentModel source = guardedDocument(session, message);
-        NuxeoPrincipal principal = guardedPrincipal(session, message);
+        Principal principal = guardedPrincipal(message);
 
         LogEntry entry = new LogEntry();
         entry.setEventId(message.getEventId());
+        entry.setEventDate(message.getEventDate());
         entry.setDocUUID(message.getId());
         entry.setDocPath(message.getPathAsString());
         entry.setDocType(message.getType());
         entry.setPrincipalName(message.getPrincipalName());
         entry.setCategory(message.getCategory());
         entry.setDocLifeCycle(message.getDocCurrentLifeCycle());
-
-        if (source != null) {
-            Calendar creationDate = null;
-            try {
-                creationDate = (Calendar) source.getProperty("dublincore",
-                        "created");
-            } catch (ClientException e) {
-            }
-            if (creationDate != null) {
-                entry.setEventDate(creationDate.getTime());
-            }
-        }
+        entry.setComment(message.getComment());
 
         doPutExtendedInfos(entry, message, source, principal);
         return entry;
 
     }
 
-    protected LogEntry doCreateAndFillEntryFromDocument(CoreSession session,
-            DocumentModel doc) throws AuditException {
+    protected LogEntry doCreateAndFillEntryFromEvent(CoreEvent event)
+            throws AuditException {
+        Principal principal = guardedPrincipal(event);
+        DocumentModel document = (DocumentModel) event.getSource();
+        LogEntry entry = new LogEntry();
+        entry.setEventId(event.getEventId());
+        entry.setEventDate(event.getDate());
+        entry.setDocUUID(document.getId());
+        entry.setDocPath(document.getPathAsString());
+        entry.setDocType(document.getType());
+        entry.setPrincipalName(principal.getName());
+        entry.setComment(event.getComment());
+        try {
+            if (document.isLifeCycleLoaded())
+                entry.setDocLifeCycle(document.getCurrentLifeCycleState());
+        } catch (ClientException e1) {
+            throw new AuditRuntimeException(
+                    "Cannot fetch life cycle state from " + document, e1);
+        }
+        entry.setCategory("eventDocumentCategory");
+
+        DocumentMessage message = new DocumentMessageImpl(document, event);
+
+        doPutExtendedInfos(entry, message, document, principal);
+
+        return entry;
+
+    }
+
+    protected LogEntry doCreateAndFillEntryFromDocument(DocumentModel doc,
+            Principal principal) throws AuditException {
         LogEntry entry = new LogEntry();
         entry.setDocPath(doc.getPathAsString());
         entry.setDocType(doc.getType());
@@ -312,7 +368,7 @@ public class NXAuditEventsService extends DefaultComponent implements
             entry.setEventDate(creationDate.getTime());
         }
 
-        doPutExtendedInfos(entry, (DocumentMessage) null, doc, null);
+        doPutExtendedInfos(entry, (DocumentMessage) null, doc, principal);
 
         return entry;
     }
@@ -480,7 +536,8 @@ public class NXAuditEventsService extends DefaultComponent implements
         DocumentModel root = guardedDocument(session, rootRef);
         long nbAddedEntries = doSyncNode(provider, session, root, recurs);
 
-        if (log.isDebugEnabled()) log.debug("synched " + nbAddedEntries + " entries on " + path);
+        if (log.isDebugEnabled())
+            log.debug("synched " + nbAddedEntries + " entries on " + path);
 
         return nbAddedEntries;
     }
@@ -490,17 +547,19 @@ public class NXAuditEventsService extends DefaultComponent implements
 
         long nbSynchedEntries = 1;
 
+        Principal principal = guardedPrincipal(session);
         List<DocumentModel> folderishChildren = new ArrayList<DocumentModel>();
 
-        provider.addLogEntry(doCreateAndFillEntryFromDocument(session, node));
+        provider.addLogEntry(doCreateAndFillEntryFromDocument(node,
+                guardedPrincipal(session)));
 
         for (DocumentModel child : guardedDocumentChildren(session,
                 node.getRef())) {
             if (child.isFolder() && recurs) {
                 folderishChildren.add(child);
             } else {
-                provider.addLogEntry(doCreateAndFillEntryFromDocument(session,
-                        child));
+                provider.addLogEntry(doCreateAndFillEntryFromDocument(child,
+                        principal));
                 nbSynchedEntries += 1;
             }
         }
@@ -526,6 +585,33 @@ public class NXAuditEventsService extends DefaultComponent implements
 
     public void addLogEntry(EntityManager em, LogEntry entry) {
         LogEntryProvider.createProvider(em).addLogEntry(entry);
+    }
+
+    /**
+     * @param coreEvent
+     * @throws AuditException
+     */
+    public void logEvent(CoreEvent coreEvent) throws AuditException {
+        EntityManager em = persistenceProvider.acquireEntityManagerWithActiveTransaction();
+        try {
+            logEvent(em, coreEvent);
+        } finally {
+            persistenceProvider.releaseEntityManager(em);
+        }
+    }
+
+    /**
+     * @param em
+     * @param coreEvent
+     * @throws AuditException
+     */
+    private void logEvent(EntityManager em, CoreEvent event)
+            throws AuditException {
+        String eventId = event.getEventId();
+        if (eventId != null && eventNames.contains(eventId) == false)
+            return;
+        LogEntry entry = doCreateAndFillEntryFromEvent(event);
+        addLogEntry(em, entry);
     }
 
 }

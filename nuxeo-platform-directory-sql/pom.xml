@@ -42,7 +42,6 @@
     <dependency>
       <groupId>net.sf.opencsv</groupId>
       <artifactId>opencsv</artifactId>
-      <version>1.7</version>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>

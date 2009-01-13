@@ -59,8 +59,4 @@ public class AuthenticationPropagatorDescriptor implements Serializable {
         return className;
     }
 
-    public void setClassName(Class<NuxeoAuthenticationPropagator> className) {
-        this.className = className;
-    }
-
 }

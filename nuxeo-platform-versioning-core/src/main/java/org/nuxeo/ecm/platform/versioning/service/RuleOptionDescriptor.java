@@ -66,32 +66,16 @@ public class RuleOptionDescriptor {
         return value;
     }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
-
     public String getLifecycleTransition() {
         return lifecycleTransition;
-    }
-
-    public void setLifecycleTransition(String lifecycleTransition) {
-        this.lifecycleTransition = lifecycleTransition;
     }
 
     public boolean isDefault() {
         return isDefault;
     }
 
-    public void setDefault(boolean isDefault) {
-        this.isDefault = isDefault;
-    }
-
     public String getEvaluatorClassNames() {
         return evaluatorClassNames;
-    }
-
-    public void setEvaluatorClassNames(String evaluatorClassNames) {
-        this.evaluatorClassNames = evaluatorClassNames;
     }
 
     /**
@@ -120,15 +104,12 @@ public class RuleOptionDescriptor {
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append(getClass().getSimpleName());
-        buf.append(" {");
-        buf.append("value=");
-        buf.append(value);
-        buf.append(", isDefault=");
-        buf.append(isDefault);
-        buf.append(", lifecycleTransition=");
-        buf.append(lifecycleTransition);
+        buf.append(" {value=").append(value);
+        buf.append(", isDefault=").append(isDefault);
+        buf.append(", lifecycleTransition=").append(lifecycleTransition);
         buf.append('}');
 
         return buf.toString();
     }
+
 }

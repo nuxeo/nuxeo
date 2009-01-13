@@ -30,6 +30,7 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -478,6 +479,30 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         list = dir.getProjection(filter, "thebar");
         Collections.sort(list);
         assertEquals(Arrays.asList("bar1", "bar3"), list);
+    }
+
+    public void testCreateFromModel() throws Exception {
+        String schema = "schema3";
+        DocumentModel entry = BaseSession.createEntryModel(null, schema, null,
+                null);
+        entry.setProperty("schema3", "uid", "yo");
+
+        assertNull(dir.getEntry("yo"));
+        dir.createEntry(entry);
+        assertNotNull(dir.getEntry("yo"));
+
+        // create one with existing same id, must fail
+        entry.setProperty("schema3", "uid", "1");
+        try {
+            entry = dir.createEntry(entry);
+            fail("Should raise an error, entry already exists");
+        } catch (DirectoryException e) {
+        }
+    }
+
+    public void testHasEntry() throws Exception {
+        assertTrue(dir.hasEntry("1"));
+        assertFalse(dir.hasEntry("foo"));
     }
 
 }

@@ -20,9 +20,6 @@
 package org.nuxeo.ecm.platform.audit;
 
 import java.util.List;
-import java.util.Properties;
-
-import javax.el.ExpressionFactory;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -33,29 +30,25 @@ import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.service.HibernateConfiguration;
+import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
-import org.nuxeo.ecm.platform.audit.service.PersistenceProvider;
-import org.nuxeo.ecm.platform.el.ExpressionContext;
-import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 import org.nuxeo.ecm.platform.events.DocumentMessageFactory;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.runtime.api.Framework;
 
-import com.sun.el.ExpressionFactoryImpl;
-
 /**
  * Test the event conf service.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class TestNXAuditEventsService extends RepositoryOSGITestCase {
 
-    private NXAuditEventsService serviceUnderTest;
+    private NXAuditEvents serviceUnderTest;
 
     protected DocumentModel rootDocument;
+
     protected DocumentModel source;
-    
+
     protected DocumentMessage message;
 
     protected CoreEvent event;
@@ -64,51 +57,59 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        PersistenceProvider.hibernateConfigurationClass = TestHibernateConfiguration.class;
-
         deployBundle("org.nuxeo.ecm.platform.usermanager");
-       
+
         deployContrib("org.nuxeo.ecm.platform.audit.tests",
                 "nxaudit-test-definitions.xml");
 
-        serviceUnderTest = (NXAuditEventsService) Framework.getRuntime().getComponent(
-                NXAuditEventsService.NAME);
+        NXAuditEventsService.persistenceProvider.setHibernateConfiguration(new TestHibernateConfiguration());
+
+        serviceUnderTest = Framework.getService(NXAuditEvents.class);
+
         assertNotNull(serviceUnderTest);
 
         openRepository();
         CoreSession session = getCoreSession();
         rootDocument = getCoreSession().getRootDocument();
-        
+
         DocumentModel model = session.createDocumentModel(
                 rootDocument.getPathAsString(), "youps", "File");
         model.setProperty("dublincore", "title", "huum");
         source = session.createDocument(model);
         session.save();
-        event = new CoreEventImpl("documentCreated", source, null, session.getPrincipal(),
-                null, null);
-        message = DocumentMessageFactory.createDocumentMessage(source,
-                event);
-    }
-
-    public void testTitle() throws ClientException {
-        ExpressionFactory factory = new ExpressionFactoryImpl();
-        ExpressionEvaluator evaluator = new ExpressionEvaluator(factory);
-        ExpressionContext context = new ExpressionContext();
-        evaluator.bindValue(context, "source", source);
-        String title = evaluator.evaluateExpression(context, "${source.dublincore.title}",String.class);
-        assertEquals("huum",title);
+        event = new CoreEventImpl("documentCreated", source, null,
+                session.getPrincipal(), "category", "yo");
+        message = DocumentMessageFactory.createDocumentMessage(source, event);
     }
 
     public void testLogMessage() throws AuditException, DocumentException {
-        serviceUnderTest.logMessage(getCoreSession(), message);
+        ((NXAuditEventsService) serviceUnderTest).logMessage(getCoreSession(),
+                message);
         List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(source.getId());
         assertTrue(entries.size() == 1);
+        LogEntry entry = entries.get(0);
+        assertEquals("category", entry.getCategory());
+        assertEquals("yo", entry.getComment());
+        assertEquals("project", entry.getDocLifeCycle());
+        assertEquals("/youps", entry.getDocPath());
+        assertEquals("File", entry.getDocType());
+        assertEquals("documentCreated", entry.getEventId());
+        assertEquals("Administrator", entry.getPrincipalName());
     }
-    
+
     public void testsyncLogCreation() throws AuditException, ClientException {
-        long count = serviceUnderTest.syncLogCreationEntries(getRepository().getName(),rootDocument.getPathAsString(), true);
+        long count = serviceUnderTest.syncLogCreationEntries(
+                getRepository().getName(), rootDocument.getPathAsString(), true);
         assertEquals(count, 2);
         List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(rootDocument.getId());
         assertEquals(entries.size(), 1);
+        LogEntry entry = entries.get(0);
+        assertEquals("eventDocumentCategory", entry.getCategory());
+        assertEquals(null, entry.getComment());
+        assertEquals("project", entry.getDocLifeCycle());
+        assertEquals("/", entry.getDocPath());
+        assertEquals("Root", entry.getDocType());
+        assertEquals("documentCreated", entry.getEventId());
+        assertEquals("system", entry.getPrincipalName());
     }
 }

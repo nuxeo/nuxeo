@@ -53,10 +53,6 @@ public class VersioningDocumentAdapter implements VersioningDocument {
 
     /**
      * Constructor.
-     *
-     * @param doc
-     * @param propMajorVersion
-     * @param propMinorVersion
      */
     VersioningDocumentAdapter(DocumentModel doc, String propMajorVersion,
             String propMinorVersion) {
@@ -170,7 +166,6 @@ public class VersioningDocumentAdapter implements VersioningDocument {
             coreSession = repo.open();
             return coreSession.getDocument(docRef);
         } catch (Exception e) {
-            // log.error("cannot retrieve document for ref: " + docRef ,e);
             throw new DocumentException("cannot retrieve document for ref: "
                     + docRef, e);
         } finally {
@@ -179,4 +174,5 @@ public class VersioningDocumentAdapter implements VersioningDocument {
             }
         }
     }
+
 }

@@ -51,8 +51,6 @@ public class TestDocumentIndexableResources extends RepositoryTestCase {
         super.setUp();
 
         deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "ServiceManagement.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "LoginComponent.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "RepositoryManager.xml");
@@ -74,8 +72,6 @@ public class TestDocumentIndexableResources extends RepositoryTestCase {
                 "nxsearch-test-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "nxsearch-test-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "PolicyService.xml");
 
         service = NXSearch.getSearchService();
         assertNotNull(service);

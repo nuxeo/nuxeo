@@ -35,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.audit.AuditMessageHandler;
-import org.nuxeo.ecm.platform.audit.MessageHandler;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.ecm.platform.events.api.JMSConstant;
 
@@ -85,7 +84,7 @@ public class AuditMessageListener implements MessageListener {
 
         @Override
         public void run() throws ClientException {
-            MessageHandler handler = new AuditMessageHandler();
+            AuditMessageHandler handler = new AuditMessageHandler();
             handler.onDocumentMessage(em, session, message);
         }
     }

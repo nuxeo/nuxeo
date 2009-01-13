@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.forms.layout.api;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Layout interface.
@@ -69,5 +70,23 @@ public interface Layout extends Serializable {
      * Returns the maximum number of columns.
      */
     int getColumns();
+
+    /**
+     * Returns widget with given name.
+     * <p>
+     * Only widgets of the first level are retrieved.
+     *
+     * @since 5.2M4
+     */
+    Widget getWidget(String name);
+
+    /**
+     * Returns a widget map, with widget name as key.
+     * <p>
+     * Only widgets of the first level are retrieved.
+     *
+     * @since 5.2M4
+     */
+    Map<String, Widget> getWidgetMap();
 
 }

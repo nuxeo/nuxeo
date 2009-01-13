@@ -73,15 +73,11 @@ public class TestListener extends RepositoryTestCase {
         super.setUp();
 
         deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
-                "ServiceManagement.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
                 "LoginComponent.xml");
         deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
                 "RepositoryManager.xml");
 
         deployContrib("org.nuxeo.runtime", "OSGI-INF/EventService.xml");
-
-        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/PolicyService.xml");
 
         deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
                 "CoreTestExtensions.xml");
@@ -124,9 +120,9 @@ public class TestListener extends RepositoryTestCase {
 
         DocumentModelImpl documentModelImpl = new DocumentModelImpl("User");
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("accessLevel", Long.valueOf(3));
+        data.put("accessLevel", 3L);
         documentModelImpl.addDataModel(new DataModelImpl("user", data));
-        ((NuxeoPrincipal)remote.getPrincipal()).setModel(documentModelImpl);
+        ((NuxeoPrincipal) remote.getPrincipal()).setModel(documentModelImpl);
     }
 
     private String generateUnique() {
@@ -162,7 +158,7 @@ public class TestListener extends RepositoryTestCase {
         dm.setProperty("dublincore", "title", "Indexable data");
         dm.setProperty("dublincore", "description", "Indexable description");
         dm.setProperty("file", "filename", "foo.pdf");
-        String[] contributors = new String[] { "a", "b" };
+        String[] contributors = { "a", "b" };
         dm.setProperty("dublincore", "contributors", contributors);
 
         // add a blob

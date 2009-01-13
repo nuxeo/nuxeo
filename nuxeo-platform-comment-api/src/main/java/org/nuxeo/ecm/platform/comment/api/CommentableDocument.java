@@ -61,12 +61,17 @@ public interface CommentableDocument extends Serializable {
      */
     DocumentModel addComment(DocumentModel comment) throws ClientException;
 
+    /**
+     * @deprecated Not used.
+     */
+    @Deprecated
     DocumentModel addComment(String comment) throws ClientException;
 
     /**
-     * Create a new comment as a reply to an existing comment.
-     * @param parent The parent comment, which must exist
-     * @param comment The comment to be added
+     * Creates a new comment as a reply to an existing comment.
+     *
+     * @param parent the parent comment, which must exist
+     * @param comment the comment to be added
      * @throws ClientException
      */
     DocumentModel addComment(DocumentModel parent, DocumentModel comment) throws ClientException;

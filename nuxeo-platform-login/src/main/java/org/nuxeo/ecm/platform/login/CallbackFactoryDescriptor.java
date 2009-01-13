@@ -42,16 +42,8 @@ public class CallbackFactoryDescriptor {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
 }

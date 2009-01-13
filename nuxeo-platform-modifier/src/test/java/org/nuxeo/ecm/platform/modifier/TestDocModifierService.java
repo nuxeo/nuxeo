@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.utils.DocumentModelUtils;
 import org.nuxeo.ecm.platform.modifier.service.DocModifierService;
 import org.nuxeo.ecm.platform.modifier.service.ServiceHelper;
-import org.nuxeo.ecm.platform.transform.NXTransform;
 import org.nuxeo.ecm.platform.transform.interfaces.Transformer;
 import org.nuxeo.ecm.platform.transform.service.TransformService;
 import org.nuxeo.runtime.api.Framework;

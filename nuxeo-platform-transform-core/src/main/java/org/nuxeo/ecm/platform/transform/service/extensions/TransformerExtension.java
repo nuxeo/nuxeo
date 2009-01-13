@@ -31,20 +31,19 @@ import org.w3c.dom.Element;
  *
  * @author janguenot
  */
-
 @XObject("transformer")
 public class TransformerExtension {
 
     @XNode("@name")
-    String name;
+    private String name;
 
     @XNode("@class")
-    String className;
+    private String className;
 
     @XNode("plugins")
-    Element plugins;
+    private Element plugins;
 
-    protected Map<String, Map<String, Serializable>> options = new HashMap<String, Map<String, Serializable>>();
+    private Map<String, Map<String, Serializable>> options = new HashMap<String, Map<String, Serializable>>();
 
     public TransformerExtensionPluginsConfiguration getPluginsChain() {
         TransformerExtensionPluginsConfiguration conf = new TransformerExtensionPluginsConfiguration();
@@ -58,22 +57,6 @@ public class TransformerExtension {
 
     public String getName() {
         return name;
-    }
-
-    public void setPluginsChain(Element plugins) {
-        this.plugins = plugins;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setOptions(Map<String, Map<String, Serializable>> options) {
-        this.options = options;
     }
 
     public Map<String, Map<String, Serializable>> getOptions() {
