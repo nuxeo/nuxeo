@@ -338,6 +338,11 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>org.jbpm.jbpm3</groupId>
+        <artifactId>jbpm-jpdl</artifactId>
+        <version>3.3.0.GA</version>
+      </dependency>
+      <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss</artifactId>
         <version>${jboss.version}</version>
@@ -455,18 +460,6 @@
         <groupId>jboss</groupId>
         <artifactId>jbosssx</artifactId>
         <version>${jboss.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jbpm</artifactId>
-        <version>3.1.4</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jbpm-identity</artifactId>
-        <version>3.1.4</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
