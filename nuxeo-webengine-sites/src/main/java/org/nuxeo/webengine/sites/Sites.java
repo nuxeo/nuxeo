@@ -1,7 +1,6 @@
 package org.nuxeo.webengine.sites;
 
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +15,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -33,7 +31,6 @@ public class Sites extends DefaultObject {
 
     @Path("{modulePath}")
     public Object dispatch(@PathParam("modulePath") String path) {
-        System.out.println("try to get site with path:" + path);
         if ( "/".equals(path) ){
             try {
                 List<Object> sites = getWebContainers();
@@ -52,15 +49,14 @@ public class Sites extends DefaultObject {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
 
-//        DocumentModelList list  = session.query("SELECT * FROM Workspace WHERE webc:isWebContainer = true");
-        DocumentModelList list  = session.query("SELECT * FROM Workspace");
+        DocumentModelList list  = session.query("SELECT * FROM Workspace WHERE webc:isWebContainer = true");
         List<Object> sites = new ArrayList<Object>();
 
         for ( DocumentModel d : list ){
             try {
                 Map<String , String> site = new HashMap<String, String>();
-                site.put("href", getValue(d, "webc:url"));
-                site.put("name", getValue(d, "webc:name"));
+                site.put("href", SiteHelper.getString(d, "webc:url"));
+                site.put("name", SiteHelper.getString(d, "webc:name"));
                 sites.add(site);
             } catch (Exception e){
                 System.out.println("ignore site :" + d);
@@ -69,16 +65,6 @@ public class Sites extends DefaultObject {
         return sites;
     }
 
-    protected String getValue(DocumentModel d, String xpath) throws ClientException{
-        Property p = d.getProperty(xpath);
-        if ( p != null) {
-            Serializable v = p.getValue();
-            if ( v != null ) {
-                return v.toString();
-            }
-        }
-        return "";
-    }
 
 
 }

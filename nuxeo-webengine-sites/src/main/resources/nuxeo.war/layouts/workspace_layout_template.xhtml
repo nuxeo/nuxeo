@@ -1,0 +1,92 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  id="#{layout.id}">
+
+<c:if test="#{layout.mode != 'edit' and layout.mode != 'create'}">
+
+  <table class="dataInput">
+    <tbody>
+
+      <nxl:layoutRow>
+        <tr>
+          <nxl:layoutRowWidget>
+            <td class="labelColumn">
+              <h:outputText value="#{widget.label}" rendered="#{!widget.translated}" />
+              <h:outputText value="#{messages[widget.label]}" rendered="#{widget.translated}" />
+            </td>
+            <td class="fieldColumn">
+              <nxl:widget widget="#{widget}" mode="#{widget.mode}" value="#{value}" />
+            </td>
+          </nxl:layoutRowWidget>
+        </tr>
+      </nxl:layoutRow>
+
+    </tbody>
+  </table>
+
+</c:if>
+
+<c:if test="#{layout.mode == 'edit' or layout.mode == 'create'}">
+
+	<c:if test="#{layout.name == 'webcontainer' }">
+	<div class="foldableBox">
+      <h3 class="unfolded">
+          <h:selectBooleanCheckbox onclick="toggleBox(this)" value="#{value.webcontainer.isWebContainer}"/>
+      </h3>
+      <div class="boxBody">
+      	<table class="dataInput">
+		    <tbody>
+		      <nxl:layoutRow>
+		        <tr>
+		          <nxl:layoutRowWidget>
+		            <td class="labelColumn">
+		              <h:outputText value="#{widget.label}" rendered="#{!widget.translated}"
+		                styleClass="#{nxu:test(widget.required, 'required', '')}" />
+		              <h:outputText value="#{messages[widget.label]}" rendered="#{widget.translated}"
+		                styleClass="#{nxu:test(widget.required, 'required', '')}" />
+		            </td>
+		            <td class="fieldColumn">
+		              <nxl:widget widget="#{widget}" mode="#{widget.mode}" value="#{value}" />
+		            </td>
+		          </nxl:layoutRowWidget>
+		        </tr>
+		      </nxl:layoutRow>
+		    </tbody>
+		  </table>
+      </div>
+	</div>
+
+	</c:if>
+
+	<c:if test="#{layout.name != 'webcontainer' }">
+		  <table class="dataInput">
+		    <tbody>
+		      <nxl:layoutRow>
+		        <tr>
+		          <nxl:layoutRowWidget>
+		            <td class="labelColumn">
+		              <h:outputText value="#{widget.label}" rendered="#{!widget.translated}"
+		                styleClass="#{nxu:test(widget.required, 'required', '')}" />
+		              <h:outputText value="#{messages[widget.label]}" rendered="#{widget.translated}"
+		                styleClass="#{nxu:test(widget.required, 'required', '')}" />
+		            </td>
+		            <td class="fieldColumn">
+		              <nxl:widget widget="#{widget}" mode="#{widget.mode}" value="#{value}" />
+		            </td>
+		          </nxl:layoutRowWidget>
+		        </tr>
+		      </nxl:layoutRow>
+		    </tbody>
+		  </table>
+	 </c:if>
+</c:if>
+
+
+
+
+</f:subview>
