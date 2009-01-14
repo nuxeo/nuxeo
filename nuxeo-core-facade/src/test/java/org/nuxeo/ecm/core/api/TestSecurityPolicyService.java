@@ -56,6 +56,8 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
                 "test-CoreExtensions.xml");
         deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "DemoRepository.xml");
+        
+        deployBundle("org.nuxeo.ecm.core.event"); 
     }
 
     @Override
