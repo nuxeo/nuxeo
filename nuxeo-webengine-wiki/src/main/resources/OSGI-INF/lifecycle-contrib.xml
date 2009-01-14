@@ -2,7 +2,7 @@
 <component name="org.nuxeo.webengine.core.lifecycles">
 
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="lifecycle">
-    <lifecycle name="BlogPost" lifecyclemanager="jcrlifecyclemanager" initial="draft">
+    <lifecycle name="BlogPost" defaultInitial="draft">
       <transitions>
         <transition name="publish" destinationState="published">
           <description>Publish the post</description>
@@ -38,7 +38,7 @@
       </states>
     </lifecycle>
 
-    <lifecycle name="SpaceDefault" lifecyclemanager="jcrlifecyclemanager" initial="available">
+    <lifecycle name="SpaceDefault" defaultInitial="available">
       <transitions>
         <transition name="close" destinationState="closed">
           <description>Close the space</description>
@@ -61,7 +61,7 @@
       </states>
     </lifecycle>
 
-    <lifecycle name="WikiPage" lifecyclemanager="jcrlifecyclemanager" initial="published">
+    <lifecycle name="WikiPage" defaultInitial="published">
       <transitions>
         <transition name="delete" destinationState="deleted">
           <description>Delete the page</description>
