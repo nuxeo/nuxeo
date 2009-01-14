@@ -1,4 +1,4 @@
-<process-definition name="validation-review">
+<process-definition name="review_approbation">
 	<swimlane name="initiator" />
 	<start-state>
 		<task swimlane='initiator' />

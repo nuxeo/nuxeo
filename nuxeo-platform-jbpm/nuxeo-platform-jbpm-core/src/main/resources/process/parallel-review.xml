@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<process-definition name="parallel-review">
+<process-definition name="review_parallel">
 	<swimlane name="initiator"/>
 	<start-state name="start state">
 	  <task swimlane="initiator"/>

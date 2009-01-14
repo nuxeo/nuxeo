@@ -37,7 +37,7 @@ public class PDParallelValidationTest extends AbstractProcessDefinitionTest {
             context.setActorId("bob");
             assertNotNull(context);
             context.deployProcessDefinition(pd);
-            ProcessInstance pi = context.newProcessInstanceForUpdate("parallel-review");
+            ProcessInstance pi = context.newProcessInstanceForUpdate("review_parallel");
             TaskInstance ti = pi.getTaskMgmtInstance().createStartTaskInstance();
             ti.end();
             assertNotNull(pi);

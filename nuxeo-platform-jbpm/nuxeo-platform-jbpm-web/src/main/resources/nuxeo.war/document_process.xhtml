@@ -21,7 +21,8 @@
 						layout="pageDirection" required="true">
 						<c:forEach var="pd"
 							items="#{jbpmService.getProcessDefinitions(currentUser, currentDocument)}">
-							<f:selectItem itemLabel="#{pd.name}" itemValue="#{pd.name}" />
+							<c:set var="label" value="document_#{pd.name}"/>
+							<f:selectItem itemLabel="#{messages[label]}" itemValue="#{pd.name}" />
 						</c:forEach>
 					</h:selectOneRadio>
 				</h:panelGroup>

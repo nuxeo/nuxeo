@@ -49,7 +49,7 @@ public class ValidationReviewTest extends AbstractProcessDefinitionTest {
             context.setActorId("bob");
             assertNotNull(context);
             context.deployProcessDefinition(pd);
-            ProcessInstance pi = context.newProcessInstanceForUpdate("validation-review");
+            ProcessInstance pi = context.newProcessInstanceForUpdate("review_approbation");
             TaskInstance ti = pi.getTaskMgmtInstance().createStartTaskInstance();
             ti.end();
             assertNotNull(pi);
