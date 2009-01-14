@@ -234,8 +234,11 @@
     <delete>
       <fileset dir="${jboss.lib}">
         <include name="nuxeo-runtime-jboss-extensions-*.jar" />
+        <include name="nuxeo-core-storage-sql-extensions-*.jar" />
         <include name="nuxeo-common-*.jar" />
+        <include name="lucene-core-*.jar" />
         <include name="derby*.jar" />
+        <include name="h2-*.jar" />
       </fileset>
     </delete>
   </target>
