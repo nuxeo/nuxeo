@@ -63,6 +63,8 @@ public class TestSecurity extends NXRuntimeTestCase {
                 "test-CoreExtensions.xml");
         deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "DemoRepository.xml");
+        
+        deployBundle("org.nuxeo.ecm.core.event"); 
 
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("username", "anonymous");

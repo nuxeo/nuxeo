@@ -315,7 +315,7 @@ public abstract class AbstractSession implements CoreSession,
     public EventService getEventService() {
         if (eventService == null) {
             try {
-                eventService = Framework.getService(EventService.class);
+                eventService = Framework.getLocalService(EventService.class);
             } catch (Exception e) {
                 throw new Error("Nuxeo is missconfigured - Core Event Service was not found");
             }

@@ -113,9 +113,7 @@ public class CoreEventImpl implements CoreEvent {
             if (categoryObj instanceof String) {
                 return (String) categoryObj;
             } else {
-                // instead of passing the default value explicitly through the info map
-                // better return it if no category was set. 
-                return DocumentEventCategories.EVENT_DOCUMENT_CATEGORY;
+                return null;
             }
         }
     }

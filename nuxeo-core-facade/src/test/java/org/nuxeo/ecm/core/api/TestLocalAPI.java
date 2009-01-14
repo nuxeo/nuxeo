@@ -56,7 +56,8 @@ public class TestLocalAPI extends TestAPI {
         deployContrib(Constants.CORE_BUNDLE, "OSGI-INF/CoreService.xml");
         deployContrib(Constants.CORE_BUNDLE, "OSGI-INF/SecurityService.xml");
         deployContrib(Constants.CORE_BUNDLE, "OSGI-INF/RepositoryService.xml");
-
+        deployBundle("org.nuxeo.ecm.core.event"); 
+        //deployBundle("org.nuxeo.ecm.core.event.compat"); 
         deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE, "TypeService.xml");
         deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "permissions-contrib.xml");
@@ -70,8 +71,6 @@ public class TestLocalAPI extends TestAPI {
                 "LifeCycleService.xml");
         deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "LifeCycleServiceExtensions.xml");
-        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
-                "CoreEventListenerService.xml");
         deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "DocumentAdapterService.xml");
     }

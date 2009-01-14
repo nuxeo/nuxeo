@@ -67,6 +67,7 @@ public class TestVersioning extends NXRuntimeTestCase {
         deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "DemoRepository.xml");
 
+        deployBundle("org.nuxeo.ecm.core.event"); 
         deployCustomVersioning();
 
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();

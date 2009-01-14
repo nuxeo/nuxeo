@@ -49,6 +49,8 @@ public class TestApiHeavyLoad extends TestConnection {
                 "CoreTestExtensions.xml");
         deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "DemoRepository.xml");
+        
+        deployBundle("org.nuxeo.ecm.core.event"); 
     }
 
     @Override
