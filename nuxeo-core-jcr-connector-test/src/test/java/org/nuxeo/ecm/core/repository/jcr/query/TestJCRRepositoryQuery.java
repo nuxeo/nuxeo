@@ -29,6 +29,7 @@ public class TestJCRRepositoryQuery extends QueryTestCase {
     public void deployRepository() throws Exception {
         deployContrib(CoreJCRConnectorTestConstants.TESTS_BUNDLE,
                 "query-repository-contrib.xml");
+        deployBundle("org.nuxeo.ecm.core.event"); 
     }
 
     @Override
