@@ -9,12 +9,11 @@
     class="org.nuxeo.ecm.platform.versioning.service.VersioningService" />
 
   <service>
-    <provide interface="org.nuxeo.ecm.platform.versioning.api.VersioningManager" />
+    <provide
+      interface="org.nuxeo.ecm.platform.versioning.api.VersioningManager" />
   </service>
-  
+
   <extension-point name="rules">
-    <object
-      class="org.nuxeo.ecm.platform.versioning.service.WFBasedRuleDescriptor" />
     <object
       class="org.nuxeo.ecm.platform.versioning.service.EditBasedRuleDescriptor" />
     <object
