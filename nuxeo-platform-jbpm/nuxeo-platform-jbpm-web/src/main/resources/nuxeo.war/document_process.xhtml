@@ -21,8 +21,9 @@
 						layout="pageDirection" required="true">
 						<c:forEach var="pd"
 							items="#{jbpmService.getProcessDefinitions(currentUser, currentDocument)}">
-							<c:set var="label" value="document_#{pd.name}"/>
-							<f:selectItem itemLabel="#{messages[label]}" itemValue="#{pd.name}" />
+							<c:set var="label" value="document_#{pd.name}" />
+							<f:selectItem itemLabel="#{messages[label]}"
+								itemValue="#{pd.name}" />
 						</c:forEach>
 					</h:selectOneRadio>
 				</h:panelGroup>
@@ -32,10 +33,12 @@
 						value="#{lifecycleEndState}" required="true"
 						layout="pageDirection">
 						<c:forEach var="lcs"
-              items="#{documentManager.getAllowedStateTransitions(currentDocument.getRef())}">
-              <f:selectItem itemLabel="#{lcs}" itemValue="#{lcs}" />
-            </c:forEach>
-            <f:selectItem itemLabel="#{messages['label.review.lifecycle.noChange']}" itemValue="null"/>
+							items="#{documentManager.getAllowedStateTransitions(currentDocument.getRef())}">
+							<f:selectItem itemLabel="#{messages[lcs]}" itemValue="#{lcs}" />
+						</c:forEach>
+						<f:selectItem
+							itemLabel="#{messages['label.review.lifecycle.noChange']}"
+							itemValue="null" />
 					</h:selectOneRadio>
 					<h:message styleClass="errorMessage"
 						for="lifeCycleDestinationStateTransition" />
@@ -43,14 +46,13 @@
 				<h:outputText value="" />
 				<h:commandButton styleClass="button" type="submit"
 					value="#{messages['label.review.start']}"
-					action="#{jbpmHelper.createProcessInstance(currentUser, selectedPD, currentDocument, lifecycleEndState)}"/>
+					action="#{jbpmHelper.createProcessInstance(currentUser, selectedPD, currentDocument, lifecycleEndState)}" />
 			</h:panelGrid>
 		</h:form>
 	</c:when>
 	<c:when test="#{processes.size() == 1}">
 		<c:set var="process" value="#{processes.get(0)}" />
-		<ui:decorate
-			template="/process/show_running_process.xhtml">
+		<ui:decorate template="/process/show_running_process.xhtml">
 			<ui:param name="process" value="#{process}" />
 		</ui:decorate>
 	</c:when>

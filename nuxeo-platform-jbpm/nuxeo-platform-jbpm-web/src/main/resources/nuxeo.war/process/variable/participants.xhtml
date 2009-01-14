@@ -4,11 +4,9 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:a4j="https://ajax4jsf.dev.java.net/ajax" class="closedContent">
-#{principalListManager.setSelectedUsers(participants)}
-#{participants}
 <h:form>
 	<h3><h:outputText
-		value="#{messages['label.workflow.task.choose-participant']}" /></h3>
+		value="#{messages['label.workflow.variable.participants']}" /></h3>
 	<table class="dataInput">
 		<tbody>
 			<tr>
@@ -28,9 +26,8 @@
 			</tr>
 			<tr>
 				<td></td>
-				<td><c:set var="tasksubmitlabel"
-					value="label.variable.participants.update" /> <h:commandButton
-					type="submit" value="#{messages[tasksubmitlabel]}"
+				<td><h:commandButton
+					type="submit" value="#{messages['command.validate']}"
 					styleClass="button"
 					action="#{jbpmHelper.updateProcessVariable(process, 'participants', principalListManager.selectedUsers)}" /></td>
 			</tr>

@@ -4,9 +4,9 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:a4j="https://ajax4jsf.dev.java.net/ajax" class="closedContent">
-<h3><h:outputText
-  value="#{messages['label.workflow.task.choose-participant']}" /></h3>
-  <ui:decorate template="/process/show_tasks_table.xhtml">
-    <ui:param name="process" value="#{process}"/>
-  </ui:decorate>
-</div>
+<h3><c:set var="label"
+	value="document_#{process.processDefinition.name}" /><h:outputText
+	value="#{messages[label]}" /></h3>
+<ui:decorate template="/process/show_tasks_table.xhtml">
+	<ui:param name="process" value="#{process}" />
+</ui:decorate></div>

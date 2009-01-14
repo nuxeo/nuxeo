@@ -29,7 +29,7 @@
 				<td><c:set var="tasksubmitlabel"
 					value="label.task.#{task.name}.submit" /> <h:commandButton
 					type="submit" disabled="#{empty principalListManager}"
-					value="#{messages[tasksubmitlabel]}" styleClass="button"
+					value="#{messages['workflowTaskEnded']}" styleClass="button"
 					action="#{jbpmHelper.endTask(task, principalListManager)}" /></td>
 			</tr>
 		</tbody>

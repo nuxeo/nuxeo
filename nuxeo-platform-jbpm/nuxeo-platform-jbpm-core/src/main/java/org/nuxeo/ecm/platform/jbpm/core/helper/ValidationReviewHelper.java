@@ -30,9 +30,11 @@ public class ValidationReviewHelper extends AbstractHelper {
     public void execute(ExecutionContext executionContext) throws Exception {
         this.executionContext = executionContext;
         if (nuxeHasStarted()) {
-            followTransition(
-                    getSwimlaneUser(JbpmService.VariableName.initiator.name()),
-                    getStringVariable(JbpmService.VariableName.endLifecycle.name()));
+            String user = getSwimlaneUser(JbpmService.VariableName.initiator.name());
+            String endLifecycle = getStringVariable(JbpmService.VariableName.endLifecycle.name());
+            if (endLifecycle != null && !"".equals(endLifecycle)) {
+                followTransition(user, endLifecycle);
+            }
         }
         executionContext.getToken().signal();
     }

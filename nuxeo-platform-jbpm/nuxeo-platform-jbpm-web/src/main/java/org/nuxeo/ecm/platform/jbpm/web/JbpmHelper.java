@@ -53,7 +53,7 @@ public class JbpmHelper {
     public String createProcessInstance(NuxeoPrincipal principal, String pd,
             DocumentModel dm, String endLifeCycle) throws Exception {
         Map<String, Serializable> map = null;
-        if (endLifeCycle != null && !endLifeCycle.equals("")) {
+        if (endLifeCycle != null && !endLifeCycle.equals("") && !"null".equals(endLifeCycle)) {
             map = new HashMap<String, Serializable>();
             map.put(JbpmService.VariableName.endLifecycle.name(), endLifeCycle);
         }
