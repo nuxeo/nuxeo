@@ -117,7 +117,7 @@ public class SQLRepository implements Repository {
         return schemaManager;
     }
 
-    public SecurityManager getSecurityManager() {
+    public SecurityManager getNuxeoSecurityManager() {
         return securityManager;
     }
 

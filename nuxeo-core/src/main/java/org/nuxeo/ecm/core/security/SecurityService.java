@@ -126,7 +126,7 @@ public class SecurityService extends DefaultComponent {
 
     // Never used. Remove ?
     public static void invalidateCache(Session session, String username) {
-        session.getRepository().getSecurityManager().invalidateCache(session);
+        session.getRepository().getNuxeoSecurityManager().invalidateCache(session);
     }
 
     public boolean arePoliciesRestrictingPermission(String permission) {
@@ -152,7 +152,7 @@ public class SecurityService extends DefaultComponent {
         }
 
         // get the security store
-        SecurityManager securityManager = doc.getSession().getRepository().getSecurityManager();
+        SecurityManager securityManager = doc.getSession().getRepository().getNuxeoSecurityManager();
 
         // fully check each ACE in turn
         String[] resolvedPermissions = getPermissionsToCheck(permission);
@@ -239,7 +239,7 @@ public class SecurityService extends DefaultComponent {
         }
 
         // get the security store
-        SecurityManager securityManager = doc.getSession().getRepository().getSecurityManager();
+        SecurityManager securityManager = doc.getSession().getRepository().getNuxeoSecurityManager();
 
         Access access = checkPermissionForUser(securityManager, doc, username,
                 permission);

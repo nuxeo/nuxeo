@@ -235,7 +235,7 @@ public class ConnectionFactoryImpl implements Repository,
         throw new UnsupportedOperationException("unused");
     }
 
-    public SecurityManager getSecurityManager() {
+    public SecurityManager getNuxeoSecurityManager() {
         initializeServices();
         return securityManager;
     }

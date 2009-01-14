@@ -19,17 +19,22 @@
 
 package org.nuxeo.ecm.core.repository.jcr;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Map;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
 
 import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryDescriptor;
@@ -76,14 +81,22 @@ public class JCRRepository extends RepositoryImpl implements Repository {
         return name;
     }
 
+    public static final String CONFIG_START = "<?xml version=\"1.0\"?>\n"
+            + "<!DOCTYPE Repository PUBLIC \"-//The Apache Software Foundation//DTD Jackrabbit 1.5//EN\"\n"
+            + "\"http://jackrabbit.apache.org/dtd/repository-1.5.dtd\">\n";
+
     public static JCRRepository create(RepositoryDescriptor descriptor)
             throws Exception {
-        RepositoryConfig config = RepositoryConfig.create(
-                descriptor.getConfigurationFile(), descriptor.getHomeDirectory());
+        File file = new File(descriptor.getConfigurationFile());
+        // add the proper DOCTYPE at the start of the file
+        String content = CONFIG_START + FileUtils.readFile(file);
+        InputStream in = new ByteArrayInputStream(content.getBytes("UTF-8"));
+        RepositoryConfig config = RepositoryConfig.create(in,
+                descriptor.getHomeDirectory());
         return new JCRRepository(descriptor, config);
     }
 
-    public SecurityManager getSecurityManager() {
+    public SecurityManager getNuxeoSecurityManager() {
         return securityManager;
     }
 
@@ -153,7 +166,9 @@ public class JCRRepository extends RepositoryImpl implements Repository {
     public void initialize() throws DocumentException {
         try {
             // register ecm types
-            Session sess = login();
+            SimpleCredentials credentials = new SimpleCredentials("username",
+                    "password".toCharArray());
+            Session sess = login(credentials);
             BuiltinTypes.registerTypes(typeMgr, sess.getWorkspace());
             sess.logout();
             initialized = true;

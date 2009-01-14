@@ -38,7 +38,7 @@ public interface Repository {
 
     SchemaManager getTypeManager();
 
-    SecurityManager getSecurityManager();
+    SecurityManager getNuxeoSecurityManager();
 
     void initialize() throws DocumentException;
 

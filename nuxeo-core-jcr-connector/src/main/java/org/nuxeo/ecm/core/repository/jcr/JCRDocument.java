@@ -905,7 +905,11 @@ public class JCRDocument extends AbstractDocument implements JCRNodeProxy {
             return true;
         }
         if (obj instanceof JCRDocument) {
-            return node == ((JCRDocument) obj).node;
+            try {
+                return node.isSame(((JCRDocument) obj).node);
+            } catch (RepositoryException e) {
+                return false;
+            }
         }
         return false;
     }

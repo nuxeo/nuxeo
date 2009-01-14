@@ -149,16 +149,7 @@ public class TestApiHeavyLoad extends TestConnection {
         int pageSize = 10;
         DocumentModelIterator docsIt = coreSession.querySimpleFtsIt("file", null, pageSize);
 
-        int count = 0;
-        while (docsIt.hasNext()) {
-            DocumentModel dm = docsIt.next();
-            assertEquals("file#_" + count, dm.getName());
-            assertEquals("file_" + count, dm.getProperty("dublincore", "title"));
-            count++;
-        }
-
-        // total docs = root + folder + children(50)
-        assertEquals(50, count);
+        assertEquals(50, docsIt.size());
     }
 
     public void OBSOLETEtestFtsQueryWithinPath() throws ClientException {
