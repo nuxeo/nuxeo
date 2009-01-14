@@ -10,6 +10,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.convert.api.ConverterNotAvailable;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
 import org.nuxeo.ecm.core.convert.service.MimeTypeTranslationHelper;
@@ -112,6 +113,9 @@ public class TransformerWrappingConverter extends BaseConverterWrapper
         try {
             BlobHolder result = getConversionService().convert(descriptor.getConverterName(), bh, null);
             return TransformDocumensFactory.wrap(result);
+        }
+        catch (ConverterNotAvailable e) {
+            return new ArrayList<TransformDocument>();
         }
         catch (Exception e) {
             return null;

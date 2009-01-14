@@ -12,8 +12,6 @@
       </parameters>
     </converter>
 
-
-
    <converter name="any2ods"
       class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
       <destinationMimeType>application/vnd.oasis.opendocument.spreadsheet</destinationMimeType>

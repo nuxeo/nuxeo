@@ -175,6 +175,9 @@ public class TransformService extends DefaultComponent implements
 
     public Plugin getPluginByName(String name) {
         ConverterDescriptor desc = ConversionServiceImpl.getConverterDesciptor(name);
+        if (desc==null) {
+            return null;
+        }
         return new PluginWrappingConverter(desc);
     }
 
@@ -251,6 +254,9 @@ public class TransformService extends DefaultComponent implements
     public boolean isMimetypeSupportedByPlugin(String pluginName,
             String mimetype) {
         Plugin plugin = getPluginByName(pluginName);
+        if (plugin==null) {
+            return false;
+        }
         List<String> sourceMimetype = plugin.getSourceMimeTypes();
         return sourceMimetype.contains(mimetype);
     }

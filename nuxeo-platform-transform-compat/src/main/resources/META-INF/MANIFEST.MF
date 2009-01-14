@@ -3,6 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo ECM Transform Compatibility
 Bundle-SymbolicName: org.nuxeo.ecm.platform.transform;singleton:=true
 Bundle-Vendor: Nuxeo
+Bundle-Category: search,web,stateful,stateless
 Eclipse-LazyStart: false
 Export-Package: org.nuxeo.ecm.platform.transform,
  org.nuxeo.ecm.platform.transform.document,
