@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -68,7 +67,7 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
     }
 
     private static CoreEventListenerService getListenerService() {
-        return NXCore.getCoreEventListenerService();
+        return Framework.getLocalService(CoreEventListenerService.class);
     }
 
     public void testServiceRegistration() {

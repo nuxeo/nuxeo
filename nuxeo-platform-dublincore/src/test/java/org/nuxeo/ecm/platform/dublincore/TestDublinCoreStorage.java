@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.listener.EventListener;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * DublinCoreStorage Test Case.
@@ -86,7 +87,7 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
     }
 
     private static CoreEventListenerService getListenerService() {
-        return NXCore.getCoreEventListenerService();
+        return Framework.getLocalService(CoreEventListenerService.class);
     }
 
     public void testServiceRegistration() {

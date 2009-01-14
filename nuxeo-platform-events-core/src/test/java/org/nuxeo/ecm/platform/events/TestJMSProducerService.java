@@ -19,11 +19,11 @@
 
 package org.nuxeo.ecm.platform.events;
 
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.listener.CoreEventListenerService;
 import org.nuxeo.ecm.core.listener.EventListener;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
 import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -62,7 +62,7 @@ public class TestJMSProducerService extends NXRuntimeTestCase {
     }
 
     private static CoreEventListenerService getRepositoryListenerService() {
-        return NXCore.getCoreEventListenerService();
+        return Framework.getLocalService(CoreEventListenerService.class);
     }
 
     public void testServiceRegistration() {
