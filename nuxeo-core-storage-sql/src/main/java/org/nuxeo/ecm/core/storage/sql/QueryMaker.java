@@ -1041,7 +1041,9 @@ public class QueryMaker {
 
         @Override
         public void visitOperator(Operator node) {
-            buf.append(' ');
+            if (node != Operator.NOT) {
+                buf.append(' ');
+            }
             buf.append(node.toString());
             buf.append(' ');
         }
