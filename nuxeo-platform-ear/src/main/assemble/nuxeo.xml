@@ -123,6 +123,15 @@
       <artifact group="org.resteasy" name="resteasy-jaxrs" />
       <artifact group="org.resteasy" name="jaxrs-api" />
       <artifact group="javax.script" name="script-api" />
+      <!-- JOD / OOo libs and other converters deps-->
+      <artifact group="com.artofsolving" name="jodconverter" />
+      <artifact group="org.openoffice" name="ridl" />
+      <artifact group="org.openoffice" name="juh" />
+      <artifact group="org.openoffice" name="unoil" />
+      <artifact group="org.openoffice" name="jurt" />
+      <artifact group="com.thoughtworks.xstream" name="xstream" />
+      <artifact group="pdfbox" name="pdfbox" />
+
     </artifacts>
   </artifactSet>
 
