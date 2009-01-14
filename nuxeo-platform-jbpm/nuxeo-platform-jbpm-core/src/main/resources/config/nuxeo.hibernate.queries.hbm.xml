@@ -5,7 +5,7 @@
       "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-	<query name="NuxeoHibernateQueries_getProcessInstancesForDoc">
+  <query name="NuxeoHibernateQueries_getProcessInstancesForDoc">
     <![CDATA[
       select si1.token.processInstance
       from org.jbpm.context.exe.variableinstance.StringInstance si1,
@@ -17,9 +17,9 @@
       and si2.name = 'documentRepositoryName'
       and si1.token.processInstance.end is null
     ]]>
-	</query>
+  </query>
 
-	 <query name="NuxeoHibernateQueries_getTaskInstancesForDoc">
+  <query name="NuxeoHibernateQueries_getTaskInstancesForDoc">
     <![CDATA[
       select t
       from org.jbpm.context.exe.variableinstance.StringInstance si1, 
