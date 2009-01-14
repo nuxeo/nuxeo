@@ -192,17 +192,6 @@ public class VersioningManagerBean implements VersioningManager {
         return service.getNextVersion(doc);
     }
 
-    /**
-     * @deprecated i'm not in the interface, my life is meaningless. please
-     *             don't use me. please.
-     * Not used. Remove in 5.2.
-     */
-    @Deprecated
-    public void notifyVersionChange(DocumentModel oldDocument,
-            DocumentModel newDocument) {
-        VersioningChangeNotifier.notifyVersionChange(oldDocument, newDocument,
-                null);
-    }
 
     public SnapshotOptions getCreateSnapshotOption(DocumentModel document)
             throws ClientException {

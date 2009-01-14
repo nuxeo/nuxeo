@@ -146,6 +146,7 @@
     <module>nuxeo-platform-audit-io</module>
     <module>nuxeo-platform-relations-io</module>
     <module>nuxeo-platform-el</module>
+    <module>nuxeo-platform-convert</module>
   </modules>
 
   <dependencyManagement>
@@ -163,6 +164,16 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-event</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-event-compat</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>
