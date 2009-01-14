@@ -28,6 +28,8 @@
         <!-- only if profile jca enabled -->
         <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-jca" profile="jca"/>
         <artifact group="org.nuxeo.ecm.core" name="nuxeo-core"/>
+        <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-event"/>
+        <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-event-compat"/>    
         <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-jcr-connector"/>
         <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-web-common"/>
 	<!-- needed for UserIdentificationInfo - must be moved in web-common -->
