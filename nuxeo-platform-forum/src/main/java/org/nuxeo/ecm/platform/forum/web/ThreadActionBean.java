@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.comment.web.CommentManagerActions;
 import org.nuxeo.ecm.platform.comment.web.ThreadEntry;
-import org.nuxeo.ecm.platform.forum.web.api.PostAction;
 import org.nuxeo.ecm.platform.forum.web.api.ThreadAction;
 import org.nuxeo.ecm.platform.forum.web.api.ThreadAdapter;
 import org.nuxeo.ecm.platform.forum.workflow.ForumConstants;
@@ -90,9 +89,6 @@ public class ThreadActionBean extends InputController implements ThreadAction {
 
     @In(create = true)
     protected transient CommentManagerActions commentManagerActions;
-
-    @In(create = true)
-    protected PostAction postAction;
 
     private String title;
 
@@ -223,11 +219,11 @@ public class ThreadActionBean extends InputController implements ThreadAction {
                 }
                 List<String> cs = Arrays.asList(contributorsArray);
 
-                if (postAction.isPostPublished(threadEntry.getComment())
+                /*if (postAction.isPostPublished(threadEntry.getComment())
                         || isPrincipalModerator()
                         || cs.contains(currentUser.getName())) {
                     basicCommentList.add(threadEntry);
-                }
+                }*/
             }
         }
         return basicCommentList;

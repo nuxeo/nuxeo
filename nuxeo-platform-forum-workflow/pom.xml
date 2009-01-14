@@ -19,28 +19,12 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-workflow-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-workflow-jbpm-document-handlers</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-workflow-document-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-workflow-jbpm</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-forum-api</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jbpm</artifactId>
+      <groupId>org.jbpm.jbpm3</groupId>
+      <artifactId>jbpm-jpdl</artifactId>
     </dependency>
   </dependencies>
 </project>

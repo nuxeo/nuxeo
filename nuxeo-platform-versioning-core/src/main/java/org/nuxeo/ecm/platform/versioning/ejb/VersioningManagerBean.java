@@ -49,7 +49,6 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningException;
 import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
 import org.nuxeo.ecm.platform.versioning.service.ServiceHelper;
 import org.nuxeo.ecm.platform.versioning.service.VersioningService;
-import org.nuxeo.ecm.platform.versioning.wfintf.WFVersioningPolicyProvider;
 
 /**
  * This is a versioning EJB facade.
@@ -148,7 +147,7 @@ public class VersioningManagerBean implements VersioningManager {
 
         // check with document Workflow
         log.debug(logPrefix + "check versioning policy in document workflow");
-        final VersioningActions wfvaction = WFVersioningPolicyProvider.getVersioningPolicyFor(dm);
+        /*final VersioningActions wfvaction = WFVersioningPolicyProvider.getVersioningPolicyFor(dm);
         log.debug(logPrefix + "wfvaction = " + wfvaction);
         options = new VersionIncEditOptions();
         if (wfvaction != null) {
@@ -159,7 +158,7 @@ public class VersioningManagerBean implements VersioningManager {
                 // because LE needs options we add the option received from WF
                 options.addOption(wfvaction);
             }
-        } else {
+        } else*/ {
             log.error(logPrefix + "wf action is null");
         }
 

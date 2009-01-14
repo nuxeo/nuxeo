@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.jbpm;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.jbpm.JbpmContext;
@@ -26,6 +27,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  * @author arussel
  *
  */
-public interface JbpmListFilter {
+public interface JbpmListFilter extends Serializable {
     <T> ArrayList<T> filter(JbpmContext jbpmContext, DocumentModel document, ArrayList<T> list, NuxeoPrincipal principal);
 }

@@ -35,6 +35,7 @@ import org.nuxeo.ecm.platform.jbpm.JbpmListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmOperation;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
+import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmRuntimeException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -48,8 +49,12 @@ public class JbpmServiceBean implements JbpmService {
     private JbpmService service;
 
     @PostConstruct
-    public void postConstruct() throws Exception {
-        service = Framework.getService(JbpmService.class);
+    public void postConstruct() {
+        try {
+            service = Framework.getService(JbpmService.class);
+        } catch (Exception e) {
+            throw new NuxeoJbpmRuntimeException(e);
+        }
     }
 
     /*
