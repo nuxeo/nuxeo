@@ -142,6 +142,8 @@ public class SQLDirectoryDescriptor {
         this.schemaName = schemaName;
     }
 
+    // XXX never used: is it supposed to help determining an entry full id using
+    // the parent directory id?
     public String getParentDirectory() {
         return parentDirectory;
     }

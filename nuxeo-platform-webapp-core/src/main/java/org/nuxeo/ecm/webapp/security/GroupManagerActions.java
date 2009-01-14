@@ -19,12 +19,18 @@
 
 package org.nuxeo.ecm.webapp.security;
 
-import java.util.List;
+import static org.jboss.seam.ScopeType.EVENT;
+
+import java.io.Serializable;
 
 import javax.ejb.Local;
-import javax.faces.model.SelectItem;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 
+import org.jboss.seam.annotations.Factory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
  * Provides user manager related operations.
@@ -32,44 +38,53 @@ import org.nuxeo.ecm.core.api.ClientException;
  * @author Razvan Caraghin
  */
 @Local
-public interface GroupManagerActions {
+public interface GroupManagerActions extends Serializable {
 
-    void initialize() throws ClientException;
+    public static final String ALL = "all";
 
-    String createGroup() throws ClientException;
+    public static final String VALID_CHARS = "0123456789_-"
+            + "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-    String deleteGroup() throws ClientException;
+    @Factory(value = "groupList", scope = EVENT)
+    public DocumentModelList getGroups() throws ClientException;
 
-    void destroy();
+    public void resetGroups() throws ClientException;
 
-    void recomputeGroupList() throws ClientException;
+    public String viewGroups() throws ClientException;
 
-    String editGroup() throws ClientException;
+    public String viewGroup() throws ClientException;
 
-    String viewGroup() throws ClientException;
+    public String viewGroup(String groupName) throws ClientException;
 
-    String updateGroup() throws ClientException;
+    public String editGroup() throws ClientException;
 
-    String viewGroup(String groupName) throws ClientException;
+    public DocumentModel getSelectedGroup() throws ClientException;
 
-    String saveGroup() throws ClientException;
+    public DocumentModel getNewGroup() throws ClientException;
 
-    List<SelectItem> getAvailableGroups() throws ClientException;
+    public String deleteGroup() throws ClientException;
 
-    boolean getAllowCreateGroup() throws ClientException;
+    public String updateGroup() throws ClientException;
 
-    boolean getAllowDeleteGroup() throws ClientException;
+    public void validateGroupName(FacesContext context, UIComponent component,
+            Object value);
 
-    boolean getAllowEditGroup() throws ClientException;
+    public String createGroup() throws ClientException;
 
-    String getSearchString() throws ClientException;
+    public boolean getAllowCreateGroup() throws ClientException;
 
-    void setSearchString(String searchString) throws ClientException;
+    public boolean getAllowDeleteGroup() throws ClientException;
 
-    String searchGroups() throws ClientException;
+    public boolean getAllowEditGroup() throws ClientException;
 
-    String clearSearch() throws ClientException;
+    public String getSearchString();
 
-    boolean isSearchOverflow();
+    public void setSearchString(String searchString);
+
+    public String searchGroups() throws ClientException;
+
+    public String clearSearch() throws ClientException;
+
+    public boolean isSearchOverflow();
 
 }

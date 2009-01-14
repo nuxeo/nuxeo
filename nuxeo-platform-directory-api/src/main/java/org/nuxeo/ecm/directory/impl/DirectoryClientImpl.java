@@ -25,8 +25,10 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryClient;
 import org.nuxeo.ecm.directory.api.DirectoryManager;
@@ -34,10 +36,11 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * XXX : this not actually serializable because Bean Proxy is not serializable.
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  *
  */
-public class DirectoryClientImpl implements DirectoryClient {
+public class DirectoryClientImpl extends BaseSession implements DirectoryClient {
 
     private static final long serialVersionUID = -1170479958816244690L;
 
@@ -168,6 +171,15 @@ public class DirectoryClientImpl implements DirectoryClient {
 
     public void updateEntry(DocumentModel docModel) throws DirectoryException {
         getDirectoryManager().updateEntry(sessionId, docModel);
+    }
+
+    public DocumentModel createEntry(DocumentModel entry)
+            throws ClientException {
+        return getDirectoryManager().createEntry(sessionId, entry);
+    }
+
+    public boolean hasEntry(String id) throws ClientException {
+        return getDirectoryManager().hasEntry(sessionId, id);
     }
 
 }

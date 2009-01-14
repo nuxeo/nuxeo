@@ -52,17 +52,15 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.DataModelImpl;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFieldMapper;
@@ -75,9 +73,10 @@ import org.nuxeo.ecm.directory.Session;
  *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
-public class LDAPSession implements Session, EntrySource {
+public class LDAPSession extends BaseSession implements Session, EntrySource {
 
     protected static final String MISSING_ID_LOWER_CASE = "lower";
+
     protected static final String MISSING_ID_UPPER_CASE = "upper";
 
     // directory connection parameters
@@ -575,21 +574,16 @@ public class LDAPSession implements Session, EntrySource {
         return result;
     }
 
-    // XXX: this should be moved to an abstract session class
     protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
-        DataModel dataModel = new DataModelImpl(schemaName, fieldMap);
-
         String id = String.valueOf(fieldMap.get(getIdField()));
-        DocumentModelImpl docModel = new DocumentModelImpl(sid, schemaName, id,
-                null, null, null, new String[] { schemaName }, null);
         try {
-            dataModel.setMap(fieldMap);
+            DocumentModel docModel = BaseSession.createEntryModel(sid,
+                    schemaName, id, fieldMap);
+            return docModel;
         } catch (PropertyException e) {
-            throw new ClientRuntimeException(e);
+            log.error(e);
+            return null;
         }
-        docModel.addDataModel(dataModel);
-
-        return docModel;
     }
 
     @SuppressWarnings("unchecked")
@@ -715,7 +709,8 @@ public class LDAPSession implements Session, EntrySource {
         DocumentModelList list = new DocumentModelListImpl();
         while (results.hasMore()) {
             SearchResult result = results.next();
-            DocumentModel entry = ldapResultToDocumentModel(result, null, fetchReferences);
+            DocumentModel entry = ldapResultToDocumentModel(result, null,
+                    fetchReferences);
             if (entry != null) {
                 list.add(entry);
             }
@@ -895,6 +890,12 @@ public class LDAPSession implements Session, EntrySource {
     public String toString() {
         return String.format("LDAPSession '%s' for directory %s", sid,
                 directory.getName());
+    }
+
+    public DocumentModel createEntry(DocumentModel entry)
+            throws ClientException {
+        Map<String, Object> fieldMap = entry.getProperties(directory.getSchema());
+        return createEntry(fieldMap);
     }
 
 }
