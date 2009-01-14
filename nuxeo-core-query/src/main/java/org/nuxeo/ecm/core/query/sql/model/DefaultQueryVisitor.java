@@ -84,7 +84,10 @@ public class DefaultQueryVisitor implements IVisitor {
     public void visitExpression(Expression node) {
         node.lvalue.accept(this);
         node.operator.accept(this);
-        node.rvalue.accept(this);
+        if (node.rvalue != null) {
+            // may be null for NOT
+            node.rvalue.accept(this);
+        }
     }
 
     public void visitMultiExpression(MultiExpression node) {

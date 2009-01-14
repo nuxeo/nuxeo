@@ -23,11 +23,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
-
-import sun.misc.Regexp;
-
 import junit.framework.TestCase;
+
+import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 
 /**
  * Simple test of the visitor using a dumb printer.
@@ -90,6 +88,10 @@ public class TestQueryVisitor extends TestCase {
         v.visitQuery(SQLQueryParser.parse(sql));
         String got = v.toString();
         assertEquals(removeTzSuffix(expected), removeTzSuffix(got));
+
+        sql = "select * from d where a = 2 OR NOT b = 5";
+        expected = "SELECT * FROM d WHERE ((a = 2) OR (NOT (b = 5)))";
+        check(sql, expected);
 
         sql = "select foo from docs where x = 1 AND x=2 AND x = 3";
         expected = "SELECT foo FROM docs WHERE AND(x = 1, x = 2, x = 3)";
@@ -237,11 +239,18 @@ class PrintVisitor extends DefaultQueryVisitor {
     @Override
     public void visitExpression(Expression node) {
         buf.append('(');
-        node.lvalue.accept(this);
-        buf.append(' ');
-        node.operator.accept(this);
-        buf.append(' ');
-        node.rvalue.accept(this);
+        if (node.rvalue == null) {
+            // NOT
+            node.operator.accept(this);
+            buf.append(' ');
+            node.lvalue.accept(this);
+        } else {
+            node.lvalue.accept(this);
+            buf.append(' ');
+            node.operator.accept(this);
+            buf.append(' ');
+            node.rvalue.accept(this);
+        }
         buf.append(')');
     }
 
