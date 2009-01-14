@@ -18,8 +18,6 @@ package org.nuxeo.ecm.core.event.test;
 
 import java.net.URL;
 
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
@@ -143,21 +141,6 @@ public class EventListenerTest extends NXRuntimeTestCase {
         // test not accepted event
         service.fireEvent("some-event", new EventContextImpl(null, null));
         assertEquals(2, SCRIPT_CNT);
-    }
-
-    public void testEventContext() throws Exception {
-        EventContextImpl ctx = new EventContextImpl("arg1", "arg2");
-        CoreSession cs = new LocalSession();
-        ctx.setCoreSession(cs);
-        assertEquals(cs, ctx.getCoreSession());
-        assertEquals("arg1", ctx.getArguments()[0]);
-        assertEquals("arg2", ctx.getArguments()[1]);
-        ctx.setProperty("p1", "v1");
-        assertEquals("v1", ctx.getProperty("p1"));
-        assertEquals(1, ctx.getProperties().size());
-        ctx.getProperties().clear();
-        assertEquals(0, ctx.getProperties().size());
-        assertNull(ctx.getPrincipal());
     }
 
 }
