@@ -104,6 +104,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <excludes>
+            <exclude>**/*Test*.class</exclude>
             <exclude>**/TestAny*.class</exclude>
             <exclude>**/TestJOO*.class</exclude>
             <exclude>**/MultipleResultsEchoPlugin*.class</exclude>
