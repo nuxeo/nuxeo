@@ -71,7 +71,7 @@ public class EventListenerDescriptor {
     @XNode("@enabled")
     protected boolean isEnabled = true;
 
-    @XNodeList(value="event", componentType=String.class, type=HashSet.class, nullByDefault=true)
+
     protected Set<String> events;
 
 
@@ -101,8 +101,9 @@ public class EventListenerDescriptor {
         return events;
     }
 
+    @XNodeList(value="event", componentType=String.class, type=HashSet.class, nullByDefault=true)
     public void setEvents(Set<String> events) {
-        this.events = events;
+        this.events = events.isEmpty() ? null : events;
     }
 
     public void setEnabled(boolean isEnabled) {
@@ -134,6 +135,7 @@ public class EventListenerDescriptor {
             } catch (Exception e) {
                 log.error("Failed to instantiate post commit event listener "+clazz, e);
             }
+            return null;
         }
         if (script == null) {
             throw new IllegalArgumentException("Listener extension must define either a class or a script");

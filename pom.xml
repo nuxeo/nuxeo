@@ -44,6 +44,7 @@
     <module>nuxeo-core-convert</module>
     <module>nuxeo-core-convert-plugins</module>
     <module>nuxeo-core-event</module>
+    <module>nuxeo-core-event-compat</module>
   </modules>
 
   <profiles>
@@ -141,6 +142,16 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-convert-plugins</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-event</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-event-compat</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>

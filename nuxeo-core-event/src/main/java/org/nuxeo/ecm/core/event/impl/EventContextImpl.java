@@ -16,29 +16,24 @@
  */
 package org.nuxeo.ecm.core.event.impl;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.security.Principal;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventContext;
 
 /**
+ * Default implementation
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class EventContextImpl implements EventContext {
+public class EventContextImpl extends AbstractEventContext {
 
     private static final long serialVersionUID = 1L;
 
-    protected static final Object[] EMPTY = new Object[0];
-    protected Object[] args;
-    protected HashMap<String, Serializable> properties;
 
     protected transient CoreSession session;
-    protected transient NuxeoPrincipal principal;
+    protected transient Principal principal;
 
 
     /**
@@ -51,53 +46,23 @@ public class EventContextImpl implements EventContext {
         this(null, null, args);
     }
 
-    public EventContextImpl(CoreSession session, NuxeoPrincipal principal, Object ... args) {
-        this.args = args;
+    public EventContextImpl(CoreSession session, Principal principal, Object ... args) {
+        super (args);
         this.session = session;
         this.principal = principal;
     }
 
 
-    public Object[] getArguments() {
-        return args;
-    }
 
     public CoreSession getCoreSession() {
         return session;
     }
 
-    public NuxeoPrincipal getPrincipal() {
+    public Principal getPrincipal() {
         return principal;
     }
 
-    public Map<String, Serializable> getProperties() {
-        if (properties == null) {
-            properties = new HashMap<String, Serializable>();
-        }
-        return properties;
-    }
-
-    public Serializable getProperty(String key) {
-        if (properties == null) {
-            properties = new HashMap<String, Serializable>();
-        }
-        return properties.get(key);
-    }
-
-    public boolean hasProperty(String key) {
-        if (properties == null) {
-            properties = new HashMap<String, Serializable>();
-        }
-        return properties.containsKey(key);
-    }
-
-    public void setProperty(String key, Serializable value) {
-        if (properties == null) {
-            properties = new HashMap<String, Serializable>();
-        }
-        properties.put(key, value);
-    }
-
+  
     public void setCoreSession(CoreSession session) {
         this.session = session;
     }
@@ -106,12 +71,5 @@ public class EventContextImpl implements EventContext {
         this.principal = principal;
     }
 
-    public Event event(String name) {
-        return new EventImpl(name, this);
-    }
-
-    public Event event(String name, int flags) {
-        return new EventImpl(name, this, flags);
-    }
 
 }

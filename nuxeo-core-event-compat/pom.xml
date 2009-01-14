@@ -8,9 +8,9 @@
     <version>1.5-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-core</artifactId>
-  <name>Nuxeo Core</name>
-  <description>Nuxeo Core: The Core.</description>
+  <artifactId>nuxeo-core-event-compat</artifactId>
+  <name>Nuxeo Core Event Compatibility</name>
+  <description>Compatibility Bundle with nuxeo core event model in versions previous to 5.2.M4.</description>
 
   <dependencies>
     <dependency>
@@ -27,27 +27,26 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-event</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-schema</artifactId>
     </dependency>
-    <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-event</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>osgi-core</artifactId>
-    </dependency>
 
-    <!-- scope test -->
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
-      <scope>test</scope>
-    </dependency>
+    <dependency>                                                                                                                                            
+      <groupId>javax.jms</groupId>                                                                                                                          
+      <artifactId>jms</artifactId>                                                                                                                          
+    </dependency>   
+
   </dependencies>
 
 </project>

@@ -65,8 +65,12 @@ public class EventServiceImpl implements EventService {
                 listeners.add(new Entry<EventListener>(el, listener.getPriority(), listener.getEvents()));
             } else {
                 PostCommitEventListener pcel = listener.asPostCommitListener();
-                postCommitListeners.add(
-                        new Entry<PostCommitEventListener>(pcel, listener.getPriority(), listener.getEvents()));
+                if (pcel != null) {
+                    postCommitListeners.add(
+                            new Entry<PostCommitEventListener>(pcel, listener.getPriority(), listener.getEvents()));
+                } else {
+                    log.error("Invalid event listener: class: "+listener.clazz + "; script: "+listener.script+"; context: "+listener.rc);
+                }
             }
         } catch (Exception e) {
             log.error("Failed to register event listener", e);

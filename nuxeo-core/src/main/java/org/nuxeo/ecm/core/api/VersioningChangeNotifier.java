@@ -19,16 +19,8 @@
 
 package org.nuxeo.ecm.core.api;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.NXCore;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
-import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
-import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
-import org.nuxeo.ecm.core.listener.CoreEventListenerService;
 
 /**
  * Helper class to send versions change event notifications in the core.
@@ -59,38 +51,5 @@ public final class VersioningChangeNotifier {
     private VersioningChangeNotifier() {
     }
 
-    /**
-     * Sends change notifications to core event listeners. The event contains
-     * info with older document (before version change) and newer doc (current
-     * document).
-     *
-     * @param oldDocument
-     * @param newDocument
-     * @param options additional info to pass to the event
-     */
-    public static void notifyVersionChange(DocumentModel oldDocument,
-            DocumentModel newDocument, Map<String, Object> options) {
-        final Map<String, Object> info = new HashMap<String, Object>();
-        if (options != null) {
-            info.putAll(options);
-        }
-        info.put(EVT_INFO_NEW_DOC_KEY, newDocument);
-        info.put(EVT_INFO_OLD_DOC_KEY, oldDocument);
-        final CoreEvent coreEvent = new CoreEventImpl(
-                CORE_EVENT_ID_VERSIONING_CHANGE, newDocument, info,
-                AbstractSession.ANONYMOUS,
-                DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY, null);
-        notifyEvent(coreEvent);
-    }
-
-    private static void notifyEvent(final CoreEvent coreEvent) {
-        CoreEventListenerService service = NXCore.getCoreEventListenerService();
-        if (service != null) {
-            service.notifyEventListeners(coreEvent);
-        } else {
-            log.debug("No CoreEventListenerService, cannot notify event " +
-                    coreEvent.getEventId());
-        }
-    }
 
 }

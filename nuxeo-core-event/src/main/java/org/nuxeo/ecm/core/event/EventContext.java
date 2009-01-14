@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.core.event;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -69,6 +70,14 @@ public interface EventContext extends Serializable {
      */
     Map<String, Serializable> getProperties(); // TODO Serializable or Object?
 
+    
+    /**
+     * Replace all properties with the given ones.
+     * The given map is set as is - no copy occurs.
+     * @param properties the properties to use
+     */
+    void setProperties(Map<String, Serializable> properties);
+    
     /**
      * Sets a event context property
      *
@@ -105,7 +114,7 @@ public interface EventContext extends Serializable {
      *
      * @return the principal. Cannot be null.
      */
-    NuxeoPrincipal getPrincipal();
+    Principal getPrincipal();
 
     /**
      * Sets the core session.

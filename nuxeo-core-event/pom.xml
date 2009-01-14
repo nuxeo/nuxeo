@@ -8,8 +8,8 @@
   </parent>
 
   <artifactId>nuxeo-core-event</artifactId>
-  <name>Nuxeo Core Event API</name>
-  <description>Nuxeo Core API for Events management</description>
+  <name>Nuxeo Core Event</name>
+  <description>Core Events model and implementation</description>
 
   <dependencies>
    <dependency>
@@ -22,16 +22,6 @@
       <artifactId>osgi-core</artifactId>                                                                                                                    
     </dependency> 
                     
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-jcr-connector-test</artifactId>
-      <scope>test</scope>
-     </dependency>
      
        <!-- TODO this should use maven conditional dependencies. If java 6 we don't need it since scripting is part of java 6 -->  
       <dependency>                                                                                                                                          

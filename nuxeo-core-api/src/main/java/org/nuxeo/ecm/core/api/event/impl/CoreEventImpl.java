@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.event.CoreEvent;
+import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 
 /**
  * Nuxeo core event implementation.
@@ -112,7 +113,9 @@ public class CoreEventImpl implements CoreEvent {
             if (categoryObj instanceof String) {
                 return (String) categoryObj;
             } else {
-                return null;
+                // instead of passing the default value explicitly through the info map
+                // better return it if no category was set. 
+                return DocumentEventCategories.EVENT_DOCUMENT_CATEGORY;
             }
         }
     }
