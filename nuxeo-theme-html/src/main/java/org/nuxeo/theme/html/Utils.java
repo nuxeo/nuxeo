@@ -32,6 +32,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.CachingDef;
+import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.styles.Style;
@@ -230,11 +231,17 @@ public final class Utils {
             final boolean ignoreViewName, final boolean ignoreClassName,
             final boolean indent) {
 
-        ThemeElement theme = ThemeManager.getThemeOfFormat(style);
         String themeName = null;
-        if (theme != null) {
-            themeName = theme.getName();
+        if (style.isNamed()) {
+            themeName = Manager.getThemeManager().getThemeNameOfNamedObject(
+                    style);
+        } else {
+            ThemeElement theme = ThemeManager.getThemeOfFormat(style);
+            if (theme != null) {
+                themeName = theme.getName();
+            }
         }
+        
         final StringBuilder sb = new StringBuilder();
         final StringBuilder pSb = new StringBuilder();
         for (String viewName : viewNames) {

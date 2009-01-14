@@ -92,7 +92,9 @@ public final class ThemeManager implements Registrable {
 
     private final Map<String, ModelType> modelsByClassname = new HashMap<String, ModelType>();
 
-    private final Map<String, Map<String, Integer>> namedObjects = new HashMap<String, Map<String, Integer>>();
+    private final Map<String, Map<String, Integer>> namedObjectsByTheme = new HashMap<String, Map<String, Integer>>();
+
+    private final Map<Integer, String> themeOfNamedObjects = new HashMap<Integer, String>();
 
     private static final Predicate PREDICATE_FORMAT_INHERIT = new DefaultPredicate(
             "_ inherits from _");
@@ -115,7 +117,8 @@ public final class ThemeManager implements Registrable {
         themes.clear();
         pages.clear();
         formatsByTypeName.clear();
-        namedObjects.clear();
+        namedObjectsByTheme.clear();
+        themeOfNamedObjects.clear();
     }
 
     public static boolean validateThemeName(String themeName) {
@@ -345,7 +348,7 @@ public final class ThemeManager implements Registrable {
     // Named objects
     public Identifiable getNamedObject(final String themeName,
             final String realm, final String name) {
-        final Map<String, Integer> objectsInTheme = namedObjects.get(themeName);
+        final Map<String, Integer> objectsInTheme = namedObjectsByTheme.get(themeName);
         if (objectsInTheme == null) {
             return null;
         }
@@ -357,24 +360,31 @@ public final class ThemeManager implements Registrable {
         return null;
     }
 
+    public String getThemeNameOfNamedObject(Identifiable object) {
+        return themeOfNamedObjects.get(object.getUid());
+    }
+    
     public void setNamedObject(final String themeName, final String realm,
             final Identifiable object) {
-        if (!namedObjects.containsKey(themeName)) {
-            namedObjects.put(themeName, new LinkedHashMap<String, Integer>());
+        if (!namedObjectsByTheme.containsKey(themeName)) {
+            namedObjectsByTheme.put(themeName,
+                    new LinkedHashMap<String, Integer>());
         }
+        final Integer uid = object.getUid();
         final String name = object.getName();
         if (name == null) {
             log.error("Cannot register unnamed object");
             return;
         }
-        namedObjects.get(themeName).put(String.format("%s/%s", realm, name),
-                object.getUid());
+        namedObjectsByTheme.get(themeName).put(
+                String.format("%s/%s", realm, name), uid);
+        themeOfNamedObjects.put(uid, themeName);
     }
 
     public List<Identifiable> getNamedObjects(final String themeName,
             final String realm) {
         final List<Identifiable> objects = new ArrayList<Identifiable>();
-        final Map<String, Integer> objectsInTheme = namedObjects.get(themeName);
+        final Map<String, Integer> objectsInTheme = namedObjectsByTheme.get(themeName);
         final String prefix = String.format("%s/", realm);
         final UidManager uidManager = Manager.getUidManager();
         if (objectsInTheme != null) {
@@ -393,11 +403,23 @@ public final class ThemeManager implements Registrable {
     public void removeNamedObject(final String themeName, final String realm,
             final String name) {
         final String key = String.format("%s/%s", realm, name);
-        namedObjects.get(themeName).remove(key);
+        Identifiable object = getNamedObject(themeName, realm, name);
+        themeOfNamedObjects.remove(object.getUid());
+        namedObjectsByTheme.get(themeName).remove(key);
     }
 
     public void removeNamedObjects(final String themeName) {
-        namedObjects.remove(themeName);
+        namedObjectsByTheme.remove(themeName);
+        List<Integer> toDelete = new ArrayList<Integer>();
+        for (Map.Entry<Integer, String> entry : themeOfNamedObjects.entrySet()) {
+            if (entry.getValue().equals(themeName)) {
+                toDelete.add(entry.getKey());
+            }
+        }
+        for (Integer key : toDelete) {
+            themeOfNamedObjects.remove(key);
+        }
+        toDelete = null;
     }
 
     public void makeElementUseNamedStyle(final Element element,
@@ -576,7 +598,7 @@ public final class ThemeManager implements Registrable {
         }
         return styles;
     }
-    
+
     // Cache management
     public void themeModified() {
         lastModified = new Date().getTime();
