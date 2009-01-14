@@ -18,12 +18,14 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -87,7 +89,9 @@ public class BinaryManagerDescriptor {
             Transformer trans = TransformerFactory.newInstance().newTransformer();
             trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
             trans.setOutputProperty(OutputKeys.INDENT, "yes");
-            trans.transform(new DOMSource(doc), new StreamResult(out));
+            // don't use StreamResult(out) as it fails on paths with spaces
+            Result outputTarget = new StreamResult(new FileOutputStream(out));
+            trans.transform(new DOMSource(doc), outputTarget);
         } catch (TransformerException e) {
             throw (IOException) new IOException().initCause(e);
         }
