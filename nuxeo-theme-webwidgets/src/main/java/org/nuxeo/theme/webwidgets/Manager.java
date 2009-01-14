@@ -58,13 +58,15 @@ public class Manager {
 
         WebContext ctx = WebEngine.getActiveContext();
         UserSession session = ctx.getUserSession();
-        String session_key = String.format("org.nuxeo.theme.webwidgets.provider_%s", name);
+        String session_key = String.format(
+                "org.nuxeo.theme.webwidgets.provider_%s", name);
         Provider provider = (Provider) session.get(session_key);
         if (provider != null) {
             return provider;
         }
         try {
             provider = (Provider) Class.forName(className).newInstance();
+            log.debug(String.format("Stored provider: %s in user session", name));
             session.put(session_key, provider);
             return provider;
         } catch (Exception e) {
