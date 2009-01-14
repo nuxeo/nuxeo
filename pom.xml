@@ -21,7 +21,7 @@
     <nuxeo.runtime.version>1.5-SNAPSHOT</nuxeo.runtime.version>
     <nuxeo.common.version>1.5-SNAPSHOT</nuxeo.common.version>
     <nuxeo.core.version>1.5-SNAPSHOT</nuxeo.core.version>
-    <jackrabbit.version>1.3.3</jackrabbit.version>
+    <jackrabbit.version>1.5.0</jackrabbit.version>
   </properties>
 
   <modules>
@@ -37,11 +37,13 @@
     <module>nuxeo-core-client</module>
     <module>nuxeo-core-io</module>
     <module>nuxeo-core-storage-sql</module>
+    <module>nuxeo-core-storage-sql-extensions</module>
     <module>nuxeo-core-storage-sql-ra</module>
     <module>nuxeo-core-storage-sql-mbean</module>
     <module>nuxeo-core-convert-api</module>
     <module>nuxeo-core-convert</module>
     <module>nuxeo-core-convert-plugins</module>
+    <module>nuxeo-core-event</module>
   </modules>
 
   <profiles>
@@ -94,6 +96,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>
@@ -175,6 +182,18 @@
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>jackrabbit-jcr-commons</artifactId>
+        <version>${jackrabbit.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-spi</artifactId>
+        <version>${jackrabbit.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-spi-commons</artifactId>
         <version>${jackrabbit.version}</version>
         <scope>provided</scope>
       </dependency>

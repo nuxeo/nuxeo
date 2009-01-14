@@ -37,6 +37,10 @@
       <artifactId>nuxeo-core-query</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
     </dependency>
@@ -53,6 +57,17 @@
        <groupId>org.hibernate</groupId>
        <artifactId>hibernate</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>1.1.104</version>
+    </dependency>
+    <dependency>
+      <!-- Needed by H2 fulltext -->
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
@@ -65,14 +80,31 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <version>1.1.104</version>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert-plugins</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- needed for convert plugins -->
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

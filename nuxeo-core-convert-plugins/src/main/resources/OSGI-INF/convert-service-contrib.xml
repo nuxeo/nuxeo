@@ -64,6 +64,12 @@
       <destinationMimeType>text/plain</destinationMimeType>
     </converter>
 
+    <converter name="rfc822totext"
+      class="org.nuxeo.ecm.core.convert.plugins.text.extractors.RFC822ToTextConverter">
+      <destinationMimeType>text/plain</destinationMimeType>
+      <sourceMimeType>message/rfc822</sourceMimeType>
+    </converter>
+
     <converter name="any2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.FullTextConverter">
       <sourceMimeType>*</sourceMimeType>
       <destinationMimeType>text/plain</destinationMimeType>

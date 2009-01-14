@@ -43,7 +43,8 @@ import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
 import org.apache.jackrabbit.core.nodetype.NodeTypeRegistry;
 import org.apache.jackrabbit.core.nodetype.PropDef;
 import org.apache.jackrabbit.core.nodetype.PropDefImpl;
-import org.apache.jackrabbit.name.QName;
+import org.apache.jackrabbit.spi.Name;
+import org.apache.jackrabbit.spi.commons.name.NameConstants;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 
 /**
@@ -261,7 +262,7 @@ public final class BuiltinTypes implements NodeConstants {
     public static NodeTypeDef createBaseNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_NT_BASE.qname);
-        ntd.setSupertypes(new QName[] {QName.NT_BASE});
+        ntd.setSupertypes(new Name[] {NameConstants.NT_BASE});
 
         /*
             // TODO remove this and use unstructured node type
@@ -294,7 +295,7 @@ public final class BuiltinTypes implements NodeConstants {
         // residual node defs set to any ecm nt base
         NodeDefImpl ndef = new NodeDefImpl();
         ndef.setDeclaringNodeType(ECM_MIX_UNSTRUCTURED.qname);
-        ndef.setRequiredPrimaryTypes(new QName[] { ECM_NT_BASE.qname });
+        ndef.setRequiredPrimaryTypes(new Name[] { ECM_NT_BASE.qname });
 
         // residual property defs set to any property
         PropDefImpl pdef = new PropDefImpl();
@@ -318,7 +319,7 @@ public final class BuiltinTypes implements NodeConstants {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_NT_SECURITY_SCHEMA.qname);
         ntd.setMixin(true);
-        ntd.setSupertypes(new QName[] {ECM_MIX_SCHEMA.qname});
+        ntd.setSupertypes(new Name[] {ECM_MIX_SCHEMA.qname});
 
         // create children definitions
         // the system schema has only one field -> the security field
@@ -329,7 +330,7 @@ public final class BuiltinTypes implements NodeConstants {
         ndefDoc.setOnParentVersion(OnParentVersionAction.IGNORE);
         ndefDoc.setDeclaringNodeType(ECM_NT_SECURITY_SCHEMA.qname);
         ndefDoc.setDefaultPrimaryType(ECM_NT_ACP.qname);
-        ndefDoc.setRequiredPrimaryTypes(new QName[] { ECM_NT_ACP.qname });
+        ndefDoc.setRequiredPrimaryTypes(new Name[] { ECM_NT_ACP.qname });
 
         ntd.setChildNodeDefs(new NodeDef[] { ndefDoc });
 
@@ -358,7 +359,7 @@ public final class BuiltinTypes implements NodeConstants {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_NT_SYSTEM_SCHEMA.qname);
         ntd.setMixin(true);
-        ntd.setSupertypes(new QName[] {ECM_MIX_SCHEMA.qname});
+        ntd.setSupertypes(new Name[] {ECM_MIX_SCHEMA.qname});
 
         NodeDefImpl nd = new NodeDefImpl();
         nd.setDeclaringNodeType(ntd.getName());
@@ -402,7 +403,7 @@ public final class BuiltinTypes implements NodeConstants {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_NT_PROXY_SCHEMA.qname);
         ntd.setMixin(true);
-        ntd.setSupertypes(new QName[] {ECM_MIX_SCHEMA.qname});
+        ntd.setSupertypes(new Name[] {ECM_MIX_SCHEMA.qname});
 
         // create children definitions
         PropDefImpl refFrozenNode = new PropDefImpl();
@@ -432,12 +433,12 @@ public final class BuiltinTypes implements NodeConstants {
     public static NodeTypeDef createDocumentNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_NT_DOCUMENT.qname);
-        ntd.setSupertypes(new QName[] { ECM_NT_BASE.qname,
+        ntd.setSupertypes(new Name[] { ECM_NT_BASE.qname,
                 ECM_NT_SECURITY_SCHEMA.qname,
                 ECM_NT_LIFECYCLE_SCHEMA.qname,
                 ECM_NT_SYSTEM_SCHEMA.qname,
-                QName.MIX_LOCKABLE,
-                QName.MIX_REFERENCEABLE, });
+                NameConstants.MIX_LOCKABLE,
+                NameConstants.MIX_REFERENCEABLE, });
 
         // no direct fields inside basic document type
         return ntd;
@@ -446,7 +447,7 @@ public final class BuiltinTypes implements NodeConstants {
     public static NodeTypeDef createFrozenDocumentProxyType() {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_NT_DOCUMENT_PROXY.qname);
-        ntd.setSupertypes(new QName[] {ECM_NT_DOCUMENT.qname,
+        ntd.setSupertypes(new Name[] {ECM_NT_DOCUMENT.qname,
                 ECM_NT_PROXY_SCHEMA.qname, });
 
         // no direct fields
@@ -469,7 +470,7 @@ public final class BuiltinTypes implements NodeConstants {
         ndefDocBag.setAutoCreated(true);
         ndefDocBag.setDeclaringNodeType(ECM_MIX_FOLDER.qname);
         ndefDocBag.setDefaultPrimaryType(ECM_NT_CONTAINER.qname);
-        ndefDocBag.setRequiredPrimaryTypes(new QName[] { ECM_NT_CONTAINER.qname });
+        ndefDocBag.setRequiredPrimaryTypes(new Name[] { ECM_NT_CONTAINER.qname });
 
         ntd.setChildNodeDefs(new NodeDef[] { ndefDocBag });
 
@@ -492,7 +493,7 @@ public final class BuiltinTypes implements NodeConstants {
         ndefDocBag.setAutoCreated(true);
         ndefDocBag.setDeclaringNodeType(ECM_MIX_ORDERED.qname);
         ndefDocBag.setDefaultPrimaryType(ECM_NT_OCONTAINER.qname);
-        ndefDocBag.setRequiredPrimaryTypes(new QName[] { ECM_NT_OCONTAINER.qname });
+        ndefDocBag.setRequiredPrimaryTypes(new Name[] { ECM_NT_OCONTAINER.qname });
 
         ntd.setChildNodeDefs(new NodeDef[] { ndefDocBag });
 
@@ -507,7 +508,7 @@ public final class BuiltinTypes implements NodeConstants {
     public static NodeTypeDef createContainerNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_NT_CONTAINER.qname);
-        ntd.setSupertypes(new QName[] {ECM_NT_BASE.qname});
+        ntd.setSupertypes(new Name[] {ECM_NT_BASE.qname});
 
         NodeDefImpl ndefDocs = new NodeDefImpl();
         ndefDocs.setAllowsSameNameSiblings(false);
@@ -527,7 +528,7 @@ public final class BuiltinTypes implements NodeConstants {
     public static NodeTypeDef createOrderedContainerNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_NT_OCONTAINER.qname);
-        ntd.setSupertypes(new QName[] {ECM_NT_CONTAINER.qname});
+        ntd.setSupertypes(new Name[] {ECM_NT_CONTAINER.qname});
         ntd.setOrderableChildNodes(true);
 
         return ntd;
@@ -554,7 +555,7 @@ public final class BuiltinTypes implements NodeConstants {
     public static NodeTypeDef createComplexFieldNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_NT_PROPERTY.qname);
-        ntd.setSupertypes(new QName[] {ECM_NT_BASE.qname});
+        ntd.setSupertypes(new Name[] {ECM_NT_BASE.qname});
 
         return ntd;
     }
@@ -567,7 +568,7 @@ public final class BuiltinTypes implements NodeConstants {
     public static NodeTypeDef createComplexListNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_NT_PROPERTY_LIST.qname);
-        ntd.setSupertypes(new QName[] {ECM_NT_PROPERTY.qname});
+        ntd.setSupertypes(new Name[] {ECM_NT_PROPERTY.qname});
         ntd.setOrderableChildNodes(true);
 
         createUnstructuredChildren(ntd);
@@ -611,12 +612,12 @@ public final class BuiltinTypes implements NodeConstants {
     public static NodeTypeDef createComplexBagNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_NT_PROPERTY_BAG.qname);
-        ntd.setSupertypes(new QName[] {ECM_NT_PROPERTY.qname});
+        ntd.setSupertypes(new Name[] {ECM_NT_PROPERTY.qname});
 
         // residual node defs set to any ecm nt base
         NodeDefImpl ndef = new NodeDefImpl();
         ndef.setDeclaringNodeType(ECM_NT_PROPERTY_BAG.qname);
-        ndef.setRequiredPrimaryTypes(new QName[] { ECM_NT_PROPERTY.qname });
+        ndef.setRequiredPrimaryTypes(new Name[] { ECM_NT_PROPERTY.qname });
 
         // residual property defs set to any property
         PropDefImpl pdef = new PropDefImpl();
@@ -636,14 +637,14 @@ public final class BuiltinTypes implements NodeConstants {
     public static NodeTypeDef createACPNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_NT_ACP.qname);
-        ntd.setSupertypes(new QName[] {ECM_NT_PROPERTY.qname});
+        ntd.setSupertypes(new Name[] {ECM_NT_PROPERTY.qname});
         ntd.setOrderableChildNodes(true);
 
         NodeDefImpl ndACL = new NodeDefImpl();
         ndACL.setAllowsSameNameSiblings(false);
         ndACL.setDeclaringNodeType(ECM_NT_ACP.qname);
         ndACL.setDefaultPrimaryType(ECM_NT_ACL.qname);
-        ndACL.setRequiredPrimaryTypes(new QName[] { ECM_NT_ACL.qname });
+        ndACL.setRequiredPrimaryTypes(new Name[] { ECM_NT_ACL.qname });
         ndACL.setName(ItemDef.ANY_NAME);
 
         PropDefImpl pdOwners = new PropDefImpl();
@@ -669,14 +670,14 @@ public final class BuiltinTypes implements NodeConstants {
     public static NodeTypeDef createACLNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_NT_ACL.qname);
-        ntd.setSupertypes(new QName[] {ECM_NT_PROPERTY.qname});
+        ntd.setSupertypes(new Name[] {ECM_NT_PROPERTY.qname});
         ntd.setOrderableChildNodes(true);
 
         NodeDefImpl ndACE = new NodeDefImpl();
         ndACE.setAllowsSameNameSiblings(false);
         ndACE.setDeclaringNodeType(ECM_NT_ACL.qname);
         ndACE.setDefaultPrimaryType(ECM_NT_ACE.qname);
-        ndACE.setRequiredPrimaryTypes(new QName[] { ECM_NT_ACE.qname });
+        ndACE.setRequiredPrimaryTypes(new Name[] { ECM_NT_ACE.qname });
         ndACE.setName(ItemDef.ANY_NAME);
 
         PropDefImpl pdName = new PropDefImpl();
@@ -699,7 +700,7 @@ public final class BuiltinTypes implements NodeConstants {
     public static NodeTypeDef createACENodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_NT_ACE.qname);
-        ntd.setSupertypes(new QName[] {ECM_NT_PROPERTY.qname});
+        ntd.setSupertypes(new Name[] {ECM_NT_PROPERTY.qname});
 
         PropDefImpl pdType = new PropDefImpl();
         pdType.setDeclaringNodeType(ECM_NT_ACE.qname);
@@ -735,7 +736,7 @@ public final class BuiltinTypes implements NodeConstants {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_NT_LIFECYCLE_SCHEMA.qname);
         ntd.setMixin(true);
-        ntd.setSupertypes(new QName[] {ECM_MIX_SCHEMA.qname});
+        ntd.setSupertypes(new Name[] {ECM_MIX_SCHEMA.qname});
 
         PropDefImpl pdState = new PropDefImpl();
         pdState.setDeclaringNodeType(ECM_NT_LIFECYCLE_SCHEMA.qname);
@@ -761,7 +762,7 @@ public final class BuiltinTypes implements NodeConstants {
     public static NodeTypeDef createVersionStorageNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_VERSION_STORAGE.qname);
-        ntd.setSupertypes(new QName[] {ECM_NT_BASE.qname});
+        ntd.setSupertypes(new Name[] {ECM_NT_BASE.qname});
         ntd.setOrderableChildNodes(true);
 
         NodeDefImpl ndefDocs = new NodeDefImpl();
@@ -780,9 +781,8 @@ public final class BuiltinTypes implements NodeConstants {
     public static NodeTypeDef createVersionHistoryNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_VERSION_HISTORY.qname);
-        ntd.setSupertypes(new QName[] { ECM_NT_VERSION_HISTORY.qname,
-                QName.MIX_REFERENCEABLE });
-        ntd.setMixin(true);
+        ntd.setSupertypes(new Name[] { ECM_NT_VERSION_HISTORY.qname,
+                NameConstants.MIX_REFERENCEABLE });
 
         // ecm:versionId
         PropDefImpl pdVersionId = new PropDefImpl();
@@ -814,8 +814,7 @@ public final class BuiltinTypes implements NodeConstants {
     public static NodeTypeDef createVersionNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_VERSION.qname);
-        ntd.setSupertypes(new QName[] {ECM_NT_VERSION.qname, QName.MIX_REFERENCEABLE});
-        ntd.setMixin(true);
+        ntd.setSupertypes(new Name[] {ECM_NT_VERSION.qname, NameConstants.MIX_REFERENCEABLE});
 
         // ecm:createDate
         PropDefImpl pdCreateDate = new PropDefImpl();

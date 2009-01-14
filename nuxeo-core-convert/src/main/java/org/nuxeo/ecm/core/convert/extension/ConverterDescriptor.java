@@ -44,7 +44,6 @@ public class ConverterDescriptor implements Serializable {
     public static final String CUSTOM_CONVERTER_TYPE = "Custom";
     public static final String CHAINED_CONVERTER_TYPE = "Chain";
 
-
     protected Converter instance = null;
 
     @XNode("@name")
@@ -62,12 +61,16 @@ public class ConverterDescriptor implements Serializable {
     @XNode("@type")
     protected String converterType = CUSTOM_CONVERTER_TYPE;
 
+    protected boolean wrappedTransformer= false;
 
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     protected Map<String, String> parameters = new HashMap<String, String>();
 
     @XNodeList(value = "conversionSteps/step", type = ArrayList.class, componentType = String.class)
     protected List<String> steps = new ArrayList<String>();
+
+    @XNodeList(value = "conversionSteps/subconverter", type = ArrayList.class, componentType = String.class)
+    protected List<String> subConverters = new ArrayList<String>();
 
     public String getConverterName() {
         return converterName;
@@ -88,7 +91,15 @@ public class ConverterDescriptor implements Serializable {
     public void initConverter() throws Exception {
         if (instance == null) {
             if ((className == null) ||(converterType.equals(CHAINED_CONVERTER_TYPE))) {
-                instance = new ChainedConverter();
+
+                if ((subConverters==null) || (subConverters.size()==0)) {
+                    // create a Chained converter based on mimetypes
+                    instance = new ChainedConverter();
+                }
+                else {
+                    // create a Chained converter based on converter chain
+                    instance = new ChainedConverter(subConverters);
+                }
                 converterType = CHAINED_CONVERTER_TYPE;
             }
             else {
@@ -107,8 +118,52 @@ public class ConverterDescriptor implements Serializable {
         return instance;
     }
 
-
     public Map<String, String> getParameters() {
         return parameters;
+    }
+
+
+    public ConverterDescriptor merge(ConverterDescriptor other) {
+
+        if (!other.getConverterName().equals(converterName)) {
+            throw new UnsupportedOperationException("Can not merge ConverterDesciptors with different names");
+        }
+
+        if (this.wrappedTransformer) {
+            // converter completly override wrapped transformers
+            return other;
+        }
+
+        if (other.parameters!=null) {
+            parameters.putAll(other.parameters);
+        }
+        if (other.className!=null) {
+            instance=null;
+            this.className=other.className;
+        }
+        if (other.sourceMimeTypes!=null) {
+            for (String mt : other.sourceMimeTypes) {
+                if (!sourceMimeTypes.contains(mt)) {
+                    sourceMimeTypes.add(mt);
+                }
+
+            }
+            //sourceMimeTypes.addAll(other.sourceMimeTypes);
+        }
+        if (other.destinationMimeType!=null) {
+            destinationMimeType = other.destinationMimeType;
+        }
+        if (other.converterType!=null) {
+            converterType = other.converterType;
+        }
+        if ((other.steps!=null) && (other.steps.size()>0)) {
+            steps = other.steps;
+        }
+
+        return this;
+    }
+
+    public String getConverterType() {
+        return converterType;
     }
 }

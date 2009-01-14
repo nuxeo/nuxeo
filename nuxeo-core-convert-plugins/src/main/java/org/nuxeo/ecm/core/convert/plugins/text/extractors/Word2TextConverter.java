@@ -55,12 +55,9 @@ public class Word2TextConverter implements Converter {
 
             return new SimpleCachableBlobHolder(blob);
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new ConversionException("Error during Word2Text conversion", e);
-        }
-
-        finally {
+        } finally {
             if (fas != null) {
                 try {
                     fas.close();
@@ -72,12 +69,10 @@ public class Word2TextConverter implements Converter {
             }
 
         }
-
     }
 
     public void init(ConverterDescriptor descriptor) {
         // TODO Auto-generated method stub
-
     }
 
 }

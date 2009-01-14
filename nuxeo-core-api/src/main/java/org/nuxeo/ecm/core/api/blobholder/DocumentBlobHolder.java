@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.api.blobholder;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -73,6 +74,10 @@ public class DocumentBlobHolder extends AbstractBlobHolder implements
 
     public Serializable getProperty(String name) throws ClientException {
         return doc.getPropertyValue(name);
+    }
+
+    public Map<String, Serializable> getProperties() throws ClientException {
+        return doc.getPrefetch();
     }
 
 }

@@ -40,7 +40,10 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class FullTextConverter implements Converter {
 
+    private static final String TEXT_PLAIN_MT = "text/plain";
     private static final Log log = LogFactory.getLog(FullTextConverter.class);
+
+    protected ConverterDescriptor descriptor;
 
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
@@ -51,11 +54,22 @@ public class FullTextConverter implements Converter {
         } catch (ClientException e) {
             throw new ConversionException("Unable to get source MimeType",e);
         }
+
+        if (TEXT_PLAIN_MT.equals(srcMT)) {
+            // no need to convert !
+            return blobHolder;
+        }
+
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-        String converterName = cs.getConverterName(srcMT, "text/plain");
+        String converterName = cs.getConverterName(srcMT, TEXT_PLAIN_MT);
 
         if (converterName!=null) {
+            if (converterName.equals(descriptor.getConverterName())) {
+                // Should never happend !
+                log.debug("Existing from converter to avoid a loop");
+                return new SimpleBlobHolder(new StringBlob(""));
+            }
             return cs.convert(converterName, blobHolder, parameters);
         }
         else {
@@ -65,6 +79,7 @@ public class FullTextConverter implements Converter {
     }
 
     public void init(ConverterDescriptor descriptor) {
+        this.descriptor=descriptor;
     }
 
 }

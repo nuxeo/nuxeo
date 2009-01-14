@@ -20,10 +20,13 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +36,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Text;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -192,6 +196,20 @@ public class Model {
 
     public static final String LOCK_KEY = "lock";
 
+    public static final String FULLTEXT_TABLE_NAME = "fulltext";
+
+    public static final String FULLTEXT_FULLTEXT_PROP = "ecm:fulltext";
+
+    public static final String FULLTEXT_FULLTEXT_KEY = "fulltext";
+
+    public static final String FULLTEXT_SIMPLETEXT_PROP = "ecm:simpleText";
+
+    public static final String FULLTEXT_SIMPLETEXT_KEY = "simpletext";
+
+    public static final String FULLTEXT_BINARYTEXT_PROP = "ecm:binaryText";
+
+    public static final String FULLTEXT_BINARYTEXT_KEY = "binarytext";
+
     public static class PropertyInfo {
 
         public final PropertyType propertyType;
@@ -202,12 +220,33 @@ public class Model {
 
         public final boolean readonly;
 
+        public final boolean fulltext;
+
         public PropertyInfo(PropertyType propertyType, String fragmentName,
                 String fragmentKey, boolean readonly) {
             this.propertyType = propertyType;
             this.fragmentName = fragmentName;
             this.fragmentKey = fragmentKey;
             this.readonly = readonly;
+            // TODO use some config to decide this
+            fulltext = (propertyType.equals(PropertyType.STRING) ||
+                    propertyType.equals(PropertyType.BINARY) || propertyType.equals(PropertyType.ARRAY_STRING)) &&
+                    (fragmentKey == null || !fragmentKey.equals(MAIN_KEY)) &&
+                    !fragmentName.equals(HIER_TABLE_NAME) &&
+                    !fragmentName.equals(MAIN_TABLE_NAME) &&
+                    !fragmentName.equals(VERSION_TABLE_NAME) &&
+                    !fragmentName.equals(PROXY_TABLE_NAME) &&
+                    !fragmentName.equals(FULLTEXT_TABLE_NAME) &&
+                    !fragmentName.equals(LOCK_TABLE_NAME) &&
+                    !fragmentName.equals(UID_SCHEMA_NAME) &&
+                    !fragmentName.equals(MISC_TABLE_NAME);
+        }
+
+        @Override
+        public String toString() {
+            return "PropertyInfo(" + fragmentName + ", " + fragmentKey + ", " +
+                    propertyType + (readonly ? ", RO" : "") +
+                    (fulltext ? ", FT" : "") + ')';
         }
     }
 
@@ -232,6 +271,10 @@ public class Model {
 
     /** Merged properties (all schemas together + shared). */
     private final Map<String, PropertyInfo> mergedPropertyInfos;
+
+    private final Map<String, Map<String, PropertyInfo>> fulltextStringPropertyInfos;
+
+    private final Map<String, Map<String, PropertyInfo>> fulltextBinaryPropertyInfos;
 
     /** Per-table info about properties. */
     private final Map<String, Map<String, PropertyType>> fragmentsKeys;
@@ -281,6 +324,8 @@ public class Model {
         schemaPropertyInfos = new HashMap<String, Map<String, PropertyInfo>>();
         sharedPropertyInfos = new HashMap<String, PropertyInfo>();
         mergedPropertyInfos = new HashMap<String, PropertyInfo>();
+        fulltextStringPropertyInfos = new HashMap<String, Map<String, PropertyInfo>>();
+        fulltextBinaryPropertyInfos = new HashMap<String, Map<String, PropertyInfo>>();
         fragmentsKeys = new HashMap<String, Map<String, PropertyType>>();
 
         collectionTables = new HashMap<String, PropertyType>();
@@ -304,7 +349,10 @@ public class Model {
         initLocksModel();
         initAclModel();
         initMiscModel();
+        initFullTextModel();
         initModels(schemaManager);
+
+        inferFulltextInfo();
     }
 
     /**
@@ -437,6 +485,32 @@ public class Model {
         }
     }
 
+    /**
+     * Infers fulltext info for all schemas.
+     */
+    private void inferFulltextInfo() {
+        for (Entry<String, Map<String, PropertyInfo>> entry : schemaPropertyInfos.entrySet()) {
+            Map<String, PropertyInfo> stringPropertyInfos = new HashMap<String, PropertyInfo>();
+            Map<String, PropertyInfo> binaryPropertyInfos = new HashMap<String, PropertyInfo>();
+            for (Entry<String, PropertyInfo> e : entry.getValue().entrySet()) {
+                String name = e.getKey();
+                PropertyInfo info = e.getValue();
+                if (!info.fulltext) {
+                    continue;
+                }
+                if (info.propertyType == PropertyType.STRING ||
+                        info.propertyType == PropertyType.ARRAY_STRING) {
+                    stringPropertyInfos.put(name, info);
+                } else if (info.propertyType == PropertyType.BINARY) {
+                    binaryPropertyInfos.put(name, info);
+                }
+            }
+            String schemaName = entry.getKey();
+            fulltextStringPropertyInfos.put(schemaName, stringPropertyInfos);
+            fulltextBinaryPropertyInfos.put(schemaName, binaryPropertyInfos);
+        }
+    }
+
     public PropertyInfo getPropertyInfo(String schemaName, String propertyName) {
         Map<String, PropertyInfo> propertyInfos = schemaPropertyInfos.get(schemaName);
         if (propertyInfos == null) {
@@ -454,6 +528,46 @@ public class Model {
 
     public PropertyInfo getPropertyInfo(String propertyName) {
         return mergedPropertyInfos.get(propertyName);
+    }
+
+    public Map<String, PropertyInfo> getFulltextStringPropertyInfos(
+            String schemaName) {
+        return fulltextStringPropertyInfos.get(schemaName);
+    }
+
+    public Map<String, PropertyInfo> getFulltextBinaryPropertyInfos(
+            String schemaName) {
+        return fulltextBinaryPropertyInfos.get(schemaName);
+    }
+
+    /**
+     * Finds out if a field is to be indexed as fulltext.
+     *
+     * @param fragmentName
+     * @param fragmentKey the key or {@code null} for a collection
+     * @return {@link PropertyType#STRING} or {@link PropertyType#BINARY} if
+     *         this field is to be indexed as fulltext
+     */
+    public PropertyType getFulltextFieldType(String fragmentName,
+            String fragmentKey) {
+        if (fragmentKey == null) {
+            PropertyType type = collectionTables.get(fragmentName);
+            if (type == PropertyType.ARRAY_STRING ||
+                    type == PropertyType.ARRAY_BINARY) {
+                return type.getArrayBaseType();
+            }
+            return null;
+        } else {
+            Map<String, PropertyInfo> infos = schemaPropertyInfos.get(fragmentName);
+            if (infos == null) {
+                return null;
+            }
+            PropertyInfo info = infos.get(fragmentKey);
+            if (info != null && info.fulltext) {
+                return info.propertyType;
+            }
+            return null;
+        }
     }
 
     private void addCollectionFragmentInfos(String fragmentName,
@@ -747,6 +861,21 @@ public class Model {
     private void initLocksModel() {
         addPropertyInfo(null, LOCK_PROP, PropertyType.STRING, LOCK_TABLE_NAME,
                 LOCK_KEY, false, StringType.INSTANCE);
+    }
+
+    /**
+     * Special model for the fulltext table.
+     */
+    private void initFullTextModel() {
+        addPropertyInfo(null, FULLTEXT_FULLTEXT_PROP, PropertyType.STRING,
+                FULLTEXT_TABLE_NAME, FULLTEXT_FULLTEXT_KEY, false,
+                StringType.INSTANCE);
+        addPropertyInfo(null, FULLTEXT_SIMPLETEXT_PROP, PropertyType.STRING,
+                FULLTEXT_TABLE_NAME, FULLTEXT_SIMPLETEXT_KEY, false,
+                StringType.INSTANCE);
+        addPropertyInfo(null, FULLTEXT_BINARYTEXT_PROP, PropertyType.STRING,
+                FULLTEXT_TABLE_NAME, FULLTEXT_BINARYTEXT_KEY, false,
+                StringType.INSTANCE);
     }
 
     /**

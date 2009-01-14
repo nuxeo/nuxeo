@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -86,6 +87,10 @@ public class SimpleBlobHolder extends AbstractBlobHolder implements BlobHolder {
     }
 
     public Serializable getProperty(String name) throws ClientException {
+        return null;
+    }
+
+    public Map<String, Serializable> getProperties() throws ClientException {
         return null;
     }
 

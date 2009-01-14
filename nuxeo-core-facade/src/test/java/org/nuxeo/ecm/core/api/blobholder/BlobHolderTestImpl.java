@@ -2,6 +2,7 @@ package org.nuxeo.ecm.core.api.blobholder;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -25,7 +26,10 @@ public class BlobHolderTestImpl extends AbstractBlobHolder {
     }
 
     public Serializable getProperty(String name) throws ClientException {
-        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Map<String, Serializable> getProperties() throws ClientException {
         return null;
     }
 

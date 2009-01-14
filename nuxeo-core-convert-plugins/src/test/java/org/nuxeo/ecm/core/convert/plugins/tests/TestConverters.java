@@ -1,5 +1,9 @@
 package org.nuxeo.ecm.core.convert.plugins.tests;
 
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.runtime.api.Framework;
+
 
 
 public class TestConverters extends BaseConverterTest {
@@ -9,6 +13,29 @@ public class TestConverters extends BaseConverterTest {
         doTestTextConverter("text/html", "html2text", "hello.html");
     }
 
+    public void testHTMLConverter2() throws Exception {
+
+        String srcMT = "text/html";
+        String converter ="html2text";
+        String fileName = "strange.html";
+
+        ConversionService cs = Framework.getLocalService(ConversionService.class);
+
+        String converterName = cs.getConverterName(srcMT, "text/plain");
+        assertEquals(converter, converterName);
+
+        BlobHolder hg = getBlobFromPath("test-docs/" + fileName);
+
+        BlobHolder result = cs.convert(converterName, hg, null);
+        assertNotNull(result);
+
+        String textResult = result.getBlob().getString().trim();
+        //System.out.print(textResult);
+        assertTrue(textResult.contains("Nuxeo propose aux organisations"));
+
+        System.out.println(result.getBlob().getString());
+
+    }
     public void testXMLConverter() throws Exception {
         doTestTextConverter("text/xml", "xml2text", "hello.xml");
     }

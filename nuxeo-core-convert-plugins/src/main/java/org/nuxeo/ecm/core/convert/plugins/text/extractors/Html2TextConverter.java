@@ -22,6 +22,11 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Map;
 
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXSource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -30,7 +35,12 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
+import org.xml.sax.InputSource;
+import org.xml.sax.helpers.DefaultHandler;
 
+/**
+ * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
+ */
 public class Html2TextConverter implements Converter {
 
     private static final Log log = LogFactory.getLog(Html2TextConverter.class);
@@ -38,26 +48,35 @@ public class Html2TextConverter implements Converter {
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
+        InputStream stream = null;
+        try {
+            stream = blobHolder.getBlob().getStream();
+            TransformerFactory factory = TransformerFactory.newInstance();
+            Transformer transformer = factory.newTransformer();
+            HtmlParser parser = new HtmlParser();
 
-          InputStream stream = null;
-          try {
-              stream = blobHolder.getBlob().getStream();
-              HtmlHandler html2text = new HtmlHandler();
-              String text = html2text.parse(stream);
+            SAXResult result = new SAXResult(new DefaultHandler());
 
-              return new SimpleCachableBlobHolder(new StringBlob(text,
-                      "text/plain"));
-          } catch (Exception e) {
-              throw new ConversionException("Error during Html2Text conversion", e);
-          } finally {
-              if (stream != null) {
-                  try {
-                      stream.close();
-                  } catch (IOException e) {
-                      log.error("Error while closing Blob stream", e);
-                  }
-              }
-          }
+            SAXSource source = new SAXSource(parser, new InputSource(stream));
+            transformer.transform(source, result);
+
+            //HtmlHandler html2text = new HtmlHandler();
+            //String text = html2text.parse(stream);
+            String text = parser.getContents();
+
+            return new SimpleCachableBlobHolder(new StringBlob(text,
+                    "text/plain"));
+        } catch (Exception e) {
+            throw new ConversionException("Error during Html2Text conversion", e);
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    log.error("Error while closing Blob stream", e);
+                }
+            }
+        }
     }
 
     public void init(ConverterDescriptor descriptor) {

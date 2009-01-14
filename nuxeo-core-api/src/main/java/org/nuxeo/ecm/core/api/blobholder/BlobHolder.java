@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.api.blobholder;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -81,4 +82,12 @@ public interface BlobHolder {
      * @return
      */
     Serializable getProperty(String name) throws ClientException;
+
+
+    /**
+     * Returns all properties as a Map
+     *
+     * @return
+     */
+    Map<String,Serializable> getProperties() throws ClientException;
 }

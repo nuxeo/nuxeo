@@ -78,7 +78,6 @@ public class XL2TextConverter implements Converter {
                 }
             }
         }
-
     }
 
     protected void appendTextFromCell(HSSFCell cell, StringBuffer sb) {
@@ -95,13 +94,10 @@ public class XL2TextConverter implements Converter {
         if (cellValue.length() > 0) {
             sb.append(cellValue + CELL_SEP);
         }
-
-
     }
 
     public void init(ConverterDescriptor descriptor) {
         // TODO Auto-generated method stub
-
     }
 
 }

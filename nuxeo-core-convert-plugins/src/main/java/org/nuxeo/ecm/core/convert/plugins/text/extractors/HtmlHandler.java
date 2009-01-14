@@ -28,9 +28,11 @@ public class HtmlHandler extends Xml2TextHandler {
         super();
     }
 
+    @Override
     public String getText() {
         return filterAndJoin(buf.toString());
     }
+
     private String filterAndJoin(String text) {
         boolean space = false;
         StringBuilder buffer = new StringBuilder();
@@ -60,6 +62,5 @@ public class HtmlHandler extends Xml2TextHandler {
         }
         return buffer.toString();
     }
-
 
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.convert.tests.4">
+
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+    point="converter">
+  <converter name="NotAvailableConverter" class="org.nuxeo.ecm.core.convert.tests.NotAvailableConverter">
+    <sourceMimeType>text/tito</sourceMimeType>
+    <destinationMimeType>test/toti</destinationMimeType>
+  </converter>
+  </extension>
+
+</component>

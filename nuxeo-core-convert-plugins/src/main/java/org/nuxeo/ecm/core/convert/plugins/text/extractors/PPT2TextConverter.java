@@ -42,37 +42,36 @@ public class PPT2TextConverter implements Converter {
 
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
-         File f = null;
-         OutputStream fas = null;
-         try {
+        File f = null;
+        OutputStream fas = null;
+        try {
 
-             PowerPointExtractor extractor = new PowerPointExtractor(blobHolder.getBlob().getStream());
+            PowerPointExtractor extractor = new PowerPointExtractor(blobHolder.getBlob().getStream());
 
-             byte[] bytes = extractor.getText().getBytes();
-             f = File.createTempFile("po-ppt2text", ".txt");
-             fas = new FileOutputStream(f);
-             fas.write(bytes);
+            byte[] bytes = extractor.getText().getBytes();
+            f = File.createTempFile("po-ppt2text", ".txt");
+            fas = new FileOutputStream(f);
+            fas.write(bytes);
 
-             Blob blob = new FileBlob(new FileInputStream(f));
-             blob.setMimeType("text/plain");
+            Blob blob = new FileBlob(new FileInputStream(f));
+            blob.setMimeType("text/plain");
 
-             return new SimpleCachableBlobHolder(blob);
+            return new SimpleCachableBlobHolder(blob);
 
-         } catch (Exception e) {
-             throw new ConversionException("Error during PPT2Text conversion", e);
-         }finally {
-             if (fas != null) {
-                 try {
-                     fas.close();
-                 } catch (IOException e) {
-                     log.error(e);
-                 }
-             }
-             if (f != null) {
-                 f.delete();
-             }
-         }
-
+        } catch (Exception e) {
+            throw new ConversionException("Error during PPT2Text conversion", e);
+        } finally {
+            if (fas != null) {
+                try {
+                    fas.close();
+                } catch (IOException e) {
+                    log.error(e);
+                }
+            }
+            if (f != null) {
+                f.delete();
+            }
+        }
     }
 
     public void init(ConverterDescriptor descriptor) {

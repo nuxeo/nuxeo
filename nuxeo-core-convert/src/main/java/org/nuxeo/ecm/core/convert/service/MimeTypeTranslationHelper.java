@@ -86,8 +86,10 @@ public class MimeTypeTranslationHelper {
 
         List<ConvertOption> sco = srcMappings.get(sourceMimeType);
 
-        for (ConvertOption co : sco) {
-            dst.add(co.getMimeType());
+        if (sco!=null) {
+            for (ConvertOption co : sco) {
+                dst.add(co.getMimeType());
+            }
         }
         return dst;
     }
@@ -95,10 +97,12 @@ public class MimeTypeTranslationHelper {
     public static List<String> getSourceMimeTypes(String destinationMimeType) {
         List<String> src = new ArrayList<String>();
 
-        List<ConvertOption> dco = srcMappings.get(destinationMimeType);
+        List<ConvertOption> dco = dstMappings.get(destinationMimeType);
 
-        for (ConvertOption co : dco) {
-            src.add(co.getMimeType());
+        if (dco!=null) {
+            for (ConvertOption co : dco) {
+                src.add(co.getMimeType());
+            }
         }
         return src;
 
