@@ -47,6 +47,8 @@ import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
+import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventService;
@@ -669,7 +671,7 @@ public class UserManagerImpl implements UserManager {
 
             // check the group does not exist
             if (groupDir.hasEntry(groupId)) {
-                throw new ClientException("Group already exists: " + groupId);
+                throw new GroupAlreadyExistsException();
             }
             groupModel = groupDir.createEntry(groupModel);
             groupDir.commit();
@@ -692,7 +694,7 @@ public class UserManagerImpl implements UserManager {
 
             // check the user does not exist
             if (userDir.hasEntry(userId)) {
-                throw new ClientException("User already exists: " + userId);
+                throw new UserAlreadyExistsException();
             }
 
             userModel = userDir.createEntry(userModel);
