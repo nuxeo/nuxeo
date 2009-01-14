@@ -26,10 +26,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.CoreTestConstants;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.listener.CoreEventListenerService;
 import org.nuxeo.ecm.core.listener.EventListener;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -51,7 +51,7 @@ public class TestRepositoryListenerService extends NXRuntimeTestCase {
         deployContrib(CoreTestConstants.CORE_TESTS_BUNDLE,
                 "CoreEventListenerTestExtensions.xml");
 
-        repositoryListenerService = NXCore.getCoreEventListenerService();
+        repositoryListenerService = Framework.getLocalService(CoreEventListenerService.class);
     }
 
     public void testComponentRegistration() {
