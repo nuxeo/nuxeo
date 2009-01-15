@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.repository.jcr;
@@ -24,6 +23,7 @@ import org.joda.time.DateTime;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryParseException;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
@@ -41,11 +41,13 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author Bogdan Stefanescu
+ * @author Florent Guillaume
  */
-// TODO: fdate literals need special handling - make a xpathLiteral() method to be
+// TODO: fdate literals need special handling - make a xpathLiteral() method to
+// be
 // able to intercept date literals to adapt them
-public class XPathBuilder implements QueryConstants {
+public class XPathBuilder {
 
     // Utility class
     private XPathBuilder() {
@@ -64,8 +66,8 @@ public class XPathBuilder implements QueryConstants {
     }
 
     /**
-     * Builds the element part of the XPATH query. Example:
-     * {@code element(*, ecmdt:Document)} for {@code SELECT * FROM Document}.
+     * Builds the element part of the XPATH query. Example: {@code element(*,
+     * ecmdt:Document)} for {@code SELECT * FROM Document}.
      */
     static void buildElementPart(XPathQuery xq, SQLQuery query) {
         if (query.from.elements.size() != 1) {
@@ -177,9 +179,9 @@ public class XPathBuilder implements QueryConstants {
     /**
      * Process special expressions.
      * <p>
-     * If the expression is not a special one, return false so that
-     * the expression will be processed in the default way.
-     * Otherwise process it and return true.
+     * If the expression is not a special one, return false so that the
+     * expression will be processed in the default way. Otherwise process it and
+     * return true.
      *
      * @param xq
      * @param expr
@@ -190,56 +192,50 @@ public class XPathBuilder implements QueryConstants {
             throws QueryException {
         if (expr.lvalue instanceof Reference) { // TODO remove this
             String name = ((Reference) expr.lvalue).name;
-            if (name.equals(ECM_FULLTEXT)) {
+            if (name.equals(NXQL.ECM_FULLTEXT)) {
                 if (expr.rvalue.getClass() != StringLiteral.class) {
-                    throw new QueryException(
-                            "Invalid query:  ecm:fulltext can only be compared against string values");
+                    throw new QueryException("Invalid query: " +
+                            NXQL.ECM_FULLTEXT +
+                            " can only be compared against string values");
                 }
                 xq.predicate.append("jcr:contains(., '").append(
                         ((StringLiteral) expr.rvalue).value).append("')");
                 return true;
-            } else if (name.equals(ECM_TYPE)) {
+            } else if (name.equals(NXQL.ECM_NAME)) {
                 if (expr.rvalue.getClass() != StringLiteral.class) {
-                    throw new QueryException(
-                            "Invalid query:  ecm:fulltext can only be compared against string values");
+                    throw new QueryException("Invalid query: " + NXQL.ECM_NAME +
+                            "can only be compared against string values");
                 }
-                String type = ((StringLiteral) expr.rvalue).value;
-                type = TypeAdapter.docType2Jcr(type);
-                xq.predicate.append("@").append(JcrConstants.JCR_PRIMARYTYPE);
-                xq.predicate.append(" ").append(operator(expr.operator)).append(" '")
-                        .append(type).append("'");
+                xq.predicate.append("fn:name() ").append(
+                        operator(expr.operator)).append(" '").append(
+                        ((StringLiteral) expr.rvalue).value).append("'");
                 return true;
-            } else if (name.equals(ECM_NAME)) {
-                if (expr.rvalue.getClass() != StringLiteral.class) {
-                    throw new QueryException(
-                            "Invalid query:  ecm:fulltext can only be compared against string values");
-                }
-                xq.predicate.append("fn:name() ").append(operator(expr.operator))
-                        .append(" '").append(((StringLiteral) expr.rvalue).value).append("'");
-                return true;
-            } else if (name.equals(ECM_IS_CHECKED_IN_VERSION)
-                    || name.equals(ECM_VERSION)) {
+            } else if (name.equals(NXQL.ECM_ISVERSION)) {
                 boolean eq;
                 if (expr.operator == Operator.EQ) {
                     eq = true;
                 } else if (expr.operator == Operator.NOTEQ) {
                     eq = false;
                 } else {
-                    throw new QueryException(
-                            "Invalid query: ecm:isCheckedInVersion support only = and != operators");
+                    throw new QueryException("Invalid query: " +
+                            NXQL.ECM_ISVERSION +
+                            " support only = and != operators");
                 }
                 boolean value;
                 if (expr.rvalue.getClass() == IntegerLiteral.class) {
                     value = ((IntegerLiteral) expr.rvalue).value != 0;
                 } else {
-                    throw new QueryException(
-                            "Invalid query: ecm:isCheckedInVersion support integer values");
+                    throw new QueryException("Invalid query: " +
+                            NXQL.ECM_ISVERSION + " support integer values");
                 }
                 if ((eq && value) || (!eq && !value)) { // we need to find
                     // versions
-                    xq.predicate.append(" @").append(ECM_FROZEN_NODE);
+                    xq.predicate.append(" @").append(
+                            NodeConstants.ECM_FROZEN_NODE_UUID.rawname);
                 } else { // avoid versions
-                    xq.predicate.append(" not(@").append(ECM_FROZEN_NODE).append(") ");
+                    xq.predicate.append(" not(@").append(
+                            NodeConstants.ECM_FROZEN_NODE_UUID.rawname).append(
+                            ") ");
                 }
                 return true;
             } else if (expr.rvalue.getClass() == DateLiteral.class) { // dates
@@ -306,8 +302,8 @@ public class XPathBuilder implements QueryConstants {
                 } else {
                     reference(xq.predicate, ref);
                     operator(xq.predicate, expr.operator);
-                    xq.predicate.append("xs:dateTime('"
-                            + DateLiteral.dateTime(dl) + "')");
+                    xq.predicate.append("xs:dateTime('" +
+                            DateLiteral.dateTime(dl) + "')");
                 }
                 return true;
             }
@@ -348,18 +344,17 @@ public class XPathBuilder implements QueryConstants {
         xq.predicate.append(")");
     }
 
-    static void inclusion(XPathQuery xq, Operand lvalue, Operand rvalue) {
-        String name = ((Reference) lvalue).name;
-        xq.predicate.append(" (");
+    static void inclusion(StringBuilder buf, Operand lvalue, Operand rvalue) {
+        buf.append(" (");
         LiteralList list = (LiteralList) rvalue;
-        int size = list.size() - 1;
-        for (int i = 0; i < size; i++) {
-            Literal literal = list.get(i);
-            xq.predicate.append(name).append(" = ").append(literal)
-                    .append(" or ");
+        for (int i = 0; i < list.size(); i++) {
+            if (i != 0) {
+                buf.append(" or ");
+            }
+            LiteralFixer fixer = reference(buf, (Reference) lvalue);
+            buf.append(" = ").append(fixer.fix(list.get(i)));
         }
-        xq.predicate.append(name).append(" = ").append(list.get(size))
-                .append(") ");
+        buf.append(") ");
     }
 
     static void expression(XPathQuery xq, Expression expr)
@@ -406,7 +401,7 @@ public class XPathBuilder implements QueryConstants {
             literal(xq.predicate, (Literal) expr.rvalue); // literal
             xq.predicate.append(")) ");
         } else if (expr.operator == Operator.IN) {
-            inclusion(xq, expr.lvalue, expr.rvalue);
+            inclusion(xq.predicate, expr.lvalue, expr.rvalue);
         } else if (expr.operator == Operator.BETWEEN) {
             between(xq, expr.lvalue, expr.rvalue);
         } else if (expr.operator == Operator.NOTBETWEEN) {
@@ -415,12 +410,20 @@ public class XPathBuilder implements QueryConstants {
             xq.predicate.append(") ");
         } else if (expr.operator == Operator.NOTIN) {
             xq.predicate.append(" not(");
-            inclusion(xq, expr.lvalue, expr.rvalue);
+            inclusion(xq.predicate, expr.lvalue, expr.rvalue);
             xq.predicate.append(") ");
         } else if (expr.rvalue != null) { // other binary operation
-            operand(xq, expr.lvalue);
-            operator(xq.predicate, expr.operator);
-            operand(xq, expr.rvalue);
+            if (expr.lvalue instanceof Reference &&
+                    expr.rvalue instanceof Literal) {
+                LiteralFixer fixer = reference(xq.predicate,
+                        (Reference) expr.lvalue);
+                operator(xq.predicate, expr.operator);
+                operand(xq, fixer.fix((Literal) expr.rvalue));
+            } else {
+                operand(xq, expr.lvalue);
+                operator(xq.predicate, expr.operator);
+                operand(xq, expr.rvalue);
+            }
         } else { // other unary operation
             operator(xq.predicate, expr.operator);
             xq.predicate.append(" (");
@@ -462,8 +465,8 @@ public class XPathBuilder implements QueryConstants {
             // xs:date seems to not be correctly handled in jackrabbit .
             // see
             // https://issues.apache.org/jira/browse/JCR-1386?page=com.atlassian.jira.plugin.system.issuetabpanels:all-tabpanel
-            buf.append("xs:dateTime('"
-                    + DateLiteral.dateTime((DateLiteral) literal) + "')");
+            buf.append("xs:dateTime('" +
+                    DateLiteral.dateTime((DateLiteral) literal) + "')");
         } else {
             buf.append(literal.asString());
         }
@@ -473,7 +476,29 @@ public class XPathBuilder implements QueryConstants {
         buf.append(function.toString()); // TODO: expand fucntion args too
     }
 
-    static void reference(StringBuilder buf, Reference ref) {
+    public static interface LiteralFixer {
+        public Literal fix(Literal literal);
+    }
+
+    public static class IdentityFixer implements LiteralFixer {
+        public static final LiteralFixer INSTANCE = new IdentityFixer();
+
+        public Literal fix(Literal literal) {
+            return literal;
+        }
+    }
+
+    public static class TypeFixer implements LiteralFixer {
+        public static final LiteralFixer INSTANCE = new TypeFixer();
+
+        public Literal fix(Literal literal) {
+            String type = TypeAdapter.docType2Jcr(((StringLiteral) literal).value);
+            return new StringLiteral(type);
+        }
+    }
+
+    static LiteralFixer reference(StringBuilder buf, Reference ref) {
+        LiteralFixer fixer = IdentityFixer.INSTANCE;
         String name = ref.name;
         if (ref.isPathReference()) {
             int p = name.lastIndexOf('/');
@@ -483,20 +508,30 @@ public class XPathBuilder implements QueryConstants {
                 buf.append(base).append("/@").append(lastSegment);
             }
         } else {
-            if (ECM_PATH.equals(name)) {
+            if (NXQL.ECM_PATH.equals(name)) {
                 name = JcrConstants.JCR_PATH;
-            } else if (ECM_ID.equals(name)) {
+            } else if (NXQL.ECM_UUID.equals(name)) {
                 name = JcrConstants.JCR_UUID;
-            } else if ("ecm:currentLifeCycleState".equals(name)) {
+            } else if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
+                name = JcrConstants.JCR_PRIMARYTYPE;
+                fixer = TypeFixer.INSTANCE;
+            } else if (NXQL.ECM_PARENTID.equals(name)) {
+                name = NodeConstants.ECM_PARENT_ID.rawname;
+            } else if (NXQL.ECM_MIXINTYPE.equals(name)) {
+                name = NodeConstants.ECM_MIXIN_TYPE.rawname;
+            } else if (NXQL.ECM_LIFECYCLESTATE.equals(name)) {
                 name = NodeConstants.ECM_LIFECYCLE_STATE.rawname;
+            } else if (NXQL.ECM_VERSIONLABEL.equals(name)) {
+                name = NodeConstants.ECM_VERSION_LABEL.rawname;
             }
             buf.append("@").append(name);
         }
+        return fixer;
     }
 
     /**
      * LIKE path:
-     * </ul>
+     * <ul>
      * <li> if path ends with / only children
      * <li> if path ends with /% all descendants
      * <li> otherwise the last element will be the document name to find
@@ -554,8 +589,8 @@ public class XPathBuilder implements QueryConstants {
         if (segment.length() == 1 && segment.charAt(0) == '%') { // "%/..."
             buf.append("//").append(segment).append("/ecm:children/");
         } else { // "/..."
-            buf.append("/jcr:root/ecm:root/ecm:children/").append(segment)
-                    .append("/ecm:children/");
+            buf.append("/jcr:root/ecm:root/ecm:children/").append(segment).append(
+                    "/ecm:children/");
         }
         segment = path.lastSegment();
         if (segment.length() == 1 && segment.charAt(0) == '%') { // "../%"

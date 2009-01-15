@@ -27,11 +27,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
 import org.nuxeo.ecm.core.query.sql.model.DefaultQueryVisitor;
 import org.nuxeo.ecm.core.query.sql.model.DoubleLiteral;
@@ -111,8 +110,6 @@ import org.nuxeo.ecm.core.storage.sql.db.TableAlias;
  */
 public class QueryMaker {
 
-    private static final Log log = LogFactory.getLog(QueryMaker.class);
-
     /**
      * Name of the Immutable facet, added by {@code DocumentModelFactory} when
      * instantiating a proxy or a version.
@@ -122,30 +119,6 @@ public class QueryMaker {
     /*
      * Fields used by the search service.
      */
-
-    public static final String ECM_PREFIX = "ecm:";
-
-    public static final String ECM_UUID = "ecm:uuid";
-
-    public static final String ECM_PATH = "ecm:path";
-
-    public static final String ECM_NAME = "ecm:name";
-
-    public static final String ECM_PARENTID = "ecm:parentId";
-
-    public static final String ECM_MIXINTYPE = "ecm:mixinType";
-
-    public static final String ECM_PRIMARYTYPE = "ecm:primaryType";
-
-    public static final String ECM_ISPROXY = "ecm:isProxy";
-
-    public static final String ECM_ISVERSION = "ecm:isCheckedInVersion";
-
-    public static final String ECM_LIFECYCLESTATE = "ecm:currentLifeCycleState";
-
-    public static final String ECM_VERSIONLABEL = "ecm:versionLabel";
-
-    public static final String ECM_FULLTEXT = "ecm:fulltext";
 
     protected final SQLInfo sqlInfo;
 
@@ -642,11 +615,11 @@ public class QueryMaker {
                             expr.rvalue instanceof StringLiteral) {
                         String name = ((Reference) expr.lvalue).name;
                         String value = ((StringLiteral) expr.rvalue).value;
-                        if (ECM_PRIMARYTYPE.equals(name)) {
+                        if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
                             (isEq ? typesAnyRequired : typesExcluded).add(value);
                             return;
                         }
-                        if (ECM_MIXINTYPE.equals(name)) {
+                        if (NXQL.ECM_MIXINTYPE.equals(name)) {
                             if (FACET_IMMUTABLE.equals(value)) {
                                 Boolean im = Boolean.valueOf(isEq);
                                 if (immutableClause != null &&
@@ -665,9 +638,9 @@ public class QueryMaker {
                             expr.rvalue instanceof IntegerLiteral) {
                         String name = ((Reference) expr.lvalue).name;
                         long v = ((IntegerLiteral) expr.rvalue).value;
-                        if (ECM_ISPROXY.equals(name)) {
+                        if (NXQL.ECM_ISPROXY.equals(name)) {
                             if (v != 0 && v != 1) {
-                                throw new QueryMakerException(ECM_ISPROXY +
+                                throw new QueryMakerException(NXQL.ECM_ISPROXY +
                                         " requires literal 0 or 1 as right argument");
                             }
                             Boolean pr = Boolean.valueOf(v == 1);
@@ -688,12 +661,12 @@ public class QueryMaker {
                     if (expr.lvalue instanceof Reference &&
                             expr.rvalue instanceof LiteralList) {
                         String name = ((Reference) expr.lvalue).name;
-                        if (ECM_PRIMARYTYPE.equals(name)) {
+                        if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
                             Set<String> set = new HashSet<String>();
                             for (Literal literal : (LiteralList) expr.rvalue) {
                                 if (!(literal instanceof StringLiteral)) {
                                     throw new QueryMakerException(
-                                            ECM_PRIMARYTYPE +
+                                            NXQL.ECM_PRIMARYTYPE +
                                                     " IN requires string literals");
                                 }
                                 set.add(((StringLiteral) literal).value);
@@ -714,12 +687,12 @@ public class QueryMaker {
                             }
                             return;
                         }
-                        if (ECM_MIXINTYPE.equals(name)) {
+                        if (NXQL.ECM_MIXINTYPE.equals(name)) {
                             Set<String> set = new HashSet<String>();
                             for (Literal literal : (LiteralList) expr.rvalue) {
                                 if (!(literal instanceof StringLiteral)) {
                                     throw new QueryMakerException(
-                                            ECM_MIXINTYPE +
+                                            NXQL.ECM_MIXINTYPE +
                                                     " IN requires string literals");
                                 }
                                 String value = ((StringLiteral) literal).value;
@@ -740,7 +713,7 @@ public class QueryMaker {
                                     mixinsAnyRequired.addAll(set);
                                 } else {
                                     throw new QueryMakerException(
-                                            ECM_MIXINTYPE +
+                                            NXQL.ECM_MIXINTYPE +
                                                     " cannot have more than one IN clause");
                                 }
                             } else {
@@ -757,47 +730,47 @@ public class QueryMaker {
         @Override
         public void visitReference(Reference node) {
             String name = node.name;
-            if (ECM_PATH.equals(name)) {
+            if (NXQL.ECM_PATH.equals(name)) {
                 if (inOrderBy) {
                     throw new QueryMakerException("Cannot order by: " + name);
                 }
                 return;
             }
-            if (ECM_ISPROXY.equals(name)) {
+            if (NXQL.ECM_ISPROXY.equals(name)) {
                 if (inOrderBy) {
                     throw new QueryMakerException("Cannot order by: " + name);
                 }
                 return;
             }
-            if (ECM_ISVERSION.equals(name)) {
+            if (NXQL.ECM_ISVERSION.equals(name)) {
                 if (inOrderBy) {
                     throw new QueryMakerException("Cannot order by: " + name);
                 }
                 needsVersionsTable = true;
                 return;
             }
-            if (ECM_PRIMARYTYPE.equals(name) || //
-                    ECM_MIXINTYPE.equals(name) || //
-                    ECM_UUID.equals(name) || //
-                    ECM_NAME.equals(name) || //
-                    ECM_PARENTID.equals(name)) {
+            if (NXQL.ECM_PRIMARYTYPE.equals(name) || //
+                    NXQL.ECM_MIXINTYPE.equals(name) || //
+                    NXQL.ECM_UUID.equals(name) || //
+                    NXQL.ECM_NAME.equals(name) || //
+                    NXQL.ECM_PARENTID.equals(name)) {
                 return;
             }
-            if (ECM_LIFECYCLESTATE.equals(name)) {
+            if (NXQL.ECM_LIFECYCLESTATE.equals(name)) {
                 props.add(model.MISC_LIFECYCLE_STATE_PROP);
                 return;
             }
-            if (ECM_VERSIONLABEL.equals(name)) {
+            if (NXQL.ECM_VERSIONLABEL.equals(name)) {
                 props.add(model.VERSION_LABEL_PROP);
                 return;
             }
-            if (ECM_FULLTEXT.equals(name)) {
+            if (NXQL.ECM_FULLTEXT.equals(name)) {
                 if (sqlInfo.dialect.isFulltextTableNeeded()) {
                     props.add(model.FULLTEXT_FULLTEXT_PROP);
                 }
                 return;
             }
-            if (name.startsWith(ECM_PREFIX)) {
+            if (name.startsWith(NXQL.ECM_PREFIX)) {
                 throw new QueryMakerException("Unknown field: " + name);
             }
 
@@ -870,20 +843,20 @@ public class QueryMaker {
                     : null;
             Operator op = node.operator;
             if (op == Operator.STARTSWITH) {
-                if (!ECM_PATH.equals(name)) {
+                if (!NXQL.ECM_PATH.equals(name)) {
                     throw new QueryMakerException("STARTSWITH requires " +
-                            ECM_PATH + "as left argument");
+                            NXQL.ECM_PATH + "as left argument");
                 }
                 visitExpressionStartsWith(node);
-            } else if (ECM_ISPROXY.equals(name)) {
+            } else if (NXQL.ECM_ISPROXY.equals(name)) {
                 visitExpressionIsProxy(node);
-            } else if (ECM_ISVERSION.equals(name)) {
+            } else if (NXQL.ECM_ISVERSION.equals(name)) {
                 visitExpressionIsVersion(node);
-            } else if (ECM_FULLTEXT.equals(name)) {
+            } else if (NXQL.ECM_FULLTEXT.equals(name)) {
                 visitExpressionFulltext(node);
             } else if ((op == Operator.EQ || op == Operator.NOTEQ ||
                     op == Operator.IN || op == Operator.NOTIN) &&
-                    name != null && !name.startsWith(ECM_PREFIX)) {
+                    name != null && !name.startsWith(NXQL.ECM_PREFIX)) {
                 PropertyInfo propertyInfo = model.getPropertyInfo(name);
                 if (propertyInfo == null) {
                     throw new QueryMakerException("Unknown field: " + name);
@@ -948,16 +921,16 @@ public class QueryMaker {
 
         protected void visitExpressionIsProxy(Expression node) {
             if (node.operator != Operator.EQ && node.operator != Operator.NOTEQ) {
-                throw new QueryMakerException(ECM_ISPROXY +
+                throw new QueryMakerException(NXQL.ECM_ISPROXY +
                         " requires = or <> operator");
             }
             if (!(node.rvalue instanceof IntegerLiteral)) {
-                throw new QueryMakerException(ECM_ISPROXY +
+                throw new QueryMakerException(NXQL.ECM_ISPROXY +
                         " requires literal 0 or 1 as right argument");
             }
             long v = ((IntegerLiteral) node.rvalue).value;
             if (v != 0 && v != 1) {
-                throw new QueryMakerException(ECM_ISPROXY +
+                throw new QueryMakerException(NXQL.ECM_ISPROXY +
                         " requires literal 0 or 1 as right argument");
             }
             boolean bool = node.operator == Operator.EQ ^ v == 0;
@@ -973,16 +946,16 @@ public class QueryMaker {
 
         protected void visitExpressionIsVersion(Expression node) {
             if (node.operator != Operator.EQ && node.operator != Operator.NOTEQ) {
-                throw new QueryMakerException(ECM_ISVERSION +
+                throw new QueryMakerException(NXQL.ECM_ISVERSION +
                         " requires = or <> operator");
             }
             if (!(node.rvalue instanceof IntegerLiteral)) {
-                throw new QueryMakerException(ECM_ISVERSION +
+                throw new QueryMakerException(NXQL.ECM_ISVERSION +
                         " requires literal 0 or 1 as right argument");
             }
             long v = ((IntegerLiteral) node.rvalue).value;
             if (v != 0 && v != 1) {
-                throw new QueryMakerException(ECM_ISVERSION +
+                throw new QueryMakerException(NXQL.ECM_ISVERSION +
                         " requires literal 0 or 1 as right argument");
             }
             boolean bool = node.operator == Operator.EQ ^ v == 0;
@@ -993,11 +966,11 @@ public class QueryMaker {
 
         protected void visitExpressionFulltext(Expression node) {
             if (node.operator != Operator.EQ && node.operator != Operator.LIKE) {
-                throw new QueryMakerException(ECM_FULLTEXT +
+                throw new QueryMakerException(NXQL.ECM_FULLTEXT +
                         " requires = or LIKE operator");
             }
             if (!(node.rvalue instanceof StringLiteral)) {
-                throw new QueryMakerException(ECM_FULLTEXT +
+                throw new QueryMakerException(NXQL.ECM_FULLTEXT +
                         " requires literal string as right argument");
             }
             String fulltextQuery = ((StringLiteral) node.rvalue).value;
@@ -1052,7 +1025,7 @@ public class QueryMaker {
         public void visitReference(Reference node) {
             String name = node.name;
             Column column;
-            if (name.startsWith(ECM_PREFIX)) {
+            if (name.startsWith(NXQL.ECM_PREFIX)) {
                 column = getSpecialColumn(name);
             } else {
                 PropertyInfo propertyInfo = model.getPropertyInfo(name);
@@ -1084,32 +1057,32 @@ public class QueryMaker {
         }
 
         protected Column getSpecialColumn(String name) {
-            if (ECM_PRIMARYTYPE.equals(name)) {
+            if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
                 return joinedHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
             }
-            if (ECM_MIXINTYPE.equals(name)) {
+            if (NXQL.ECM_MIXINTYPE.equals(name)) {
                 // toplevel ones have been extracted by the analyzer
                 throw new QueryMakerException("Cannot use non-toplevel " +
                         name + " in query");
             }
-            if (ECM_UUID.equals(name)) {
+            if (NXQL.ECM_UUID.equals(name)) {
                 return hierTable.getColumn(model.MAIN_KEY);
             }
-            if (ECM_NAME.equals(name)) {
+            if (NXQL.ECM_NAME.equals(name)) {
                 return hierTable.getColumn(model.HIER_CHILD_NAME_KEY);
             }
-            if (ECM_PARENTID.equals(name)) {
+            if (NXQL.ECM_PARENTID.equals(name)) {
                 return hierTable.getColumn(model.HIER_PARENT_KEY);
             }
-            if (ECM_LIFECYCLESTATE.equals(name)) {
+            if (NXQL.ECM_LIFECYCLESTATE.equals(name)) {
                 return database.getTable(model.MISC_TABLE_NAME).getColumn(
                         model.MISC_LIFECYCLE_STATE_KEY);
             }
-            if (ECM_FULLTEXT.equals(name)) {
-                throw new QueryMakerException(ECM_FULLTEXT +
+            if (NXQL.ECM_FULLTEXT.equals(name)) {
+                throw new QueryMakerException(NXQL.ECM_FULLTEXT +
                         " must be used as left-hand operand");
             }
-            if (ECM_VERSIONLABEL.equals(name)) {
+            if (NXQL.ECM_VERSIONLABEL.equals(name)) {
                 return database.getTable(model.VERSION_TABLE_NAME).getColumn(
                         model.VERSION_LABEL_KEY);
             }

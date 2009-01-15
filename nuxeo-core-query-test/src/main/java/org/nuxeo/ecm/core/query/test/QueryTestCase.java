@@ -22,11 +22,11 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.Collection;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -268,7 +268,6 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(3, dml.size());
     }
 
-    // this is disabled for JCR
     public void testQueryMultiple() throws Exception {
         DocumentModelList dml;
         createDocs();
@@ -287,12 +286,20 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(5, dml.size());
         dml = session.query("SELECT * FROM Document WHERE dc:contributors NOT IN ('bob', 'john')");
         assertEquals(5, dml.size());
+    }
+
+    // this is disabled for JCR
+    public void testQueryNegativeMultiple() throws Exception {
+        DocumentModelList dml;
+        createDocs();
         dml = session.query("SELECT * FROM Document WHERE dc:contributors <> 'pete'");
         assertEquals(6, dml.size());
         dml = session.query("SELECT * FROM Document WHERE dc:contributors <> 'blah'");
         assertEquals(7, dml.size());
         dml = session.query("SELECT * FROM File WHERE dc:contributors <> 'blah' AND ecm:isProxy = 0");
         assertEquals(3, dml.size());
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Versionable' AND ecm:mixinType <> 'Downloadable'");
+        assertEquals(1, dml.size()); // 1 note
     }
 
     public void testQueryAfterEdit() throws ClientException, IOException {
@@ -619,7 +626,6 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(1, dml.size());
     }
 
-    // this is disabled for JCR
     public void testQuerySpecialFields() throws Exception {
         // ecm:isProxy and ecm:isCheckedInVersion are already tested in
         // testQueryWithProxies
@@ -658,9 +664,10 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         dml = session.query(String.format(
                 "SELECT * FROM Document WHERE ecm:name = '%s'", file1.getName()));
         assertIdSet(dml, file1.getId());
-        dml = session.query(String.format(
-                "SELECT * FROM Document WHERE ecm:name = '%s'", file4.getName()));
-        assertIdSet(dml, file4.getId(), proxy.getId(), version.getId());
+        // Disabled, version and proxies names don't need to be identical
+        // dml = session.query(String.format(
+        // "SELECT * FROM Document WHERE ecm:name = '%s'", file4.getName()));
+        // assertIdSet(dml, file4.getId(), proxy.getId(), version.getId());
 
         /*
          * ecm:parentId
@@ -693,14 +700,10 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
 
         dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Folderish'");
         assertEquals(3, dml.size());
-        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Folderish' AND ecm:mixinType <> 'blah'");
-        assertEquals(3, dml.size());
         dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Downloadable'");
         assertEquals(5, dml.size()); // 3 files, 1 proxy, 1 version
         dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Versionable'");
         assertEquals(6, dml.size()); // 1 note, 3 files, 1 proxy, 1 version
-        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Versionable' AND ecm:mixinType <> 'Downloadable'");
-        assertEquals(1, dml.size()); // 1 note
         dml = session.query("SELECT * FROM Document WHERE ecm:mixinType IN ('Folderish', 'Downloadable')");
         assertEquals(8, dml.size()); // 3 folders, 3 files, 1 proxy, 1 version
         dml = session.query("SELECT * FROM Document WHERE ecm:mixinType NOT IN ('Folderish', 'Downloadable')");
