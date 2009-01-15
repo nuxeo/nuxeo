@@ -169,6 +169,29 @@ startd() {
     return $?
 }
 
+waitstopped() {
+    for i in 1 2 3 4 5 6 7 8 9 10; do
+        if status check_dead nowarn; then
+            return 0
+        fi
+        sleep 1
+        $ECHO -n "."
+    done
+    return 1
+}
+
+waitstoppedlog() {
+    echo "Waiting for server to stop..."
+    while true; do
+        case `tail -n 1 "$LOG"` in
+            "Shutdown complete"|"Halting VM")
+                echo "Server stopped."
+                return 0
+        esac
+        sleep 1 || return 1 # Ctrl-C interrupt
+    done
+}
+
 stop() {
     if ! status check_alive warn; then
         return 0 # success
@@ -181,38 +204,30 @@ stop() {
     else
         $SU "$CMD_STOP"
     fi
-    for i in 1 2 3 4 5 6 7 8 9 10; do
-        sleep 1
-        if status check_dead nowarn; then
-            break;
+    if ! waitstopped; then
+        $ECHO -n "SIGTERM"
+        cmd="kill -15 $JBOSS_PID"
+        if [ -z "$SU" ]; then
+            eval $cmd
+        else
+            $SU "$cmd"
         fi
-        $ECHO -n "."
-    done
-    if status check_alive nowarn; then
-        #kill it
-        $ECHO -n " SIGKILL"
+    fi
+    if ! waitstopped; then
+        $ECHO -n "SIGKILL"
         cmd="kill -9 $JBOSS_PID"
         if [ -z "$SU" ]; then
             eval $cmd
         else
             $SU "$cmd"
         fi
-        wait $JBOSS_PID || waitstopped
+    fi
+    if ! waitstopped; then
+        echo "ERROR unable to stop $JBOSS_PID."
+        return 1
     fi
     echo " done."
     return 0
-}
-
-waitstopped() {
-    echo "Waiting for server to stop..."
-    while true; do
-        case `tail -n 1 "$LOG"` in
-            "Shutdown complete"|"Halting VM")
-                echo "Server stopped."
-                return 0
-        esac
-        sleep 1 || return 1 # Ctrl-C interrupt
-    done
 }
 
 
@@ -233,12 +248,10 @@ case "$1" in
         fi
         ;;
     stop)
-        stop
-        # stop && waitstopped
+        stop || exit 1
         ;;
     restart)
         stop
-        # stop && waitstopped
         sleep 5
         start
         ;;
