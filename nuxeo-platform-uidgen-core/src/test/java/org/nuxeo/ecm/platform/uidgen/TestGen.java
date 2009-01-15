@@ -48,7 +48,9 @@ public class TestGen extends NXRuntimeTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core"); // for dublincore
-
+        deployBundle("org.nuxeo.ecm.core.event");
+        deployBundle("org.nuxeo.ecm.core.event.compat");
+        
         deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests", "test-uid-CoreExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests", "nxuidgenerator-bundle.xml");
         deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests", "nxuidgenerator-bundle-contrib.xml");

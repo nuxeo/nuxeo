@@ -52,7 +52,9 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core"); // for dublincore
+        deployBundle("org.nuxeo.ecm.core.event.compat");
         // define geide schema
         SchemaImpl sch = new SchemaImpl("geide");
         sch.addField(QName.valueOf("application_emetteur"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));

@@ -78,6 +78,9 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
                 "nxdublincore-bundle.xml");
 
+        deployBundle("org.nuxeo.ecm.core.event");
+        deployBundle("org.nuxeo.ecm.core.event.compat");
+        
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         context.put("username", "Administrator");
         remote = CoreInstance.getInstance().open("demo", context);
