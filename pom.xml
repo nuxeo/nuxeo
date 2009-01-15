@@ -280,12 +280,6 @@
         <artifactId>jackrabbit-text-extractors</artifactId>
         <version>1.5.0</version>
         <scope>provided</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>poi</groupId>
-            <artifactId>poi</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.shared</groupId>
@@ -697,6 +691,29 @@
         <groupId>pdfbox</groupId>
         <artifactId>pdfbox</artifactId>
         <version>0.7.3</version>
+        <scope>provided</scope>
+        <exclusions>
+          <!-- jackrabbit-text-extractors excludes those -->
+          <exclusion>
+            <groupId>bouncycastle</groupId>
+            <artifactId>bcmail-jdk14</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>bouncycastle</groupId>
+            <artifactId>bcprov-jdk14</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.fontbox</groupId>
+        <artifactId>fontbox</artifactId>
+        <version>0.1.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jempbox</groupId>
+        <artifactId>jempbox</artifactId>
+        <version>0.2.0</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
