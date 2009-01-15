@@ -2,7 +2,7 @@
 <process-definition name="review_parallel">
 	<swimlane name="initiator"/>
 	<start-state name="start state">
-	  <task swimlane="initiator"/>
+	  <task swimlane="initiator" name="start"/>
 		<transition name="start process" to="choose participants node" />
 	</start-state>
 	<task-node name="choose participants node">
