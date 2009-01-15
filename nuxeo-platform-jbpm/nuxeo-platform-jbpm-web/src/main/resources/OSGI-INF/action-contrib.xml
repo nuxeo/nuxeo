@@ -8,7 +8,7 @@
 			<category>VIEW_ACTION_LIST</category>
 			<filter id="jbpm-process">
 				<rule grant="true">
-					<permission>read</permission>
+					<permission>Read</permission>
 					<type>File</type>
 					<type>Note</type>
 				</rule>
