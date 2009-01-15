@@ -48,14 +48,12 @@ public class EventServiceImpl implements EventService {
 
     protected ListenerList listeners;
     protected ListenerList postCommitListeners;
-    protected AssocMap eventDups;
 
 
     public EventServiceImpl() {
         EntryComparator cmp = new EntryComparator();
         this.listeners = new ListenerList(cmp);
         this.postCommitListeners = new ListenerList(cmp);
-        eventDups = new AssocMap();
     }
 
     public void addEventListener(EventListenerDescriptor listener) {

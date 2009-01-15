@@ -311,6 +311,7 @@ public abstract class AbstractSession implements CoreSession,
         ctx.setProperty(CoreEventConstants.SESSION_ID, sessionId);
         return ctx;
     }
+
     
     public EventService getEventService() {
         if (eventService == null) {
@@ -327,6 +328,7 @@ public abstract class AbstractSession implements CoreSession,
         getEventService().fireEvent(event);
     }
     
+    @SuppressWarnings("unchecked")
     protected void notifyEvent(String eventId, DocumentModel source,
             Map<String, ?> options, String category, String comment,
             boolean withLifeCycle) throws ClientException {
@@ -338,9 +340,11 @@ public abstract class AbstractSession implements CoreSession,
             ctx = newEventContext();
         }
         // compatibility with old code (< 5.2.M4) - import info from old event model
-        if (options != null && !options.isEmpty()) {
+        if (options != null) {
             ctx.setProperties((Map<String,Serializable>)options);
         }
+        ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, repositoryName);
+        ctx.setProperty(CoreEventConstants.SESSION_ID, sessionId);
         // Document life cycle
         if (source != null && withLifeCycle) {
             String currentLifeCycleState = null;

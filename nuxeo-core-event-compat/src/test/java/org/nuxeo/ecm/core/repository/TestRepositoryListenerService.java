@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.CoreTestConstants;
 import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.listener.CoreEventListenerService;
 import org.nuxeo.ecm.core.listener.EventListener;
@@ -44,11 +43,9 @@ public class TestRepositoryListenerService extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib(CoreTestConstants.CORE_BUNDLE,
-                "OSGI-INF/RepositoryService.xml");
-        deployContrib(CoreTestConstants.CORE_BUNDLE,
-                "OSGI-INF/CoreEventListenerService.xml");
-        deployContrib(CoreTestConstants.CORE_TESTS_BUNDLE,
+        deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.event.compat");
+        deployTestContrib("org.nuxeo.ecm.core.event.compat",
                 "CoreEventListenerTestExtensions.xml");
 
         repositoryListenerService = Framework.getLocalService(CoreEventListenerService.class);
