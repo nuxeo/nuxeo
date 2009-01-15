@@ -5,7 +5,7 @@
 
 	<extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
 	           point="lifecycle">
-		<lifecycle name="defaultReverse" initial="work">
+		<lifecycle name="defaultReverse" defaultInitial="work">
 			<states>
 			  <state name="work">
 			  	<transitions>
