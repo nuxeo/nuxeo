@@ -111,6 +111,7 @@ import org.nuxeo.ecm.webengine.model.*;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+
 @WebModule(name="sample4")
 @Path("/sample4")
 @Produces(["text/html", "*/*"])

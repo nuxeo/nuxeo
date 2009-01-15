@@ -13,7 +13,7 @@ import org.nuxeo.ecm.core.api.*;
 
 @WebModule(name="wiki", facets = ["mainWiki"], base="base")
 @Path("/wikis")
-@Produces(["text/html; charset=UTF-8", "*/*; charset=UTF-8"])
+@Produces(["text/html; charset=UTF-8"])
 public class Main extends DocumentModule {
 
   public Main() {

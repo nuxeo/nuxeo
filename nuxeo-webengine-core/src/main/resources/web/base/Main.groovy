@@ -12,7 +12,7 @@ import org.nuxeo.ecm.core.api.*;
 
 @WebModule(name="base")
 @Path("/")
-@Produces(["text/html; charset=UTF-8", "*/*; charset=UTF-8"])
+@Produces(["text/html; charset=UTF-8"])
 public class Main extends DefaultModule {
     
   @GET

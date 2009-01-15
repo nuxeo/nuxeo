@@ -8,6 +8,7 @@ import org.nuxeo.ecm.webengine.model.impl.*;
 import org.nuxeo.ecm.webengine.model.exceptions.*;
 import org.nuxeo.ecm.webengine.*;
 
+
 /**
  * Web Module Main Resource Sample.
  * <p>
