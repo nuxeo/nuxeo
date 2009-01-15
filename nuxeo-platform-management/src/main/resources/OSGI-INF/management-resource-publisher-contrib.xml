@@ -1,0 +1,36 @@
+<component
+  name="org.nuxeo.ecm.platform.management.core.service.ResourcePublisherContrib">
+
+  <require>org.nuxeo.runtime.management.ResourcePublisher
+  </require>
+
+  <extension target="org.nuxeo.runtime.management.ResourcePublisher"
+    point="factories">
+
+    <resource class="org.nuxeo.webengine.WebEngine" ifaceClass="org.nuxeo.webengine.WebEngineMBean" />
+    <factory name="httpSessionMetric"
+      class="org.nuxeo.ecm.platform.management.core.adapters.HttpSessionMetricFactory" />
+
+    <factory name="inventory"
+      class="org.nuxeo.ecm.platform.management.core.adapters.RuntimeInventoryFactory" />
+
+
+    <factory name="repositorySessionMetric"
+      class="org.nuxeo.ecm.platform.management.core.adapters.RepositorySessionMetricFactory" />
+
+  </extension>
+
+
+
+  <require>org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService</require>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="sessionManager">
+
+    <sessionManager name="management" enabled="true"
+      class="org.nuxeo.ecm.platform.management.core.adapters.HttpSessionMetricFactory$SessionManager" />
+
+  </extension>
+
+</component>

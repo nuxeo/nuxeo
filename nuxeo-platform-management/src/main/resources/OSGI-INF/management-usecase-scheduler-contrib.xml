@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.platform.management.core.service.UsecaseSchedulerContrib">
+
+  
+  <require>
+    org.nuxeo.ecm.platform.management.core.service.UsecaseScheduler
+  </require>
+
+  <extension
+    target="org.nuxeo.ecm.platform.management.core.service.UsecaseScheduler"
+    point="usecases">
+    <usecase name="repository"
+      class="org.nuxeo.ecm.platform.management.core.usecases.RepositoryUsecase"
+      serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
+  </extension>
+  
+</component>

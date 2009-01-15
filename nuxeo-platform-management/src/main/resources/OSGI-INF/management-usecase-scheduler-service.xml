@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.platform.management.usecases.UsecaseScheduler">
+
+  <implementation
+    class="org.nuxeo.ecm.platform.management.usecases.UsecaseSchedulerService" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.management.usecases.UsecaseScheduler" />
+  </service>
+
+  <require>
+    org.nuxeo.ecm.platform.scheduler.service.SchedulerRegistryService
+  </require>
+
+  <require>org.nuxeo.runtime.management.ResourcePublisher</require>
+
+  <extension-point name="usecases">
+    <object class="org.nuxeo.ecm.platform.management.usecases.UsecaseDescriptor" />
+  </extension-point>
+  
+</component>
