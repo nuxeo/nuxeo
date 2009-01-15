@@ -38,6 +38,7 @@ import org.nuxeo.ecm.platform.jbpm.JbpmService;
  *
  */
 public class HibernateQueriesTest extends TestCase {
+
     private static final String DEMO = "demo";
 
     private static final String _1 = "1";

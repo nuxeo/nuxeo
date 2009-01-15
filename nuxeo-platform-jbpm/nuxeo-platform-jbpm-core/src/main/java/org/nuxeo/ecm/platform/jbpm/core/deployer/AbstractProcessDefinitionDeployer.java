@@ -23,7 +23,7 @@ import java.net.URL;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- * 
+ *
  */
 public abstract class AbstractProcessDefinitionDeployer implements
         ProcessDefinitionDeployer {

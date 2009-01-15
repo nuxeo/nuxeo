@@ -41,6 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 @Name("org.nuxeo.ecm.platform.jbpm.web.JbpmHelper")
 @Scope(ScopeType.STATELESS)
 public class JbpmHelper {
+
     private transient JbpmService jbpmService;
 
     public JbpmService getJbpmService() throws Exception {
@@ -53,7 +54,8 @@ public class JbpmHelper {
     public String createProcessInstance(NuxeoPrincipal principal, String pd,
             DocumentModel dm, String endLifeCycle) throws Exception {
         Map<String, Serializable> map = null;
-        if (endLifeCycle != null && !endLifeCycle.equals("") && !"null".equals(endLifeCycle)) {
+        if (endLifeCycle != null && !endLifeCycle.equals("")
+                && !"null".equals(endLifeCycle)) {
             map = new HashMap<String, Serializable>();
             map.put(JbpmService.VariableName.endLifecycle.name(), endLifeCycle);
         }
@@ -81,8 +83,8 @@ public class JbpmHelper {
     @SuppressWarnings("unchecked")
     public boolean processHasRunningTask(ProcessInstance pi, String taskName) {
         Collection<TaskInstance> tis = pi.getTaskMgmtInstance().getTaskInstances();
-        for(TaskInstance ti : tis) {
-            if(!ti.hasEnded() && ti.getName().equals(taskName)) {
+        for (TaskInstance ti : tis) {
+            if (!ti.hasEnded() && ti.getName().equals(taskName)) {
                 return true;
             }
         }

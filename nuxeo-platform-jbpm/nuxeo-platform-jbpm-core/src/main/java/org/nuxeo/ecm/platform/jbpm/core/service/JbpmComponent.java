@@ -46,6 +46,7 @@ import org.osgi.framework.FrameworkListener;
  */
 public class JbpmComponent extends DefaultComponent implements
         FrameworkListener {
+
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.jbpm.core.JbpmService");
 

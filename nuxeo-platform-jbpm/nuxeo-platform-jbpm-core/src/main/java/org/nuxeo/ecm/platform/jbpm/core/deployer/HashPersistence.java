@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.jbpm.core.deployer;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- * 
+ *
  */
 public class HashPersistence {
 

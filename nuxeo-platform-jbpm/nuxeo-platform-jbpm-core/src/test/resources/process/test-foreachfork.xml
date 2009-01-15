@@ -14,10 +14,10 @@
     <task name="validate">
       <assignment actor-id="participant.name" />
     </task>
-    <transition to="participants join"/>
+    <transition to="participants join" />
   </task-node>
   <join name="participants join">
     <transition to="end" />
   </join>
-  <end-state name="end"/>
+  <end-state name="end" />
 </process-definition>

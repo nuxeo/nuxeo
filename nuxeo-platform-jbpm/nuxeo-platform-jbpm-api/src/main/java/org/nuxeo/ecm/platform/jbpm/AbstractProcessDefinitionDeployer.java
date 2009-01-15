@@ -37,23 +37,27 @@ public abstract class AbstractProcessDefinitionDeployer implements
 
     public void deploy(final URL url) throws Exception {
         JbpmService service = Framework.getService(JbpmService.class);
-        service.executeJbpmOperation(new JbpmOperation(){
-            public Serializable run(JbpmContext context) throws NuxeoJbpmException {
+        service.executeJbpmOperation(new JbpmOperation() {
+            public Serializable run(JbpmContext context)
+                    throws NuxeoJbpmException {
                 InputStream is;
                 try {
                     is = url.openStream();
                 } catch (IOException e) {
-                    throw new NuxeoJbpmException("Error opening process definition url.", e);
+                    throw new NuxeoJbpmException(
+                            "Error opening process definition url.", e);
                 }
                 ProcessDefinition pd = ProcessDefinition.parseXmlInputStream(is);
                 context.deployProcessDefinition(pd);
                 try {
                     is.close();
                 } catch (IOException e) {
-                    throw new NuxeoJbpmException("Error cloising process definition url.", e);
+                    throw new NuxeoJbpmException(
+                            "Error cloising process definition url.", e);
                 }
                 return null;
-            }});
+            }
+        });
     }
 
     public boolean isDeployable(URL url) throws Exception {

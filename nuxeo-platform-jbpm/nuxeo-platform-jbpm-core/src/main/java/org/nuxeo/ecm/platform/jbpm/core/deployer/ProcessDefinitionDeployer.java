@@ -23,9 +23,10 @@ import java.net.URL;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- * 
+ *
  */
 public interface ProcessDefinitionDeployer {
+
     void deploy(URL url) throws Exception;
 
     boolean isDeployable(URL url) throws Exception;

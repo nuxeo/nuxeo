@@ -33,8 +33,8 @@ public class ValidationReviewTest extends AbstractProcessDefinitionTest {
     /*
      * (non-Javadoc)
      *
-     * @seeorg.nuxeo.ecm.platform.jbpm.core.pd.AbstractProcessDefinitionTest#
-     * getProcessDefinitionResource()
+     * @see org.nuxeo.ecm.platform.jbpm.core.pd.AbstractProcessDefinitionTest#
+     *      getProcessDefinitionResource()
      */
     @Override
     public String getProcessDefinitionResource() {

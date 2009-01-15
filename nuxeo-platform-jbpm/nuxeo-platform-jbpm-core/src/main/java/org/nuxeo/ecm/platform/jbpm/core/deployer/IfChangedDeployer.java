@@ -36,10 +36,11 @@ import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- * 
+ *
  */
 public class IfChangedDeployer extends AbstractProcessDefinitionDeployer
         implements ProcessDefinitionDeployer {
+
     private final MD5Hasher hasher;
 
     private final HashPersistence persistence;

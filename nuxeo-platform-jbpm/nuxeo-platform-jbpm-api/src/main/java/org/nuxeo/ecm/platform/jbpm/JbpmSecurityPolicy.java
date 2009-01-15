@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  *
  */
 public interface JbpmSecurityPolicy {
+
     enum Action {
         read, write, execute
     };
@@ -32,26 +33,36 @@ public interface JbpmSecurityPolicy {
     /**
      * check the permission on a transition.
      * <dl>
-     *   <dt>read</dt><dd>Read a transition.</dd>
-     *   <dt>execute</dt><dd>Take a transition.</dd>
+     * <dt>read</dt>
+     * <dd>Read a transition.</dd>
+     * <dt>execute</dt>
+     * <dd>Take a transition.</dd>
      * </dl>
+     *
      * @param transition the transition.
      * @param action the action.
-     * @param dm the attached document, <code>null</code> if no document is attached to the process.
+     * @param dm the attached document, <code>null</code> if no document is
+     *            attached to the process.
      * @return if the permission is granted, <code>null</code> if unknown.
      */
-    Boolean checkPermission(Transition transition, Action action, DocumentModel dm);
+    Boolean checkPermission(Transition transition, Action action,
+            DocumentModel dm);
 
     /**
      * check the permission on a process instance.
      * <dl>
-     *   <dt>read</dt><dd>Read a process definition.</dd>
-     *   <dt>execute</dt><dd>Create a process instance from this definition.</dd>
+     * <dt>read</dt>
+     * <dd>Read a process definition.</dd>
+     * <dt>execute</dt>
+     * <dd>Create a process instance from this definition.</dd>
      * </dl>
+     *
      * @param processDefinition
      * @param action
-     * @param dm the attached document, <code>null</code> if no document is attache to the process.
+     * @param dm the attached document, <code>null</code> if no document is
+     *            attache to the process.
      * @return if the permission is granted, <code>null</code> if unknow.
      */
-    Boolean checkPermission(ProcessDefinition processDefinition, Action action, DocumentModel dm);
+    Boolean checkPermission(ProcessDefinition processDefinition, Action action,
+            DocumentModel dm);
 }

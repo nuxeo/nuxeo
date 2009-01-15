@@ -173,8 +173,8 @@ public interface JbpmService {
 
     /**
      * Return a list of available Process Definition Name available for this
-     * document and user. All process definition if dm is <code>null</code>. The
-     * returned process definition is always the latest.
+     * document and user. All process definition if dm is <code>null</code>.
+     * The returned process definition is always the latest.
      *
      * @param user the caller.
      * @param dm the document concerned by the process
@@ -227,8 +227,8 @@ public interface JbpmService {
      * @return
      * @throws NuxeoJbpmException
      */
-    List<TaskInstance> getTaskInstances(DocumentModel dm, NuxeoPrincipal user, JbpmListFilter jbpmListFilter)
-            throws NuxeoJbpmException;
+    List<TaskInstance> getTaskInstances(DocumentModel dm, NuxeoPrincipal user,
+            JbpmListFilter jbpmListFilter) throws NuxeoJbpmException;
 
     /**
      * Return the list of process instances associated with this document.
@@ -239,5 +239,6 @@ public interface JbpmService {
      * @throws NuxeoJbpmException
      */
     List<ProcessInstance> getProcessInstances(DocumentModel dm,
-            NuxeoPrincipal user, JbpmListFilter jbpmListFilter) throws NuxeoJbpmException;
+            NuxeoPrincipal user, JbpmListFilter jbpmListFilter)
+            throws NuxeoJbpmException;
 }

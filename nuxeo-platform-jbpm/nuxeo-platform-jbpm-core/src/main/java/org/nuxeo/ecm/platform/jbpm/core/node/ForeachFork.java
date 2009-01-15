@@ -27,6 +27,7 @@ import org.jbpm.graph.exe.Token;
  *
  */
 public class ForeachFork implements ActionHandler {
+
     private String list;
 
     private String var;

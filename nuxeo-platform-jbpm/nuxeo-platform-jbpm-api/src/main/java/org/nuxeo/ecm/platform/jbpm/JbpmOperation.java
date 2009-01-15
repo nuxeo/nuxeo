@@ -25,5 +25,6 @@ import org.jbpm.JbpmContext;
  *
  */
 public interface JbpmOperation {
+
     Serializable run(JbpmContext context) throws NuxeoJbpmException;
 }

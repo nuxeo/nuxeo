@@ -1,5 +1,5 @@
 <foo>
-<!-- a comment -->
+  <!-- a comment -->
   <bar />
   <!-- another comment -->
 </foo>

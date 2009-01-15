@@ -28,5 +28,8 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  *
  */
 public interface JbpmListFilter extends Serializable {
-    <T> ArrayList<T> filter(JbpmContext jbpmContext, DocumentModel document, ArrayList<T> list, NuxeoPrincipal principal);
+
+    <T> ArrayList<T> filter(JbpmContext jbpmContext, DocumentModel document,
+            ArrayList<T> list, NuxeoPrincipal principal);
+
 }

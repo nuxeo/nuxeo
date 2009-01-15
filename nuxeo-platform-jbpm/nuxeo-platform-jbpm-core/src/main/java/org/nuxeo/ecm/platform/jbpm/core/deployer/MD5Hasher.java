@@ -49,9 +49,10 @@ import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- * 
+ *
  */
 public class MD5Hasher {
+
     private final DocumentBuilder builder;
 
     private final Transformer transformer;

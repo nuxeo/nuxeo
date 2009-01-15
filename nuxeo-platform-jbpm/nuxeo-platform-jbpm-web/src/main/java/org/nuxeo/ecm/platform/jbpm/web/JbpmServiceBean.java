@@ -30,8 +30,9 @@ import org.nuxeo.runtime.api.Framework;
 @Name("org.nuxeo.ecm.platform.jbpm.web.JbpmServiceBean")
 @Scope(ScopeType.APPLICATION)
 public class JbpmServiceBean {
-    @Factory(value="jbpmService", scope = ScopeType.APPLICATION)
-    public JbpmService bpmManagmenetServiceFactory() throws Exception {
+
+    @Factory(value = "jbpmService", scope = ScopeType.APPLICATION)
+    public JbpmService bpmManagmentServiceFactory() throws Exception {
         return Framework.getService(JbpmService.class);
     }
 }

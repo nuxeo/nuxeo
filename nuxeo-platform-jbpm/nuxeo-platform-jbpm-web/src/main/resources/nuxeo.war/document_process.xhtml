@@ -1,59 +1,59 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:c="http://java.sun.com/jstl/core"
-	xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"><!-- Process --> <c:set
-	var="processes"
-	value="#{jbpmService.getProcessInstances(currentDocument, currentUser, null)}" />
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"><!-- Process --> <c:set
+  var="processes"
+  value="#{jbpmService.getProcessInstances(currentDocument, currentUser, null)}" />
 <c:choose>
-	<c:when test="#{empty processes}">
-		<h:form>
-			<h3><h:outputText value="#{messages['label.review.start.new']}" /></h3>
-			<i> <h:outputText
-				value="#{messages['label.review.fillup.information']}" /></i>
-			<h:panelGrid columns="2" styleClass="dataInput"
-				columnClasses="labelColumn, fieldColumn">
-				<h:outputLabel for="workflowDefinitionId" class="required"
-					value="#{messages['label.review.select.one']}" />
-				<h:panelGroup class="dataInputGroup">
-					<h:selectOneRadio id="workflowDefinitionId" value="#{selectedPD}"
-						layout="pageDirection" required="true">
-						<c:forEach var="pd"
-							items="#{jbpmService.getProcessDefinitions(currentUser, currentDocument)}">
-							<c:set var="label" value="document_#{pd.name}" />
-							<f:selectItem itemLabel="#{messages[label]}"
-								itemValue="#{pd.name}" />
-						</c:forEach>
-					</h:selectOneRadio>
-				</h:panelGroup>
-				<h:outputLabel value="#{messages['label.review.out.life.cycle']}" />
-				<h:panelGroup class="dataInputGroup">
-					<h:selectOneRadio id="lifeCycleDestinationStateTransition"
-						value="#{lifecycleEndState}" required="true"
-						layout="pageDirection">
-						<c:forEach var="lcs"
-							items="#{documentManager.getAllowedStateTransitions(currentDocument.getRef())}">
-							<f:selectItem itemLabel="#{messages[lcs]}" itemValue="#{lcs}" />
-						</c:forEach>
-						<f:selectItem
-							itemLabel="#{messages['label.review.lifecycle.noChange']}"
-							itemValue="null" />
-					</h:selectOneRadio>
-					<h:message styleClass="errorMessage"
-						for="lifeCycleDestinationStateTransition" />
-				</h:panelGroup>
-				<h:outputText value="" />
-				<h:commandButton styleClass="button" type="submit"
-					value="#{messages['label.review.start']}"
-					action="#{jbpmHelper.createProcessInstance(currentUser, selectedPD, currentDocument, lifecycleEndState)}" />
-			</h:panelGrid>
-		</h:form>
-	</c:when>
-	<c:when test="#{processes.size() == 1}">
-		<c:set var="process" value="#{processes.get(0)}" />
-		<ui:decorate template="/process/show_running_process.xhtml">
-			<ui:param name="process" value="#{process}" />
-		</ui:decorate>
-	</c:when>
+  <c:when test="#{empty processes}">
+    <h:form>
+      <h3><h:outputText value="#{messages['label.review.start.new']}" /></h3>
+      <i> <h:outputText
+        value="#{messages['label.review.fillup.information']}" /></i>
+      <h:panelGrid columns="2" styleClass="dataInput"
+        columnClasses="labelColumn, fieldColumn">
+        <h:outputLabel for="workflowDefinitionId" class="required"
+          value="#{messages['label.review.select.one']}" />
+        <h:panelGroup class="dataInputGroup">
+          <h:selectOneRadio id="workflowDefinitionId" value="#{selectedPD}"
+            layout="pageDirection" required="true">
+            <c:forEach var="pd"
+              items="#{jbpmService.getProcessDefinitions(currentUser, currentDocument)}">
+              <c:set var="label" value="document_#{pd.name}" />
+              <f:selectItem itemLabel="#{messages[label]}"
+                itemValue="#{pd.name}" />
+            </c:forEach>
+          </h:selectOneRadio>
+        </h:panelGroup>
+        <h:outputLabel value="#{messages['label.review.out.life.cycle']}" />
+        <h:panelGroup class="dataInputGroup">
+          <h:selectOneRadio id="lifeCycleDestinationStateTransition"
+            value="#{lifecycleEndState}" required="true"
+            layout="pageDirection">
+            <c:forEach var="lcs"
+              items="#{documentManager.getAllowedStateTransitions(currentDocument.getRef())}">
+              <f:selectItem itemLabel="#{messages[lcs]}" itemValue="#{lcs}" />
+            </c:forEach>
+            <f:selectItem
+              itemLabel="#{messages['label.review.lifecycle.noChange']}"
+              itemValue="null" />
+          </h:selectOneRadio>
+          <h:message styleClass="errorMessage"
+            for="lifeCycleDestinationStateTransition" />
+        </h:panelGroup>
+        <h:outputText value="" />
+        <h:commandButton styleClass="button" type="submit"
+          value="#{messages['label.review.start']}"
+          action="#{jbpmHelper.createProcessInstance(currentUser, selectedPD, currentDocument, lifecycleEndState)}" />
+      </h:panelGrid>
+    </h:form>
+  </c:when>
+  <c:when test="#{processes.size() == 1}">
+    <c:set var="process" value="#{processes.get(0)}" />
+    <ui:decorate template="/process/show_running_process.xhtml">
+      <ui:param name="process" value="#{process}" />
+    </ui:decorate>
+  </c:when>
 </c:choose></div>

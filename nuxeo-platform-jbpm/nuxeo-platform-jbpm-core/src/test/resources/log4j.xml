@@ -6,7 +6,7 @@
     <param name="Target" value="System.out" />
     <param name="Threshold" value="INFO" />
     <layout class="org.apache.log4j.PatternLayout">
-         <!-- The default pattern: Date Priority [Category] Message\n -->
+      <!-- The default pattern: Date Priority [Category] Message\n -->
       <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n" />
     </layout>
   </appender>

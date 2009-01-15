@@ -35,9 +35,10 @@ import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- * 
+ *
  */
 public class MD5HasherTest extends TestCase {
+
     private static final String xmlFolder = "xml/";
 
     private static final String smallXmlFile = xmlFolder + "smallXmlFile.xml";

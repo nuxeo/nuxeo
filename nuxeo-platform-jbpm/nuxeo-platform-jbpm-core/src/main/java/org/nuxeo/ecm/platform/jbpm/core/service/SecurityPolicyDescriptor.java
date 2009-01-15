@@ -26,6 +26,7 @@ import org.nuxeo.ecm.platform.jbpm.JbpmSecurityPolicy;
  */
 @XObject("securityPolicy")
 public class SecurityPolicyDescriptor {
+
     @XNode("@class")
     private Class<? extends JbpmSecurityPolicy> klass;
 

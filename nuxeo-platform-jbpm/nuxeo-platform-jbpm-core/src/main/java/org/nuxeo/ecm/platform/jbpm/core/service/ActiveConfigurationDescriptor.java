@@ -24,10 +24,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- * 
+ *
  */
 @XObject("configuration")
 public class ActiveConfigurationDescriptor {
+
     @XNode("@name")
     private String name;
 

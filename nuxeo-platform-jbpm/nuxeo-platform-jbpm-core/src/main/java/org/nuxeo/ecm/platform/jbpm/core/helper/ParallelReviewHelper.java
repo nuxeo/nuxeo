@@ -24,6 +24,7 @@ import org.nuxeo.ecm.platform.jbpm.JbpmService;
  *
  */
 public class ParallelReviewHelper extends AbstractHelper {
+
     private static final long serialVersionUID = 1L;
 
     @Override

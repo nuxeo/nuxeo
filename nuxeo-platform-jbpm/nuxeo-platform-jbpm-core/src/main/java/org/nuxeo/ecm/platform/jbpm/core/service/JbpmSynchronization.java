@@ -25,12 +25,16 @@ import org.jbpm.JbpmContext;
  *
  */
 public class JbpmSynchronization implements Synchronization {
+
     private final JbpmContext context;
+
     public JbpmSynchronization(JbpmContext context) {
         this.context = context;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see javax.transaction.Synchronization#afterCompletion(int)
      */
     public void afterCompletion(int arg0) {
@@ -38,7 +42,9 @@ public class JbpmSynchronization implements Synchronization {
         JbpmServiceImpl.contexts.set(null);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see javax.transaction.Synchronization#beforeCompletion()
      */
     public void beforeCompletion() {

@@ -53,6 +53,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class JbpmServiceImpl implements JbpmService {
+
     private JbpmConfiguration configuration;
 
     private UserManager userManager;
@@ -392,7 +393,6 @@ public class JbpmServiceImpl implements JbpmService {
         }
         return userManager;
     }
-
 
     @SuppressWarnings("unchecked")
     public List<String> getAvailableTransitions(final Long taskInstanceId,

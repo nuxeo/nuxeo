@@ -46,6 +46,7 @@ import org.nuxeo.runtime.api.Framework;
 @Local(JbpmService.class)
 @Remote(JbpmService.class)
 public class JbpmServiceBean implements JbpmService {
+
     private JbpmService service;
 
     @PostConstruct
@@ -60,25 +61,24 @@ public class JbpmServiceBean implements JbpmService {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.nuxeo.ecm.platform.jbpm.JbpmService#createProcessInstance(org.nuxeo
-     * .ecm.core.api.NuxeoPrincipal, java.lang.String,
-     * org.nuxeo.ecm.core.api.DocumentModel, java.util.Map, java.util.Map)
+     * @see org.nuxeo.ecm.platform.jbpm.JbpmService#createProcessInstance(org.nuxeo
+     *      .ecm.core.api.NuxeoPrincipal, java.lang.String,
+     *      org.nuxeo.ecm.core.api.DocumentModel, java.util.Map, java.util.Map)
      */
     public ProcessInstance createProcessInstance(NuxeoPrincipal user,
             String processInstanceName, DocumentModel dm,
             Map<String, Serializable> variables,
             Map<String, Serializable> transientVariables)
             throws NuxeoJbpmException {
-        return service.createProcessInstance(user, processInstanceName, dm, variables, transientVariables);
+        return service.createProcessInstance(user, processInstanceName, dm,
+                variables, transientVariables);
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.nuxeo.ecm.platform.jbpm.JbpmService#endProcessInstance(java.lang.
-     * Long)
+     * @see org.nuxeo.ecm.platform.jbpm.JbpmService#endProcessInstance(java.lang.
+     *      Long)
      */
     public void endProcessInstance(Long processId) throws NuxeoJbpmException {
         service.endProcessInstance(processId);
@@ -88,21 +88,21 @@ public class JbpmServiceBean implements JbpmService {
      * (non-Javadoc)
      *
      * @see org.nuxeo.ecm.platform.jbpm.JbpmService#endTask(java.lang.Long,
-     * java.lang.String, java.util.Map, java.util.Map)
+     *      java.lang.String, java.util.Map, java.util.Map)
      */
     public void endTask(Long taskInstanceId, String transition,
             Map<String, Serializable> variables,
             Map<String, Serializable> transientVariables)
             throws NuxeoJbpmException {
-        service.endTask(taskInstanceId, transition, variables, transientVariables);
+        service.endTask(taskInstanceId, transition, variables,
+                transientVariables);
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.nuxeo.ecm.platform.jbpm.JbpmService#executeJbpmOperation(org.nuxeo
-     * .ecm.platform.jbpm.JbpmOperation)
+     * @see org.nuxeo.ecm.platform.jbpm.JbpmService#executeJbpmOperation(org.nuxeo
+     *      .ecm.platform.jbpm.JbpmOperation)
      */
     public Serializable executeJbpmOperation(JbpmOperation operation)
             throws NuxeoJbpmException {
@@ -112,9 +112,8 @@ public class JbpmServiceBean implements JbpmService {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.nuxeo.ecm.platform.jbpm.JbpmService#getAvailableTransitions(java.
-     * lang.Long, org.nuxeo.ecm.core.api.NuxeoPrincipal)
+     * @see org.nuxeo.ecm.platform.jbpm.JbpmService#getAvailableTransitions(java.
+     *      lang.Long, org.nuxeo.ecm.core.api.NuxeoPrincipal)
      */
     public List<String> getAvailableTransitions(Long taskInstanceId,
             NuxeoPrincipal principal) throws NuxeoJbpmException {
@@ -133,9 +132,8 @@ public class JbpmServiceBean implements JbpmService {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.nuxeo.ecm.platform.jbpm.JbpmService#getCurrentProcessInstances(org
-     * .nuxeo.ecm.core.api.NuxeoPrincipal)
+     * @see org.nuxeo.ecm.platform.jbpm.JbpmService#getCurrentProcessInstances(org
+     *      .nuxeo.ecm.core.api.NuxeoPrincipal)
      */
     public List<ProcessInstance> getCurrentProcessInstances(
             NuxeoPrincipal principal) throws NuxeoJbpmException {
@@ -145,9 +143,8 @@ public class JbpmServiceBean implements JbpmService {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.nuxeo.ecm.platform.jbpm.JbpmService#getCurrentTaskInstances(org.nuxeo
-     * .ecm.core.api.NuxeoPrincipal)
+     * @see org.nuxeo.ecm.platform.jbpm.JbpmService#getCurrentTaskInstances(org.nuxeo
+     *      .ecm.core.api.NuxeoPrincipal)
      */
     public List<TaskInstance> getCurrentTaskInstances(NuxeoPrincipal currentUser)
             throws NuxeoJbpmException {
@@ -157,9 +154,8 @@ public class JbpmServiceBean implements JbpmService {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.nuxeo.ecm.platform.jbpm.JbpmService#getDocumentModel(org.jbpm.taskmgmt
-     * .exe.TaskInstance, org.nuxeo.ecm.core.api.NuxeoPrincipal)
+     * @see org.nuxeo.ecm.platform.jbpm.JbpmService#getDocumentModel(org.jbpm.taskmgmt
+     *      .exe.TaskInstance, org.nuxeo.ecm.core.api.NuxeoPrincipal)
      */
     public DocumentModel getDocumentModel(TaskInstance ti, NuxeoPrincipal user)
             throws NuxeoJbpmException {
@@ -169,9 +165,8 @@ public class JbpmServiceBean implements JbpmService {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.nuxeo.ecm.platform.jbpm.JbpmService#getDocumentModel(org.jbpm.graph
-     * .exe.ProcessInstance, org.nuxeo.ecm.core.api.NuxeoPrincipal)
+     * @see org.nuxeo.ecm.platform.jbpm.JbpmService#getDocumentModel(org.jbpm.graph
+     *      .exe.ProcessInstance, org.nuxeo.ecm.core.api.NuxeoPrincipal)
      */
     public DocumentModel getDocumentModel(ProcessInstance pi,
             NuxeoPrincipal user) throws NuxeoJbpmException {
@@ -181,9 +176,8 @@ public class JbpmServiceBean implements JbpmService {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.nuxeo.ecm.platform.jbpm.JbpmService#getProcessDefinitions(org.nuxeo
-     * .ecm.core.api.NuxeoPrincipal, org.nuxeo.ecm.core.api.DocumentModel)
+     * @see org.nuxeo.ecm.platform.jbpm.JbpmService#getProcessDefinitions(org.nuxeo
+     *      .ecm.core.api.NuxeoPrincipal, org.nuxeo.ecm.core.api.DocumentModel)
      */
     public List<ProcessDefinition> getProcessDefinitions(NuxeoPrincipal user,
             DocumentModel dm) throws NuxeoJbpmException {
@@ -193,9 +187,8 @@ public class JbpmServiceBean implements JbpmService {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.nuxeo.ecm.platform.jbpm.JbpmService#getProcessInstance(java.lang.
-     * Long)
+     * @see org.nuxeo.ecm.platform.jbpm.JbpmService#getProcessInstance(java.lang.
+     *      Long)
      */
     public ProcessInstance getProcessInstance(Long processInstanceId)
             throws NuxeoJbpmException {
@@ -205,10 +198,9 @@ public class JbpmServiceBean implements JbpmService {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.nuxeo.ecm.platform.jbpm.JbpmService#getProcessInstances(org.nuxeo
-     * .ecm.core.api.DocumentModel, org.nuxeo.ecm.core.api.NuxeoPrincipal,
-     * org.nuxeo.ecm.platform.jbpm.JbpmListFilter)
+     * @see org.nuxeo.ecm.platform.jbpm.JbpmService#getProcessInstances(org.nuxeo
+     *      .ecm.core.api.DocumentModel, org.nuxeo.ecm.core.api.NuxeoPrincipal,
+     *      org.nuxeo.ecm.platform.jbpm.JbpmListFilter)
      */
     public List<ProcessInstance> getProcessInstances(DocumentModel dm,
             NuxeoPrincipal user, JbpmListFilter jbpmListFilter)
@@ -219,9 +211,8 @@ public class JbpmServiceBean implements JbpmService {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.nuxeo.ecm.platform.jbpm.JbpmService#getTaskInstances(java.lang.Long,
-     * org.nuxeo.ecm.core.api.NuxeoPrincipal)
+     * @see org.nuxeo.ecm.platform.jbpm.JbpmService#getTaskInstances(java.lang.Long,
+     *      org.nuxeo.ecm.core.api.NuxeoPrincipal)
      */
     public List<TaskInstance> getTaskInstances(Long processInstanceId,
             NuxeoPrincipal principal) throws NuxeoJbpmException {
@@ -231,10 +222,9 @@ public class JbpmServiceBean implements JbpmService {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.nuxeo.ecm.platform.jbpm.JbpmService#getTaskInstances(org.nuxeo.ecm
-     * .core.api.DocumentModel, org.nuxeo.ecm.core.api.NuxeoPrincipal,
-     * org.nuxeo.ecm.platform.jbpm.JbpmListFilter)
+     * @see org.nuxeo.ecm.platform.jbpm.JbpmService#getTaskInstances(org.nuxeo.ecm
+     *      .core.api.DocumentModel, org.nuxeo.ecm.core.api.NuxeoPrincipal,
+     *      org.nuxeo.ecm.platform.jbpm.JbpmListFilter)
      */
     public List<TaskInstance> getTaskInstances(DocumentModel dm,
             NuxeoPrincipal user, JbpmListFilter jbpmListFilter)
@@ -245,9 +235,8 @@ public class JbpmServiceBean implements JbpmService {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.nuxeo.ecm.platform.jbpm.JbpmService#persistProcessInstance(org.jbpm
-     * .graph.exe.ProcessInstance)
+     * @see org.nuxeo.ecm.platform.jbpm.JbpmService#persistProcessInstance(org.jbpm
+     *      .graph.exe.ProcessInstance)
      */
     public void persistProcessInstance(ProcessInstance pi)
             throws NuxeoJbpmException {
@@ -257,9 +246,8 @@ public class JbpmServiceBean implements JbpmService {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.nuxeo.ecm.platform.jbpm.JbpmService#persistTaskInstances(java.util
-     * .List)
+     * @see org.nuxeo.ecm.platform.jbpm.JbpmService#persistTaskInstances(java.util
+     *      .List)
      */
     public void persistTaskInstances(List<TaskInstance> taskInstances)
             throws NuxeoJbpmException {

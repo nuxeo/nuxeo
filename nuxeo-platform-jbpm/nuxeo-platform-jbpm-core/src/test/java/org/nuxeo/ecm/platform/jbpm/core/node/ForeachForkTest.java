@@ -58,7 +58,7 @@ public class ForeachForkTest extends AbstractProcessDefinitionTest {
         Set<TaskInstance> tis = (Set<TaskInstance>) pi.getTaskMgmtInstance().getTaskInstances();
 
         assertEquals(3, tis.size());
-        for(TaskInstance ti : tis) {
+        for (TaskInstance ti : tis) {
             ti.end();
         }
         assertTrue(pi.hasEnded());

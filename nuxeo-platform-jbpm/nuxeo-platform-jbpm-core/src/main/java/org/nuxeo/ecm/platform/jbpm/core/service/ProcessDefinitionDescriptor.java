@@ -24,10 +24,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- * 
+ *
  */
 @XObject("processDefinition")
 public class ProcessDefinitionDescriptor {
+
     @XNode("@path")
     private String path;
 

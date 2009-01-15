@@ -40,6 +40,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class JbpmServiceTest extends RepositoryOSGITestCase {
+
     private JbpmService service;
 
     private UserManager userManager;

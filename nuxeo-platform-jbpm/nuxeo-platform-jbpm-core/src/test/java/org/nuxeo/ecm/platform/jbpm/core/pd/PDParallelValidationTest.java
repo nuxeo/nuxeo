@@ -29,6 +29,7 @@ import org.jbpm.taskmgmt.exe.TaskInstance;
  *
  */
 public class PDParallelValidationTest extends AbstractProcessDefinitionTest {
+
     @SuppressWarnings("unchecked")
     public void testPD() {
         JbpmContext context = null;

@@ -28,6 +28,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  *
  */
 public class JbpmComponentTest extends NXRuntimeTestCase {
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
