@@ -12,9 +12,9 @@ import org.nuxeo.ecm.webengine.model.exceptions.*;
 import org.nuxeo.ecm.webengine.*;
 import org.nuxeo.runtime.api.*;
 import org.nuxeo.runtime.management.*;
-import org.nuxeo.runtime.management.ManagementService
-import org.apache.commons.logging.Logimport org.apache.commons.logging.LogFactory
-import org.nuxeo.ecm.webengine.model.WebContextimport javax.management.MBeanAttributeInfoimport javax.management.MBeanInfo@WebModule(name="management")
+import org.apache.commons.logging.*
+import org.nuxeo.ecm.webengine.model.*;import javax.management.*;
+@WebModule(name="management")
 
 @Path("/management")
 @Produces(["text/xml; charset=UTF-8"])
@@ -22,7 +22,7 @@ public class Main extends DefaultModule {
 	
 	protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 	
-	protected final ManagementService service = Framework.getService(ManagementService.class);
+	protected final ResourcePublisher publisher = Framework.getService(ResourcePublisher.class);
 	
 	/**
 	 * Default view
@@ -36,7 +36,7 @@ public class Main extends DefaultModule {
 	@GET
 	@Path("/{name}")
 	public Object doGetListAttributes(@PathParam("name") String name) {
-	    ObjectName objectName = service.lookupName(name);
+	    ObjectName objectName = publisher.lookupName(name);
 	    MBeanInfo objectInfo = mbeanServer.getMBeanInfo(objectName);
 		return getTemplate("list-attributes.xml.ftl").
 		    arg("name", name).
@@ -53,7 +53,7 @@ public class Main extends DefaultModule {
 	}
 	
 	protected Object doGetAttribute(String resourceName, String attributeName, String templateName) {
-	    ObjectName objectName = service.lookupName(resourceName);
+	    ObjectName objectName = publisher.lookupName(resourceName);
         Object attributeValue = mbeanServer.getAttribute(objectName, attributeName);
         return getTemplate(templateName).
             arg("resource", resourceName).
@@ -66,11 +66,11 @@ public class Main extends DefaultModule {
 	}
 	
 	public Set<String> getShortcutsName() {
-		return service.getShortcutsName();
+		return publisher.getShortcutsName();
 	}
 	
 	public String getQualifiedName(String name) {
-		return service.lookupName(name).toString();
+		return publisher.lookupName(name).toString();
 	}
 	
 	
