@@ -232,20 +232,12 @@
       <id>maven-website</id>
       <url>scpexe://gironde.nuxeo.com/home/mavenweb/webengine/</url>
     </site>
-    <repository>
-      <id>nuxeo-release</id>
-      <url>scpexe://amour.nuxeo.com/home/nexus/repositories/nuxeo-release</url>
-    </repository>
-    <snapshotRepository>
-      <id>nuxeo-snapshot</id>
-      <url>scpexe://amour.nuxeo.com/home/nexus/repositories/nuxeo-snapshot</url>
-    </snapshotRepository>
   </distributionManagement>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/nuxeo-webengine#5.2</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo-webengine#5.2</developerConnection>
-    <url>http://hg.nuxeo.org/nuxeo-webengine#5.2/</url>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-webengine#5.2</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-webengine#5.2</developerConnection>
+    <url>http://hg.nuxeo.org/nuxeo/nuxeo-webengine#5.2/</url>
   </scm>
 
   <developers>
