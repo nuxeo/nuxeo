@@ -88,8 +88,11 @@ public class JbpmComponent extends DefaultComponent implements
             break;
         case configurationPath:
             ConfigurationPathDescriptor configPath = (ConfigurationPathDescriptor) contribution;
-            URL url = contributor.getRuntimeContext().getLocalResource(
-                    configPath.getPath());
+            String path = configPath.getPath();
+            URL url = contributor.getRuntimeContext().getLocalResource(path);
+            if (url == null) {
+                throw new RuntimeException("Config not found: " + path);
+            }
             paths.put(configPath.getName(), url);
             break;
         case permissionMapper:
@@ -147,10 +150,10 @@ public class JbpmComponent extends DefaultComponent implements
             InputStream is;
             try {
                 is = url.openStream();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(
-                        "Unable to open input stream for jbpm configuration.",
-                        e);
+                        "Unable to open input stream for jbpm configuration "
+                                + activeConfigurationName, e);
             }
             jbpmConfiguration = JbpmConfiguration.parseInputStream(is);
             try {

@@ -10,18 +10,10 @@
     <version>5.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-platform-jbpm-api</artifactId>
-  <name>Nuxeo JPBM Service API</name>
-  <description>The jBPM service API.</description>
-  <dependencies>
-    <dependency>
-      <groupId>org.jbpm.jbpm3</groupId>
-      <artifactId>jbpm-jpdl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-api</artifactId>
-    </dependency>
-  </dependencies>
+  <artifactId>nuxeo-platform-jbpm-test</artifactId>
+  <name>Nuxeo JPBM Service test</name>
+  <description>The jBPM service test.</description>
+
+  <dependencies></dependencies>
 
 </project>

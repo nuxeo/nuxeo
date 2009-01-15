@@ -32,7 +32,7 @@ public class JbpmComponentTest extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.core.jbpm");
-        deployBundle("org.nuxeo.ecm.platform.core.jbpm.test");
+        deployBundle("org.nuxeo.ecm.platform.core.jbpm.testing");
     }
 
     public void testServices() throws Exception {

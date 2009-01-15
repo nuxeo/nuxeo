@@ -26,7 +26,6 @@
     point="configurationPath">
 
     <configuration name="prod" path="config/jbpm.cfg.xml" />
-    <configuration name="test" path="config/test-jbpm.cfg.xml" />
 
   </extension>
 

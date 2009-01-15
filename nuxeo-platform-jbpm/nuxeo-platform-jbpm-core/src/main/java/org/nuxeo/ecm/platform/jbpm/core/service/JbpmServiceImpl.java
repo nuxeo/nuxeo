@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.jbpm.JbpmListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmOperation;
 import org.nuxeo.ecm.platform.jbpm.JbpmSecurityPolicy;
@@ -68,7 +67,7 @@ public class JbpmServiceImpl implements JbpmService {
         return operation.run(context);
     }
 
-    //we open the first call in the thread
+    // we open the first call in the thread
     // and close it on the session complete of hibernate.
     protected JbpmContext getContext() {
         JbpmContext context = contexts.get();
@@ -99,7 +98,8 @@ public class JbpmServiceImpl implements JbpmService {
                     List<String> groups = currentUser.getAllGroups();
                     groups.add(currentUser.getName());
                     context.setActorId(currentUser.getName());
-                    return toArrayList(context.getTaskMgmtSession().findTaskInstances(groups));
+                    return toArrayList(context.getTaskMgmtSession().findTaskInstances(
+                            groups));
                 }
 
             });
@@ -355,7 +355,6 @@ public class JbpmServiceImpl implements JbpmService {
                 DocumentModel dm = getDocumentModel(
                         getPrincipal(ti.getActorId()), docId, repoId);
                 if (dm != null) {
-                    getSecurityService();
                     Transition t = ti.getToken().getNode().getLeavingTransition(
                             transition);
                     Boolean permission = getPermission(t,
@@ -394,13 +393,6 @@ public class JbpmServiceImpl implements JbpmService {
         return userManager;
     }
 
-    protected SecurityService getSecurityService() {
-        try {
-            return Framework.getService(SecurityService.class);
-        } catch (Exception e) {
-            throw new NuxeoJbpmRuntimeException(e);
-        }
-    }
 
     @SuppressWarnings("unchecked")
     public List<String> getAvailableTransitions(final Long taskInstanceId,
@@ -510,7 +502,7 @@ public class JbpmServiceImpl implements JbpmService {
 
     public void persistProcessInstance(final ProcessInstance pi)
             throws NuxeoJbpmException {
-        executeJbpmOperation(new JbpmOperation(){
+        executeJbpmOperation(new JbpmOperation() {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
                 Session session = context.getSession();

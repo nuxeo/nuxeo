@@ -1,5 +1,5 @@
 <jbpm-configuration>
-  <string name='resource.hibernate.cfg.xml' value='config/hibernate.cfg.xml' />
+  <string name='resource.hibernate.cfg.xml' value='config/jbpm-hibernate.cfg.xml' />
   <jbpm-context>
     <service name="persistence">
       <factory>

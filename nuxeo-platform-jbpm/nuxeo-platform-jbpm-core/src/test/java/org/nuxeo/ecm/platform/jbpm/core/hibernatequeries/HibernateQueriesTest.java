@@ -56,7 +56,8 @@ public class HibernateQueriesTest extends TestCase {
 
     @Override
     public void setUp() throws Exception {
-        URL url = getClass().getResource("/config/test-hibernate.cfg.xml");
+        URL url = getClass().getResource("/config/test-jbpm-hibernate.cfg.xml");
+        assertNotNull(url);
         factory = new Configuration().configure(url).buildSessionFactory();
         session = factory.openSession();
         assertNotNull(session);

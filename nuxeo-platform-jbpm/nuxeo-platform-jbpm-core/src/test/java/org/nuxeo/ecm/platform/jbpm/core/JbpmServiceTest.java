@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.core.service.JbpmServiceImpl;
+import org.nuxeo.ecm.platform.jbpm.test.JbpmTestConstants;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -49,19 +50,20 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
 
     @Override
     protected void setUp() throws Exception {
-        //clean up previous test.
+        // clean up previous test.
         JbpmServiceImpl.contexts.set(null);
         super.setUp();
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         deployBundle("org.nuxeo.ecm.directory.sql");
+
         deployBundle("org.nuxeo.ecm.platform.core.jbpm");
-        deployBundle("org.nuxeo.ecm.platform.core.jbpm.test");
+        deployBundle(JbpmTestConstants.TESTING_BUNDLE_NAME);
+
         service = Framework.getService(JbpmService.class);
         userManager = Framework.getService(UserManager.class);
         assertNotNull(userManager);
-        userManager.getAvailablePrincipals();
         administrator = userManager.getPrincipal("Administrator");
         assertNotNull(administrator);
         user1 = userManager.getPrincipal("myuser1");
@@ -76,7 +78,6 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
                 administrator, dm);
         assertNotNull(pds);
         assertEquals(2, pds.size());
-        //service.getConfiguration().getCurrentJbpmContext().close();
         // create process instance
         ProcessInstance pd = service.createProcessInstance(administrator,
                 "review_parallel", dm, null, null);
@@ -87,7 +88,8 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
                 JbpmService.VariableName.documentRepositoryName.name()),
                 dm.getRepositoryName());
         // get tasks
-        List<TaskInstance> tasks = service.getTaskInstances(dm, administrator, null);
+        List<TaskInstance> tasks = service.getTaskInstances(dm, administrator,
+                null);
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
     }
@@ -99,10 +101,12 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         ti.setActorId("bob");
         Map<String, Object> variables = new HashMap<String, Object>();
         variables.put(JbpmService.VariableName.documentId.name(), dm.getId());
-        variables.put(JbpmService.VariableName.documentRepositoryName.name(), "demo");
+        variables.put(JbpmService.VariableName.documentRepositoryName.name(),
+                "demo");
         ti.addVariables(variables);
         service.persistTaskInstances(Collections.singletonList(ti));
-        List<TaskInstance> lists = service.getTaskInstances(dm, new NuxeoPrincipalImpl("bob"), null);
+        List<TaskInstance> lists = service.getTaskInstances(dm,
+                new NuxeoPrincipalImpl("bob"), null);
         assertNotNull(lists);
     }
 

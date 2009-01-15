@@ -51,7 +51,8 @@ public class PDParallelValidationTest extends AbstractProcessDefinitionTest {
             assertEquals("bob",
                     tis.toArray(new TaskInstance[] {})[0].getActorId());
             // bob finish choosing the participants
-            pi.getContextInstance().setVariable("participants", Arrays.asList(new String[]{"bob", "trudy"}));
+            pi.getContextInstance().setVariable("participants",
+                    Arrays.asList(new String[] { "bob", "trudy" }));
             ti = (TaskInstance) context.getTaskList("bob").get(0);
             ti.end();
             // bob and trudy have tasks
