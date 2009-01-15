@@ -169,7 +169,6 @@ public class Main extends DefaultModule {
     return getTemplate("styleProperties.ftl").arg(
             "selected_element", getSelectedElement()).arg(
             "style_edit_mode", getStyleEditMode()).arg(                    
-            "style_layers_of_selected_element", getStyleLayersOfSelectedElement()).arg(
             "style_selectors", getStyleSelectorsForSelectedElement()).arg(
             "rendered_style_properties", getRenderedStylePropertiesForSelectedElement()).arg(
             "selected_style_selector", getSelectedStyleSelector()).arg(
@@ -247,6 +246,13 @@ public class Main extends DefaultModule {
   public void selectElement() {
     String id = ctx.getForm().getString("id")
     SessionManager.setElementId(id)
+    // clean up
+    SessionManager.setStyleEditMode(null);
+    SessionManager.setStyleLayerId(null);
+    SessionManager.setStyleSelector(null);
+    SessionManager.setStylePropertyCategory(null);
+    SessionManager.setStyleCategory(null);
+    SessionManager.setPresetGroup(null);
   }
   
   @POST
