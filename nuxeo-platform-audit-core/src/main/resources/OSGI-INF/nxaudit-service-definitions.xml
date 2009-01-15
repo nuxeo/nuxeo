@@ -18,7 +18,7 @@
     <provide interface="org.nuxeo.ecm.platform.audit.api.NXAuditEvents"/>
   </service>
   
-  <require>org.nuxeo.runtime.management.ManagementService</require>
+  <require>org.nuxeo.runtime.management.ResourcePublisher</require>
 
   <extension-point name="event">
     <documentation>

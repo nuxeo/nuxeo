@@ -45,7 +45,7 @@ import org.nuxeo.ecm.platform.events.DocumentMessageFactory;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.management.ManagementServiceImpl;
+import org.nuxeo.runtime.management.ResourcePublisherService;
 import org.nuxeo.runtime.management.ObjectNameFactory;
 
 /**
@@ -100,7 +100,7 @@ public class TestNXAuditEventsServiceManagement extends RepositoryOSGITestCase {
 
     protected void doEnableManagement() throws InstanceNotFoundException,
             ReflectionException, MBeanException {
-        String qualifiedName = ObjectNameFactory.formatQualifiedName(ManagementServiceImpl.NAME);
+        String qualifiedName = ObjectNameFactory.formatQualifiedName(ResourcePublisherService.NAME);
         ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
         mbeanServer.invoke(objectName, "enable", null, null);
     }

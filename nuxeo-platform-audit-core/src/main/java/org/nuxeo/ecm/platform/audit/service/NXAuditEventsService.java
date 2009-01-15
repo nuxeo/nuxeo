@@ -129,7 +129,6 @@ public class NXAuditEventsService extends DefaultComponent implements
             eventEnabled = true;
         }
         if (eventEnabled) {
-            AuditEventMetricMBeanAdapter.register(this, eventName);
             eventNames.add(eventName);
             if (log.isDebugEnabled())
                 log.debug("Registered event: " + eventName);

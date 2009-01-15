@@ -22,8 +22,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.management.ManagementServiceImpl;
 import org.nuxeo.runtime.management.ObjectNameFactory;
+import org.nuxeo.runtime.management.ResourcePublisher;
+import org.nuxeo.runtime.management.ResourcePublisherService;
 
 /**
  * @author matic
@@ -31,7 +32,8 @@ import org.nuxeo.runtime.management.ObjectNameFactory;
  */
 public class AuditEventMetricMBeanAdapter implements AuditEventMetricMBean {
 
-    protected AuditEventMetricMBeanAdapter(NXAuditEventsService service, String name) {
+    protected AuditEventMetricMBeanAdapter(NXAuditEventsService service,
+            String name) {
         this.service = service;
         this.eventName = name;
     }
@@ -40,41 +42,44 @@ public class AuditEventMetricMBeanAdapter implements AuditEventMetricMBean {
 
     protected final String eventName;
 
-    public static String getQualifiedName(String name) {
-        String qualifiedName = ObjectNameFactory.formatQualifiedName(NXAuditEventsService.NAME);
-        qualifiedName += ",eventName=" + name + ",kind=metric";
+    public static String formatQualifiedName(String name) {
+        String qualifiedName = ObjectNameFactory.formatMetricQualifiedName(NXAuditEventsService.NAME,name);
         return qualifiedName;
     }
     
-    public static ObjectName getObjectName(String name) {
-        return ObjectNameFactory.getObjectName(getQualifiedName(name));
+    public static String formatShortcutName(String name) {
+        return ObjectNameFactory.formatMetricShortName("event-" + name);
     }
 
-    protected static ManagementServiceImpl managementService;
+    public static ObjectName getObjectName(String name) {
+        return ObjectNameFactory.getObjectName(formatQualifiedName(name));
+    }
+
+    protected static ResourcePublisherService publisher;
 
     private static final Log log = LogFactory.getLog(AuditEventMetricMBeanAdapter.class);
 
     public static void register(NXAuditEventsService service, String name) {
-       
-        if (managementService == null) {
-            managementService = (ManagementServiceImpl) Framework.getRuntime().getComponent(
-                    ManagementServiceImpl.NAME);
+
+        if (publisher == null) {
+            publisher = (ResourcePublisherService) Framework.getLocalService(ResourcePublisher.class);
         }
-        if (managementService == null) {
+        if (publisher == null) {
             if (log.isWarnEnabled()) {
                 log.warn("cannot register event metric mbean for " + name
                         + ", no management service available");
             }
             return;
         }
-        managementService.registerResource("event-" + name + "-metric",getQualifiedName(name),
-                AuditEventMetricMBean.class, new AuditEventMetricMBeanAdapter(service, name));
+        publisher.registerResource(formatShortcutName(name),
+                formatQualifiedName(name), AuditEventMetricMBean.class,
+                new AuditEventMetricMBeanAdapter(service, name));
     }
 
     public static void unregister(String name) {
-        if (managementService == null)
+        if (publisher == null)
             return;
-        managementService.unregisterResource(name, getQualifiedName(name));
+        publisher.unregisterResource(name, formatQualifiedName(name));
     }
 
     public Long getCount() {
