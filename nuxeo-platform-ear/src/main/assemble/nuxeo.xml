@@ -131,6 +131,8 @@
       <artifact group="org.openoffice" name="jurt" />
       <artifact group="com.thoughtworks.xstream" name="xstream" />
       <artifact group="pdfbox" name="pdfbox" />
+      <artifact group="org.fontbox" name="fontbox" />
+      <artifact group="org.jempbox" name="jempbox" />
 
     </artifacts>
   </artifactSet>
@@ -154,7 +156,7 @@
   -->
 
   <!--
-    CUSTOM RESOURCES 
+    CUSTOM RESOURCES
   <assemble>
     <outputFile>/</outputFile>
     <set>custom-resources</set>
@@ -165,7 +167,7 @@
   -->
 
   <!--
-    CUSTOM ARTIFACTS 
+    CUSTOM ARTIFACTS
   <assemble>
     <outputFile>plugins</outputFile>
     <set>custom-plugins</set>
