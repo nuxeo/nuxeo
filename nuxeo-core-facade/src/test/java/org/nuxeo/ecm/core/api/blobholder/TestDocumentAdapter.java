@@ -14,7 +14,6 @@ public class TestDocumentAdapter extends RepositoryOSGITestCase {
     protected void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core.event"); 
 
         openRepository();
     }

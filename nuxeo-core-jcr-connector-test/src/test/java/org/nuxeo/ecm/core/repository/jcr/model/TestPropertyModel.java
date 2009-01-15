@@ -55,7 +55,6 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
         deployContrib(CoreJCRConnectorTestConstants.TESTS_BUNDLE,
                 "test-core-types.xml");
 
-        deployBundle("org.nuxeo.ecm.core.event");
         openRepository();
         doc = coreSession.createDocumentModel("TestDocument");
         doc.setPathInfo("/", "doc");
