@@ -35,6 +35,13 @@ public class ResourceFactoryDescriptor {
         super();
     }
 
+    @XNode("@name")
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
     @XNode("@class")
     private Class<? extends ResourceFactory> factoryClass;
 

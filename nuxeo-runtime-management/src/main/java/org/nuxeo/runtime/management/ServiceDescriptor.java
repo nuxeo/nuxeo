@@ -26,18 +26,18 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * 
  */
 @XObject("resource")
-public class ResourceDescriptor implements Serializable {
+public class ServiceDescriptor implements Serializable {
 
     private static final long serialVersionUID = 6338431911839779273L;
 
-    protected ResourceDescriptor(String qualifiedName,
+    protected ServiceDescriptor(String qualifiedName,
             Class<?> implClass) {
         this.name = qualifiedName;
         this.resourceClass = implClass;
         this.ifaceClass = null;
     }
 
-    public ResourceDescriptor() {
+    public ServiceDescriptor() {
         ;
     }
 

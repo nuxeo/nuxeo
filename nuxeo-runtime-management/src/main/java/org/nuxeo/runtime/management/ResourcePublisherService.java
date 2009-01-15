@@ -31,6 +31,7 @@ import javax.management.ObjectName;
 import javax.management.modelmbean.ModelMBean;
 import javax.management.modelmbean.RequiredModelMBean;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jsesoft.mmbi.NamedModelMBean;
@@ -53,7 +54,7 @@ public class ResourcePublisherService extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(ResourcePublisherService.class);
 
-    public static final String RESOURCES_EXT_KEY = "resources";
+    public static final String SERVICES_EXT_KEY = "services";
 
     public static final String FACTORIES_EXT_KEY = "factories";
 
@@ -65,8 +66,8 @@ public class ResourcePublisherService extends DefaultComponent implements
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (extensionPoint.equals(RESOURCES_EXT_KEY)) {
-            resourcesRegistry.doRegisterResource((ResourceDescriptor) contribution);
+        if (extensionPoint.equals(SERVICES_EXT_KEY)) {
+            resourcesRegistry.doRegisterResource((ServiceDescriptor) contribution);
         } else if (extensionPoint.equals(FACTORIES_EXT_KEY)) {
             factoriesRegistry.doRegisterFactory((ResourceFactoryDescriptor) contribution);
         } else if (extensionPoint.equals(SHORTCUTS_EXT_KEY)) {
@@ -80,8 +81,8 @@ public class ResourcePublisherService extends DefaultComponent implements
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (extensionPoint.equals(RESOURCES_EXT_KEY)) {
-            resourcesRegistry.doUnregisterResource((ResourceDescriptor) contribution);
+        if (extensionPoint.equals(SERVICES_EXT_KEY)) {
+            resourcesRegistry.doUnregisterResource((ServiceDescriptor) contribution);
         } else if (extensionPoint.equals(FACTORIES_EXT_KEY)) {
             factoriesRegistry.doUnregisterFactory((ResourceFactoryDescriptor) contribution);
         } else if (extensionPoint.equals(SHORTCUTS_EXT_KEY)) {
@@ -130,8 +131,9 @@ public class ResourcePublisherService extends DefaultComponent implements
                     ObjectNameFactory.getObjectName(qualifiedName));
         }
 
-        public void registerShortcut(String name, String qualifiedName) {
-            doRegisterShortcut(name, qualifiedName);
+        protected void doRegisterShortcut(String shortName,
+                ObjectName qualifiedName) {
+            registry.put(shortName, qualifiedName);
         }
 
         protected void doUnregisterShortcut(ShortcutDescriptor descriptor) {
@@ -161,9 +163,14 @@ public class ResourcePublisherService extends DefaultComponent implements
             doRegisterResource(resource);
         }
 
-        protected void doRegisterResource(ResourceDescriptor descriptor) {
-            Resource resource = doResolveResource(descriptor);
+        protected void doRegisterResource(ServiceDescriptor descriptor) {
+            Resource resource = doResolveServiceDescriptor(descriptor);
             doRegisterResource(resource);
+            String shortName = descriptor.getName();
+            if (!StringUtils.isEmpty(shortName)) {
+                shortcutsRegistry.doRegisterShortcut(shortName,
+                        resource.getManagementName());
+            }
         }
 
         protected void doRegisterResource(Resource resource) {
@@ -174,7 +181,7 @@ public class ResourcePublisherService extends DefaultComponent implements
             }
         }
 
-        protected ObjectName doResolveResourceName(ResourceDescriptor descriptor) {
+        protected ObjectName doResolveServiceName(ServiceDescriptor descriptor) {
             String qualifiedName = descriptor.getName();
             if (qualifiedName == null) {
                 qualifiedName = ObjectNameFactory.getQualifiedName(descriptor.getResourceClass().getCanonicalName());
@@ -182,11 +189,11 @@ public class ResourcePublisherService extends DefaultComponent implements
             return ObjectNameFactory.getObjectName(qualifiedName);
         }
 
-        protected Resource doResolveResource(ResourceDescriptor descriptor) {
+        protected Resource doResolveServiceDescriptor(ServiceDescriptor descriptor) {
             Class<?> resourceClass = descriptor.getResourceClass();
-            Object resourceInstance = doResolveResourceInstance(resourceClass,
+            Object resourceInstance = doResolveService(resourceClass,
                     descriptor);
-            ObjectName managementName = doResolveResourceName(descriptor);
+            ObjectName managementName = doResolveServiceName(descriptor);
             Class<?> ifaceClass = descriptor.getIfaceClass();
             Class<?> managementClass = ifaceClass != null ? ifaceClass
                     : resourceClass;
@@ -194,28 +201,20 @@ public class ResourcePublisherService extends DefaultComponent implements
                     resourceInstance);
         }
 
-        protected Class<?> doResolveResourceClass(String className) {
+        protected <T> T doResolveService(Class<T> resourceClass,
+                ServiceDescriptor descriptor) {
+            T service;
             try {
-                return getClass().getClassLoader().loadClass(className);
-            } catch (ClassNotFoundException e) {
-                throw ManagementRuntimeException.wrap(e);
-            }
-        }
-
-        protected <T> T doResolveResourceInstance(Class<T> resourceClass,
-                ResourceDescriptor descriptor) {
-            T resource;
-            try {
-                resource = Framework.getService(resourceClass);
+                service = Framework.getService(resourceClass);
             } catch (Exception e) {
                 throw ManagementRuntimeException.wrap(
                         "Cannot locate resource using " + resourceClass, e);
             }
-            if (resource == null) {
+            if (service == null) {
                 throw new ManagementRuntimeException(
                         "Cannot locate resource using " + resourceClass);
             }
-            return resource;
+            return service;
         }
 
         protected void doUnregisterResources() {
@@ -230,10 +229,13 @@ public class ResourcePublisherService extends DefaultComponent implements
             }
         }
 
-        protected void doUnregisterResource(ResourceDescriptor descriptor) {
-            ObjectName objectName = doResolveResourceName(descriptor);
+        protected void doUnregisterResource(ServiceDescriptor descriptor) {
+            ObjectName objectName = doResolveServiceName(descriptor);
             doUnregisterResource(objectName);
-
+            String shortName = descriptor.getName();
+            if (!StringUtils.isEmpty(shortName)) {
+                shortcutsRegistry.unregisterShortcut(shortName);
+            }
         }
 
         protected void doUnregisterResource(String qualifiedName) {
@@ -328,12 +330,22 @@ public class ResourcePublisherService extends DefaultComponent implements
             Class<?> managementClass, Object instance) {
         resourcesRegistry.doRegisterResource(qualifiedName, managementClass,
                 instance);
-        if (shortName != null) shortcutsRegistry.doRegisterShortcut(shortName, qualifiedName);
+        if (shortName != null)
+            shortcutsRegistry.doRegisterShortcut(shortName, qualifiedName);
     }
 
     public void unregisterResource(String shortName, String qualifiedName) {
         resourcesRegistry.doUnregisterResource(qualifiedName);
-        if (shortName != null) shortcutsRegistry.doUnregisterShortcut(shortName);
+        if (shortName != null)
+            shortcutsRegistry.doUnregisterShortcut(shortName);
+    }
+
+    public void registerShortcut(String shortName, String qualifiedName) {
+        shortcutsRegistry.doRegisterShortcut(shortName, qualifiedName);
+    }
+
+    public void unregisterShortcut(String shortName) {
+        shortcutsRegistry.doUnregisterShortcut(shortName);
     }
 
     public Set<String> getShortcutsName() {
