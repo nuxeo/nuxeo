@@ -25,6 +25,7 @@ import org.jbpm.graph.def.Node;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.SimplePrincipal;
+import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.core.pd.AbstractProcessDefinitionTest;
 
 /**
@@ -53,7 +54,8 @@ public class ForeachForkTest extends AbstractProcessDefinitionTest {
         daList.add(trudy);
         daList.add(jack);
         assertEquals(3, daList.size());
-        pi.getContextInstance().setVariable("participants", daList);
+        pi.getContextInstance().setVariable(
+                JbpmService.VariableName.participants.name(), daList);
         pi.signal();
         Set<TaskInstance> tis = (Set<TaskInstance>) pi.getTaskMgmtInstance().getTaskInstances();
 

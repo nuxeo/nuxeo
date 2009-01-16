@@ -17,7 +17,10 @@
 package org.nuxeo.ecm.platform.jbpm.core.helper;
 
 import org.jbpm.graph.exe.ExecutionContext;
-import org.nuxeo.ecm.platform.jbpm.JbpmService;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
@@ -27,14 +30,20 @@ public class ValidationReviewHelper extends AbstractJbpmHandlerHelper {
 
     private static final long serialVersionUID = 1L;
 
+    protected NuxeoPrincipal getNuxeoPrincipal(String user) throws Exception {
+        UserManager userManager = Framework.getService(UserManager.class);
+        return userManager.getPrincipal(user);
+    }
+
     @Override
     public void execute(ExecutionContext executionContext) throws Exception {
         this.executionContext = executionContext;
         if (nuxeoHasStarted()) {
-            String user = getSwimlaneUser(JbpmService.VariableName.initiator.name());
-            String endLifecycle = getStringVariable(JbpmService.VariableName.endLifecycle.name());
+            String endLifecycle = getEndLifecycleTransition();
             if (endLifecycle != null && !"".equals(endLifecycle)) {
-                followTransition(user, endLifecycle);
+                String user = getSwimlaneUser(getInitiator());
+                followTransition(getNuxeoPrincipal(user), getDocumentRef(),
+                        endLifecycle);
             }
         }
         executionContext.getToken().signal();

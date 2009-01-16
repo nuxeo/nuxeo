@@ -58,7 +58,8 @@ public class JbpmHelper {
         if (endLifeCycle != null && !endLifeCycle.equals("")
                 && !"null".equals(endLifeCycle)) {
             map = new HashMap<String, Serializable>();
-            map.put(JbpmService.VariableName.endLifecycle.name(), endLifeCycle);
+            map.put(JbpmService.VariableName.endLifecycleTransition.name(),
+                    endLifeCycle);
         }
         getJbpmService().createProcessInstance(principal, pd, dm, map, null);
         return null;
@@ -68,7 +69,7 @@ public class JbpmHelper {
             throws NuxeoJbpmException, Exception {
         Map<String, Serializable> variables = new HashMap<String, Serializable>();
         ArrayList<String> users = new ArrayList<String>(plm.getSelectedUsers());
-        variables.put("participants", users);
+        variables.put(JbpmService.VariableName.participants.name(), users);
         getJbpmService().endTask(ti.getId(), null, variables, null);
         return null;
     }

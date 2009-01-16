@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,28 +12,33 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bchaffangeon
+ *     Anahide Tchertchian
  *
- * $Id: ForumStartupActionHandler.java 20771 2007-06-18 21:04:16Z sfermigier $
+ * $Id$
  */
+
 package org.nuxeo.ecm.platform.forum.workflow;
 
 import org.jbpm.graph.exe.ExecutionContext;
-import org.nuxeo.ecm.platform.workflow.api.common.WorkflowConstants;
 
 /**
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * Makes post document follow lifecycle transition to be in rejected state
+ *
+ * @author Anahide Tchertchian
+ *
  */
-public class ForumStartupActionHandler extends
-        AbstractForumWorkflowDocumentHandler {
+public class RejectForumPostHandler extends ForumHandlerHelper {
 
     private static final long serialVersionUID = 1L;
 
-    public void execute(ExecutionContext ec) throws Exception {
-        log.info("Moderation started on : "
-                + ec.getVariable(WorkflowConstants.DOCUMENT_REF));
-
-        bindDocumentToProcess(ec);
+    @Override
+    public void execute(ExecutionContext executionContext) throws Exception {
+        this.executionContext = executionContext;
+        if (nuxeoHasStarted()) {
+            if (nuxeoHasStarted()) {
+                followTransition(ForumConstants.TRANSITION_TO_REJECTED_STATE);
+            }
+        }
+        executionContext.getToken().signal();
     }
-
 }

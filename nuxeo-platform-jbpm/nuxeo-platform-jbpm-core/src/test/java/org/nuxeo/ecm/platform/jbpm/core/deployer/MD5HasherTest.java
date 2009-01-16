@@ -87,10 +87,10 @@ public class MD5HasherTest extends TestCase {
     }
 
     public void testGetBytes() throws Exception {
-        Document document = hasher.getDomDocument(getURL(smallXmlFile));
+        URL url = getURL(smallXmlFile);
+        Document document = hasher.getDomDocument(url);
         byte[] result = hasher.getBytes(document);
         assertNotNull(result);
-        URL url = getURL(smallXmlFile);
         File file = new File(url.getFile());
         assertEquals(result.length, file.length());
     }

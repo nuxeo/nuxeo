@@ -14,10 +14,11 @@
  * Contributors:
  *     arussel
  */
-package org.nuxeo.ecm.platform.jbpm.core.helper;
+package org.nuxeo.ecm.platform.jbpm;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.jbpm.graph.def.ActionHandler;
@@ -32,9 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.jbpm.JbpmService;
-import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.jbpm.JbpmService.VariableName;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -51,14 +50,16 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
     protected ExecutionContext executionContext;
 
     public void execute(ExecutionContext executionContext) throws Exception {
+        throw new UnsupportedOperationException();
     }
 
     public void assign(Assignable assignable, ExecutionContext executionContext)
             throws Exception {
+        throw new UnsupportedOperationException();
     }
 
     public String decide(ExecutionContext executionContext) throws Exception {
-        return "";
+        throw new UnsupportedOperationException();
     }
 
     public JbpmService getJbpmService() throws Exception {
@@ -68,17 +69,38 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
         return jbpmService;
     }
 
-    /**
-     * @param user
-     * @return
-     * @throws Exception
-     */
-    protected CoreSession getCoreSession(String user) throws Exception {
-        String repositoryName = (String) executionContext.getContextInstance().getVariable(
-                JbpmService.VariableName.documentRepositoryName.name());
+    // get standard variables values
+
+    protected String getDocumentRepositoryName() throws Exception {
+        return getStringVariable(VariableName.documentRepositoryName.name());
+    }
+
+    protected String getDocumentId() throws Exception {
+        return getStringVariable(VariableName.documentId.name());
+    }
+
+    protected DocumentRef getDocumentRef() throws Exception {
+        return new IdRef(getDocumentId());
+    }
+
+    protected String getInitiator() throws Exception {
+        return getStringVariable(VariableName.initiator.name());
+    }
+
+    protected String getEndLifecycleTransition() throws Exception {
+        return getStringVariable(VariableName.endLifecycleTransition.name());
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<String> getParticipants() throws Exception {
+        return (List<String>) executionContext.getContextInstance().getVariable(
+                VariableName.participants.name());
+    }
+
+    protected CoreSession getCoreSession(NuxeoPrincipal principal)
+            throws Exception {
+        String repositoryName = getDocumentRepositoryName();
         Map<String, Serializable> context = new HashMap<String, Serializable>();
-        UserManager userManager = Framework.getService(UserManager.class);
-        NuxeoPrincipal principal = userManager.getPrincipal(user);
         context.put("principal", principal);
         try {
             return CoreInstance.getInstance().open(repositoryName, context);
@@ -96,12 +118,9 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
         CoreInstance.getInstance().close(session);
     }
 
-    protected void followTransition(String user, String transition)
-            throws Exception {
-        CoreSession coreSession = getCoreSession(user);
-        String docId = (String) executionContext.getContextInstance().getVariable(
-                JbpmService.VariableName.documentId.name());
-        DocumentRef docRef = new IdRef(docId);
+    protected void followTransition(NuxeoPrincipal principal,
+            DocumentRef docRef, String transition) throws Exception {
+        CoreSession coreSession = getCoreSession(principal);
         DocumentModel model = coreSession.getDocument(docRef);
         model.followTransition(transition);
         coreSession.saveDocument(model);

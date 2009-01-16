@@ -23,6 +23,7 @@ import java.util.Set;
 import org.jbpm.JbpmContext;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
+import org.nuxeo.ecm.platform.jbpm.JbpmService;
 
 /**
  * @author arussel
@@ -43,7 +44,7 @@ public class PDParallelValidationTest extends AbstractProcessDefinitionTest {
             ti.end();
             assertNotNull(pi);
             assertEquals("bob", pi.getTaskMgmtInstance().getSwimlaneInstance(
-                    "initiator").getActorId());
+                    JbpmService.VariableName.initiator.name()).getActorId());
             Set<TaskInstance> tis = (Set<TaskInstance>) pi.getTaskMgmtInstance().getTaskInstances();
             assertNotNull(tis);
             assertEquals(2, tis.size());

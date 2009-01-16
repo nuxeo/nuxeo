@@ -17,24 +17,18 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.jbpm.test;
+package org.nuxeo.ecm.platform.forum.workflow;
 
 /**
- * JBPM test configuration constants
+ * Forum workflow test constants
  *
  * @author Anahide Tchertchian
  *
  */
-public class JbpmTestConstants {
+public class ForumWorkflowTestConstants {
 
-    public static final String API_BUNDLE_NAME = "org.nuxeo.ecm.platform.core.jbpm.api";
+    public static final String FORUM_CORE_BUNDLE = "org.nuxeo.ecm.platform.forum.workflow";
 
-    public static final String CORE_BUNDLE_NAME = "org.nuxeo.ecm.platform.core.jbpm";
-
-    public static final String TESTING_BUNDLE_NAME = "org.nuxeo.ecm.platform.core.jbpm.testing";
-
-    public static final String TEST_JBPM_CONFIGURATION = "test-contrib.xml";
-
-    public static final String TEST_SQL_DIRECTORIES_CONTRIB = "test-sql-directories.xml";
+    public static final String FORUM_WORKFLOW_BUNDLE = "org.nuxeo.ecm.platform.forum.workflow";
 
 }

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.jbpm.core;
 
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
+import org.nuxeo.ecm.platform.jbpm.test.JbpmTestConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -32,8 +33,8 @@ public class JbpmComponentTest extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.core.jbpm");
-        deployBundle("org.nuxeo.ecm.platform.core.jbpm.testing");
+        deployBundle(JbpmTestConstants.CORE_BUNDLE_NAME);
+        deployBundle(JbpmTestConstants.TESTING_BUNDLE_NAME);
     }
 
     public void testServices() throws Exception {

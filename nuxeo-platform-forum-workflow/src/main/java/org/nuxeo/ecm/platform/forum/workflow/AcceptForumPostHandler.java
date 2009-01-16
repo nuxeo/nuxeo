@@ -12,39 +12,30 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     arussel
+ *     Anahide Tchertchian
+ *
+ * $Id$
  */
-package org.nuxeo.ecm.platform.jbpm.core.helper;
+
+package org.nuxeo.ecm.platform.forum.workflow;
 
 import org.jbpm.graph.exe.ExecutionContext;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.api.Framework;
 
 /**
- * @author arussel
+ * Makes post document follow lifecycle transition to be in published state
+ *
+ * @author Anahide Tchertchian
  *
  */
-public class ParallelReviewHelper extends AbstractJbpmHandlerHelper {
+public class AcceptForumPostHandler extends ForumHandlerHelper {
 
     private static final long serialVersionUID = 1L;
-
-    protected NuxeoPrincipal getNuxeoPrincipal(String user) throws Exception {
-        UserManager userManager = Framework.getService(UserManager.class);
-        return userManager.getPrincipal(user);
-    }
 
     @Override
     public void execute(ExecutionContext executionContext) throws Exception {
         this.executionContext = executionContext;
         if (nuxeoHasStarted()) {
-            String endLifecycle = getEndLifecycleTransition();
-            if (endLifecycle != null && !"".equals(endLifecycle)) {
-                String user = getSwimlaneUser(getInitiator());
-                followTransition(getNuxeoPrincipal(user), getDocumentRef(),
-                        endLifecycle);
-            }
+            followTransition(ForumConstants.TRANSITION_TO_PUBLISHED_STATE);
         }
         executionContext.getToken().signal();
     }

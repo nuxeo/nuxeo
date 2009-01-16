@@ -23,6 +23,7 @@ import java.util.List;
 import org.jbpm.JbpmContext;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
+import org.nuxeo.ecm.platform.jbpm.JbpmService;
 
 /**
  * @author arussel
@@ -30,12 +31,6 @@ import org.jbpm.taskmgmt.exe.TaskInstance;
  */
 public class ValidationReviewTest extends AbstractProcessDefinitionTest {
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.jbpm.core.pd.AbstractProcessDefinitionTest#
-     *      getProcessDefinitionResource()
-     */
     @Override
     public String getProcessDefinitionResource() {
         return "/process/validation-review.xml";
@@ -57,7 +52,7 @@ public class ValidationReviewTest extends AbstractProcessDefinitionTest {
             List<TaskInstance> bobstask = context.getTaskList("bob");
             assertEquals(1, bobstask.size());
             pi.getContextInstance().setVariable(
-                    "participants",
+                    JbpmService.VariableName.participants.name(),
                     new ArrayList<String>(Arrays.asList(new String[] { "bob",
                             "trudy" })));
             bobstask.get(0).end();

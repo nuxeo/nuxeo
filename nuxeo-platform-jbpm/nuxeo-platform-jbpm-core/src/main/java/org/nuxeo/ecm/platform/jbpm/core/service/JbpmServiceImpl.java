@@ -144,11 +144,14 @@ public class JbpmServiceImpl implements JbpmService {
                     pi.getContextInstance().setTransientVariables(
                             transientVariables);
                 }
-                pi.getContextInstance().setVariable(
-                        JbpmService.VariableName.documentId.name(), dm.getId());
-                pi.getContextInstance().setVariable(
-                        JbpmService.VariableName.documentRepositoryName.name(),
-                        dm.getRepositoryName());
+                if (dm != null) {
+                    pi.getContextInstance().setVariable(
+                            JbpmService.VariableName.documentId.name(),
+                            dm.getId());
+                    pi.getContextInstance().setVariable(
+                            JbpmService.VariableName.documentRepositoryName.name(),
+                            dm.getRepositoryName());
+                }
                 TaskInstance ti = pi.getTaskMgmtInstance().createStartTaskInstance();
                 if (ti == null) {
                     pi.signal();
@@ -238,7 +241,9 @@ public class JbpmServiceImpl implements JbpmService {
         return (List<ProcessInstance>) executeJbpmOperation(new JbpmOperation() {
             public ArrayList<ProcessInstance> run(JbpmContext context)
                     throws NuxeoJbpmException {
-                context.setActorId(user.getName());
+                if (user != null) {
+                    context.setActorId(user.getName());
+                }
                 ArrayList<ProcessInstance> result = new ArrayList<ProcessInstance>();
                 Session session = context.getSession();
                 List<ProcessInstance> list = session.getNamedQuery(
