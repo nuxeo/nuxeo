@@ -27,22 +27,7 @@
       <artifact group="!org.nuxeo*" />
       <artifact group="org.nuxeo.common" />
       <artifact name="nuxeo-runtime-jboss-extensions" />
-
-      <artifact name="nuxeo-platform-search-compass-plugin" />
     </excludes>
-  </artifactSet>
-
-  <assemble>
-    <outputFile>system</outputFile>
-    <unpack>true</unpack>
-    <unpackInNewDirectory>true</unpackInNewDirectory>
-    <set>nuxeo-platform-unpacked</set>
-  </assemble>
-  <artifactSet id="nuxeo-platform-unpacked">
-    <import>**</import>
-    <includes>
-      <artifact name="nuxeo-platform-search-compass-plugin" />
-    </includes>
   </artifactSet>
 
   <!-- third party libraries embedded in the ear -->

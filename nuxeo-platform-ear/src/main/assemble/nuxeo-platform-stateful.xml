@@ -33,7 +33,6 @@
 
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
-      <artifact name="nuxeo-platform-search-compass-plugin" />
       <artifact name="nuxeo-platform-ear" />
     </excludes>
   </artifactSet>
@@ -49,7 +48,6 @@
     <includes>
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
-      <artifact name="nuxeo-platform-search-compass-plugin" />
     </includes>
   </artifactSet>
 
