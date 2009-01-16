@@ -436,7 +436,7 @@ public class JbpmServiceImpl implements JbpmService {
         });
     }
 
-    public void persistTaskInstances(final List<TaskInstance> taskInstances)
+    public void saveTaskInstances(final List<TaskInstance> taskInstances)
             throws NuxeoJbpmException {
         executeJbpmOperation(new JbpmOperation() {
             public Serializable run(JbpmContext context)

@@ -105,7 +105,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         variables.put(JbpmService.VariableName.documentRepositoryName.name(),
                 "demo");
         ti.addVariables(variables);
-        service.persistTaskInstances(Collections.singletonList(ti));
+        service.saveTaskInstances(Collections.singletonList(ti));
         List<TaskInstance> lists = service.getTaskInstances(dm,
                 new NuxeoPrincipalImpl("bob"), null);
         assertNotNull(lists);

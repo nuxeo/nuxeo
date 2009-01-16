@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author arussel
  *
  */
-public abstract class AbstractHelper implements ActionHandler,
+public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
         AssignmentHandler, DecisionHandler {
 
     private static final long serialVersionUID = 1L;
@@ -112,7 +112,7 @@ public abstract class AbstractHelper implements ActionHandler,
         return (String) executionContext.getContextInstance().getVariable(name);
     }
 
-    protected boolean nuxeHasStarted() throws Exception {
+    protected boolean nuxeoHasStarted() throws Exception {
         return Framework.getRuntime() != null;
     }
 }

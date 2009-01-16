@@ -23,14 +23,14 @@ import org.nuxeo.ecm.platform.jbpm.JbpmService;
  * @author arussel
  *
  */
-public class ValidationReviewHelper extends AbstractHelper {
+public class ValidationReviewHelper extends AbstractJbpmHandlerHelper {
 
     private static final long serialVersionUID = 1L;
 
     @Override
     public void execute(ExecutionContext executionContext) throws Exception {
         this.executionContext = executionContext;
-        if (nuxeHasStarted()) {
+        if (nuxeoHasStarted()) {
             String user = getSwimlaneUser(JbpmService.VariableName.initiator.name());
             String endLifecycle = getStringVariable(JbpmService.VariableName.endLifecycle.name());
             if (endLifecycle != null && !"".equals(endLifecycle)) {

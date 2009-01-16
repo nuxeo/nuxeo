@@ -26,29 +26,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 public interface PublicationHelper extends Serializable {
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.jbpm.core.helper.PublicationHelper#decide(org.jbpm.graph.exe.ExecutionContext)
-     */
     String decide(ExecutionContext executionContext) throws Exception;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.jbpm.core.helper.PublicationHelper#publishDocument(org.nuxeo.ecm.core.api.CoreSession,
-     *      org.nuxeo.ecm.core.api.DocumentModel,
-     *      org.nuxeo.ecm.core.api.DocumentModel)
-     */
     void publishDocument(CoreSession session, DocumentModel docToPublish,
             DocumentModel secionToPublish) throws ClientException;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.jbpm.core.helper.PublicationHelper#assign(org.jbpm.taskmgmt.exe.Assignable,
-     *      org.jbpm.graph.exe.ExecutionContext)
-     */
     void assign(Assignable assignable, ExecutionContext executionContext)
             throws Exception;
 

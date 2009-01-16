@@ -124,11 +124,13 @@ public interface JbpmService {
             NuxeoPrincipal principal) throws NuxeoJbpmException;
 
     /**
-     * Persist the task instances.
+     * Saves the task instances.
+     * <p>
+     * Tasks are created or updated if they already exist.
      *
      * @param taskInstances
      */
-    void persistTaskInstances(List<TaskInstance> taskInstances)
+    void saveTaskInstances(List<TaskInstance> taskInstances)
             throws NuxeoJbpmException;
 
     // PROCESS
