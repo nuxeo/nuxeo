@@ -1165,9 +1165,6 @@
                 <link>http://jakarta.apache.org/commons/io/apidocs/</link>
                 <link>http://junit.sourceforge.net/javadoc/</link>
                 <link>http://logging.apache.org/log4j/docs/api/</link>
-                <link>
-                  http://www.opensymphony.com/compass/versions/1.2M2/api/
-                </link>
                 <link>http://jackrabbit.apache.org/api-1/</link>
                 <link>http://www.day.com/maven/jsr170/javadocs/jcr-1.0/</link>
                 <link>http://www.restlet.org/documentation/1.0/api/</link>
