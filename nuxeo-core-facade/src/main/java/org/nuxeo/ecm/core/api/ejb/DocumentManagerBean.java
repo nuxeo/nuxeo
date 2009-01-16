@@ -315,41 +315,33 @@ public class DocumentManagerBean extends AbstractSession implements SessionSynch
 
 
     public void afterBegin() throws EJBException, RemoteException {
-//        System.out.println("# "+Thread.currentThread().getId()+ " #### TRANSACTION STARTED: ");
-//        if (log.isDebugEnabled()) {
-//            log.debug("Transaction started");
-//        }
-//        CoreEventListenerService service = NXCore.getCoreEventListenerService();
-//        if (service != null) {
-//            service.transactionStarted();
-//        }
+        if (log.isTraceEnabled()) {
+            log.trace("Transaction started");
+        }
+        try {
+            getEventService().transactionStarted();
+        } catch (Exception e) {
+            log.error("Error while notifying transaction start", e);
+        }
     }
 
     public void beforeCompletion() throws EJBException, RemoteException {
-//        System.out.println("# "+Thread.currentThread().getId()+ " #### TRANSACTION ABOUT TO COMMIT");
-//        if (log.isDebugEnabled()) {
-//            log.debug("Transaction about to commit");
-//        }
-//        CoreEventListenerService service = NXCore.getCoreEventListenerService();
-//        if (service != null) {
-//            service.transactionAboutToCommit();
-//        }
     }
 
     public void afterCompletion(boolean committed) throws EJBException,
-            RemoteException {
-//        System.out.println("# "+Thread.currentThread().getId()+ " #### TRANSACTION COMMITTED: "+committed);
-//        if (log.isDebugEnabled()) {
-//            log.debug("Transaction "+(committed ? "committed" : "rollbacked"));
-//        }
-//        CoreEventListenerService service = NXCore.getCoreEventListenerService();
-//        if (service != null) {
-//            if (committed) {
-//                service.transactionCommited();
-//            } else {
-//                service.transactionRollbacked();
-//            }
-//        }
+    RemoteException {
+        if (log.isTraceEnabled()) {
+            log.trace("Transaction "+(committed ? "committed" : "rollbacked"));
+        }
+        try {
+            if (committed) {
+                getEventService().transactionCommited();
+            } else {
+                getEventService().transactionRollbacked();
+            }
+        } catch (Exception e) {
+            log.error("Error while notifying transaction completion", e);
+        }
     }
 
 }
