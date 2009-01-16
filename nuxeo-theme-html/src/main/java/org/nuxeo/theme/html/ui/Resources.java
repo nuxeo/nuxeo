@@ -59,7 +59,7 @@ public class Resources {
         // styles
         if (hasStyles) {
             sb.append(String.format(
-                    "<link type=\"text/css\" rel=\"stylesheet\" media=\"all\" href=\"%s\"></link>",
+                    "<link type=\"text/css\" rel=\"stylesheet\" media=\"all\" href=\"%s\"/>",
                     combinedStyles.toString()));
         }
 
