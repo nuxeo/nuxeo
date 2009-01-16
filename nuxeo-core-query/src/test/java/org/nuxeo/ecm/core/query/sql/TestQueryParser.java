@@ -457,6 +457,8 @@ public class TestQueryParser extends TestCase {
 
     public void testOrderByClause() {
         SQLQuery query = SQLQueryParser.parse("SELECT p, q, r FROM t ORDER BY p, q");
+        String expected = "SELECT p, q, r FROM t ORDER BY p, q";
+        assertEquals(expected, query.toString());
         OrderByClause clause = query.getOrderByClause();
         OrderByList elements = clause.elements;
         assertEquals("p", elements.get(0).reference.name);
@@ -466,6 +468,8 @@ public class TestQueryParser extends TestCase {
         assertEquals(2, elements.size());
 
         query = SQLQueryParser.parse("SELECT p, q, r FROM t ORDER BY p, q ASC");
+        expected = "SELECT p, q, r FROM t ORDER BY p, q";
+        assertEquals(expected, query.toString());
         clause = query.getOrderByClause();
         elements = clause.elements;
         assertEquals("p", elements.get(0).reference.name);
@@ -475,6 +479,8 @@ public class TestQueryParser extends TestCase {
         assertEquals(2, elements.size());
 
         query = SQLQueryParser.parse("SELECT p, q, r FROM t ORDER BY p, q DESC");
+        expected = "SELECT p, q, r FROM t ORDER BY p, q DESC";
+        assertEquals(expected, query.toString());
         clause = query.getOrderByClause();
         elements = clause.elements;
         assertEquals("p", elements.get(0).reference.name);
@@ -484,6 +490,8 @@ public class TestQueryParser extends TestCase {
         assertEquals(2, elements.size());
 
         query = SQLQueryParser.parse("SELECT p, q, r FROM t ORDER BY p DESC, q");
+        expected = "SELECT p, q, r FROM t ORDER BY p DESC, q";
+        assertEquals(expected, query.toString());
         clause = query.getOrderByClause();
         elements = clause.elements;
         assertEquals("p", elements.get(0).reference.name);
