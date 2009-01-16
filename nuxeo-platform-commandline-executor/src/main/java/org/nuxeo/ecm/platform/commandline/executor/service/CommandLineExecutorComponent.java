@@ -92,41 +92,41 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
             env.merge((EnvironementDescriptor) contribution);
         } else if (EP_CMD.equals(extensionPoint)) {
             CommandLineDescriptor desc = (CommandLineDescriptor) contribution;
+            String name = desc.getName();
 
-            log.debug("Registering command " + desc.getName());
+            log.debug("Registering command: " + name);
 
             if (!desc.isEnabled()) {
-                commandDescriptors.remove(desc.getName());
-                log.info("Command " + desc.getName()
-                        + " is configured to not be enabled ");
+                commandDescriptors.remove(name);
+                log.info("Command configured to not be enabled: " + name);
             }
 
             String testerName = desc.getTester();
             if (testerName == null) {
                 testerName = DEFAULT_TESTER;
-                log.debug("Using default tester for command " + desc.getName());
+                log.debug("Using default tester for command: " + name);
             }
 
             CommandTester tester = testers.get(testerName);
             boolean cmdAvailable = false;
             if (tester == null) {
-                log.error("Unable to find tester " + testerName + " command "
-                        + desc.getName() + " will not be avalaible");
+                log.error("Unable to find tester '" + testerName +
+                        "', command will not be avalaible: " + name);
             } else {
-                log.debug("testing command " + desc.getName() + " with tester "
-                        + testerName);
+                log.debug("Using tester '" + testerName + "' for command: " +
+                        name);
                 CommandTestResult testResult = tester.test(desc);
                 cmdAvailable = testResult.succeed();
                 if (cmdAvailable) {
-                    log.info("Command " + desc.getName() + " is avalaible");
+                    log.info("Registered command: " + name);
                 } else {
-                    log.warn("Command " + desc.getName() + " is NOT avalaible "
-                            + testResult.getErrorMessage());
+                    log.warn("Command not available: " + name + " (" +
+                            testResult.getErrorMessage() + ')');
                     desc.setInstallErrorMessage(testResult.getErrorMessage());
                 }
             }
             desc.setAvalaible(cmdAvailable);
-            commandDescriptors.put(desc.getName(), desc);
+            commandDescriptors.put(name, desc);
         } else if (EP_CMDTESTER.equals(extensionPoint)) {
             CommandTesterDescriptor desc = (CommandTesterDescriptor) contribution;
             CommandTester tester = (CommandTester) desc.getTesterClass()
