@@ -96,11 +96,12 @@ public class StandaloneApplication extends OSGiAdapter {
         }
         // start level 1
         // start bundles that are specified in the osgi.bundles property
-        startBundles();
+        startBundles("pre-bundles");
         // start level 2
         // if needed install all discovered bundles (the one that are located in bundles dir)
         autoInstallBundles();
         // start level 3
+        startBundles("post-bundles");
         //TODO
         fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, getSystemBundle(), null));
     }
@@ -117,17 +118,16 @@ public class StandaloneApplication extends OSGiAdapter {
         super.shutdown();
     }
 
-    protected void startBundles() throws Exception {
+    protected void startBundles(String key) throws Exception {
         if (options == null) {
             return;
-        }
-        options.getOption("bundles");
-        String bundlesString = env.getProperty(Environment.BUNDLES);
+        }        
+        String bundlesString = options.getOption(key);
         if (bundlesString == null) {
             return; // no bundles to start
         }
-        Iterable<BundleFile> bundles = new ArrayList<BundleFile>();
-        String[] ar = StringUtils.split(bundlesString, ',', true);
+        ArrayList<BundleFile> bundles = new ArrayList<BundleFile>();
+        String[] ar = StringUtils.split(bundlesString, ':', true);
         for (String entry : ar) {
             File file;
             if (entry.contains("file:")) {
@@ -143,6 +143,7 @@ public class StandaloneApplication extends OSGiAdapter {
                 bf = new JarBundleFile(file);
             }
             classLoader.addURL(bf.getURL());
+            bundles.add(bf);
         }
         for (BundleFile bf : bundles) {
             this.install(new BundleImpl(this, bf, classLoader));

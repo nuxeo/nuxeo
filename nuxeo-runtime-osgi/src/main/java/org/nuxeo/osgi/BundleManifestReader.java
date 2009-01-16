@@ -29,6 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuxeo.common.utils.JarUtils;
+import org.nuxeo.common.utils.StringUtils;
 import org.osgi.framework.Constants;
 
 /**
@@ -40,6 +41,15 @@ public final class BundleManifestReader {
     private static final Pattern PARAMS_PATTERN
             = Pattern.compile("\\s*([^:\\s]+)\\s*:=\\s*([^;\\s]+)\\s*;?");
 
+    public static String[] CUSTOM_HEADERS = new String[] {"Nuxeo-Component", "Nuxeo-WebModule"};
+    
+    static { // we can add dynamically new headers through system properties
+        String h = System.getProperty("org.nuxeo.manifest.headers");
+        if (h != null) {
+            CUSTOM_HEADERS = StringUtils.split(h, ',', true);
+        }
+    }
+    
     // Utility class
     private BundleManifestReader() {
     }
@@ -76,6 +86,7 @@ public final class BundleManifestReader {
         headers.put(Constants.BUNDLE_ACTIVATOR, NullActivator.class.getName());
         return headers;
     }
+
 
     public static Dictionary<String, String> getHeaders(Manifest mf) {
         Attributes attrs = mf.getMainAttributes();
@@ -125,9 +136,13 @@ public final class BundleManifestReader {
         if (val != null) {
             headers.put(Constants.REQUIRE_BUNDLE, val);
         }
-        val = attrs.getValue("Nuxeo-Component");
-        if (val != null) {
-            headers.put("Nuxeo-Component", val);
+        // Nuxeo headers
+        for (int i=0; i<CUSTOM_HEADERS.length; i++) {
+            String key = CUSTOM_HEADERS[i];
+            val = attrs.getValue(key);    
+            if (val != null) {
+                headers.put(key, val);
+            }
         }
         return headers;
     }

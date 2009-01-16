@@ -149,6 +149,8 @@ public class StandaloneApplication2 extends OSGiAdapter {
         super.shutdown();
     }
 
+    //TODO: this method doesn't work - it must be sync with the one from 
+    // StandaloneApplication
     protected void startBundles() throws Exception {
         String bundlesString = env.getProperty(Environment.BUNDLES);
         if (bundlesString == null) {
