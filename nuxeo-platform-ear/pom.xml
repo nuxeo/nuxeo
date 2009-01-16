@@ -165,7 +165,7 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-multi</artifactId>
     </dependency>
-    <!--dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-forum</artifactId>
     </dependency>
@@ -176,7 +176,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-forum-workflow</artifactId>
-    </dependency-->
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-search-api</artifactId>
@@ -241,20 +241,20 @@
       <artifactId>nuxeo-platform-login-jboss</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-jbpm-api</artifactId>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-jbpm-api</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-jbpm-core</artifactId>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-jbpm-core</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-jbpm-web</artifactId>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-jbpm-web</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-jbpm-facade</artifactId>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-jbpm-facade</artifactId>
     </dependency>
 
     <dependency>
@@ -485,19 +485,19 @@
     <!--dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-publishing-api</artifactId>
-    </dependency>
-    <dependency>
+      </dependency>
+      <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-publishing</artifactId>
-    </dependency>
-    <dependency>
+      </dependency>
+      <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-publishing-facade</artifactId>
-    </dependency>
-    <dependency>
+      </dependency>
+      <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-publishing-web</artifactId>
-    </dependency-->
+      </dependency-->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-url-core</artifactId>
