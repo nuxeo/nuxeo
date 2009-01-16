@@ -122,7 +122,7 @@ public class ConnectionImpl implements Session {
 
     private Session getSession() throws StorageException {
         if (session == null) {
-            throw new StorageException("Cannot use closed connection handle");
+            throw new StorageException("Cannot use closed connection handle: " + this);
         }
         return session;
     }
