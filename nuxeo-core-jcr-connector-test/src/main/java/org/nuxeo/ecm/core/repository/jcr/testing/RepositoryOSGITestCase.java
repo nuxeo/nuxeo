@@ -79,7 +79,7 @@ public abstract class RepositoryOSGITestCase extends NXRuntimeTestCase {
             repository = NXCore.getRepositoryService().getRepositoryManager().getRepository(
                     REPOSITORY_NAME);
         }
-        openCoreSession("Administrator");
+        openCoreSession(null);
     }
 
     public CoreSession getCoreSession() {
