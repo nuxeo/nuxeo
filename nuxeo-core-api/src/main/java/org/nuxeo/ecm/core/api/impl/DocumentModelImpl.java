@@ -382,6 +382,30 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     /**
+     * Detaches the documentImpl from its existing session, so that it can
+     * survive beyond the session's closing.
+     *
+     * @param loadAll if {@code true}, load all data from the session before
+     *            detaching
+     */
+    public void detach(boolean loadAll) throws ClientException {
+        if (sid == null) {
+            return;
+        }
+        if (loadAll && type != null) {
+            DocumentType dt = type.get();
+            if (dt != null) {
+                for (String schema : dt.getSchemaNames()) {
+                    if (!isSchemaLoaded(schema)) {
+                        loadDataModel(schema);
+                    }
+                }
+            }
+        }
+        sid = null;
+    }
+
+    /**
      * Lazily loads the given data model.
      *
      * @param schema
