@@ -452,10 +452,12 @@ public class SearchActionsBean extends InputController implements
         return queryModelActions.get(QM_ADVANCED).getDocumentModel();
     }
 
+    @Deprecated
     public void reindexDocuments() throws ClientException {
         reindexDocuments(reindexPath);
     }
 
+    @Deprecated
     public void reindexDocuments(String path) throws ClientException {
         SearchService service = SearchServiceDelegate.getRemoteSearchService();
 

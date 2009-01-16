@@ -25,7 +25,6 @@ import javax.security.auth.login.LoginException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingThread;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceConf;
 import org.nuxeo.runtime.api.Framework;
 
@@ -47,8 +46,6 @@ public abstract class AbstractIndexableResource implements IndexableResource {
 
     private LoginContext loginCtx;
 
-    private Boolean boundToIndexingThread;
-
     protected AbstractIndexableResource() {
     }
 
@@ -66,24 +63,7 @@ public abstract class AbstractIndexableResource implements IndexableResource {
         return configuration;
     }
 
-    protected boolean isBoundToIndexingThread() {
-        if (boundToIndexingThread == null) {
-            boundToIndexingThread = Thread.currentThread() instanceof IndexingThread;
-        }
-        return boundToIndexingThread;
-    }
-
     protected void login() {
-
-        // Here, we are executed within an Indexing thread that already
-        // performed authentication on the nuxeo security domain.
-        if (isBoundToIndexingThread()) {
-            log.debug("Bound to an indexing thread. We do not "
-                    + " authenticated against the nuxeo security domain again.");
-            loginCtx = null;
-            return;
-        }
-
         // We need to login here on the nuxeo ecm security domain for being able
         // to access the remote logs bean.
         try {

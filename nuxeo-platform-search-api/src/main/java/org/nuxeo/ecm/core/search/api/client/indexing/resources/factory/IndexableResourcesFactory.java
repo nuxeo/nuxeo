@@ -29,13 +29,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory.BuiltinDocumentFields;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
-import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingThread;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResource;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResources;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.document.impl.DocumentBuiltinsIndexableResourceImpl;
@@ -45,7 +42,6 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableR
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.IndexableDocType;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.IndexableDocTypeDescriptor;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.ResourceType;
-import org.nuxeo.ecm.core.search.api.indexingwrapper.DocumentModelIndexingWrapper;
 
 /**
  * Computes an <code>IndexableResources</code> instance for a given
@@ -83,45 +79,14 @@ public final class IndexableResourcesFactory implements Serializable {
         return dm.getId();
     }
 
+    // TODO probably unused, as sid is always null
     public static IndexableResources computeResourcesFor(DocumentModel dm) {
-        return computeResourcesFor(dm, null);
-    }
-
-    public static IndexableResources computeResourcesFor(DocumentModel dm,
-            String managedSessionId) {
-
         if (dm == null) {
             log.error("No document model given.... Nothing to compute.");
             return null;
         }
 
-        String sid = managedSessionId;
-        if (managedSessionId == null) {
-            // called from ThreadPool
-            // => we need to refetch the dm from a new CoreSession
-
-            if (Thread.currentThread() instanceof IndexingThread) {
-                IndexingThread idxThread = (IndexingThread) Thread.currentThread();
-                String repositoryName = dm.getRepositoryName();
-                try {
-                    CoreSession session = idxThread.getCoreSession(repositoryName);
-                    sid = session.getSessionId();
-                    dm = session.getDocument(dm.getRef());
-                    // get the wrapper if available
-                    dm = dm.getAdapter(DocumentModelIndexingWrapper.class);
-                } catch (ClientException e) {
-                    log.warn(String.format(
-                            "Unable to fetch DocumentModel with ref '%s' from indexing thread context",
-                            dm.getRef()));
-                    return null;
-                } catch (Throwable t) {
-                    log.error(
-                            "Unable to fetch CoreSession from thread context",
-                            t);
-                    return null;
-                }
-            }
-        }
+        String sid = null;
 
         // Ask resource configurations for this given doctype.
         String docType = dm.getType();

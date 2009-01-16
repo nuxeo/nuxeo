@@ -117,31 +117,6 @@ public interface SearchService extends Serializable {
      */
     void index(ResolvedResources sources) throws IndexingException;
 
-    /**
-     * Adds / indexex in a separated thread a document model instance.
-     * <p>
-     * We need to invoke the service to reach the thread pool as the ppol
-     *
-     * @param dm a Nuxeo Core document model instance.
-     * @param recursive perform an indexing recursion on this document model
-     *            children
-     * @param fulltext do compute fulltext along with other metadata.
-     * @throws IndexingException in case of thread pool internal error.
-     */
-    void indexInThread(DocumentModel dm, Boolean recursive, boolean fulltext)
-            throws IndexingException;
-
-    /**
-     * Add / index in a separated thread a resolved resources.
-     * <p>
-     * We need to invoke the service to reach the thread pool as the ppol
-     * </p>
-     *
-     * @param sources : resolved resources
-     * @throws IndexingException : in case of thread pool internal error.
-     */
-    void indexInThread(ResolvedResources sources) throws IndexingException;
-
     void unindex(DocumentModel dm) throws IndexingException;
 
     /**
@@ -391,7 +366,9 @@ public interface SearchService extends Serializable {
      * @param fulltext whether or not we want to index fulltext.
      * @parem path the path from which the reindexing will occur.
      * @throws IndexingException
+     * @deprecated does nothing
      */
+    @Deprecated
     void reindexAll(String repoName, String path, boolean fulltext)
             throws IndexingException;
 
