@@ -33,7 +33,10 @@ import org.nuxeo.ecm.core.api.Blob;
  * plugins chain.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ *
+ * @deprecated TransformationService is deprecated use {@link org.nuxeo.ecm.core.convert.api.ConversionService}
  */
+@Deprecated
 public interface Transformer extends Serializable {
 
     /**

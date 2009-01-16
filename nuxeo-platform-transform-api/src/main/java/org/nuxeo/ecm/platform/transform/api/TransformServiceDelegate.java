@@ -26,7 +26,11 @@ import org.nuxeo.runtime.api.Framework;
  * Stateless transform service delegate.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ *
+ * @deprecated TransformationService is deprecated use {@link org.nuxeo.ecm.core.convert.api.ConversionService}
+ *
  */
+@Deprecated
 public final class TransformServiceDelegate {
 
     // Utility class.
