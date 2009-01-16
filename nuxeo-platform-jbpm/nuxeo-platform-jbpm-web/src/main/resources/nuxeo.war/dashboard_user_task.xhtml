@@ -1,39 +1,35 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxd="http://nuxeo.org/nxweb/document">
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:nxu="http://nuxeo.org/nxweb/util"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:nxd="http://nuxeo.org/nxweb/document">
 <div class="foldableBox">
 
 <h3 class="unfolded"><a href="#nogo"
-  onclick="return toggleBox(this)"> <h:outputText
-  value="#{messages['jbpm.dashboard.pd']}" /> </a></h3>
+	onclick="return toggleBox(this)"> <h:outputText
+	value="#{messages['title.dashboard.userTasks']}" /> </a></h3>
 
 <div class="boxBody"><h:dataTable
-  value="#{jbpmService.getCurrentTaskInstances(currentUser)}" var="ti"
-  rowClasses="dataRowEven,dataRowOdd" styleClass="dataList">
-  <h:column>
-    <f:facet name="header">#{messages['jbpm.dashboard.table.tiName']}</f:facet>
-        #{ti.name} #{ti.id}
-      </h:column>
-  <h:column>
-    <f:facet name="header">#{messages['jbpm.dashboard.table.tiStatus']}</f:facet>
-    <c:choose>
-      <c:when test="#{ti.started == null}">#{messages['jbpm.dashboard.table.tiStatus.created']}</c:when>
-      <c:when test="#{ti.done == null}">#{messages['jbpm.dashboard.table.tiStatus.started']}</c:when>
-      <c:otherwise>#{messages['jbpm.dashboard.table.tiStatus.done']}</c:otherwise>
-    </c:choose>
-  </h:column>
-  <h:column>
-    <f:facet name="header">#{messages['jbpm.dashboard.table.tiStatus.documents']}</f:facet>
-    <h:form>
-      <nxd:documentLink
-        document="#{jbpmService.getDocumentModel(ti, currentUser)}"
-        view="PROCESS" title="#{jbpmService.getDocumentModel(ti, currentUser).title}"/>
-    </h:form>
-  </h:column>
+	value="#{jbpmService.getCurrentTaskInstances(currentUser)}" var="task"
+	rowClasses="dataRowEven,dataRowOdd" styleClass="dataList">
+	<h:column>
+		<f:facet name="header">#{messages['label.workflow.task.name']}</f:facet>
+		<c:set var="taskNameLabel" value="label.workflow.task.#{task.name}" />#{messages[taskNameLabel]}</h:column>
+	<h:column>
+		<f:facet name="header">#{messages['label.workflow.task.startDate']}</f:facet>
+		<h:outputText value="#{task.create}" />
+	</h:column>
+	<h:column>
+		<f:facet name="header">#{messages['label.title']}</f:facet>
+		<h:form>
+			<nxd:documentLink
+				document="#{jbpmService.getDocumentModel(task, currentUser)}"
+				view="PROCESS"
+				title="#{jbpmService.getDocumentModel(task, currentUser).title}" />
+		</h:form>
+	</h:column>
 </h:dataTable></div>
 </div>
 </div>
