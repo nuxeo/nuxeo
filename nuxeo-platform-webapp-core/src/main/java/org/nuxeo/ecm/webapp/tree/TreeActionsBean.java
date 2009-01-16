@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.tree;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +63,9 @@ import org.richfaces.event.NodeExpandedEvent;
 @Scope(CONVERSATION)
 @Name("treeActions")
 @Install(precedence = FRAMEWORK)
-public class TreeActionsBean implements TreeActions {
+public class TreeActionsBean implements TreeActions, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(TreeActionsBean.class);
 
@@ -70,10 +73,10 @@ public class TreeActionsBean implements TreeActions {
             "_NODE_SELECTED_MARKER";
 
     @In(create = true, required = false)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     protected List<DocumentTreeNode> tree;
 
