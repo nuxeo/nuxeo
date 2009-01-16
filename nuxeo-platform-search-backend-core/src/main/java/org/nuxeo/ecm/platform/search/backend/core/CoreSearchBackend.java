@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -149,6 +150,8 @@ public class CoreSearchBackend extends AbstractSearchEngineBackend {
                 log.error("Got null document from query: " + query);
                 continue;
             }
+            // detach the document so that we can use it beyond the session
+            ((DocumentModelImpl) doc).detach(true);
             resultItems.add(new DocumentModelResultItem(doc));
         }
         return new ResultSetImpl(sqlQuery, "core", searchPrincipal, offset,
