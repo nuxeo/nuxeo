@@ -20,6 +20,10 @@
     <directory>src/main/resources/webengine</directory>
   </fileSet>
 
+  <fileSet id="theme-template" profile="theme">
+    <directory>src/main/resources/theme</directory>
+  </fileSet>
+
 
   <artifactSet id="bundles">
     <artifacts>
@@ -95,6 +99,15 @@
     </artifacts>
   </artifactSet>
 
+  <artifactSet id="theme-bundles" profile="theme">
+    <artifacts>
+      <artifact group="org.nuxeo.theme" name="nuxeo-theme-core" version="${nuxeo.theme.version}"/>
+      <artifact group="org.nuxeo.theme" name="nuxeo-theme-fragments" version="${nuxeo.theme.version}"/>
+      <artifact group="org.nuxeo.theme" name="nuxeo-theme-webengine" version="${nuxeo.theme.version}"/>
+      <artifact group="org.nuxeo.theme" name="nuxeo-theme-html" version="${nuxeo.theme.version}"/>
+      <artifact group="org.nuxeo.theme" name="nuxeo-theme-editor" version="${nuxeo.theme.version}"/>
+    </artifacts>
+  </artifactSet>
 
   <artifactSet id="third-party-libs">
     <artifacts>
@@ -137,12 +150,20 @@
     </artifacts>
   </artifactSet>
 
+  <artifactSet id="third-party-theme-libs" profile="theme">
+    <artifacts>
+      <artifact group="cssparser" name="cssparser" />
+      <artifact group="org.dojotoolkit" name="custom_rhino" />
+    </artifacts>
+  </artifactSet>
+
   <assemble>
     <set>base-template</set>
     <set>template</set>
     <set>webengine-template</set>
     <set>platform-template</set>
     <set>platform-audit-template</set>
+    <set>theme-template</set>
     <outputFile>/</outputFile>
   </assemble>
 
@@ -150,6 +171,7 @@
     <set>third-party-libs</set>
     <set>third-party-el-libs</set>
     <set>third-party-jpa-libs</set>
+    <set>third-party-theme-libs</set>
     <outputFile>lib</outputFile>
   </assemble>
 
@@ -159,6 +181,7 @@
     <set>platform-el-bundles</set>
     <set>platform-audit-bundles</set>
     <set>webengine-bundles</set>
+    <set>theme-bundles</set>
     <outputFile>bundles</outputFile>
   </assemble>
 

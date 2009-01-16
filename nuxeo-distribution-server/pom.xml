@@ -38,6 +38,12 @@
       </activation>
     </profile>
     <profile>
+      <id>theme</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+    <profile>
       <id>jca</id>
       <activation>
         <activeByDefault>false</activeByDefault>
