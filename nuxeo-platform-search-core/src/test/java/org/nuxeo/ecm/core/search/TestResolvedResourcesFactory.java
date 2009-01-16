@@ -969,12 +969,4 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         service.index(computeResourcesFor(doc), true);
     }
 
-    public void xtestReindexAll() throws Exception {
-        final int NB_DOCS = 100;
-        for (int i = 0; i < NB_DOCS; i++) {
-            createSampleFileTextPlain();
-        }
-        service.reindexAll("demo", "/", false);
-    }
-
 }

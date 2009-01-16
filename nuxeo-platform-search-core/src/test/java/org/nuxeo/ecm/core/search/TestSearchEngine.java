@@ -53,7 +53,7 @@ public class TestSearchEngine extends RepositoryTestCase {
 
     private static final String BACKEND_NAME = "fake";
 
-    private static final String CONF_NAME = "compass-test.cfg.xml";
+    private static final String CONF_NAME = "fake.xml";
 
     private static final String DOC_SCHEMA_CONF_NAME = "dublincore";
 

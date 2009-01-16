@@ -113,14 +113,18 @@ public interface SearchActions extends StatefulBaseLifeCycle,
     /** Reindex all documents.
      *
      * @throws ClientException
+     * @deprecated does nothing
      */
+    @Deprecated
     void reindexDocuments() throws ClientException;
 
     /** Reindex all documents under given path (inclusive).
      *
      * @param path
      * @throws ClientException
+     * @deprecated does nothing
      */
+    @Deprecated
     void reindexDocuments(String path) throws ClientException;
 
     /**
