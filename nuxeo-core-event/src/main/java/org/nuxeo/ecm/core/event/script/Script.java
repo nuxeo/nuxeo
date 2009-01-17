@@ -36,12 +36,12 @@ import org.nuxeo.common.utils.FileUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class Script {
 
-    public static boolean trackChanges = true; 
+    public static boolean trackChanges = true;
     public static ScriptEngineManager scripting;
+
     public CompiledScript script;
     public long lastModified = -1;
 
@@ -53,7 +53,7 @@ public abstract class Script {
         }
         return scripting;
     }
-    
+
     public static Script newScript(String location) throws Exception {
         if (location.indexOf(':') > -1) {
             return newScript(new URL(location));
@@ -64,7 +64,7 @@ public abstract class Script {
 
     public static Script newScript(URL location) throws Exception {
         String proto = location.getProtocol();
-        if (proto.equals("jar")) {            
+        if (proto.equals("jar")) {
             String path = location.getPath();
             int p = path.indexOf('!');
             if (p == -1) { // invalid jar URL .. returns a generic URL script
@@ -75,12 +75,12 @@ public abstract class Script {
                 return new JARFileScript(new File(new URI(path)), location);
             } else { // TODO import query string too?
                 return new JARUrlScript(new URL(path), location);
-            }            
-        }else if (proto.equals("file")) {
+            }
+        } else if (proto.equals("file")) {
             return new FileScript(new File(location.toURI()));
         } else {
             return new URLScript(location);
-        }        
+        }
     }
 
     public static Script newScript(File location) {
@@ -88,19 +88,21 @@ public abstract class Script {
     }
 
     public abstract Reader getReader() throws IOException;
+
     public abstract Reader getReaderIfModified() throws IOException;
+
     public abstract String getExtension();
+
     public abstract String getLocation();
-        
-    protected String getExtension(String location) {        
+
+    protected String getExtension(String location) {
         int p = location.lastIndexOf('.');
         if (p > -1) {
-            return location.substring(p+1);
-        }        
+            return location.substring(p + 1);
+        }
         return null;
     }
-    
-    
+
     public Object run(Bindings args) throws Exception {
         if (args == null) {
             args = new SimpleBindings();
@@ -112,14 +114,15 @@ public abstract class Script {
             result = script.eval(ctx);
         } else {
             result = getCompiledScript().eval(ctx);
-        }        
+        }
         return result;
     }
-    
+
     public CompiledScript getCompiledScript() throws ScriptException {
         try {
             Reader reader = getReaderIfModified();
-            if (reader != null) { // script == null cannot happens since lastModified is -1 the first time.
+            if (reader != null) { // script == null cannot happens since
+                                  // lastModified is -1 the first time.
                 script = compile(reader);
             }
             return script;
@@ -127,15 +130,15 @@ public abstract class Script {
             throw new ScriptException(e);
         }
     }
-    
+
     public CompiledScript compile(Reader reader) throws ScriptException {
         ScriptEngine engine = getScripting().getEngineByExtension(getExtension());
         if (engine == null) {
-            throw new ScriptException("Unknown script type: "+getExtension());
+            throw new ScriptException("Unknown script type: " + getExtension());
         }
         if (engine instanceof Compilable) {
-            Compilable comp = (Compilable)engine;
-            try {             
+            Compilable comp = (Compilable) engine;
+            try {
                 try {
                     return comp.compile(reader);
                 } finally {
@@ -144,17 +147,19 @@ public abstract class Script {
             } catch (IOException e) {
                 throw new ScriptException(e);
             }
-        } else {// TODO this will read sources twice the fist time - pass reader?
+        } else {// TODO this will read sources twice the fist time - pass
+                // reader?
             return new FakeCompiledScript(engine, this);
         }
     }
 
-    
-    
-    public static void main(String[] args) throws Exception {        
-        URL url = new URL("jar:file:///Users/bstefanescu/work/kits/freemarker-2.3.15/lib/freemarker.jar!/freemarker/version.properties");
-        System.out.println(">>"+url.getProtocol());
-        System.out.println(">>"+url.getPath());
-        System.out.println(">>"+FileUtils.read(url.openStream()));
+    // FIXME: make a proper test and remove.
+    public static void main(String[] args) throws Exception {
+        URL url = new URL(
+                "jar:file:///Users/bstefanescu/work/kits/freemarker-2.3.15/lib/freemarker.jar!/freemarker/version.properties");
+        System.out.println(">>" + url.getProtocol());
+        System.out.println(">>" + url.getPath());
+        System.out.println(">>" + FileUtils.read(url.openStream()));
     }
+
 }

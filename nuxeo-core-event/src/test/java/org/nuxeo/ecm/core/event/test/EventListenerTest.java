@@ -30,7 +30,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * TODO add tests on post commit.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class EventListenerTest extends NXRuntimeTestCase {
 

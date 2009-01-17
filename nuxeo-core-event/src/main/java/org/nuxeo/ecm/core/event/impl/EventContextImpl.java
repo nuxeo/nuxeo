@@ -23,18 +23,15 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Default implementation
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class EventContextImpl extends AbstractEventContext {
 
     private static final long serialVersionUID = 1L;
 
-
     protected transient CoreSession session;
     protected transient Principal principal;
-
 
     /**
      * Constructor to be used by derived classes
@@ -53,7 +50,6 @@ public class EventContextImpl extends AbstractEventContext {
     }
 
 
-
     public CoreSession getCoreSession() {
         return session;
     }
@@ -62,7 +58,6 @@ public class EventContextImpl extends AbstractEventContext {
         return principal;
     }
 
-  
     public void setCoreSession(CoreSession session) {
         this.session = session;
     }
@@ -70,6 +65,5 @@ public class EventContextImpl extends AbstractEventContext {
     public void setPrincipal(NuxeoPrincipal principal) {
         this.principal = principal;
     }
-
 
 }

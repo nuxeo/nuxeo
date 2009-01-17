@@ -23,26 +23,22 @@ import java.net.URL;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class JARUrlScript extends Script {
 
     protected URL url;
     protected URL jar;
 
-    
     public JARUrlScript(URL jar, URL url) throws IOException {
         this.url = url;
         this.jar = jar;
     }
-       
 
     @Override
     public String getExtension() {
         return getExtension(url.getPath());
     }
-    
-    
+
     @Override
     public String getLocation() {
         return url.toExternalForm();
@@ -55,10 +51,10 @@ public class JARUrlScript extends Script {
 
     @Override
     public Reader getReaderIfModified() throws IOException {
-        long tm = jar.openConnection().getLastModified(); 
+        long tm = jar.openConnection().getLastModified();
         if (tm > lastModified) {
             synchronized (this) {
-                if (tm > lastModified) {                
+                if (tm > lastModified) {
                     lastModified = tm;
                     return new InputStreamReader(url.openStream());
                 }
@@ -66,4 +62,5 @@ public class JARUrlScript extends Script {
         }
         return null;
     }
+
 }

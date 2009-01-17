@@ -23,10 +23,11 @@ import java.util.Set;
 
 /**
  * A map used to track duplicates.
- * This class is not synchronized on read; this means you need to populate the map before using it.
+ * <p>
+ * This class is not synchronized on read; this means you need to populate the
+ * map before using it.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AssocMap {
 
@@ -67,6 +68,5 @@ public class AssocMap {
         Set<String> set = peers.get(x);
         return set != null && set.contains(y);
     }
-
 
 }

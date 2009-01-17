@@ -27,17 +27,15 @@ import org.nuxeo.ecm.core.event.EventListener;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ScriptingEventListener implements EventListener {
 
-    protected Script script;  
-    
-    
+    protected Script script;
+
     public ScriptingEventListener(Script script) throws IOException {
         this.script = script;
-    }    
-    
+    }
+
     public void handleEvent(Event event) throws ClientException {
         Bindings bindings = new SimpleBindings();
         bindings.put("event", event);

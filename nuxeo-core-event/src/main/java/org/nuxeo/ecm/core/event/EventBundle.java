@@ -19,11 +19,12 @@ package org.nuxeo.ecm.core.event;
 /**
  * An ordered set of events raised during an user operation.
  * <p>
- * The bundle is used collects any events that is raised during an user operation.
- * The bundle will be send after the operation commit to any registered {@link PostCommitEventListener}.
+ * The bundle is used collects any events that is raised during an user
+ * operation. The bundle will be send after the operation commit to any
+ * registered {@link PostCommitEventListener}.
  * <p>
- * The bundle implementation is free to ignore some events.
- * This is the case for events marked as inline or for duplicate events.
+ * The bundle implementation is free to ignore some events. This is the case for
+ * events marked as inline or for duplicate events.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -31,8 +32,10 @@ package org.nuxeo.ecm.core.event;
 public interface EventBundle extends Iterable<Event> {
 
     /**
-     * Gets the bundle name. This is usually the first event name in the bundle but
-     * the implementation may decide to change this behavior.
+     * Gets the bundle name.
+     * <p>
+     * This is usually the first event name in the bundle but the implementation
+     * may decide to change this behavior.
      *
      * @return the bundle name. Can be null only if the bundle is empty.
      */
@@ -57,9 +60,10 @@ public interface EventBundle extends Iterable<Event> {
     /**
      * Adds an event in that bundle at the end of the list.
      * <p>
-     * The bundle implementation must ignore redundant events and events marked as inline.
+     * The bundle implementation must ignore redundant events and events marked
+     * as inline.
      *
-     *  @param event the event to append.
+     * @param event the event to append.
      */
     void push(Event event);
 

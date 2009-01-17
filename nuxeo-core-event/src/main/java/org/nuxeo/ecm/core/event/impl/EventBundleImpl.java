@@ -25,30 +25,30 @@ import org.nuxeo.ecm.core.event.EventBundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class EventBundleImpl implements EventBundle {
 
     protected List<Event> events;
 
     /**
-     * If true the bundle is controlled by a transaction otherwsie it is controlled by the SAVE event.
+     * If true the bundle is controlled by a transaction, otherwise it is controlled by the SAVE event.
+     * <p>
      * This means the bundle will be fired either at transaction commit either at SAVE event
      */
-    protected boolean isTransacted;  
-    
+    protected boolean isTransacted;
+
     public EventBundleImpl() {
         events = new ArrayList<Event>();
     }
-    
+
     public boolean isTransacted() {
         return isTransacted;
     }
-    
+
     public void setTransacted(boolean isTransacted) {
         this.isTransacted = isTransacted;
     }
-    
+
     public String[] getEventNames() {
         String[] names = new String[events.size()];
         for (int i=0; i<names.length; i++) {
@@ -57,11 +57,9 @@ public class EventBundleImpl implements EventBundle {
         return names;
     }
 
-
     public Event[] getEvents() {
         return events.toArray(new Event[events.size()]);
     }
-
 
     public String getName() {
         if (events.isEmpty()) {
@@ -70,25 +68,21 @@ public class EventBundleImpl implements EventBundle {
         return events.get(0).getName();
     }
 
-
     public boolean isEmpty() {
         return events.isEmpty();
     }
-
 
     public Event peek() {
         return events.get(0);
     }
 
-
     public void push(Event event) {
-        events.add(event);        
+        events.add(event);
     }
-    
+
     public int size() {
         return events.size();
     }
-
 
     public Iterator<Event> iterator() {
         return events.iterator();

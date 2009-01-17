@@ -26,34 +26,36 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 /**
  * An event context is describing the context in which a core event was raised.
  * <p>
- * You can subclass this class to implement more specialized event contexts
- * like operations.
+ * You can subclass this class to implement more specialized event contexts like
+ * operations.
  * <p>
- * An event context is exposing information about the process the raised the event such as
+ * An event context is exposing information about the process the raised the
+ * event such as
  * <ul>
- * <li> the current core session.
- * <li> the current principal.
- * <li> the event data exposed as a list of arguments.
- * <li> random properties that are associated with the event.
- * These properties can be set by the event source or by any event listener
- * that processes the event.
+ * <li>the current core session.
+ * <li>the current principal.
+ * <li>the event data exposed as a list of arguments.
+ * <li>random properties that are associated with the event. These properties
+ * can be set by the event source or by any event listener that processes the
+ * event.
  * </ul>
  *
- * To add more information you need to implement more specialized event contexts.
+ * To add more information you need to implement more specialized event
+ * contexts.
  * <p>
- * An event context also acts as an event factory. See {@link #event(String)} and {@link #event(String, int)} methods.
- * Events created by an event context are automatically mapped to that context.
+ * An event context also acts as an event factory. See {@link #event(String)}
+ * and {@link #event(String, int)} methods. Events created by an event context
+ * are automatically mapped to that context.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface EventContext extends Serializable {
 
     /**
      * Gets event data. More objects can be associated with an event.
      * <p>
-     * For this reason an array of objects is returned.
-     * This array is usually representing the arguments of the operation that raised the event.
+     * For this reason an array of objects is returned. This array is usually
+     * representing the arguments of the operation that raised the event.
      *
      * @return the event data
      */
@@ -62,22 +64,23 @@ public interface EventContext extends Serializable {
     /**
      * Gets the events properties.
      * <p>
-     * Event properties are used to attach random information to an event context and can be set
-     * by the event source or by any listener that is processing the event.
-     * These properties usually serves to share data between the source and the listeners.
+     * Event properties are used to attach random information to an event
+     * context and can be set by the event source or by any listener that is
+     * processing the event. These properties usually serves to share data
+     * between the source and the listeners.
      *
      * @return the event properties
      */
     Map<String, Serializable> getProperties(); // TODO Serializable or Object?
 
-    
     /**
-     * Replace all properties with the given ones.
-     * The given map is set as is - no copy occurs.
+     * Replaces all properties with the given ones. The given map is set as is -
+     * no copy occurs.
+     *
      * @param properties the properties to use
      */
     void setProperties(Map<String, Serializable> properties);
-    
+
     /**
      * Sets a event context property
      *
@@ -131,8 +134,8 @@ public interface EventContext extends Serializable {
     void setPrincipal(NuxeoPrincipal principal);
 
     /**
-     * Creates a new event in that context given the event name.
-     * The default flags if the event will be used.
+     * Creates a new event in that context given the event name. The default
+     * flags if the event will be used.
      *
      * @param name the event name
      * @return the event
@@ -141,8 +144,8 @@ public interface EventContext extends Serializable {
     Event event(String name);
 
     /**
-     * Creates a new event in that context given the event name.
-     * The given flags will be applied on the event.
+     * Creates a new event in that context given the event name. The given flags
+     * will be applied on the event.
      *
      * @param name the event name
      * @param flags the event flags to use

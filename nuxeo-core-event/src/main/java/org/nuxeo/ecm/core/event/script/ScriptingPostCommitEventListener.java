@@ -27,17 +27,16 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class ScriptingPostCommitEventListener implements PostCommitEventListener {
+public class ScriptingPostCommitEventListener implements
+        PostCommitEventListener {
 
-    protected Script script;  
-    
-    
+    protected Script script;
+
     public ScriptingPostCommitEventListener(Script script) throws IOException {
         this.script = script;
-    }    
-    
+    }
+
     public void handleEvent(EventBundle bundle) throws ClientException {
         Bindings bindings = new SimpleBindings();
         bindings.put("bundle", bundle);

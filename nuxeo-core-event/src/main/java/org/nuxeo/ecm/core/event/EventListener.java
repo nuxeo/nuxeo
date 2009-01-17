@@ -21,19 +21,20 @@ import org.nuxeo.ecm.core.api.ClientException;
 /**
  * An event listener receives notifications from core components.
  * <p>
- * Notifications are expressed as Event objects.
- * This type of listeners are always invoked synchronously immediately after the event is raised.
+ * Notifications are expressed as Event objects. This type of listeners are
+ * always invoked synchronously immediately after the event is raised.
  *
- * @see PostCommitEventListener for asynchronous listeners or post commit listeners
+ * @see PostCommitEventListener for asynchronous listeners or post commit
+ *      listeners
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface EventListener {
 
     /**
-     * Handle the given event.
-     * The listener can cancel the event by calling {@link Event#cancel()}
+     * Handle the given event. The listener can cancel the event by calling
+     * {@link Event#cancel()}
+     *
      * @param event the event
      * @throws ClientException
      */

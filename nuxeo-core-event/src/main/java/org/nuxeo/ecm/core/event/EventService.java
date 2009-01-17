@@ -20,21 +20,24 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 
 /**
- * The event service manage listener registries and
- * notify listeners about core events.
+ * The event service manage listener registries and notify listeners about core
+ * events.
  * <p>
- * The service is able to run in a transactioned mode where all events are recorded and
- * fired after the transaction commits in one step as an event bundle.
+ * The service is able to run in a transactional mode where all events are
+ * recorded and fired after the transaction commits in one step as an event
+ * bundle.
  * <p>
- * To start a transaction you need to call {@link #startTransaction()} method and
- * after the transaction is commited you need to call {@link #commit()} to fire the
- * event bundle. If the transaction rollback then you need to call {@link #rollback()} to
- * cleanup recorded events.
+ * To start a transaction you need to call {@link #startTransaction()} method
+ * and after the transaction is committed you need to call {@link #commit()} to
+ * fire the event bundle. If the transaction rollbacks, then you need to call
+ * {@link #rollback()} to cleanup recorded events.
  * <p>
- * Events are recorded in a thread variable so they are valid only in the current thread.
+ * Events are recorded in a thread variable so they are valid only in the
+ * current thread.
  * <p>
- * Listeners are of 2 types: {@link EventListener} notified as the event is raised and
- * {@link PostCommitEventListener} notified after the transaction was commited.
+ * Listeners are of 2 types: {@link EventListener} notified as the event is
+ * raised and {@link PostCommitEventListener} notified after the transaction was
+ * committed.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -44,9 +47,8 @@ public interface EventService {
     /**
      * Add a new event listener.
      * <p>
-     * The event listener is described by a {@link EventListenerDescriptor} that may
-     * specify a priority.
-     * Both types of listeners are registered.
+     * The event listener is described by a {@link EventListenerDescriptor} that
+     * may specify a priority. Both types of listeners are registered.
      *
      * @param listener the listener to add
      */
@@ -71,7 +73,8 @@ public interface EventService {
     /**
      * Fires an event.
      * <p>
-     * If a transaction was started the event is registered if needed to be send after the transaction commit.
+     * If a transaction was started the event is registered if needed to be send
+     * after the transaction commit.
      *
      * @param event the event to fire
      * @throws ClientException
@@ -81,8 +84,8 @@ public interface EventService {
     /**
      * Fires all recorded events in a transaction.
      * <p>
-     * The events are fired to {@link PostCommitEventListener} listeners.
-     * Events are fired in the form of an event bundle.
+     * The events are fired to {@link PostCommitEventListener} listeners. Events
+     * are fired in the form of an event bundle.
      *
      * @param event the event bundle
      * @throws ClientException
@@ -92,30 +95,33 @@ public interface EventService {
     /**
      * Notifies that a transaction was started.
      * <p>
-     * Any fired events will be recorded until the transaction is
-     * terminated either by calling {@link #transactionRollbacked()} either {@link #transactionCommited()()}
+     * Any fired events will be recorded until the transaction is terminated
+     * either by calling {@link #transactionRollbacked()} either
+     * {@link #transactionCommited()()}
      */
     void transactionStarted();
 
     /**
-     * Notifies that the transaction was commited.
+     * Notifies that the transaction was committed.
      * <p>
-     * This will fire the events collected during the transaction
-     * in the form of a {@link EventBundle}.
-     * After this the recording will stop and recorded events discarded.
+     * This will fire the events collected during the transaction in the form of
+     * a {@link EventBundle}. After this the recording will stop and recorded
+     * events discarded.
+     *
      * @throws ClientException
      */
     void transactionCommited() throws ClientException;
 
     /**
-     * Notifies that transaction was rollbacked. This will discard any recorded event.
+     * Notifies that transaction was rollbacked. This will discard any recorded
+     * event.
      */
     void transactionRollbacked();
 
     /**
      * Tests whether or not a transaction was started.
      *
-     * @return true if a transaction was started, fasle otherwise
+     * @return true if a transaction was started, false otherwise
      */
     boolean isTransactionStarted();
 

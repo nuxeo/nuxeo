@@ -26,44 +26,42 @@ import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class URLScript extends Script {
 
     protected URL url;
     protected URLConnection conn;
 
-    
     public URLScript(String location) throws IOException {
-        this (new URL(location));
+        this(new URL(location));
     }
-    
+
     public URLScript(Bundle bundle, String path) throws IOException {
-        this (bundle.getEntry(path));
+        this(bundle.getEntry(path));
     }
 
     public URLScript(URL url) throws IOException {
         this.url = url;
         conn = url.openConnection();
     }
-       
-    
+
     @Override
     public String getExtension() {
         return getExtension(url.getPath());
     }
-    
+
     @Override
     public String getLocation() {
         return url.toExternalForm();
     }
 
+    @Override
     public Reader getReaderIfModified() throws IOException {
         URLConnection conn = url.openConnection();
-        long tm = conn.getLastModified(); 
+        long tm = conn.getLastModified();
         if (tm > lastModified) {
             synchronized (this) {
-                if (tm > lastModified) {                
+                if (tm > lastModified) {
                     lastModified = tm;
                     return new InputStreamReader(conn.getInputStream());
                 }
@@ -71,16 +69,15 @@ public class URLScript extends Script {
         }
         return null;
     }
-    
+
     @Override
     public Reader getReader() throws IOException {
         try {
-              return new InputStreamReader(conn.getInputStream());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-          return null;
-      
+            return new InputStreamReader(conn.getInputStream());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

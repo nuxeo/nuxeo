@@ -24,27 +24,21 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 /**
- * This simulate a compiled script for scripts that doesn't support compilation.
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * This simulates a compiled script for scripts that doesn't support
+ * compilation.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class FakeCompiledScript extends CompiledScript {
 
     protected ScriptEngine engine;
     protected Script script;
-    
-    /**
-     * 
-     */
+
     public FakeCompiledScript(ScriptEngine engine, Script script) {
         this.script = script;
         this.engine = engine;
     }
-    
-    /* (non-Javadoc)
-     * @see javax.script.CompiledScript#eval(javax.script.ScriptContext)
-     */
+
     @Override
     public Object eval(ScriptContext arg0) throws ScriptException {
         try {
@@ -55,9 +49,6 @@ public class FakeCompiledScript extends CompiledScript {
         }
     }
 
-    /* (non-Javadoc)
-     * @see javax.script.CompiledScript#getEngine()
-     */
     @Override
     public ScriptEngine getEngine() {
         return engine;

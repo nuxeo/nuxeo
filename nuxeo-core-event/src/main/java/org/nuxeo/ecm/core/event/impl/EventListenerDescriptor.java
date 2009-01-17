@@ -36,7 +36,6 @@ import org.nuxeo.runtime.model.RuntimeContext;
  * XObject descriptor to declare event listeners
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("listener")
 public class EventListenerDescriptor {
@@ -44,26 +43,26 @@ public class EventListenerDescriptor {
     public final static Log log = LogFactory.getLog(EventListenerDescriptor.class);
 
     /**
-     * The event listener class
+     * The event listener class.
      */
     @XNode("@class")
     protected Class<?> clazz;
 
     /**
-     * A script reference: URL, file path, or bundle entry
+     * A script reference: URL, file path, or bundle entry.
      * Runtime variable are expanded. To specify a bundle entry use the URL schema "bundle:"
      */
     @XNode("@script")
     protected String script;
 
     /**
-     * Applies only for scripts
+     * Applies only for scripts.
      */
     @XNode("@postCommit")
     protected boolean isPostCommit;
 
     /**
-     * The priority to be used to order listeners
+     * The priority to be used to order listeners.
      */
     @XNode("@priority")
     protected int priority;
@@ -71,9 +70,7 @@ public class EventListenerDescriptor {
     @XNode("@enabled")
     protected boolean isEnabled = true;
 
-
     protected Set<String> events;
-
 
     protected RuntimeContext rc;
 
@@ -85,7 +82,7 @@ public class EventListenerDescriptor {
         return priority;
     }
 
-        public void setRuntimeContext(RuntimeContext rc) {
+    public void setRuntimeContext(RuntimeContext rc) {
         this.rc = rc;
     }
 
@@ -162,5 +159,5 @@ public class EventListenerDescriptor {
             return Script.newScript(script);
         }
     }
-    
+
 }

@@ -25,10 +25,10 @@ import org.nuxeo.ecm.core.event.EventContext;
 
 /**
  * Base class to be used to create new context events.
- * This  class is handling context properties and event creation.
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * <p>
+ * This class handles context properties and event creation.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class AbstractEventContext implements EventContext {
 
@@ -37,7 +37,6 @@ public abstract class AbstractEventContext implements EventContext {
     protected static final Object[] EMPTY = new Object[0];
     protected Object[] args;
     protected Map<String, Serializable> properties;
-
 
     /**
      * Constructor to be used by derived classes
@@ -49,11 +48,9 @@ public abstract class AbstractEventContext implements EventContext {
         this.args = args == null || (args.length == 1 && args[0] == null) ? EMPTY : args;
     }
 
-    
     public Object[] getArguments() {
         return args;
     }
-
 
     public Map<String, Serializable> getProperties() {
         if (properties == null) {
@@ -61,7 +58,7 @@ public abstract class AbstractEventContext implements EventContext {
         }
         return properties;
     }
-    
+
     public void setProperties(Map<String, Serializable> properties) {
         this.properties = properties;
     }

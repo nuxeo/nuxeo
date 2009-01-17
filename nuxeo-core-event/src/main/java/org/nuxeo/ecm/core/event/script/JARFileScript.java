@@ -31,18 +31,16 @@ public class JARFileScript extends Script {
     protected URL url;
     protected File jar;
 
-    
     public JARFileScript(File jar, URL url) throws IOException {
         this.url = url;
         this.jar = jar;
     }
-       
 
     @Override
     public String getExtension() {
         return getExtension(url.getPath());
     }
-    
+
     @Override
     public String getLocation() {
         return url.toExternalForm();
@@ -55,10 +53,10 @@ public class JARFileScript extends Script {
 
     @Override
     public Reader getReaderIfModified() throws IOException {
-        long tm = jar.lastModified(); 
+        long tm = jar.lastModified();
         if (tm > lastModified) {
             synchronized (this) {
-                if (tm > lastModified) {                
+                if (tm > lastModified) {
                     lastModified = tm;
                     return new InputStreamReader(url.openStream());
                 }
@@ -66,4 +64,5 @@ public class JARFileScript extends Script {
         }
         return null;
     }
+
 }

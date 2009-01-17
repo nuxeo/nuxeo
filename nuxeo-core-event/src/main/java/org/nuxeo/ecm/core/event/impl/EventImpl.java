@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.event.EventContext;
  * Event implementation.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class EventImpl implements Event {
 
@@ -42,7 +41,7 @@ public class EventImpl implements Event {
     public EventImpl(String name, EventContext ctx, int flags) {
         this.name = name;
         this.ctx = ctx;
-        this.time = System.currentTimeMillis();
+        time = System.currentTimeMillis();
         this.flags = flags;
     }
 
