@@ -31,7 +31,7 @@ public class JARFileScript extends Script {
     protected URL url;
     protected File jar;
 
-    public JARFileScript(File jar, URL url) throws IOException {
+    public JARFileScript(File jar, URL url) {
         this.url = url;
         this.jar = jar;
     }

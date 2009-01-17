@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.core.event.script;
 
-import java.io.IOException;
-
 import javax.script.Bindings;
 import javax.script.SimpleBindings;
 
@@ -32,7 +30,7 @@ public class ScriptingEventListener implements EventListener {
 
     protected Script script;
 
-    public ScriptingEventListener(Script script) throws IOException {
+    public ScriptingEventListener(Script script) {
         this.script = script;
     }
 

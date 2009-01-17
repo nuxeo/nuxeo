@@ -39,7 +39,7 @@ public class EventListenerTest extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.event");
     }
 
-    public void testFlags() throws Exception {
+    public void testFlags() {
         EventImpl event = new EventImpl("test", null);
         assertTrue(event.isPublic());
         assertEquals(0, event.getFlags());

@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.core.event.script;
 
-import java.io.IOException;
-
 import javax.script.Bindings;
 import javax.script.SimpleBindings;
 
@@ -33,7 +31,7 @@ public class ScriptingPostCommitEventListener implements
 
     protected Script script;
 
-    public ScriptingPostCommitEventListener(Script script) throws IOException {
+    public ScriptingPostCommitEventListener(Script script) {
         this.script = script;
     }
 

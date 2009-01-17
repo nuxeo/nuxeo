@@ -29,7 +29,7 @@ public class JARUrlScript extends Script {
     protected URL url;
     protected URL jar;
 
-    public JARUrlScript(URL jar, URL url) throws IOException {
+    public JARUrlScript(URL jar, URL url) {
         this.url = url;
         this.jar = jar;
     }
