@@ -4,10 +4,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.runtime.api.Framework;
 
-
-
 public class TestConverters extends BaseConverterTest {
-
 
     public void testHTMLConverter() throws Exception {
         doTestTextConverter("text/html", "html2text", "hello.html");
@@ -75,4 +72,5 @@ public class TestConverters extends BaseConverterTest {
         doTestAny2TextConverter("application/vnd.oasis.opendocument.presentation", "any2text", "hello.odp");
         doTestAny2TextConverter("application/pdf", "any2text", "hello.pdf");
     }
+
 }

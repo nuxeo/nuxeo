@@ -14,8 +14,7 @@ import junit.framework.TestCase;
 
 public class TestBlobHolderPersistence extends TestCase {
 
-
-    public void testPersistance() throws Exception  {
+    public void testPersistence() throws Exception  {
 
         List<Blob> blobs = new ArrayList<Blob>();
         for (int i=0; i<10; i++) {
@@ -29,7 +28,6 @@ public class TestBlobHolderPersistence extends TestCase {
             }
             blobs.add(blob);
         }
-
 
         CachableBlobHolder holder = new SimpleCachableBlobHolder(blobs);
 
@@ -47,8 +45,8 @@ public class TestBlobHolderPersistence extends TestCase {
         File[] files = holderDir.listFiles();
         assertEquals(2, files.length);
 
-        boolean mainFileFound=false;
-        boolean subFilesFound=false;
+        boolean mainFileFound = false;
+        boolean subFilesFound = false;
         for (File file : files) {
             if (file.isDirectory()) {
                 File[] subFiles = file.listFiles();
@@ -85,7 +83,6 @@ public class TestBlobHolderPersistence extends TestCase {
             assertTrue(subBlob.getFilename().startsWith("subFile"));
             assertTrue(subBlob.getString().startsWith("FileContent_"));
         }
-
     }
 
 }

@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
 
 /**
- * Managager for the cache system of the {@link ConversionService}
+ * Manager for the cache system of the {@link ConversionService}.
  *
  * @author tiry
  *
@@ -48,9 +48,7 @@ public class ConversionCacheHolder {
     private static final Log log = LogFactory.getLog(ConversionCacheHolder.class);
 
     public static int nbSubPathPart = 5;
-
     public static int subPathPartSize = 2;
-
     public static long cacheHits = 0;
 
     public static long getCacheHits() {
@@ -72,7 +70,7 @@ public class ConversionCacheHolder {
         int idx = 0;
 
         for (int i = 0; i < nbSubPathPart; i++) {
-            String subPart = path.substring(idx, idx+ subPathPartSize);
+            String subPart = path.substring(idx, idx + subPathPartSize);
             subPath.add(subPart);
             idx += subPathPartSize;
             if (idx >= path.length()) {
@@ -92,7 +90,7 @@ public class ConversionCacheHolder {
             new File(path.toString()).mkdir();
         }
 
-        //path = path.append(key);
+        // path = path.append(key);
 
         return path.toString();
     }
@@ -101,8 +99,7 @@ public class ConversionCacheHolder {
         cacheLock.writeLock().lock();
         try {
             doAddToCache(key, result);
-        }
-        finally {
+        } finally {
             cacheLock.writeLock().unlock();
         }
     }
@@ -113,8 +110,7 @@ public class ConversionCacheHolder {
 
         try {
             persisted = cce.persist(getCacheEntryPath(key));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error while trying to persit cache entry", e);
         }
 
@@ -123,13 +119,11 @@ public class ConversionCacheHolder {
         }
     }
 
-
     public static void removeFromCache(String key) {
         cacheLock.writeLock().lock();
         try {
             doRemoveFromCache(key);
-        }
-        finally {
+        } finally {
             cacheLock.writeLock().unlock();
         }
 
@@ -143,20 +137,16 @@ public class ConversionCacheHolder {
         }
     }
 
-
-    public static ConversionCacheEntry getCacheEntry(String key)
-    {
-           cacheLock.readLock().lock();
-           try {
-               return doGetCacheEntry(key);
-           }
-           finally {
-               cacheLock.readLock().unlock();
-           }
+    public static ConversionCacheEntry getCacheEntry(String key) {
+        cacheLock.readLock().lock();
+        try {
+            return doGetCacheEntry(key);
+        } finally {
+            cacheLock.readLock().unlock();
+        }
     }
 
-    protected static ConversionCacheEntry doGetCacheEntry(String key)
-    {
+    protected static ConversionCacheEntry doGetCacheEntry(String key) {
         return cache.get(key);
     }
 
@@ -164,30 +154,26 @@ public class ConversionCacheHolder {
         cacheLock.readLock().lock();
         try {
             return doGetFromCache(key);
-        }
-        finally {
+        } finally {
             cacheLock.readLock().unlock();
         }
     }
 
     protected static BlobHolder doGetFromCache(String key) {
-        ConversionCacheEntry cacheEntry =cache.get(key);
-        if (cacheEntry!=null) {
+        ConversionCacheEntry cacheEntry = cache.get(key);
+        if (cacheEntry != null) {
             if (cacheHits == Long.MAX_VALUE) {
-                cacheHits=0;
-            }
-            else {
-                cacheHits+=1;
+                cacheHits = 0;
+            } else {
+                cacheHits += 1;
             }
             return cacheEntry.restore();
         }
         return null;
     }
 
-
     public static Set<String> getCacheKeys() {
         return cache.keySet();
     }
-
 
 }

@@ -24,23 +24,22 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 
 /**
- * Represent an Entry in the {@link ConversionService} cache system.
- * Manage timestamp and persistence.
+ * Represents an Entry in the {@link ConversionService} cache system.
+ * <p>
+ * Manages timestamp and persistence.
  *
  * @author tiry
- *
  */
 public class ConversionCacheEntry {
 
     protected Date lastAccessTime = null;
-    protected transient BlobHolder bh;
-    protected boolean persisted=false;
+    protected BlobHolder bh;
+    protected boolean persisted = false;
     protected String persistPath;
-    protected long sizeInKB=0;
-
+    protected long sizeInKB = 0;
 
     public ConversionCacheEntry(BlobHolder bh) {
-        this.bh=bh;
+        this.bh = bh;
         updateAccessTime();
     }
 
@@ -48,45 +47,40 @@ public class ConversionCacheEntry {
         lastAccessTime = new Date();
     }
 
-
     public boolean persist(String basePath) throws Exception {
-
         if (bh instanceof CachableBlobHolder) {
             CachableBlobHolder cbh = (CachableBlobHolder) bh;
             persistPath = cbh.persist(basePath);
             sizeInKB = new File(persistPath).length() / 1024;
-            persisted=true;
+            persisted = true;
         }
-        bh=null;
+        bh = null;
         return persisted;
     }
 
     public void remove() {
-        if ((persisted) && (persistPath!=null)) {
+        if ((persisted) && (persistPath != null)) {
             new File(persistPath).delete();
         }
     }
 
     public BlobHolder restore() {
         updateAccessTime();
-        if ((persisted) && (persistPath!=null)) {
-            CachableBlobHolder holder =  new SimpleCachableBlobHolder();
+        if ((persisted) && (persistPath != null)) {
+            CachableBlobHolder holder = new SimpleCachableBlobHolder();
             holder.load(persistPath);
             return holder;
-        }
-        else
+        } else {
             return null;
+        }
     }
-
 
     public long getDiskSpaceUsageInKB() {
         return sizeInKB;
     }
 
-    public Date getLastAccessedTime()
-    {
+    public Date getLastAccessedTime() {
         return lastAccessTime;
     }
-
 
 }

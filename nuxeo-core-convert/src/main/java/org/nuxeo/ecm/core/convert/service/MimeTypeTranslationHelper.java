@@ -23,25 +23,27 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
+
 /**
- * Helper class to manage chains of converters
+ * Helper class to manage chains of converters.
  *
  * @author tiry
- *
  */
 public class MimeTypeTranslationHelper {
 
     protected static Map<String, List<ConvertOption>> srcMappings = new HashMap<String, List<ConvertOption>>();
     protected static Map<String, List<ConvertOption>> dstMappings = new HashMap<String, List<ConvertOption>>();
 
+    // Utility class.
+    private MimeTypeTranslationHelper() {
+    }
 
-    public static  void addConverter(ConverterDescriptor desc) {
-
+    public static void addConverter(ConverterDescriptor desc) {
         List<String> sMts = desc.getSourceMimeTypes();
         String dMt = desc.getDestinationMimeType();
 
         List<ConvertOption> dco = dstMappings.get(dMt);
-        if (dco==null) {
+        if (dco == null) {
             dco = new ArrayList<ConvertOption>();
         }
 
@@ -49,26 +51,26 @@ public class MimeTypeTranslationHelper {
 
             List<ConvertOption> sco = srcMappings.get(sMT);
 
-            if (sco==null) {
+            if (sco == null) {
                 sco = new ArrayList<ConvertOption>();
             }
 
-            sco.add(new ConvertOption(desc.getConverterName(),dMt));
+            sco.add(new ConvertOption(desc.getConverterName(), dMt));
             srcMappings.put(sMT, sco);
 
-            dco.add(new ConvertOption(desc.getConverterName(),sMT));
+            dco.add(new ConvertOption(desc.getConverterName(), sMT));
         }
         dstMappings.put(dMt, dco);
     }
 
-
-    public static String getConverterName(String sourceMimeType, String destMimeType) {
+    public static String getConverterName(String sourceMimeType,
+            String destMimeType) {
 
         List<ConvertOption> sco = srcMappings.get(sourceMimeType);
-        if (sco==null) {
+        if (sco == null) {
             // use wildcard
             sco = srcMappings.get("*");
-            if (sco==null) {
+            if (sco == null) {
                 return null;
             }
         }
@@ -86,7 +88,7 @@ public class MimeTypeTranslationHelper {
 
         List<ConvertOption> sco = srcMappings.get(sourceMimeType);
 
-        if (sco!=null) {
+        if (sco != null) {
             for (ConvertOption co : sco) {
                 dst.add(co.getMimeType());
             }
@@ -99,13 +101,12 @@ public class MimeTypeTranslationHelper {
 
         List<ConvertOption> dco = dstMappings.get(destinationMimeType);
 
-        if (dco!=null) {
+        if (dco != null) {
             for (ConvertOption co : dco) {
                 src.add(co.getMimeType());
             }
         }
         return src;
-
     }
 
 }

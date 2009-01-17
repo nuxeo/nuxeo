@@ -34,204 +34,188 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestService extends NXRuntimeTestCase {
 
-     @Override
-     protected void setUp() throws Exception {
-            super.setUp();
-            deployBundle("org.nuxeo.ecm.core.api");
-            deployBundle("org.nuxeo.ecm.core.convert.api");
-            deployBundle("org.nuxeo.ecm.core.convert");
-     }
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core.convert.api");
+        deployBundle("org.nuxeo.ecm.core.convert");
+    }
 
+    public void testServiceRegistration() {
 
-     public void testServiceRegistration() {
+        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        assertNotNull(cs);
+    }
 
-         ConversionService cs = Framework.getLocalService(ConversionService.class);
-         assertNotNull(cs);
-     }
+    public void testServiceContrib() throws Exception {
 
+        deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib1.xml");
+        ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-     public void testServiceContrib() throws Exception{
+        Converter cv1 = ConversionServiceImpl.getConverter("dummy1");
+        assertNotNull(cv1);
 
-         deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib1.xml");
-         ConversionService cs = Framework.getLocalService(ConversionService.class);
+        ConverterDescriptor desc1 = ConversionServiceImpl.getConverterDesciptor("dummy1");
+        assertNotNull(desc1);
 
-         Converter cv1 =  ConversionServiceImpl.getConverter("dummy1");
-         assertNotNull(cv1);
+        assertEquals("test/me", desc1.getDestinationMimeType());
+        assertTrue(desc1.getSourceMimeTypes().size() == 2);
+        assertTrue(desc1.getSourceMimeTypes().contains("text/plain"));
+        assertTrue(desc1.getSourceMimeTypes().contains("text/xml"));
 
-         ConverterDescriptor desc1 = ConversionServiceImpl.getConverterDesciptor("dummy1");
-         assertNotNull(desc1);
+    }
 
-         assertEquals("test/me", desc1.getDestinationMimeType());
-         assertTrue(desc1.getSourceMimeTypes().size()==2);
-         assertTrue(desc1.getSourceMimeTypes().contains("text/plain"));
-         assertTrue(desc1.getSourceMimeTypes().contains("text/xml"));
+    public void testConverterLookup() throws Exception {
 
-     }
+        deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib1.xml");
+        ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-     public void testConverterLookup() throws Exception {
+        String converterName = cs.getConverterName("text/plain", "test/me");
+        assertEquals("dummy1", converterName);
 
-         deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib1.xml");
-         ConversionService cs = Framework.getLocalService(ConversionService.class);
+        converterName = cs.getConverterName("text/plain2", "test/me");
+        assertNull(converterName);
 
-         String converterName = cs.getConverterName("text/plain", "test/me");
-         assertEquals("dummy1", converterName);
+        deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib2.xml");
 
-         converterName = cs.getConverterName("text/plain2", "test/me");
-         assertNull(converterName);
+        if (true) {
+            return;
+        }
 
+        converterName = cs.getConverterName("test/me", "foo/bar");
+        assertEquals("dummy2", converterName);
 
+        converterName = cs.getConverterName("text/plain", "foo/bar");
+        assertEquals("dummyChain", converterName);
 
-         deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib2.xml");
+        Converter cv = ConversionServiceImpl.getConverter("dummyChain");
+        assertNotNull(cv);
+        boolean isChain = false;
+        if (cv instanceof ChainedConverter) {
+            ChainedConverter ccv = (ChainedConverter) cv;
+            List<String> steps = ccv.getSteps();
+            assertNotNull(steps);
+            assertTrue(steps.size() == 2);
+            assertTrue(steps.contains("test/me"));
+            assertTrue(steps.contains("foo/bar"));
+            isChain = true;
 
-         if (true) {
-             return;
-         }
+        }
+        assertTrue(isChain);
 
-         converterName = cs.getConverterName("test/me", "foo/bar");
-         assertEquals("dummy2", converterName);
+        converterName = cs.getConverterName("something", "somethingelse");
+        assertEquals("custom", converterName);
 
-         converterName = cs.getConverterName("text/plain", "foo/bar");
-         assertEquals("dummyChain", converterName);
+        converterName = cs.getConverterName("any", "somethingelse");
+        assertEquals("wildcard", converterName);
 
-         Converter cv =  ConversionServiceImpl.getConverter("dummyChain");
-         assertNotNull(cv);
-         boolean isChain = false;
-         if (cv instanceof ChainedConverter) {
-             ChainedConverter ccv = (ChainedConverter) cv;
-             List<String> steps = ccv.getSteps();
-             assertNotNull(steps);
-             assertTrue(steps.size()==2);
-             assertTrue(steps.contains("test/me"));
-             assertTrue(steps.contains("foo/bar"));
-             isChain=true;
+        converterName = cs.getConverterName("text/plain", "jacky/chan");
+        assertEquals("dummyChain2", converterName);
+        Converter cv2 = ConversionServiceImpl.getConverter("dummyChain2");
+        assertNotNull(cv2);
+        isChain = false;
+        if (cv2 instanceof ChainedConverter) {
+            ChainedConverter ccv = (ChainedConverter) cv2;
+            List<String> steps = ccv.getSteps();
+            assertNull(steps);
+            isChain = true;
 
-         }
-         assertTrue(isChain);
+        }
+        assertTrue(isChain);
 
-         converterName = cs.getConverterName("something", "somethingelse");
-         assertEquals("custom", converterName);
+    }
 
-         converterName = cs.getConverterName("any", "somethingelse");
-         assertEquals("wildcard", converterName);
+    public void testAvailability() throws Exception {
 
+        deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib2.xml");
+        deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib4.xml");
+        ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-         converterName = cs.getConverterName("text/plain", "jacky/chan");
-         assertEquals("dummyChain2", converterName);
-         Converter cv2 =  ConversionServiceImpl.getConverter("dummyChain2");
-         assertNotNull(cv2);
-         isChain = false;
-         if (cv2 instanceof ChainedConverter) {
-             ChainedConverter ccv = (ChainedConverter) cv2;
-             List<String> steps = ccv.getSteps();
-             assertNull(steps);
-             isChain=true;
+        ConverterCheckResult result = null;
 
-         }
-         assertTrue(isChain);
+        // ** not existing converter
+        // check registration check
+        boolean notRegistred = false;
+        boolean notAvailable = false;
 
+        try {
+            result = cs.isConverterAvailable("toto");
+        } catch (ConverterNotRegistred e) {
+            notRegistred = true;
+        }
+        assertTrue(notRegistred);
 
-     }
+        // check call
+        notRegistred = false;
+        try {
+            cs.convert("toto", new SimpleBlobHolder(new StringBlob("")), null);
+        } catch (ConverterNotRegistred e) {
+            notRegistred = true;
+        }
+        assertTrue(notRegistred);
 
-     public void testAvailability() throws Exception{
+        // not available converter
 
-         deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib2.xml");
-         deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib4.xml");
-         ConversionService cs = Framework.getLocalService(ConversionService.class);
+        notRegistred = false;
+        try {
+            result = cs.isConverterAvailable("NotAvailableConverter");
+        } catch (ConverterNotRegistred e) {
+            notRegistred = true;
+        }
+        assertFalse(notRegistred);
+        assertFalse(result.isAvailable());
+        assertNotNull(result.getErrorMessage());
+        assertNotNull(result.getInstallationMessage());
 
-         ConverterCheckResult result =null;
+        notRegistred = false;
+        notAvailable = false;
+        try {
+            cs.convert("NotAvailableConverter", new SimpleBlobHolder(
+                    new StringBlob("")), null);
+        } catch (ConverterNotRegistred e) {
+            notRegistred = true;
+        } catch (ConverterNotAvailable e) {
+            notAvailable = true;
+        }
+        assertFalse(notRegistred);
+        assertTrue(notAvailable);
 
-         // ** not existing converter
-         // check registration check
-         boolean notRegistred=false;
-         boolean notAvailable=false;
+        // ** available converter
+        notRegistred = false;
+        notAvailable = false;
+        try {
+            result = cs.isConverterAvailable("dummy2");
+        } catch (ConverterNotRegistred e) {
+            notRegistred = true;
+        }
+        assertFalse(notRegistred);
+        assertTrue(result.isAvailable());
+        assertNull(result.getErrorMessage());
+        assertNull(result.getInstallationMessage());
+        assertTrue(result.getSupportedInputMimeTypes().size() == 2);
 
-         try {
-             result = cs.isConverterAvailable("toto");
-         }
-         catch (ConverterNotRegistred e) {
-             notRegistred=true;
-         }
-         assertTrue(notRegistred);
+        notRegistred = false;
+        try {
+            cs.convert("dummy2", new SimpleBlobHolder(new StringBlob("")), null);
+        } catch (ConverterNotRegistred e) {
+            notRegistred = true;
+        } catch (ConverterNotAvailable e) {
+            notAvailable = true;
+        }
+        assertFalse(notRegistred);
+        assertFalse(notAvailable);
+    }
 
+    public void testServiceConfig() throws Exception {
 
-         // check call
-         notRegistred=false;
-         try {
-             cs.convert("toto", new SimpleBlobHolder(new StringBlob("")), null);
-         }
-         catch (ConverterNotRegistred e) {
-             notRegistred=true;
-         }
-         assertTrue(notRegistred);
+        deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/convert-service-config-test.xml");
+        ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-         // ** not available converter
+        assertEquals(12, ConversionServiceImpl.getGCIntervalInMinutes());
+        assertEquals(132, ConversionServiceImpl.getMaxCacheSizeInKB());
+        assertFalse(ConversionServiceImpl.isCacheEnabled());
 
-         notRegistred=false;
-         try {
-             result = cs.isConverterAvailable("NotAvailableConverter");
-         }
-         catch (ConverterNotRegistred e) {
-             notRegistred=true;
-         }
-         assertFalse(notRegistred);
-         assertFalse(result.isAvailable());
-         assertNotNull(result.getErrorMessage());
-         assertNotNull(result.getInstallationMessage());
-
-         notRegistred=false;
-         notAvailable=false;
-         try {
-             cs.convert("NotAvailableConverter", new SimpleBlobHolder(new StringBlob("")), null);
-         }
-         catch (ConverterNotRegistred e) {
-             notRegistred=true;
-         }
-         catch (ConverterNotAvailable e) {
-             notAvailable=true;
-         }
-         assertFalse(notRegistred);
-         assertTrue(notAvailable);
-
-
-         // ** available converter
-         notRegistred=false;
-         notAvailable=false;
-         try {
-             result = cs.isConverterAvailable("dummy2");
-         }
-         catch (ConverterNotRegistred e) {
-             notRegistred=true;
-         }
-         assertFalse(notRegistred);
-         assertTrue(result.isAvailable());
-         assertNull(result.getErrorMessage());
-         assertNull(result.getInstallationMessage());
-         assertTrue(result.getSupportedInputMimeTypes().size()==2);
-
-         notRegistred=false;
-         try {
-             cs.convert("dummy2", new SimpleBlobHolder(new StringBlob("")), null);
-         }
-         catch (ConverterNotRegistred e) {
-             notRegistred=true;
-         }
-         catch (ConverterNotAvailable e) {
-             notAvailable=true;
-         }
-         assertFalse(notRegistred);
-         assertFalse(notAvailable);
-     }
-
-
-     public void testServiceConfig() throws Exception{
-
-         deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/convert-service-config-test.xml");
-         ConversionService cs = Framework.getLocalService(ConversionService.class);
-
-         assertEquals(12,ConversionServiceImpl.getGCIntervalInMinutes());
-         assertEquals(132,ConversionServiceImpl.getMaxCacheSizeInKB());
-         assertFalse(ConversionServiceImpl.isCacheEnabled());
-
-     }
+    }
 
 }

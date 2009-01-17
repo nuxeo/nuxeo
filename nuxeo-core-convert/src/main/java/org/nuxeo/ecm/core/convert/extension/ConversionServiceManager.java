@@ -6,5 +6,4 @@ public interface ConversionServiceManager extends ConversionService {
 
     Converter getConverter(String converterName);
 
-
 }

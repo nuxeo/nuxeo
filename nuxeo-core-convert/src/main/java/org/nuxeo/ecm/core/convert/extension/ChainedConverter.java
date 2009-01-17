@@ -12,16 +12,17 @@ import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
 import org.nuxeo.ecm.core.convert.service.MimeTypeTranslationHelper;
 
 /**
- *
  * Specific {@link Converter} implementation that acts as a converters chain.
- * The chain can be :
- *  - a chain of mime-types
- *  - a chain of converter names
+ * <p>
+ * The chain can be:
+ * <ul>
+ * <li>a chain of mime-types
+ * <li>a chain of converter names
+ * </ul>
  *
- *  This depends on the properties of the descriptor
+ * This depends on the properties of the descriptor.
  *
  * @author tiry
- *
  */
 public class ChainedConverter implements Converter {
 
@@ -32,13 +33,13 @@ public class ChainedConverter implements Converter {
 
     public ChainedConverter() {
         subConvertersBased = false;
-        this.subConverters=null;
+        subConverters = null;
     }
 
     public ChainedConverter(List<String> subConverters) {
         subConvertersBased = true;
         this.subConverters = subConverters;
-        this.steps = null;
+        steps = null;
     }
 
     public BlobHolder convert(BlobHolder blobHolder,
@@ -61,14 +62,12 @@ public class ChainedConverter implements Converter {
 
             for (String converterName : subConverters) {
 
-                ConverterDescriptor desc = ConversionServiceImpl
-                        .getConverterDesciptor(converterName);
+                ConverterDescriptor desc = ConversionServiceImpl.getConverterDesciptor(converterName);
                 if (!desc.getSourceMimeTypes().contains(srcMT)) {
                     throw new ConversionException(
                             "Conversion Chain is not well defined");
                 }
-                Converter converter = ConversionServiceImpl
-                        .getConverter(converterName);
+                Converter converter = ConversionServiceImpl.getConverter(converterName);
                 result = converter.convert(result, parameters);
                 srcMT = desc.getDestinationMimeType();
             }
@@ -82,7 +81,6 @@ public class ChainedConverter implements Converter {
 
     /*
      * Try to find a chain of converters that fits the mime-types chain
-     *
      */
     protected BlobHolder convertBasedOnMimeTypes(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
@@ -92,16 +90,14 @@ public class ChainedConverter implements Converter {
 
             BlobHolder result = blobHolder;
             for (String dstMT : steps) {
-                String converterName = MimeTypeTranslationHelper
-                        .getConverterName(srcMT, dstMT);
+                String converterName = MimeTypeTranslationHelper.getConverterName(srcMT, dstMT);
                 if (converterName == null) {
                     throw new ConversionException(
                             "Chained conversion error : unable to find converter between "
                                     + srcMT + " and " + dstMT);
                 }
 
-                Converter converter = ConversionServiceImpl
-                        .getConverter(converterName);
+                Converter converter = ConversionServiceImpl.getConverter(converterName);
 
                 result = converter.convert(result, parameters);
                 srcMT = dstMT;
@@ -118,16 +114,12 @@ public class ChainedConverter implements Converter {
         if (!subConvertersBased) {
             steps.addAll(descriptor.getSteps());
             steps.add(descriptor.getDestinationMimeType());
-        }
-        else {
-            ConverterDescriptor fconv = ConversionServiceImpl
-            .getConverterDesciptor(subConverters.get(0));
-            ConverterDescriptor lconv = ConversionServiceImpl
-            .getConverterDesciptor(subConverters.get(subConverters.size()-1));
+        } else {
+            ConverterDescriptor fconv = ConversionServiceImpl.getConverterDesciptor(subConverters.get(0));
+            ConverterDescriptor lconv = ConversionServiceImpl.getConverterDesciptor(subConverters.get(subConverters.size() - 1));
 
             descriptor.sourceMimeTypes = fconv.sourceMimeTypes;
             descriptor.destinationMimeType = lconv.destinationMimeType;
-
         }
     }
 

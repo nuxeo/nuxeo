@@ -35,22 +35,20 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestCache extends NXRuntimeTestCase {
 
-
     @Override
     protected void setUp() throws Exception {
-           super.setUp();
-           deployBundle("org.nuxeo.ecm.core.api");
-           deployBundle("org.nuxeo.ecm.core.convert.api");
-           deployBundle("org.nuxeo.ecm.core.convert");
-           deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/convert-service-config-enabled.xml");
+        super.setUp();
+        deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core.convert.api");
+        deployBundle("org.nuxeo.ecm.core.convert");
+        deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/convert-service-config-enabled.xml");
     }
-
 
     public void testCache() throws Exception {
         deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib3.xml");
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
-        Converter cv =  ConversionServiceImpl.getConverter("identity");
+        Converter cv = ConversionServiceImpl.getConverter("identity");
         assertNotNull(cv);
 
         int cacheSize1 = ConversionCacheHolder.getNbCacheEntries();
@@ -58,7 +56,7 @@ public class TestCache extends NXRuntimeTestCase {
 
         File file = FileUtils.getResourceFileFromContext("test-data/hello.doc");
         assertNotNull(file);
-        assertTrue(file.length()>0);
+        assertTrue(file.length() > 0);
 
         Blob blob = new FileBlob(file);
         blob.setFilename("hello.doc");
@@ -73,25 +71,25 @@ public class TestCache extends NXRuntimeTestCase {
         int cacheSize2 = ConversionCacheHolder.getNbCacheEntries();
 
         // check new cache entry was created
-        assertEquals(1, cacheSize2-cacheSize1);
+        assertEquals(1, cacheSize2 - cacheSize1);
 
 
         BlobHolder result2 = cs.convert("identity", bh, null);
 
         // check NO new cache entry was created
         cacheSize2 = ConversionCacheHolder.getNbCacheEntries();
-        assertEquals(1, cacheSize2-cacheSize1);
+        assertEquals(1, cacheSize2 - cacheSize1);
 
         long cacheHits2 = ConversionCacheHolder.getCacheHits();
 
         // check cache hits
-        assertEquals(1, cacheHits2-cacheHits1);
+        assertEquals(1, cacheHits2 - cacheHits1);
 
         // force GC
-        ConversionCacheGCManager.doGC(file.length()/1024);
+        ConversionCacheGCManager.doGC(file.length() / 1024);
 
         int cacheSize3 = ConversionCacheHolder.getNbCacheEntries();
         assertEquals(0, cacheSize3);
-
     }
+
 }

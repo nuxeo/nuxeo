@@ -43,16 +43,14 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Runtime Component that also provides the POJO implementation of the
- * {@link ConversionService}
+ * {@link ConversionService}.
  *
  * @author tiry
- *
  */
 public class ConversionServiceImpl extends DefaultComponent implements
         ConversionService {
 
-    private static final Log log = LogFactory
-            .getLog(ConversionServiceImpl.class);
+    private static final Log log = LogFactory.getLog(ConversionServiceImpl.class);
 
     public static final String CONVERTER_EP = "converter";
     public static final String CONFIG_EP = "configuration";
@@ -63,6 +61,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
 
     /** Component implementation * */
 
+    @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
@@ -79,12 +78,13 @@ public class ConversionServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
     }
 
-    /** Component API * */
+    /* Component API */
 
     public static Converter getConverter(String converterName) {
         ConverterDescriptor desc = converterDescriptors.get(converterName);
@@ -132,7 +132,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
         return config.getCachingDirectory();
     }
 
-    /** Service API *** */
+    /* Service API */
 
     public List<String> getRegistredConverters() {
         List<String> converterNames = new ArrayList<String>();
@@ -174,7 +174,6 @@ public class ConversionServiceImpl extends DefaultComponent implements
             }
             return result;
         }
-
     }
 
     public BlobHolder convertToMimeType(String destinationMimeType,

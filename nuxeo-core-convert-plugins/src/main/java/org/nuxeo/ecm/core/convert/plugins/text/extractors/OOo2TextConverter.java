@@ -18,7 +18,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 /**
- * Based on Apache JackRabbit OOo converter
+ * Based on Apache JackRabbit OOo converter.
  */
 public class OOo2TextConverter implements Converter {
 
@@ -55,7 +55,6 @@ public class OOo2TextConverter implements Converter {
 
     public void init(ConverterDescriptor descriptor) {
         // TODO Auto-generated method stub
-
     }
 
 }

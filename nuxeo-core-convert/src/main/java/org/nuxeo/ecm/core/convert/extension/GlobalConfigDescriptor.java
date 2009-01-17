@@ -31,10 +31,6 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 @XObject("configuration")
 public class GlobalConfigDescriptor implements Serializable{
 
-    /**
-     *
-     */
-
     private static final long serialVersionUID = 1L;
 
     public static final long DEFAULT_GC_INTERVAL_IN_MIN = 10;
@@ -70,13 +66,11 @@ public class GlobalConfigDescriptor implements Serializable{
         return diskCacheSize;
     }
 
-
     public boolean isCacheEnabled() {
         return enableCache;
     }
 
     public void update(GlobalConfigDescriptor other) {
-
         if (other.GCInterval!=0) {
             GCInterval= other.GCInterval;
         }
@@ -91,11 +85,11 @@ public class GlobalConfigDescriptor implements Serializable{
         enableCache = other.enableCache;
     }
 
-
     public String getCachingDirectory() {
         if (cachingDirectory==null) {
             cachingDirectory=System.getProperty("java.io.tmpdir");
         }
         return cachingDirectory;
     }
+
 }

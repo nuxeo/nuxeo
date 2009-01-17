@@ -44,8 +44,8 @@ public class PPT2TextConverter implements Converter {
             Map<String, Serializable> parameters) throws ConversionException {
         File f = null;
         OutputStream fas = null;
-        try {
 
+        try {
             PowerPointExtractor extractor = new PowerPointExtractor(blobHolder.getBlob().getStream());
 
             byte[] bytes = extractor.getText().getBytes();
@@ -57,7 +57,6 @@ public class PPT2TextConverter implements Converter {
             blob.setMimeType("text/plain");
 
             return new SimpleCachableBlobHolder(blob);
-
         } catch (Exception e) {
             throw new ConversionException("Error during PPT2Text conversion", e);
         } finally {

@@ -12,4 +12,5 @@ public class TestWordConverter extends BaseConverterTest {
     public void testAnyToTextConverter() throws Exception {
         doTestAny2TextConverter("application/msword", "any2text", "hello.doc");
     }
+
 }

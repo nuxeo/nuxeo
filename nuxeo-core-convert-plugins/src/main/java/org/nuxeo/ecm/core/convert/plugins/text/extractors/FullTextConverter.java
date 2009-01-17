@@ -33,10 +33,9 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Converter that try to find a way to extract full text content according to input mime-type
+ * Converter that tries to find a way to extract full text content according to input mime-type.
  *
  * @author tiry
- *
  */
 public class FullTextConverter implements Converter {
 
@@ -66,7 +65,7 @@ public class FullTextConverter implements Converter {
 
         if (converterName!=null) {
             if (converterName.equals(descriptor.getConverterName())) {
-                // Should never happend !
+                // Should never happen !
                 log.debug("Existing from converter to avoid a loop");
                 return new SimpleBlobHolder(new StringBlob(""));
             }

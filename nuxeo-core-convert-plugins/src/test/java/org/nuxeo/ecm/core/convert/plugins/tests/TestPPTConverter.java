@@ -9,7 +9,6 @@ public class TestPPTConverter extends BaseConverterTest {
                 "hello.ppt");
     }
 
-
     public void testAnyToTextConverter() throws Exception {
         doTestAny2TextConverter("application/vnd.ms-powerpoint",
                     "any2text", "hello.ppt");

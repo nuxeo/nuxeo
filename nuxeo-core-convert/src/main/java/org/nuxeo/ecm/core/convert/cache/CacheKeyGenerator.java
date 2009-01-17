@@ -24,14 +24,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 
 /**
- *
  * Simple helper to handle cache key generation
  *
  * @author tiry
- *
  */
 public class CacheKeyGenerator {
-
 
     public static String computeKey(String converterName, BlobHolder blobHolder,
             Map<String, Serializable> parameters) {
@@ -43,7 +40,7 @@ public class CacheKeyGenerator {
         try {
             sb.append(blobHolder.getHash());
         } catch (ClientException e) {
-            throw new IllegalStateException("Can not fetch Hash from BlobHolder");
+            throw new IllegalStateException("Can not fetch Hash from BlobHolder", e);
         }
 
         if (parameters!=null) {

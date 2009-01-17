@@ -26,29 +26,36 @@ import org.nuxeo.ecm.core.convert.cache.CachableBlobHolder;
 
 /**
  * Interface that must be implemented by any contributer Converter class.
- * There is only one instance of each contributed converter class : that means that implementation must be ThreadSafe
- * @author tiry
+ * <p>
+ * There is only one instance of each contributed converter class: that means
+ * that the implementation must be thread-safe.
  *
+ * @author tiry
  */
 public interface Converter {
 
     /**
-     * Initialize the Converter
-     * This can be used to retrieve some configuration information from the XMap Descriptor
+     * Initializes the Converter.
+     * <p>
+     * This can be used to retrieve some configuration information from the XMap
+     * Descriptor.
      *
      * @param descriptor
      */
     void init(ConverterDescriptor descriptor);
 
     /**
-     *
-     * Main method to handle the real Conversion Job.     *
-     * Returned {@link BlobHolder} must implement {@link CachableBlobHolder} otherwise result won't be cached.
+     * Main method to handle the real Conversion Job.
+     * <p>
+     * Returned {@link BlobHolder} must implement {@link CachableBlobHolder},
+     * otherwise result won't be cached.
      *
      * @param blobHolder
      * @param parameters
      * @return
      * @throws ConversionException
      */
-    BlobHolder convert(BlobHolder blobHolder,Map<String, Serializable> parameters) throws ConversionException;
+    BlobHolder convert(BlobHolder blobHolder,
+            Map<String, Serializable> parameters) throws ConversionException;
+
 }

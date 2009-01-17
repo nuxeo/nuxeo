@@ -43,7 +43,6 @@ public class Word2TextConverter implements Converter {
         OutputStream fas = null;
 
         try {
-
             WordExtractor extractor = new WordExtractor(blobHolder.getBlob().getStream());
             byte[] bytes = extractor.getText().getBytes();
             f = File.createTempFile("po-word2text", ".txt");
@@ -54,7 +53,6 @@ public class Word2TextConverter implements Converter {
             blob.setMimeType("text/plain");
 
             return new SimpleCachableBlobHolder(blob);
-
         } catch (Exception e) {
             throw new ConversionException("Error during Word2Text conversion", e);
         } finally {
@@ -67,7 +65,6 @@ public class Word2TextConverter implements Converter {
             if (f != null) {
                 f.delete();
             }
-
         }
     }
 

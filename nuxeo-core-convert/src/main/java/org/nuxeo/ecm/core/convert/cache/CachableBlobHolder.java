@@ -20,31 +20,32 @@ package org.nuxeo.ecm.core.convert.cache;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 
 /**
- *
  * Extended interface for {@link BlobHolder} that can be cached.
- * A BlobHolder can be cached if it can be persisted to disk and reloaded from a file.
- * Converter need to return BlobHodlers that implement this interface to make the result cachable.
+ * <p>
+ * A BlobHolder can be cached if it can be persisted to disk and reloaded from a
+ * file. Converter need to return BlobHodlers that implement this interface to
+ * make the result cachable.
  *
  * @author tiry
- *
  */
 public interface CachableBlobHolder extends BlobHolder {
 
     /**
-     * Persist the blobHolder to disk.
+     * Persists the blobHolder to disk.
      *
-     * @param basePath the base path (existing directory) as determined by the caller
+     * @param basePath
+     *            the base path (existing directory) as determined by the caller
      * @return the full path of the newly created FileSystem resource
      * @throws Exception
      */
-    public String persist(String basePath) throws Exception;
+    String persist(String basePath) throws Exception;
 
     /**
-     * Reload the {@link BlobHolder} from a file.
+     * Reloads the {@link BlobHolder} from a file.
      *
      * @param path
      *
      */
-    public void load(String path);
+    void load(String path);
 
 }

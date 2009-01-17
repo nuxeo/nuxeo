@@ -4,38 +4,33 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Result object for an availibility check on a Converter.
+ * Result object for an availability check on a Converter.
+ * <p>
  * Contains an availability flag + error and installation message is needed.
  *
  * @author tiry
- *
  */
 public class ConverterCheckResult implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
-
 
     protected boolean available;
 
-    protected String installationMessage=null;
+    protected String installationMessage = null;
 
-    protected String errorMessage=null;
+    protected String errorMessage = null;
 
     protected List<String> supportedInputMimeTypes;
 
-    public ConverterCheckResult(){
-        available=true;
+    public ConverterCheckResult() {
+        available = true;
     }
 
-    public ConverterCheckResult(String installationMessage, String errorMessage){
-        available=false;
-        this.installationMessage=installationMessage;
-        this.errorMessage=errorMessage;
+    public ConverterCheckResult(String installationMessage, String errorMessage) {
+        available = false;
+        this.installationMessage = installationMessage;
+        this.errorMessage = errorMessage;
     }
-
 
     public boolean isAvailable() {
         return available;
@@ -68,6 +63,5 @@ public class ConverterCheckResult implements Serializable {
     public void setSupportedInputMimeTypes(List<String> supportedInputMimeTypes) {
         this.supportedInputMimeTypes = supportedInputMimeTypes;
     }
-
 
 }
