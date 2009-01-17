@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.NoSuchPropertyException;
 import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
@@ -210,6 +211,8 @@ public class DocumentModelFactory {
                     docModel.prefetchProperty(
                             field.getDeclaringType().getName() + '.'
                                     + field.getName().getLocalName(), value);
+                } catch (NoSuchPropertyException e) {
+                    // skip
                 } catch (DocumentException e) {
                     log.error("Error while building prefetch fields, "
                             + "check the document configuration", e);
