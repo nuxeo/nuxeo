@@ -8,5 +8,4 @@ public class ConverterNotAvailable extends ConversionException {
         super("Converter " + message + " is not available");
     }
 
-
 }

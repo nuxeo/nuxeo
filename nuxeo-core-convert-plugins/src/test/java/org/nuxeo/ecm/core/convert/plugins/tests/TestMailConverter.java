@@ -17,7 +17,7 @@ public class TestMailConverter extends BaseConverterTest {
 
     private static final String CONVERTER_NAME = "rfc822totext";
 
-    protected ConversionService cs = null;
+    protected ConversionService cs;
 
     @Override
     public void setUp() throws Exception {
@@ -26,7 +26,7 @@ public class TestMailConverter extends BaseConverterTest {
         assertNotNull(cs);
     }
 
-    private Blob getTestBlob(String filePath) throws Exception {
+    private Blob getTestBlob(String filePath) {
         File file = FileUtils.getResourceFileFromContext(filePath);
         return new FileBlob(file);
     }

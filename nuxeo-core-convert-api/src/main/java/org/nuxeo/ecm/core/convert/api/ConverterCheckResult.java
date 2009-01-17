@@ -16,9 +16,9 @@ public class ConverterCheckResult implements Serializable {
 
     protected boolean available;
 
-    protected String installationMessage = null;
+    protected String installationMessage;
 
-    protected String errorMessage = null;
+    protected String errorMessage;
 
     protected List<String> supportedInputMimeTypes;
 

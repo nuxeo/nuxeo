@@ -12,14 +12,11 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public abstract class BaseConverterTest extends NXRuntimeTestCase {
 
-    protected static BlobHolder getBlobFromPath(String path) {
-        File file = FileUtils.getResourceFileFromContext(path);
-        assertTrue(file.length() > 0);
-        return new SimpleBlobHolder(new FileBlob(file));
+    public BaseConverterTest() {
     }
 
-    public BaseConverterTest() {
-        super();
+    public BaseConverterTest(String name) {
+        super(name);
     }
 
     @Override
@@ -31,8 +28,10 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
     }
 
-    public BaseConverterTest(String name) {
-        super(name);
+    protected static BlobHolder getBlobFromPath(String path) {
+        File file = FileUtils.getResourceFileFromContext(path);
+        assertTrue(file.length() > 0);
+        return new SimpleBlobHolder(new FileBlob(file));
     }
 
     protected void doTestTextConverter(String srcMT, String converter, String fileName)

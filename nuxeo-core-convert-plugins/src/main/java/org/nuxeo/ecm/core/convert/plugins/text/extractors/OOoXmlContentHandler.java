@@ -18,6 +18,7 @@ public class OOoXmlContentHandler extends DefaultHandler {
         return sb.toString();
     }
 
+    @Override
     public void startElement(String namespaceURI, String localName,
             String rawName, Attributes atts)
             throws SAXException {
@@ -26,6 +27,7 @@ public class OOoXmlContentHandler extends DefaultHandler {
         }
     }
 
+    @Override
     public void characters(char[] ch, int start, int length)
             throws SAXException {
         if (dumpText) {
@@ -33,9 +35,8 @@ public class OOoXmlContentHandler extends DefaultHandler {
             sb.append(" ");
         }
     }
-    public void endElement(java.lang.String namespaceURI,
-            java.lang.String localName,
-            java.lang.String qName)
+    @Override
+    public void endElement(String namespaceURI, String localName, String qName)
             throws SAXException {
         dumpText = false;
     }

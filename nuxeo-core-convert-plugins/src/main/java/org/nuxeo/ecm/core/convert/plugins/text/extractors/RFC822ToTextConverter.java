@@ -41,7 +41,7 @@ public class RFC822ToTextConverter implements Converter {
 
     private static final String TXT_MT = "text/plain";
 
-    protected ConverterDescriptor desciptor;
+    protected ConverterDescriptor descriptor;
 
     protected Blob extractTextFromMessage(Blob blob) {
         if (blob == null) {
@@ -68,7 +68,7 @@ public class RFC822ToTextConverter implements Converter {
                 }
             }
             Blob outblob = new FileBlob(new FileInputStream(f));
-            outblob.setMimeType(desciptor.getDestinationMimeType());
+            outblob.setMimeType(descriptor.getDestinationMimeType());
             return outblob;
         } catch (Exception e) {
             log.error(e);
@@ -188,8 +188,7 @@ public class RFC822ToTextConverter implements Converter {
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
-        Blob inputBlob = null;
-        Blob outblob = null;
+        Blob inputBlob;
 
         try {
             inputBlob = blobHolder.getBlob();
@@ -197,6 +196,7 @@ public class RFC822ToTextConverter implements Converter {
         catch (Exception e) {
             throw new ConversionException("Error while getting blob from Holder", e);
         }
+        Blob outblob;
         try {
             outblob = extractTextFromMessage(inputBlob);
         } catch (Exception e) {
@@ -207,7 +207,7 @@ public class RFC822ToTextConverter implements Converter {
     }
 
     public void init(ConverterDescriptor descriptor) {
-        this.desciptor = descriptor;
+        this.descriptor = descriptor;
     }
 
 }
