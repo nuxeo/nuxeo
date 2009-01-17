@@ -1,5 +1,7 @@
 <div>
+<ul>
 <#list nxthemesInfo.model.items as item>
+  <li style="display: inline">
   <#if item.icon>
     <img src="${item.icon}" />
   </#if>
@@ -8,5 +10,7 @@
   <#else>
     <a href="${item.url}">${item.title}</a>
   </#if>
+  </li>
 </#list>
+</ul>
 </div>
