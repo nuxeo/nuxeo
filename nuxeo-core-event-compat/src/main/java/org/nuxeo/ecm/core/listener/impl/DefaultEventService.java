@@ -49,10 +49,10 @@ public class DefaultEventService extends DefaultComponent implements
 
     private final ListenerList eventListeners = new ListenerList(new EventListenerOrderComparator());
 
-    private TransactedEventService txEventMgr = null;
+    private TransactedEventService txEventMgr;
 
     public DefaultEventService() {
-        this (Boolean.parseBoolean(Framework.getProperty("activateCoreNotificationTransaction", "true")));
+        this(Boolean.parseBoolean(Framework.getProperty("activateCoreNotificationTransaction", "true")));
     }
 
     public DefaultEventService(boolean activatePostCommit) {

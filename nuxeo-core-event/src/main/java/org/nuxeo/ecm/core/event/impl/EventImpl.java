@@ -28,21 +28,21 @@ public class EventImpl implements Event {
 
     private static final long serialVersionUID = 1L;
 
-    protected String name;
+    protected final String name;
+    protected final long time;
+    protected final EventContext ctx;
+
     protected int flags;
-    protected long time;
-    protected EventContext ctx;
-
-
-    public EventImpl(String name, EventContext ctx) {
-        this(name, ctx, 0);
-    }
 
     public EventImpl(String name, EventContext ctx, int flags) {
         this.name = name;
         this.ctx = ctx;
         time = System.currentTimeMillis();
         this.flags = flags;
+    }
+
+    public EventImpl(String name, EventContext ctx) {
+        this(name, ctx, 0);
     }
 
     public void setFlags(int flags) {
@@ -85,8 +85,8 @@ public class EventImpl implements Event {
         return isFlagSet(INLINE);
     }
 
-    public void setInline(boolean inline) {
-        if (inline) {
+    public void setInline(boolean isInline) {
+        if (isInline) {
             setFlags(INLINE);
         } else {
             clearFlags(INLINE);

@@ -33,27 +33,29 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
 
 /**
  * This implementation is always recording the event even if no transaction was started.
- * If the transaction was not started the SAVE event is used to flush the event bundle.
+ * If the transaction was not started, the SAVE event is used to flush the event bundle.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class EventServiceImpl implements EventService {
 
     private static final Log log  = LogFactory.getLog(EventServiceImpl.class);
 
-    protected final static ThreadLocal<EventBundleImpl> bundle = new ThreadLocal<EventBundleImpl>() {
-        protected EventBundleImpl initialValue() { return new EventBundleImpl(); };
+    protected static final ThreadLocal<EventBundleImpl> bundle = new ThreadLocal<EventBundleImpl>() {
+        @Override
+        protected EventBundleImpl initialValue() {
+            return new EventBundleImpl();
+        }
     };
 
-    protected ListenerList listeners;
-    protected ListenerList postCommitListeners;
+    protected final ListenerList listeners;
+    protected final ListenerList postCommitListeners;
 
 
     public EventServiceImpl() {
         EntryComparator cmp = new EntryComparator();
-        this.listeners = new ListenerList(cmp);
-        this.postCommitListeners = new ListenerList(cmp);
+        listeners = new ListenerList(cmp);
+        postCommitListeners = new ListenerList(cmp);
     }
 
     public void addEventListener(EventListenerDescriptor listener) {
@@ -154,16 +156,17 @@ public class EventServiceImpl implements EventService {
      * A listener entry having a priority
      */
     static class Entry<T> {
-        int priority;
-        T listener;
-        Set<String> events;
-        Entry(T listener) {
-            this (listener, 0, null);
-        }
+        final int priority;
+        final T listener;
+        final Set<String> events;
+
         Entry(T listener, int priority, Set<String> events) {
             this.listener = listener;
             this.priority = priority;
             this.events = events;
+        }
+        Entry(T listener) {
+            this(listener, 0, null);
         }
         @Override
         public boolean equals(Object obj) {

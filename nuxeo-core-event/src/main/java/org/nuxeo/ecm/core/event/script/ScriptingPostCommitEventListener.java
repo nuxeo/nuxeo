@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
 public class ScriptingPostCommitEventListener implements
         PostCommitEventListener {
 
-    protected Script script;
+    protected final Script script;
 
     public ScriptingPostCommitEventListener(Script script) {
         this.script = script;

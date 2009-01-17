@@ -29,8 +29,14 @@ import org.osgi.framework.Bundle;
  */
 public class URLScript extends Script {
 
-    protected URL url;
+    protected final URL url;
+
     protected URLConnection conn;
+
+    public URLScript(URL url) throws IOException {
+        this.url = url;
+        conn = url.openConnection();
+    }
 
     public URLScript(String location) throws IOException {
         this(new URL(location));
@@ -38,11 +44,6 @@ public class URLScript extends Script {
 
     public URLScript(Bundle bundle, String path) throws IOException {
         this(bundle.getEntry(path));
-    }
-
-    public URLScript(URL url) throws IOException {
-        this.url = url;
-        conn = url.openConnection();
     }
 
     @Override

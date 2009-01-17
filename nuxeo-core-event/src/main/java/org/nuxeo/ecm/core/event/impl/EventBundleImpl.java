@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.event.EventBundle;
  */
 public class EventBundleImpl implements EventBundle {
 
-    protected List<Event> events;
+    protected final List<Event> events;
 
     /**
      * If true the bundle is controlled by a transaction, otherwise it is controlled by the SAVE event.

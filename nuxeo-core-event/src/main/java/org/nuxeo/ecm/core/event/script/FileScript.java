@@ -27,16 +27,16 @@ import java.io.Reader;
  */
 public class FileScript extends Script {
 
-    protected File file;
-    
-    public FileScript(String path) {
-        this (new File(path));
-    }
-    
+    protected final File file;
+
     public FileScript(File file) {
         this.file = file;
     }
-    
+
+    public FileScript(String path) {
+        this(new File(path));
+    }
+
     @Override
     public String getExtension() {
         return getExtension(file.getPath());
@@ -65,5 +65,5 @@ public class FileScript extends Script {
         }
         return null;
     }
-    
+
 }

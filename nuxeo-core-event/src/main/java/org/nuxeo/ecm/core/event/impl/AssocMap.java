@@ -31,7 +31,7 @@ import java.util.Set;
  */
 public class AssocMap {
 
-    protected Map<String, Set<String>> peers = new HashMap<String, Set<String>>();
+    protected final Map<String, Set<String>> peers = new HashMap<String, Set<String>>();
 
 
     public synchronized void put(String x, String y) {
@@ -41,16 +41,8 @@ public class AssocMap {
             return; // already associated
         }
         if (px == null) {
-            if (py == null) {
-              Set<String> set = new HashSet<String>();
-              set.add(x);
-              set.add(y);
-              peers.put(x, set);
-              peers.put(y, set);
-            } else {
-                py.add(x);
-                peers.put(x, py);
-            }
+            py.add(x);
+            peers.put(x, py);
         } else if (py == null) {
             px.add(y);
             peers.put(y, px);

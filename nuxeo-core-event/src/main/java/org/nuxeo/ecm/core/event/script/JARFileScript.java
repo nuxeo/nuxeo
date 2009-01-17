@@ -28,8 +28,8 @@ import java.net.URL;
  */
 public class JARFileScript extends Script {
 
-    protected URL url;
-    protected File jar;
+    protected final URL url;
+    protected final File jar;
 
     public JARFileScript(File jar, URL url) {
         this.url = url;

@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.event.EventListener;
  */
 public class ScriptingEventListener implements EventListener {
 
-    protected Script script;
+    protected final Script script;
 
     public ScriptingEventListener(Script script) {
         this.script = script;

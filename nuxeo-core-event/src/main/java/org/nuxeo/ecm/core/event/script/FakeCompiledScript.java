@@ -31,8 +31,8 @@ import javax.script.ScriptException;
  */
 public class FakeCompiledScript extends CompiledScript {
 
-    protected ScriptEngine engine;
-    protected Script script;
+    protected final ScriptEngine engine;
+    protected final Script script;
 
     public FakeCompiledScript(ScriptEngine engine, Script script) {
         this.script = script;

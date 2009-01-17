@@ -40,7 +40,7 @@ import org.nuxeo.runtime.model.RuntimeContext;
 @XObject("listener")
 public class EventListenerDescriptor {
 
-    public final static Log log = LogFactory.getLog(EventListenerDescriptor.class);
+    public static final Log log = LogFactory.getLog(EventListenerDescriptor.class);
 
     /**
      * The event listener class.

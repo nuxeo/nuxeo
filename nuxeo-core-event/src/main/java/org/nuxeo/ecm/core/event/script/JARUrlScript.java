@@ -26,8 +26,8 @@ import java.net.URL;
  */
 public class JARUrlScript extends Script {
 
-    protected URL url;
-    protected URL jar;
+    protected final URL url;
+    protected final URL jar;
 
     public JARUrlScript(URL jar, URL url) {
         this.url = url;
