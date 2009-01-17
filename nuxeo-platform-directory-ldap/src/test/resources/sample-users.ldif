@@ -1,3 +1,5 @@
+version: 1
+
 # Root of the directory
 #
 dn: dc=example,dc=com

@@ -3,6 +3,8 @@ package org.nuxeo.ecm.platform.convert.tests;
 import java.io.File;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -16,6 +18,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestPDFToHtml extends NXRuntimeTestCase {
+
+    private static final Log log = LogFactory.getLog(TestPDFToHtml.class);
 
     protected ConversionService cs;
 
@@ -52,16 +56,16 @@ public class TestPDFToHtml extends NXRuntimeTestCase {
         ConverterCheckResult check =  cs.isConverterAvailable(converterName);
         assertNotNull(check);
         if (!check.isAvailable()) {
-            System.out.println("Skipping PDF2Html tests since commandLine is not installed");
-            System.out.println(" converter check output : " + check.getInstallationMessage());
-            System.out.println(" converter check output : " + check.getErrorMessage());
+            log.warn("Skipping PDF2Html tests since commandLine is not installed");
+            log.warn(" converter check output : " + check.getInstallationMessage());
+            log.warn(" converter check output : " + check.getErrorMessage());
             return;
         }
 
         CommandAvailability ca = cles.getCommandAvailability("pdftohtml");
 
         if (!ca.isAvailable()) {
-            System.out.println("pdftohtml command is not avalaible, skipping test");
+            log.warn("pdftohtml command is not avalaible, skipping test");
             return;
         }
 

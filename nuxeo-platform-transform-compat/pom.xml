@@ -40,6 +40,12 @@
       <artifactId>nuxeo-core-convert-plugins</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <!-- needed for convert plugins -->
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <scope>test</scope>
+    </dependency>
 
   </dependencies>
 

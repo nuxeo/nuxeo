@@ -99,6 +99,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
             if (!desc.isEnabled()) {
                 commandDescriptors.remove(name);
                 log.info("Command configured to not be enabled: " + name);
+                return;
             }
 
             String testerName = desc.getTester();

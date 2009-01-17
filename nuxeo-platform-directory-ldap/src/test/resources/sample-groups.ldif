@@ -1,3 +1,5 @@
+version: 1
+
 # Branch to store groups of users
 # (User's passwords are equal to their uids)
 #

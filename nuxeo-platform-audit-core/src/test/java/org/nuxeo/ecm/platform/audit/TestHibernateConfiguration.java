@@ -34,7 +34,7 @@ public class TestHibernateConfiguration implements
         properties.put("hibernate.dialect",
                 "org.hibernate.dialect.HSQLDialect");
         properties.put("hibernate.hbm2ddl.auto", "update");
-        properties.put("hibernate.show_sql", "true");
+        properties.put("hibernate.show_sql", "false"); // true to debug
         properties.put("hibernate.format_sql", "true");
 
         return properties;

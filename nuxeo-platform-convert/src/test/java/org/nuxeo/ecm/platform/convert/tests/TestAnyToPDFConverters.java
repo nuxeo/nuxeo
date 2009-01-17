@@ -2,6 +2,8 @@ package org.nuxeo.ecm.platform.convert.tests;
 
 import java.io.File;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
@@ -11,6 +13,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class TestAnyToPDFConverters extends BaseConverterTest {
 
+    private static final Log log = LogFactory.getLog(TestAnyToPDFConverters.class);
 
     protected void doTestPDFConverter(String srcMT, String fileName)
     throws Exception {
@@ -23,9 +26,9 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         ConverterCheckResult check =  cs.isConverterAvailable(converterName);
         assertNotNull(check);
         if (!check.isAvailable()) {
-            System.out.println("Skipping JOD based converter tests since OOo is not installed");
-            System.out.println(" converter check output : " + check.getInstallationMessage());
-            System.out.println(" converter check output : " + check.getErrorMessage());
+            log.warn("Skipping JOD based converter tests since OOo is not installed");
+            log.warn("  converter check output : " + check.getInstallationMessage());
+            log.warn("  converter check output : " + check.getErrorMessage());
             return;
         }
 
@@ -47,9 +50,9 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         ConverterCheckResult check =  cs.isConverterAvailable("any2pdf");
         assertNotNull(check);
         if (!check.isAvailable()) {
-            System.out.print("Skipping JOD based converter tests since OOo is not installed");
-            System.out.print(" converter check output : " + check.getInstallationMessage());
-            System.out.print(" converter check output : " + check.getErrorMessage());
+            log.warn("Skipping JOD based converter tests since OOo is not installed");
+            log.warn("  converter check output : " + check.getInstallationMessage());
+            log.warn("  converter check output : " + check.getErrorMessage());
             return;
         }
 

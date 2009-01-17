@@ -140,7 +140,7 @@ public class OOoMimetypeSniffer implements MagicDetector {
                 mimetype = new String[] { FileUtils.readFile(mimetypeFile) };
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            // probably not a zip file
         } finally {
             if (tempFile != null) {
                 FileUtils.deleteTree(tempFile);

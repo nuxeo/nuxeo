@@ -404,7 +404,7 @@ public class TestSearchEngine extends RepositoryTestCase {
 
         Map<String, IndexableResourceDataConf> fields = conf.getIndexableFields();
         // do no more assume static fields count - schemas are dynamic and may change over time
-        log.error("fields content : "+fields);
+        // log.error("fields content : "+fields);
         assertEquals(7, fields.size());
 
         IndexableResourceDataConf fconf = fields.get("filename");

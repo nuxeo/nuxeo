@@ -69,7 +69,7 @@ public class ImageMagickTester extends NXRuntimeTestCase {
 
         List<String> lines = result.getOutput();
 
-        System.out.println(lines);
+        // System.out.println(lines);
 
         assertEquals("PNG 48 48", lines.get(0));
     }
