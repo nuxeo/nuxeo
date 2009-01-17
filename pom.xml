@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -77,6 +76,7 @@
     <module>nuxeo-platform-placeful-core</module>
     <module>nuxeo-platform-placeful-facade</module>
     <module>nuxeo-platform-placeful-theme</module>
+    <module>nuxeo-platform-publishing</module>
     <module>nuxeo-platform-relations-api</module>
     <module>nuxeo-platform-relations-default-config</module>
     <module>nuxeo-platform-relations-core</module>
@@ -93,8 +93,10 @@
     <module>nuxeo-platform-syndication</module>
     <module>nuxeo-platform-transform-api</module>
     <module>nuxeo-platform-transform-compat</module>
-<!--    <module>nuxeo-platform-transform-core</module>
-    <module>nuxeo-platform-transform-plugins</module>-->
+    <!--
+      <module>nuxeo-platform-transform-core</module>
+      <module>nuxeo-platform-transform-plugins</module>
+    -->
     <module>nuxeo-platform-types-api</module>
     <module>nuxeo-platform-types-core</module>
     <module>nuxeo-platform-types-facade</module>
@@ -121,12 +123,6 @@
     <module>nuxeo-platform-forum-core</module>
     <module>nuxeo-platform-forum-workflow</module>
     <module>nuxeo-platform-forum</module>
-    <!--
-      <module>nuxeo-platform-publishing-api</module>
-      <module>nuxeo-platform-publishing</module>
-      <module>nuxeo-platform-publishing-facade</module>
-      <module>nuxeo-platform-publishing-web</module>
-    -->
     <module>nuxeo-platform-content-template-manager</module>
     <module>nuxeo-platform-domsync-core</module>
     <module>nuxeo-platform-forms-layout-api</module>
@@ -636,7 +632,7 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-convert</artifactId>
         <version>${nuxeo.platform.version}</version>
-      </dependency><!--
+      </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-transform-core</artifactId>
@@ -647,7 +643,7 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-transform-plugins</artifactId>
         <version>${nuxeo.platform.version}</version>
-      </dependency>-->
+      </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-types-api</artifactId>
@@ -847,7 +843,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-publishing</artifactId>
+        <artifactId>nuxeo-platform-publishing-core</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>
