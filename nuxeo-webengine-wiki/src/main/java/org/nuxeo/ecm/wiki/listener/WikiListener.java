@@ -33,7 +33,6 @@ public class WikiListener extends AbstractEventListener implements AsynchronousE
 
     private static final Log log = LogFactory.getLog(WikiListener.class);
 
-
     @Override
     public void handleEvent(CoreEvent coreEvent) throws Exception {
         /* TODO: work in progress
