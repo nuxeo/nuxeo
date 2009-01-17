@@ -1,6 +1,6 @@
 [tree1]
 root = .
-revision = ea0b2fcd36d7b8fe61752d7d462f93503ddb37bb
+revision = 850bc9e39388591997ff8ab4d2516343194944d1
 path.default = https://hg.nuxeo.org/nuxeo/
 
 [tree2]
@@ -25,7 +25,7 @@ path.default = https://hg.nuxeo.org/nuxeo/nuxeo-gwt
 
 [tree6]
 root = nuxeo-platform
-revision = 64fc18bf92af3d8f18887925079159650b1450a1
+revision = 9ebdbeb6142c5d4308ffe93398408316b754ab3c
 path.default = https://hg.nuxeo.org/nuxeo/nuxeo-platform
 
 [tree7]
@@ -45,6 +45,6 @@ path.default = https://hg.nuxeo.org/nuxeo/nuxeo-theme
 
 [tree10]
 root = nuxeo-webengine
-revision = 37f641207c37ff7333ebe48f9505bf694829e8a2
+revision = fc8e6c32ea8954faed8935c914dbcd13f1f7b519
 path.default = https://hg.nuxeo.org/nuxeo/nuxeo-webengine
 
