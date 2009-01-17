@@ -1,0 +1,50 @@
+[tree1]
+root = .
+revision = ea0b2fcd36d7b8fe61752d7d462f93503ddb37bb
+path.default = https://hg.nuxeo.org/nuxeo/
+
+[tree2]
+root = nuxeo-common
+revision = 60cb34983fd7b0d97d7652a894ec1a821fe44c90
+path.default = https://hg.nuxeo.org/nuxeo/nuxeo-common
+
+[tree3]
+root = nuxeo-core
+revision = 2f7eb98b8ed1377621de5f8f7b7a234bc94b6a04
+path.default = https://hg.nuxeo.org/nuxeo/nuxeo-core
+
+[tree4]
+root = nuxeo-distribution
+revision = 377f0a66fe881e645644695042d46a904e4c1453
+path.default = https://hg.nuxeo.org/nuxeo/nuxeo-distribution
+
+[tree5]
+root = nuxeo-gwt
+revision = 89c433a812b03483749ee878b50249e9bdf404b9
+path.default = https://hg.nuxeo.org/nuxeo/nuxeo-gwt
+
+[tree6]
+root = nuxeo-platform
+revision = 64fc18bf92af3d8f18887925079159650b1450a1
+path.default = https://hg.nuxeo.org/nuxeo/nuxeo-platform
+
+[tree7]
+root = nuxeo-runtime
+revision = a06ca5c6d1495aa6cd9a0aee094e9ba83baf76d2
+path.default = https://hg.nuxeo.org/nuxeo/nuxeo-runtime
+
+[tree8]
+root = nuxeo-shell
+revision = 5aa5bb75258ff0a81b9baab09355af255707f738
+path.default = https://hg.nuxeo.org/nuxeo/nuxeo-shell
+
+[tree9]
+root = nuxeo-theme
+revision = 7362e8c0d4a295856ce08a50c0f2ac9b69889b04
+path.default = https://hg.nuxeo.org/nuxeo/nuxeo-theme
+
+[tree10]
+root = nuxeo-webengine
+revision = 37f641207c37ff7333ebe48f9505bf694829e8a2
+path.default = https://hg.nuxeo.org/nuxeo/nuxeo-webengine
+
