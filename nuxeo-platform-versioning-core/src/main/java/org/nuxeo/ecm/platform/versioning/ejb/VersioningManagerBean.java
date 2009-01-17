@@ -128,10 +128,6 @@ public class VersioningManagerBean implements VersioningManager {
         return service.getNextVersion(doc);
     }
 
-<<<<<<< /home/alexandre/Work/nuxeo/nuxeo-platform/nuxeo-platform-versioning-core/src/main/java/org/nuxeo/ecm/platform/versioning/ejb/VersioningManagerBean.java
-=======
-
->>>>>>> /tmp/VersioningManagerBean.java~other.tRsKkW
     public SnapshotOptions getCreateSnapshotOption(DocumentModel document)
             throws ClientException {
         return service.getCreateSnapshotOption(document);
