@@ -156,8 +156,7 @@ public abstract class XValueFactory {
             try {
                 return context.loadClass(value);
             } catch (Exception e) {
-                log.error("Cannot load class: " + e.getClass().getName() +
-                        ": " + e.getMessage());
+                log.error("Cannot load class: " + e);
                 return null;
             }
         }
@@ -169,8 +168,7 @@ public abstract class XValueFactory {
             try {
                 return new Resource(context.getResource(value));
             } catch (Exception e) {
-                log.error("Cannot load resource: " + e.getClass().getName() +
-                        ": " + e.getMessage());
+                log.error("Cannot load resource: " + e);
                 return null;
             }
         }
