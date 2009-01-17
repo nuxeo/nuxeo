@@ -25,16 +25,16 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleDescriptor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * The web entry point of WebEngine. This is the root JAX-RS resource that is 
+ * The web entry point of WebEngine. This is the root JAX-RS resource that is
  * dispatching requests to WebEngine modules.
- * 
- * 
- * TODO : 
+ *
+ *
+ * TODO :
  *  1. add support for multiple segment paths
  *  2. application must be able to override this class.
  *  May be the best approach would be to create a stateful resource but this depends on the JAX-RS backend
  *  and may not be supported.
- *   
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -45,11 +45,10 @@ public class Main {
     public Object doGet() {
         return dispatch("/");
     }
-    
-    
+
     @Path("{modulePath}")
     public Object dispatch(@PathParam("modulePath") String path) {
-        try {            
+        try {
             WebEngine engine = Framework.getService(WebEngine.class);
             ModuleDescriptor md = engine.getModuleManager().getModuleByPath(path);
             if (md != null) {
@@ -61,5 +60,5 @@ public class Main {
             throw WebException.wrap("Failed to dispatch: "+path, e);
         }
     }
-    
+
 }

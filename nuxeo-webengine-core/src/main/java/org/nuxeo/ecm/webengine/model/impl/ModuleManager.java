@@ -33,14 +33,14 @@ public class ModuleManager {
     protected Map<String, ModuleDescriptor> modules;
     protected Map<String, ModuleDescriptor> paths;
     protected WebEngine engine;
-    
-    
+
+
     public ModuleManager(WebEngine engine) {
         this.engine = engine;
         modules = new ConcurrentHashMap<String, ModuleDescriptor>();
         paths = new ConcurrentHashMap<String, ModuleDescriptor>();
     }
-    
+
     /**
      * Get a module given its name
      * @return the module or null if none
@@ -48,19 +48,19 @@ public class ModuleManager {
     public ModuleDescriptor getModule(String key) {
         return modules.get(key);
     }
-    
+
     public ModuleDescriptor getModuleByPath(String path) {
         if (!path.startsWith("/")) {
             path = "/"+path;
         }
         return paths.get(path);
     }
-    
+
     public ModuleDescriptor[] getModules() {
         return modules.values().toArray(new ModuleDescriptor[modules.size()]);
     }
-    
-    
+
+
     public synchronized void registerModule(ModuleDescriptor descriptor) {
         modules.put(descriptor.name, descriptor);
         ModuleConfiguration cfg = descriptor.getConfiguration();
@@ -68,9 +68,9 @@ public class ModuleManager {
         if (!path.startsWith("/")) {
             path = "/"+path;
         }
-        paths.put(path, descriptor);    
+        paths.put(path, descriptor);
     }
-    
+
     public synchronized void unregisterModule(String name) {
         ModuleDescriptor md = modules.remove(name);
         Iterator<ModuleDescriptor> it = paths.values().iterator();
@@ -81,7 +81,7 @@ public class ModuleManager {
             }
         }
     }
-    
+
     public synchronized void bind(String name, String path) {
         ModuleDescriptor md = modules.get(name);
         if (md != null) {
@@ -99,18 +99,18 @@ public class ModuleManager {
     }
 
     public void loadModule(File root, String name) throws IOException {
-        String path = name+"/module.xml";
+        String path = name + "/module.xml";
         File file = new File(root, path);
         if (file.isFile()) {
             ModuleDescriptor md = new ModuleDescriptor(engine, name, file);
             registerModule(md);
-        } 
-    }
-    
-    public void reloadModule(File root, String name) throws IOException {
-        unregisterModule(name);
-        loadModule(root, name); 
+        }
     }
 
- 
+    public void reloadModule(File root, String name) throws IOException {
+        unregisterModule(name);
+        loadModule(root, name);
+    }
+
+
 }

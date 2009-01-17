@@ -68,27 +68,24 @@ public class ModuleImpl implements Module {
     protected final ModuleImpl superModule;
     protected LinkRegistry linkReg;
     protected final String skinPathPrefix;
-    protected ResourceType rootType; 
-    
+    protected ResourceType rootType;
+
     protected Messages messages;
     protected DirectoryStack dirStack;
-    protected LinkProvider linkProvider;    
+    protected LinkProvider linkProvider;
     protected ErrorHandler errorHandler;
 
     // cache used for resolved files
     protected ConcurrentMap<String, ScriptFile> fileCache;
-    
+
 
     //TODO remove this
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.webengine.model.Module#getModuleBinding()
-     */
     public ResourceBinding getModuleBinding() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public ModuleImpl(WebEngine engine, String name, ModuleImpl superModule, ModuleConfiguration config) throws Exception {        
+    public ModuleImpl(WebEngine engine, String name, ModuleImpl superModule, ModuleConfiguration config) throws Exception {
         this.engine = engine;
         this.name = name;
         this.superModule = superModule;
@@ -107,20 +104,20 @@ public class ModuleImpl implements Module {
             errorHandler = ehc.newInstance();
         } else {
             errorHandler = new DefaultErrorHandler();
-        }        
+        }
         loadConfiguration();
         reloadMessages();
-        loadDirectoryStack();        
+        loadDirectoryStack();
     }
 
     public ErrorHandler getErrorHandler() {
         return errorHandler;
     }
-    
+
     public LinkProvider getLinkProvider() {
         return linkProvider;
     }
-    
+
     public WebEngine getEngine() {
         return engine;
     }
@@ -128,7 +125,7 @@ public class ModuleImpl implements Module {
     public String getName() {
         return name;
     }
-    
+
     public ModuleImpl getSuperModule() {
         return superModule;
     }
@@ -142,10 +139,7 @@ public class ModuleImpl implements Module {
         getTypeRegistry();
         return rootType;
     }
-    
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.webengine.model.Module#getRootObject()
-     */
+
     public Object getRootObject() {
         try {
             AbstractWebContext ctx = (AbstractWebContext)WebEngine.getActiveContext();
@@ -173,7 +167,6 @@ public class ModuleImpl implements Module {
         }
         return typeReg;
     }
-
 
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         return engine.getScripting().loadClass(className);
@@ -254,7 +247,6 @@ public class ModuleImpl implements Module {
         return null;
     }
 
-    
     public void loadConfiguration() {
         linkReg = new LinkRegistry();
         if (configuration.links != null) {
@@ -264,7 +256,6 @@ public class ModuleImpl implements Module {
         }
         configuration.links = null; // avoid storing unused data
     }
-    
 
     public List<LinkDescriptor> getLinks(String category) {
         return linkReg.getLinks(category);
@@ -277,7 +268,6 @@ public class ModuleImpl implements Module {
     public LinkRegistry getLinkRegistry() {
         return linkReg;
     }
-
 
     public String getTemplateFileExt() {
         return configuration.templateFileExt;
@@ -368,14 +358,14 @@ public class ModuleImpl implements Module {
 
     /**
      * TODO There are no more reasons to lazy load the type registry since module are lazy loaded.
-     * Type registry must be loaded at module creation 
-     * 
+     * Type registry must be loaded at module creation
+     *
      * @return
      */
     public TypeRegistry createTypeRegistry() {
         //double s = System.currentTimeMillis();
         GlobalTypes gtypes = engine.getGlobalTypes();
-        TypeRegistry typeReg = null;
+        TypeRegistry typeReg;
         // install types from super modules
         if (superModule != null) { //TODO add type reg listener on super modules to update types  when needed?
             typeReg = new TypeRegistry(superModule.getTypeRegistry(), engine, this);
@@ -428,12 +418,10 @@ public class ModuleImpl implements Module {
             }
         }
     }
-    
-    
+
     @Override
     public String toString() {
         return getName();
     }
-
 
 }

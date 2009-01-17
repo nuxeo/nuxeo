@@ -63,14 +63,14 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     public TypeRegistry(WebEngine engine, ModuleImpl module) {
-        this (null, engine, module);
+        this(null, engine, module);
     }
 
     protected void registerRootType() {
-        TypeDescriptor root = new TypeDescriptor(new StaticClassProxy(Resource.class), ResourceType.ROOT_TYPE_NAME, null);
+        TypeDescriptor root = new TypeDescriptor(
+                new StaticClassProxy(Resource.class), ResourceType.ROOT_TYPE_NAME, null);
         registerType(root);
     }
-
 
     public ResourceType getRootType() {
         return types.get(ResourceType.ROOT_TYPE_NAME);
@@ -93,7 +93,6 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     public AdapterType getAdapter(String name) {
         return adapters.get(name);
     }
-
 
     public AdapterType getAdapter(Resource target, String name) {
         AdapterType adapter = adapters.get(name);
@@ -269,8 +268,8 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void installTypeContribution(String key, TypeDescriptor object) {
-        AbstractResourceType type = null;
-        type = new ResourceTypeImpl(engine, module, null, object.type, object.clazz, object.visibility);
+        AbstractResourceType type = new ResourceTypeImpl(
+                engine, module, null, object.type, object.clazz, object.visibility);
         if (object.superType != null) {
             type.superType = types.get(object.superType);
             assert type.superType != null; // must never be null since the object is resolved
@@ -291,7 +290,8 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void installAdapterContribution(String key, AdapterDescriptor object) {
-        AdapterTypeImpl type = new AdapterTypeImpl(engine, module, null, object.type, object.name, object.clazz, object.visibility);
+        AdapterTypeImpl type = new AdapterTypeImpl(
+                engine, module, null, object.type, object.name, object.clazz, object.visibility);
         if (object.superType != null) {
             type.superType = types.get(object.superType);
             assert type.superType != null; // must never be null since the object is resolved
@@ -310,8 +310,9 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void updateTypeContribution(String key, TypeDescriptor object) {
-     // when a type is updated (i.e. reinstalled) we must not replace the existing type since it may contains some contributed actions
-        // there are two methods to do this:
+        // When a type is updated (i.e. reinstalled) we must not replace
+        // the existing type since it may contains some contributed actions.
+        // There are two methods to do this:
         // 1. update the existing type
         // 2. unresolve, reinstall then resolve the type contribution to force action reinstalling.
         // we are using 1.
