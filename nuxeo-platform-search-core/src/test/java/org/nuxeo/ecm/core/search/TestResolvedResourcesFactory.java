@@ -89,8 +89,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "LifeCycleServiceExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "CoreEventListenerService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "PlatformService.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "DefaultPlatform.xml");

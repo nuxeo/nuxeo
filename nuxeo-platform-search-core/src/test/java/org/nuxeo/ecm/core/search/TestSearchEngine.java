@@ -69,7 +69,6 @@ public class TestSearchEngine extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.search.tests", "DemoRepository.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests", "LifeCycleService.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests", "LifeCycleServiceExtensions.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests", "CoreEventListenerService.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests", "PlatformService.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests", "DefaultPlatform.xml");
 
