@@ -18,9 +18,9 @@
 package org.nuxeo.ecm.core.convert.service;
 
 /**
- * Helper class to manage mime-types chains
- * @author tiry
+ * Helper class to manage mime-types chains.
  *
+ * @author tiry
  */
 public class ConvertOption {
 

@@ -30,6 +30,10 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
  */
 public class CacheKeyGenerator {
 
+    // Utility class.
+    private CacheKeyGenerator() {
+    }
+
     public static String computeKey(String converterName, BlobHolder blobHolder,
             Map<String, Serializable> parameters) {
 
@@ -45,10 +49,8 @@ public class CacheKeyGenerator {
 
         if (parameters!=null) {
             for (String key : parameters.keySet()) {
-                sb.append(":");
-                sb.append(key);
-                sb.append(":");
-                sb.append(parameters.get(key).toString());
+                sb.append(":").append(key);
+                sb.append(":").append(parameters.get(key).toString());
             }
         }
         return sb.toString();

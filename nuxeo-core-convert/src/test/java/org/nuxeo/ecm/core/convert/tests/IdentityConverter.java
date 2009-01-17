@@ -33,9 +33,8 @@ public class IdentityConverter implements Converter {
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
-        Blob inputBlob;
         try {
-            inputBlob = blobHolder.getBlob();
+            Blob inputBlob = blobHolder.getBlob();
             return new SimpleCachableBlobHolder(inputBlob);
         } catch (ClientException e) {
             throw new ConversionException("Error while getting input blob", e);

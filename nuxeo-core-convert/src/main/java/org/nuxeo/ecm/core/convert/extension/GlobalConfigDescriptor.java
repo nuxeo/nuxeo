@@ -24,19 +24,18 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 
 /**
- * XMap Descriptor for the {@link ConversionService} configuration
- * @author tiry
+ * XMap Descriptor for the {@link ConversionService} configuration.
  *
+ * @author tiry
  */
 @XObject("configuration")
-public class GlobalConfigDescriptor implements Serializable{
+public class GlobalConfigDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     public static final long DEFAULT_GC_INTERVAL_IN_MIN = 10;
 
-    public static final int DEFAULT_DISK_CACHE_IN_KB= 10 * 1024;
-
+    public static final int DEFAULT_DISK_CACHE_IN_KB = 10 * 1024;
 
     @XNode("gcInterval")
     protected long GCInterval;
@@ -45,22 +44,20 @@ public class GlobalConfigDescriptor implements Serializable{
     protected int diskCacheSize;
 
     @XNode("enableCache")
-    protected boolean enableCache=true;
-
+    protected boolean enableCache = true;
 
     @XNode("cachingDirectory")
     protected String cachingDirectory;
 
-
     public long getGCInterval() {
-        if (GCInterval==0) {
+        if (GCInterval == 0) {
             return DEFAULT_GC_INTERVAL_IN_MIN;
         }
         return GCInterval;
     }
 
     public int getDiskCacheSize() {
-        if (diskCacheSize==0) {
+        if (diskCacheSize == 0) {
             return DEFAULT_DISK_CACHE_IN_KB;
         }
         return diskCacheSize;
@@ -71,14 +68,14 @@ public class GlobalConfigDescriptor implements Serializable{
     }
 
     public void update(GlobalConfigDescriptor other) {
-        if (other.GCInterval!=0) {
-            GCInterval= other.GCInterval;
+        if (other.GCInterval != 0) {
+            GCInterval = other.GCInterval;
         }
-        if (other.diskCacheSize!=0) {
+        if (other.diskCacheSize != 0) {
             diskCacheSize = other.diskCacheSize;
         }
 
-        if (other.cachingDirectory!=null) {
+        if (other.cachingDirectory != null) {
             cachingDirectory = other.cachingDirectory;
         }
 
@@ -86,8 +83,8 @@ public class GlobalConfigDescriptor implements Serializable{
     }
 
     public String getCachingDirectory() {
-        if (cachingDirectory==null) {
-            cachingDirectory=System.getProperty("java.io.tmpdir");
+        if (cachingDirectory == null) {
+            cachingDirectory = System.getProperty("java.io.tmpdir");
         }
         return cachingDirectory;
     }

@@ -37,13 +37,12 @@ import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
  * Manager for the cache system of the {@link ConversionService}.
  *
  * @author tiry
- *
  */
 public class ConversionCacheHolder {
 
-    protected static Map<String, ConversionCacheEntry> cache = new HashMap<String, ConversionCacheEntry>();
+    protected static final Map<String, ConversionCacheEntry> cache = new HashMap<String, ConversionCacheEntry>();
 
-    protected static ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
+    protected static final ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
 
     private static final Log log = LogFactory.getLog(ConversionCacheHolder.class);
 

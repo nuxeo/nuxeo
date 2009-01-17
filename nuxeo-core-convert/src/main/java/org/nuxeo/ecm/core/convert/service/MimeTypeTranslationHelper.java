@@ -31,8 +31,10 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
  */
 public class MimeTypeTranslationHelper {
 
-    protected static Map<String, List<ConvertOption>> srcMappings = new HashMap<String, List<ConvertOption>>();
-    protected static Map<String, List<ConvertOption>> dstMappings = new HashMap<String, List<ConvertOption>>();
+    protected static final Map<String, List<ConvertOption>> srcMappings
+            = new HashMap<String, List<ConvertOption>>();
+    protected static final Map<String, List<ConvertOption>> dstMappings
+            = new HashMap<String, List<ConvertOption>>();
 
     // Utility class.
     private MimeTypeTranslationHelper() {

@@ -55,9 +55,9 @@ public class ConversionServiceImpl extends DefaultComponent implements
     public static final String CONVERTER_EP = "converter";
     public static final String CONFIG_EP = "configuration";
 
-    protected static Map<String, ConverterDescriptor> converterDescriptors = new HashMap<String, ConverterDescriptor>();
+    protected static final Map<String, ConverterDescriptor> converterDescriptors = new HashMap<String, ConverterDescriptor>();
 
-    protected static GlobalConfigDescriptor config = new GlobalConfigDescriptor();
+    protected static final GlobalConfigDescriptor config = new GlobalConfigDescriptor();
 
     /** Component implementation * */
 
@@ -209,7 +209,8 @@ public class ConversionServiceImpl extends DefaultComponent implements
         return isConverterAvailable(converterName, false);
     }
 
-    protected Map<String, ConverterCheckResult> checkResultCache = new HashMap<String, ConverterCheckResult>();
+    protected final Map<String, ConverterCheckResult> checkResultCache
+            = new HashMap<String, ConverterCheckResult>();
 
     public ConverterCheckResult isConverterAvailable(String converterName,
             boolean refresh) throws ConversionException {

@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
  */
 public class ConversionCacheEntry {
 
-    protected Date lastAccessTime = null;
+    protected Date lastAccessTime;
     protected BlobHolder bh;
     protected boolean persisted = false;
     protected String persistPath;
@@ -59,14 +59,14 @@ public class ConversionCacheEntry {
     }
 
     public void remove() {
-        if ((persisted) && (persistPath != null)) {
+        if (persisted && persistPath != null) {
             new File(persistPath).delete();
         }
     }
 
     public BlobHolder restore() {
         updateAccessTime();
-        if ((persisted) && (persistPath != null)) {
+        if (persisted && persistPath != null) {
             CachableBlobHolder holder = new SimpleCachableBlobHolder();
             holder.load(persistPath);
             return holder;

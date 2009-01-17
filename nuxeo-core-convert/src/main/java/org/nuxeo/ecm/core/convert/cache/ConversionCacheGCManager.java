@@ -46,6 +46,10 @@ public class ConversionCacheGCManager {
     private static int gcRuns = 0;
     private static int gcCalls = 0;
 
+    // Utility class.
+    private ConversionCacheGCManager() {
+    }
+
     protected static int getMaxDiskSpaceUsageKB() {
         return ConversionServiceImpl.getMaxCacheSizeInKB();
     }

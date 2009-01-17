@@ -41,7 +41,7 @@ public class ConverterDescriptor implements Serializable {
     public static final String CUSTOM_CONVERTER_TYPE = "Custom";
     public static final String CHAINED_CONVERTER_TYPE = "Chain";
 
-    protected Converter instance = null;
+    protected Converter instance;
 
     @XNode("@name")
     protected String converterName;
