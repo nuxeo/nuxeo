@@ -63,15 +63,19 @@ public class NXThemesHeadDirective implements TemplateDirectiveModel {
 
         Writer writer = env.getOut();
 
-        WebContext context = WebEngine.getActiveContext();        
+        WebContext context = WebEngine.getActiveContext();
         HttpServletRequest request = context.getRequest();
         final URL themeUrl = (URL) request.getAttribute("org.nuxeo.theme.url");
 
+        String baseUrl = context.getHead().getURL();
+        if (!baseUrl.endsWith("/")) {
+            baseUrl += "/";
+        }
+        
         Map<String, String> attributes = new HashMap<String, String>();
         attributes.put("themeName", ThemeManager.getThemeNameByUrl(themeUrl));
         attributes.put("path", context.getModulePath());
-        attributes.put("baseUrl", context.getHead().getURL());
+        attributes.put("baseUrl", baseUrl);
         writer.write(Head.render(attributes));
-
     }
 }
