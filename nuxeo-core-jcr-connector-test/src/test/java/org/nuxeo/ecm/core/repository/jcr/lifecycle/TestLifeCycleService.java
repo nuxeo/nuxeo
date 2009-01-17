@@ -55,8 +55,6 @@ public class TestLifeCycleService extends RepositoryTestCase {
                 "LifeCycleService.xml");
         deployContrib(CoreJCRConnectorTestConstants.TESTS_BUNDLE,
                 "LifeCycleManagerTestExtensions.xml");
-        deployContrib(CoreJCRConnectorTestConstants.TESTS_BUNDLE,
-                "CoreEventListenerService.xml");
         session = getRepository().getSession(null);
         root = session.getRootDocument();
         lifeCycleService = NXCore.getLifeCycleService();
