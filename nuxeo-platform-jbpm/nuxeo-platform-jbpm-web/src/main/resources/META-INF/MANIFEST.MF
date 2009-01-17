@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM JBPM Web
+Bundle-SymbolicName: org.nuxeo.ecm.platform.jbpm.web;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateful
+Nuxeo-Component: OSGI-INF/theme-contrib.xml,
+  OSGI-INF/action-contrib.xml
+Nuxeo-RequiredBy: org.nuxeo.ecm.war
+Require-Bundle: org.nuxeo.ecm.platform.core.jbpm,
+  org.nuxeo.ecm.webapp.core

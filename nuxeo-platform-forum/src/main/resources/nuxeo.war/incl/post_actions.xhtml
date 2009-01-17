@@ -35,7 +35,7 @@
         rendered="#{isPrincipalModerator and threadEntry.comment.currentLifeCycleState == 'moderation_pending'}"/>
   
       <h:commandLink action="#{postAction.approvePost(threadEntry.comment)}"
-        value="#{messages['command.validate']}"
+        value="#{messages['label.review.end.task']}"
         rendered="#{isPrincipalModerator and threadEntry.comment.currentLifeCycleState == 'moderation_pending'}">
       </h:commandLink>
   

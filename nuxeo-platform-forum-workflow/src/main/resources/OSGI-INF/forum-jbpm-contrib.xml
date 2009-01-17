@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.forum.jbpm.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService"
+    point="processDefinition">
+
+    <processDefinition path="process/forum-moderation.xml" deployer="ifChanged" />
+
+  </extension>
+
+</component>

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<process-definition name="forum_moderation">
+
+  <start-state name="start state">
+    <transition name="start process" to="moderate post" />
+  </start-state>
+
+  <task-node name="moderate post">
+    <task name="moderate">
+      <assignment pooled-actors="#{participants}" />
+    </task>
+    <transition to="moderation_publish" />
+    <transition to="moderation_reject" />
+  </task-node>
+
+  <node name="moderation_publish">
+    <action
+      class="org.nuxeo.ecm.platform.forum.workflow.AcceptForumPostHandler" />
+    <transition to="end" />
+  </node>
+
+  <node name="moderation_reject">
+    <action
+      class="org.nuxeo.ecm.platform.forum.workflow.RejectForumPostHandler" />
+    <transition to="end" />
+  </node>
+
+  <end-state name="end" />
+
+</process-definition>

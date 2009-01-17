@@ -32,14 +32,13 @@ import org.nuxeo.ecm.core.utils.DocumentModelUtils;
 import org.nuxeo.ecm.platform.versioning.VersionChangeRequest.RequestSource;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.platform.versioning.service.VersioningService;
-import org.nuxeo.ecm.platform.versioning.wfintf.WFState;
 
 /**
  * Test cases for versioning component. Tests the versions are incremented
  * accordingly to defined rules.
  * <p>
  * Document (JCRDocument) objects are used in this test (at the core level).
- * 
+ *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
 public class TestVersioningRules extends VersioningBaseTestCase {
@@ -76,82 +75,6 @@ public class TestVersioningRules extends VersioningBaseTestCase {
         String propertyName = service.getMinorVersionPropertyName(doc.getType());
         doc.setProperty(DocumentModelUtils.getSchemaName(propertyName),
                 DocumentModelUtils.getFieldName(propertyName), version);
-    }
-
-    /**
-     * Tests with lifecycle.
-     * 
-     * @throws Exception
-     */
-    public void testVersionWFRequestRuleIncMinor() throws Exception {
-        Document verfile = root.addChild("testfolder1", "VerFile");
-        session.save();
-        DocumentRef docRef = new IdRef(verfile.getUUID());
-        DocumentModel doc = coreSession.getDocument(docRef);
-
-        // request a doc version change
-        final BasicVersionChangeRequest req = new NoDefaultVersioningActionRequest(
-                VersionChangeRequest.RequestSource.WORKFLOW, doc);
-
-        // this workflow should increment minor
-        req.setWfStateInitial("project");
-        req.setWfStateFinal("review");
-
-        final VersioningService service = getVersioningService();
-
-        service.incrementVersions(req);
-
-        assertEquals(0L, getMajorVersion(doc));
-        assertEquals(1L, getMinorVersion(doc));
-    }
-
-    public void testVersionWFRequestSelfIncMinor() throws Exception {
-        Document folder1 = root.addChild("testfolder1", "VerFile");
-        session.save();
-        DocumentRef docRef = new IdRef(folder1.getUUID());
-        DocumentModel doc = coreSession.getDocument(docRef);
-
-        setMajorVersion(doc, 9L);
-        setMinorVersion(doc, 92L);
-
-        // request a doc version change
-        final BasicVersionChangeRequest req = new BasicImplVersionChangeRequest(
-                VersionChangeRequest.RequestSource.WORKFLOW, doc,
-                VersioningActions.ACTION_INCREMENT_MINOR);
-
-        req.setWfStateInitial("project");
-        req.setWfStateFinal("project");
-
-        final VersioningService service = getVersioningService();
-
-        service.incrementVersions(req);
-
-        assertEquals(9L, getMajorVersion(doc));
-        assertEquals(93L, getMinorVersion(doc));
-    }
-
-    public void testVersionWFRequestRuleIncMajor() throws Exception {
-        Document folder1 = root.addChild("testfolder1", "VerFile");
-        session.save();
-        DocumentRef docRef = new IdRef(folder1.getUUID());
-        DocumentModel doc = coreSession.getDocument(docRef);
-
-        setMajorVersion(doc, 9L);
-        setMinorVersion(doc, 92L);
-
-        // request a doc version change
-        final BasicVersionChangeRequest req = new NoDefaultVersioningActionRequest(
-                VersionChangeRequest.RequestSource.WORKFLOW, doc);
-
-        req.setWfStateInitial("review");
-        req.setWfStateFinal("project");
-
-        final VersioningService service = getVersioningService();
-
-        service.incrementVersions(req);
-
-        assertEquals(10L, getMajorVersion(doc));
-        assertEquals(0L, getMinorVersion(doc));
     }
 
     public void testVersionEditRequest() throws Exception {
@@ -239,35 +162,9 @@ public class TestVersioningRules extends VersioningBaseTestCase {
     }
 
     /**
-     * Test incrementation rules when a workflow process is in progress for the
-     * document.
-     * 
-     * @throws ClientException
-     */
-    public void testWithWorkflowInProgress() throws DocumentException,
-            LifeCycleException, ClientException {
-        Document verfile = root.addChild("testfile", "VerFile");
-        session.save();
-        DocumentRef docRef = new IdRef(verfile.getUUID());
-
-        try {
-            boolean inProgressWFProcess = WFState.hasWFProcessInProgress(docRef);
-
-            // log.info("inProgressWFProcess: " + inProgressWFProcess);
-
-            assertFalse(inProgressWFProcess);
-        } catch (ClientException e) {
-            // probably server not found, etc
-            log.info("couldn't get WF info: ", e);
-        }
-
-        // TODO start a workflow process for the doc
-    }
-
-    /**
      * Tests edit option (inc major/minor) with lifecycle transition specified
      * by major inc option.
-     * 
+     *
      * @throws DocumentException
      * @throws ClientException
      * @throws LifeCycleException

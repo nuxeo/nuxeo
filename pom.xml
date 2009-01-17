@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -59,6 +61,7 @@
     <module>nuxeo-platform-filemanager-core-listener</module>
     <module>nuxeo-platform-filemanager-api</module>
     <module>nuxeo-platform-filemanager-facade</module>
+    <module>nuxeo-platform-jbpm</module>
     <module>nuxeo-platform-lang</module>
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-login-jboss</module>
@@ -113,25 +116,17 @@
     <module>nuxeo-platform-webapp</module>
     <module>nuxeo-platform-webapp-core</module>
     <module>nuxeo-platform-webapp-types</module>
-    <module>nuxeo-platform-workflow-api</module>
-    <module>nuxeo-platform-workflow-client</module>
-    <module>nuxeo-platform-workflow-core</module>
-    <module>nuxeo-platform-workflow-document</module>
-    <module>nuxeo-platform-workflow-document-api</module>
-    <module>nuxeo-platform-workflow-document-facade</module>
-    <module>nuxeo-platform-workflow-facade</module>
-    <module>nuxeo-platform-workflow-jbpm</module>
-    <module>nuxeo-platform-workflow-jbpm-document-handlers</module>
-    <module>nuxeo-platform-workflow-test</module>
     <module>nuxeo-platform-ws</module>
-    <module>nuxeo-platform-forum</module>
-    <module>nuxeo-platform-forum-core</module>
     <module>nuxeo-platform-forum-api</module>
+    <module>nuxeo-platform-forum-core</module>
     <module>nuxeo-platform-forum-workflow</module>
-    <module>nuxeo-platform-publishing-api</module>
-    <module>nuxeo-platform-publishing</module>
-    <module>nuxeo-platform-publishing-facade</module>
-    <module>nuxeo-platform-publishing-web</module>
+    <module>nuxeo-platform-forum</module>
+    <!--
+      <module>nuxeo-platform-publishing-api</module>
+      <module>nuxeo-platform-publishing</module>
+      <module>nuxeo-platform-publishing-facade</module>
+      <module>nuxeo-platform-publishing-web</module>
+    -->
     <module>nuxeo-platform-content-template-manager</module>
     <module>nuxeo-platform-domsync-core</module>
     <module>nuxeo-platform-forms-layout-api</module>
@@ -466,6 +461,31 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-api</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-core</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-web</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-facade</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-test</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-login</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
@@ -724,54 +744,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-workflow-api</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-workflow-client</artifactId>
-        <version>${nuxeo.platform.version}</version>
-        <type>ejb</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-workflow-core</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-workflow-document</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-workflow-document-api</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-workflow-document-facade</artifactId>
-        <version>${nuxeo.platform.version}</version>
-        <type>ejb</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-workflow-facade</artifactId>
-        <version>${nuxeo.platform.version}</version>
-        <type>ejb</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-workflow-jbpm</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-workflow-jbpm-document-handlers</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-imaging-api</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
@@ -1019,7 +991,9 @@
 
   <scm>
     <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-platform</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-platform</developerConnection>
+    <developerConnection>
+      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-platform
+    </developerConnection>
     <url>http://hg.nuxeo.org/nuxeo/nuxeo-platform</url>
   </scm>
 

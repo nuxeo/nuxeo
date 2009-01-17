@@ -34,22 +34,17 @@ import javax.persistence.Transient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.VersioningChangeNotifier;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.versioning.api.DocVersion;
 import org.nuxeo.ecm.platform.versioning.api.SnapshotOptions;
 import org.nuxeo.ecm.platform.versioning.api.VersionIncEditOptions;
-import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.platform.versioning.api.VersioningException;
 import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
 import org.nuxeo.ecm.platform.versioning.service.ServiceHelper;
 import org.nuxeo.ecm.platform.versioning.service.VersioningService;
-import org.nuxeo.ecm.platform.versioning.wfintf.WFVersioningPolicyProvider;
 
 /**
  * This is a versioning EJB facade.
@@ -107,65 +102,6 @@ public class VersioningManagerBean implements VersioningManager {
         return service.getVersionIncEditOptions(docModel);
     }
 
-    /**
-     * @deprecated i'm not in the interface, my life is meaningless. please
-     *             don't use me. please.
-     * Not used. Remove in 5.2.
-     */
-    @Deprecated
-    public VersionIncEditOptions getVersionIncOptions(DocumentRef docRef,
-            CoreSession documentManager) throws VersioningException, ClientException {
-
-        final String logPrefix = "<getVersionIncOptions> ";
-
-        // check with VersioningService
-        final String currentLifeCycleState;
-        final String documentType;
-        final DocumentModel dm;
-        try {
-            currentLifeCycleState = documentManager.getCurrentLifeCycleState(docRef);
-            dm = documentManager.getDocument(docRef);
-            documentType = dm.getType();
-        } catch (ClientException e) {
-            throw new VersioningException(
-                    "Error getting currentLifeCycleState", e);
-        }
-        log.debug(logPrefix + "currentLifeCycleState: " + currentLifeCycleState);
-
-        VersionIncEditOptions options = null;
-
-        if (currentLifeCycleState != null) {
-            log.debug("check versioning policy in component extensions");
-            options = service.getVersionIncOptions(currentLifeCycleState,
-                    documentType);
-
-            if (options.getVersioningAction() == VersioningActions.ACTION_CASE_DEPENDENT) {
-                return options;
-            }
-        } else {
-            log.warn(logPrefix + "document lifecycle not initialized.");
-        }
-
-        // check with document Workflow
-        log.debug(logPrefix + "check versioning policy in document workflow");
-        final VersioningActions wfvaction = WFVersioningPolicyProvider.getVersioningPolicyFor(dm);
-        log.debug(logPrefix + "wfvaction = " + wfvaction);
-        options = new VersionIncEditOptions();
-        if (wfvaction != null) {
-            if (wfvaction == VersioningActions.ACTION_CASE_DEPENDENT) {
-                options.addOption(VersioningActions.ACTION_NO_INCREMENT);
-                options.addOption(VersioningActions.ACTION_INCREMENT_MINOR);
-            } else {
-                // because LE needs options we add the option received from WF
-                options.addOption(wfvaction);
-            }
-        } else {
-            log.error(logPrefix + "wf action is null");
-        }
-
-        return options;
-    }
-
     public DocumentModel incrementMajor(DocumentModel doc)
             throws ClientException {
         return service.incrementMajor(doc);
@@ -192,7 +128,10 @@ public class VersioningManagerBean implements VersioningManager {
         return service.getNextVersion(doc);
     }
 
+<<<<<<< /home/alexandre/Work/nuxeo/nuxeo-platform/nuxeo-platform-versioning-core/src/main/java/org/nuxeo/ecm/platform/versioning/ejb/VersioningManagerBean.java
+=======
 
+>>>>>>> /tmp/VersioningManagerBean.java~other.tRsKkW
     public SnapshotOptions getCreateSnapshotOption(DocumentModel document)
             throws ClientException {
         return service.getCreateSnapshotOption(document);

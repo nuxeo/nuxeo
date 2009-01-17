@@ -1,0 +1,22 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"><c:set var="tasks"
+  value="#{jbpmService.getTaskInstances(currentDocument, currentUser, null)}" />
+<c:set var="restrictedProcesses"
+  value="#{jbpmService.getProcessInstances(currentDocument, currentUser,restrictToInitiator)}" />
+<c:if test="#{restrictedProcesses.size() == 1}">
+        <c:set var="restrictedProcess" value="#{restrictedProcesses.get(0)}"/>
+  <ui:decorate
+    template="/process/#{restrictedProcess.processDefinition.name}.xhtml">
+    <ui:param name="process" value="#{restrictedProcess}" />
+  </ui:decorate>
+</c:if> <c:if test="#{not empty tasks}">
+  <c:forEach var="task" items="#{tasks}">
+    <ui:decorate template="/process/task/#{task.name}.xhtml">
+      <ui:param name="task" value="#{task}" />
+    </ui:decorate>
+  </c:forEach>
+</c:if></div>

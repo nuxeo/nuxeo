@@ -1,0 +1,32 @@
+<process-definition name="review_approbation">
+  <swimlane name="initiator" />
+  <start-state>
+    <task swimlane='initiator' name="start" />
+    <transition to='choose participants node' />
+  </start-state>
+  <task-node name="choose participants node">
+    <task name="choose-participant" swimlane="initiator" />
+    <transition to="condition on participants" />
+  </task-node>
+  <decision name="condition on participants">
+    <transition to="validate node" />
+    <transition condition="#{empty participants}" to="follow transition" />
+  </decision>
+  <task-node name="validate node">
+    <task name="validate">
+      <assignment actor-id="#{participants[0]}" />
+    </task>
+    <transition to="condition on participants">
+      <script>
+        <variable name="participants" />
+        <expression><![CDATA[!participants.isEmpty() && participants.remove(0) != null]]></expression>
+      </script>
+    </transition>
+  </task-node>
+  <node name="follow transition">
+    <action
+      class="org.nuxeo.ecm.platform.jbpm.core.helper.ValidationReviewHelper" />
+    <transition to="end" />
+  </node>
+  <end-state name="end" />
+</process-definition>
