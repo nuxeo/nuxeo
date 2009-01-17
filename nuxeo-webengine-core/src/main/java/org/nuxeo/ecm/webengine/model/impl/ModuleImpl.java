@@ -80,9 +80,6 @@ public class ModuleImpl implements Module {
     
 
     //TODO remove this
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.webengine.model.Module#getModuleBinding()
-     */
     public ResourceBinding getModuleBinding() {
         // TODO Auto-generated method stub
         return null;
@@ -143,9 +140,6 @@ public class ModuleImpl implements Module {
         return rootType;
     }
     
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.webengine.model.Module#getRootObject()
-     */
     public Object getRootObject() {
         try {
             AbstractWebContext ctx = (AbstractWebContext)WebEngine.getActiveContext();
@@ -154,6 +148,7 @@ public class ModuleImpl implements Module {
             obj.setRoot(true);
             return obj;
         } catch (Exception e) {
+            e.printStackTrace();
             throw WebException.wrap("Failed to instantiate the root resource for module "+getName(),  e);
         }
     }
@@ -173,7 +168,6 @@ public class ModuleImpl implements Module {
         }
         return typeReg;
     }
-
 
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         return engine.getScripting().loadClass(className);
@@ -254,7 +248,6 @@ public class ModuleImpl implements Module {
         return null;
     }
 
-    
     public void loadConfiguration() {
         linkReg = new LinkRegistry();
         if (configuration.links != null) {
@@ -265,7 +258,6 @@ public class ModuleImpl implements Module {
         configuration.links = null; // avoid storing unused data
     }
     
-
     public List<LinkDescriptor> getLinks(String category) {
         return linkReg.getLinks(category);
     }
@@ -277,7 +269,6 @@ public class ModuleImpl implements Module {
     public LinkRegistry getLinkRegistry() {
         return linkReg;
     }
-
 
     public String getTemplateFileExt() {
         return configuration.templateFileExt;
@@ -429,11 +420,9 @@ public class ModuleImpl implements Module {
         }
     }
     
-    
     @Override
     public String toString() {
         return getName();
     }
-
 
 }
