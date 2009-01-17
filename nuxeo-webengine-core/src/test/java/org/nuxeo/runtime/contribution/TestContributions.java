@@ -48,7 +48,7 @@ public class TestContributions extends TestCase {
         mf2.list.add("k1");
         reg.addFragment(mf2.id, mf2);
 
-        System.out.println(reg);
+        // System.out.println(reg);
     }
 
     public void test2() {
@@ -68,7 +68,7 @@ public class TestContributions extends TestCase {
         mf2.list.add("k1");
         reg.addFragment(mf2.id, mf2);
 
-        System.out.println(reg);
+        // System.out.println(reg);
     }
 
     public void test3() {
@@ -92,7 +92,7 @@ public class TestContributions extends TestCase {
 //        System.out.println(reg);
 
         reg.removeFragment("key1", mf2);
-        System.out.println(reg);
+        // System.out.println(reg);
     }
 
 }

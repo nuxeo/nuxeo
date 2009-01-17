@@ -16,7 +16,7 @@ public class TestLinkExtractor extends TestCase{
         CommonWikiParser parser = new CommonWikiParser();
         StringBuffer sb = new StringBuffer();
         parser.parse(new InputStreamReader(in), new WordExtractor(sb));
-        System.out.println(sb.toString());
+        // System.out.println(sb.toString());
 
         List<String> workLinks = WikiHelper.getWordLinks(sb.toString());
         assertEquals(2, workLinks.size());
