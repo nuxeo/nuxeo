@@ -48,8 +48,8 @@ public class TestWiki extends TestCase {
         StringWriter writer = new StringWriter();
         engine.serialize(reader, writer);
 
-        System.out.println(writer.getBuffer());
-        System.out.println(">>>>>>> " + ((System.currentTimeMillis() - s) / 1000));
+        // System.out.println(writer.getBuffer());
+        // System.out.println(">>>>>>> " + ((System.currentTimeMillis() - s) / 1000));
     }
 
     public void test2() throws IOException, WikiParserException {
@@ -65,7 +65,7 @@ public class TestWiki extends TestCase {
         StringWriter writer = new StringWriter();
         engine.serialize(reader, writer);
 
-        System.out.println(writer.getBuffer());
+        // System.out.println(writer.getBuffer());
     }
 
 }
