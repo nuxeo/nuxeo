@@ -257,11 +257,7 @@ public class ModuleImpl implements Module {
         }
         configuration.links = null; // avoid storing unused data
     }
-<<<<<<< local
 
-=======
-    
->>>>>>> other
     public List<LinkDescriptor> getLinks(String category) {
         return linkReg.getLinks(category);
     }
@@ -423,11 +419,7 @@ public class ModuleImpl implements Module {
             }
         }
     }
-<<<<<<< local
 
-=======
-    
->>>>>>> other
     @Override
     public String toString() {
         return getName();
