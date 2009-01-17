@@ -91,7 +91,7 @@ public class WorkflowServiceImpl extends DefaultComponent implements
                         }
                         registerWorkflowEngine(engine);
                     } else {
-                        log.error("Cannot load class " + desc.getName());
+                        log.error("Could not load class for engine: " + desc.getName());
                     }
                 }
             }
