@@ -101,7 +101,7 @@
       <artifact group="org.jboss.seam" name="jboss-seam-debug" />
       <artifact group="javax.el" name="el-ri" />
       <artifact group="org.jboss.el" name="jboss-el" />
-      <artifact group="jboss" name="jbpm" />
+      <artifact group="org.jbpm.jbpm3" name="jbpm-jpdl" />
       <artifact group="jboss" name="jgroups" />
       <!-- version is needed because of assembly plugin don't manage classifier here -->
       <artifact group="net.sf.json-lib" name="json-lib" classifier="jdk15" version="2.2.1"/>
