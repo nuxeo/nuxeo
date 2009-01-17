@@ -26,6 +26,8 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Node;
 
 /**
@@ -38,6 +40,8 @@ import org.w3c.dom.Node;
  *
  */
 public abstract class XValueFactory {
+
+    private static final Log log = LogFactory.getLog(XValueFactory.class);
 
     static final Map<Class, XValueFactory> defaultFactories
             = new Hashtable<Class, XValueFactory>();
@@ -152,7 +156,8 @@ public abstract class XValueFactory {
             try {
                 return context.loadClass(value);
             } catch (Exception e) {
-                e.printStackTrace(); //TODO
+                log.error("Cannot load class: " + e.getClass().getName() +
+                        ": " + e.getMessage());
                 return null;
             }
         }
@@ -164,7 +169,8 @@ public abstract class XValueFactory {
             try {
                 return new Resource(context.getResource(value));
             } catch (Exception e) {
-                e.printStackTrace(); //TODO
+                log.error("Cannot load resource: " + e.getClass().getName() +
+                        ": " + e.getMessage());
                 return null;
             }
         }
