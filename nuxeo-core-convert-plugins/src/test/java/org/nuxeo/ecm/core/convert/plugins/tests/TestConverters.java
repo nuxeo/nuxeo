@@ -30,7 +30,7 @@ public class TestConverters extends BaseConverterTest {
         //System.out.print(textResult);
         assertTrue(textResult.contains("Nuxeo propose aux organisations"));
 
-        System.out.println(result.getBlob().getString());
+        // System.out.println(result.getBlob().getString());
 
     }
     public void testXMLConverter() throws Exception {

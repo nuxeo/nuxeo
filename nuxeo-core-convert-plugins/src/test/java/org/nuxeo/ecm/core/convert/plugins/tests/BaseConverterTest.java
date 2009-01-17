@@ -48,7 +48,7 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         assertNotNull(result);
         assertTrue(result.getBlob().getString().trim().startsWith("Hello"));
 
-        System.out.println(result.getBlob().getString());
+        // System.out.println(result.getBlob().getString());
     }
 
     protected void doTestAny2TextConverter(String srcMT, String converterName,
@@ -63,7 +63,7 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         assertNotNull(result);
         assertTrue(result.getBlob().getString().trim().startsWith("Hello"));
 
-        System.out.println(result.getBlob().getString());
+        // System.out.println(result.getBlob().getString());
     }
 
 }
