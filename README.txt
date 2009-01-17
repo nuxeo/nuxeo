@@ -1,7 +1,8 @@
 About
 -----
 
-This module builds Nuxeo products: Nuxeo-EP, Nuxeo-WebEngine, Nuxeo-Shell, ...
+This module builds the Nuxeo products: Nuxeo EP, Nuxeo WebEngine, Nuxeo Shell,
+etc.
 
 Building predefined applications
 --------------------------------
@@ -13,22 +14,23 @@ Using this project you can build the following applications:
 Previously built by nuxeo-platform/nuxeo-platform-ear/, Nuxeo EP EAR is now
 built here.
 
-From this directory, build syntax: "mvn package" or "mvn package -Pnuxeo-jboss"
+- From this directory, use the following commands: "mvn package" or 
+  "mvn package -Pnuxeo-jboss"
 
-From nuxeo-platform-ear, run "mvn package" or see in package.sh for available
-packages.
+- From nuxeo-platform-ear, run "mvn package" or see in package.sh for available
+  packages.
 
-Built EAR is in nuxeo-platform-ear/target/ and its name depends on chosen
-package: default is nuxeo.ear
+  Built EAR is in nuxeo-platform-ear/target/ and its name depends on chosen
+  package: default is nuxeo.ear
 
 2. Nuxeo Shell 
 
-A client application suitable to connect on remote nuxeo servers.
+A command-line client application suitable to connect to remote nuxeo servers.
 
 This application can be used to connect to remote nuxeo servers for debugging,
-browsing or administration stuff.
+browsing or administration purposes.
 
-Build syntax is: "mvn install package -Pshell"
+To build, run: "mvn package -Pshell"
     
 3. Nuxeo Core Server 
 
@@ -40,7 +42,7 @@ need a repository connection.
   
 Remoting will be also available in the future via Nuxeo Runtime.
   
-Build syntax: "mvn install package -Pcore"
+To build, run: "mvn package -Pcore"
     
 4. Nuxeo Jetty Server
   
@@ -50,7 +52,7 @@ This application can be used to browse repository content via WEB.
   
 This is also known as Nuxeo WebEngine (based on Jetty).
 
-Build syntax: "mvn install package -Pjetty"
+To build, run: "mvn package -Pjetty"
    
 5. Nuxeo GF3 Server
   
@@ -63,7 +65,7 @@ This is also known as Nuxeo WebEngine (based on GF3).
 In the future, this application will provide a full installation of Nuxeo
 (including EJBs, JMS, etc).
 
-Build syntax: "mvn install package -Pgf3"
+To build, run: "mvn package -Pgf3"
   
 6. Nuxeo Tomcat WebApp
   
@@ -75,7 +77,7 @@ Tomcat.
 
 Nuxeo WebEngine will be available at htpp://localhost:8080/nuxeo
 
-Build syntax: "mvn install package -Ptomcat"
+To build, run: "mvn package -Ptomcat"
 
 Extending
 ---------
