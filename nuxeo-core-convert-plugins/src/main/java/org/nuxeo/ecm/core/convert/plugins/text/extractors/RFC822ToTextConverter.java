@@ -33,12 +33,9 @@ import org.nuxeo.runtime.api.Framework;
 
 public class RFC822ToTextConverter implements Converter {
 
-    private static final long serialVersionUID = 1L;
-
     private static final Log log = LogFactory.getLog(RFC822ToTextConverter.class);
 
     private static final String MESSAGE_RFC822_MIMETYPE = "message/rfc822";
-
     private static final String TXT_MT = "text/plain";
 
     protected ConverterDescriptor descriptor;

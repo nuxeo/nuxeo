@@ -60,14 +60,12 @@ public class TestService extends NXRuntimeTestCase {
         assertNotNull(desc1);
 
         assertEquals("test/me", desc1.getDestinationMimeType());
-        assertTrue(desc1.getSourceMimeTypes().size() == 2);
+        assertSame(2, desc1.getSourceMimeTypes().size());
         assertTrue(desc1.getSourceMimeTypes().contains("text/plain"));
         assertTrue(desc1.getSourceMimeTypes().contains("text/xml"));
-
     }
 
     public void testConverterLookup() throws Exception {
-
         deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib1.xml");
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
@@ -96,7 +94,7 @@ public class TestService extends NXRuntimeTestCase {
             ChainedConverter ccv = (ChainedConverter) cv;
             List<String> steps = ccv.getSteps();
             assertNotNull(steps);
-            assertTrue(steps.size() == 2);
+            assertSame(2, steps.size());
             assertTrue(steps.contains("test/me"));
             assertTrue(steps.contains("foo/bar"));
             isChain = true;
@@ -123,11 +121,9 @@ public class TestService extends NXRuntimeTestCase {
 
         }
         assertTrue(isChain);
-
     }
 
     public void testAvailability() throws Exception {
-
         deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib2.xml");
         deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib4.xml");
         ConversionService cs = Framework.getLocalService(ConversionService.class);
@@ -193,7 +189,7 @@ public class TestService extends NXRuntimeTestCase {
         assertTrue(result.isAvailable());
         assertNull(result.getErrorMessage());
         assertNull(result.getInstallationMessage());
-        assertTrue(result.getSupportedInputMimeTypes().size() == 2);
+        assertSame(2, result.getSupportedInputMimeTypes().size());
 
         notRegistred = false;
         try {
@@ -215,7 +211,6 @@ public class TestService extends NXRuntimeTestCase {
         assertEquals(12, ConversionServiceImpl.getGCIntervalInMinutes());
         assertEquals(132, ConversionServiceImpl.getMaxCacheSizeInKB());
         assertFalse(ConversionServiceImpl.isCacheEnabled());
-
     }
 
 }

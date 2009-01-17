@@ -3,9 +3,6 @@ package org.nuxeo.ecm.core.api.blobholder;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.DocumentStringBlobHolder;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 
 public class TestDocumentAdapter extends RepositoryOSGITestCase {
@@ -19,7 +16,6 @@ public class TestDocumentAdapter extends RepositoryOSGITestCase {
     }
 
     public void testFileAdapters() throws Exception {
-
         DocumentModel file = getCoreSession().createDocumentModel("File");
         file.setPathInfo("/", "TestFile");
 
@@ -37,11 +33,9 @@ public class TestDocumentAdapter extends RepositoryOSGITestCase {
         assertTrue(bh instanceof DocumentBlobHolder);
 
         assertEquals("/TestFile/TestFile.txt", bh.getFilePath());
-
-
     }
-    public void testNoteAdapters() throws Exception {
 
+    public void testNoteAdapters() throws Exception {
         DocumentModel note = getCoreSession().createDocumentModel("Note");
         note.setPathInfo("/", "TestNote");
 
@@ -53,7 +47,6 @@ public class TestDocumentAdapter extends RepositoryOSGITestCase {
         BlobHolder bh = note.getAdapter(BlobHolder.class);
         assertNotNull(bh);
         assertTrue(bh instanceof DocumentStringBlobHolder);
-
     }
 
     public void testFolderAdapters() throws Exception {
@@ -64,16 +57,8 @@ public class TestDocumentAdapter extends RepositoryOSGITestCase {
 
         folder = getCoreSession().createDocument(folder);
 
-
         BlobHolder bh = folder.getAdapter(BlobHolder.class);
         assertNull(bh);
-
     }
-
-
-
-
-
-
 
 }

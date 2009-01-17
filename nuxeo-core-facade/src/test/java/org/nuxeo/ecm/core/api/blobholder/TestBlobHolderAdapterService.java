@@ -7,13 +7,11 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestBlobHolderAdapterService extends NXRuntimeTestCase {
 
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
     }
-
 
     public void testService() throws Exception {
         BlobHolderAdapterService bhas = Framework.getLocalService(BlobHolderAdapterService.class);
@@ -21,9 +19,9 @@ public class TestBlobHolderAdapterService extends NXRuntimeTestCase {
     }
 
     public void testContrib() throws Exception {
-        assertTrue(BlobHolderAdapterComponent.getFactoryNames().size()==0);
+        assertSame(0, BlobHolderAdapterComponent.getFactoryNames().size());
         deployContrib("org.nuxeo.ecm.core.facade.tests","blob-holder-adapters-test-contrib.xml");
-        assertTrue(BlobHolderAdapterComponent.getFactoryNames().size()==1);
+        assertSame(1, BlobHolderAdapterComponent.getFactoryNames().size());
 
         BlobHolderAdapterService bhas = Framework.getLocalService(BlobHolderAdapterService.class);
         assertNotNull(bhas);
@@ -34,8 +32,7 @@ public class TestBlobHolderAdapterService extends NXRuntimeTestCase {
         assertNotNull(bh);
 
         assertTrue(bh.getFilePath().startsWith("Test"));
-        assertTrue(bh.getBlob().getString().equals("Test"));
+        assertEquals("Test", bh.getBlob().getString());
     }
-
 
 }

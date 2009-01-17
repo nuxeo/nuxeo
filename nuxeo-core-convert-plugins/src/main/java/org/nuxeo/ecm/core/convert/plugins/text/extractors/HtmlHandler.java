@@ -25,7 +25,6 @@ import org.xml.sax.SAXException;
 public class HtmlHandler extends Xml2TextHandler {
 
     public HtmlHandler() throws SAXException, ParserConfigurationException {
-        super();
     }
 
     @Override
@@ -39,7 +38,7 @@ public class HtmlHandler extends Xml2TextHandler {
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
 
-            if ((c == '\n') || (c == ' ') || Character.isWhitespace(c)) {
+            if (c == '\n' || c == ' ' || Character.isWhitespace(c)) {
                 if (space) {
                     continue;
                 } else {

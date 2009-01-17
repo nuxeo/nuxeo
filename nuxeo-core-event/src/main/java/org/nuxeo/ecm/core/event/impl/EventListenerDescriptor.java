@@ -74,10 +74,6 @@ public class EventListenerDescriptor {
 
     protected RuntimeContext rc;
 
-
-    public EventListenerDescriptor() {
-    }
-
     public int getPriority() {
         return priority;
     }

@@ -12,10 +12,10 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public abstract class BaseConverterTest extends NXRuntimeTestCase {
 
-    public BaseConverterTest() {
+    protected BaseConverterTest() {
     }
 
-    public BaseConverterTest(String name) {
+    protected BaseConverterTest(String name) {
         super(name);
     }
 

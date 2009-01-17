@@ -56,9 +56,7 @@ public class HtmlParser extends AbstractSAXParser {
     @Override
     public void startDocument(XMLLocator arg0, String arg1,
             NamespaceContext arg2, Augmentations arg3) throws XNIException {
-
         super.startDocument(arg0, arg1, arg2, arg3);
-
         buffer = new StringBuffer();
     }
 
@@ -77,7 +75,7 @@ public class HtmlParser extends AbstractSAXParser {
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
 
-            if ((c == '\n') || (c == ' ') || Character.isWhitespace(c)) {
+            if (c == '\n' || c == ' ' || Character.isWhitespace(c)) {
                 if (space) {
                     continue;
                 } else {
