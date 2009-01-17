@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.listener.PostCommitListener;
  *
  *
  * @author <a href="mailto:ja@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class JMSEventListener2 extends AbstractEventListener implements
         AsynchronousEventListener, PostCommitListener {
@@ -79,10 +78,8 @@ public class JMSEventListener2 extends AbstractEventListener implements
 
     /**
      * Core event notification.
-     *
      * <p>
      * Gets core events and transmits them to a JMS as a DocumentMessage.
-     * </p>
      *
      * @param coreEvent instance fired at core layer
      */
@@ -269,7 +266,6 @@ public class JMSEventListener2 extends AbstractEventListener implements
                         + source.getRef().toString() + "... skipping.");
                 continue;
             }
-
 
             // remove duplicates TODO improve this
             String id = coreEvent.getEventId();

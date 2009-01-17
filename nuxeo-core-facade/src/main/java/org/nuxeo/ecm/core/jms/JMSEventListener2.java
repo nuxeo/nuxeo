@@ -46,9 +46,7 @@ import org.nuxeo.ecm.core.listener.PostCommitListener;
 /**
  * JMS Core Event Listener. This is a listener designed to notify client applications like Apogee
  *
- *
  * @author <a href="mailto:ja@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class JMSEventListener2 extends AbstractEventListener implements
         AsynchronousEventListener, PostCommitListener {
@@ -79,10 +77,8 @@ public class JMSEventListener2 extends AbstractEventListener implements
 
     /**
      * Core event notification.
-     *
      * <p>
      * Gets core events and transmits them to a JMS as a DocumentMessage.
-     * </p>
      *
      * @param coreEvent instance fired at core layer
      */
@@ -206,7 +202,6 @@ public class JMSEventListener2 extends AbstractEventListener implements
                 CoreEventPublisher.getInstance().publish(event, event.getId());
             }
         }
-
     }
 
     private static void sendEventToJMS(CoreEvent coreEvent) {
@@ -220,7 +215,7 @@ public class JMSEventListener2 extends AbstractEventListener implements
         }
     }
 
-    /** Post Commit notification */
+    /* Post Commit notification */
 
     public void onCommit(CoreEvent[] events) {
         CoreEventPublisher publisher = CoreEventPublisher.getInstance();
@@ -269,7 +264,6 @@ public class JMSEventListener2 extends AbstractEventListener implements
                         + source.getRef().toString() + "... skipping.");
                 continue;
             }
-
 
             // remove duplicates TODO improve this
             String id = coreEvent.getEventId();

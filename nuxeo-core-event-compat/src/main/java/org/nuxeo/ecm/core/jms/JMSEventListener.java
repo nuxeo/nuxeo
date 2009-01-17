@@ -43,11 +43,11 @@ import org.nuxeo.ecm.core.listener.AsynchronousEventListener;
 import org.nuxeo.ecm.core.listener.OperationEventFactory;
 
 /**
- * JMS Core Event Listener. This is a listener designed to notify client applications like Apogee
- *
+ * JMS Core Event Listener.
+ * <p>
+ * This is a listener designed to notify client applications like Apogee.
  *
  * @author <a href="mailto:ja@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class JMSEventListener extends AbstractEventListener implements
         AsynchronousEventListener {
@@ -78,10 +78,8 @@ public class JMSEventListener extends AbstractEventListener implements
 
     /**
      * Core event notification.
-     *
      * <p>
      * Gets core events and transmits them to a JMS as a DocumentMessage.
-     * </p>
      *
      * @param coreEvent instance fired at core layer
      */
@@ -218,4 +216,5 @@ public class JMSEventListener extends AbstractEventListener implements
             }
         }
     }
+
 }

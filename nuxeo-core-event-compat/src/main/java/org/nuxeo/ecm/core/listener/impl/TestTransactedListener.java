@@ -27,10 +27,9 @@ import org.nuxeo.ecm.core.listener.PostCommitListener;
 import org.nuxeo.ecm.core.listener.PreCommitListener;
 
 /**
- * This is a test listener that prints out transacted notifications
+ * This is a test listener that prints out transacted notifications.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TestTransactedListener extends AbstractEventListener implements PostCommitListener,
         OnSaveListener, PreCommitListener {
@@ -49,17 +48,14 @@ public class TestTransactedListener extends AbstractEventListener implements Pos
 
     public void onSave(Operation<?>[] events) {
         System.out.println(">>>>> OPERATION_EVENTS > ON SAVE: "+events.length);
-
     }
 
     public void aboutToCommit(CoreEvent[] events) {
         System.out.println(">>>>> CORE_EVENTS > ABOUT TO COMMIT: "+events.length);
-
     }
 
     public void aboutToCommit(Operation<?>[] events) {
         System.out.println(">>>>> OPERATION_EVENTS > ABOUT TO COMMIT: "+events.length);
-
     }
 
 }

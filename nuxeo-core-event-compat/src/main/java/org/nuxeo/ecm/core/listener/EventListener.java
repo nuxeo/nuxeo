@@ -77,7 +77,8 @@ public interface EventListener {
     boolean accepts(String eventId);
 
     /**
-     * Handle the given event
+     * Handles the given event.
+     *
      * @param coreEvent
      * @throws Exception
      */

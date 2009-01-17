@@ -34,7 +34,6 @@ import org.nuxeo.runtime.services.event.EventService;
  * This is a bridge from core events to NXRuntime event service.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class NXRuntimeEventListener extends AbstractEventListener implements
         AsynchronousEventListener, DocumentModelEventListener {
