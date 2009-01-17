@@ -19,11 +19,11 @@
 
 package org.nuxeo.ecm.core.api.local;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.security.Principal;
 import java.util.Map;
 import java.util.Set;
-import java.io.IOException;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;

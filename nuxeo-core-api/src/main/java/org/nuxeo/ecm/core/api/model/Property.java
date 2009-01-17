@@ -31,10 +31,9 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 
 /**
- * A document property.
- * <p>
  * Document properties are instances of document schema fields.
- * You can say that a {@link Field} object is like a java class and a {@link
+ * <p>
+ * You can say that a {@link Field} object is like a Java class and a {@link
  * Property} object like ia class instance.
  * Thus, schemas defines fields (or elements) which have a name and a
  * type, and each field of a document can be instantiated (if the schema
@@ -47,7 +46,8 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * <p>
  * So properties are holding the actual values for each defined field.
  * <p>
- * The usual way of using properties is to get a document from the storage server then modify document properties
+ * The usual way of using properties is to get a document from the storage server
+ * then modify document properties
  * and send them back to the storage server to that modifications are be stored.
  * <p>
  * Note that the storage server can be on a remote machine so when modifying
@@ -75,10 +75,9 @@ import org.nuxeo.ecm.core.schema.types.Type;
  *   <li> Internal Flags - that reflect some internal state
  * </ul>
  * <p>
+ * Property Types:
  * <p>
- * <b>Property Types</b>
- * <p>
- * Before going deeper in property flags we will talk first about property types.
+ * Before going deeper in property flags, we will talk first about property types.
  * There are several types of properties that are very closed on the type of
  * fields they are bound onto.
  * <ul>
@@ -109,7 +108,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * As we've seen there are 2 categories of properties: container properties and scalar properties
  * Complex and list properties are container properties while structured and scalar properties are scalar.
  * <p>
- * <b>Dirty Flags</b>
+ * Dirty Flags:
  * <p>
  * Dirty flags are used to keep track of the dirty state of a property.
  * The following flags are supported:
@@ -155,7 +154,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * This way a modification on a children property is propagated to parents in
  * the form of a MODIFIED flag.
  * <p>
- * <b>Internal Flags</b>
+ * Internal Flags:
  * <p>
  * Internal flags are used by the implementation to keep some internal state.
  * For these flags you should look into the implementation

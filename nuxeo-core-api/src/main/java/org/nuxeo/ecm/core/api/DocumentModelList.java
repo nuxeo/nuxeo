@@ -23,10 +23,9 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * A serializable list of doucment models.
+ * A serializable list of document models.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface DocumentModelList extends List<DocumentModel>, Serializable {
 

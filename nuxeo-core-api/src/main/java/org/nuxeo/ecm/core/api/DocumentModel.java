@@ -40,15 +40,16 @@ import org.nuxeo.ecm.core.schema.DocumentType;
  * to a schema. All the information about a document (like security) is
  * expressed using schemas (and implicitly data models).
  * <p>
- * Data models are lazy loaded as they are needed. At document model creation
+ * Data models are lazily loaded as they are needed. At document model creation
  * only data models corresponding to the default schemas are loaded. The default
  * schemas are configured in the type manager through extension points.
  * <p>
  * The user may overwrite the default schemas by passing the schemas to be used
  * at model creation via {@link CoreSession#getDocument(DocumentRef, String[])}
  * <p>
- * How a lazy data model is loaded depends on the implementation. <br>
- * Anyway the API is already providing a mechanism to handle this as follow:
+ * How a lazy data model is loaded depends on the implementation.
+ * <p>
+ * Anyway the API already provides a mechanism to handle this as follow:
  *
  * <pre><code>
  * public DataModel getDataModel(String schema) {
