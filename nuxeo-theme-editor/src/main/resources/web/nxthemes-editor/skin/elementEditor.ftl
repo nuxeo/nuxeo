@@ -47,7 +47,6 @@ window.scrollTo(0,0);
   identifier="element style"
   url="${basePath}/nxthemes-editor/elementStyle"
   controlledBy="element editor perspectives,element form actions,style editor actions"
-  javascript="/nuxeo/nxthemes-lib/nxthemes-style-editor.js"
   visibleInPerspectives="edit style" />
 
   <@nxthemes_panel

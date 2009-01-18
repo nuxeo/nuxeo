@@ -9,32 +9,17 @@
     <div class="nxthemesButtonSelector"
       style="float: right; margin-top: -40px">
       <span>Edit mode:</span>
-      <#if style_edit_mode == 'css'>
-          <a href="javascript:void(0)" onclick="NXThemesStyleEditor.setStyleEditMode('form', 'css')">form</a>
-          <a href="javascript:void(0)" class="selected">CSS</a>
-      <#else>
-          <a href="javascript:void(0)" class="selected">form</a>
+      <#if style_edit_mode == 'form'>            
           <a href="javascript:void(0)" onclick="NXThemesStyleEditor.setStyleEditMode('css', 'form')">CSS</a>
+          <a href="javascript:void(0)" class="selected">form</a>
+      <#else>
+          <a href="javascript:void(0)" class="selected">CSS</a>
+          <a href="javascript:void(0)" onclick="NXThemesStyleEditor.setStyleEditMode('form', 'css')">form</a>
       </#if>
     </div>
 
-      <!-- Inline CSS editing -->
-      <#if style_edit_mode == 'css'>
-        <form id="nxthemesElementStyleCSS" class="nxthemesForm" action=""
-          onsubmit="return false">
-          <div>
-            <textarea name="cssSource" rows="15" cols="72"
-              style="width: 100%; height: 250px; font-size: 11px;">${rendered_style_properties}</textarea>
-            <input type="hidden" name="id" value="#{selected_element.uid}" />
-            <input type="hidden" name="viewName" value="${selected_view_name}" />
-          </div>
-          <div style="padding-top: 10px">
-            <button type="submit">Save</button>
-          </div>
-        </form>
-
       <!-- Edit form -->
-      <#else>
+      <#if style_edit_mode == 'form'>
         <form id="nxthemesElementStyle" class="nxthemesForm" action="" onsubmit="return false">
           <p style="margin-bottom: 10px;">
             <label>
@@ -74,7 +59,22 @@
               </button>
             </#if>
         </form>
-      </#if>
+      
+      <!-- Inline CSS editing -->
+      <#else>
+        <form id="nxthemesElementStyleCSS" class="nxthemesForm" action=""
+          onsubmit="return false">
+          <div>
+            <textarea name="cssSource" rows="15" cols="72"
+              style="width: 100%; height: 250px; font-size: 11px;">${rendered_style_properties}</textarea>
+            <input type="hidden" name="id" value="#{selected_element.uid}" />
+            <input type="hidden" name="viewName" value="${selected_view_name}" />
+          </div>
+          <div style="padding-top: 10px">
+            <button type="submit">Save</button>
+          </div>
+        </form>
+      </#if>  
   </fieldset>
 
 </div>

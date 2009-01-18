@@ -29,10 +29,6 @@
       <path>nxthemes/editor/scripts/authoring.js</path>
     </resource>
 
-    <resource name="nxthemes-style-editor.js">
-      <path>nxthemes/editor/scripts/style-editor.js</path>
-    </resource>
-
     <resource name="nxthemes-editor-authoring.css">
       <path>nxthemes/editor/styles/authoring.css</path>
     </resource>
