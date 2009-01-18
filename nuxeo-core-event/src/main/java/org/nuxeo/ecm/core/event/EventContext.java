@@ -19,9 +19,11 @@ package org.nuxeo.ecm.core.event;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.event.Event.Flag;
 
 /**
  * An event context is describing the context in which a core event was raised.
@@ -151,6 +153,6 @@ public interface EventContext extends Serializable {
      * @param flags the event flags to use
      * @return the event the event
      */
-    Event event(String name, int flags);
+    Event event(String name, Set<Flag> flags);
 
 }

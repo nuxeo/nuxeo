@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -132,7 +133,7 @@ public abstract class AbstractSession implements CoreSession,
      * You must use {@link #getEventService()} to get the service
      */
     private transient EventService eventService;
-    
+
     /**
      * Used to check permissions.
      */
@@ -303,8 +304,7 @@ public abstract class AbstractSession implements CoreSession,
         }
         return options;
     }
-    
-    
+
     public CoreEventContext newEventContext(Object ... args) {
         CoreEventContext ctx = new CoreEventContext(this, args);
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, repositoryName);
@@ -312,7 +312,6 @@ public abstract class AbstractSession implements CoreSession,
         return ctx;
     }
 
-    
     public EventService getEventService() {
         if (eventService == null) {
             try {
@@ -323,16 +322,16 @@ public abstract class AbstractSession implements CoreSession,
         }
         return eventService;
     }
-    
-    public void fireEvent(Event event) throws ClientException { 
+
+    public void fireEvent(Event event) throws ClientException {
         getEventService().fireEvent(event);
     }
-    
+
     @SuppressWarnings("unchecked")
     protected void notifyEvent(String eventId, DocumentModel source,
             Map<String, ?> options, String category, String comment,
             boolean withLifeCycle) throws ClientException {
-        
+
         CoreEventContext ctx = null;
         if (source != null) {
             ctx = newEventContext(source);
@@ -360,21 +359,20 @@ public abstract class AbstractSession implements CoreSession,
         if (comment != null) {
             ctx.setProperty("comment", comment);
         }
-        ctx.setProperty("category", category == null ? 
+        ctx.setProperty("category", category == null ?
                 DocumentEventCategories.EVENT_DOCUMENT_CATEGORY : category);
         // set isLocal on event if JMS is blocked
         if (source != null && source.getContextData("BLOCK_JMS_PRODUCING") != null
                 && (Boolean) source.getContextData("BLOCK_JMS_PRODUCING")) {
-            ctx.fireEvent(eventId, Event.LOCAL);
+            ctx.fireEvent(eventId, EnumSet.of(Event.Flag.LOCAL));
         } else {
             ctx.fireEvent(eventId);
-        }        
+        }
     }
 
-    
     /**
      * Copied from obsolete VersionChangeNotifier
-     *  
+     *
      * Sends change notifications to core event listeners. The event contains
      * info with older document (before version change) and newer doc (current
      * document).
@@ -385,14 +383,14 @@ public abstract class AbstractSession implements CoreSession,
      */
     protected void notifyVersionChange(DocumentModel oldDocument,
             DocumentModel newDocument, Map<String, Object> options) throws ClientException {
-        final Map<String, Object> info = new HashMap<String, Object>();        
+        final Map<String, Object> info = new HashMap<String, Object>();
         if (options != null) {
             info.putAll(options);
-        }        
+        }
         info.put(VersioningChangeNotifier.EVT_INFO_NEW_DOC_KEY, newDocument);
         info.put(VersioningChangeNotifier.EVT_INFO_OLD_DOC_KEY, oldDocument);
-        notifyEvent(VersioningChangeNotifier.CORE_EVENT_ID_VERSIONING_CHANGE, 
-                newDocument, info, DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY, 
+        notifyEvent(VersioningChangeNotifier.CORE_EVENT_ID_VERSIONING_CHANGE,
+                newDocument, info, DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY,
                 null, false);
     }
 

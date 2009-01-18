@@ -16,16 +16,19 @@
  */
 package org.nuxeo.ecm.core.api;
 
+import java.util.Set;
+
+import org.nuxeo.ecm.core.event.Event.Flag;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 
 /**
- * Specialized implementation to be used with an abstract session 
- * 
+ * Specialized implementation to be used with an abstract session
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class CoreEventContext extends EventContextImpl {
-    
+
     private static final long serialVersionUID = 1L;
 
     public CoreEventContext(AbstractSession session, Object ... args) {
@@ -35,9 +38,10 @@ public class CoreEventContext extends EventContextImpl {
     public void fireEvent(String name) throws ClientException {
         ((AbstractSession)session).fireEvent(event(name));
     }
-    
-    public void fireEvent(String name, int flags) throws ClientException {
-        ((AbstractSession)session).fireEvent(event(name, flags));
+
+    public void fireEvent(String name, Set<Flag> flags)
+            throws ClientException {
+        ((AbstractSession) session).fireEvent(event(name, flags));
     }
-    
+
 }

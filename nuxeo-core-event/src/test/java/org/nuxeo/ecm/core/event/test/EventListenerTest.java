@@ -17,8 +17,11 @@
 package org.nuxeo.ecm.core.event.test;
 
 import java.net.URL;
+import java.util.Collections;
+import java.util.EnumSet;
 
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.Event.Flag;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
@@ -42,17 +45,19 @@ public class EventListenerTest extends NXRuntimeTestCase {
     public void testFlags() {
         EventImpl event = new EventImpl("test", null);
         assertTrue(event.isPublic());
-        assertEquals(0, event.getFlags());
-        event.setFlags(Event.LOCAL | Event.INLINE);
-        assertEquals(Event.LOCAL | Event.INLINE, event.getFlags());
+        assertEquals(Collections.<Flag> emptySet(), event.getFlags());
+        event.setLocal(true);
+        event.setInline(true);
+        assertEquals(EnumSet.of(Flag.LOCAL, Flag.INLINE), event.getFlags());
         assertTrue(event.isInline());
         assertTrue(event.isLocal());
-        event.clearFlags(Event.LOCAL);
-        assertEquals(Event.INLINE, event.getFlags());
+        event.setLocal(false);
+        assertEquals(EnumSet.of(Flag.INLINE), event.getFlags());
         assertTrue(event.isInline());
         assertFalse(event.isLocal());
 
-        event.clearFlags(~0); // clear all flags
+        event.setInline(false);
+        assertEquals(Collections.<Flag> emptySet(), event.getFlags());
         assertTrue(event.isPublic());
         assertFalse(event.isLocal());
 
@@ -104,12 +109,12 @@ public class EventListenerTest extends NXRuntimeTestCase {
         Event event = ctx.event("test");
         assertEquals("test", event.getName());
         assertEquals(ctx, event.getContext());
-        assertEquals(0, event.getFlags());
+        assertEquals(Collections.<Flag> emptySet(), event.getFlags());
 
-        event = ctx.event("test2", Event.COMMIT | Event.INLINE);
+        event = ctx.event("test2", EnumSet.of(Flag.COMMIT, Flag.INLINE));
         assertEquals("test2", event.getName());
         assertEquals(ctx, event.getContext());
-        assertEquals(Event.COMMIT | Event.INLINE, event.getFlags());
+        assertEquals(EnumSet.of(Flag.COMMIT, Flag.INLINE), event.getFlags());
     }
 
     public void testTimestamp() {
@@ -123,8 +128,10 @@ public class EventListenerTest extends NXRuntimeTestCase {
      * The script listener will update this counter
      */
     public static int SCRIPT_CNT = 0;
+
     public void testScripts() throws Exception {
-        URL url = EventListenerTest.class.getClassLoader().getResource("test-listeners.xml");
+        URL url = EventListenerTest.class.getClassLoader().getResource(
+                "test-listeners.xml");
         RuntimeContext rc = deployTestContrib("org.nuxeo.ecm.core.event", url);
         assertEquals(0, SCRIPT_CNT);
         EventService service = Framework.getService(EventService.class);

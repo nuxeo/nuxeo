@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.core.event;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * A lightweight object used by core components to notify interested components
@@ -48,10 +49,12 @@ import java.io.Serializable;
  */
 public interface Event extends Serializable {
 
-    int LOCAL = 1;
-    int CANCEL = 2;
-    int COMMIT = 4;
-    int INLINE = 8;
+    static enum Flag {
+        LOCAL, //
+        CANCEL, //
+        COMMIT, //
+        INLINE
+    }
 
     /**
      * Gets the event name.
@@ -86,33 +89,11 @@ public interface Event extends Serializable {
     EventContext getContext();
 
     /**
-     * Gets the bit mask of event flags
+     * Gets the set of event flags
      *
      * @return the event flags
      */
-    int getFlags();
-
-    /**
-     * Updates the event flags given a bit mask
-     *
-     * @param flags the flags to update
-     */
-    void setFlags(int flags);
-
-    /**
-     * Clears the event flags in the given bit mask.
-     *
-     * @param flags the flags to clear
-     */
-    void clearFlags(int flags);
-
-    /**
-     * Tests whether or not the given flags are set
-     *
-     * @param flags the flags to test
-     * @return true if they are set false otherwise
-     */
-    boolean isFlagSet(int flags);
+    Set<Flag> getFlags();
 
     /**
      * Cancels this event.

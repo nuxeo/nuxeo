@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.core.event.impl;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 
@@ -29,36 +32,29 @@ public class EventImpl implements Event {
     private static final long serialVersionUID = 1L;
 
     protected final String name;
+
     protected final long time;
+
     protected final EventContext ctx;
 
-    protected int flags;
+    protected Set<Flag> flags;
 
-    public EventImpl(String name, EventContext ctx, int flags) {
+    public EventImpl(String name, EventContext ctx, Set<Flag> flags) {
         this.name = name;
         this.ctx = ctx;
         time = System.currentTimeMillis();
+        if (flags == null) {
+            flags = EnumSet.noneOf(Flag.class);
+        }
         this.flags = flags;
     }
 
     public EventImpl(String name, EventContext ctx) {
-        this(name, ctx, 0);
+        this(name, ctx, null);
     }
 
-    public void setFlags(int flags) {
-        this.flags |= flags;
-    }
-
-    public int getFlags() {
+    public Set<Flag> getFlags() {
         return flags;
-    }
-
-    public boolean isFlagSet(int flags) {
-        return (this.flags & flags) == flags;
-    }
-
-    public void clearFlags(int flags) {
-        this.flags &= ~flags;
     }
 
     public EventContext getContext() {
@@ -74,46 +70,46 @@ public class EventImpl implements Event {
     }
 
     public void cancel() {
-        setFlags(CANCEL);
+        flags.add(Flag.CANCEL);
     }
 
     public boolean isCanceled() {
-        return isFlagSet(CANCEL);
+        return flags.contains(Flag.CANCEL);
     }
 
     public boolean isInline() {
-        return isFlagSet(INLINE);
+        return flags.contains(Flag.INLINE);
     }
 
     public void setInline(boolean isInline) {
         if (isInline) {
-            setFlags(INLINE);
+            flags.add(Flag.INLINE);
         } else {
-            clearFlags(INLINE);
+            flags.remove(Flag.INLINE);
         }
     }
 
     public boolean isCommitEvent() {
-        return isFlagSet(COMMIT);
+        return flags.contains(Flag.COMMIT);
     }
 
     public void setIsCommitEvent(boolean isCommit) {
         if (isCommit) {
-            setFlags(COMMIT);
+            flags.add(Flag.COMMIT);
         } else {
-            clearFlags(COMMIT);
+            flags.remove(Flag.COMMIT);
         }
     }
 
     public boolean isLocal() {
-        return isFlagSet(LOCAL);
+        return flags.contains(Flag.LOCAL);
     }
 
     public void setLocal(boolean isLocal) {
         if (isLocal) {
-            setFlags(LOCAL);
+            flags.add(Flag.LOCAL);
         } else {
-            clearFlags(LOCAL);
+            flags.remove(Flag.LOCAL);
         }
     }
 
