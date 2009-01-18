@@ -222,6 +222,9 @@ public class Column implements Serializable {
         case Types.INTEGER:
             ps.setInt(index, ((Long) value).intValue());
             return;
+        case Types.DOUBLE:
+            ps.setDouble(index, ((Double) value).doubleValue());
+            return;
         case Types.VARCHAR:
         case Types.LONGVARCHAR: // MySQL
             String v;
@@ -264,6 +267,9 @@ public class Column implements Serializable {
             break;
         case Types.INTEGER:
             result = rs.getLong(index);
+            break;
+        case Types.DOUBLE:
+            result = rs.getDouble(index);
             break;
         case Types.VARCHAR:
         case Types.LONGVARCHAR: // MySQL
