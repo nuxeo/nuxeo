@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.publishing;
+package org.nuxeo.ecm.platform.publishing.workflow;
 
 import java.security.Principal;
 import java.util.List;
@@ -25,7 +25,6 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.publishing.api.PublishingException;
-import org.nuxeo.ecm.platform.publishing.workflow.PublishingConstants;
 import org.nuxeo.ecm.platform.workflow.api.client.delegate.WAPIBusinessDelegate;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WAPI;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMProcessInstance;

@@ -73,7 +73,6 @@ import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
 import org.nuxeo.ecm.platform.events.api.EventMessage;
 import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
 import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
-import org.nuxeo.ecm.platform.publishing.PublishActions;
 import org.nuxeo.ecm.platform.publishing.api.PublishingInformation;
 import org.nuxeo.ecm.platform.publishing.api.PublishingService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -82,10 +81,10 @@ import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelRow;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
-import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
-//import org.nuxeo.ecm.platform.workflow.api.client.events.EventNames;
+import org.nuxeo.ecm.platform.versioning.api.VersioningManager; //import org.nuxeo.ecm.platform.workflow.api.client.events.EventNames;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 import org.nuxeo.ecm.webapp.security.PrincipalListManager;
@@ -94,7 +93,7 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 
 /**
  * This Seam bean manages the publishing tab.
- *
+ * 
  * @author Narcis Paslaru
  * @author Florent Guillaume
  * @author Thierry Martins
@@ -151,7 +150,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
     private transient SelectDataModel sectionsModel;
 
     // list of selected sections
-    private List<DocumentModelTreeNode> selectedSections;
+    private List<DocumentModelTreeNode> selectedSections = new ArrayList<DocumentModelTreeNode>();
 
     private transient DocumentMessageProducer docMsgProducer;
 
@@ -219,121 +218,16 @@ public class PublishActionsBean implements PublishActions, Serializable {
         return publishRoots;
     }
 
-    protected class SelectionModelGetter extends UnrestrictedSessionRunner {
-
-        protected final DocumentRef currentDocRef;
-
-        protected final DocumentRef currentParentRef;
-
-        protected final DocumentModelTree sections;
-
-        public SelectionModelGetter() throws ClientException {
-            super(documentManager);
-            DocumentModel doc = navigationContext.getCurrentDocument();
-            this.currentDocRef = doc.getRef();
-            this.currentParentRef = doc.getParentRef();
-
-            //Get the available sections, using the base session.
-            getSectionRootTypes();
-            getSectionTypes();
-            sections = new DocumentModelTreeImpl();
-            DocumentModelList domains = documentManager.getChildren(
-                    documentManager.getRootDocument().getRef(), DOMAIN_TYPE);
-            for (DocumentModel domain : domains) {
-                for (String sectionRootNameType : sectionRootTypes) {
-                    DocumentModelList children = documentManager.getChildren(
-                            domain.getRef(), sectionRootNameType);
-                    for (DocumentModel sectionRoot : children) {
-                        String sectionRootPath = sectionRoot.getPathAsString();
-                        for (String sectionNameType : sectionTypes) {
-                            accumulateAvailableSections(sections,
-                                    sectionRootPath, sectionNameType);
-                        }
-                    }
-                }
-            }
-        }
-
-        /*
-         * Use an unrestricted session to find all proxies and their versions.
-         */
-        @Override
-        public void run() throws ClientException {
-            /*
-             * The DocumentModelTreeImpl datastructure contains section
-             * DocumentModels from the base session, but we only access their
-             * ref so it's safe. Also, the selected sections are filled with
-             * tree nodes from the base session.
-             */
-            DocumentModelList publishedProxies = session.getProxies(
-                    currentDocRef, null);
-            for (DocumentModel pProxy : publishedProxies) {
-                for (DocumentModelTreeNode node : sections) {
-                    DocumentRef proxyParentRef = pProxy.getParentRef();
-                    DocumentRef sectionRef = node.getDocument().getRef();
-                    if (sectionRef.equals(proxyParentRef)) {
-                        String versionLabel = versioningManager.getVersionLabel(pProxy);
-                        node.setVersion(versionLabel);
-                        // when looking at a proxy, don't check itself
-                        if (!sectionRef.equals(currentParentRef)) {
-                            addSelectedSection(node);
-                        }
-                        break;
-                    }
-                }
-            }
-            SelectDataModel model = new SelectDataModelImpl(
-                    SECTIONS_DOCUMENT_TREE, sections, getSelectedSections());
-            setSectionsModel(model);
-        }
-    }
-
     protected void getSectionsSelectModel() throws ClientException {
-        // get the section list from an unrestricted session
-        new SelectionModelGetter().runUnrestricted();
-    }
-
-    private void accumulateAvailableSections(DocumentModelTree sections,
-            String sectionRootPath, String sectionNameType)
-            throws ClientException {
-
-        Object[] params = { sectionRootPath, sectionNameType };
-
-        PagedDocumentsProvider sectionsProvider = null;
-        try {
-            sectionsProvider = queryModelActions.get(DOMAIN_SECTIONS).getResultsProvider(
-                    params);
-        } catch (QueryException e) {
-            throw new ClientException(String.format("Invalid search query. "
-                    + "Check the \"%s\" QueryModel configuration",
-                    DOMAIN_SECTIONS), e);
+        SelectionModelGetter selectionModelGetter = new SelectionModelGetter(
+                documentManager, navigationContext.getCurrentDocument(),
+                sectionRootTypes, sectionTypes, getSelectedSections(),
+                queryModelActions.get("DOMAIN_SECTIONS"));
+        selectionModelGetter.runUnrestricted();
+        for (DocumentModelTreeNode node : selectionModelGetter.getTreeNodes()) {
+            addSelectedSection(node);
         }
-        sectionsProvider.rewind();
-        DocumentModelList mainSections = sectionsProvider.getCurrentPage();
-
-        while (sectionsProvider.isNextPageAvailable()) {
-            mainSections.addAll(sectionsProvider.getNextPage());
-        }
-
-        int firstLevel = sectionRootPath.split("/").length + 1;
-
-        DocumentModelTreeImpl nodes = new DocumentModelTreeImpl();
-        for (DocumentModel currentSection : mainSections) {
-            if (documentManager.hasPermission(currentSection.getRef(),
-                    SecurityConstants.READ)) {
-                int currentLevel = currentSection.getPathAsString().split("/").length;
-                nodes.add(currentSection, currentLevel - firstLevel);
-            }
-        }
-        // sort sections using titles
-        DocumentModelTreeNodeComparator comp = new DocumentModelTreeNodeComparator(
-                nodes.getPathTitles());
-        Collections.sort((ArrayList) nodes, comp);
-
-        // populate sections
-        for (DocumentModelTreeNode node : nodes) {
-            sections.add(node);
-        }
+        setSectionsModel(selectionModelGetter.getDataModel());
     }
 
     // TODO move to protected
@@ -404,8 +298,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
         for (DocumentModelTreeNode section : selectedSections) {
             DocumentModel proxy = getPublishedInSection(docToPublish,
                     section.getDocument());
-            boolean moderation = proxy == null ||
-                    new PublishingTasks(proxy, currentUser).getPublishingWorkItem() != null;
+            boolean moderation = proxy == null
+                    || new PublishingTasks(proxy, currentUser).getPublishingWorkItem() != null;
             boolean candidate = false;
             if (proxy == null) {
                 candidate = true;
@@ -522,15 +416,16 @@ public class PublishActionsBean implements PublishActions, Serializable {
                     documentManager.publishDocument(doc, target);
                     nbPublishedDocs++;
                 } else {
-                    log.info("Attempted to publish non-publishable document " +
-                            doc.getTitle());
+                    log.info("Attempted to publish non-publishable document "
+                            + doc.getTitle());
                 }
             }
         }
 
         Object[] params = { nbPublishedDocs };
-        facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 " +
-                resourcesAccessor.getMessages().get("n_published_docs"), params);
+        facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+                + resourcesAccessor.getMessages().get("n_published_docs"),
+                params);
 
         if (nbPublishedDocs < docs2Publish.size()) {
             facesMessages.add(FacesMessage.SEVERITY_WARN,
@@ -540,80 +435,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
         EventManager.raiseEventsOnDocumentChildrenChange(navigationContext.getCurrentDocument());
         return null;
-    }
-
-    protected class DocumentPublisher extends UnrestrictedSessionRunner {
-
-        protected final boolean setIssuedDate;
-
-        protected final DocumentRef docRef;
-
-        protected final DocumentRef sectionRef;
-
-        /** Returned proxy. */
-        public DocumentRef proxyRef;
-
-        protected DocumentPublisher(DocumentModel doc, DocumentModel section)
-                throws ClientException {
-            super(documentManager);
-            docRef = doc.getRef();
-            sectionRef = section.getRef();
-            setIssuedDate = documentManager.isDirty(docRef) && !doc.isProxy();
-        }
-
-        @Override
-        public void run() throws ClientException {
-            DocumentModel doc = session.getDocument(docRef);
-            DocumentModel section = session.getDocument(sectionRef);
-            if (setIssuedDate) {
-                doc.setProperty("dublincore", "issued", Calendar.getInstance());
-                // make sure that saveDocument doesn't create a snapshot,
-                // as publishDocument will do it
-                doc.putContextData(
-                        org.nuxeo.common.collections.ScopeType.REQUEST,
-                        VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY,
-                        Boolean.FALSE);
-                session.saveDocument(doc);
-            }
-            DocumentModel proxy = session.publishDocument(doc, section);
-            session.save();
-            proxyRef = proxy.getRef();
-
-            // notify event
-            Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
-            eventInfo.put("proxy", proxy);
-            eventInfo.put("targetSection", section.getName());
-            eventInfo.put("sectionPath", section.getPathAsString());
-            String eventId;
-            if (isUnrestricted) {
-                // submitted through workflow, this event starts the workflow
-                eventId = org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_SUBMITED_FOR_PUBLICATION;
-                // additional event info: recipients
-                String[] validators = getPublishingService().getValidatorsFor(
-                        proxy);
-                List<String> recipients = new ArrayList<String>(
-                        validators.length);
-                for (String user : validators) {
-                    boolean isUser = principalListManager.getPrincipalType(user) == PrincipalListManager.USER_TYPE;
-                    recipients.add((isUser ? "user:" : "group:") + user);
-                }
-                eventInfo.put("recipients", StringUtils.join(recipients, '|'));
-            } else {
-                // direct publishing
-                eventId = org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_PUBLISHED;
-            }
-            notifyEvent(eventId, eventInfo, comment, null, doc);
-            if (isUnrestricted) {
-                /*
-                 * Invalidate dashboard items using Seam since a publishing
-                 * workflow might have been started. XXX We need to do it here
-                 * since the workflow starts in a message driven bean in a async
-                 * way. Not sure we can optimize right now.
-                 */
-                Events.instance().raiseEvent(
-                        org.nuxeo.ecm.platform.workflow.api.client.events.EventNames.WORKFLOW_NEW_STARTED);
-            }
-        }
     }
 
     /*
@@ -630,7 +451,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
         }
 
         DocumentPublisher documentPublisher = new DocumentPublisher(
-                docToPublish, section);
+                documentManager, docToPublish, section, comment);
 
         /*
          * If not enough rights to creating content, bypass rights since READ is
@@ -687,7 +508,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
     /*
      * Called by document_publish.xhtml
      */
-    @Factory(autoCreate=true,scope=ScopeType.EVENT, value="currentPublishingSectionsModel")
+    @Factory(autoCreate = true, scope = ScopeType.EVENT, value = "currentPublishingSectionsModel")
     public SelectDataModel getSectionsModel() throws ClientException {
         if (sectionsModel == null) {
             getSectionsSelectModel();
@@ -707,27 +528,11 @@ public class PublishActionsBean implements PublishActions, Serializable {
         comment = null;
     }
 
-    /**
-     * @deprecated Unused.
-     */
-    @Deprecated
-    public void processSelectRowEvent(SelectDataModelRowEvent event) {
-    }
-
     public List<DocumentModelTreeNode> getSelectedSections() {
-        log.debug("getSelectedSections");
-        if (selectedSections == null) {
-            selectedSections = new ArrayList<DocumentModelTreeNode>();
-
-        }
         return selectedSections;
     }
 
     private void addSelectedSection(DocumentModelTreeNode section) {
-        if (selectedSections == null) {
-            selectedSections = new ArrayList<DocumentModelTreeNode>();
-        }
-
         Boolean sectionAlreadySelected = false;
         for (DocumentModelTreeNode node : selectedSections) {
             if (node.getDocument().getRef().equals(
@@ -742,8 +547,9 @@ public class PublishActionsBean implements PublishActions, Serializable {
     }
 
     public void setSelectedSections(List<DocumentModelTreeNode> selectedSections) {
-        log.debug("Set Selected Sections");
-        this.selectedSections = selectedSections;
+        if (selectedSections != null) {
+            this.selectedSections = selectedSections;
+        }
     }
 
     public void notifyEvent(String eventId,
@@ -873,23 +679,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
      * Called by section_clipboard.xhtml
      */
     public List<Action> getActionsForSectionSelection() {
-        return webActions.getUnfiltredActionsList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION +
-                "_LIST");
-    }
-
-    protected PublishingService getPublishingService() throws ClientException {
-        if (publishingService == null) {
-            // local call first
-            publishingService = Framework.getLocalService(PublishingService.class);
-            if (publishingService == null) {
-                try {
-                    publishingService = Framework.getService(PublishingService.class);
-                } catch (Exception e) {
-                    throw new ClientException(e);
-                }
-            }
-        }
-        return publishingService;
+        return webActions.getUnfiltredActionsList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION
+                + "_LIST");
     }
 
     /*
