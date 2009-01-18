@@ -26,19 +26,19 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class CallbackFactoryDescriptor {
 
     @XNode("@class")
-    protected Class className;
+    protected Class<?> className;
 
     @XNode("enabled")
-    protected Boolean enabled;
+    protected boolean enabled = true;
 
     @XNode("@name")
     protected String name;
 
-    public Class getClassName() {
+    public Class<?> getClassName() {
         return className;
     }
 
-    public Boolean getEnabled() {
+    public boolean getEnabled() {
         return enabled;
     }
 

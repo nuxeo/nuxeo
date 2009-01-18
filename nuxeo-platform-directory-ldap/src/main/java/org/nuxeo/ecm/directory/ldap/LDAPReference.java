@@ -78,7 +78,7 @@ public class LDAPReference extends AbstractReference {
     private static final Log log = LogFactory.getLog(LDAPReference.class);
 
     @XNode("@forceDnConsistencyCheck")
-    public Boolean forceDnConsistencyCheck = Boolean.FALSE;
+    public boolean forceDnConsistencyCheck;
 
     protected LDAPDirectoryDescriptor targetDirectoryDescriptor;
 
@@ -710,7 +710,7 @@ public class LDAPReference extends AbstractReference {
                             continue;
                         }
                     }
-                    if (forceDnConsistencyCheck.booleanValue()) {
+                    if (forceDnConsistencyCheck) {
                         // check that the referenced entry is actually part of
                         // the target directory (takes care of the filters and
                         // the scope)

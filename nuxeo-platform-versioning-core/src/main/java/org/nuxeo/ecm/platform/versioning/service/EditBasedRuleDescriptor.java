@@ -74,7 +74,7 @@ public class EditBasedRuleDescriptor implements RuleDescriptor {
     private String[] excludeDocTypes;
 
     @XNode("@enabled")
-    private Boolean enabled = true;
+    private boolean enabled = true;
 
     /**
      * Default constructor - used normally when created as an XObject.

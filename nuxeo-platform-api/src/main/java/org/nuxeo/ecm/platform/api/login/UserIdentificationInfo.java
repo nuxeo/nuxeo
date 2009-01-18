@@ -83,7 +83,7 @@ public class UserIdentificationInfo implements Serializable {
         this.userName = userName;
     }
 
-    public Boolean containsValidIdentity() {
+    public boolean containsValidIdentity() {
         if (userName == null) {
             return false;
         }

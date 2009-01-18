@@ -44,7 +44,7 @@ public class AutoBasedRuleDescriptor implements RuleDescriptor {
     private String action;
 
     @XNode("@enabled")
-    private Boolean enabled = true;
+    private boolean enabled = true;
 
     /**
      * Default constructor - used normally when created as an XObject.

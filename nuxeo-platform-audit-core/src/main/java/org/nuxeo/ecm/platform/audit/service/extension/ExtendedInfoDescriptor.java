@@ -43,7 +43,7 @@ public class ExtendedInfoDescriptor implements Serializable {
     private String expression;
 
     @XNode("@enabled")
-    private Boolean enabled = true;
+    private boolean enabled = true;
 
 
     public String getKey() {
@@ -62,11 +62,11 @@ public class ExtendedInfoDescriptor implements Serializable {
         expression = value;
     }
 
-    public Boolean getEnabled() {
+    public boolean getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 

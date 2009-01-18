@@ -91,7 +91,7 @@ public class SQLDirectoryDescriptor {
     public boolean autoincrementIdField;
 
     @XNode("readOnly")
-    public Boolean readOnly = false;
+    public Boolean readOnly = Boolean.FALSE;
 
     @XNode("passwordField")
     private String passwordField;

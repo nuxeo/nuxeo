@@ -20,13 +20,13 @@ public class FilterConfigDescriptor implements Serializable {
     protected String name;
 
     @XNode("@synchonize")
-    protected Boolean useSync=false;
+    protected boolean useSync;
 
     @XNode("@transactional")
-    protected Boolean useTx=false;
+    protected boolean useTx;
 
     @XNode("@grant")
-    protected Boolean grant=true;
+    protected boolean grant = true;
 
     @XNode("pattern")
     protected String pattern;
@@ -40,15 +40,15 @@ public class FilterConfigDescriptor implements Serializable {
         return name;
     }
 
-    public Boolean useSync() {
+    public boolean useSync() {
         return useSync;
     }
 
-    public Boolean useTx() {
+    public boolean useTx() {
         return useTx;
     }
 
-    public Boolean isGrantRule() {
+    public boolean isGrantRule() {
         return grant;
     }
 

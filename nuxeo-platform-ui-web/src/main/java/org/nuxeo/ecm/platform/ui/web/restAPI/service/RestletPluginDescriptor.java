@@ -39,16 +39,16 @@ public class RestletPluginDescriptor {
     private String name;
 
     @XNode("@enabled")
-    private Boolean enabled = true;
+    private Boolean enabled = Boolean.TRUE;
 
     @XNodeList(value = "urlPatterns/urlPattern", type = ArrayList.class, componentType = String.class)
     private List<String> urlPatterns = new ArrayList<String>();
 
     @XNode("@useSeam")
-    private Boolean useSeam;
+    private boolean useSeam;
 
     @XNode("@useConversation")
-    private Boolean useConversation=false;
+    private boolean useConversation;
 
     @XNode("@class")
     private Class<Restlet> className;
@@ -85,19 +85,19 @@ public class RestletPluginDescriptor {
         this.urlPatterns = urlPatterns;
     }
 
-    public Boolean getUseSeam() {
+    public boolean getUseSeam() {
         return useSeam;
     }
 
-    public void setUseSeam(Boolean useSeam) {
+    public void setUseSeam(boolean useSeam) {
         this.useSeam = useSeam;
     }
 
-    public Boolean getUseConversation() {
+    public boolean getUseConversation() {
         return useConversation;
     }
 
-    public void setUseConversation(Boolean useConversation) {
+    public void setUseConversation(boolean useConversation) {
         this.useConversation = useConversation;
     }
 

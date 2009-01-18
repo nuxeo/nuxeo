@@ -115,10 +115,7 @@ public class NXAuditEventsService extends DefaultComponent implements
                 for (Object contribution : contributions) {
                     EventDescriptor desc = (EventDescriptor) contribution;
                     String eventName = desc.getName();
-                    Boolean eventEnabled = desc.getEnabled();
-                    if (eventEnabled == null) {
-                        eventEnabled = true;
-                    }
+                    boolean eventEnabled = desc.getEnabled();
                     if (eventEnabled) {
                         eventNames.add(eventName);
                         if (log.isDebugEnabled())

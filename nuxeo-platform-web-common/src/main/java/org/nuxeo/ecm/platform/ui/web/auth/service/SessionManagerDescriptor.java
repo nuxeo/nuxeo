@@ -34,7 +34,7 @@ public class SessionManagerDescriptor implements Serializable {
     private String name;
 
     @XNode("@enabled")
-    Boolean enabled = true;
+    boolean enabled = true;
 
     @XNode("@class")
     Class<NuxeoAuthenticationSessionManager> className;
@@ -43,7 +43,7 @@ public class SessionManagerDescriptor implements Serializable {
         return name;
     }
 
-    public Boolean getEnabled() {
+    public boolean getEnabled() {
         return enabled;
     }
 

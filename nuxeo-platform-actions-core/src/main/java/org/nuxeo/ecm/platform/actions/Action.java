@@ -64,7 +64,7 @@ public class Action implements Serializable, Comparable<Action> {
     @XNode("@help")
     private String help;
 
-    private Boolean available = true;
+    private boolean available = true;
 
     /**
      * Attribute that provides a hint for action ordering.
@@ -224,11 +224,11 @@ public class Action implements Serializable, Comparable<Action> {
         return id == null ? 0 : id.hashCode();
     }
 
-    public Boolean getAvailable() {
+    public boolean getAvailable() {
         return available;
     }
 
-    public void setAvailable(Boolean available) {
+    public void setAvailable(boolean available) {
         this.available = available;
     }
 

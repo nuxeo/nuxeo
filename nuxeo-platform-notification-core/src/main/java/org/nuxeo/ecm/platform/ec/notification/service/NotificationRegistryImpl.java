@@ -25,8 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ec.notification.NotificationImpl;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
@@ -38,9 +36,6 @@ import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
 public class NotificationRegistryImpl implements NotificationRegistry {
 
     private static final long serialVersionUID = 1L;
-
-    private static final Log log = LogFactory
-            .getLog(NotificationRegistryImpl.class);
 
     // maps Notifications to Strings that are names of the objects
     private final Map<String, List<Notification>> notificationRegistry = new HashMap<String, List<Notification>>();

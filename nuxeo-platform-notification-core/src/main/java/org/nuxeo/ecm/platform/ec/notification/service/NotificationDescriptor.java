@@ -56,10 +56,10 @@ public class NotificationDescriptor implements Notification {
     protected String template;
 
     @XNode("@enabled")
-    protected Boolean enabled;
+    protected boolean enabled = true;
 
     @XNode("@autoSubscribed")
-    protected Boolean autoSubscribed;
+    protected boolean autoSubscribed = false;
 
     @XNode("@availableIn")
     protected String availableIn;
@@ -67,12 +67,12 @@ public class NotificationDescriptor implements Notification {
     @XNodeList(value = "event", type = ArrayList.class, componentType = NotificationEventDescriptor.class)
     protected List<NotificationEventDescriptor> events;
 
-    public Boolean getAutoSubscribed() {
+    public boolean getAutoSubscribed() {
         return autoSubscribed;
     }
 
     // Not used.
-    public void setAutoSubscribed(Boolean autoSubscribed) {
+    public void setAutoSubscribed(boolean autoSubscribed) {
         this.autoSubscribed = autoSubscribed;
     }
 
@@ -94,12 +94,12 @@ public class NotificationDescriptor implements Notification {
         this.channel = channel;
     }
 
-    public Boolean getEnabled() {
+    public boolean getEnabled() {
         return enabled;
     }
 
     // Not used.
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 

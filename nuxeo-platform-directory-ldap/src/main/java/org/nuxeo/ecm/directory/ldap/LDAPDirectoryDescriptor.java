@@ -59,7 +59,7 @@ public class LDAPDirectoryDescriptor {
     public String searchBaseDn;
 
     @XNode("readOnly")
-    public Boolean readOnly = true;
+    public boolean readOnly = true;
 
     @XNode("cacheTimeout")
     public int cacheTimeout = 0;
@@ -119,9 +119,9 @@ public class LDAPDirectoryDescriptor {
     // XXX: ignoredFields?
     // XXX: referenceFields?
     public LDAPDirectoryDescriptor() {
-        scopes.put("object", SearchControls.OBJECT_SCOPE);
-        scopes.put("onelevel", SearchControls.ONELEVEL_SCOPE);
-        scopes.put("subtree", SearchControls.SUBTREE_SCOPE);
+        scopes.put("object", Integer.valueOf(SearchControls.OBJECT_SCOPE));
+        scopes.put("onelevel", Integer.valueOf(SearchControls.ONELEVEL_SCOPE));
+        scopes.put("subtree", Integer.valueOf(SearchControls.SUBTREE_SCOPE));
     }
 
     public String getRdnAttribute() {
@@ -201,7 +201,7 @@ public class LDAPDirectoryDescriptor {
             throw new DirectoryException("Invalid search scope: " + searchScope
                     + ". Valid options: object, onelevel, subtree");
         }
-        this.searchScope = scope;
+        this.searchScope = scope.intValue();
     }
 
     public int getSearchScope() {
@@ -263,11 +263,11 @@ public class LDAPDirectoryDescriptor {
         return ldapReferences;
     }
 
-    public Boolean getReadOnly() {
+    public boolean getReadOnly() {
         return readOnly;
     }
 
-    public void setReadOnly(Boolean readOnly) {
+    public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
     }
 

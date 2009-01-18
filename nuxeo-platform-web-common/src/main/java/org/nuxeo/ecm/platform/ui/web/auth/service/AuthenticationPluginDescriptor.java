@@ -37,7 +37,7 @@ public class AuthenticationPluginDescriptor implements Serializable {
     private String name;
 
     @XNode("@enabled")
-    Boolean enabled = true;
+    boolean enabled = true;
 
     @XNode("@class")
     Class<NuxeoAuthenticationPlugin> className;
@@ -46,23 +46,23 @@ public class AuthenticationPluginDescriptor implements Serializable {
     String loginModulePlugin;
 
     @XNode("needStartingURLSaving")
-    Boolean needStartingURLSaving = false;
+    boolean needStartingURLSaving;
 
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> parameters = new HashMap<String, String>();
 
     @XNode("stateful")
-    Boolean stateful = true;
+    boolean stateful = true;
 
     public Class<NuxeoAuthenticationPlugin> getClassName() {
         return className;
     }
 
-    public Boolean getEnabled() {
+    public boolean getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
@@ -86,11 +86,11 @@ public class AuthenticationPluginDescriptor implements Serializable {
         this.parameters = parameters;
     }
 
-    public Boolean getNeedStartingURLSaving() {
+    public boolean getNeedStartingURLSaving() {
         return needStartingURLSaving;
     }
 
-    public Boolean getStateful() {
+    public boolean getStateful() {
         return stateful;
     }
 

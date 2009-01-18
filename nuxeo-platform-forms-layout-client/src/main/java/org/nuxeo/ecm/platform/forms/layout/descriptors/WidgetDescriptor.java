@@ -65,7 +65,7 @@ public class WidgetDescriptor implements WidgetDefinition {
     Map<String, String> helpLabels = new HashMap<String, String>();
 
     @XNode("translated")
-    Boolean translated = true;
+    boolean translated = true;
 
     @XNodeMap(value = "properties", key = "@mode", type = HashMap.class, componentType = PropertiesDescriptor.class)
     Map<String, PropertiesDescriptor> properties = new HashMap<String, PropertiesDescriptor>();

@@ -72,7 +72,6 @@ import org.nuxeo.ecm.directory.sql.repository.Update;
  */
 public class SQLSession extends BaseSession implements Session, EntrySource {
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(SQLSession.class);
 
     protected final Map<String, Field> schemaFieldMap;
@@ -152,7 +151,7 @@ public class SQLSession extends BaseSession implements Session, EntrySource {
             throws ClientException {
         acquireConnection();
         if (idGenerator != null) {
-            Integer idValue = idGenerator.nextId();
+            Integer idValue = Integer.valueOf(idGenerator.nextId());
             fieldMap.put(idField, idValue);
         } else {
             // check id that was given
@@ -635,7 +634,7 @@ public class SQLSession extends BaseSession implements Session, EntrySource {
             if ("string".equals(typeName)) {
                 return rs.getString(columnName);
             } else if ("integer".equals(typeName) || "long".equals(typeName)) {
-                return rs.getLong(columnName);
+                return Long.valueOf(rs.getLong(columnName));
             } else if ("date".equals(typeName)) {
                 Timestamp ts = rs.getTimestamp(columnName);
                 if (ts == null) {
@@ -669,13 +668,13 @@ public class SQLSession extends BaseSession implements Session, EntrySource {
             } else if ("integer".equals(typeName) || "long".equals(typeName)) {
                 long longValue;
                 if (value instanceof Integer) {
-                    longValue = (Integer) value;
+                    longValue = ((Integer) value).intValue();
                     ps.setLong(index, longValue);
                 } else if (value instanceof Long) {
-                    longValue = (Long) value;
+                    longValue = ((Long) value).longValue();
                     ps.setLong(index, longValue);
                 } else if (value instanceof String) {
-                    longValue = Long.valueOf((String) value);
+                    longValue = Long.valueOf((String) value).longValue();
                     ps.setLong(index, longValue);
                 } else if (value == null) {
                     ps.setNull(index, Types.INTEGER);
@@ -776,7 +775,7 @@ public class SQLSession extends BaseSession implements Session, EntrySource {
     }
 
     public boolean isReadOnly() {
-        return directory.getConfig().getReadOnly();
+        return Boolean.TRUE.equals(directory.getConfig().getReadOnly());
     }
 
     public DocumentModelList query(Map<String, Object> filter,

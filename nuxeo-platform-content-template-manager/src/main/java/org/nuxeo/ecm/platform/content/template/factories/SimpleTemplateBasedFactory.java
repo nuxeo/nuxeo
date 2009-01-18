@@ -83,8 +83,8 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
 
             // add the the ACL defined in the descriptor
             for (ACEDescriptor ace : aces) {
-                existingACL.add(new ACE(ace.getPrincipal(), ace.getPermission(),
-                        ace.getGranted().booleanValue()));
+                existingACL.add(new ACE(ace.getPrincipal(),
+                        ace.getPermission(), ace.getGranted()));
             }
             // readd the acl to invalidate the ACPImpl cache
             acp.addACL(existingACL);

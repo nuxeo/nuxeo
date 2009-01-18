@@ -51,16 +51,16 @@ public class NotificationImpl implements Notification {
 
     private final String channel;
 
-    private final Boolean autoSubscribed;
+    private final boolean autoSubscribed;
 
     private final String availableIn;
 
     private final String label;
 
-    private Boolean enabled;
+    private boolean enabled;
 
     public NotificationImpl(String name, String template, String channel, String subjectTemplate,
-            Boolean autoSubscribed, String subject, String availableIn, String label) {
+            boolean autoSubscribed, String subject, String availableIn, String label) {
         this.name = name;
         this.template = template;
         this.channel = channel;
@@ -83,7 +83,7 @@ public class NotificationImpl implements Notification {
         return template;
     }
 
-    public Boolean getAutoSubscribed() {
+    public boolean getAutoSubscribed() {
         return autoSubscribed;
     }
 
@@ -120,11 +120,11 @@ public class NotificationImpl implements Notification {
         return name.hashCode();
     }
 
-    public Boolean getEnabled() {
+    public boolean getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 

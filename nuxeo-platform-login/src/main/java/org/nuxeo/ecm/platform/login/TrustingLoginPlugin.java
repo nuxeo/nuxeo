@@ -38,7 +38,7 @@ import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 public class TrustingLoginPlugin extends BaseLoginModule {
 
     public Boolean initLoginModule() {
-        return true;
+        return Boolean.TRUE;
     }
 
     public String validatedUserIdentity(UserIdentificationInfo userIdent)

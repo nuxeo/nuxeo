@@ -36,10 +36,10 @@ public class DocumentsListDescriptor implements Serializable {
     private String name;
 
     @XNode("category")
-    private String category;
+    private String category = "";
 
     @XNode("defaultInCategory")
-    private Boolean defaultInCategory;
+    private boolean defaultInCategory;
 
     @XNodeList(value = "events/event", type = ArrayList.class, componentType = String.class)
     private List<String> eventsName;
@@ -48,58 +48,27 @@ public class DocumentsListDescriptor implements Serializable {
     private String imageURL;
 
     @XNode("supportAppends")
-    Boolean supportAppends;
+    boolean supportAppends = true;
 
     @XNode("readOnly")
-    Boolean readOnly;
+    boolean readOnly;
 
     @XNode("isSession")
-    Boolean isSession;
+    boolean isSession = true;
 
     @XNode("title")
-    String title;
+    String title = "";
 
     @XNode("@enabled")
-    Boolean enabled;
+    boolean enabled = true;
 
     @XNode("persistent")
-    Boolean persistent;
-
-    public DocumentsListDescriptor() {
-        category = "";
-        defaultInCategory = false;
-        eventsName = new ArrayList<String>();
-        supportAppends = true;
-        readOnly = false;
-        imageURL = "/nuxeo/img/clipboard.gif";
-        title = "";
-        isSession = true;
-        enabled = true;
-        persistent=false;
-    }
+    boolean persistent;
 
     public DocumentsListDescriptor(String listName) {
-        this();
-        name = listName;
-    }
-
-    // XXX: not used?
-    public DocumentsListDescriptor(String listName, String title,
-            String category, Boolean isDefault, List<String> events,
-            Boolean appendMode, Boolean readOnly, String imgUrl, Boolean isSession) {
-        name = listName;
-        this.title = title;
-        this.category = category;
-        defaultInCategory = isDefault;
         eventsName = new ArrayList<String>();
-        if (events != null) {
-            eventsName.addAll(events);
-        }
-        supportAppends = appendMode;
-        this.readOnly = readOnly;
-        imageURL = imgUrl;
-        this.isSession = isSession;
-        enabled = true;
+        imageURL = "/nuxeo/img/clipboard.gif";
+        name = listName;
     }
 
     public String getCategory() {
@@ -110,11 +79,11 @@ public class DocumentsListDescriptor implements Serializable {
         this.category = category;
     }
 
-    public Boolean getDefaultInCategory() {
+    public boolean getDefaultInCategory() {
         return defaultInCategory;
     }
 
-    public void setDefaultInCategory(Boolean defaultInCategory) {
+    public void setDefaultInCategory(boolean defaultInCategory) {
         this.defaultInCategory = defaultInCategory;
     }
 
@@ -126,19 +95,19 @@ public class DocumentsListDescriptor implements Serializable {
         this.eventsName = eventsName;
     }
 
-    public Boolean getReadOnly() {
+    public boolean getReadOnly() {
         return readOnly;
     }
 
-    public void setReadOnly(Boolean readOnly) {
+    public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
     }
 
-    public Boolean getSupportAppends() {
+    public boolean getSupportAppends() {
         return supportAppends;
     }
 
-    public void setSupportAppends(Boolean supportAppends) {
+    public void setSupportAppends(boolean supportAppends) {
         this.supportAppends = supportAppends;
     }
 
@@ -166,30 +135,30 @@ public class DocumentsListDescriptor implements Serializable {
         name = listName;
     }
 
-    public Boolean getEnabled() {
+    public boolean getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
-    public Boolean getIsSession() {
+    public boolean getIsSession() {
         return isSession;
     }
 
-    public void setIsSession(Boolean isSession) {
+    public void setIsSession(boolean isSession) {
         this.isSession = isSession;
     }
 
-    public Boolean getPersistent() {
+    public boolean getPersistent() {
         if (!isSession) {
             return false; // XXX conversation scoped list can't be persistent
         }
         return persistent;
     }
 
-    public void setPersistent(Boolean persistent) {
+    public void setPersistent(boolean persistent) {
         this.persistent = persistent;
     }
 

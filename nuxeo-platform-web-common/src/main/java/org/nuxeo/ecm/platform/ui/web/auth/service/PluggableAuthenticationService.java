@@ -182,9 +182,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
         AuthenticationPluginDescriptor oldDescriptor = authenticatorsDescriptors.get(newContrib.getName());
 
         // Enable/Disable
-        if (newContrib.getEnabled() != null) {
-            oldDescriptor.setEnabled(newContrib.getEnabled());
-        }
+        oldDescriptor.setEnabled(newContrib.getEnabled());
 
         // Merge parameters
         Map<String, String> oldParameters = oldDescriptor.getParameters();
