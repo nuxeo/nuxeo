@@ -1,9 +1,5 @@
 <div>
 
-<script type="text/javascript"><!--
-window.scrollTo(0,0);
-//--></script>
-
 <div id="nxthemesFragmentFactory" class="nxthemesScreen">
 
 <h1 class="nxthemesEditor">Add fragment</h1>

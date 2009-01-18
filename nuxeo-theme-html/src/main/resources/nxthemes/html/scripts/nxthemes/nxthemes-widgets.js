@@ -144,6 +144,10 @@ NXThemes.Panel.prototype = Object.extend(new NXThemes.View(), {
             loadingElement.hide();
           }
         }
+
+        // scroll to the top
+        window.scrollTo(0, 0);
+
         view._rendering = false;
         view.ready();
       }

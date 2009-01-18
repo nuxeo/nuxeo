@@ -1,9 +1,5 @@
 <div>
 
-<script type="text/javascript"><!--
-window.scrollTo(0,0);
-//--></script>
-
 <div id="nxthemesThemeManager" class="nxthemesScreen">
 
 <h1 class="nxthemesEditor">Manage themes</h1>

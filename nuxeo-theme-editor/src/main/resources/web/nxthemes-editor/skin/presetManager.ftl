@@ -1,8 +1,4 @@
 <div>
-
-<script type="text/javascript"><!--
-window.scrollTo(0,0);
-//--></script>
  
 <!-- preset menu -->
 <@nxthemes_view resource="preset-menu.json" />     

@@ -1,9 +1,5 @@
 <div>
 
-<script type="text/javascript"><!--
-window.scrollTo(0,0);
-//--></script>
-
 <!--  Style picker -->
 <@nxthemes_panel identifier="style picker"
   url="${basePath}/nxthemes-editor/stylePicker"
