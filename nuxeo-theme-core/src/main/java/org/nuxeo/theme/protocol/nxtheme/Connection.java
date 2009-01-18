@@ -84,8 +84,8 @@ public final class Connection extends URLConnection {
             // no such element found in the theme definitions: throws
             // IOException since it is the most semantically suited Exception
             // declared in the java.net.URLConnection based class
-            throw new IOException(String.format("%s with url '%s' not found",
-                    host, url.toString()));
+            throw new IOException(String.format("Error while rendering %s",
+                    ThemeManager.getUrlDescription(url)));
         }
 
         final RenderingInfo info = new RenderingInfo(rendered, url);

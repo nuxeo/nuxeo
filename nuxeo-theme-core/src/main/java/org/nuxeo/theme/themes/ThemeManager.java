@@ -345,6 +345,22 @@ public final class ThemeManager implements Registrable {
                 TypeFamily.PERSPECTIVE, perspectiveName);
     }
 
+    public static String getUrlDescription(URL url) {
+        final String[] path = url.getPath().split("/");
+        String host = url.getHost();
+        String description = "[???]";
+        if ("theme".equals(host)) {
+            description = String.format(
+                    "[THEME %s, PAGE %s, ENGINE %s, TEMPLATE %s, PERSPECTIVE %s, MODE %s]",
+                    path[4], path[5], path[1], path[3], path[6], path[2]);
+        } else if ("element".equals(host)) {
+            description = String.format(
+                    "[ELEMENT %s, ENGINE %s, TEMPLATE %s, MODE %s]", path[4],
+                    path[1], path[3], path[2]);
+        }
+        return description;
+    }
+
     // Named objects
     public Identifiable getNamedObject(final String themeName,
             final String realm, final String name) {
@@ -363,7 +379,7 @@ public final class ThemeManager implements Registrable {
     public String getThemeNameOfNamedObject(Identifiable object) {
         return themeOfNamedObjects.get(object.getUid());
     }
-    
+
     public void setNamedObject(final String themeName, final String realm,
             final Identifiable object) {
         if (!namedObjectsByTheme.containsKey(themeName)) {
