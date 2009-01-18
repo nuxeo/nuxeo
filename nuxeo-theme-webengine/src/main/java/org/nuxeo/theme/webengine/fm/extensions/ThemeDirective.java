@@ -92,11 +92,12 @@ public class ThemeDirective implements TemplateDirectiveModel {
         if (themeUrl == null) {
             return;
         }
-        String rendered;
+
+        String rendered = "";
         try {
             rendered = renderTheme(themeUrl);
         } catch (ThemeException e) {
-            log.error("Theme rendering failed: " + e.getMessage());
+            log.error("Theme rendering failed", e);
             return;
         }
 
@@ -105,7 +106,7 @@ public class ThemeDirective implements TemplateDirectiveModel {
         writer.setSuppressOutput(true);
         body.render(writer);
         writer.setSuppressOutput(false);
-        
+
         // Apply the theme template
         BufferedReader reader = new BufferedReader(new StringReader(rendered));
         Template tpl = new Template(themeUrl.toString(), reader,
@@ -126,6 +127,9 @@ public class ThemeDirective implements TemplateDirectiveModel {
     }
 
     protected boolean needsToBeRefreshed(URL themeUrl) {
+        if (themeUrl == null) {
+            return false;
+        }
         if (themeUrl.getProtocol().equals("nxtheme")) {
             Long lastRefreshed = lastRefreshedMap.get(themeUrl);
             if (lastRefreshed == null) {
@@ -150,38 +154,43 @@ public class ThemeDirective implements TemplateDirectiveModel {
             return themeUrl;
         }
 
-        // Get the negotiation strategy
         final String root = context.getModulePath();
-
         final ApplicationType application = (ApplicationType) Manager.getTypeRegistry().lookup(
                 TypeFamily.APPLICATION, root);
 
-        String strategy = null;
-        if (application != null) {
-            final NegotiationDef negotiation = application.getNegotiation();
-            if (negotiation != null) {
-                request.setAttribute("org.nuxeo.theme.default.theme",
-                        negotiation.getDefaultTheme());
-                request.setAttribute("org.nuxeo.theme.default.engine",
-                        negotiation.getDefaultEngine());
-                request.setAttribute("org.nuxeo.theme.default.perspective",
-                        negotiation.getDefaultPerspective());
-                strategy = negotiation.getStrategy();
-            }
+        if (application == null) {
+            log.error("Application not set for: " + root);
+            return null;
         }
+
+        final NegotiationDef negotiation = application.getNegotiation();
+        if (negotiation == null) {
+            log.error("Negotiation not set for: " + root);
+            return null;
+        }
+
+        request.setAttribute("org.nuxeo.theme.default.theme",
+                negotiation.getDefaultTheme());
+        request.setAttribute("org.nuxeo.theme.default.engine",
+                negotiation.getDefaultEngine());
+        request.setAttribute("org.nuxeo.theme.default.perspective",
+                negotiation.getDefaultPerspective());
+        String strategy = negotiation.getStrategy();
 
         if (strategy == null) {
-            log.error("Could not obtain the negotiation strategy for " + root);
-        } else {
-            try {
-                final String spec = new WebNegotiator(strategy, context).getSpec();
-                themeUrl = new URL(spec);
-                request.setAttribute("org.nuxeo.theme.url", themeUrl);
-            } catch (NegotiationException e) {
-                log.error("Could not get default negotiation settings.", e);
-            }
+            log.error("Negotiation strategy not set for: " + root);
+            return null;
         }
 
+        try {
+            final String spec = new WebNegotiator(strategy, context).getSpec();
+            themeUrl = new URL(spec);
+        } catch (NegotiationException e) {
+            log.error("Could not get negotiation information for: " + root);
+            return null;
+        }
+
+        request.setAttribute("org.nuxeo.theme.url", themeUrl);
         return themeUrl;
     }
 }
