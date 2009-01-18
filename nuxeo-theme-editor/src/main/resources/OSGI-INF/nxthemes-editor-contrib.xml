@@ -27,7 +27,6 @@
 
     <resource name="nxthemes-editor-authoring.js">
       <path>nxthemes/editor/scripts/authoring.js</path>
-      <shrinkable>false</shrinkable>
     </resource>
 
     <resource name="nxthemes-editor-authoring.css">
