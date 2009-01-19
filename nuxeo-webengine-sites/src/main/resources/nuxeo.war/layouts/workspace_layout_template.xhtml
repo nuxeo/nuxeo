@@ -35,12 +35,15 @@
 
 	<c:if test="#{layout.name == 'webcontainer' }">
 	<div class="foldableBox">
-      <h3 class="#{nxu:test(value.webcontainer.isWebContainer, 'unfolded', 'folded')}" >
-          <h:selectBooleanCheckbox onclick="toggleBox(this)"
-          	value="#{value.webcontainer.isWebContainer}"/>
+      <h3 class="#{nxu:test(layoutValue.webcontainer.isWebContainer, 'unfolded', 'folded')}" >
+        <h:selectBooleanCheckbox onclick="Element.next(this).click();"
+          value="#{layoutValue.webcontainer.isWebContainer}" />
+        <h:commandButton value="hidden button"
+          action="#{siteActions.toggleWebContainerLayout(layoutValue)}"
+          immediate="true" style="display: none;"/>
       </h3>
       <div class="boxBody"
-      	style="#{nxu:test(value.webcontainer.isWebContainer, 'display: block', 'display: none')}">
+        style="#{nxu:test(layoutValue.webcontainer.isWebContainer, 'display: block', 'display: none')}">
       	<table class="dataInput">
 		    <tbody>
 		      <nxl:layoutRow>
