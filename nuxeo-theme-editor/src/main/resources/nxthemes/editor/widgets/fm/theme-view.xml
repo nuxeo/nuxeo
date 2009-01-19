@@ -31,7 +31,11 @@
         <@nxthemes_button identifier="manage presets"
           controlledBy="editor buttons"
           switchTo="editor perspectives/manage presets" label="Manage presets" />
-          
+        
+        <@nxthemes_button identifier="manage styles"
+          controlledBy="editor buttons"
+          switchTo="editor perspectives/manage styles" label="Manage styles" />
+                    
         <@nxthemes_button identifier="manage themes"
           controlledBy="editor buttons"
           switchTo="editor perspectives/manage themes" label="Manage themes" />
@@ -68,7 +72,7 @@
       <@nxthemes_panel identifier="back to canvas"
         url="${basePath}/nxthemes-editor/backToCanvas"
         controlledBy="editor perspectives"
-        visibleInPerspectives="add fragments,edit element,manage presets,manage themes" />
+        visibleInPerspectives="add fragments,edit element,manage presets,manage styles,manage themes" />
 
     </div>
 
@@ -130,6 +134,12 @@
       controlledBy="editor perspectives"
       visibleInPerspectives="manage presets" />
       
+    <!-- style manager -->
+    <@nxthemes_panel identifier="style manager"
+      url="${basePath}/nxthemes-editor/styleManager"
+      controlledBy="editor perspectives"
+      visibleInPerspectives="manage styles" />
+          
     <!-- theme manager -->
     <@nxthemes_panel identifier="theme manager"
       url="${basePath}/nxthemes-editor/themeManager"

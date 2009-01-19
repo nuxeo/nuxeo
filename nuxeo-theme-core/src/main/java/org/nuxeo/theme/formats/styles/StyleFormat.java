@@ -28,6 +28,7 @@ import org.nuxeo.theme.formats.Format;
 public class StyleFormat extends DefaultFormat implements Style {
 
     private final Map<String, Map<String, Properties>> styleProperties = new TreeMap<String, Map<String, Properties>>();
+
     private final Map<String, String> selectorDescriptions = new HashMap<String, String>();
 
     public Properties getPropertiesFor(String viewName, String path) {
@@ -94,12 +95,23 @@ public class StyleFormat extends DefaultFormat implements Style {
         return selectorDescriptions.get(key);
     }
 
-    public void setSelectorDescription(String path, String viewName, String description) {
+    public void setSelectorDescription(String path, String viewName,
+            String description) {
         if (viewName == null) {
             viewName = "*";
         }
         final String key = String.format("%s/%s", path, viewName);
         selectorDescriptions.put(key, description);
+    }
+
+    public Properties getAllProperties() {
+        Properties properties = new Properties();
+        for (Map<String, Properties> map : styleProperties.values()) {
+            for (Properties s : map.values()) {
+                properties.putAll(s);
+            }
+        }
+        return properties;
     }
 
     @Override

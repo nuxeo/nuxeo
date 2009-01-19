@@ -5,13 +5,13 @@
       
 <div id="nxthemesPresetManager">
 
-<h1 class="nxthemesEditor">Manage presets</h1>
+<h1 class="nxthemesEditor">Presets</h1>
 
 
 <#list theme_names as theme_name>
 <#assign presets = This.getCustomPresets(theme_name)>
 
-<h3 style="padding: 2px 4px; background-color: #f6f6f6" class="nxthemesEditor">Theme: ${theme_name}</h3>
+<h2 class="nxthemesEditor">Theme: ${theme_name}</h2>
 
 <table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
 <#assign count = 0 />
@@ -88,7 +88,7 @@ ${preset_info.preview}</div>
 
 
 <#list preset_groups as group>
-<h3 style="padding: 2px 4px; background-color: #f6f6f6" class="nxthemesEditor">${group}</h3>
+<h2 class="nxthemesEditor">${group}</h2>
 
 <table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
 <#assign count = 0 /> 

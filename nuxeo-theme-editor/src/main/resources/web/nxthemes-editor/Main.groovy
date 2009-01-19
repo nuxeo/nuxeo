@@ -71,6 +71,13 @@ public class Main extends DefaultModule {
   }
   
   @GET
+  @Path("styleManager")
+  public Object renderStyleManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
+    return getTemplate("styleManager.ftl").arg(
+            "theme_names", Manager.getThemeManager().getThemeNames())
+  }  
+  
+  @GET
   @Path("themeManager")
   public Object renderThemeManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("themeManager.ftl").arg("themes", getThemeDescriptors())
@@ -1091,6 +1098,10 @@ public class Main extends DefaultModule {
       return presets
   }
   
+  public static List<String> getUnidentifiedPresetNames(String themeName) {
+      return PresetManager.getUnidentifiedPresetNames(themeName)
+  }
+  
   /* Session */
   
   public static String getSelectedPresetGroup() {
@@ -1177,7 +1188,7 @@ public class Main extends DefaultModule {
   }
 
   // handle errors
-  public Response handleError(WebApplicationException e) {
+  public Object handleError(WebApplicationException e) {
       if (e instanceof ThemeEditorException) {
           return Response.status(500).entity(e.getMessage()).build();
       } else {

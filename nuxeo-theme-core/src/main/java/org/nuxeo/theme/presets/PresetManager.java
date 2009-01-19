@@ -16,12 +16,15 @@ package org.nuxeo.theme.presets;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.themes.ThemeException;
+import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
 
@@ -180,4 +183,43 @@ public class PresetManager {
         }
     }
 
+    public static List<String> getUnidentifiedPresetNames(final String themeName) {
+        List<String> names = new ArrayList<String>();
+        ThemeManager themeManager = Manager.getThemeManager();
+        for (Style style : themeManager.getStyles()) {
+
+            if (style.isNamed()) {
+                if (!themeName.equals(Manager.getThemeManager().getThemeNameOfNamedObject(
+                        style))) {
+                    continue;
+                }
+            } else {
+                ThemeElement theme = ThemeManager.getThemeOfFormat(style);
+                if (theme == null) {
+                    continue;
+                }
+                if (!themeName.equals(theme.getName())) {
+                    continue;
+                }
+            }
+
+            for (Map.Entry<Object, Object> entry : style.getAllProperties().entrySet()) {
+                String value = (String) entry.getValue();
+                Matcher m = manyPresetNamePattern.matcher(value.trim());
+                while (m.find()) {
+                    String name = m.group(1);
+                    String presetStr = String.format("\"%s\"", name);
+                    String presetName = extractPresetName(themeName, presetStr);
+                    if (presetName == null) {
+                        continue;
+                    }
+                    PresetType preset = getPresetByName(presetName);
+                    if (preset == null && !names.contains(name)) {
+                        names.add(name);
+                    }
+                }
+            }
+        }
+        return names;
+    }
 }

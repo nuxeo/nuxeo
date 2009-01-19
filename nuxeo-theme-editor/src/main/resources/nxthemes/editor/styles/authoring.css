@@ -374,6 +374,14 @@ h1.nxthemesEditor, h2.nxthemesEditor, h3.nxthemesEditor {
   padding: 0;
 }
 
+h2.nxthemesEditor {
+  background-color: #f6f6f6;	
+  padding: 2px 12px;	
+  -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
+  border-radius: 20px;    
+}
+
 form.nxthemesEditor {
   font-family: Arial, sans-serif;
 }
@@ -926,17 +934,7 @@ div.nxthemesFragment b {
   font:  12px Arial, sans-serif;
 }
 
-#nxthemesThemeManager {
-  position: absolute;
-  top: 105px;
-  left: 0;
-  right: 0;
-  background-color: #fff;
-  padding: 0 20px;
-  font-family: Arial, sans-serif;
-  z-index: 1;
-}
-#nxthemesPresetManager {
+#nxthemesThemeManager, #nxthemesPresetManager, #nxthemesStyleManager {
   position: absolute;
   top: 105px;
   left: 0;
@@ -1063,16 +1061,6 @@ div.nxthemesWarning {
   color: #666;
 }
 
-/* style manager */
-#nxthemesStyleManager {
-  position: absolute;
-  top: 90px;
-  left: 0;
-  right: 0;
-  background-color: #fff;
-  padding: 0 20px;
-  font-family: Arial, sans-serif;
-}
 
 #stylePickerGroupName {
   width: 100%;

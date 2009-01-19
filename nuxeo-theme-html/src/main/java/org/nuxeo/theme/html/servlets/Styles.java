@@ -79,8 +79,7 @@ public final class Styles extends HttpServlet implements Serializable {
         String rendered = themeManager.getCachedStyles();
         if (rendered == null) {
             final StringBuilder sb = new StringBuilder();
-            for (Format format : themeManager.getFormatsByTypeName("style")) {
-                final Style style = (Style) format;
+            for (Style style : themeManager.getStyles()) {
                 sb.append(Utils.styleToCss(style, style.getSelectorViewNames(),
                         RESOLVE_PRESETS, IGNORE_VIEW_NAME, IGNORE_CLASSNAME,
                         INDENT));

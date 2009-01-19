@@ -2,11 +2,11 @@
 
 <div id="nxthemesThemeManager" class="nxthemesScreen">
 
-<h1 class="nxthemesEditor">Manage themes</h1>
+<h1 class="nxthemesEditor">Themes</h1>
 
 <table cellpadding="0" cellspacing="0" border="0">
   <tr>
-    <th></th>
+    <th>&nbsp</th>
     <th>theme</th>
     <th>source</th>
     <th style="text-align: center; width: 90px">save theme</th>

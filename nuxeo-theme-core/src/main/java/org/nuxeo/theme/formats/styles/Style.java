@@ -37,4 +37,5 @@ public interface Style extends Format {
 
     void setSelectorDescription(String path, String viewName, String description);
 
+    Properties getAllProperties();
 }
