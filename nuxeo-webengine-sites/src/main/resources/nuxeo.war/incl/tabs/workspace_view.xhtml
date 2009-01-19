@@ -5,8 +5,9 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
-
-  <div style="border-width:1px;border-style:solid;border-color:#0000FF;margin:5px;padding:10px">
-  <h:outputText escape="false" value="#{wikiPreviewkActions.wikiPagePreview}"></h:outputText>
-  </div>
+  <iframe src="/nuxeo/site/sites/#{currentDocument.webcontainer.url}"
+    width="100%"
+    height="400px"
+  	name="#{currentDocument.webcontainer.name}">
+  </iframe>
 </div>

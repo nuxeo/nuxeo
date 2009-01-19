@@ -1,3 +1,6 @@
+<html>
+<head><title>Wiki Title</title></head>
+</body>
 <H1>WIKI template</H1>
 <hr>
 Logo : <img src="${This.path}/logo" alt="logo">
@@ -9,3 +12,5 @@ Welcome Animation/Image</br>
 <hr>
 Welcome Text:</br>
 ${welcomeText}
+</body>
+</html>
