@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.platform.management.usecases.UsecaseScheduler">
+
+  <implementation
+    class="org.nuxeo.ecm.platform.management.usecases.UsecaseSchedulerService" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.management.usecases.UsecaseScheduler" />
+  </service>
+
+  <require>org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService</require>
+
+  <!-- extension-point name="schedule">
+    <schedule id="managementUsecaseSchedule">
+      <cronExpression>0 0/5 * * * ?</cronExpression>
+      <eventId>MananagementUsecaseSchedule</eventId>
+      <eventCategory>default</eventCategory>
+      <password></password>
+      <username>scheduler</username>
+    </schedule>
+  </extension-point> -->
+  
+  <require>org.nuxeo.ecm.core.listener.CoreEventListenerService</require>
+  
+  <!-- <extension-point name="listener">
+    <listener name="managementUsecacheScheduleListener" class="org.nuxeo.ecm.platform.management.usecases.UsecaseScheduleEventListener">
+      <eventId>MananagementUsecaseSchedule</eventId>
+    </listener>
+  </extension-point> -->
+
+  <extension-point name="usecases">
+    <object class="org.nuxeo.ecm.platform.management.usecases.UsecaseDescriptor" />
+  </extension-point>
+
+  <extension
+    target="org.nuxeo.ecm.platform.management.usecases.UsecaseScheduler"
+    point="usecases">
+    <usecase name="repository"
+      class="org.nuxeo.ecm.platform.management.usecases.RepositoryUsecase"
+      serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
+  </extension>
+
+</component>

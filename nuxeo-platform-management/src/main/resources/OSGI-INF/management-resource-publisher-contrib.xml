@@ -1,0 +1,26 @@
+<component
+  name="org.nuxeo.ecm.platform.management.ResourcePublisherContrib">
+
+  <require>org.nuxeo.runtime.management.ResourcePublisher</require>
+  
+  <require>org.nuxeo.ecm.platform.management.usecases.UsecaseScheduler</require>
+
+  <extension target="org.nuxeo.runtime.management.ResourcePublisher"
+    point="factories">
+
+   <factory name="httpSessionMetric"
+      class="org.nuxeo.ecm.platform.management.adapters.HttpSessionMetricFactory" />
+
+    <factory name="inventory"
+      class="org.nuxeo.ecm.platform.management.adapters.RuntimeInventoryFactory" />
+
+
+    <factory name="repositorySessionMetric"
+      class="org.nuxeo.ecm.platform.management.adapters.RepositorySessionMetricFactory" />
+
+    <factory name="managementUsecaseScheduler"
+      class="org.nuxeo.ecm.platform.management.usecases.UsecaseFactory"/>
+
+  </extension>
+
+</component>
