@@ -71,11 +71,29 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
 
     protected static final Pattern PATH_PATTERN = Pattern.compile("\\s+@Path\\(\"([^\"]*)\"\\)\\s+");
 
+    protected static final Map<Object, Object> mimeTypes = loadMimeTypes();
+
     private static final Log log = LogFactory.getLog(WebEngine.class);
 
     private static final ThreadLocal<WebContext> CTX = new ThreadLocal<WebContext>();
 
-    protected static final Map<Object, Object> mimeTypes = loadMimeTypes();
+    protected final File root;
+    protected ModuleManager moduleMgr;
+    protected FileChangeNotifier notifier;
+    protected volatile long lastMessagesUpdate = 0;
+    protected Scripting scripting;
+    protected RenderingEngine rendering;
+    protected Map<String, Object> env;
+    protected boolean isDebug = false;
+
+    protected GlobalTypes globalTypes;
+
+    protected AnnotationManager annoMgr;
+
+    protected final ResourceRegistry registry;
+    protected Messages messages;
+
+    protected String skinPathPrefix;
 
     static Map<Object, Object> loadMimeTypes() {
         Map<Object,Object> mimeTypes = new HashMap<Object, Object>();
@@ -104,31 +122,11 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         CTX.set(ctx);
     }
 
-
-    protected final File root;
-    protected ModuleManager moduleMgr;
-    protected FileChangeNotifier notifier;
-    protected volatile long lastMessagesUpdate = 0;
-    protected Scripting scripting;
-    protected RenderingEngine rendering;
-    protected Map<String, Object> env;
-    protected boolean isDebug = false;
-
-    protected GlobalTypes globalTypes;
-
-    protected AnnotationManager annoMgr;
-
-    protected final ResourceRegistry registry;
-    protected Messages messages;
-
-    protected String skinPathPrefix;
-
-
     public WebEngine(ResourceRegistry registry, File root) throws IOException {
         this.registry = registry;
         isDebug = Boolean.parseBoolean(Framework.getProperty("debug", "false"));
-        this.root = root;        
-        if (isDebug) { // TODO notifier must be intialized by WebEngine
+        this.root = root;
+        if (isDebug) { // TODO notifier must be initialized by WebEngine
             notifier = new FileChangeNotifier();
             notifier.start();
             notifier.watch(new File(root, "i18n")); // watch i18n files
@@ -176,16 +174,10 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         registry.addMessageBodyWriter(new BlobWriter());
     }
 
-    /**
-     * @param skinPathPrefix the skinPathPrefix to set.
-     */
     public void setSkinPathPrefix(String skinPathPrefix) {
         this.skinPathPrefix = skinPathPrefix;
     }
 
-    /**
-     * @return the skinPathPrefix.
-     */
     public String getSkinPathPrefix() {
         return skinPathPrefix;
     }
@@ -201,7 +193,6 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     public GlobalTypes getGlobalTypes() {
         return globalTypes;
     }
-
 
     public String getMimeType(String ext) {
         return (String)mimeTypes.get(ext);
@@ -318,7 +309,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
 //        return false;
 //    }
 //
-//    protected  void loadModules() {        
+//    protected  void loadModules() {
 //        moduleReg = new ModuleRegistry(this);
 //        for (File file : root.listFiles()) {
 //            try {
@@ -401,10 +392,9 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         return scripting;
     }
 
-
     public ModuleManager getModuleManager() {
         if (moduleMgr == null) { // avoid synchronizing if not needed
-            synchronized(this) { 
+            synchronized(this) {
                 if (moduleMgr == null) {
                     moduleMgr = new ModuleManager(this);
                     try {
@@ -438,7 +428,8 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         return rendering;
     }
 
-    /** Manage jax-rs root resource bindings */
+    /* Manage jax-rs root resource bindings */
+
     public void addResourceBinding(ResourceBinding binding) {
         registry.addBinding(binding);
     }
@@ -551,7 +542,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         }
     }
 
-    /** ResourceLocator API */
+    /* ResourceLocator API */
 
     public URL getResourceURL(String key) {
         try {
