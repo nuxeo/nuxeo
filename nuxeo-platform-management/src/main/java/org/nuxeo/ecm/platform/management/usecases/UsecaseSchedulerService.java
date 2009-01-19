@@ -54,7 +54,7 @@ public class UsecaseSchedulerService extends DefaultComponent implements
     protected class Schedule implements
             org.nuxeo.ecm.platform.scheduler.core.interfaces.Schedule {
         public String getCronExpression() {
-            return "0 0/1 * * * ?";
+            return "0 0/5 * * * ?";
         }
 
         public String getEventCategory() {

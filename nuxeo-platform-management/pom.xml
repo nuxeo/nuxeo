@@ -13,6 +13,7 @@
   <artifactId>nuxeo-platform-management</artifactId>
   <name>Nuxeo Platform Management</name>
   <description>Nuxeo Enterprise Platform: Management</description>
+  <version>5.2.0.m2-NXP-2981</version>
 
   <dependencies>
 
@@ -20,7 +21,7 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-management</artifactId>
-      <version>${nuxeo.runtime.version}</version>
+      <version>${nuxeo.runtime.version}-NXP-2981</version>
     </dependency>
 
     <dependency>
