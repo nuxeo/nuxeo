@@ -61,7 +61,6 @@ public class Site extends DefaultObject {
     @GET
     @Path("logo")
     public Response getLogo() {
-        System.out.println(".... getting logo");
         try {
             Blob blob = (Blob) SiteHelper.getBlob(ws, "webc:logo");
             return Response.ok().entity(blob).type(blob.getMimeType()).build();
@@ -75,7 +74,6 @@ public class Site extends DefaultObject {
     @GET
     @Path("welcomeMedia")
     public Response getWelcomeMedia() {
-        System.out.println(".... getting welcomeMedia");
         try {
             Blob blob = (Blob) SiteHelper.getBlob(ws, "webc:welcomeMedia");
             return Response.ok().entity(blob).type(blob.getMimeType()).build();
