@@ -12,6 +12,7 @@
   <name>Nuxeo Platform Audit Service - Facade</name>
   <packaging>ejb</packaging>
   <description>Nuxeo Enterprise Platform: Audit Service Facade.</description>
+  <version>${nuxeo.platform.version}-NXP-2981</version>
 
   <dependencies>
     <dependency>
@@ -53,5 +54,24 @@
       <artifactId>jmock</artifactId>
     </dependency>
   </dependencies>
+
+  <distributionManagement>
+    <site>
+      <id>maven_website</id>
+      <url>scpexe://gironde.nuxeo.com/home/mavenweb/site/</url>
+    </site>
+    <repository>
+      <id>nuxeo-release</id>
+      <url>
+        scpexe://amour.nuxeo.com/home/nexus/repositories/nuxeo-release
+      </url>
+    </repository>
+    <snapshotRepository>
+      <id>nuxeo-snapshot</id>
+      <url>
+        scpexe://amour.nuxeo.com/home/nexus/repositories/nuxeo-snapshot
+      </url>
+    </snapshotRepository>
+  </distributionManagement>
 
 </project>
