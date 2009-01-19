@@ -367,6 +367,12 @@ public class ClipboardActionsBean extends InputController implements
     public String moveDocumentList(String listName) throws ClientException {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(listName);
 
+        // Get all parent folders
+        Set<DocumentRef> parentRefs = new HashSet<DocumentRef>();
+        for (DocumentModel doc : docs) {
+            parentRefs.add(doc.getParentRef());
+        }
+
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (null != docs) {
             List<DocumentModel> newDocs = moveDocumentsToNewParent(
@@ -382,6 +388,12 @@ public class ClipboardActionsBean extends InputController implements
             eventManager.raiseEventsOnDocumentSelected(currentDocument);
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                     currentDocument);
+
+            // Send event to all initial parents
+            for (DocumentRef docRef : parentRefs) {
+                Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                        documentManager.getDocument(docRef));
+            }
 
             log.debug("Elements moved and created into the backend...");
         } else {
