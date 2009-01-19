@@ -21,18 +21,12 @@ package org.nuxeo.webengine.sites;
 
 import static org.jboss.seam.ScopeType.STATELESS;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.component.EditableValueHolder;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
 /**
  * Performs validation and re-rendering of webcontainer layout widgets.
@@ -48,20 +42,6 @@ public class SiteActionsBean {
     public static final String SCHEMA_NAME = "webcontainer";
 
     public static final String ISWEBCONTAINER_PROPERTY_NAME = "isWebContainer";
-
-    public void validateEmail(FacesContext context, UIComponent component,
-            Object value) {
-        // validate value, and in case of error:
-        if (!(value instanceof String)) {
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                            context, "label.userManager.wrong.username"), null);
-            ((EditableValueHolder) component).setValid(false);
-            context.addMessage(component.getClientId(context), message);
-            // also add global message
-            context.addMessage(null, message);
-        }
-    }
 
     public String toggleWebContainerLayout(DocumentModel webContainer)
             throws ClientException {
