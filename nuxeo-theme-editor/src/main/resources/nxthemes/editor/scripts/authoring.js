@@ -1150,8 +1150,7 @@ NXThemesStyleEditor.setStyleSelector = function(selector) {
              selector: selector
          },
          onComplete: function(r) {
-             NXThemes.getControllerById("style editor perspectives").switchTo("style properties");
-             NXThemes.getViewById("style properties").refresh();
+        	 NXThemesStyleEditor.setStyleEditMode("form");
          }
     });
 };
@@ -1264,6 +1263,7 @@ NXThemesStyleEditor.setStyleEditMode = function(mode, fromMode) {
              mode: mode
          },
          onComplete: function(req) {
+           NXThemes.getControllerById("style editor perspectives").switchTo("style properties");
            NXThemes.getViewById("style properties").refresh();
          }
     });
