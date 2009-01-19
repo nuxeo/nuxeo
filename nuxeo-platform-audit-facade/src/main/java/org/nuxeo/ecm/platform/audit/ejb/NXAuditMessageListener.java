@@ -99,6 +99,7 @@ public class NXAuditMessageListener implements MessageListener {
     private static long createLogEntry(DocumentMessage doc) throws AuditException {
         NXAuditEvents service = NXAudit.getNXAuditEventsService();
         LogEntry logEntry = service.computeLogEntry(doc);
+	if (logEntry == null) return -1L;
         Logs logService;
         try {
             logService = Framework.getService(Logs.class);

@@ -85,6 +85,7 @@ public class LogsBean implements Logs {
     public void addLogEntries(List<LogEntry> entries) throws AuditException {
         try {
             for (LogEntry entry : entries) {
+		if (entry == null) continue;
                 em.persist(entry);
             }
         } catch (Exception e) {

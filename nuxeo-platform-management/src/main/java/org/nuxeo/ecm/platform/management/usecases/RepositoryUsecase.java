@@ -38,6 +38,7 @@ public class RepositoryUsecase implements Usecase {
                 RepositoryUsecase.class.getSimpleName(), "File");
         DocumentRef ref = model.getRef();
         model.setProperty("dublincore", "title", "huum");
+        model.setProperty("uid", "major_version",1L);
         session.createDocument(model);
         ACP acp = model.getACP();
         ACL acl = acp.getOrCreateACL();
