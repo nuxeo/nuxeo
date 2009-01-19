@@ -245,11 +245,8 @@ public class PostActionBean implements PostAction {
             throw new ClientException("No moderation task found");
         }
 
-        // pass current principal as transient variable
-        Map<String, Serializable> vars = new HashMap<String, Serializable>();
-        vars.put(ForumConstants.PRINCIPAL, (NuxeoPrincipal) currentUser);
         jbpmService.endTask(moderationTask.getId(),
-                ForumConstants.PROCESS_TRANSITION_TO_REJECTED, null, vars);
+                ForumConstants.PROCESS_TRANSITION_TO_REJECTED, null, null);
 
         // force comment manager to reload posts
         commentManagerActions.documentChanged();
@@ -268,11 +265,8 @@ public class PostActionBean implements PostAction {
             throw new ClientException("No moderation task found");
         }
 
-        // pass current principal as transient variable
-        Map<String, Serializable> vars = new HashMap<String, Serializable>();
-        vars.put(ForumConstants.PRINCIPAL, (NuxeoPrincipal) currentUser);
         jbpmService.endTask(moderationTask.getId(),
-                ForumConstants.PROCESS_TRANSITION_TO_PUBLISH, null, vars);
+                ForumConstants.PROCESS_TRANSITION_TO_PUBLISH, null, null);
 
         // force comment manager to reload posts
         commentManagerActions.documentChanged();
@@ -309,6 +303,7 @@ public class PostActionBean implements PostAction {
 
         Map<String, Serializable> vars = new HashMap<String, Serializable>();
         vars.put(VariableName.participants.name(), moderators);
+        vars.put(ForumConstants.POST_REF, post.getId());
         jbpmService.createProcessInstance((NuxeoPrincipal) currentUser,
                 ForumConstants.PROCESS_INSTANCE_NAME, thread, vars, null);
     }
