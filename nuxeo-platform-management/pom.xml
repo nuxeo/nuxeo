@@ -59,5 +59,23 @@
 
   </dependencies>
 
+  <distributionManagement>
+    <site>
+      <id>maven_website</id>
+      <url>scpexe://gironde.nuxeo.com/home/mavenweb/site/</url>
+    </site>
+    <repository>
+      <id>nuxeo-release</id>
+      <url>
+        scpexe://amour.nuxeo.com/home/nexus/repositories/nuxeo-release
+      </url>
+    </repository>
+    <snapshotRepository>
+      <id>nuxeo-snapshot</id>
+      <url>
+        scpexe://amour.nuxeo.com/home/nexus/repositories/nuxeo-snapshot
+      </url>
+    </snapshotRepository>
+  </distributionManagement>
 
 </project>
