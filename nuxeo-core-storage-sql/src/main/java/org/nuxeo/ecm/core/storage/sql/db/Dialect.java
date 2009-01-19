@@ -139,6 +139,9 @@ public class Dialect {
 
     public String getTypeName(int sqlType, int length, int precision, int scale) {
         if (sqlType == Column.ExtendedTypes.FULLTEXT) {
+            if (dialect instanceof PostgreSQLDialect) {
+                return "tsvector";
+            }
             sqlType = Types.CLOB;
         }
         if (dialect instanceof DerbyDialect && sqlType == Types.CLOB) {
@@ -260,6 +263,10 @@ public class Dialect {
      * @return the expression containing a free variable
      */
     public String getSetterFor(int type) {
+        if (type == Column.ExtendedTypes.FULLTEXT &&
+                dialect instanceof PostgreSQLDialect) {
+            return "TO_TSVECTOR(?)";
+        }
         return "?";
     }
 
@@ -299,6 +306,9 @@ public class Dialect {
      * @return
      */
     public int[] getFulltextTableInfo() {
+        if (dialect instanceof PostgreSQLDialect) {
+            return ALL_FULLTEXT;
+        }
         return ALL_VARCHAR;
 
     }
@@ -356,6 +366,11 @@ public class Dialect {
                     mainColumn.getFullQuotedName());
             return new String[] { (queryTable + " %s"), fulltextQuery,
                     whereExpr, null };
+        }
+        if (dialect instanceof PostgreSQLDialect) {
+            String whereExpr = String.format("NX_CONTAINS(%s, ?)",
+                    ftColumn.getFullQuotedName());
+            return new String[] { null, null, whereExpr, fulltextQuery };
         }
         throw new UnsupportedOperationException();
     }

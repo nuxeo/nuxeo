@@ -1310,7 +1310,6 @@ public class SQLInfo {
 
         public StoredProcedureInfo makeInTree() {
             return new StoredProcedureInfo(
-                    //
                     Boolean.FALSE, // no drop needed
                     null,
                     null, //
@@ -1341,9 +1340,8 @@ public class SQLInfo {
 
         public StoredProcedureInfo makeAccessAllowed() {
             return new StoredProcedureInfo(
-                    //
                     Boolean.FALSE, // no drop needed
-                    null,
+                    null, //
                     null, //
                     String.format(
                             "CREATE OR REPLACE FUNCTION NX_ACCESS_ALLOWED" //
@@ -1377,13 +1375,60 @@ public class SQLInfo {
                             , idType));
         }
 
-        public StoredProcedureInfo makeParseFullText() {
-            throw new UnsupportedOperationException();
+        public StoredProcedureInfo makeContainsFullText() {
+            return new StoredProcedureInfo( //
+                    Boolean.FALSE, // no drop needed
+                    null, //
+                    null, //
+                    "CREATE OR REPLACE FUNCTION NX_CONTAINS(ft TSVECTOR, query VARCHAR) " //
+                            + "RETURNS boolean " //
+                            + "AS $$" //
+                            + "  SELECT $1 @@ TO_TSQUERY($2) " //
+                            + "$$ " //
+                            + "LANGUAGE sql " //
+                            + "STABLE " //
+            );
         }
 
-        public StoredProcedureInfo makeContainsFullText() {
-            throw new UnsupportedOperationException();
+        public StoredProcedureInfo makeFTTrigger() {
+            Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+            String qname = ft.getQuotedName();
+            return new StoredProcedureInfo(
+                    Boolean.TRUE, // do a drop
+                    null, //
+                    String.format(
+                            "DROP TRIGGER IF EXISTS NX_TRIG_FT_UPDATE ON %s",
+                            qname),
+                    String.format(
+                            "CREATE TRIGGER NX_TRIG_FT_UPDATE " //
+                                    + "BEFORE INSERT OR UPDATE ON %s "
+                                    + "FOR EACH ROW EXECUTE PROCEDURE NX_UPDATE_FULLTEXT()" //
+                            , qname));
         }
+
+        public StoredProcedureInfo makeConsolidateFullText() {
+            Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+            Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY);
+            Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY);
+            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY);
+            return new StoredProcedureInfo(Boolean.FALSE, // no drop needed
+                    null, //
+                    null, //
+                    String.format(
+                            "CREATE OR REPLACE FUNCTION NX_UPDATE_FULLTEXT() " //
+                                    + "RETURNS trigger " //
+                                    + "AS $$ " //
+                                    + "BEGIN" //
+                                    + "  NEW.%s := NEW.%s || NEW.%s;" //
+                                    + "  RETURN NEW; " //
+                                    + "END " //
+                                    + "$$ " //
+                                    + "LANGUAGE plpgsql " //
+                                    + "VOLATILE " //
+                            , ftft.getQuotedName(), ftst.getQuotedName(),
+                            ftbt.getQuotedName()));
+        }
+
     }
 
     /**
@@ -1406,7 +1451,6 @@ public class SQLInfo {
             PostgreSQLstoredProcedureInfoMaker maker = new PostgreSQLstoredProcedureInfoMaker();
             spis.add(maker.makeInTree());
             spis.add(maker.makeAccessAllowed());
-            spis.add(maker.makeParseFullText());
             spis.add(maker.makeContainsFullText());
         }
         return spis;
@@ -1428,6 +1472,8 @@ public class SQLInfo {
             spis.add(maker.makeFTIndex());
         } else if ("PostgreSQL".equals(databaseName)) {
             PostgreSQLstoredProcedureInfoMaker maker = new PostgreSQLstoredProcedureInfoMaker();
+            spis.add(maker.makeConsolidateFullText());
+            spis.add(maker.makeFTTrigger());
         }
         return spis;
     }

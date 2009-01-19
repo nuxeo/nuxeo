@@ -323,6 +323,12 @@ public class Mapper {
                     int sqlType = type.intValue();
                     int t = column.getSqlType();
                     if (t != sqlType) {
+                        // type in database is different...
+                        if (t == Column.ExtendedTypes.FULLTEXT &&
+                                sqlType == Types.OTHER) { // PostgreSQL
+                            continue;
+                            // and keep our extend type info in the column
+                        }
                         column.setSqlType(sqlType);
                         if (t == Column.ExtendedTypes.FULLTEXT &&
                                 sqlType == Types.CLOB) {
