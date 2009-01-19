@@ -65,10 +65,16 @@ public class DocumentsListDescriptor implements Serializable {
     @XNode("persistent")
     boolean persistent;
 
-    public DocumentsListDescriptor(String listName) {
+    // empty constructor needed for descriptor instantiation
+    public DocumentsListDescriptor() {
         eventsName = new ArrayList<String>();
         imageURL = "/nuxeo/img/clipboard.gif";
-        name = listName;
+    }
+
+    public DocumentsListDescriptor(String listName) {
+        this();
+        eventsName = new ArrayList<String>();
+        imageURL = "/nuxeo/img/clipboard.gif";
     }
 
     public String getCategory() {
