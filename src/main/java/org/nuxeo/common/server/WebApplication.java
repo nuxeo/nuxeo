@@ -31,10 +31,13 @@ public class WebApplication {
 
     @XNode("root")
     protected String root;
+
     @XNode("webXml")
     protected String webXml;
+
     @XNode("@name")
     protected String name;
+
     @XNode("@path")
     protected String path;
 

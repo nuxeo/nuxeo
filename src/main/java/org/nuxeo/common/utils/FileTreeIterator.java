@@ -50,16 +50,10 @@ public class FileTreeIterator implements Iterator<File> {
         }
     }
 
-    /**
-     * @param filter the filter to set.
-     */
     public void setFilter(FileFilter filter) {
         this.filter = filter;
     }
 
-    /**
-     * @return the filter.
-     */
     public FileFilter getFilter() {
         return filter;
     }
