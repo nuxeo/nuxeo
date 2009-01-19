@@ -14,7 +14,7 @@
 
 package org.nuxeo.theme.models;
 
-import java.util.Calendar;
+import java.util.Date;
 
 public class FeedItem extends AbstractModel {
 
@@ -22,7 +22,7 @@ public class FeedItem extends AbstractModel {
 
     private String description;
 
-    private Calendar date;
+    private Date date;
     
     private String creator;
 
@@ -55,11 +55,11 @@ public class FeedItem extends AbstractModel {
         this.description = description;
     }
 
-    public Calendar getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(Calendar date) {
+    public void setDate(Date date) {
         this.date = date;
     }
     
