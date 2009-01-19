@@ -20,13 +20,10 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,7 +33,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Text;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -197,8 +193,6 @@ public class Model {
     public static final String LOCK_KEY = "lock";
 
     public static final String FULLTEXT_TABLE_NAME = "fulltext";
-
-    public static final String FULLTEXT_FULLTEXT_PROP = "ecm:fulltext";
 
     public static final String FULLTEXT_FULLTEXT_KEY = "fulltext";
 
@@ -867,9 +861,6 @@ public class Model {
      * Special model for the fulltext table.
      */
     private void initFullTextModel() {
-        addPropertyInfo(null, FULLTEXT_FULLTEXT_PROP, PropertyType.STRING,
-                FULLTEXT_TABLE_NAME, FULLTEXT_FULLTEXT_KEY, false,
-                StringType.INSTANCE);
         addPropertyInfo(null, FULLTEXT_SIMPLETEXT_PROP, PropertyType.STRING,
                 FULLTEXT_TABLE_NAME, FULLTEXT_SIMPLETEXT_KEY, false,
                 StringType.INSTANCE);

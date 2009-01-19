@@ -75,7 +75,7 @@ public class Insert implements Serializable {
         List<String> values = new LinkedList<String>();
         for (Column column : columns) {
             columnNames.add(column.getQuotedName());
-            values.add("?");
+            values.add(dialect.getSetterFor(column.getSqlType()));
         }
 
         if (columnNames.isEmpty()) {

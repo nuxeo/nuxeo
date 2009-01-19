@@ -766,7 +766,8 @@ public class QueryMaker {
             }
             if (NXQL.ECM_FULLTEXT.equals(name)) {
                 if (sqlInfo.dialect.isFulltextTableNeeded()) {
-                    props.add(model.FULLTEXT_FULLTEXT_PROP);
+                    // we only use this for its fragment name
+                    props.add(model.FULLTEXT_SIMPLETEXT_PROP);
                 }
                 return;
             }

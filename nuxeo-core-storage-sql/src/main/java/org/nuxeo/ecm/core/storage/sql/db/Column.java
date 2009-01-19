@@ -40,6 +40,18 @@ import org.nuxeo.ecm.core.storage.sql.PropertyType;
  */
 public class Column implements Serializable {
 
+    /**
+     * Extended (internal) types beyond the standard JDBC ones.
+     */
+    public static class ExtendedTypes {
+
+        private ExtendedTypes() {
+        }
+
+        /** A column holding full text information. */
+        public static final int FULLTEXT = Types.OTHER + 10;
+    }
+
     private static final long serialVersionUID = 1L;
 
     protected final Table table;
@@ -47,6 +59,10 @@ public class Column implements Serializable {
     protected final Dialect dialect;
 
     protected final String physicalName;
+
+    private final String quotedName;
+
+    private final String quotedSetter;
 
     /** The backend type */
     private final PropertyType type;
@@ -97,6 +113,8 @@ public class Column implements Serializable {
         this.sqlType = sqlType;
         this.key = key;
         this.model = model;
+        quotedName = dialect.openQuote() + physicalName + dialect.closeQuote();
+        quotedSetter = quotedName + " = " + dialect.getSetterFor(sqlType);
     }
 
     /**
@@ -116,11 +134,15 @@ public class Column implements Serializable {
     }
 
     public String getQuotedName() {
-        return dialect.openQuote() + physicalName + dialect.closeQuote();
+        return quotedName;
     }
 
     public String getFullQuotedName() {
-        return table.getQuotedName() + '.' + getQuotedName();
+        return table.getQuotedName() + '.' + quotedName;
+    }
+
+    public String getQuotedSetter() {
+        return quotedSetter;
     }
 
     public int getSqlType() {
@@ -212,7 +234,8 @@ public class Column implements Serializable {
     public void setToPreparedStatement(PreparedStatement ps, int index,
             Serializable value) throws SQLException {
         if (value == null) {
-            ps.setNull(index, sqlType);
+            ps.setNull(index, sqlType == ExtendedTypes.FULLTEXT ? Types.OTHER
+                    : sqlType);
             return;
         }
         switch (sqlType) {
@@ -247,6 +270,9 @@ public class Column implements Serializable {
             Calendar cal = (Calendar) value;
             Timestamp ts = new Timestamp(cal.getTimeInMillis());
             ps.setTimestamp(index, ts, cal); // cal passed for timezone
+            return;
+        case ExtendedTypes.FULLTEXT:
+            ps.setString(index, (String) value);
             return;
         default:
             throw new SQLException("Unhandled SQL type: " + sqlType);

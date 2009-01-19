@@ -138,13 +138,13 @@ public class Dialect {
     }
 
     public String getTypeName(int sqlType, int length, int precision, int scale) {
-        String typeName;
-        if (dialect instanceof DerbyDialect && sqlType == Types.CLOB) {
-            typeName = "clob"; // skip size
-        } else {
-            typeName = dialect.getTypeName(sqlType, length, precision, scale);
+        if (sqlType == Column.ExtendedTypes.FULLTEXT) {
+            sqlType = Types.CLOB;
         }
-        return typeName;
+        if (dialect instanceof DerbyDialect && sqlType == Types.CLOB) {
+            return "clob"; // different from DB2Dialect
+        }
+        return dialect.getTypeName(sqlType, length, precision, scale);
     }
 
     public String getNoColumnsInsertString() {
@@ -250,6 +250,20 @@ public class Dialect {
     }
 
     /**
+     * Gets the JDBC expression setting a free value for this column type.
+     * <p>
+     * Needed for columns that need an expression around the value being set,
+     * usually for conversion (this is the case for PostgreSQL fulltext {@code
+     * TSVECTOR} columns for instance).
+     *
+     * @param type the JDBC or extended type
+     * @return the expression containing a free variable
+     */
+    public String getSetterFor(int type) {
+        return "?";
+    }
+
+    /**
      * Gets the expression to use to check security.
      *
      * @param the quoted name of the id column to use
@@ -263,6 +277,30 @@ public class Dialect {
             sql += " = 1";
         }
         return sql;
+    }
+
+    private static final int[] ALL_FULLTEXT = new int[] {
+            Column.ExtendedTypes.FULLTEXT, Column.ExtendedTypes.FULLTEXT };
+
+    private static final int[] ALL_VARCHAR = new int[] { Types.VARCHAR,
+            Types.VARCHAR };
+
+    /**
+     * Gets information about what the fulltext table looks like.
+     * <p>
+     * There are two interesting kinds of columns:
+     * <ul>
+     * <li>the column against which queries are made,</li>
+     * <li>the column(s) holding partial fulltext info, coming from simple text
+     * or binaries extracted text.</li>
+     * </ul>
+     * The first column may be absent if fulltext is stored externally (H2).
+     *
+     * @return
+     */
+    public int[] getFulltextTableInfo() {
+        return ALL_VARCHAR;
+
     }
 
     /**
@@ -293,6 +331,7 @@ public class Dialect {
      *
      * @param ftColumn the column containing the fulltext to match
      * @param mainColumn the column with the main id, for joins
+     * @param fulltextQuery the query to do
      * @return a String array with the table join expression, the join param,
      *         the where expression and the where parm
      *
@@ -307,7 +346,7 @@ public class Dialect {
                     qname = String.format(colFmt, qname, Integer.valueOf(255));
                 }
             }
-            String whereExpr = "NX_CONTAINS(" + qname + ", ?) = 1";
+            String whereExpr = String.format("NX_CONTAINS(%s, ?) = 1", qname);
             return new String[] { null, null, whereExpr, fulltextQuery };
         }
         if (dialect instanceof H2Dialect) {

@@ -78,10 +78,6 @@ public class SQLInfo {
 
     private final Map<String, List<Column>> insertColumnsMap;
 
-    private final Map<String, String> updateByIdSqlMap; // statement
-
-    private final Map<String, List<Column>> updateByIdColumnsMap;
-
     private final Map<String, String> deleteSqlMap; // statement
 
     private String selectByChildNameAllSql;
@@ -188,9 +184,6 @@ public class SQLInfo {
 
         insertSqlMap = new HashMap<String, String>();
         insertColumnsMap = new HashMap<String, List<Column>>();
-
-        updateByIdSqlMap = new HashMap<String, String>();
-        updateByIdColumnsMap = new HashMap<String, List<Column>>();
 
         deleteSqlMap = new HashMap<String, String>();
 
@@ -313,6 +306,8 @@ public class SQLInfo {
 
     // ----- update -----
 
+    // TODO these two methods are redundant with one another
+
     public SQLInfoSelect getUpdateById(String tableName, Collection<String> keys) {
         Table table = database.getTable(tableName);
         List<String> values = new LinkedList<String>();
@@ -320,7 +315,7 @@ public class SQLInfo {
         Column mainColumn = table.getColumn(model.MAIN_KEY);
         for (String key : keys) {
             Column column = table.getColumn(key);
-            values.add(column.getQuotedName() + " = ?");
+            values.add(column.getQuotedSetter());
             columns.add(column);
         }
         columns.add(mainColumn);
@@ -328,6 +323,19 @@ public class SQLInfo {
         update.setNewValues(StringUtils.join(values, ", "));
         update.setWhere(mainColumn.getQuotedName() + " = ?");
         return new SQLInfoSelect(update.getStatement(), columns, null);
+    }
+
+    public Update getUpdateByIdForKeys(String tableName, Set<String> keys) {
+        Table table = database.getTable(tableName);
+        List<String> values = new ArrayList<String>(keys.size());
+        for (String key : keys) {
+            values.add(table.getColumn(key).getQuotedSetter());
+        }
+        Update update = new Update(table);
+        update.setNewValues(StringUtils.join(values, ", "));
+        update.setWhere(table.getColumn(model.MAIN_KEY).getQuotedName() +
+                " = ?");
+        return update;
     }
 
     // ----- delete -----
@@ -489,6 +497,7 @@ public class SQLInfo {
     protected void initFragmentSQL(String tableName) {
         TableMaker maker = new TableMaker(tableName);
         boolean isMain = tableName.equals(model.mainTableName);
+        boolean isFulltext = tableName.equals(model.FULLTEXT_TABLE_NAME);
 
         if (isMain) {
             maker.newId(); // global primary key / generation
@@ -498,6 +507,14 @@ public class SQLInfo {
                 maker.table.addIndex(model.MAIN_KEY);
             } else {
                 maker.newPrimaryKey();
+            }
+        }
+
+        if (isFulltext) {
+            // special column for complete fulltext, if needed
+            int sqlType = dialect.getFulltextTableInfo()[0];
+            if (sqlType != 0) {
+                maker.newColumn(model.FULLTEXT_FULLTEXT_KEY, null, sqlType);
             }
         }
 
@@ -608,6 +625,8 @@ public class SQLInfo {
                         tableName.equals(model.MISC_TABLE_NAME)) {
                     // or VARCHAR for system tables // TODO size?
                     sqlType = Types.VARCHAR;
+                } else if (tableName.equals(model.FULLTEXT_TABLE_NAME)) {
+                    sqlType = Column.ExtendedTypes.FULLTEXT;
                 } else {
                     sqlType = Types.CLOB;
                 }
@@ -684,7 +703,6 @@ public class SQLInfo {
         protected void postProcess() {
             postProcessSelectById();
             postProcessInsert();
-            postProcessUpdateById();
             postProcessDelete();
             postProcessCopy();
         }
@@ -850,28 +868,6 @@ public class SQLInfo {
             identityFetchColumnMap.put(tableName, identityColumn);
         }
 
-        protected void postProcessUpdateById() {
-            List<String> newValues = new LinkedList<String>();
-            List<Column> updateByIdColumns = new LinkedList<Column>();
-            List<String> wheres = new LinkedList<String>();
-            List<Column> whereColumns = new LinkedList<Column>();
-            for (Column column : table.getColumns()) {
-                if (column.getKey().equals(model.MAIN_KEY)) {
-                    wheres.add(column.getQuotedName() + " = ?");
-                    whereColumns.add(column);
-                } else {
-                    newValues.add(column.getQuotedName() + " = ?");
-                    updateByIdColumns.add(column);
-                }
-            }
-            updateByIdColumns.addAll(whereColumns);
-            Update update = new Update(table);
-            update.setNewValues(StringUtils.join(newValues, ", "));
-            update.setWhere(StringUtils.join(wheres, " AND "));
-            updateByIdSqlMap.put(tableName, update.getStatement());
-            updateByIdColumnsMap.put(tableName, updateByIdColumns);
-        }
-
         protected void postProcessDelete() {
             Delete delete = new Delete(table);
             List<String> wheres = new LinkedList<String>();
@@ -982,19 +978,6 @@ public class SQLInfo {
             copyIdColumnMap.put(tableName, copyIdColumn);
         }
 
-    }
-
-    public Update getUpdateByIdForKeys(String tableName, Set<String> keys) {
-        Table table = database.getTable(tableName);
-        List<String> values = new ArrayList<String>(keys.size());
-        for (String key : keys) {
-            values.add(table.getColumn(key).getQuotedName() + " = ?");
-        }
-        Update update = new Update(table);
-        update.setNewValues(StringUtils.join(values, ", "));
-        update.setWhere(table.getColumn(model.MAIN_KEY).getQuotedName() +
-                " = ?");
-        return update;
     }
 
     public static class SQLInfoSelect {

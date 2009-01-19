@@ -323,8 +323,11 @@ public class Mapper {
                     int sqlType = type.intValue();
                     int t = column.getSqlType();
                     if (t != sqlType) {
-                        // type in database is different...
                         column.setSqlType(sqlType);
+                        if (t == Column.ExtendedTypes.FULLTEXT &&
+                                sqlType == Types.CLOB) {
+                            continue;
+                        }
                         // some databases are known to change requested types
                         if (t == Types.BIT && //
                                 (sqlType == Types.SMALLINT // Derby
@@ -839,7 +842,8 @@ public class Mapper {
                         throw new AssertionError("Invalid hier column: " + key);
                     }
                     if (v == null) {
-                        throw new IllegalStateException("Null value for key: " + key);
+                        throw new IllegalStateException("Null value for key: " +
+                                key);
                     }
                     column.setToPreparedStatement(ps, i, v);
                     if (debugValues != null) {
