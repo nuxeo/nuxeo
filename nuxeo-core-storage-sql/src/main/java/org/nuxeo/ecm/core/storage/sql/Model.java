@@ -194,6 +194,8 @@ public class Model {
 
     public static final String FULLTEXT_TABLE_NAME = "fulltext";
 
+    public static final String FULLTEXT_FULLTEXT_PROP = "ecm:fulltext";
+
     public static final String FULLTEXT_FULLTEXT_KEY = "fulltext";
 
     public static final String FULLTEXT_SIMPLETEXT_PROP = "ecm:simpleText";
@@ -861,6 +863,9 @@ public class Model {
      * Special model for the fulltext table.
      */
     private void initFullTextModel() {
+        addPropertyInfo(null, FULLTEXT_FULLTEXT_PROP, PropertyType.STRING,
+                FULLTEXT_TABLE_NAME, FULLTEXT_FULLTEXT_KEY, false,
+                StringType.INSTANCE);
         addPropertyInfo(null, FULLTEXT_SIMPLETEXT_PROP, PropertyType.STRING,
                 FULLTEXT_TABLE_NAME, FULLTEXT_SIMPLETEXT_KEY, false,
                 StringType.INSTANCE);

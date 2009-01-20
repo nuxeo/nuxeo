@@ -337,7 +337,7 @@ public class RepositoryImpl implements Repository {
             Connection connection = null;
             try {
                 connection = xaconnection.getConnection();
-                dialect = new Dialect(connection);
+                dialect = new Dialect(connection, repositoryDescriptor);
             } finally {
                 if (connection != null) {
                     connection.close();

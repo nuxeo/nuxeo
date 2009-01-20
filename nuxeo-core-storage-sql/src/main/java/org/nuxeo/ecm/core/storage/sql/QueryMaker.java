@@ -522,7 +522,7 @@ public class QueryMaker {
         select.setOrderBy(orderBy);
 
         List<Column> whatColumns = Collections.singletonList(hierTable.getColumn(model.MAIN_KEY));
-        selectInfo = new SQLInfoSelect(select.getStatement(), whatColumns, null);
+        selectInfo = new SQLInfoSelect(select.getStatement(), whatColumns, null, null);
     }
 
     /**

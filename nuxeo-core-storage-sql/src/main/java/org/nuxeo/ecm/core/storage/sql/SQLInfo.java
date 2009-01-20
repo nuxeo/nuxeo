@@ -315,21 +315,24 @@ public class SQLInfo {
         Column mainColumn = table.getColumn(model.MAIN_KEY);
         for (String key : keys) {
             Column column = table.getColumn(key);
-            values.add(column.getQuotedSetter());
+            values.add(column.getQuotedName() + " = " +
+                    column.getFreeVariableSetter());
             columns.add(column);
         }
         columns.add(mainColumn);
         Update update = new Update(table);
         update.setNewValues(StringUtils.join(values, ", "));
         update.setWhere(mainColumn.getQuotedName() + " = ?");
-        return new SQLInfoSelect(update.getStatement(), columns, null);
+        return new SQLInfoSelect(update.getStatement(), columns, null, null);
     }
 
     public Update getUpdateByIdForKeys(String tableName, Set<String> keys) {
         Table table = database.getTable(tableName);
         List<String> values = new ArrayList<String>(keys.size());
         for (String key : keys) {
-            values.add(table.getColumn(key).getQuotedSetter());
+            Column column = table.getColumn(key);
+            values.add(column.getQuotedName() + " = " +
+                    column.getFreeVariableSetter());
         }
         Update update = new Update(table);
         update.setNewValues(StringUtils.join(values, ", "));
@@ -497,7 +500,6 @@ public class SQLInfo {
     protected void initFragmentSQL(String tableName) {
         TableMaker maker = new TableMaker(tableName);
         boolean isMain = tableName.equals(model.mainTableName);
-        boolean isFulltext = tableName.equals(model.FULLTEXT_TABLE_NAME);
 
         if (isMain) {
             maker.newId(); // global primary key / generation
@@ -507,14 +509,6 @@ public class SQLInfo {
                 maker.table.addIndex(model.MAIN_KEY);
             } else {
                 maker.newPrimaryKey();
-            }
-        }
-
-        if (isFulltext) {
-            // special column for complete fulltext, if needed
-            int sqlType = dialect.getFulltextTableInfo()[0];
-            if (sqlType != 0) {
-                maker.newColumn(model.FULLTEXT_FULLTEXT_KEY, null, sqlType);
             }
         }
 
@@ -988,12 +982,16 @@ public class SQLInfo {
 
         public final List<Column> whereColumns;
 
+        public final List<Column> opaqueColumns;
+
         public SQLInfoSelect(String sql, List<Column> whatColumns,
-                List<Column> whereColumns) {
+                List<Column> whereColumns, List<Column> opaqueColumns) {
             this.sql = sql;
             this.whatColumns = new ArrayList<Column>(whatColumns);
             this.whereColumns = whereColumns == null ? null
                     : new ArrayList<Column>(whereColumns);
+            this.opaqueColumns = opaqueColumns == null ? null
+                    : new ArrayList<Column>(opaqueColumns);
         }
     }
 
@@ -1013,6 +1011,7 @@ public class SQLInfo {
         List<String> freeColumnsList = Arrays.asList(freeColumns);
         List<Column> whatColumns = new LinkedList<Column>();
         List<Column> whereColumns = new LinkedList<Column>();
+        List<Column> opaqueColumns = new LinkedList<Column>();
         List<String> whats = new LinkedList<String>();
         List<String> wheres = new LinkedList<String>();
         for (Column column : table.getColumns()) {
@@ -1020,10 +1019,16 @@ public class SQLInfo {
             if (freeColumnsList.contains(column.getKey())) {
                 whereColumns.add(column);
                 wheres.add(qname + " = ?");
+            } else if (column.isOpaque()) {
+                opaqueColumns.add(column);
             } else {
                 whatColumns.add(column);
                 whats.add(qname);
             }
+        }
+        if (whats.isEmpty()) {
+            // only opaque columns, don't generate an illegal SELECT
+            whats.add(table.getColumn(model.MAIN_KEY).getQuotedName());
         }
         Select select = new Select(table);
         select.setWhat(StringUtils.join(whats, ", "));
@@ -1038,7 +1043,7 @@ public class SQLInfo {
         }
         select.setOrderBy(StringUtils.join(orders, ", "));
         return new SQLInfoSelect(select.getStatement(), whatColumns,
-                whereColumns);
+                whereColumns, opaqueColumns.isEmpty() ? null : opaqueColumns);
     }
 
     /**
@@ -1050,6 +1055,7 @@ public class SQLInfo {
         List<String> freeColumnsList = Arrays.asList(freeColumns);
         List<Column> whatColumns = new LinkedList<Column>();
         List<Column> whereColumns = new LinkedList<Column>();
+        List<Column> opaqueColumns = new LinkedList<Column>();
         List<String> whats = new LinkedList<String>();
         List<String> wheres = new LinkedList<String>();
         String join = table.getColumn(model.MAIN_KEY).getFullQuotedName() +
@@ -1060,10 +1066,16 @@ public class SQLInfo {
             if (freeColumnsList.contains(column.getKey())) {
                 whereColumns.add(column);
                 wheres.add(qname + " = ?");
+            } else if (column.isOpaque()) {
+                opaqueColumns.add(column);
             } else {
                 whatColumns.add(column);
                 whats.add(qname);
             }
+        }
+        if (whats.isEmpty()) {
+            // only opaque columns, don't generate an illegal SELECT
+            whats.add(table.getColumn(model.MAIN_KEY).getQuotedName());
         }
         for (String name : joinCriteria) {
             Column column = joinTable.getColumn(name);
@@ -1075,7 +1087,7 @@ public class SQLInfo {
         select.setFrom(table.getQuotedName() + ", " + joinTable.getQuotedName());
         select.setWhere(StringUtils.join(wheres, " AND "));
         return new SQLInfoSelect(select.getStatement(), whatColumns,
-                whereColumns);
+                whereColumns, opaqueColumns.isEmpty() ? null : opaqueColumns);
     }
 
     /**
@@ -1376,18 +1388,20 @@ public class SQLInfo {
         }
 
         public StoredProcedureInfo makeContainsFullText() {
+            String tsconfig = dialect.getFulltextAnalyzer();
             return new StoredProcedureInfo( //
                     Boolean.FALSE, // no drop needed
                     null, //
                     null, //
-                    "CREATE OR REPLACE FUNCTION NX_CONTAINS(ft TSVECTOR, query VARCHAR) " //
-                            + "RETURNS boolean " //
-                            + "AS $$" //
-                            + "  SELECT $1 @@ TO_TSQUERY($2) " //
-                            + "$$ " //
-                            + "LANGUAGE sql " //
-                            + "STABLE " //
-            );
+                    String.format(
+                            "CREATE OR REPLACE FUNCTION NX_CONTAINS(ft TSVECTOR, query VARCHAR) " //
+                                    + "RETURNS boolean " //
+                                    + "AS $$" //
+                                    + "  SELECT $1 @@ TO_TSQUERY('%s', $2) " //
+                                    + "$$ " //
+                                    + "LANGUAGE sql " //
+                                    + "STABLE " //
+                            , tsconfig));
         }
 
         public StoredProcedureInfo makeFTTrigger() {

@@ -50,6 +50,10 @@ public class Column implements Serializable {
 
         /** A column holding full text information. */
         public static final int FULLTEXT = Types.OTHER + 10;
+
+        public static boolean hasElement(int type) {
+            return type == FULLTEXT;
+        }
     }
 
     private static final long serialVersionUID = 1L;
@@ -62,7 +66,7 @@ public class Column implements Serializable {
 
     private final String quotedName;
 
-    private final String quotedSetter;
+    private final String freeVariableSetter;
 
     /** The backend type */
     private final PropertyType type;
@@ -114,7 +118,7 @@ public class Column implements Serializable {
         this.key = key;
         this.model = model;
         quotedName = dialect.openQuote() + physicalName + dialect.closeQuote();
-        quotedSetter = quotedName + " = " + dialect.getSetterFor(sqlType);
+        freeVariableSetter = dialect.getFreeVariableSetterForType(sqlType);
     }
 
     /**
@@ -141,12 +145,16 @@ public class Column implements Serializable {
         return table.getQuotedName() + '.' + quotedName;
     }
 
-    public String getQuotedSetter() {
-        return quotedSetter;
-    }
-
     public int getSqlType() {
         return sqlType;
+    }
+
+    public String getFreeVariableSetter() {
+        return freeVariableSetter;
+    }
+
+    public boolean isOpaque() {
+        return ExtendedTypes.hasElement(sqlType);
     }
 
     public void setSqlType(int sqlType) {
@@ -234,8 +242,10 @@ public class Column implements Serializable {
     public void setToPreparedStatement(PreparedStatement ps, int index,
             Serializable value) throws SQLException {
         if (value == null) {
-            ps.setNull(index, sqlType == ExtendedTypes.FULLTEXT ? Types.OTHER
-                    : sqlType);
+            ps.setNull(
+                    index,
+                    sqlType == ExtendedTypes.FULLTEXT ? dialect.getFulltextType()
+                            : sqlType);
             return;
         }
         switch (sqlType) {

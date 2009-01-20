@@ -42,6 +42,16 @@ public class SimpleFragment extends Fragment {
     public static final SimpleFragment UNKNOWN = new SimpleFragment(null,
             State.DETACHED, null, null);
 
+    private static enum OpaqueValue {
+        OPAQUE_VALUE
+    }
+
+    /**
+     * A database value we don't care about reading. When present in a fragment,
+     * it won't be written, but any other value will be.
+     */
+    public static final Serializable OPAQUE = OpaqueValue.OPAQUE_VALUE;
+
     /** The map actually holding the data. */
     private final Map<String, Serializable> map;
 

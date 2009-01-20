@@ -9,6 +9,9 @@
     <repository name="test"
       factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository>
+        <indexing>
+          <fulltext analyzer="english"/>
+        </indexing>
         <xa-datasource>org.postgresql.xa.PGXADataSource</xa-datasource>
         <property name="ServerName">localhost</property>
         <property name="DatabaseName">nuxeojunittests</property>

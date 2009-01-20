@@ -35,6 +35,7 @@ import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.dialect.SQLServerDialect;
 import org.hibernate.exception.SQLExceptionConverter;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 
 /**
  * A Dialect encapsulates knowledge about database-specific behavior.
@@ -53,13 +54,18 @@ public class Dialect {
 
     protected final boolean storesUpperCaseIdentifiers;
 
+    protected final String fulltextAnalyzer;
+
+    private static final String DEFAULT_FULLTEXT_ANALYSER_PG = "blabla";
+
     /**
      * Creates a {@code Dialect} by connecting to the datasource to check what
      * database is used.
      *
      * @throws StorageException if a SQL connection problem occurs
      */
-    public Dialect(Connection connection) throws StorageException {
+    public Dialect(Connection connection,
+            RepositoryDescriptor repositoryDescriptor) throws StorageException {
         try {
             DatabaseMetaData metadata = connection.getMetaData();
             databaseName = metadata.getDatabaseProductName();
@@ -85,6 +91,14 @@ public class Dialect {
             }
         }
         dialectName = dialect.getClass().getSimpleName();
+        String analyzer = repositoryDescriptor.fulltextAnalyzer;
+        if (analyzer == null) {
+            // suitable defaults
+            if (dialect instanceof PostgreSQLDialect) {
+                analyzer = DEFAULT_FULLTEXT_ANALYSER_PG;
+            }
+        }
+        fulltextAnalyzer = analyzer;
     }
 
     public String getDatabaseName() {
@@ -148,6 +162,46 @@ public class Dialect {
             return "clob"; // different from DB2Dialect
         }
         return dialect.getTypeName(sqlType, length, precision, scale);
+    }
+
+    /**
+     * Gets the type of a fulltext column has known by JDBC.
+     * <p>
+     * This is used for setNull.
+     */
+    public int getFulltextType() {
+        // see also getTypeName
+        if (dialect instanceof PostgreSQLDialect) {
+            return Types.OTHER;
+        }
+        return Types.CLOB;
+    }
+
+    /**
+     * Gets the JDBC expression setting a free value for this column type.
+     * <p>
+     * Needed for columns that need an expression around the value being set,
+     * usually for conversion (this is the case for PostgreSQL fulltext {@code
+     * TSVECTOR} columns for instance).
+     *
+     * @param type the JDBC or extended type
+     * @return the expression containing a free variable
+     */
+    public String getFreeVariableSetterForType(int type) {
+        if (type == Column.ExtendedTypes.FULLTEXT &&
+                dialect instanceof PostgreSQLDialect) {
+            return String.format("TO_TSVECTOR('%s', ?)", fulltextAnalyzer);
+        }
+        return "?";
+    }
+
+    /**
+     * Gets the fulltext analyzer configured.
+     * <p>
+     * For PostgreSQL, it's a text search configuration name.
+     */
+    public String getFulltextAnalyzer() {
+        return fulltextAnalyzer;
     }
 
     public String getNoColumnsInsertString() {
@@ -253,24 +307,6 @@ public class Dialect {
     }
 
     /**
-     * Gets the JDBC expression setting a free value for this column type.
-     * <p>
-     * Needed for columns that need an expression around the value being set,
-     * usually for conversion (this is the case for PostgreSQL fulltext {@code
-     * TSVECTOR} columns for instance).
-     *
-     * @param type the JDBC or extended type
-     * @return the expression containing a free variable
-     */
-    public String getSetterFor(int type) {
-        if (type == Column.ExtendedTypes.FULLTEXT &&
-                dialect instanceof PostgreSQLDialect) {
-            return "TO_TSVECTOR(?)";
-        }
-        return "?";
-    }
-
-    /**
      * Gets the expression to use to check security.
      *
      * @param the quoted name of the id column to use
@@ -284,33 +320,6 @@ public class Dialect {
             sql += " = 1";
         }
         return sql;
-    }
-
-    private static final int[] ALL_FULLTEXT = new int[] {
-            Column.ExtendedTypes.FULLTEXT, Column.ExtendedTypes.FULLTEXT };
-
-    private static final int[] ALL_VARCHAR = new int[] { Types.VARCHAR,
-            Types.VARCHAR };
-
-    /**
-     * Gets information about what the fulltext table looks like.
-     * <p>
-     * There are two interesting kinds of columns:
-     * <ul>
-     * <li>the column against which queries are made,</li>
-     * <li>the column(s) holding partial fulltext info, coming from simple text
-     * or binaries extracted text.</li>
-     * </ul>
-     * The first column may be absent if fulltext is stored externally (H2).
-     *
-     * @return
-     */
-    public int[] getFulltextTableInfo() {
-        if (dialect instanceof PostgreSQLDialect) {
-            return ALL_FULLTEXT;
-        }
-        return ALL_VARCHAR;
-
     }
 
     /**
