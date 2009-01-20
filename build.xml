@@ -237,6 +237,7 @@
         <include name="nuxeo-core-storage-sql-extensions-*.jar" />
         <include name="nuxeo-common-*.jar" />
         <include name="lucene-core-*.jar" />
+        <include name="lucene-analyzers-*.jar" />
         <include name="derby*.jar" />
         <include name="h2-*.jar" />
       </fileset>
