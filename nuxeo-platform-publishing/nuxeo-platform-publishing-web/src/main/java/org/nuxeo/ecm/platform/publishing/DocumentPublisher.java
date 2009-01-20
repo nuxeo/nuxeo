@@ -40,21 +40,20 @@ import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusines
 import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
 import org.nuxeo.ecm.platform.publishing.api.PublishingService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author alexandre
- * 
+ *
  */
 public class DocumentPublisher extends UnrestrictedSessionRunner {
     protected final CoreSession coreSession;
 
     protected final String comment;
 
-    protected final PublishingService publishingService;
-
     protected UserManager userManager;
+
+    protected PublishingService publishingService;
 
     protected final boolean setIssuedDate;
 
@@ -74,8 +73,8 @@ public class DocumentPublisher extends UnrestrictedSessionRunner {
         sectionRef = section.getRef();
         setIssuedDate = coreSession.isDirty(docRef) && !doc.isProxy();
         try {
-            this.publishingService = Framework.getService(PublishingService.class);
             this.userManager = Framework.getService(UserManager.class);
+            this.publishingService = Framework.getService(PublishingService.class);
         } catch (Exception e) {
             throw new IllegalStateException(
                     "Publishing service is not deployed.", e);
@@ -159,7 +158,8 @@ public class DocumentPublisher extends UnrestrictedSessionRunner {
         EventMessage message = new DocumentMessageImpl(dm, event);
 
         try {
-            DocumentMessageProducerBusinessDelegate.getRemoteDocumentMessageProducer().produce(message);
+            DocumentMessageProducerBusinessDelegate.getRemoteDocumentMessageProducer().produce(
+                    message);
         } catch (Exception e) {
             throw new ClientException(e);
         }

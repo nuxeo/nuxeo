@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.publishing;
 
+import javax.naming.CommunicationException;
+
 import org.nuxeo.ecm.platform.publishing.api.PublishingService;
 import org.nuxeo.ecm.platform.publishing.rules.DefaultValidatorsRule;
 import org.nuxeo.runtime.api.Framework;
@@ -35,25 +37,48 @@ public class TestPublishingService extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.publishing");
+        deployContrib("org.nuxeo.ecm.platform.publishing",
+                "OSGI-INF/nuxeo-platform-publishing-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.publishing",
+                "OSGI-INF/nuxeo-platform-publishing-contrib.xml");
     }
 
     /**
      * Lookup here will be successful since local lookup.
-     *
-     * @throws Exception
      */
-    public void testLocalRuntimeServiceLookup() throws Exception {
-        assertNotNull(Framework.getService(PublishingService.class));
+    public void testLocalRuntimeServiceLookup() {
+        assertNotNull(Framework.getLocalService(PublishingService.class));
+    }
+
+    /**
+     * Remote lookup will fail since the service is defined at platform level
+     * using an EJB name.
+     */
+    public void xtestRemoteRuntimeServiceLookup() throws Exception {
+        boolean failed = false;
+        try {
+            Framework.getService(PublishingService.class);
+        } catch (CommunicationException ce) {
+            failed = true;
+        }
+        assertTrue(failed);
     }
 
     public void testDefaultValidatorsRule() throws Exception {
-        PublishingService service = Framework.getService(PublishingService.class);
+        PublishingService service = Framework.getLocalService(
+                PublishingService.class);
         assertTrue(service.getValidatorsRule() instanceof DefaultValidatorsRule);
+
+        // Override
+        deployContrib("org.nuxeo.ecm.platform.publishing.tests",
+                "test-nuxeo-platform-publishing-contrib.xml");
+
+        assertTrue(service.getValidatorsRule() instanceof FakeValidatorsRule);
     }
 
     public void testDefaultValidDate() throws Exception {
-        PublishingService service = Framework.getService(PublishingService.class);
+        PublishingService service = Framework.getLocalService(
+                PublishingService.class);
 
         assertEquals("dc", service.getValidDateFieldSchemaPrefixName());
         assertEquals("valid", service.getValidDateFieldName());

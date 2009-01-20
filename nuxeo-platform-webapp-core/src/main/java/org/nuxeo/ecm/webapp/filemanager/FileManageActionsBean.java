@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.api.FileManagerPermissionException;
-import org.nuxeo.ecm.platform.publishing.api.PublishActions;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
@@ -100,8 +99,8 @@ public class FileManageActionsBean extends InputController implements
     @In(create = true)
     protected ClipboardActions clipboardActions;
 
-    @In(create = true)
-    protected PublishActions publishActions;
+    //@In(create = true)
+    //protected PublishActions publishActions;
 
     protected FileManager fileManager;
 
@@ -442,22 +441,6 @@ public class FileManageActionsBean extends InputController implements
             String moveStatus = checkMoveAllowed(srcRef, dstRef);
 
             if (moveStatus.equals(MOVE_IMPOSSIBLE)) {
-                return debug;
-            }
-
-            if (moveStatus.equals(MOVE_PUBLISH)) {
-                DocumentModel doc = documentManager.getDocument(srcRef);
-                DocumentModel container = documentManager.getDocument(dstRef);
-                if (publishActions == null) {
-                    return debug;
-                }
-                publishActions.publishDocument(doc, container);
-                facesMessages.add(FacesMessage.SEVERITY_INFO,
-                        resourcesAccessor.getMessages().get(
-                                "document_published"),
-                        resourcesAccessor.getMessages().get(doc.getType()));
-
-                documentManager.save();
                 return debug;
             }
 

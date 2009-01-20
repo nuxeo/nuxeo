@@ -22,6 +22,9 @@ package org.nuxeo.ecm.platform.publishing;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.publishing.api.Publisher;
+import org.nuxeo.ecm.platform.publishing.api.PublishingException;
 import org.nuxeo.ecm.platform.publishing.api.PublishingService;
 import org.nuxeo.ecm.platform.publishing.api.PublishingValidatorException;
 import org.nuxeo.ecm.platform.publishing.api.ValidatorsRule;
@@ -37,6 +40,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class PublishingServiceImpl extends DefaultComponent implements
         PublishingService {
+    private Publisher publisher;
 
     private static final long serialVersionUID = 1L;
 
@@ -48,6 +52,8 @@ public class PublishingServiceImpl extends DefaultComponent implements
     private static final String PT_VALIDATORS_RULE = "publishingValidatorsRule";
 
     private static final String PT_VALID_DATE_FIELD = "publishingValidDateField";
+
+    private static final String PT_PUBLISHER = "publisher";
 
     protected PublishingValidDateFieldDesc prefixed;
 
@@ -85,7 +91,8 @@ public class PublishingServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
         if (extensionPoint.equals(PT_VALIDATORS_RULE)) {
 
             validatorsRuleDesc = (ValidatorsRuleDesc) contribution;
@@ -100,8 +107,10 @@ public class PublishingServiceImpl extends DefaultComponent implements
                     + prefixed.getPrefixedFieldName()
                     + " Previous registration is overriden");
 
+        } else if (extensionPoint.equals(PT_PUBLISHER)) {
+            publisher = ((PublisherDescriptor) contribution).getPublisher().newInstance();
         } else {
-            log.error("Extension point name is unknown... => " + extensionPoint);
+            log.error("Extension point name is unknown:" + extensionPoint);
         }
     }
 
@@ -117,6 +126,35 @@ public class PublishingServiceImpl extends DefaultComponent implements
         } else {
             log.error("Extension point name is unknown... => " + extensionPoint);
         }
+    }
+
+    public boolean canManagePublishing(DocumentModel currentDocument,
+            NuxeoPrincipal currentUser) throws PublishingException {
+        return publisher.canManagePublishing(currentDocument, currentUser);
+    }
+
+    public boolean hasValidationTask(DocumentModel proxy,
+            NuxeoPrincipal currentUser) throws PublishingException {
+        return publisher.hasValidationTask(proxy, currentUser);
+    }
+
+    public void submitToPublication(DocumentModel document,
+            DocumentModel placeToPublishTo, NuxeoPrincipal principal) throws PublishingException {
+        publisher.submitToPublication(document, placeToPublishTo, principal);
+    }
+
+    public void validatorPublishDocument(DocumentModel currentDocument,
+            NuxeoPrincipal currentUser) throws PublishingException {
+        publisher.validatorPublishDocument(currentDocument, currentUser);
+    }
+
+    public void validatorRejectPublication(DocumentModel doc,
+            NuxeoPrincipal principal, String comment) throws PublishingException {
+        publisher.validatorRejectPublication(doc, principal, comment);
+    }
+
+    public boolean isPublished(DocumentModel proxy) throws PublishingException {
+        return publisher.isPublished(proxy);
     }
 
 }

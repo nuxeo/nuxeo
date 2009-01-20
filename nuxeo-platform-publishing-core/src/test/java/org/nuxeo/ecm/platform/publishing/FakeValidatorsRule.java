@@ -14,33 +14,26 @@
  * Contributors:
  *     <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
- * $Id: PublishingConstants.java 29075 2008-01-16 09:12:59Z jcarsique $
+ * $Id: FakeValidatorsRule.java 28491 2008-01-04 19:04:30Z sfermigier $
  */
 
-package org.nuxeo.ecm.platform.publishing.workflow;
+package org.nuxeo.ecm.platform.publishing;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.publishing.api.PublishingValidatorException;
+import org.nuxeo.ecm.platform.publishing.api.ValidatorsRule;
 
 /**
- * Publishing related constants.
- *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ *
  */
-public final class PublishingConstants {
+public class FakeValidatorsRule implements ValidatorsRule {
 
-    public static final String WORKFLOW_REVIEWERS = "workflowReviewers";
+    private static final long serialVersionUID = 1L;
 
-    public static final String WORKFLOW_TRANSITION_TO_PUBLISH = "publish";
-
-    public static final String WORKFLOW_TRANSITION_TO_RIGHTS = "setupRights";
-
-    public static final String WORKFLOW_TRANSITION_TO_REJECT = "reject";
-
-    public static final String WORKFLOW_DEFINITION_NAME = "document_publishing";
-
-    public static final String SUBMITTED_BY = "submitted_by";
-
-    // Constant utility class.
-    private PublishingConstants() {
+    public String[] computesValidatorsFor(DocumentModel dm)
+            throws PublishingValidatorException {
+        return null;
     }
 
 }

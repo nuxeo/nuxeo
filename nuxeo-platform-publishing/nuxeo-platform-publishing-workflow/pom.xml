@@ -11,4 +11,18 @@
   <artifactId>nuxeo-platform-publishing-workflow</artifactId>
   <name>Nuxeo Platform Publishing Jbpm</name>
   <description>Nuxeo Enterprise Platform: Jbpm Plugin</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-publishing-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-publishing-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-jbpm-api</artifactId>
+    </dependency>
+  </dependencies>
 </project>

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,29 +12,20 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
- * $Id: PublishingService.java 28476 2008-01-04 09:52:52Z sfermigier $
+ *     arussel
  */
-
 package org.nuxeo.ecm.platform.publishing.api;
-
-import java.io.Serializable;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Publishing service interface.
- *
- * <p>
- * General publishing related service API.
- * </p>
- *
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @author arussel
  *
  */
-public interface PublishingService extends Serializable {
-
+public interface PublishingService extends Publisher{
+    enum DocumentStatus {
+        notPublished, waitingValidation, published
+    }
     /**
      * Computes the list of publishing validators given the document model of
      * the document just published.
@@ -69,5 +60,6 @@ public interface PublishingService extends Serializable {
      * @return the schema name.
      */
     String getValidDateFieldSchemaPrefixName();
+
 
 }

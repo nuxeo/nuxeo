@@ -22,8 +22,6 @@ package org.nuxeo.ecm.platform.publishing;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,32 +40,24 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
-import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentModelTree;
 import org.nuxeo.ecm.core.api.DocumentModelTreeNode;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
-import org.nuxeo.ecm.core.api.facet.VersioningDocument;
-import org.nuxeo.ecm.core.api.impl.DocumentModelTreeImpl;
-import org.nuxeo.ecm.core.api.impl.DocumentModelTreeNodeComparator;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.TypeService;
-import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
 import org.nuxeo.ecm.platform.events.api.EventMessage;
@@ -79,9 +69,8 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelRow;
-import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
-import org.nuxeo.ecm.platform.versioning.api.VersioningManager; //import org.nuxeo.ecm.platform.workflow.api.client.events.EventNames;
+import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -89,11 +78,10 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 import org.nuxeo.runtime.api.Framework;
-import org.jboss.seam.annotations.intercept.BypassInterceptors;
 
 /**
  * This Seam bean manages the publishing tab.
- * 
+ *
  * @author Narcis Paslaru
  * @author Florent Guillaume
  * @author Thierry Martins
@@ -102,6 +90,7 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 @Scope(ScopeType.CONVERSATION)
 @Transactional
 public class PublishActionsBean implements PublishActions, Serializable {
+    private PublishingService publishingService;
 
     private static final long serialVersionUID = 1L;
 
@@ -153,8 +142,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
     private List<DocumentModelTreeNode> selectedSections = new ArrayList<DocumentModelTreeNode>();
 
     private transient DocumentMessageProducer docMsgProducer;
-
-    private transient PublishingService publishingService;
 
     private String comment;
 
@@ -299,7 +286,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
             DocumentModel proxy = getPublishedInSection(docToPublish,
                     section.getDocument());
             boolean moderation = proxy == null
-                    || new PublishingTasks(proxy, currentUser).getPublishingWorkItem() != null;
+                    || publishingService.isPublished(proxy);
             boolean candidate = false;
             if (proxy == null) {
                 candidate = true;
@@ -695,6 +682,12 @@ public class PublishActionsBean implements PublishActions, Serializable {
      */
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public void processSelectRowEvent(SelectDataModelRowEvent event)
+            throws ClientException {
+        // TODO Auto-generated method stub
+
     }
 
 }

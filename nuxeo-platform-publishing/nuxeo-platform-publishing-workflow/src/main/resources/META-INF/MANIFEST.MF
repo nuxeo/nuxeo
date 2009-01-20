@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Publishing
+Bundle-SymbolicName: org.nuxeo.ecm.platform.publishing.workflow;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: core,stateful
+Nuxeo-Component: OSGI-INF/jbpm-publisher-contrib.xml,
+Require-Bundle: org.nuxeo.ecm.platform.publishing.api,
+  org.nuxeo.ecm.platform.publishing.core

@@ -36,7 +36,5 @@
     <object
         class="org.nuxeo.ecm.platform.publishing.rules.ValidatorsRuleDesc"/>
   </extension-point>
-  <extension-point name="publisher">
-    <object class="org.nuxeo.ecm.platform.publishing.PublisherDescriptor"/>
-  </extension-point>
+
 </component>

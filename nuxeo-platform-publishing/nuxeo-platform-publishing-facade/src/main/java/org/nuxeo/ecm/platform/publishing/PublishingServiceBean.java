@@ -19,9 +19,14 @@
 
 package org.nuxeo.ecm.platform.publishing;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.annotation.PostConstruct;
+import javax.ejb.Local;
+import javax.ejb.Remote;
+import javax.ejb.Stateless;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.publishing.api.PublishingException;
 import org.nuxeo.ecm.platform.publishing.api.PublishingService;
 import org.nuxeo.ecm.platform.publishing.api.PublishingValidatorException;
 import org.nuxeo.ecm.platform.publishing.api.ValidatorsRule;
@@ -33,62 +38,69 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
  */
-//@Stateless
-//@Local(PublishingService.class)
-//@Remote(PublishingService.class)
+@Stateless
+@Local(PublishingService.class)
+@Remote(PublishingService.class)
 public class PublishingServiceBean implements PublishingService {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(PublishingServiceBean.class);
+    private PublishingService service;
 
-    protected PublishingService service;
-
-    private PublishingService getService() {
-        if (service == null) {
-            service = Framework.getLocalService(PublishingService.class);
+    @PostConstruct
+    void postConstruct() {
+        try {
+            service = Framework.getService(PublishingService.class);
+        } catch (Exception e) {
+            throw new IllegalStateException("Publishing service not deployed.", e);
         }
-        return service;
     }
 
     public String getValidDateFieldName() {
-        String fieldName;
-        try {
-            fieldName = getService().getValidDateFieldName();
-        } catch (Exception e) {
-            log.error("Cannot lookup publishing service...", e);
-            fieldName = "valid"; // XXX HARDCODED FALLBACK
-        }
-        return fieldName;
+        return service.getValidDateFieldName();
     }
 
     public String getValidDateFieldSchemaPrefixName() {
-        String prefix;
-        try {
-            prefix = getService().getValidDateFieldSchemaPrefixName();
-        } catch (Exception e) {
-            log.error("Cannot lookup publishing service...", e);
-            prefix = "dc"; // XXX HARDCODED FALLBACK
-        }
-        return prefix;
+        return service.getValidDateFieldSchemaPrefixName();
     }
 
     public String[] getValidatorsFor(DocumentModel dm)
             throws PublishingValidatorException {
-        try {
-            return getService().getValidatorsFor(dm);
-        } catch (Exception e) {
-            throw new PublishingValidatorException(e);
-        }
+        return service.getValidatorsFor(dm);
     }
 
-    public ValidatorsRule getValidatorsRule()
-            throws PublishingValidatorException {
-        try {
-            return getService().getValidatorsRule();
-        } catch (Exception e) {
-            throw new PublishingValidatorException(e);
-        }
+    public ValidatorsRule getValidatorsRule() throws PublishingValidatorException {
+        return service.getValidatorsRule();
+    }
+
+    public boolean canManagePublishing(DocumentModel currentDocument,
+            NuxeoPrincipal currentUser) throws PublishingException {
+        return service.canManagePublishing(currentDocument, currentUser);
+    }
+
+    public boolean hasValidationTask(DocumentModel proxy,
+            NuxeoPrincipal currentUser) throws PublishingException {
+        return service.hasValidationTask(proxy, currentUser);
+    }
+
+    public boolean isPublished(DocumentModel proxy) throws PublishingException {
+        return service.isPublished(proxy);
+    }
+
+    public void submitToPublication(DocumentModel document,
+            DocumentModel placeToPublishTo, NuxeoPrincipal principal)
+            throws PublishingException {
+        service.submitToPublication(document, placeToPublishTo, principal);
+    }
+
+    public void validatorPublishDocument(DocumentModel currentDocument,
+            NuxeoPrincipal currentUser) throws PublishingException {
+        service.validatorPublishDocument(currentDocument, currentUser);
+    }
+
+    public void validatorRejectPublication(DocumentModel doc,
+            NuxeoPrincipal principal, String comment) throws PublishingException {
+        service.validatorRejectPublication(doc, principal, comment);
     }
 
 }
