@@ -1289,9 +1289,10 @@ public class SQLInfo {
                     null,
                     null, //
                     String.format(
-                            "CALL NXFT_CREATE_INDEX('PUBLIC', '%s', ('%s', '%s'))", //
+                            "CALL NXFT_CREATE_INDEX('PUBLIC', '%s', ('%s', '%s'), '%s')", //
                             ft.getName(), ftst.getPhysicalName(),
-                            ftbt.getPhysicalName()));
+                            ftbt.getPhysicalName(),
+                            dialect.getFulltextAnalyzer()));
         }
 
         protected StoredProcedureInfo makeFunction(String functionName,
@@ -1387,6 +1388,23 @@ public class SQLInfo {
                             , idType));
         }
 
+        public StoredProcedureInfo makeToTSVector() {
+            String tsconfig = dialect.getFulltextAnalyzer();
+            return new StoredProcedureInfo( //
+                    Boolean.FALSE, // no drop needed
+                    null, //
+                    null, //
+                    String.format(
+                            "CREATE OR REPLACE FUNCTION NX_TO_TSVECTOR(string VARCHAR) " //
+                                    + "RETURNS TSVECTOR " //
+                                    + "AS $$" //
+                                    + "  SELECT TO_TSVECTOR('%s', $1) " //
+                                    + "$$ " //
+                                    + "LANGUAGE sql " //
+                                    + "STABLE " //
+                            , tsconfig));
+        }
+
         public StoredProcedureInfo makeContainsFullText() {
             String tsconfig = dialect.getFulltextAnalyzer();
             return new StoredProcedureInfo( //
@@ -1465,6 +1483,7 @@ public class SQLInfo {
             PostgreSQLstoredProcedureInfoMaker maker = new PostgreSQLstoredProcedureInfoMaker();
             spis.add(maker.makeInTree());
             spis.add(maker.makeAccessAllowed());
+            spis.add(maker.makeToTSVector());
             spis.add(maker.makeContainsFullText());
         }
         return spis;

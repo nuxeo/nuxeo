@@ -9,6 +9,9 @@
     <repository name="test"
       factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository>
+        <indexing>
+          <fulltext analyzer="org.apache.lucene.analysis.fr.FrenchAnalyzer"/>
+        </indexing>
         <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
         <!-- Directory name mentioned in SQLRepositoryTestCase -->
         <property name="URL">jdbc:h2:/tmp/nxsqltests-h2/nuxeo</property>

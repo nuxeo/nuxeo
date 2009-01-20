@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
@@ -91,16 +91,11 @@ public class H2Fulltext {
      * @param conn
      */
     public static void init(Connection conn) throws SQLException {
-        try {
-            // fail early if paths are incorrect
-            getIndexWriter(conn, null);
-        } catch (Exception e) {
-            throw convertException(e);
-        }
         Statement st = conn.createStatement();
         st.execute("CREATE SCHEMA IF NOT EXISTS " + FT_SCHEMA);
         st.execute("CREATE TABLE IF NOT EXISTS " + FT_TABLE +
-                "(SCHEMA VARCHAR, TABLE VARCHAR, COLUMNS VARCHAR, PRIMARY KEY(SCHEMA, TABLE))");
+                "(SCHEMA VARCHAR, TABLE VARCHAR, COLUMNS VARCHAR, " +
+                "ANALYZER VARCHAR, PRIMARY KEY(SCHEMA, TABLE))");
         String className = H2Fulltext.class.getName();
         st.execute("CREATE ALIAS IF NOT EXISTS " + PREFIX +
                 "CREATE_INDEX FOR \"" + className + ".createIndex\"");
@@ -124,34 +119,29 @@ public class H2Fulltext {
      * Usually called through:
      *
      * <pre>
-     *   CALL NXFT_CREATE_INDEX('myschema', 'mytable', ('col1', 'col2'));
+     *   CALL NXFT_CREATE_INDEX('myschema', 'mytable', ('col1', 'col2'), 'lucene.analyzer');
      * </pre>
      *
      * @param conn the connection
      * @param schema the schema name of the table
      * @param table the table name
      * @param columns the column list
+     * @param analyzer the Lucene fulltext analyzer class
      */
     public static void createIndex(Connection conn, String schema,
-            String table, String columns) throws SQLException {
+            String table, String columns, String analyzer) throws SQLException {
         columns = columns.replace("(", "").replace(")", "").replace(" ", "");
-        PreparedStatement ps = conn.prepareStatement("SELECT COLUMNS FROM " +
-                FT_TABLE + " WHERE SCHEMA = ? AND TABLE = ?");
+        PreparedStatement ps = conn.prepareStatement("DELETE FROM " + FT_TABLE +
+                " WHERE SCHEMA = ? AND TABLE = ?");
         ps.setString(1, schema);
         ps.setString(2, table);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            String existing = rs.getString(1);
-            if (columns.equals(existing)) {
-                // index already exists
-                return;
-            }
-        }
+        ps.execute();
         ps = conn.prepareStatement("INSERT INTO " + FT_TABLE +
-                "(SCHEMA, TABLE, COLUMNS) VALUES(?, ?, ?)");
+                "(SCHEMA, TABLE, COLUMNS, ANALYZER) VALUES(?, ?, ?, ?)");
         ps.setString(1, schema);
         ps.setString(2, table);
         ps.setString(3, columns);
+        ps.setString(4, analyzer);
         ps.execute();
         ps.close();
         createTrigger(conn, schema, table);
@@ -264,16 +254,31 @@ public class H2Fulltext {
         }
 
         String indexPath = getIndexPath(conn);
+
+        // find analyzer
+        PreparedStatement ps = conn.prepareStatement("SELECT ANALYZER FROM " +
+                FT_TABLE + " WHERE SCHEMA = ? AND TABLE = ?");
+        ps.setString(1, schema);
+        ps.setString(2, table);
+        ResultSet res = ps.executeQuery();
+        if (!res.next()) {
+            throw new SQLException("No index for table: " + schema + '.' +
+                    table);
+        }
+        String analyzer = res.getString(1);
+        ps.close();
+
         try {
             BooleanQuery query = new BooleanQuery();
-            QueryParser parser = new QueryParser(FIELD_TEXT, getAnalyzer());
+            QueryParser parser = new QueryParser(FIELD_TEXT,
+                    getAnalyzer(analyzer));
             query.add(parser.parse(text), BooleanClause.Occur.MUST);
             query.add(new TermQuery(new Term(FIELD_SCHEMA, schema)),
                     BooleanClause.Occur.MUST);
             query.add(new TermQuery(new Term(FIELD_TABLE, table)),
                     BooleanClause.Occur.MUST);
 
-            getIndexWriter(conn, indexPath).flush();
+            getIndexWriter(indexPath, analyzer).flush();
             Searcher searcher = new IndexSearcher(indexPath);
             Iterator<Hit> it = searcher.search(query).iterator();
             for (; it.hasNext();) {
@@ -319,8 +324,12 @@ public class H2Fulltext {
         return primaryKeyType;
     }
 
-    private static StandardAnalyzer getAnalyzer() {
-        return new StandardAnalyzer();
+    private static Analyzer getAnalyzer(String analyzer) throws SQLException {
+        try {
+            return (Analyzer) Class.forName(analyzer).newInstance();
+        } catch (Exception e) {
+            throw new SQLException(e.toString());
+        }
     }
 
     private static String getIndexPath(Connection conn) throws SQLException {
@@ -336,11 +345,8 @@ public class H2Fulltext {
         return path + ".lucene";
     }
 
-    private static IndexWriter getIndexWriter(Connection conn, String indexPath)
+    private static IndexWriter getIndexWriter(String indexPath, String analyzer)
             throws SQLException {
-        if (indexPath == null) {
-            indexPath = getIndexPath(conn);
-        }
         IndexWriter indexWriter;
         indexWriter = indexWriters.get(indexPath);
         if (indexWriter == null) {
@@ -348,8 +354,8 @@ public class H2Fulltext {
                 if (!indexWriters.containsKey(indexPath)) {
                     try {
                         boolean recreate = !IndexReader.indexExists(indexPath);
-                        indexWriter = new IndexWriter(indexPath, getAnalyzer(),
-                                recreate);
+                        indexWriter = new IndexWriter(indexPath,
+                                getAnalyzer(analyzer), recreate);
                     } catch (IOException e) {
                         throw convertException(e);
                     }
@@ -479,7 +485,6 @@ public class H2Fulltext {
             this.schema = schema;
             this.table = table;
             indexPath = getIndexPath(conn);
-            indexWriter = getIndexWriter(conn, indexPath);
             DatabaseMetaData meta = conn.getMetaData();
 
             // find primary key name
@@ -510,7 +515,7 @@ public class H2Fulltext {
             rs.close();
 
             // find columns configured for indexing
-            PreparedStatement ps = conn.prepareStatement("SELECT COLUMNS FROM " +
+            PreparedStatement ps = conn.prepareStatement("SELECT COLUMNS, ANALYZER FROM " +
                     FT_TABLE + " WHERE SCHEMA = ? AND TABLE = ?");
             ps.setString(1, schema);
             ps.setString(2, table);
@@ -520,6 +525,7 @@ public class H2Fulltext {
                         table);
             }
             String columns = rs.getString(1);
+            String analyzer = rs.getString(2);
             ps.close();
             if (columns == null) {
                 throw new SQLException("No columns in index for table: " +
@@ -542,6 +548,7 @@ public class H2Fulltext {
                 i++;
             }
             rs.close();
+            indexWriter = getIndexWriter(indexPath, analyzer);
         }
 
         /**

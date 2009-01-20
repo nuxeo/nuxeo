@@ -56,7 +56,9 @@ public class Dialect {
 
     protected final String fulltextAnalyzer;
 
-    private static final String DEFAULT_FULLTEXT_ANALYSER_PG = "blabla";
+    private static final String DEFAULT_FULLTEXT_ANALYSER_PG = "english";
+
+    private static final String DEFAULT_FULLTEXT_ANALYSER_H2 = "org.apache.lucene.analysis.standard.StandardAnalyzer";
 
     /**
      * Creates a {@code Dialect} by connecting to the datasource to check what
@@ -96,6 +98,9 @@ public class Dialect {
             // suitable defaults
             if (dialect instanceof PostgreSQLDialect) {
                 analyzer = DEFAULT_FULLTEXT_ANALYSER_PG;
+            }
+            if (dialect instanceof H2Dialect) {
+                analyzer = DEFAULT_FULLTEXT_ANALYSER_H2;
             }
         }
         fulltextAnalyzer = analyzer;
@@ -190,7 +195,7 @@ public class Dialect {
     public String getFreeVariableSetterForType(int type) {
         if (type == Column.ExtendedTypes.FULLTEXT &&
                 dialect instanceof PostgreSQLDialect) {
-            return String.format("TO_TSVECTOR('%s', ?)", fulltextAnalyzer);
+            return "NX_TO_TSVECTOR(?)";
         }
         return "?";
     }
