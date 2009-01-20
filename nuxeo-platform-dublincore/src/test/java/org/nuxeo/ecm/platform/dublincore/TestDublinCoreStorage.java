@@ -28,7 +28,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -63,8 +62,7 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("org.nuxeo.ecm.core",
-                "OSGI-INF/CoreService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
 
         deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
                 "test-CoreExtensions.xml");
@@ -80,7 +78,7 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
 
         deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core.event.compat");
-        
+
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         context.put("username", "Administrator");
         remote = CoreInstance.getInstance().open("demo", context);
@@ -141,7 +139,8 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         Calendar modified = (Calendar) dm2.getData("modified");
         assertNotNull(modified);
 
-        assertTrue(modified.getTime() + " !> " +created.getTime(), modified.after(created));
+        assertTrue(modified.getTime() + " !> " + created.getTime(),
+                modified.after(created));
     }
 
     // Wait until we can have a real list management
@@ -191,6 +190,8 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
                 "contributors");
         contributorsList = Arrays.asList(contributorsArray);
         assertTrue(contributorsList.contains("Jacky"));
+        assertEquals("Administrator", childFile3.getProperty("dublincore",
+                "creator"));
     }
 
 }

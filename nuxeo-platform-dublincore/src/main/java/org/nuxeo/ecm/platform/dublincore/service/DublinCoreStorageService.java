@@ -82,14 +82,13 @@ public class DublinCoreStorageService extends DefaultComponent {
 
         List<String> contributorsList = new ArrayList<String>();
 
-        if (contributorsArray != null) {
+        if (contributorsArray != null && contributorsArray.length > 0) {
             contributorsList = Arrays.asList(contributorsArray);
             // make it resizable
             contributorsList = new ArrayList<String>(contributorsList);
         } else {
-            // BBB code.
-            SchemaManager schemaMgr = Framework.getLocalService(
-                    SchemaManager.class);
+            // initialize creator too
+            SchemaManager schemaMgr = Framework.getLocalService(SchemaManager.class);
             if (schemaMgr.getSchema("dublincore").getField("creator") != null) {
                 // First time only => creator
                 try {

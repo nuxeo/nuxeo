@@ -150,6 +150,7 @@ public final class Functions {
     @SuppressWarnings("unchecked")
     public static String userFullName(String username) {
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+
         // empty user name is current user
         if (username == null || username.length() == 0) {
             username = externalContext.getUserPrincipal().getName();
