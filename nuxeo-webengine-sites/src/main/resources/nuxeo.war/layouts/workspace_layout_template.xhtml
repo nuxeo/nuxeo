@@ -5,6 +5,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   id="#{layout.id}">
 
 <c:if test="#{layout.mode != 'edit' and layout.mode != 'create'}">
@@ -33,18 +34,25 @@
 
 <c:if test="#{layout.mode == 'edit' or layout.mode == 'create'}">
 
-	<c:if test="#{layout.name == 'webcontainer' }">
+  <a4j:region renderRegionOnly="true">
+  <a4j:outputPanel ajaxRendered="true">
 	<div class="foldableBox">
-      <h3 class="#{nxu:test(layoutValue.webcontainer.isWebContainer, 'unfolded', 'folded')}" >
-        <h:selectBooleanCheckbox onclick="Element.next(this).click();"
-          value="#{layoutValue.webcontainer.isWebContainer}" />
-        <h:commandButton value="hidden button"
-          action="#{siteActions.toggleWebContainerLayout(layoutValue)}"
-          immediate="true" style="display: none;"/>
+      <h3 class="#{nxu:test(siteActions.webContainerChecked, 'unfolded', 'folded')}" >
+        <h:selectBooleanCheckbox binding="#{siteActions.checkboxComponent}"
+          value="#{layoutValue.webcontainer.isWebContainer}">
+          <a4j:support event="onclick"
+            bypassUpdates="true" ajaxSingle="true"
+            reRender="#{layout.id}" />
+        </h:selectBooleanCheckbox>
+        <a4j:status>
+          <f:facet name="start">
+            <h:graphicImage value="/img/standart_waiter.gif" />
+          </f:facet>
+        </a4j:status>
       </h3>
-      <div class="boxBody"
-        style="#{nxu:test(layoutValue.webcontainer.isWebContainer, 'display: block', 'display: none')}">
-      	<table class="dataInput">
+      <c:if test="#{siteActions.webContainerChecked}">
+        <div class="boxBody">
+          <table class="dataInput">
 		    <tbody>
 		      <nxl:layoutRow>
 		        <tr>
@@ -62,36 +70,12 @@
 		        </tr>
 		      </nxl:layoutRow>
 		    </tbody>
-		  </table>
-      </div>
+  	      </table>
+        </div>
+      </c:if>
 	</div>
+  </a4j:outputPanel>
+  </a4j:region>
 
-	</c:if>
-
-	<c:if test="#{layout.name != 'webcontainer' }">
-		  <table class="dataInput">
-		    <tbody>
-		      <nxl:layoutRow>
-		        <tr>
-		          <nxl:layoutRowWidget>
-		            <td class="labelColumn">
-		              <h:outputText value="#{widget.label}" rendered="#{!widget.translated}"
-		                styleClass="#{nxu:test(widget.required, 'required', '')}" />
-		              <h:outputText value="#{messages[widget.label]}" rendered="#{widget.translated}"
-		                styleClass="#{nxu:test(widget.required, 'required', '')}" />
-		            </td>
-		            <td class="fieldColumn">
-		              <nxl:widget widget="#{widget}" mode="#{widget.mode}" value="#{value}" />
-		            </td>
-		          </nxl:layoutRowWidget>
-		        </tr>
-		      </nxl:layoutRow>
-		    </tbody>
-		  </table>
-	 </c:if>
 </c:if>
-
-
-
-
 </f:subview>

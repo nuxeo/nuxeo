@@ -6,9 +6,7 @@
     point="layouts">
     <layout name="webpage">
       <templates>
-        <template mode="any">
-          /layouts/layout_default_template.xhtml
-        </template>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
       </templates>
       <rows>
         <row>
@@ -30,8 +28,7 @@
         </fields>
         <properties widgetMode="edit">
           <property name="required">true</property>
-          <property name="styleClass">dataInputText
-          </property>
+          <property name="styleClass">dataInputText</property>
         </properties>
       </widget>
 
@@ -41,14 +38,13 @@
           <field>webp:content</field>
         </fields>
         <properties widgetMode="edit">
-          <property name="styleClass">dataInputText
-          </property>
+          <property name="styleClass">dataInputText</property>
         </properties>
       </widget>
 
     </layout>
-    
-    
+
+
     <layout name="webcontainer">
       <templates>
         <template mode="any">/layouts/workspace_layout_template.xhtml</template>
@@ -72,7 +68,7 @@
         <row>
           <widget>welcomeText</widget>
         </row>
-         <row>
+        <row>
           <widget>welcomeMedia</widget>
         </row>
         <row>
@@ -87,6 +83,7 @@
         </fields>
         <properties widgetMode="edit">
           <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
         </properties>
       </widget>
 
@@ -106,7 +103,9 @@
           <field>webc:template</field>
         </fields>
         <properties mode="any">
-        	<property name="template">/widgets/site_template_widget.xhtml</property>
+          <property name="template">
+            /widgets/site_template_widget.xhtml
+          </property>
         </properties>
       </widget>
 
@@ -120,24 +119,18 @@
         </properties>
       </widget>
 
-       <widget name="logo" type="file">
+      <widget name="logo" type="file">
         <translated>true</translated>
         <fields>
           <field>webc:logo</field>
         </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
       </widget>
 
-      <widget name="welcomeText" type="htmltext">
+      <widget name="welcomeText" type="textarea">
         <translated>true</translated>
         <fields>
           <field>webc:welcomeText</field>
         </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
       </widget>
 
       <widget name="welcomeMedia" type="file">
@@ -145,9 +138,6 @@
         <fields>
           <field>webc:welcomeMedia</field>
         </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
       </widget>
 
       <widget name="useCaptcha" type="checkbox">
@@ -155,9 +145,6 @@
         <fields>
           <field>webc:useCaptcha</field>
         </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
       </widget>
 
     </layout>

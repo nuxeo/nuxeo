@@ -82,6 +82,10 @@
       <artifactId>jboss-seam</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>javax.faces</groupId>
+      <artifactId>jsf-api</artifactId>
+    </dependency>
 
     <!-- test scope -->
     <dependency>

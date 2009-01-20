@@ -19,22 +19,16 @@
 
 package org.nuxeo.webengine.sites;
 
-import static org.jboss.seam.ScopeType.STATELESS;
+import javax.faces.component.UISelectBoolean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Performs validation and re-rendering of webcontainer layout widgets.
+ * Performs re-rendering of webcontainer layout widgets.
  *
  * @author Anahide Tchertchian
  */
-@Name("siteActions")
-@Scope(STATELESS)
 public class SiteActionsBean {
 
     private static final Log log = LogFactory.getLog(SiteActionsBean.class);
@@ -43,21 +37,29 @@ public class SiteActionsBean {
 
     public static final String ISWEBCONTAINER_PROPERTY_NAME = "isWebContainer";
 
-    public String toggleWebContainerLayout(DocumentModel webContainer)
-            throws ClientException {
-        if (webContainer == null || !webContainer.hasSchema(SCHEMA_NAME)) {
-            log.error("Invalid document model...");
-            return null;
-        }
-        Object isWebContainer = webContainer.getProperty(SCHEMA_NAME,
-                ISWEBCONTAINER_PROPERTY_NAME);
-        // assume it's false by default => toggle to true
-        boolean newValue = true;
-        if (isWebContainer instanceof Boolean) {
-            newValue = !((Boolean) isWebContainer);
-        }
-        webContainer.setProperty(SCHEMA_NAME, ISWEBCONTAINER_PROPERTY_NAME,
-                newValue);
-        return null;
+    protected UISelectBoolean checkboxComponent;
+
+    public UISelectBoolean getCheckboxComponent() {
+        return checkboxComponent;
     }
+
+    public void setCheckboxComponent(UISelectBoolean checkboxComponent) {
+        this.checkboxComponent = checkboxComponent;
+    }
+
+    public boolean isWebContainerChecked() {
+        Boolean checked = false;
+        if (checkboxComponent != null) {
+            UISelectBoolean checkbox = checkboxComponent;
+            Object currentValue = checkbox.getSubmittedValue();
+            if (currentValue == null) {
+                currentValue = checkbox.getValue();
+            }
+            if (currentValue != null) {
+                checked = Boolean.valueOf(currentValue.toString());
+            }
+        }
+        return checked;
+    }
+
 }
