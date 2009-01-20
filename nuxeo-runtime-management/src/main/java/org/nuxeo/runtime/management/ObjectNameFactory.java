@@ -75,7 +75,6 @@ public class ObjectNameFactory {
         return name;
     }
 
-    @SuppressWarnings("unchecked")
     public static String formatShortName(ObjectName name) {
         String shortName = removeDotPart(name.getKeyProperty("name"));
         String typeName = name.getKeyProperty("type");

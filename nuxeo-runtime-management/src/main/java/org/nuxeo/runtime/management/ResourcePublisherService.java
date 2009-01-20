@@ -50,7 +50,11 @@ public class ResourcePublisherService extends DefaultComponent implements
         ResourcePublisher {
 
     public static final ComponentName NAME = new ComponentName(
-            "org.nuxeo.runtime.management.ManagementPublisherService");
+            "org.nuxeo.runtime.management.ResourcePublisher");
+
+    public ResourcePublisherService() {
+        super(); // enables breaking
+    }
 
     private static final Log log = LogFactory.getLog(ResourcePublisherService.class);
 
@@ -189,7 +193,8 @@ public class ResourcePublisherService extends DefaultComponent implements
             return ObjectNameFactory.getObjectName(qualifiedName);
         }
 
-        protected Resource doResolveServiceDescriptor(ServiceDescriptor descriptor) {
+        protected Resource doResolveServiceDescriptor(
+                ServiceDescriptor descriptor) {
             Class<?> resourceClass = descriptor.getResourceClass();
             Object resourceInstance = doResolveService(resourceClass,
                     descriptor);
@@ -259,7 +264,7 @@ public class ResourcePublisherService extends DefaultComponent implements
     protected final ResourcesRegistry resourcesRegistry = new ResourcesRegistry();
 
     protected class ServerLocatorsRegistry {
-        protected final ModelMBeanInfoFactory mbeanInfoFactory = new ModelMBeanInfoFactory();
+        protected ModelMBeanInfoFactory mbeanInfoFactory = new ModelMBeanInfoFactory();
 
         protected MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
@@ -291,7 +296,8 @@ public class ResourcePublisherService extends DefaultComponent implements
                 mbean = new NamedModelMBean();
                 mbean.setManagedResource(resource.getInstance(),
                         "ObjectReference");
-                mbean.setModelMBeanInfo(mbeanInfoFactory.getModelMBeanInfo(resource.getClazz()));
+                mbean.setModelMBeanInfo(mbeanInfoFactory.getModelMBeanInfo(
+                        resource.getClazz()));
                 mbean.setInstance(mbeanServer.registerMBean(mbean,
                         resource.getManagementName()));
                 if (log.isDebugEnabled()) {
@@ -406,7 +412,8 @@ public class ResourcePublisherService extends DefaultComponent implements
         try {
             ModelMBean mbean = new RequiredModelMBean();
             mbean.setManagedResource(new ManagementAdapter(), "ObjectReference");
-            mbean.setModelMBeanInfo(serverLocatorsRegistry.mbeanInfoFactory.getModelMBeanInfo(ManagementAdapter.class));
+            mbean.setModelMBeanInfo(serverLocatorsRegistry.mbeanInfoFactory.getModelMBeanInfo(
+                    ManagementAdapter.class));
             serverLocatorsRegistry.mbeanServer.registerMBean(mbean,
                     ObjectNameFactory.getObjectName(NAME.getName()));
         } catch (Exception cause) {

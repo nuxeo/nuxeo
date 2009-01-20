@@ -9,8 +9,6 @@ import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +29,7 @@ public class TestManagementService extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib(OSGI_BUNDLE_NAME, "OSGI-INF/management-service.xml");
+        deployContrib(OSGI_BUNDLE_NAME, "OSGI-INF/management-resource-publisher-service.xml");
 
         managementService = (ResourcePublisherService) Framework.getRuntime().getComponent(
                 ResourcePublisherService.NAME);
@@ -64,16 +62,10 @@ public class TestManagementService extends NXRuntimeTestCase {
         ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
         return mbeanServer.queryNames(objectName, null);
     }
-
-    public void testLogin() throws LoginException {
-        LoginContext context =
-            Framework.loginAs("test");
-        assertNotNull(context);
-    }
     
     public void testRegisterResource() throws Exception {
         managementService.registerResource("dummy", "nx:name=dummy",
-                DummyMBean.class, new DummyImpl());
+                DummyMBean.class, new DummyService());
         Set<ObjectName> registeredNames = doQuery("nx:name=dummy");
         assertNotNull(registeredNames);
         assertEquals(1, registeredNames.size());
@@ -95,7 +87,7 @@ public class TestManagementService extends NXRuntimeTestCase {
                 new MBeanServerLocatorDescriptor("test"), "locators",
                 null);
         managementService.registerResource("dummy", "nx:name=dummy",
-                DummyMBean.class, new DummyImpl());
+                DummyMBean.class, new DummyService());
         Set<ObjectName> registeredNames = myServer.queryNames(
                 ObjectNameFactory.getObjectName("nx:name=dummy"), null);
         assertNotNull(registeredNames);
@@ -105,8 +97,8 @@ public class TestManagementService extends NXRuntimeTestCase {
     }
 
     public void testXMLConfiguration() throws Exception {
-        deployContrib(OSGI_BUNDLE_NAME, "OSGI-INF/management-tests-service.xml");
-        deployContrib(OSGI_BUNDLE_NAME, "OSGI-INF/management-tests-contrib.xml");
+        deployContrib(OSGI_BUNDLE_NAME, "management-tests-service.xml");
+        deployContrib(OSGI_BUNDLE_NAME, "management-tests-contrib.xml");
         String qualifiedName = ObjectNameFactory.formatTypeQuery("service");
 
         Set<ObjectName> registeredNames = doQuery(qualifiedName);
@@ -115,7 +107,7 @@ public class TestManagementService extends NXRuntimeTestCase {
 
         Set<String> shortcutsName = managementService.getShortcutsName();
         assertNotNull(shortcutsName);
-        assertEquals(1, shortcutsName.size());
+        assertEquals(4, shortcutsName.size());
         assertEquals("dummy", shortcutsName.iterator().next());
     }
 

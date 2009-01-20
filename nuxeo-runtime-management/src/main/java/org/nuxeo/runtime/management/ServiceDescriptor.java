@@ -25,7 +25,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  * 
  */
-@XObject("resource")
+@XObject("service")
 public class ServiceDescriptor implements Serializable {
 
     private static final long serialVersionUID = 6338431911839779273L;
