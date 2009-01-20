@@ -20,6 +20,10 @@
     <!-- if not defined Nuxeo will try to find the path automatically -->
     <!--<oooInstallationPath>/usr/lib/openoffice/program</oooInstallationPath>-->
 
+    <!-- define jpipe library path : used only for OOo 3 -->
+    <!--<jpipeLibPath>/opt/openoffice.org/ure/lib</jpipeLibPath>-->
+
+
     <!-- define number of time a worker process can be used before being recycled: used only if daemon is enabled -->
     <oooWorkersRecycleInterval>10</oooWorkersRecycleInterval>
 
