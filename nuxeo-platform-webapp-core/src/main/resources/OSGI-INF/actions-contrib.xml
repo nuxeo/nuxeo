@@ -367,6 +367,7 @@
       </filter>
     </action>
 
+    <!-- disabled: see NXP-3029 (even if it was disabled before) -->
     <action id="CURRENT_SELECTION_MASS_EDIT"
       link="#{massEditActions.putSelectionInWorkList}" enabled="false"
       label="command.mass_edition.addworklist" icon="">
@@ -410,8 +411,9 @@
       </filter>
     </action>
 
+    <!-- disabled: see NXP-3029 -->
     <action id="CLIPBOARD_BULK_EDIT" link="#{massEditActions.massEditWorkList}"
-      enabled="true" label="command.mass_edition.addworklist"
+      enabled="false" label="command.mass_edition.addworklist"
       icon="/icons/action_mass_edit.gif">
       <category>DEFAULT_LIST</category>
       <filter id="currentWorkListIsNotEmpty_massedit">

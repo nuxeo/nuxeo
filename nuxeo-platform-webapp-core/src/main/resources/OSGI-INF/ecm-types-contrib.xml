@@ -15,17 +15,9 @@
       <subtypes>
         <type>Domain</type>
       </subtypes>
-      <!-- new layout config -->
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
-      <!-- old layout config, to remove so that new layout is used -->
-      <layout>
-        <widget jsfcomponent="h:inputText" schemaname="dublincore"
-          fieldname="title" required="true" />
-        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-          fieldname="description" />
-      </layout>
     </type>
 
     <type id="Domain" coretype="Domain">
@@ -41,17 +33,9 @@
         <type>SectionRoot</type>
         <type>TemplateRoot</type>
       </subtypes>
-      <!-- new layout config -->
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
-      <!-- old layout config, to remove so that new layout is used -->
-      <layout>
-        <widget jsfcomponent="h:inputText" schemaname="dublincore"
-          fieldname="title" required="true" />
-        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-          fieldname="description" />
-      </layout>
     </type>
 
     <type id="WorkspaceRoot" coretype="WorkspaceRoot">
@@ -62,17 +46,9 @@
       <subtypes>
         <type>Workspace</type>
       </subtypes>
-      <!-- new layout config -->
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
-      <!-- old layout config, to remove so that new layout is used -->
-      <layout>
-        <widget jsfcomponent="h:inputText" schemaname="dublincore"
-          fieldname="title" required="true" />
-        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-          fieldname="description" />
-      </layout>
     </type>
 
     <type id="TemplateRoot" coretype="TemplateRoot">
@@ -83,17 +59,9 @@
       <subtypes>
         <type>Workspace</type>
       </subtypes>
-      <!-- new layout config -->
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
-      <!-- old layout config, to remove so that new layout is used -->
-      <layout>
-        <widget jsfcomponent="h:inputText" schemaname="dublincore"
-          fieldname="title" required="true" />
-        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-          fieldname="description" />
-      </layout>
     </type>
 
     <type id="Workspace" coretype="Workspace">
@@ -108,20 +76,10 @@
         <type>File</type>
         <type>Note</type>
       </subtypes>
-      <!-- new layout config -->
       <layouts mode="any">
         <layout>heading</layout>
         <layout>file</layout>
       </layouts>
-      <!-- old layout config, to remove so that new layout is used -->
-      <!-- layout>
-        <widget jsfcomponent="h:inputText" schemaname="dublincore"
-          fieldname="title" required="true" />
-        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-          fieldname="description" />
-        <widget jsfcomponent="t:inputFileUpload" schemaname="file"
-          fieldname="content" />
-      </layout-->
     </type>
 
     <type id="SectionRoot" coretype="SectionRoot">
@@ -132,17 +90,9 @@
       <subtypes>
         <type>Section</type>
       </subtypes>
-      <!-- new layout config -->
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
-      <!-- old layout config, to remove so that new layout is used -->
-      <layout>
-        <widget jsfcomponent="h:inputText" schemaname="dublincore"
-          fieldname="title" required="true" />
-        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-          fieldname="description" />
-      </layout>
     </type>
 
     <type id="Section" coretype="Section">
@@ -153,17 +103,9 @@
       <subtypes>
         <type>Section</type>
       </subtypes>
-      <!-- new layout config -->
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
-      <!-- old layout config, to remove so that new layout is used -->
-      <layout>
-        <widget jsfcomponent="h:inputText" schemaname="dublincore"
-          fieldname="title" required="true" />
-        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-          fieldname="description" />
-      </layout>
     </type>
 
     <type id="Folder" coretype="Folder">
@@ -176,57 +118,29 @@
         <type>File</type>
         <type>Note</type>
       </subtypes>
-      <!-- new layout config -->
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
-      <!-- old layout config, to remove so that new layout is used -->
-      <layout>
-        <widget jsfcomponent="h:inputText" schemaname="dublincore"
-          fieldname="title" required="true" />
-        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-          fieldname="description" />
-      </layout>
     </type>
 
     <type id="File" coretype="File">
       <label>File</label>
       <icon>/icons/file.gif</icon>
-      <!-- dummy default infos as an example -->
       <default-view>view_documents</default-view>
-      <!-- new layout config -->
       <layouts mode="any">
         <layout>heading</layout>
         <layout>file</layout>
       </layouts>
-      <!-- old layout config, to remove so that new layout is used -->
-      <layout>
-        <widget jsfcomponent="h:inputText" schemaname="dublincore"
-          fieldname="title" required="true" />
-        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-          fieldname="description" />
-        <widget jsfcomponent="t:inputFileUpload" schemaname="file"
-          fieldname="content" />
-      </layout>
     </type>
 
     <type id="Note" coretype="Note">
       <label>Note</label>
       <icon>/icons/note.gif</icon>
       <default-view>view_documents</default-view>
-      <!-- new layout config -->
       <layouts mode="any">
         <layout>heading</layout>
         <layout>note</layout>
       </layouts>
-      <!-- old layout config, to remove so that new layout is used -->
-      <layout>
-        <widget jsfcomponent="h:inputText" schemaname="dublincore"
-          fieldname="title" required="true" />
-        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-          fieldname="description" />
-        <widget jsfcomponent="nxu:editor" schemaname="note" fieldname="note" />
-      </layout>
     </type>
 
     <type id="AdvancedSearch" coretype="AdvancedSearch">
