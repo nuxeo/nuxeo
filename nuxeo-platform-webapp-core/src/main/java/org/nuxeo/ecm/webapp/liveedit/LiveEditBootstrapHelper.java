@@ -41,9 +41,11 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -54,7 +56,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -97,15 +98,13 @@ import org.nuxeo.runtime.api.Framework;
 public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants {
 
     protected static final String IMMUTABLE_FACET = "Immutable";
-
-    protected static final long serialVersionUID = 876879071L;
-
     protected static final String MODIFIED_FIELD = "modified";
-
     protected static final String DUBLINCORE_SCHEMA = "dublincore";
 
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(LiveEditBootstrapHelper.class);
+
+    private static final long serialVersionUID = 876879071L;
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
@@ -127,6 +126,9 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
 
     @RequestParameter
     protected String templateDocRef;
+
+    @In(create=true)
+    protected LiveEditClientConfig liveEditClientConfig;
 
     /**
      * @deprecated use blobPropertyField and filenamePropertyField instead
@@ -302,22 +304,46 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 docTitleT.setText(doc.getTitle());
             }
             addTextElement(docInfo, docRepositoryTag, repoID);
+
+            addTextElement(docInfo, docSchemaNameTag, schema);
+            addTextElement(docInfo, docFieldNameTag, blobField);
+            addTextElement(docInfo, docBlobFieldNameTag, blobField);
             Element docFieldPathT = docInfo.addElement(docfieldPathTag);
+            Element docBlobFieldPathT = docInfo.addElement(docBlobFieldPathTag);
             if (blobPropertyName != null) {
                 // FIXME AT: NXP-2306: send blobPropertyName correctly (?)
                 docFieldPathT.setText(blobPropertyName);
+                docBlobFieldPathT.setText(blobPropertyName);
             } else {
-                addTextElement(docInfo, docSchemaNameTag, schema);
-                addTextElement(docInfo, docFieldNameTag, blobField);
                 if (schema != null && blobField != null) {
-                    docFieldPathT.setText(schema + '/' + blobField);
+                    docFieldPathT.setText(schema + ':' + blobField);
+                    docBlobFieldPathT.setText(schema + ':' + blobField);
                 }
             }
+            addTextElement(docInfo, docFilenameFieldNameTag, filenameField);
+            Element docFilenameFieldPathT = docInfo.addElement(docFilenameFieldPathTag);
+            if (filenamePropertyName != null) {
+                docFilenameFieldPathT.setText(filenamePropertyName);
+            } else {
+                if (schema != null && blobField != null) {
+                    docFilenameFieldPathT.setText(schema + ':' + filenameField);
+                }
+            }
+
             addTextElement(docInfo, docfileNameTag, filename);
             addTextElement(docInfo, docTypeTag, docType);
             addTextElement(docInfo, docMimetypeTag, mimetype);
             addTextElement(docInfo, docFileExtensionTag,
                     getFileExtension(mimetype));
+
+            Element docFileAuthorizedExtensions = docInfo.addElement(docFileAuthorizedExtensionsTag);
+            List<String> authorizedExtensions = getFileExtensions(mimetype);
+            if (authorizedExtensions != null) {
+                for (String extension : authorizedExtensions) {
+                    addTextElement(docFileAuthorizedExtensions,
+                            docFileAuthorizedExtensionTag, extension);
+                }
+            }
 
             Element docIsVersionT = docInfo.addElement(docIsVersionTag);
             Element docIsLockedT = docInfo.addElement(docIsLockedTag);
@@ -327,6 +353,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             }
 
             // template information for ACTION_CREATE_DOCUMENT_FROM_TEMPLATE
+
             Element templateDocInfo = root.addElement(templateDocumentTag);
             addTextElement(templateDocInfo, docRefTag, templateDocRef);
             docPathT = templateDocInfo.addElement(docPathTag);
@@ -338,13 +365,24 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             addTextElement(templateDocInfo, docRepositoryTag, templateRepoID);
             addTextElement(templateDocInfo, docSchemaNameTag, templateSchema);
             addTextElement(templateDocInfo, docFieldNameTag, templateBlobField);
+            addTextElement(templateDocInfo, docBlobFieldNameTag, templateBlobField);
             docFieldPathT = templateDocInfo.addElement(docfieldPathTag);
+            docBlobFieldPathT = templateDocInfo.addElement(docBlobFieldPathTag);
             if (templateSchema != null && templateBlobField != null) {
-                docFieldPathT.setText(templateSchema + "/" + templateBlobField);
+                docFieldPathT.setText(templateSchema + ":" + templateBlobField);
+                docBlobFieldPathT.setText(templateSchema + ":" + templateBlobField);
             }
             addTextElement(templateDocInfo, docMimetypeTag, mimetype);
             addTextElement(templateDocInfo, docFileExtensionTag,
                     getFileExtension(mimetype));
+
+            Element templateFileAuthorizedExtensions = templateDocInfo.addElement(docFileAuthorizedExtensionsTag);
+            if (authorizedExtensions != null) {
+                for (String extension : authorizedExtensions) {
+                    addTextElement(templateFileAuthorizedExtensions,
+                            docFileAuthorizedExtensionTag, extension);
+                }
+            }
 
             // Browser request related informations
             Element requestInfo = root.addElement(requestInfoTag);
@@ -431,6 +469,15 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         }
     }
 
+    protected List<String> getFileExtensions(String mimetype) throws Exception {
+        if (mimetype == null) {
+            return null;
+        }
+        MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
+        List<String> extensions = mimetypeRegistry.getExtensionsFromMimetypeName(mimetype);
+        return extensions;
+    }
+
     protected static Element addTextElement(Element parent,
             QName newElementName, String value) {
         Element element = parent.addElement(newElementName);
@@ -456,8 +503,12 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         sb.append(userName);
         Calendar modified = null;
         if (doc != null) {
-            modified = (Calendar) doc.getProperty(DUBLINCORE_SCHEMA,
-                    MODIFIED_FIELD);
+            try {
+                modified = (Calendar) doc.getProperty(DUBLINCORE_SCHEMA,
+                        MODIFIED_FIELD);
+            } catch (ClientException e) {
+                modified = null;
+            }
         }
         if (modified == null) {
             modified = Calendar.getInstance();
@@ -476,22 +527,70 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             return false;
         }
         String mimetype = blob.getMimeType();
+        return isMimeTypeLiveEditable(mimetype);
+    }
+
+    public boolean isMimeTypeLiveEditable(String mimetype) throws ClientException {
+
         Boolean isEditable = cachedEditableStates.get(mimetype);
         if (isEditable == null) {
+
+            if (liveEditClientConfig.getLiveEditConfigurationPolicy().equals(LiveEditClientConfig.LE_CONFIG_CLIENTSIDE)){
+                // only trust client config
+                isEditable = liveEditClientConfig.isMimeTypeLiveEditable(mimetype);
+                cachedEditableStates.put(mimetype, isEditable);
+                return isEditable;
+            }
+
             try {
                 MimetypeEntry mimetypeEntry = getMimetypeRegistry().getMimetypeEntryByMimeType(
                         mimetype);
                 if (mimetypeEntry == null) {
                     isEditable = Boolean.FALSE;
                 } else {
-                    isEditable = Boolean.valueOf(mimetypeEntry.isOnlineEditable());
+                    isEditable = mimetypeEntry.isOnlineEditable();
                 }
             } catch (Throwable t) {
-                throw EJBExceptionHandler.wrapException(t);
+                throw ClientException.wrap(t);
+            }
+
+            if (liveEditClientConfig.getLiveEditConfigurationPolicy().equals(LiveEditClientConfig.LE_CONFIG_BOTHSIDES)){
+                Boolean isEditableOnClient = liveEditClientConfig.isMimeTypeLiveEditable(mimetype);
+                isEditable = isEditable && isEditableOnClient;
             }
             cachedEditableStates.put(mimetype, isEditable);
         }
-        return isEditable.booleanValue();
+        return isEditable;
+    }
+
+    @Factory(value = "msword_liveeditable", scope = ScopeType.SESSION)
+    public boolean isMSWordLiveEdititable() throws ClientException {
+        return isMimeTypeLiveEditable("application/msword");
+    }
+
+    @Factory(value = "msexcel_liveeditable", scope = ScopeType.SESSION)
+    public boolean isMSExcelLiveEdititable() throws ClientException {
+        return isMimeTypeLiveEditable("application/vnd.ms-excel");
+    }
+
+    @Factory(value = "mspowerpoint_liveeditable", scope = ScopeType.SESSION)
+    public boolean isMSPowerpointLiveEdititable() throws ClientException {
+        return isMimeTypeLiveEditable("application/vnd.ms-powerpoint");
+    }
+
+    @Factory(value = "ootext_liveeditable", scope = ScopeType.SESSION)
+    public boolean isOOTextLiveEdititable() throws ClientException {
+        return isMimeTypeLiveEditable("application/vnd.oasis.opendocument.text");
+    }
+
+    @Factory(value = "oocalc_liveeditable", scope = ScopeType.SESSION)
+    public boolean isOOCalcLiveEdititable() throws ClientException {
+        return isMimeTypeLiveEditable("application/vnd.oasis.opendocument.spreadsheet");
+    }
+
+    @Factory(value = "oopresentation_liveeditable", scope = ScopeType.SESSION)
+    public boolean isOOPresentationLiveEdititable() throws ClientException {
+        return isMimeTypeLiveEditable("application/vnd.oasis.opendocument.presentation");
     }
 
     public boolean isCurrentDocumentLiveEditable() throws ClientException {
@@ -524,6 +623,11 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             return false;
         }
 
+        // check Client browser config
+        if (!liveEditClientConfig.isLiveEditInstalled()){
+            return false;
+        }
+
         String cacheKey = documentModel.getRef() + "__" + propertyName;
         Boolean cachedEditableBlob = cachedEditableBlobs.get(cacheKey);
         if (cachedEditableBlob == null) {
@@ -548,7 +652,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 return cacheBlobToFalse(cacheKey);
             }
 
-            Blob blob = null;
+            Blob blob;
             try {
                 blob = documentModel.getProperty(propertyName).getValue(
                         Blob.class);
@@ -560,7 +664,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             cachedEditableBlob = isLiveEditable(blob);
             cachedEditableBlobs.put(cacheKey, cachedEditableBlob);
         }
-        return cachedEditableBlob.booleanValue();
+        return cachedEditableBlob;
     }
 
     protected boolean cacheBlobToFalse(String cacheKey) {

@@ -38,8 +38,9 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Context;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -103,6 +104,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
             EventNames.DOCUMENT_CHANGED }, create = false, inject = false)
+    @BypassInterceptors
     public void resetVersions() {
         versionModelList = null;
     }
@@ -148,7 +150,6 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
                 navigationContext.getCurrentDocument().getRef(),
                 selectedVersion);
         documentManager.save();
-        // documentManager.checkOut(restoredDocument.getRef());
 
         // same as edit basically
         // XXX AT: do edit events need to be sent?

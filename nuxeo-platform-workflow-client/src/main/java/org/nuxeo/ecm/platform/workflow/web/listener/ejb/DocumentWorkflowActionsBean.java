@@ -85,6 +85,7 @@ import org.nuxeo.ecm.platform.workflow.web.api.DocumentTaskActions;
 import org.nuxeo.ecm.platform.workflow.web.api.DocumentWorkflowActions;
 import org.nuxeo.ecm.platform.workflow.web.api.WorkflowBeansDelegate;
 import org.nuxeo.ecm.webapp.security.PrincipalListManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Workflow actions bean.
@@ -113,9 +114,6 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
 
     @In(create = true)
     protected WorkflowBeansDelegate workflowBeansDelegate;
-
-    @In
-    protected RepositoryLocation currentServerLocation;
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -216,7 +214,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
 
         // :XXX: Apply path rules
         // String docPath = currentItem.getPath().makeAbsolute()
-        // log.info("Doc path is :" + docPath);
+        // log.debug("Doc path is :" + docPath);
         Collection<String> defIds = wrules.getAllowedWorkflowDefinitionNamesByDoctype(docType);
 
         for (String defId : defIds) {
@@ -237,7 +235,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
                 // Lazily remove entries at runtime to avoid having to recheck
                 // in the future. It will be reloaded at startup since this is
                 // defined within extension points though.
-                log.info("Optimization : remove rules because definition no longer exist or is incorrect.");
+                log.debug("Optimization : remove rules because definition no longer exist or is incorrect.");
                 wrules.delRuleByType(defId, docType);
             }
         }
@@ -267,7 +265,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
                 if (proc != null) {
                     procs.add(proc);
                 } else {
-                    log.info("Cleanup up worklfow document mapping....");
+                    log.debug("Cleanup up worklfow document mapping....");
                     wdoc.deleteDocumentWorkflowRef(
                             getCurrentDocument().getRef(), pid);
                 }
@@ -349,17 +347,17 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
             processVariables.put(
                     WorkflowConstants.WORKFLOW_FORMER_REVIEW_LEVEL, 0);
 
+            RepositoryLocation currentServerLocation = navigationContext.getCurrentServerLocation();
             processVariables.put(WorkflowConstants.DOCUMENT_LOCATION_URI,
                     currentServerLocation.getName());
 
-            log.info("About to start a process for participant="
-                    + currentUser.getName());
+            log.debug("About to start a process for participant=" +
+                    currentUser.getName());
 
             workflowPath = wapi.startProcess(wdefId, processVariables, null);
         } catch (WMWorkflowException we) {
             workflowPath = null;
-            log.error("An error occurred while grabbing workflow definitions");
-            we.printStackTrace();
+            log.error("An error occurred while grabbing workflow definitions", we);
         }
 
         // Broadcast a message.
@@ -402,20 +400,22 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
         wfSecurityManager.removeACL(getCurrentDocument().getRef(),
                 reviewModel.getProcessInstanceId());
 
-        log.info("Deny WF rights ............ DONE");
+        log.debug("Deny WF rights");
 
         WMProcessInstance workflowInstance;
         try {
             workflowInstance = wapi.terminateProcessInstance(wid);
         } catch (WMWorkflowException we) {
             workflowInstance = null;
-            log.error("An error occurred while grabbing workflow definitions");
-            we.printStackTrace();
+            log.error("An error occurred while grabbing workflow definitions", we);
         }
 
         // Broadcast events
         if (workflowInstance != null) {
             // Prepare an event for notification
+            Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
+            List<String> participants = getWorkflowParticipants(wapi, wid);
+            eventInfo.put("", getRecipientsFromList(participants));
             notifyEvent(WorkflowEventTypes.WORKFLOW_ABANDONED, null,
                     userComment, name);
 
@@ -972,6 +972,43 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
         final Set<String> participantNameSet = new TreeSet<String>(
                 participantNameList);
         return participantNameSet.size() >= 2;
+    }
+
+    private List<String> getWorkflowParticipants(WAPI wapi, String pid) {
+        List<String> assignees = new ArrayList<String>();
+        Collection<WMWorkItemInstance> tasks = wapi.listWorkItems(pid,
+                WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
+        for (WMWorkItemInstance ti : tasks) {
+            if (ti.isCancelled()) {
+                continue;
+            }
+            assignees.add(ti.getParticipantName());
+        }
+        return assignees;
+    }
+
+    private String getRecipientsFromList(List<String> participants) {
+        StringBuilder recipients = new StringBuilder();
+        try {
+            UserManager userManager = Framework.getService(UserManager.class);
+            if (participants != null && !participants.isEmpty()) {
+                for (String participantName : participants) {
+                    boolean isUser = userManager.getGroup(participantName) == null;
+                    participantName = (isUser ? "user:" : "group:")
+                            + participantName;
+                    recipients.append(participantName).append("|");
+                }
+                String recipient = null;
+                if (recipients.toString().trim().length() > 0) {
+                    recipient = recipients.toString().substring(0,
+                            recipients.lastIndexOf("|"));
+                }
+                return recipient;
+            }
+        } catch (Exception e) {
+            log.error(e);
+        }
+        return "";
     }
 
 }

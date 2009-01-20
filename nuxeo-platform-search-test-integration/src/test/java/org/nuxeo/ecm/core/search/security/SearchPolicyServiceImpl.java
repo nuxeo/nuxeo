@@ -21,6 +21,8 @@ package org.nuxeo.ecm.core.search.security;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.query.sql.model.IntegerLiteral;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
@@ -51,9 +53,14 @@ public class SearchPolicyServiceImpl implements SearchPolicyService {
         if (principal == null) {
             return nxqlQuery;
         }
-        Predicate add = new Predicate(new Reference("sp:securityLevel"),
-                Operator.LTEQ, new IntegerLiteral((Long) principal.getModel()
-                        .getProperty("user", "accessLevel")));
+        Predicate add;
+        try {
+            add = new Predicate(new Reference("sp:securityLevel"),
+                    Operator.LTEQ, new IntegerLiteral((Long) principal.getModel()
+                            .getProperty("user", "accessLevel")));
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
         if (!query.getWhereClause().toString().contains(add.toString())) {
             WhereClause wc;
             if (query.getWhereClause() != null) {

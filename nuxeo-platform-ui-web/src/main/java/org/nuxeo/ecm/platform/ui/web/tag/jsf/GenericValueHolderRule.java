@@ -62,8 +62,7 @@ public class GenericValueHolderRule extends MetaRule {
 
         @Override
         public void applyMetadata(FaceletContext ctx, Object instance) {
-            ((ValueHolder) instance).setConverter(
-                    ctx.getFacesContext().getApplication().createConverter(
+            ((ValueHolder) instance).setConverter(ctx.getFacesContext().getApplication().createConverter(
                     converterId));
         }
     }
@@ -94,7 +93,7 @@ public class GenericValueHolderRule extends MetaRule {
 
         @Override
         public void applyMetadata(FaceletContext ctx, Object instance) {
-             ((UIComponent) instance).setValueExpression("converter",
+            ((UIComponent) instance).setValueExpression("converter",
                     attr.getValueExpression(ctx, Converter.class));
         }
     }
@@ -123,7 +122,7 @@ public class GenericValueHolderRule extends MetaRule {
 
         @Override
         public void applyMetadata(FaceletContext ctx, Object instance) {
-             ((UIComponent) instance).setValueExpression("value",
+            ((UIComponent) instance).setValueExpression("value",
                     attr.getValueExpression(ctx, Object.class));
         }
     }
@@ -158,7 +157,8 @@ public class GenericValueHolderRule extends MetaRule {
             Class returnType = Object.class;
             MethodExpression meth = attr.getMethodExpression(ctx, returnType,
                     paramTypesClasses);
-            ValueExpression ve = new MethodValueExpression(ctx, meth,
+            ValueExpression ve = new MethodValueExpression(
+                    ctx.getFunctionMapper(), ctx.getVariableMapper(), meth,
                     paramTypesClasses);
             ((UIComponent) instance).setValueBinding("value",
                     new LegacyValueBinding(ve));

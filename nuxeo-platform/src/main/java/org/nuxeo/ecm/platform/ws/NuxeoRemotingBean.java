@@ -68,6 +68,7 @@ import org.nuxeo.runtime.api.Framework;
  * Nuxeo remoting stateful session bean.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 @Stateless
 @SerializedConcurrentAccess
@@ -75,9 +76,6 @@ import org.nuxeo.runtime.api.Framework;
 @Remote(NuxeoRemoting.class)
 @WebService(name = "NuxeoRemotingInterface", serviceName = "NuxeoRemotingService")
 @SOAPBinding(style = Style.DOCUMENT)
-// @SecurityDomain("nuxeo-ecm")
-// @PortComponent(authMethod="BASIC", transportGuarantee="NONE",
-// configName="Standard WSSecurity Endpoint")
 public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         NuxeoRemoting {
 
@@ -105,25 +103,27 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
     }
 
     @WebMethod
-    public DocumentSnapshot getDocumentSnapshot(String sid, String uuid) throws ClientException
-    {
+    public DocumentSnapshot getDocumentSnapshot(String sid, String uuid) throws ClientException {
+        return getDocumentSnapshotExt(sid, uuid, false);
+    }
+
+    public DocumentSnapshot getDocumentSnapshotExt(String sid, String uuid, boolean useDownloadUrl) throws ClientException {
         WSRemotingSession rs = initSession(sid);
         DocumentModel doc = rs.getDocumentManager().getDocument(new IdRef(uuid));
 
         DocumentProperty[] props = getDocumentNoBlobProperties(doc, rs);
-        DocumentBlob[] blobs = getDocumentBlobs(doc, rs);
+        DocumentBlob[] blobs = getDocumentBlobs(doc, rs, useDownloadUrl);
 
-        ACE[] resACP=null;
+        ACE[] resACP = null;
 
         ACP acp = doc.getACP();
         if (acp != null) {
             ACL acl = acp.getMergedACLs("MergedACL");
-            resACP= acl.toArray(new ACE[acl.size()]);
+            resACP = acl.toArray(new ACE[acl.size()]);
         }
-        DocumentSnapshot ds = new DocumentSnapshot(props,blobs,doc.getPathAsString(),resACP);
+        DocumentSnapshot ds = new DocumentSnapshot(props, blobs, doc.getPathAsString(), resACP);
         return ds;
     }
-
 
     @WebMethod
     public ACE[] getDocumentLocalACL(String sid, String uuid) throws ClientException {
@@ -153,7 +153,11 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
     }
 
     @WebMethod
-    public DocumentBlob[] getDocumentBlobs(String sid, String uuid)
+    public DocumentBlob[] getDocumentBlobs(String sid, String uuid) throws ClientException {
+        return getDocumentBlobsExt(sid, uuid, false);
+    }
+
+    public DocumentBlob[] getDocumentBlobsExt(String sid, String uuid, boolean useDownloadUrl)
             throws ClientException {
         WSRemotingSession rs = initSession(sid);
         DocumentModel doc = rs.getDocumentManager().getDocument(new IdRef(uuid));
@@ -161,24 +165,22 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
             return null;
         }
 
-        return getDocumentBlobs(doc, rs);
+        return getDocumentBlobs(doc, rs, useDownloadUrl);
     }
 
-    protected DocumentBlob[] getDocumentBlobs(DocumentModel doc,  WSRemotingSession rs) throws ClientException
-    {
+    protected DocumentBlob[] getDocumentBlobs(DocumentModel doc, WSRemotingSession rs, boolean useDownloadUrl) throws ClientException {
         List<DocumentBlob> blobs = new ArrayList<DocumentBlob>();
         String[] schemas = doc.getDeclaredSchemas();
         for (String schema : schemas) {
             DataModel dm = doc.getDataModel(schema);
             Map<String, Object> map = dm.getMap();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
-                collectBlobs(rs, "", map, entry.getKey(), entry.getValue(),
-                        blobs);
+                collectBlobs(doc.getId(), schema, rs, "", map, entry.getKey(), entry.getValue(),
+                        blobs, useDownloadUrl);
             }
         }
         return blobs.toArray(new DocumentBlob[blobs.size()]);
     }
-
 
     @WebMethod
     public String[] listUsers(String sid, int from, int to)
@@ -412,22 +414,22 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
     }
 
     @SuppressWarnings("unchecked")
-    protected void collectBlobs(WSRemotingSession rs, String prefix,
+    protected void collectBlobs(String docId, String schemaName, WSRemotingSession rs, String prefix,
             Map<String, Object> container, String name, Object value,
-            List<DocumentBlob> blobs) throws ClientException {
+            List<DocumentBlob> blobs, boolean useDownloadUrl) throws ClientException {
         if (value instanceof Map) {
             Map<String, Object> map = (Map<String, Object>) value;
             prefix = prefix + name + '/';
             for (Map.Entry<String, Object> entry : map.entrySet()) {
-                collectBlobs(rs, prefix, map, entry.getKey(), entry.getValue(),
-                        blobs);
+                collectBlobs(docId, schemaName, rs, prefix, map, entry.getKey(), entry.getValue(),
+                        blobs,useDownloadUrl);
             }
         } else if (value instanceof List) {
             prefix = prefix + name + '/';
             List<Object> list = (List<Object>) value;
             for (int i = 0, len = list.size(); i < len; i++) {
-                collectBlobs(rs, prefix, container, String.valueOf(i),
-                        list.get(i), blobs);
+                collectBlobs(docId, schemaName, rs, prefix, container, String.valueOf(i),
+                        list.get(i), blobs, useDownloadUrl);
             }
         } else if (value instanceof Blob) {
             try {
@@ -436,7 +438,19 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
                 if (filename == null) {
                     filename = prefix + name;
                 }
-                DocumentBlob db = new DocumentBlob(filename, blob);
+
+                DocumentBlob db=null;
+                if (useDownloadUrl)
+                {
+                    String repoName = rs.getDocumentManager().getRepositoryName();
+                    String downloadUrl = getDownloadUrl(repoName, docId, schemaName, prefix+name, filename);
+                    db= new DocumentBlob(filename,blob.getEncoding(),blob.getMimeType(),downloadUrl);
+                }
+                else
+                {
+                    db= new DocumentBlob(filename, blob);
+                }
+
                 // List<String> extensions =
                 // rs.mimeTypeReg.getExtensionsFromMimetypeName(blob.getMimeType());
                 // if (extensions != null) {
@@ -448,6 +462,31 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
                 throw new ClientException("Failed to get document blob", e);
             }
         }
+    }
+
+    protected String getSchemaPrefix(String schemaName) {
+        // XXX : no API to get the prefix from the schemaName !
+        return schemaName;
+    }
+
+    protected String getDownloadUrl(String repoName, String docId, String schemaName, String xPath, String fileName) {
+        //String downloadUrl = "/nxbigfile/default/1f4f31c4-9b07-4709-9563-7d60a96f63ed/file:content/preview.pdf";
+        schemaName = getSchemaPrefix(schemaName);
+
+        StringBuilder sb = new StringBuilder();
+        //if (xPath.startsWith(schemaName + "/"))
+        //    xPath = xPath.replace(schemaName + "/", "");
+        sb.append("/nxbigfile/");
+        sb.append(repoName);
+        sb.append("/");
+        sb.append(docId);
+        sb.append("/");
+        sb.append(schemaName);
+        sb.append(":");
+        sb.append(xPath);
+        sb.append("/");
+        sb.append(fileName);
+        return sb.toString();
     }
 
     @WebMethod
@@ -490,6 +529,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return groups.toArray(new String[groups.size()]);
     }
 
+    @SuppressWarnings("unchecked")
     @WebMethod
     public String getRelativePathAsString(String sessionId, String uuid)
             throws ClientException {
@@ -503,7 +543,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         }
     }
 
-    public Map<String, Object> createDataMap(String[] propertiesArray) {
+    private Map<String, Object> createDataMap(String[] propertiesArray) {
         Map<String, Object> map = new HashMap<String, Object>();
 
         for (int i = 0; i < propertiesArray.length; i += 2) {
@@ -517,6 +557,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return map;
     }
 
+    @SuppressWarnings("unchecked")
     private void createSubMaps(Map<String, Object> map, String[] path,
             String value, int depth) {
         String key = path[depth];
@@ -533,6 +574,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         }
     }
 
+    @SuppressWarnings("unchecked")
     @WebMethod
     public String uploadDocument(String sid, String parentUUID, String type,
             String[] properties) throws ClientException {

@@ -40,7 +40,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
@@ -160,7 +160,7 @@ public class WorkItemsListsActionsBean extends InputController implements
                     "No name submitted for the creation of the work items list... Cancelling");
         }
 
-        // Check that the name has not been choosen yet by user
+        // Check that the name has not been chosen yet by user
         if (wiLists.getWorkItemListEntryByName(participantName, name) == null) {
             wiLists.saveWorkItemsListFor(pid, participantName, name);
             Events.instance().raiseEvent(EventNames.WORK_ITEMS_LIST_ADDED);

@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
+import javax.faces.application.FacesMessage;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -36,12 +37,14 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
-import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.annotations.remoting.WebRemote;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -79,7 +82,6 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
  * @author DM
  *
  */
-
 @Name("searchActions")
 @Scope(ScopeType.CONVERSATION)
 @Transactional
@@ -134,6 +136,9 @@ public class SearchActionsBean extends InputController implements
     @In(required = false, create = true)
     private transient ResultsProvidersCache resultsProvidersCache;
 
+    @In(required = false, create = true)
+    protected transient FacesMessages facesMessages;
+
     @In(create = true)
     private transient ClipboardActions clipboardActions;
 
@@ -180,28 +185,30 @@ public class SearchActionsBean extends InputController implements
     // business methods
     //
 
+    @BypassInterceptors
     public String getSimpleSearchKeywords() {
         return simpleSearchKeywords;
     }
 
     public void setSimpleSearchKeywords(String k) {
-        this.simpleSearchKeywords = k;
+        simpleSearchKeywords = k;
     }
 
     public String getNxql() {
-        return this.nxql;
+        return nxql;
     }
 
     public void setNxql(String k) {
-        this.nxql = k;
+        nxql = k;
     }
 
+    @BypassInterceptors
     public String getSearchTypeId() {
-        return this.searchTypeId.name();
+        return searchTypeId.name();
     }
 
     public void setSearchTypeId(String type) {
-        this.searchTypeId = SearchType.valueOf(type);
+        searchTypeId = SearchType.valueOf(type);
     }
 
     public String getReindexPath() {
@@ -224,21 +231,22 @@ public class SearchActionsBean extends InputController implements
             // param not set
             return;
         }
-        this.searchTypeId = SearchType.valueOf(type);
+        searchTypeId = SearchType.valueOf(type);
     }
 
     @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false)
+    @BypassInterceptors
     public void resetSearchField() {
-        this.simpleSearchKeywords = "";
-        this.searchTypeId = SearchType.KEYWORDS;
+        simpleSearchKeywords = "";
+        searchTypeId = SearchType.KEYWORDS;
     }
 
     public String getQueryErrorMsg() {
-        return this.queryErrorMsg;
+        return queryErrorMsg;
     }
 
     public void setQueryErrorMsg(String msg) {
-        this.queryErrorMsg = msg;
+        queryErrorMsg = msg;
     }
 
     @Begin(join = true)
@@ -246,7 +254,7 @@ public class SearchActionsBean extends InputController implements
         // clear the form...
         // TODO add this to CONVERSATION
 
-        this.queryErrorMsg = "";
+        queryErrorMsg = "";
         // this.resultDocuments = null;
 
         return ACTION_PAGE_SEARCH_FORM;
@@ -303,9 +311,23 @@ public class SearchActionsBean extends InputController implements
                         sortInfo);
                 page = ACTION_PAGE_SEARCH_ADVANCED;
             } else if (searchTypeId == SearchType.KEYWORDS) {
-                if (simpleSearchKeywords == null) {
+                if (simpleSearchKeywords == null || simpleSearchKeywords == "") {
                     log.warn("simpleSearchKeywords not given");
+                    facesMessages.add(FacesMessage.SEVERITY_INFO,
+                            resourcesAccessor.getMessages().get(
+                                    "feedback.search.noKeywords"));
                     return ACTION_PAGE_SEARCH_NO_KEYWORDS;
+                }
+                String[] keywords = simpleSearchKeywords.split(" ");
+                for (String string : keywords) {
+                    if (string.startsWith("*")) {
+                        log.warn("Can't begin search with * character");
+                        facesMessages.add(FacesMessage.SEVERITY_INFO,
+                                resourcesAccessor.getMessages().get(
+                                        "feedback.search.star"));
+                        return ACTION_PAGE_SEARCH_NO_KEYWORDS;
+
+                    }
                 }
                 resultsProvidersCache.invalidate(QM_SIMPLE);
                 resultsProvider = resultsProvidersCache.get(QM_SIMPLE);
@@ -357,7 +379,8 @@ public class SearchActionsBean extends InputController implements
 
     public SelectDataModel getResultsSelectModel(String providerName)
             throws ClientException {
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(SEARCH_DOCUMENT_LIST,
                 getResultDocuments(providerName), selectedDocuments);
         model.addSelectModelListener(this);
@@ -468,7 +491,7 @@ public class SearchActionsBean extends InputController implements
             SortInfo sortInfo) throws ClientException,
             ResultsProviderFarmUserException {
         // TODO param!
-        // XXX : we have here a dependency to the Core implemetation
+        // XXX : we have here a dependency to the Core implementation
         try {
             switch (searchTypeId) {
             case NXQL:
@@ -506,6 +529,7 @@ public class SearchActionsBean extends InputController implements
     }
 
     @Observer(value = { org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHILDREN_CHANGED }, create = false)
+
     public void refreshCache() {
         // XXX invalidate both because no way to know in which list it appended
         resultsProvidersCache.invalidate(QM_SIMPLE);

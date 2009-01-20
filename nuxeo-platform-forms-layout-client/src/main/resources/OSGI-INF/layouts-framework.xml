@@ -173,4 +173,20 @@
       class="org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutDescriptor" />
   </extension-point>
 
+  <extension-point name="widgets">
+
+    <documentation>
+      Since 5.1.7 and 5.2.0, a widget can be defined globally in the
+      application.
+
+      Layouts can reference global widgets in their row definition without
+      having to redefine them in their widgets definitions. The widget with
+      given name will be searched in this global registry only if it is not
+      found in the layout definition.
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor" />
+  </extension-point>
+
 </component>

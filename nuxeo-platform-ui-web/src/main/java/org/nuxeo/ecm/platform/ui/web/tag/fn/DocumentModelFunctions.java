@@ -31,6 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.Component;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.core.Manager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -90,6 +92,10 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     // static cache of default viewId per document type shared all among threads
     private static final Map<String, String> defaultViewCache = Collections.synchronizedMap(new HashMap<String, String>());
 
+    // Utility class.
+    private DocumentModelFunctions() {
+    }
+
     private static DirectoryService getDirectoryService() {
         if (dirService == null) {
             dirService = DirectoryHelper.getDirectoryService();
@@ -137,10 +143,6 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         }
     }
 
-    // Utility class.
-    private DocumentModelFunctions() {
-    }
-
     public static TypeInfo typeInfo(DocumentModel document) {
         if (document != null) {
             return document.getAdapter(TypeInfo.class);
@@ -174,7 +176,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String iconPath(DocumentModel document) {
         String iconPath = "";
         if (document != null) {
-            iconPath = (String) document.getProperty("common", "icon");
+            try {
+                iconPath = (String) document.getProperty("common", "icon");
+            } catch (ClientException e) {
+                iconPath = null;
+            }
             if (iconPath == null || iconPath.length() == 0
                     || document.getType().equals("Workspace")) {
                 TypeInfo typeInfo = document.getAdapter(TypeInfo.class);
@@ -189,7 +195,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String iconExpandedPath(DocumentModel document) {
         String iconPath = "";
         if (document != null) {
-            iconPath = (String) document.getProperty("common", "icon-expanded");
+            try {
+                iconPath = (String) document.getProperty("common", "icon-expanded");
+            } catch (ClientException e) {
+                iconPath = null;
+            }
             if (iconPath == null || iconPath.length() == 0) {
                 TypeInfo typeInfo = document.getAdapter(TypeInfo.class);
                 if (typeInfo != null) {
@@ -226,7 +236,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String titleOrId(DocumentModel document) {
         String title = null;
         if (document != null) {
-            title = (String) document.getProperty("dublincore", "title");
+            try {
+                title = (String) document.getProperty("dublincore", "title");
+            } catch (ClientException e) {
+                title = null;
+            }
             if (title == null || title.length() == 0) {
                 title = document.getId();
             }
@@ -248,27 +262,32 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (document == null) {
             return false;
         }
-        String sid = document.getSessionId();
-        CoreSession session;
+
+        CoreSession session = (CoreSession) Component.getInstance("documentManager", ScopeType.CONVERSATION);
+
         boolean sessionOpened = false;
-
-        if (sid != null) {
-            session = CoreInstance.getInstance().getSession(sid);
-        } else {
-            String repositoryName = document.getRepositoryName();
-            if (repositoryName != null) {
-                session = CoreInstance.getInstance().open(repositoryName, null);
-                sessionOpened = true;
+        if (session == null) {
+            String sid = document.getSessionId();
+            if (sid != null) {
+                session = CoreInstance.getInstance().getSession(sid);
             } else {
-                throw new ClientException("Cannot reconnect to Nuxeo core: no "
-                        + "repository name for document model");
+                String repositoryName = document.getRepositoryName();
+                if (repositoryName != null) {
+                    session = CoreInstance.getInstance().open(repositoryName,
+                            null);
+                    sessionOpened = true;
+                } else {
+                    throw new ClientException(
+                            "Cannot reconnect to Nuxeo core: no "
+                                    + "repository name for document model");
+                }
             }
-        }
 
-        if (null == session) {
-            log.error("Cannot retrieve CoreSession for document "
-                    + document.getTitle() + " with sid=" + sid);
-            return false;
+            if (null == session) {
+                log.error("Cannot retrieve CoreSession for document "
+                        + document.getTitle() + " with sid=" + sid);
+                return false;
+            }
         }
 
         boolean granted = session.hasPermission(document.getRef(), permission);
@@ -347,8 +366,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String fileUrl(String patternName, DocumentModel doc,
             String blobPropertyName, String filename) {
         try {
-            DocumentLocation docLoc = new DocumentLocationImpl(
-                    doc.getRepositoryName(), doc.getRef());
+            DocumentLocation docLoc = new DocumentLocationImpl(doc);
             Map<String, String> params = new HashMap<String, String>();
             params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY,
                     blobPropertyName);
@@ -368,6 +386,38 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         }
 
         return null;
+    }
+
+    public static String fileDescription(DocumentModel document,
+            String blobPropertyName, String filePropertyName) {
+        String fileInfo = "";
+        if (document != null) {
+            Long blobLength = null;
+            try {
+                Blob blob = (Blob) document.getPropertyValue(blobPropertyName);
+                if (blob != null) {
+                    blobLength = blob.getLength();
+                }
+            } catch (ClientException e) {
+                // no prop by that name with that type
+            }
+            String filename = null;
+            try {
+                filename = (String) document.getPropertyValue(filePropertyName);
+            } catch (ClientException e) {
+                // no prop by that name with that type
+            }
+            if (blobLength != null && filename != null) {
+                fileInfo = String.format("%s [%s]", filename,
+                        Functions.printFileSize(String.valueOf(blobLength)));
+            } else if (blobLength != null) {
+                fileInfo = String.format("[%s]",
+                        Functions.printFileSize(String.valueOf(blobLength)));
+            } else if (filename != null) {
+                fileInfo = filename;
+            }
+        }
+        return fileInfo;
     }
 
     /**
@@ -408,11 +458,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             String listElement, int index, String blobPropertyName,
             String filename) {
         try {
-            DocumentLocation docLoc = new DocumentLocationImpl(
-                    doc.getRepositoryName(), doc.getRef());
+            DocumentLocation docLoc = new DocumentLocationImpl(doc);
             Map<String, String> params = new HashMap<String, String>();
 
-            String fileProperty = getPropertyPath(listElement, index, blobPropertyName);
+            String fileProperty = getPropertyPath(listElement, index,
+                    blobPropertyName);
 
             params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, fileProperty);
             params.put(DocumentFileCodec.FILENAME_KEY, filename);
@@ -443,8 +493,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             String viewId, Map<String, String> parameters,
             boolean newConversation) {
         try {
-            DocumentLocation docLoc = new DocumentLocationImpl(
-                    doc.getRepositoryName(), doc.getRef());
+            DocumentLocation docLoc = new DocumentLocationImpl(doc);
             if (viewId == null) {
                 viewId = getDefaultView(doc);
             }
@@ -697,7 +746,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @param id the label id
      * @return the label.
      * @throws DirectoryException
-     * @deprecated use {@link DirectoryFunctions#getDirectoryEntry(String, String)}
+     * @deprecated use
+     *             {@link DirectoryFunctions#getDirectoryEntry(String, String)}
      */
     @Deprecated
     public static String getLabelFromId(String directoryName, String id)

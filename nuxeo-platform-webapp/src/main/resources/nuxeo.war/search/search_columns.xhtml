@@ -4,8 +4,8 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxdir="http://nuxeo.org/nxdirectory">
 
    <nxdir:chainSelect
@@ -82,12 +82,12 @@
   <h:inputHidden id="fieldRef2" value="#{searchColumns.fieldRef2}" />
 
   <a4j:outputPanel id="a4j_resultFieldList">
-  <t:dataList id="resultFieldList" var="field" layout="simple"
+  <nxu:dataList id="resultFieldList" var="field" layout="simple"
         value="#{searchColumns.resultColumns}"
     styleClass="resultColumnsContainer">
 
     <div id="fieldRef:#{field.fullName}" class="cell" style="display: inline">
-      <t:outputText value="#{messages[field.label]}" />
+      <h:outputText value="#{messages[field.label]}" />
      <a4j:commandLink
        reRender="a4j_resultFieldList, result_messages, sortPanelGrid"
        styleClass="button"
@@ -106,7 +106,7 @@
             value="Droppables.add('fieldRef:#{field.fullName}', {accept:'cell', onDrop:function(element){swapColumns(element.id,'fieldRef:#{field.fullName}')}, hoverclass:'dropInto'});"/>
         </script>
 
-  </t:dataList>
+  </nxu:dataList>
   <br />
   </a4j:outputPanel>
   </div>
@@ -116,7 +116,7 @@
     <h:outputText value="#{messages['label.search.orderBy']}" />
     <h:selectOneMenu value="#{searchColumns.sortColumn}" >
       <f:selectItem itemLabel="#{messages['label.vocabulary.selectValue']}" itemValue="" />
-      <t:selectItems value="#{searchColumns.resultColumns}" var="field"
+      <nxu:selectItems value="#{searchColumns.resultColumns}" var="field"
         itemLabel="#{messages[field.label]}" itemValue="#{field.prefixedName}" />
     </h:selectOneMenu>
 

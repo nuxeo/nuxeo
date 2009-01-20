@@ -21,19 +21,22 @@ package org.nuxeo.ecm.platform.usermanager;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
 
-@XObject(value = "userManager", order = { "users/anonymousUser",
-        "users/anonymousUser@id", "users/anonymousUser/property" })
+@XObject(value = "userManager")
 public class UserManagerDescriptor implements Serializable {
+
+    private static final Log log = LogFactory.getLog(UserManagerDescriptor.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -67,11 +70,10 @@ public class UserManagerDescriptor implements Serializable {
         this.userListingMode = userListingMode;
     }
 
-    protected boolean userSearchFieldsPresent;
+    protected boolean userSearchFieldsPresent = false;
 
     @XNode("users/searchFields")
-    protected void setUserSearchFieldsPresent(
-            @SuppressWarnings("unused")
+    protected void setUserSearchFieldsPresent(@SuppressWarnings("unused")
     String text) {
         userSearchFieldsPresent = true;
     }
@@ -79,8 +81,31 @@ public class UserManagerDescriptor implements Serializable {
     @XNode("users/searchFields@append")
     protected boolean userSearchFieldsAppend;
 
-    @XNodeList(value = "users/searchFields/searchField", type = HashSet.class, componentType = String.class)
-    Set<String> userSearchFields;
+    Map<String, MatchType> userSearchFields = new LinkedHashMap<String, MatchType>();
+
+    @XNodeList(value = "users/searchFields/exactMatchSearchField", componentType = String.class, type = String[].class)
+    protected void setExactMatchUserSearchFields(String[] fields) {
+        for (String field: fields) {
+            userSearchFields.put(field, MatchType.EXACT);
+        }
+    }
+
+
+    @XNodeList(value = "users/searchFields/substringMatchSearchField", componentType = String.class, type = String[].class)
+    protected void setSubstringMatchUserSearchFields(String[] fields) {
+        for (String field: fields) {
+            userSearchFields.put(field, MatchType.SUBSTRING);
+        }
+    }
+
+    /**
+     * @deprecated use setSubstringMatchUserSearchFields instead
+     */
+    @Deprecated
+    @XNodeList(value = "users/searchFields/searchField", componentType = String.class, type = String[].class)
+    protected void setUserSearchFields(String[] fields) {
+        setSubstringMatchUserSearchFields(fields);
+    }
 
     protected Pattern userPasswordPattern;
 
@@ -89,39 +114,11 @@ public class UserManagerDescriptor implements Serializable {
         userPasswordPattern = Pattern.compile(pattern);
     }
 
-    protected boolean anonymousUserSpecified;
-
     @XNode("users/anonymousUser")
-    protected void setAnonymousUserSpecified(@SuppressWarnings("unused")
-    String text) {
-        anonymousUserSpecified = true;
-    }
+    protected VirtualUserDescriptor anonymousUser;
 
-    @XNode("users/anonymousUser@remove")
-    protected boolean anonymousUserRemove;
-
-    @XNode("users/anonymousUser@id")
-    protected String anonymousUserId;
-
-    protected Map<String, String> anonymousUser;
-
-    @XNodeMap(value = "users/anonymousUser/property", key = "@name", type = HashMap.class, componentType = String.class)
-    protected void setAnonymousUser(Map<String, String> properties) {
-        // anonymousUserSpecified is already initialized because of the order
-        // parameter in @XObject
-        if (anonymousUserSpecified) {
-            anonymousUser = properties;
-            if (anonymousUserId != null) {
-                // we should really use a dedicated class and not map
-                anonymousUser.put(UserManager.ANONYMOUS_USER_ID_KEY,
-                        anonymousUserId);
-            }
-        } else {
-            // we have to do this hack because a XNodeMap is initialized to an
-            // empty map even if the XML is not present
-            anonymousUser = null;
-        }
-    }
+    @XNodeMap(value = "users/virtualUser", key = "@id", type = HashMap.class, componentType = VirtualUserDescriptor.class)
+    protected Map<String, VirtualUserDescriptor> virtualUsers;
 
     @XNode("groups/directory")
     protected String groupDirectoryName;
@@ -171,7 +168,7 @@ public class UserManagerDescriptor implements Serializable {
         }
         if (other.userSearchFieldsPresent) {
             if (other.userSearchFieldsAppend) {
-                userSearchFields.addAll(other.userSearchFields);
+                userSearchFields.putAll(other.userSearchFields);
             } else {
                 userSearchFields = other.userSearchFields;
             }
@@ -192,10 +189,24 @@ public class UserManagerDescriptor implements Serializable {
             groupParentGroupsField = other.groupParentGroupsField;
         }
         if (other.anonymousUser != null) {
-            if (other.anonymousUserRemove) {
+            if (other.anonymousUser.remove) {
                 anonymousUser = null;
             } else {
                 anonymousUser = other.anonymousUser;
+            }
+        }
+        if (other.virtualUsers != null) {
+            if (virtualUsers == null) {
+                virtualUsers = other.virtualUsers;
+            } else {
+                for (VirtualUserDescriptor otherVirtualUser : other.virtualUsers.values()) {
+                    if (virtualUsers.containsKey(otherVirtualUser.id)
+                            && otherVirtualUser.remove) {
+                        virtualUsers.remove(otherVirtualUser.id);
+                    } else {
+                        virtualUsers.put(otherVirtualUser.id, otherVirtualUser);
+                    }
+                }
             }
         }
     }

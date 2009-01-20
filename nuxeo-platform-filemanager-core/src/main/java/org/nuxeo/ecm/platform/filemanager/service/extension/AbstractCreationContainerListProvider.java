@@ -23,10 +23,9 @@ import java.util.Arrays;
 
 /**
  * Helper class to contribute CreationContainerListProvider implementation to
- * the FileManagerService
+ * the FileManagerService.
  *
- * @author Olivier Grisel <ogrisel@nuxeo.com>
- *
+ * @author Olivier Grisel (ogrisel@nuxeo.com)
  */
 public abstract class AbstractCreationContainerListProvider implements
         CreationContainerListProvider {

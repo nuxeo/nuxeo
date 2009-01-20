@@ -5,7 +5,6 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
@@ -149,13 +148,13 @@
                       value="#{messages['label.userManager.userGroups']}" />
                   </td>
                   <td class="fieldColumn">
-                    <t:dataList var="group"
+                    <nxu:dataList var="group"
                       value="#{selectedUser.groups}" layout="simple"
                       rowCountVar="rowCount" rowIndexVar="rowIndex">
                       <h:outputText value="#{group}" />
                       <h:outputText value=", "
                         rendered="#{rowIndex + 1 &lt; rowCount}" />
-                    </t:dataList>
+                    </nxu:dataList>
                   </td>
                 </tr>
               </tbody>

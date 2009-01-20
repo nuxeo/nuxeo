@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webapp.querymodel;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;

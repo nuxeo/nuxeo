@@ -53,8 +53,6 @@ public class TestPublishingService extends NXRuntimeTestCase {
     /**
      * Remote lookup will fail since the service is defined at platform level
      * using an EJB name.
-     *
-     * @throws Exception
      */
     public void xtestRemoteRuntimeServiceLookup() throws Exception {
         boolean failed = false;

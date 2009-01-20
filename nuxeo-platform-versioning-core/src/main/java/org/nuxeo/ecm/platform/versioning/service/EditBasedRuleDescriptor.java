@@ -33,6 +33,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * <p>
  * To decide whether or not a rule of this type is a candidate, the service
  * checks for the following document properties:
+ * <ul>
  * <li>lifecycleState : the document has to be in the specified state. The
  * wildcard '*' can be used to specify any lifecycle state.</li>
  * <li>document type
@@ -43,6 +44,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * doc types </li>
  * </ul>
  * </li>
+ * </ul>
  *
  * @author DM
  *
@@ -76,7 +78,6 @@ public class EditBasedRuleDescriptor implements RuleDescriptor {
 
     /**
      * Default constructor - used normally when created as an XObject.
-     *
      */
     public EditBasedRuleDescriptor() {
         log.debug("<EditBasedRuleDescriptor:init>");
@@ -123,7 +124,6 @@ public class EditBasedRuleDescriptor implements RuleDescriptor {
     }
 
     public boolean isDocTypeExcluded(String docType) {
-
         for (String excludedDocType : excludeDocTypes) {
             if (excludedDocType.equals(docType)) {
                 return true;

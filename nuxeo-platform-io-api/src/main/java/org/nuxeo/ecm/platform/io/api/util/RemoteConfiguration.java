@@ -35,7 +35,7 @@ public class RemoteConfiguration extends AbstractIOConfiguration {
     private static final long serialVersionUID = 1L;
 
     protected transient IOManager manager;
-    protected Properties jndiEnv;
+    protected final Properties jndiEnv;
     protected String jndiName;
 
     public RemoteConfiguration(String jndiName, Properties jndiEnv) {
@@ -57,4 +57,5 @@ public class RemoteConfiguration extends AbstractIOConfiguration {
     public boolean isLocal() {
         return false;
     }
+
 }

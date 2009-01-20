@@ -26,8 +26,10 @@ import java.io.ObjectOutput;
 
 import javax.el.ELContext;
 import javax.el.ELException;
+import javax.el.FunctionMapper;
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
+import javax.el.VariableMapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,7 +48,9 @@ public class MethodValueExpression extends ValueExpression implements
 
     private static final long serialVersionUID = 1228707110702282837L;
 
-    private ELContext context;
+    private FunctionMapper functionMapper;
+
+    private VariableMapper variableMapper;
 
     private MethodExpression methodExpression;
 
@@ -55,9 +59,11 @@ public class MethodValueExpression extends ValueExpression implements
     public MethodValueExpression() {
     }
 
-    public MethodValueExpression(ELContext context,
-            MethodExpression methodExpression, Class[] paramTypesClasses) {
-        this.context = context;
+    public MethodValueExpression(FunctionMapper functionMapper,
+            VariableMapper variableMapper, MethodExpression methodExpression,
+            Class[] paramTypesClasses) {
+        this.functionMapper = functionMapper;
+        this.variableMapper = variableMapper;
         this.methodExpression = methodExpression;
         this.paramTypesClasses = paramTypesClasses;
     }
@@ -108,7 +114,7 @@ public class MethodValueExpression extends ValueExpression implements
         // invoke method instead of resolving value
         try {
             EvaluationContext evalCtx = new EvaluationContext(arg0,
-                    context.getFunctionMapper(), context.getVariableMapper());
+                    functionMapper, variableMapper);
             return methodExpression.invoke(evalCtx, paramTypesClasses);
         } catch (Throwable t) {
             throw new ELException(

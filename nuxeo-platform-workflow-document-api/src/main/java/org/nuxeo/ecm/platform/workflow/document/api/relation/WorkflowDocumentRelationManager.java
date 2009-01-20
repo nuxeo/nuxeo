@@ -20,6 +20,9 @@
 package org.nuxeo.ecm.platform.workflow.document.api.relation;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentRef;
 
@@ -33,7 +36,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  * workflow instances may be bound to one or several documents.
  *
  * @See org.nuxeo.ecm.platform.workflow.document.DocumentRefEntry
- *
  * @See org.nuxeo.ecm.platform.workflow.document.WorkflowInstanceRefEntry
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
@@ -79,5 +81,12 @@ public interface WorkflowDocumentRelationManager extends Serializable {
      */
     void deleteDocumentWorkflowRef(DocumentRef docRef,
             String pid) throws WorkflowDocumentRelationException;
+
+    /**
+     *
+     * @param pids Process instance Id
+     * @return map pid - document ref ids associated with this pid.
+     */
+    Map<String, List<String>> getDocumentModelsPids(Set<String> pids);
 
 }

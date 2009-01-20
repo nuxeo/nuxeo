@@ -78,21 +78,26 @@ public class FancyURLResponseWrapper extends HttpServletResponseWrapper {
         } else {
             // parse url to get outcome from view id
             String viewId = url;
+            String webAppName = "/" + BaseURL.getWebAppName();
             if (viewId.startsWith(baseUrl)) {
+                // url is absolute
                 viewId = '/' + viewId.substring(baseUrl.length());
+            } else if (viewId.startsWith(webAppName)) {
+                // url is relative to the web app
+                viewId = viewId.substring(webAppName.length());
             }
             int index = viewId.indexOf('?');
             if (index != -1) {
                 viewId = viewId.substring(0, index);
             }
-            docView.setViewId(navigationHandler.getOutcomeFromViewId(viewId));
+            String jsfOutcome = navigationHandler.getOutcomeFromViewId(viewId);
+            docView.setViewId(jsfOutcome);
         }
 
         int index = url.indexOf('?');
         if (index != -1) {
             String uriString = url.substring(index + 1);
-            Map<String, String> parameters = URIUtils.getRequestParameters(
-                    uriString);
+            Map<String, String> parameters = URIUtils.getRequestParameters(uriString);
             if (parameters != null) {
                 for (Map.Entry<String, String> entry : parameters.entrySet()) {
                     docView.addParameter(entry.getKey(), entry.getValue());

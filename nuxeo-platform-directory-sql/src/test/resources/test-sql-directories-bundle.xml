@@ -30,7 +30,7 @@
       <table>users</table>
       <idField>username</idField>
       <passwordField>password</passwordField>
-
+      <substringMatchType>subany</substringMatchType>
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>test-users.csv</dataFile>
       <createTablePolicy>always</createTablePolicy>

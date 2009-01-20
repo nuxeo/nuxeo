@@ -5,9 +5,11 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxf="http://nuxeo.org/nxweb/function"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxd="http://nuxeo.org/nxweb/document"><a4j:region>
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
   <h:form rendered="${!empty documents}">
-    <nxu:dataTable id="#{idParam}" value="#{documents}" var="doc" preserveSort="true"
+  <a4j:region renderRegionOnly="true">
+  <a4j:outputPanel  id="#{idParam}">
+    <nxu:dataTable value="#{documents}" var="doc" preserveSort="true"
       preserveDataModel="false" rowClasses="dataRowEven,dataRowOdd"
       sortable="false" styleClass="dataList">
 
@@ -76,7 +78,8 @@
         </f:facet>
 
         <h:outputText value="#{doc.dublincore.modified}">
-          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}" />
+          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+            timeZone="#{timeZone}" />
         </h:outputText>
       </nxu:column>
 
@@ -117,11 +120,11 @@
       </nxu:column>
     </nxu:dataTable>
 
-    <a4j:commandButton value="#{messages['label.refresh']}" reRender="#{idParam}" styleClass="button" />
-  </h:form>
+    <a4j:commandButton value="#{messages['label.refresh']}" reRender="#{idParam}" styleClass="button"/>
+   </a4j:outputPanel>
 
 </a4j:region>
-
+</h:form>
 <ui:include src="/incl/popupMenu.xhtml"/>
 <script>
 // init menu

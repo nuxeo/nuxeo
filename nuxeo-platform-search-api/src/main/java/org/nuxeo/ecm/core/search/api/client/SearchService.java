@@ -142,6 +142,8 @@ public interface SearchService extends Serializable {
      */
     void indexInThread(ResolvedResources sources) throws IndexingException;
 
+    void unindex(DocumentModel dm) throws IndexingException;
+
     /**
      * Completely erases the indexes.
      *
@@ -152,8 +154,8 @@ public interface SearchService extends Serializable {
     /**
      * Deletes an index given an aggregated resources key.
      * <p>
-     * This will remove <strong>all</strong> resources indexed with <param>key</param>
-     * as key used to identified the set ot resources. See
+     * This will remove <strong>all</strong> resources indexed with
+     * <param>key</param> as key used to identified the set ot resources. See
      * <code>ResolvedResources.getId()</code>
      *
      * @param key aggregated resources key.

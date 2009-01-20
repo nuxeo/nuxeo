@@ -290,7 +290,7 @@ public class UsecaseSchedulerService extends DefaultComponent implements
             }
         }
 
-        protected boolean isEnabled = true;
+        protected Boolean isEnabled = true;
 
         public void enable() {
             isEnabled = true;

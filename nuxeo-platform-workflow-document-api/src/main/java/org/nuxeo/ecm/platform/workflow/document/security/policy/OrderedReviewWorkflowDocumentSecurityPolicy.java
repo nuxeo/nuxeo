@@ -180,6 +180,10 @@ public class OrderedReviewWorkflowDocumentSecurityPolicy extends
         return hasAction;
     }
 
+    @Override
+    public boolean selectThisItem(WMWorkItemInstance item) throws WMWorkflowException {
+        return item.getOrder() == getCurrentReviewLevel(item.getProcessInstance().getId());
+    }
     public boolean canEndWorkItem(Principal participant, WMWorkItemInstance wi)
             throws WMWorkflowException {
         boolean granted = false;
@@ -269,5 +273,6 @@ public class OrderedReviewWorkflowDocumentSecurityPolicy extends
         }
         return granted;
     }
+
 
 }

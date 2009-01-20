@@ -59,11 +59,11 @@ public class FileManagerBean implements FileManager {
 
     private static final Log log = LogFactory.getLog(FileManagerBean.class);
 
-    private transient FileManager service;
+    private FileManager service;
 
-    private transient CoreSession userSession;
+    private CoreSession userSession;
 
-    private transient String userSessionId;
+    private String userSessionId;
 
     private FileManager getFileManagerService() throws ClientException {
         if (service == null) {

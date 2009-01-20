@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.schema.TypeRef;
 import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.SchemaImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.runtime.api.Framework;
@@ -67,7 +68,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         createSchema();
 
         Set<String> schemaSet = new HashSet<String>(Arrays.asList("i", "pw",
-                "a", "b"));
+                "a", "int", "b"));
         memDir = new MemoryDirectory("mydir", SCHEMA_NAME,
                 schemaSet, "i", "pw");
         dir = (MemoryDirectorySession) memDir.getSession();
@@ -76,6 +77,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         e1.put("pw", "secr");
         e1.put("a", "AAA");
         e1.put("b", "BCD");
+        e1.put("int", 3);
         e1.put("x", "XYZ"); // shouldn't be put in storage
         entry = dir.createEntry(e1);
     }
@@ -88,12 +90,13 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         sch.addField(QName.valueOf("a"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
         sch.addField(QName.valueOf("b"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
         sch.addField(QName.valueOf("x"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
+        sch.addField(QName.valueOf("int"), new TypeRef<Type>(SchemaNames.BUILTIN, DoubleType.ID));
         Framework.getService(SchemaManager.class).registerSchema(sch);
     }
 
     public void testSchemaIntrospection() throws Exception {
         MemoryDirectory md = new MemoryDirectory("adir", SCHEMA_NAME, "i", "pw");
-        assertEquals(new HashSet<String>(Arrays.asList("i", "pw", "a", "b", "x")),
+        assertEquals(new HashSet<String>(Arrays.asList("i", "pw", "a", "int", "b", "x")),
                 md.schemaSet);
     }
 
@@ -444,10 +447,10 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         // check number ordering
 
         entry = dir.getEntry("1");
-        entry.setProperty(SCHEMA_NAME, "a", Integer.valueOf(2));
+        entry.setProperty(SCHEMA_NAME, "int", 2);
         dir.updateEntry(entry);
         entry = dir.getEntry("2");
-        entry.setProperty(SCHEMA_NAME, "a", Integer.valueOf(10));
+        entry.setProperty(SCHEMA_NAME, "int", 10);
         dir.updateEntry(entry);
 
         orderBy.clear();

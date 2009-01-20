@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Language pack
+Bundle-SymbolicName: org.nuxeo.ecm.platform.lang
+Bundle-Vendor: Nuxeo
+Bundle-Category: stateless,web

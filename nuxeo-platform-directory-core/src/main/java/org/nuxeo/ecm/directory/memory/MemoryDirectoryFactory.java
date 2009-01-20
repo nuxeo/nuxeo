@@ -46,7 +46,7 @@ public class MemoryDirectoryFactory implements DirectoryFactory {
         try {
             directoryService = Framework.getService(DirectoryService.class);
         } catch (Exception e) {
-            throw new DirectoryException("Error in Directory Service lookup");
+            throw new DirectoryException("Error in Directory Service lookup", e);
         }
 //        directoryService=MultiDirectoryFactory.getDirectoryService();
     }

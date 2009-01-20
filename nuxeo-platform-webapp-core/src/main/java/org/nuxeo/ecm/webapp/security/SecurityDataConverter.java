@@ -72,6 +72,7 @@ public class SecurityDataConverter implements Serializable {
 
         // needed so that the user lists are updated
         securityData.rebuildUserLists();
+        securityData.setNeedSave(false);
     }
 
     /**

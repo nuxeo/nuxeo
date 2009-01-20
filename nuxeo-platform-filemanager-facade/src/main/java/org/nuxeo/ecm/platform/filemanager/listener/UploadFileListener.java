@@ -28,6 +28,8 @@ import java.util.Map;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
@@ -37,6 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -62,17 +65,19 @@ import org.nuxeo.runtime.api.Framework;
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
         @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
         @ActivationConfigProperty(propertyName = "messageSelector",
-                propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " IN ('" + JMSConstant.DOCUMENT_MESSAGE + "','" + JMSConstant.EVENT_MESSAGE + "') AND " + JMSConstant.NUXEO_EVENT_ID + " IN ('"
+                propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " IN ('" + JMSConstant.DOCUMENT_MESSAGE + "','"
+                    + JMSConstant.EVENT_MESSAGE + "') AND " + JMSConstant.NUXEO_EVENT_ID + " IN ('"
                     + DocumentEventTypes.DOCUMENT_CREATED +"','" + DocumentEventTypes.DOCUMENT_UPDATED + "')") })
+@TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class UploadFileListener implements MessageListener {
-
-    private static final Log log = LogFactory.getLog(UploadFileListener.class);
 
     public static final String DUPLICATED_FILE = "duplicatedFile";
 
-    private transient CoreSession session;
+    private static final Log log = LogFactory.getLog(UploadFileListener.class);
 
-    private transient FileManager fileManager;
+    private CoreSession session;
+
+    private FileManager fileManager;
 
     private LoginContext loginCtx;
 
@@ -123,16 +128,12 @@ public class UploadFileListener implements MessageListener {
         return session;
     }
 
-    /**
-     *
-     * @param message
-     */
     public void onMessage(Message message) {
-
         try {
             Object obj = ((ObjectMessage)message).getObject();
-            if(!(obj instanceof DocumentMessage))
+            if(!(obj instanceof DocumentMessage)) {
                 return;
+            }
             DocumentMessage doc = (DocumentMessage) obj;
             login();
 
@@ -143,7 +144,7 @@ public class UploadFileListener implements MessageListener {
             }
             Boolean duplicatedMessage = (Boolean) doc.getEventInfo().get(
                     EventMessage.DUPLICATED);
-            if (duplicatedMessage != null && duplicatedMessage == true) {
+            if (duplicatedMessage != null && duplicatedMessage) {
                 return;
             }
 
@@ -182,16 +183,19 @@ public class UploadFileListener implements MessageListener {
                 }
             }
         } catch (PropertyException pe) {
-            log.debug("Requested Field isn't on the Document.");
-            log.debug(pe.getClass().toString(), pe);
+            log.debug("Requested Field isn't on the Document.", pe);
         } catch (Exception e) {
             log.error(e.getClass().toString(), e);
 
         } finally {
             try {
+                if (session!=null)
+                {
+                    CoreInstance.getInstance().close(session);
+                }
                 logout();
-            } catch (Exception e) {
-                log.error("Impossible to logout", e);
+            } catch (Throwable e) {
+                log.error("Error during cleanup", e);
             }
         }
     }
@@ -217,6 +221,7 @@ public class UploadFileListener implements MessageListener {
                 principal, category, null);
 
         DocumentMessage msg = new DocumentMessageImpl(newDoc, event);
+        // FIXME: is this really needed ?
         msg.feed(event);
         DocumentMessageProducer producer = null;
         try {

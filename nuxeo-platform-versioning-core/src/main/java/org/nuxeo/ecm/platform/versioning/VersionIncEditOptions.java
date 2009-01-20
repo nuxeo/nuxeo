@@ -30,10 +30,15 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
  * incrementation options are available. If the versioningAction is
  * ACTION_CASE_DEPENDENT then options should be presented to the user.
  *
- * @see org.nuxeo.ecm.platform.versioning.VersioningActions
+ * @see org.nuxeo.ecm.platform.versioning.api.VersioningActions
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ *
+ * @deprecated use
+ *             {@link org.nuxeo.ecm.platform.versioning.api.VersionIncEditOptions}
+ *             instead
  */
+@Deprecated
 public class VersionIncEditOptions implements Serializable {
 
     private static final long serialVersionUID = 8401716646032719628L;
@@ -44,7 +49,6 @@ public class VersionIncEditOptions implements Serializable {
 
     private final List<VersioningActions> options = new ArrayList<VersioningActions>();
 
-
     public void addInfo(String info) {
         this.info.append(info);
         this.info.append("; ");
@@ -53,8 +57,6 @@ public class VersionIncEditOptions implements Serializable {
     /**
      * Explanatory information derived from rules logic (could be used in
      * debugging).
-     *
-     * @return
      */
     public String getInfo() {
         return info.toString();

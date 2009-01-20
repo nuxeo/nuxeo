@@ -213,7 +213,7 @@ function getMenuItemsToHideCallBacks(actionsToRemove)
 
 function getDocRef(trigger)
 {
-  return trigger.getAttribute('docRef');
+  return trigger.getAttribute('docref');
 }
 
 function beforeDisplayCallBack(e,cur,menu,shadow,trigger,menuX,menuY)

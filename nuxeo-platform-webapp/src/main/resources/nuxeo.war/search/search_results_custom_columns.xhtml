@@ -7,82 +7,66 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxdir="http://nuxeo.org/nxdirectory"
-  xmlns:t="http://myfaces.apache.org/tomahawk">
+  xmlns:nxdir="http://nuxeo.org/nxdirectory">
 
-    <c:forEach var="field" items="#{columns}">
+<c:forEach var="field" items="#{columns}">
 
-      <t:column rendered="#{field.type != 'special'}">
+  <nxu:column rendered="#{field.type != 'special'}">
 
-      <ui:decorate template="/search/column_header.xhtml">
-        <ui:param name="sortColumn" value="#{field.prefixedName}"/>
-        <ui:param name="provider" value="#{provider}" />
-        <ui:param name="providerName" value="#{providerName}" />
-        <ui:param name="label" value="#{messages[field.label]}" />
-      </ui:decorate>      
+    <ui:decorate template="/search/column_header.xhtml">
+      <ui:param name="sortColumn" value="#{field.prefixedName}" />
+      <ui:param name="provider" value="#{provider}" />
+      <ui:param name="providerName" value="#{providerName}" />
+      <ui:param name="label" value="#{messages[field.label]}" />
+    </ui:decorate>
 
-      <t:outputText
-        value="#{doc[field.schemaName][field.fieldName]}"
-        styleClass="dataInputText"
-        rendered="#{field.jsfComponent=='h:inputText'}" />
+    <h:outputText value="#{doc[field.schemaName][field.fieldName]}"
+      styleClass="dataInputText" rendered="#{field.jsfComponent=='h:inputText'}" />
 
-      <t:dataList var="item"
-          value="#{doc[field.schemaName][field.fieldName]}"
-          rendered="#{field.jsfComponent == 't:dataList'}"
-      >
-        <t:inputText
-          value="#{item}"
-          styleClass="dataInputText"
-        />
-      </t:dataList>
+    <nxu:dataList var="item" value="#{doc[field.schemaName][field.fieldName]}"
+      rendered="#{field.jsfComponent == 't:dataList'}">
+      <h:outputText value="#{item}" styleClass="dataInputText" />
+    </nxu:dataList>
 
-      <h:inputTextarea
-        value="#{doc[field.schemaName][field.fieldName]}"
-        class="dataInputText"
-        rendered="#{field.jsfComponent=='h:inputTextarea'}" />
+    <h:outputText value="#{doc[field.schemaName][field.fieldName]}"
+      class="dataInputText" rendered="#{field.jsfComponent=='h:inputTextarea'}" />
 
-      <t:outputText
-        value="#{doc[field.schemaName][field.fieldName]}"
-        rendered="#{field.jsfComponent=='t:inputCalendar'}">
-	<f:convertDateTime pattern="#{nxu:basicDateFormater()}"/>
-      </t:outputText>
+    <h:outputText value="#{doc[field.schemaName][field.fieldName]}"
+      rendered="#{field.jsfComponent=='t:inputCalendar'}">
+      <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
+        timeZone="#{timeZone}" />
+    </h:outputText>
 
-      <nxdir:selectOneListbox
+    <nxdir:selectOneListbox
+      rendered="#{field.jsfComponent=='nxdir:selectOneListbox'}"
+      value="#{doc[field.schemaName][field.fieldName]}"
+      displayObsoleteEntries="true" directoryName="#{field.directory}"
+      displayValueOnly="true" />
 
-        rendered="#{field.jsfComponent=='nxdir:selectOneListbox'}"
-        value="#{doc[field.schemaName][field.fieldName]}"
-	displayObsoleteEntries="true"
-        directoryName="#{field.directory}"
-        displayValueOnly="true" />
+    <nxdir:directoryEntryOutput
+      rendered="#{field.jsfComponent=='nxdir:directoryEntryOutput'}"
+      value="#{doc[field.schemaName][field.fieldName]}"
+      directoryName="#{field.directory}" />
 
-      <nxdir:directoryEntryOutput
-        rendered="#{field.jsfComponent=='nxdir:directoryEntryOutput'}"
-        value="#{doc[field.schemaName][field.fieldName]}"
-        directoryName="#{field.directory}"
-	/>
+    <nxdir:selectManyListbox
+      rendered="#{field.jsfComponent=='nxdir:selectManyListbox'}"
+      value="#{doc[field.schemaName][field.fieldName]}"
+      displayObsoleteEntries="true" directoryName="#{field.directory}"
+      displayValueOnly="true" />
 
-      <nxdir:selectManyListbox
-        rendered="#{field.jsfComponent=='nxdir:selectManyListbox'}"
-        value="#{doc[field.schemaName][field.fieldName]}"
-	displayObsoleteEntries="true"
-        directoryName="#{field.directory}"
-        displayValueOnly="true" />
+    <f:subview rendered="#{field.jsfComponent=='nxdir:chainSelect'}">
+      <nxdir:chainSelectOutput directoryNameList="#{field.directory}"
+        display="#{field.display}"
+        qualifiedParentKeys="#{field.qualifiedParentKeys}"
+        keySeparator="#{field.keySeparator}" displayObsoleteEntries="true"
+        displayKeySeparator="#{field.keySeparator}"
+        value="#{doc[field.schemaName][field.fieldName]}" />
+    </f:subview>
 
-      <f:subview rendered="#{field.jsfComponent=='nxdir:chainSelect'}">
-	<nxdir:chainSelectOutput
-	    directoryNameList="#{field.directory}"
-	    display="#{field.display}"
-	    qualifiedParentKeys="#{field.qualifiedParentKeys}"
-	    keySeparator="#{field.keySeparator}"
-	    displayObsoleteEntries="true"
-	    displayKeySeparator="#{field.keySeparator}"
-	    value="#{doc[field.schemaName][field.fieldName]}" />
-      </f:subview>
+  </nxu:column>
 
-    </t:column>
+  <ui:include src="/search/search_results_special_columns.xhtml" />
 
-    <ui:include src="/search/search_results_special_columns.xhtml" />
-
-    </c:forEach>
+</c:forEach>
 
 </span>

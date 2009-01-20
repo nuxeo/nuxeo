@@ -58,7 +58,7 @@ public class TestIndexableResources extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
-    public void testFieldProperty() throws Exception {
+    public void testFieldProperty() {
         IndexableResourceConf rConf
             = service.getIndexableResourceConfByName("fake", false);
         IndexableResourceDataConf dConf = rConf.getIndexableFields().get("pipe");

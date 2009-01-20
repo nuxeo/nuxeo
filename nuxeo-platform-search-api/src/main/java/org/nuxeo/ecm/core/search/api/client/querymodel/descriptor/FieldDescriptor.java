@@ -64,7 +64,12 @@ public class FieldDescriptor {
     }
 
     public String getPlainStringValue(DocumentModel model) {
-        Object rawValue = model.getProperty(schema, name);
+        Object rawValue;
+        try {
+            rawValue = model.getProperty(schema, name);
+        } catch (ClientException e) {
+            rawValue = null;
+        }
         if (rawValue == null) {
             return null;
         }
@@ -76,7 +81,12 @@ public class FieldDescriptor {
     }
 
     public Integer getIntValue(DocumentModel model) {
-        Object rawValue = model.getProperty(schema, name);
+        Object rawValue;
+        try {
+            rawValue = model.getProperty(schema, name);
+        } catch (ClientException e) {
+            rawValue = null;
+        }
         if (rawValue == null || "".equals(rawValue)) {
             return null;
         } else if (rawValue instanceof Integer) {
@@ -105,8 +115,12 @@ public class FieldDescriptor {
         }
     }
 
-    public Object getRawValue(DocumentModel model) throws ClientException {
-        return model.getProperty(schema, name);
+    public Object getRawValue(DocumentModel model) {
+        try {
+            return model.getProperty(schema, name);
+        } catch (ClientException e) {
+            return null;
+        }
     }
 
     public String getStringValue(DocumentModel model) throws ClientException {
@@ -121,7 +135,7 @@ public class FieldDescriptor {
         } else if (rawValue instanceof Date) {
             Date date = (Date) rawValue;
             value = "DATE '" + sf.format(date) + "'";
-        } else if (rawValue instanceof Integer || rawValue instanceof Long) {
+        } else if (rawValue instanceof Integer || rawValue instanceof Long || rawValue instanceof Double) {
             value = rawValue.toString(); // no quotes
         } else if (rawValue instanceof Boolean) {
             value = (Boolean) rawValue ? "1" : "0";
@@ -133,7 +147,7 @@ public class FieldDescriptor {
             if (fieldType == null) {
                 fieldType = getFieldType();
             }
-            if ("long".equals(fieldType) || "integer".equals(fieldType)) {
+            if ("long".equals(fieldType) || "integer".equals(fieldType) || "double".equals(fieldType)) {
                 return value;
             } else {
                 // TODO switch back to SQLQueryParser for org.nuxeo.core 1.4
@@ -145,7 +159,12 @@ public class FieldDescriptor {
 
     @SuppressWarnings("unchecked")
     public List<String> getListValue(DocumentModel model) {
-        Object rawValue = model.getProperty(schema, name);
+        Object rawValue;
+        try {
+            rawValue = model.getProperty(schema, name);
+        } catch (ClientException e) {
+            rawValue = null;
+        }
         if (rawValue == null) {
             return null;
         }
@@ -167,7 +186,12 @@ public class FieldDescriptor {
     }
 
     public Boolean getBooleanValue(DocumentModel model) {
-        Object rawValue = model.getProperty(schema, name);
+        Object rawValue;
+        try {
+            rawValue = model.getProperty(schema, name);
+        } catch (ClientException e) {
+            rawValue = null;
+        }
         if (rawValue == null) {
             return null;
         } else {

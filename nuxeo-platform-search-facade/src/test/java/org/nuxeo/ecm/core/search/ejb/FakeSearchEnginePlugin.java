@@ -65,8 +65,7 @@ public class FakeSearchEnginePlugin extends AbstractSearchEngineBackend {
     public void deleteAtomicResource(String key) throws IndexingException {
     }
 
-    public NativeQuery convertToNativeQuery(ComposedNXQuery query)
-            throws SearchException {
+    public NativeQuery convertToNativeQuery(ComposedNXQuery query) {
         return null;
     }
 

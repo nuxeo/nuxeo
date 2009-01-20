@@ -70,7 +70,8 @@ public class DocumentRefEntry implements Serializable {
     }
 
     @ManyToMany
-    @JoinTable(name = "DOCUMENT_WORKFLOW", joinColumns = { @JoinColumn(name = "DOC_UUID") }, inverseJoinColumns = { @JoinColumn(name = "WORKFLOW_INSTANCE_ID") })
+    @JoinTable(name = "DOCUMENT_WORKFLOW", joinColumns = { @JoinColumn(name = "DOC_UUID") },
+            inverseJoinColumns = { @JoinColumn(name = "WORKFLOW_INSTANCE_ID") })
     public Set<WorkflowInstanceRefEntry> getWorkflowInstanceRefs() {
         return workflowInstanceRefs;
     }

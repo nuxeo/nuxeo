@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
 
@@ -56,7 +55,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("documentManager")
 @Scope(CONVERSATION)
-@NuxeoJavaBeanErrorHandler
 public class DocumentManagerBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -66,7 +64,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
     /**
      * Map holding the open session for each repository location.
      */
-    protected Map<RepositoryLocation, CoreSession> sessions = new HashMap<RepositoryLocation, CoreSession>();
+    protected final Map<RepositoryLocation, CoreSession> sessions = new HashMap<RepositoryLocation, CoreSession>();
 
     public void initialize() {
         log.debug("Seam component initialized...");
@@ -140,8 +138,8 @@ public class DocumentManagerBusinessDelegate implements Serializable {
                  *
                  * XXX but this means we don't close the session correctly
                  */
-                log.debug("EJBAccessException while closing session for repository " +
-                        serverName);
+                log.debug("EJBAccessException while closing session for repository "
+                        + serverName);
             } catch (Exception e) {
                 log.error("Error closing session for repository " + serverName,
                         e);

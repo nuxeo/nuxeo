@@ -15,9 +15,14 @@
     <documentation>
       The docid codec uses the document uid to resolve the context. Urls are of
       the form http://site/nuxeo/nxdoc/demo/docuid/view.
+
+      The docpath codec uses the document path to resolve the context. Urls are of
+      the form http://site/nuxeo/nxpath/demo/path/to/my/doc/view.
     </documentation>
     <documentViewCodec name="docid" enabled="true" default="true" prefix="nxdoc"
       class="org.nuxeo.ecm.platform.url.codec.DocumentIdCodec" />
+    <documentViewCodec name="docpath" enabled="true" default="false" prefix="nxpath"
+      class="org.nuxeo.ecm.platform.url.codec.DocumentPathCodec" />
 
     <extension
       target="org.nuxeo.ecm.platform.url.service.DocumentViewCodecService"

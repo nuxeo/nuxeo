@@ -6,7 +6,9 @@ Bundle-Vendor: Nuxeo
 Require-Bundle: org.nuxeo.ecm.core.query,
  org.nuxeo.ecm.core.api
 Eclipse-LazyStart: false
-Nuxeo-Component: OSGI-INF/querymodel-framework.xml
+Nuxeo-Component: OSGI-INF/querymodel-framework.xml,
+ OSGI-INF/indexingwrapper-framework.xml,
+ OSGI-INF/documentmodel-adapter-contrib.xml
 Export-Package: org.nuxeo.ecm.core.search.api,
  org.nuxeo.ecm.core.search.api.backend,
  org.nuxeo.ecm.core.search.api.backend.impl,

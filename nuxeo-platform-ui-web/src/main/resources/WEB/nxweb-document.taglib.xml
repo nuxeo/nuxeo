@@ -126,6 +126,16 @@
     </function-signature>
   </function>
   <function>
+    <function-name>fileDescription</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String fileDescription( org.nuxeo.ecm.core.api.DocumentModel,
+      java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
     <function-name>complexFileUrl</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions

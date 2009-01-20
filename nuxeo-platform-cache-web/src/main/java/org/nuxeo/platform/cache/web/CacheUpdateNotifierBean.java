@@ -50,8 +50,8 @@ import org.nuxeo.ecm.platform.cache.client.ClientCacheServiceFactory;
 
 /**
  * Seam component created for each Seam session context. Each instance of this
- * class creates a cache listener that tries to invalidate/update
- * changed objects into the associated Seam context.
+ * class creates a cache listener that tries to invalidate/update changed
+ * objects into the associated Seam context.
  * <p>
  * Bridge from Cache to Seam.
  *
@@ -61,7 +61,8 @@ import org.nuxeo.ecm.platform.cache.client.ClientCacheServiceFactory;
 @Name(CacheUpdateNotifier.SEAM_NAME_CACHE_NOTIFIER)
 @Scope(ScopeType.SESSION)
 @SerializedConcurrentAccess
-public class CacheUpdateNotifierBean implements CacheUpdateNotifier, Serializable {
+public class CacheUpdateNotifierBean implements CacheUpdateNotifier,
+        Serializable {
 
     private static final long serialVersionUID = -4658013073616597630L;
 
@@ -85,10 +86,10 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier, Serializabl
         public void documentUpdate(DocumentModel docModel, boolean pre) {
             assert docModel != null;
             final String logPrefix = "<documentUpdate> ";
-            log.info(logPrefix + " docModel path: "
-                    + docModel.getPathAsString() + ", pre: " + pre);
-            log.info(logPrefix + "doc title: "
-                    + docModel.getProperty("dublincore", "title"));
+            if (log.isTraceEnabled()) {
+                log.trace(logPrefix + " docModel path: "
+                        + docModel.getPathAsString() + ", pre: " + pre);
+            }
         }
 
         public void documentRemove(DocumentModel docModel) {
@@ -101,10 +102,10 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier, Serializabl
             log.debug("documentRemove: sessionContext " + sessionContext);
             log.debug("documentRemove: sessionCtx     " + sessionCtx);
 
-            //docModelOnNotification = docModel;
+            // docModelOnNotification = docModel;
 
-            //printVarsOnContext(sessionContext);
-            //printVarsOnContext(sessionCtx);
+            // printVarsOnContext(sessionContext);
+            // printVarsOnContext(sessionCtx);
             removeDocumentFromContextStructures(sessionCtx, docModel);
         }
 
@@ -116,11 +117,11 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier, Serializabl
 
     }
 
-    //private DocumentModel docModelOnNotification;
+    // private DocumentModel docModelOnNotification;
 
     /**
-     * This will be a valid variable if the thread is coming from
-     * a Seam context (the thread is started by an event = web request).
+     * This will be a valid variable if the thread is coming from a Seam context
+     * (the thread is started by an event = web request).
      */
     @In
     private transient Context sessionContext;
@@ -166,8 +167,7 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier, Serializabl
         assert null != listeners;
         log.debug("<addCacheListener> " + listener);
         listeners.add(listener);
-        ClientCacheServiceFactory.getCacheService().addCacheListener(
-                listener);
+        ClientCacheServiceFactory.getCacheService().addCacheListener(listener);
     }
 
     /**
@@ -204,15 +204,16 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier, Serializabl
 
     private void removeDocumentFromContextStructures(Context ctx,
             DocumentModel docModelOnNotification) {
-        //final String contextVarName = "ListOfDocuments";
+        // final String contextVarName = "ListOfDocuments";
         for (String varName : ctx.getNames()) {
-            removeDocumentFromContextStructure(ctx, varName, docModelOnNotification);
+            removeDocumentFromContextStructure(ctx, varName,
+                    docModelOnNotification);
         }
     }
 
     /**
-     * Checks if the structure identified by the given name on the sessionContext
-     * is a manageable structure which might contain the current
+     * Checks if the structure identified by the given name on the
+     * sessionContext is a manageable structure which might contain the current
      * docModelOnNotification and removes it.
      *
      */
@@ -222,8 +223,8 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier, Serializabl
                 + "contextVarName=" + contextVarName;
 
         final Object objOnCtx = ctx.get(contextVarName);
-        //log.info(logPrefix + " check context var[" + contextVarName + "] = "
-        //        + objOnCtx.getClass());
+        // log.info(logPrefix + " check context var[" + contextVarName + "] = "
+        // + objOnCtx.getClass());
         if (objOnCtx != null) {
             if (objOnCtx instanceof List) {
 
@@ -232,12 +233,16 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier, Serializabl
                 removeDocumnentFromList(contextVarName, docModelOnNotification,
                         list);
 
-            //} else if (objOnCtx instanceof DocModelTableModel) {
-            //    final DocModelTableModel tableModel = (DocModelTableModel) objOnCtx;
+                // } else if (objOnCtx instanceof DocModelTableModel) {
+                // final DocModelTableModel tableModel = (DocModelTableModel)
+                // objOnCtx;
 
-            //    final boolean removed = removeDocumnentFromTableModel(docModelOnNotification, tableModel);
+                // final boolean removed =
+                // removeDocumnentFromTableModel(docModelOnNotification,
+                // tableModel);
 
-            //    log.info(logPrefix + "tableModel name: " + contextVarName + ", removed: " + removed);
+                // log.info(logPrefix + "tableModel name: " + contextVarName +
+                // ", removed: " + removed);
             } else {
                 if (log.isDebugEnabled()) {
                     log.debug(logPrefix + "structure not handled: "
@@ -257,11 +262,9 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier, Serializabl
             for (Object object : list) {
                 if (object instanceof DocumentModel) {
                     final DocumentModel model = (DocumentModel) object;
-                    log.debug("Compare : "
-                                    + docModelOnNotification.getRef());
+                    log.debug("Compare : " + docModelOnNotification.getRef());
                     log.debug("        : " + model.getRef());
-                    if (docModelOnNotification.getRef().equals(
-                            model.getRef())) {
+                    if (docModelOnNotification.getRef().equals(model.getRef())) {
                         try {
                             removed = list.remove(model);
                         } catch (UnsupportedOperationException e) {
@@ -288,20 +291,14 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier, Serializabl
     }
 
     /*
-    private static boolean removeDocumnentFromTableModel(
-            final DocumentModel docModelOnNotification,
-            final DocModelTableModel tableModel) {
-        //final String logPrefix = "<removeDocumnentFromTableModel> ";
-
-        try {
-            return tableModel.removeRow(docModelOnNotification);
-        } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return false;
-    }
-    */
+     * private static boolean removeDocumnentFromTableModel( final DocumentModel
+     * docModelOnNotification, final DocModelTableModel tableModel) { //final
+     * String logPrefix = "<removeDocumnentFromTableModel> ";
+     *
+     * try { return tableModel.removeRow(docModelOnNotification); } catch
+     * (ClientException e) { // TODO Auto-generated catch block
+     * e.printStackTrace(); } return false; }
+     */
 
     /**
      * Debug utility method.
@@ -310,16 +307,16 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier, Serializabl
      */
     private void printVarsOnContext(Context ctx) {
         final String logPrefix = "VarOnCtx: ";
-        log.info(logPrefix + ctx);
+        log.debug(logPrefix + ctx);
         for (String varName : ctx.getNames()) {
             final Object objOnCtx = ctx.get(varName);
-            log.info(logPrefix + "var: " + varName + " = " + objOnCtx);
+            log.debug(logPrefix + "var: " + varName + " = " + objOnCtx);
         }
     }
 
     /**
-     * Method is called to trigger the activation of the bean.
-     * It does nothing on its own.
+     * Method is called to trigger the activation of the bean. It does nothing
+     * on its own.
      */
     // TODO : find a less intrusive solution. Avoid calling too many times
     // without a scope

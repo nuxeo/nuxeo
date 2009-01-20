@@ -36,13 +36,18 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
 import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
 
+/**
+ * Codec handling a document repository, id, view and additional request
+ * parameters.
+ *
+ * @author Anahide Tchertchian
+ */
 public class DocumentIdCodec extends AbstractDocumentViewCodec implements
         DocumentViewCodec {
 
     public static final String PREFIX = "nxdoc";
 
     // nxdoc/server/docId/view_id/?requestParams
-    // FIXME AT: pattern should not match an url with a subUri
     public static final String URLPattern = "/(\\w+)/([a-zA-Z_0-9\\-]+)(/([a-zA-Z_0-9\\-\\.]*))?(/)?(\\?(.*)?)?";
 
     public DocumentIdCodec() {
@@ -64,8 +69,12 @@ public class DocumentIdCodec extends AbstractDocumentViewCodec implements
         if (docLoc != null) {
             List<String> items = new ArrayList<String>();
             items.add(getPrefix());
-            items.add(docLoc.getServerLocationName());
-            items.add(docLoc.getDocRef().toString());
+            items.add(docLoc.getServerName());
+            IdRef docRef = docLoc.getIdRef();
+            if (docRef == null) {
+                return null;
+            }
+            items.add(docRef.toString());
             String viewId = docView.getViewId();
             if (viewId != null) {
                 items.add(viewId);

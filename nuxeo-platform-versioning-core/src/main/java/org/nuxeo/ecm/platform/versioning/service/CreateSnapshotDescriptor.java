@@ -65,7 +65,6 @@ public class CreateSnapshotDescriptor {
 
     /**
      * Default constructor - used normally when created as an XObject.
-     *
      */
     public CreateSnapshotDescriptor() {
         log.debug("<CreateSnapshotDescriptor:init>");
@@ -161,4 +160,5 @@ public class CreateSnapshotDescriptor {
         sb.append('}');
         return sb.toString();
     }
+
 }

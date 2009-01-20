@@ -43,9 +43,14 @@
     </factoryBinding>
 
     <factoryBinding name="WorkspaceFactory" factoryName="SimpleTemplateFactory"
-                    targetType="Workspace">
+                     targetType="Workspace">
       <template>
-        <templateItem typeName="Folder" id="Folder1" title="Folder1" description="First Folder"/>
+        <templateItem typeName="Folder" id="Folder1" title="Folder1" description="First Folder">
+          <properties>
+            <property xpath="dublincore:creator" value="Administrator"/>
+            <property xpath="dublincore:coverage" value="coverage"/>
+          </properties>
+        </templateItem>
         <templateItem typeName="Folder" id="Secret_Folder" title="Secret Folder"
                       description="Secret Folder">
           <acl>

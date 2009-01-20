@@ -29,8 +29,8 @@ import org.nuxeo.runtime.model.ComponentName;
  */
 public interface PlacefulService {
 
-    public static final ComponentName ID = new ComponentName(
-                "org.nuxeo.ecm.platform.ec.placeful.PlacefulService");
+    ComponentName ID = new ComponentName(
+            "org.nuxeo.ecm.platform.ec.placeful.PlacefulService");
 
     Map<String, String> getAnnotationRegistry();
 

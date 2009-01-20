@@ -24,11 +24,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.jetbrains.annotations.NotNull;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -96,9 +96,9 @@ public class DocumentModelGhost implements DocumentModel {
      * from server.
      *
      */
-    public DocumentModelGhost(@NotNull DocumentRef ref, String sid, @NotNull String type,
-            String[] declaredSchemas, @NotNull String id, @NotNull Path path,
-            @NotNull DocumentRef parentRef) {
+    public DocumentModelGhost(DocumentRef ref, String sid, String type,
+            String[] declaredSchemas, String id, Path path,
+            DocumentRef parentRef) {
         this.ref = ref;
         this.sid = sid;
         this.type = type;
@@ -143,13 +143,9 @@ public class DocumentModelGhost implements DocumentModel {
                 documentModel = dm.getDocumentImpl(ref);
             }
         } catch (SecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             throw new CacheRuntimeException(
                     "Error loading DocumentModel from Ghost", e);
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             throw new CacheRuntimeException(
                     "Error loading DocumentModel from Ghost", e);
         }
@@ -173,7 +169,11 @@ public class DocumentModelGhost implements DocumentModel {
     }
 
     public String getTitle() {
-        return getDM().getTitle();
+        try {
+            return getDM().getTitle();
+        } catch (ClientException e) {
+            return null;
+        }
     }
 
     /**
@@ -218,11 +218,19 @@ public class DocumentModelGhost implements DocumentModel {
     // ================================================
 
     public Map<String, Object> getProperties(String schemaName) {
-        return getDM().getProperties(schemaName);
+        try {
+            return getDM().getProperties(schemaName);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public Object getProperty(String schemaName, String name) {
-        return getDM().getProperty(schemaName, name);
+        try {
+            return getDM().getProperty(schemaName, name);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public boolean hasFacet(String facet) {
@@ -238,15 +246,27 @@ public class DocumentModelGhost implements DocumentModel {
     }
 
     public void setACP(ACP acp, boolean overwrite) {
-        getDM().setACP(acp, overwrite);
+        try {
+            getDM().setACP(acp, overwrite);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public void setProperties(String schemaName, Map<String, Object> data) {
-        getDM().setProperties(schemaName, data);
+        try {
+            getDM().setProperties(schemaName, data);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public void setProperty(String schemaName, String name, Object value) {
-        getDM().setProperty(schemaName, name, value);
+        try {
+            getDM().setProperty(schemaName, name, value);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public void setPathInfo(String parentPath, String name) {
@@ -254,7 +274,11 @@ public class DocumentModelGhost implements DocumentModel {
     }
 
     public ACP getACP() {
-        return getDM().getACP();
+        try {
+            return getDM().getACP();
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public String getLock() {
@@ -274,7 +298,11 @@ public class DocumentModelGhost implements DocumentModel {
     }
 
     public DataModel getDataModel(String schema) {
-        return getDM().getDataModel(schema);
+        try {
+            return getDM().getDataModel(schema);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public DataModelMap getDataModels() {
@@ -333,7 +361,11 @@ public class DocumentModelGhost implements DocumentModel {
     }
 
     public boolean isDownloadable() {
-        return getDM().isDownloadable();
+        try {
+            return getDM().isDownloadable();
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public <T> T getAdapter(Class<T> itf) {
@@ -389,14 +421,22 @@ public class DocumentModelGhost implements DocumentModel {
      * @see DocumentModel#copyContent(DocumentModel)
      */
     public void copyContent(DocumentModel sourceDoc) {
-        getDM().copyContent(sourceDoc);
+        try {
+            getDM().copyContent(sourceDoc);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     /**
      * @see DocumentModel#getCacheKey()
      */
     public String getCacheKey() {
-        return getDM().getCacheKey();
+        try {
+            return getDM().getCacheKey();
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     /**
@@ -457,24 +497,44 @@ public class DocumentModelGhost implements DocumentModel {
     }
 
     public DocumentPart getPart(String schema) {
-        return getDM().getPart(schema);
+        try {
+            return getDM().getPart(schema);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public DocumentPart[] getParts() {
-        return getDM().getParts();
+        try {
+            return getDM().getParts();
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public Property getProperty(String xpath) throws PropertyException {
-        return getDM().getProperty(xpath);
+        try {
+            return getDM().getProperty(xpath);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public Serializable getPropertyValue(String xpath) throws PropertyException {
-        return getDM().getPropertyValue(xpath);
+        try {
+            return getDM().getPropertyValue(xpath);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public void setPropertyValue(String xpath, Serializable value)
             throws PropertyException {
-        getDM().setPropertyValue(xpath, value);
+        try {
+            getDM().setPropertyValue(xpath, value);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public long getFlags() {

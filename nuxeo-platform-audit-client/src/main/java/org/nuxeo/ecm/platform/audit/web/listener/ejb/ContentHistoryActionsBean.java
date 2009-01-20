@@ -36,8 +36,9 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
-import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -57,12 +58,11 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
 /**
  * Content history actions bean.
- * <p>
+ * <p/>
  * :XXX: http://jira.nuxeo.org/browse/NXP-514
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-
 @Name("contentHistoryActions")
 @Scope(CONVERSATION)
 public class ContentHistoryActionsBean implements ContentHistoryActions {
@@ -109,16 +109,17 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
 
     @Destroy
     public void destroy() {
-        log.debug("Removing Audit Seam component...");
+        if (log.isDebugEnabled()) log.debug("Removing Audit Seam component...");
     }
 
-    @Observer(value = { EventNames.CONTENT_ROOT_SELECTION_CHANGED,
+    @Observer(value = {EventNames.CONTENT_ROOT_SELECTION_CHANGED,
             EventNames.DOCUMENT_CHANGED, EventNames.DOCUMENT_SELECTION_CHANGED,
             EventNames.DOMAIN_SELECTION_CHANGED,
             EventNames.LOCATION_SELECTION_CHANGED,
-            AuditEventTypes.HISTORY_CHANGED }, create = false, inject = false)
+            AuditEventTypes.HISTORY_CHANGED}, create = false, inject = false)
+    @BypassInterceptors
     public void invalidateLogEntries() {
-        log.debug("Invalidate log entries.................");
+        if (log.isDebugEnabled()) log.debug("Invalidate log entries.................");
         logEntries = null;
         latestLogEntries = null;
         logEntriesComments = null;
@@ -177,8 +178,8 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         } else {
             try {
                 Logs logsBean = AuditLogsServiceDelegate.getRemoteAuditLogsService();
-                /**
-                 * in case the document is a proxy,meaning is the result of a
+                /*
+                 * In case the document is a proxy,meaning is the result of a
                  * publishing,to have the history of the document from which
                  * this proxy was created,first we have to get to the version
                  * that was created when the document was publish,and to which
@@ -196,11 +197,10 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
                             filterMap, doDefaultSort);
                 }
 
-                log.debug("logEntries computed .................!");
+                if (log.isDebugEnabled()) log.debug("logEntries computed .................!");
             } catch (Exception e) {
-                log.error("An error occurred while grabbing log entries for "
-                        + document.getId());
-                throw new AuditException(e);
+                String message = "An error occurred while grabbing log entries for " + document.getId();
+                throw new AuditException(message, e);
             }
             return logEntries;
         }
@@ -220,9 +220,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
             sortAscending = true;
         }
         sortInfo = new SortInfo(sortColumn, sortAscending);
-
         logEntries = null;
-
         return null;
     }
 

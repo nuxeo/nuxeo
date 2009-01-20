@@ -35,9 +35,9 @@ public class ContentFactoryDescriptor {
     private Boolean enabled = true;
 
     @XNode("@class")
-    private Class className;
+    private Class<ContentFactory> className;
 
-    public Class getClassName() {
+    public Class<ContentFactory> getClassName() {
         return className;
     }
 

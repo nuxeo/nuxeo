@@ -118,6 +118,14 @@ public class SearchServiceBean implements SearchService {
         }
     }
 
+    public void unindex(DocumentModel dm) throws IndexingException {
+        if (getSearchService() != null) {
+            getSearchService().unindex(dm);
+        } else {
+            log.error("Cannot find core search service....");
+        }
+    }
+
     public ResultSet searchQuery(NativeQuery nativeQuery, int offset, int range)
             throws SearchException, QueryException {
         ResultSet resultSet = null;
@@ -127,8 +135,7 @@ public class SearchServiceBean implements SearchService {
             resultSet = getSearchService().searchQuery(nativeQuery, offset,
                     range);
         } else {
-            log.error("Cannot find core search service....");
-            log.error("Returning an empty result set....");
+            log.error("Cannot find core search service, returning an empty result set....");
         }
         return resultSet;
     }
@@ -141,8 +148,7 @@ public class SearchServiceBean implements SearchService {
             nxqlQuery.setSearchPrincipal(getSearchPrincipal());
             resultSet = getSearchService().searchQuery(nxqlQuery, offset, range);
         } else {
-            log.error("Cannot find core search service....");
-            log.error("Returning an empty result set....");
+            log.error("Cannot find core search service, returning an empty result set....");
         }
         return resultSet;
     }
@@ -157,15 +163,13 @@ public class SearchServiceBean implements SearchService {
             resultSet = getSearchService().searchQuery(queryString,
                     backendName, offset, range);
         } else {
-            log.error("Cannot find core search service....");
-            log.error("Returning an empty result set....");
+            log.error("Cannot find core search service, returning an empty result set....");
         }
         return resultSet;
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getSupportedAnalyzersFor(String backendName) {
-        List<String> capabilities = Collections.EMPTY_LIST;
+        List<String> capabilities = Collections.emptyList();
         if (getSearchService() != null) {
             capabilities = getSearchService().getSupportedAnalyzersFor(
                     backendName);
@@ -175,9 +179,8 @@ public class SearchServiceBean implements SearchService {
         return capabilities;
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getSupportedFieldTypes(String backendName) {
-        List<String> capabilities = Collections.EMPTY_LIST;
+        List<String> capabilities = Collections.emptyList();
         if (getSearchService() != null) {
             capabilities = getSearchService().getSupportedFieldTypes(
                     backendName);
@@ -458,4 +461,5 @@ public class SearchServiceBean implements SearchService {
             log.error("Cannot find core search service....");
         }
     }
+
 }

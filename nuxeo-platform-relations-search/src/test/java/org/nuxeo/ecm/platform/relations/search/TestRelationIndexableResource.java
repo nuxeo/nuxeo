@@ -80,7 +80,7 @@ public class TestRelationIndexableResource extends NXRuntimeTestCase {
                 "comments", false);
     }
 
-    public void testRegistration() throws Exception {
+    public void testRegistration() {
         ResourceTypeDescriptor desc = searchService
             .getResourceTypeDescriptorByName(ResourceType.RELATIONS);
         assertNotNull(desc);
@@ -90,7 +90,7 @@ public class TestRelationIndexableResource extends NXRuntimeTestCase {
                 RelationIndexableResource);
     }
 
-    public void testComputeId() throws Exception {
+    public void testComputeId() {
         Subject subject = NodeFactory.createResource("test://subj");
         Node object = NodeFactory.createResource("test://obj");
         Node object2 = NodeFactory.createResource("test://other");

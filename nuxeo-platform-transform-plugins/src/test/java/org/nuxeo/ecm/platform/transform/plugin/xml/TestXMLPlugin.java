@@ -1,0 +1,17 @@
+package org.nuxeo.ecm.platform.transform.plugin.xml;
+
+import junit.framework.TestCase;
+
+import java.io.ByteArrayInputStream;
+
+public class TestXMLPlugin extends TestCase {
+
+    public void test() throws Exception {
+        String input = "<?xml version=\"1.0\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict_ZZZZZ.dtd\">" +
+                "<root>aaaa<v>1</v>   aaaaaaa<c>      zzzzzzz    </c> nnnn ab   nnn</root>";
+        String output = new Xml2Text().parse(new ByteArrayInputStream(input.getBytes()));
+        String expected = " aaaa 1 aaaaaaa zzzzzzz     nnnn ab   nnn";
+        assertEquals(expected, output);
+    }
+
+}

@@ -59,8 +59,6 @@ public interface ResultsProvidersCache {
      * Invalidates a results provider.
      * <p>
      * A new provider will be computed next time get() is called.
-     *
-     * @throws ClientException
      */
     void invalidate(String name);
 

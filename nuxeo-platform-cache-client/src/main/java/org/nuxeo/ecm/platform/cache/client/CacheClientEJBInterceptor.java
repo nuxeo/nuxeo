@@ -118,7 +118,7 @@ public class CacheClientEJBInterceptor implements Interceptor, Serializable {
                     result = invocation.invokeNext();
                 } else {
                     // we have a valid object from the cache
-                    log.info("Found object in client cache: " + cachedObject);
+                    log.debug("Found object in client cache: " + cachedObject);
 
                     result = cachedObject;
                 }

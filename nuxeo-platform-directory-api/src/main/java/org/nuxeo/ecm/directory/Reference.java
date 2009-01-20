@@ -31,7 +31,6 @@ import java.util.List;
  * list of entry ids of a target directory.
  *
  * @author ogrisel
- *
  */
 public interface Reference {
 

@@ -44,13 +44,15 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Out;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -68,7 +70,6 @@ import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
 import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -109,7 +110,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
 
     @In
     protected transient Context eventContext;
-
 
     // --------------------------------------------
     // fields managed by this class
@@ -165,6 +165,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         parents = null;
     }
 
+    @BypassInterceptors
     public DocumentModel getCurrentDocument() {
         return currentDocument;
     }
@@ -247,6 +248,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         EventManager.raiseEventsOnDocumentSelected(currentDocument);
     }
 
+    @BypassInterceptors
     public DocumentModel getChangeableDocument() {
         return changeableDocument;
     }
@@ -279,6 +281,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
     }
 
     @Observer( value={ EventNames.DOCUMENT_CHILDREN_CHANGED }, create=false, inject=false)
+    @BypassInterceptors
     public void resetCurrentDocumentChildrenCache(DocumentModel targetDoc) {
         if (targetDoc != null && currentDocument != null
                 && !currentDocument.getRef().equals(targetDoc.getRef())) {
@@ -307,7 +310,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             // logDocWithTitle(logPrefix + "Retrieved children for: ",
             // currentDocument);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
         return currentDocumentChildren;
     }
@@ -370,11 +373,12 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             // logDocWithTitle(logPrefix + "Retrieved children for: ",
             // currentDocument);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
         return currentDocumentChildren;
     }
 
+    @BypassInterceptors
     public DocumentModel getCurrentDomain() {
         return currentDomain;
     }
@@ -406,8 +410,8 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             try {
                 setCurrentDocument(null);
             } catch (ClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                // TODO: more robust exception handling?
+                log.error(e);
             }
         }
 
@@ -418,8 +422,8 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             try {
                 setCurrentDocument(domainDocModel);
             } catch (ClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                // TODO: more robust exception handling?
+                log.error(e);
             }
         }
 
@@ -436,7 +440,11 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         if (ctxDoc == null && newDoc == null) {
             return false;
         }
-        return !ctxDoc.getCacheKey().equals(newDoc.getCacheKey());
+        try {
+            return !ctxDoc.getCacheKey().equals(newDoc.getCacheKey());
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public void saveCurrentDocument() throws ClientException {
@@ -536,6 +544,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         return documentManager;
     }
 
+    @BypassInterceptors
     public DocumentModel getCurrentWorkspace() {
         return currentWorkspace;
     }
@@ -1001,7 +1010,11 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
     @SuppressWarnings("unused")
     private void logDocWithTitle(String msg, DocumentModel doc) {
         if (null != doc) {
-            log.debug(msg + " " + doc.getProperty("dublincore", "title"));
+            try {
+                log.debug(msg + " " + doc.getProperty("dublincore", "title"));
+            } catch (ClientException e) {
+                log.debug(msg + ", ERROR: " + e);
+            }
         } else {
             log.debug(msg + " NULL DOC");
         }
@@ -1028,8 +1041,8 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             try {
                 setCurrentDocument(null);
             } catch (ClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                // TODO: more robust exception handling?
+                log.error(e);
             }
             return;
         }
@@ -1041,8 +1054,8 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             try {
                 setCurrentDocument(crDocumentModel);
             } catch (ClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                // TODO: more robust exception handling?
+                log.error(e);
             }
         }
     }

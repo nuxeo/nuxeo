@@ -37,9 +37,7 @@ public interface VersioningManager {
      * interrogated further (this is transparently) and the versioning service
      * will process workflow response afterwards.
      * <p>
-     *
      * The flow is like this:
-     *
      * <pre>
      *     client
      *       -&gt; query versioning service
@@ -48,10 +46,7 @@ public interface VersioningManager {
      *       &lt;- return list of inc options
      * </pre>
      *
-     * @param docRef the reference to the document
-     * @param lifecycleState current lifecycle state of the document
-     * @param docType document type
-     *
+     * @param docModel the document
      * @return a list of version incrementation options available for the given
      *         document ref
      *
@@ -63,7 +58,7 @@ public interface VersioningManager {
             ClientException, DocumentException;
 
     /**
-     * Get the label for the current version of a document, for the UI.
+     * Gets the label for the current version of a document, for the UI.
      *
      * @param document the document
      * @return the version label
@@ -85,25 +80,6 @@ public interface VersioningManager {
 
     SnapshotOptions getCreateSnapshotOption(DocumentModel docModel) throws ClientException;
 
-    /*
-     * Checks with the registered VersioningService for the given document
-     * incrementation options and if the case with the existing document
-     * workflow.
-     *
-     * @param docRef the reference to the document
-     * @param documentManager
-     * @return a list of version incrementation options available for the given
-     *         document ref
-     *
-     * @throws VersioningException
-     * @throws ClientException
-     *
-     * @deprecated use getVersionIncEditOptions
-     */
-    //@Deprecated
-    //VersionIncEditOptions getVersionIncOptions(DocumentRef docRef,
-    //        CoreSession documentManager) throws VersioningException, DocumentException, ClientException;
-
     DocumentModel incrementMinor(DocumentModel docModel) throws ClientException,
             VersioningException;
 
@@ -112,10 +88,5 @@ public interface VersioningManager {
 
     DocVersion getNextVersion(DocumentModel docModel) throws ClientException,
             VersioningException;
-
-    // FIXME : DM : Due to be removed
-    //@Deprecated
-    //void notifyVersionChange(DocumentModel oldDocument,
-    //        DocumentModel newDocument);
 
 }

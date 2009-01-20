@@ -23,13 +23,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Calendar;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,8 +43,10 @@ import org.compass.core.engine.naming.StaticPropertyPath;
 import org.compass.core.lucene.LuceneProperty;
 import org.compass.core.lucene.util.LuceneUtils;
 import org.compass.core.mapping.rsem.RawResourcePropertyMapping;
+import org.compass.core.spi.InternalCompassSession;
 import org.nuxeo.common.utils.Null;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -56,7 +57,9 @@ import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedData;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory.BuiltinDocumentFields;
 import org.nuxeo.ecm.core.search.api.backend.security.SecurityFiltering;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
+import org.nuxeo.ecm.core.search.api.helper.DoubleConverter;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.FieldConstants;
+
 import sun.misc.BASE64Encoder;
 
 /**
@@ -64,7 +67,6 @@ import sun.misc.BASE64Encoder;
  * or for another resource.
  *
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
- *
  */
 public class ResourceBuilder {
 
@@ -75,12 +77,12 @@ public class ResourceBuilder {
     // TODO others: use a better naming for id properties. They don't need
     // to be different from one nuxeo-handled alias to the other.
 
-    private final CompassSession session;
+    private final InternalCompassSession session;
 
     private final Resource resource;
 
     public ResourceBuilder(CompassSession session, String alias, String id) {
-        this.session = session;
+        this.session = (InternalCompassSession) session;
         resource = session.createResource(alias);
 
         // Primary ids
@@ -109,7 +111,7 @@ public class ResourceBuilder {
      */
     // TODO apply converter TODO integrate or drop
     @SuppressWarnings("unused")
-    private Property buildDynamicalProperty(String name, Object value,
+    private static Property buildDynamicalProperty(String name, Object value,
             String analyzer, Store store, Index index) {
 
         Field f = new Field(name, (String) value,
@@ -145,7 +147,6 @@ public class ResourceBuilder {
      * @param stored
      * @param multiple
      * @param sortable
-     * @param properties TODO
      * @param properties optional map of properties. Musn't be null
      * @param sortOption TODO
      * @throws IndexingException
@@ -153,7 +154,8 @@ public class ResourceBuilder {
     @SuppressWarnings("unchecked")
     protected void addProperty(String name, Object value, String type,
             Boolean indexed, Boolean stored, Boolean multiple,
-            boolean sortable, Map<String, Serializable> properties, String sortOption) throws IndexingException {
+            boolean sortable, Map<String, Serializable> properties,
+            String sortOption) throws IndexingException {
 
         // Get rid of null case first
         if (value == null || value instanceof Null) {
@@ -182,7 +184,7 @@ public class ResourceBuilder {
             } else { // still support collections
                 Collection<Object> coll = (Collection<Object>) value;
                 empty = coll.isEmpty();
-               for (Object val : coll) {
+                for (Object val : coll) {
                     addProperty(name, val, type, indexed, stored, false,
                             sortable, properties, sortOption);
                 }
@@ -221,7 +223,7 @@ public class ResourceBuilder {
         } else if (value instanceof Calendar) {
             sValue = String.valueOf(((Calendar) value).getTimeInMillis());
         } else if (value instanceof Date) {
-            sValue = String.valueOf(((Date)value).getTime());
+            sValue = String.valueOf(((Date) value).getTime());
         } else if (value instanceof Integer || value instanceof Long
                 || value instanceof Boolean || value instanceof Double) {
             sValue = String.valueOf(value);
@@ -234,26 +236,51 @@ public class ResourceBuilder {
                     : Property.Index.TOKENIZED;
         }
 
-        // Sortable configuration.
-        if (sortable && sValue != null) {
-            final String sname = name + Util.SORTABLE_FIELD_SUFFIX;
-            String sortValue;
-            if (sortOption != null) {
-                sortOption = sortOption.toLowerCase();
-            }
-            if ("case-insensitive".equals(sortOption)) {
-                sortValue = sValue.toLowerCase();
-            } else {
-                sortValue = sValue;
-            }
-            // TODO maybe some escaping to be done here
-            log.debug("Adding a sort field name=" + sname + " and value="
-                    + sortValue);
-            addTermProperty(sname, sortValue, true, false);
-        }
-
         try {
             resource.addProperty(name, value);
+            if (sortable && sValue != null) {
+                if (value instanceof Double) {
+                    String stval = DoubleConverter.format(value);
+                    addTermProperty(name + Util.SORTABLE_FIELD_SUFFIX, stval,
+                            true, false);
+                } else {
+
+                    // :FIXME: Pluggable String Formatter, Have to fix QueryConverter issues before using it
+                    // String alias = resource.getAlias(); ResourceMapping
+                    // resourceMapping =
+                    // session.getMapping().getResourceMappingByAlias( alias);
+                    // ResourcePropertyMapping propertyMapping =
+                    // resourceMapping.getResourcePropertyMapping(name); if
+                    // (propertyMapping == null) { throw new
+                    // SearchEngineException(
+                    // "No resource property mapping is defined for alias [" +
+                    // alias + "] and resource property [" + name + "]"); }
+                    // ResourcePropertyConverter converter =
+                    // (ResourcePropertyConverter)
+                    // propertyMapping.getConverter();
+                    //
+                    // if (converter == null) { converter =
+                    // (ResourcePropertyConverter)
+                    // session.getMapping().getConverterLookup
+                    // ().lookupConverter( value.getClass()); } String strValue
+                    // = converter.toString(value, propertyMapping);
+
+                    final String sname = name + Util.SORTABLE_FIELD_SUFFIX;
+                    if (sortOption != null) {
+                        sortOption = sortOption.toLowerCase();
+                    }
+                    String sortValue;
+                    if ("case-insensitive".equals(sortOption)) {
+                        sortValue = StringUtils.toAscii(sValue).toLowerCase();
+                    } else {
+                        sortValue = sValue;
+                    }
+                    // TODO maybe some escaping to be done here
+                    log.debug("Adding a sort field name=" + sname
+                            + " and value=" + sortValue);
+                    addTermProperty(sname, sortValue, true, false);
+                }
+            }
         } catch (SearchEngineException see) {
             // If Compass doesn't find a PropertyMapping, fall back
             // to lower level creation
@@ -282,10 +309,30 @@ public class ResourceBuilder {
                             name));
                     return;
                 }
-                addPathProperty(name, sValue, (String) properties.get(
-                        FieldConstants.PROPERTY_PATH_SEPARATOR),
+                addPathProperty(
+                        name,
+                        sValue,
+                        (String) properties.get(FieldConstants.PROPERTY_PATH_SEPARATOR),
                         indexed, stored);
                 return;
+            }
+
+            // Sortable configuration.
+            if (sortable && sValue != null) {
+                final String sname = name + Util.SORTABLE_FIELD_SUFFIX;
+                if (sortOption != null) {
+                    sortOption = sortOption.toLowerCase();
+                }
+                String sortValue;
+                if ("case-insensitive".equals(sortOption)) {
+                    sortValue = StringUtils.toAscii(sValue).toLowerCase();
+                } else {
+                    sortValue = sValue;
+                }
+                // TODO maybe some escaping to be done here
+                log.debug("Adding a sort field name=" + sname + " and value="
+                        + sortValue);
+                addTermProperty(sname, sortValue, true, false);
             }
 
             if (sValue == null) {
@@ -382,21 +429,19 @@ public class ResourceBuilder {
     /**
      * @param name
      * @param value
-     * @param separator The separator,
-     *   if <code>null</code> defaults to a slash
+     * @param separator The separator, if <code>null</code> defaults to a slash
      */
-    public void addPathProperty(String name, String value,
-            String separator, boolean indexed, boolean stored) {
+    public void addPathProperty(String name, String value, String separator,
+            boolean indexed, boolean stored) {
         if (separator == null) {
             separator = "/";
         }
         StringBuilder sb;
         int j = -1;
         do {
-            j = value.indexOf(separator, j+1);
+            j = value.indexOf(separator, j + 1);
             if (j != -1) {
-                addTermProperty(name, value.substring(0, j),
-                        indexed, false);
+                addTermProperty(name, value.substring(0, j), indexed, false);
             }
         } while (j < value.length() && j != -1);
         // In case the "stored" stuff would be global, and last one wins
@@ -409,9 +454,9 @@ public class ResourceBuilder {
      * <p>
      * Internal storage convention:
      * <ul>
-     * <li> a positive ACE on perm <em>perm</em> for name <em>name</em>
-     * becomes <em>+name:perm</em>
-     * <li> a negative ACE becomes <em>-name:perm</em>
+     * <li>a positive ACE on perm <em>perm</em> for name <em>name</em> becomes
+     * <em>+name:perm</em>
+     * <li>a negative ACE becomes <em>-name:perm</em>
      * </ul>
      * This is a bijection. We don't need any escaping.
      * <p>

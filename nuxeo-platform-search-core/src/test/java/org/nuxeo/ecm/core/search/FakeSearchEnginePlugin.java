@@ -50,13 +50,11 @@ public class FakeSearchEnginePlugin extends AbstractSearchEngineBackend {
         return null;
     }
 
-    public ResultSet searchQuery(SQLQuery nxqlQuery, int offset, int range)
-            throws SearchException {
+    public ResultSet searchQuery(SQLQuery nxqlQuery, int offset, int range) {
         return null;
     }
 
-    public ResultSet searchQuery(NativeQueryString queryString, int offset, int range)
-            throws SearchException {
+    public ResultSet searchQuery(NativeQueryString queryString, int offset, int range) {
         return null;
     }
 
@@ -69,11 +67,11 @@ public class FakeSearchEnginePlugin extends AbstractSearchEngineBackend {
     }
 
     public ResultSet searchQuery(NativeQuery nativeQuery, int offset,
-            int range) throws SearchException {
+            int range) {
         return null;
     }
 
-    public void deleteAtomicResource(String key) throws IndexingException {
+    public void deleteAtomicResource(String key) {
     }
 
     public void clear() throws IndexingException {

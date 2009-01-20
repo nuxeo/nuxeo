@@ -19,12 +19,13 @@
 
 package org.nuxeo.ecm.platform.search.ejb;
 
+import java.io.Serializable;
+
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJBException;
 import javax.ejb.MessageDriven;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
-import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
@@ -32,9 +33,11 @@ import javax.security.auth.login.LoginContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.search.NXSearch;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.events.IndexingEventConf;
+import org.nuxeo.ecm.core.search.api.indexingwrapper.DocumentModelIndexingWrapper;
 import org.nuxeo.ecm.core.search.threading.IndexingThreadPool;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.ecm.platform.events.api.EventMessage;
@@ -61,16 +64,21 @@ import org.nuxeo.runtime.api.Framework;
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "topic/NXPMessages"),
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
         @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
-        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " IN ('"
-                + JMSConstant.DOCUMENT_MESSAGE + "','" + JMSConstant.EVENT_MESSAGE + "')") })
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE
+                + " IN ('"
+                + JMSConstant.DOCUMENT_MESSAGE
+                + "','"
+                + JMSConstant.EVENT_MESSAGE + "')") })
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class SearchMessageListener implements MessageListener {
 
     private static final Log log = LogFactory.getLog(SearchMessageListener.class);
 
-    private transient SearchService service;
+    private SearchService service;
 
     private LoginContext loginCtx;
+
+    private static final String ASYNC_INDEXING_DELAY_PROPERTY = "org.nuxeo.ecm.platform.search.asynchronousIndexingDelay";
 
     private SearchService getSearchService() {
         if (service == null) {
@@ -103,9 +111,10 @@ public class SearchMessageListener implements MessageListener {
                 return;
             }
 
-            Object obj = ((ObjectMessage)message).getObject();
-            if(!(obj instanceof DocumentMessage))
+            Object obj = ((ObjectMessage) message).getObject();
+            if (!(obj instanceof DocumentMessage)) {
                 return;
+            }
             DocumentMessage doc = (DocumentMessage) obj;
             String eventId = doc.getEventId();
 
@@ -135,6 +144,14 @@ public class SearchMessageListener implements MessageListener {
             boolean recursive = eventConf.isRecursive();
             String action = eventConf.getAction();
 
+            Serializable blockIndexing = doc.getEventInfo().get(
+                    EventMessage.BLOCK_ASYNC_INDEXING);
+            if (blockIndexing != null && (Boolean) blockIndexing) {
+                return;
+            }
+
+            // get the wrapper if available
+            DocumentModel dm = doc.getAdapter(DocumentModelIndexingWrapper.class);
             if (IndexingEventConf.INDEX.equals(action)
                     || IndexingEventConf.RE_INDEX.equals(action)) {
 
@@ -142,21 +159,38 @@ public class SearchMessageListener implements MessageListener {
                 // For now only based on explicit registration of the doc type
                 // against the search service. (i.e : versus core type facet
                 // based)
-                if (service.getIndexableDocTypeFor(doc.getType()) == null) {
+                if (service.getIndexableDocTypeFor(dm.getType()) == null) {
                     return;
                 }
 
                 if (log.isDebugEnabled()) {
-                    log.debug("indexing " + doc.getPath());
+                    log.debug("indexing " + dm.getPath());
+                }
+
+                String asynchronousIndexingDelay = Framework.getProperty(ASYNC_INDEXING_DELAY_PROPERTY);
+                if (asynchronousIndexingDelay != null && asynchronousIndexingDelay.length() > 0) {
+                    long asyncIndexingDelayValue = 0;
+                    try {
+                        asyncIndexingDelayValue = Long.parseLong(asynchronousIndexingDelay);
+                    } catch (NumberFormatException e) {
+                        log.error("Wrong asynchronous indexing delay specified", e);
+                    }
+                    if (asyncIndexingDelayValue > 0) {
+                        try {
+                            Thread.sleep(asyncIndexingDelayValue);
+                        } catch (InterruptedException e) {
+                            log.error("Couldn't wait before asynchronous indexing", e);
+                        }
+                    }
                 }
 
                 // Compute full text as well.
-                IndexingThreadPool.index(doc, recursive, true);
+                IndexingThreadPool.index(dm, recursive, true);
             } else if (IndexingEventConf.UN_INDEX.equals(action)) {
                 if (log.isDebugEnabled()) {
-                    log.debug("asynchronous unindexing " + doc.getPath());
+                    log.debug("asynchronous unindexing " + dm.getPath());
                 }
-                IndexingThreadPool.unindex(doc, recursive);// Compute
+                IndexingThreadPool.unindex(dm, recursive);// Compute
             }
         } catch (Exception e) {
             throw new EJBException(e);

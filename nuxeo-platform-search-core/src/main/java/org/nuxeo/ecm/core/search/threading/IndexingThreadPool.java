@@ -29,14 +29,15 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.search.NXSearch;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResources;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
-import org.nuxeo.ecm.core.search.api.client.SearchService;
+import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.Task;
+import org.nuxeo.ecm.core.search.threading.task.TaskFactory;
 
 /**
  * Indexing thread pool.
  * <p>
  * Control the amount of indexing threads that will run in a concurrent way.
  *
- * @see IndexingTask
+ * @see org.nuxeo.ecm.core.search.threading.task.IndexingSingleDocumentTask
  * @see IndexingThreadImpl
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
@@ -49,129 +50,129 @@ public final class IndexingThreadPool {
 
     private static final int MIN_POOL_SIZE = 5;
 
+    private static int BROWSING_TASK_QUEUE_SIZE = 100;
+
     // Here, idle threads waiting for work if IndexingTask pool is full, will
     // wait for the among time specified. Keep this large so that we won't loose
     // tasks;
     private static final long THREAD_KEEP_ALIVE = 5000L;
 
-    private static final int DEFAULT_QUEUE_SIZE = 100;
+    private static final ThreadPoolExecutor indexingTpExec;
 
-    private static final ThreadPoolExecutor tpExec;
+    private static final ThreadPoolExecutor browsingTpExec;
 
     private static final ThreadPoolExecutor reindexExec;
-
-    private static SearchService searchService;
 
     static {
         // Thread pool aught to be on the node which holds the search service.
         int maxPoolSize = NXSearch.getSearchService().getNumberOfIndexingThreads();
         log.info("Indexing thread pool will be initialized with a size pool @ "
                 + maxPoolSize);
-        tpExec = new ThreadPoolExecutor(MIN_POOL_SIZE, maxPoolSize,
-                THREAD_KEEP_ALIVE, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>(DEFAULT_QUEUE_SIZE),
-                new IndexingThreadFactory());
+
+        indexingTpExec = IndexingThreadPoolExecutor.newInstance(MIN_POOL_SIZE,
+                maxPoolSize, THREAD_KEEP_ALIVE, TimeUnit.MILLISECONDS);
         // tpExec.prestartAllCoreThreads();
         log.info("Indexing Thread Pool initialized...");
 
-        reindexExec = new ThreadPoolExecutor(1, 1, 0,
-                TimeUnit.MICROSECONDS, new LinkedBlockingQueue<Runnable>(1),
-                new IndexingThreadFactory());
-    }
+        browsingTpExec = new ThreadPoolExecutor(MIN_POOL_SIZE, maxPoolSize, 0,
+                TimeUnit.MICROSECONDS, new LinkedBlockingQueue<Runnable>(
+                        BROWSING_TASK_QUEUE_SIZE), new IndexingThreadFactory(),
+                new IndexingRejectedExecutionHandler());
 
-    public static void setSearchService(SearchService service) {
-        searchService = service;
+        reindexExec = new ThreadPoolExecutor(1, 1, 0, TimeUnit.MICROSECONDS,
+                new LinkedBlockingQueue<Runnable>(1),
+                new IndexingThreadFactory(),
+                new IndexingRejectedExecutionHandler());
     }
 
     public static void index(DocumentModel dm, Boolean recursive)
             throws IndexingException {
-        execute(new IndexingTask(dm, recursive));
+        if (recursive) {
+            executeBrowsingTask(TaskFactory.createIndexingBrowseTask(
+                    dm.getRef(), dm.getRepositoryName()));
+        } else {
+            executeIndexingTask(TaskFactory.createIndexingTask(dm.getRef(),
+                    dm.getRepositoryName()));
+        }
     }
 
     public static void index(DocumentModel dm, Boolean recursive,
             boolean fulltext) throws IndexingException {
-        execute(new IndexingTask(dm, recursive, fulltext));
-    }
-
-    public static void index(ResolvedResources resources)
-            throws IndexingException {
-        execute(new IndexingTask(resources));
-    }
-
-    public static void reindexAll(DocumentModel dm, Boolean recursive) {
-        Runnable r = new ReindexingAllTask(dm, recursive);
-        if (searchService != null) {
-            ((AbstractIndexingTask) r).setSearchService(searchService);
-        }
-        synchronized (reindexExec) {
-            reindexExec.execute(r);
+        if (recursive) {
+            executeBrowsingTask(TaskFactory.createIndexingBrowseTask(
+                    dm.getRef(), dm.getRepositoryName()));
+        } else {
+            executeIndexingTask(TaskFactory.createIndexingTask(dm.getRef(),
+                    dm.getRepositoryName(), fulltext));
         }
     }
 
-    public static void reindexAll(DocumentModel dm, Boolean recursive,
-            boolean fulltext) {
-        Runnable r = new ReindexingAllTask(dm, recursive, fulltext);
-        if (searchService != null) {
-            ((AbstractIndexingTask) r).setSearchService(searchService);
-        }
-        synchronized (reindexExec) {
-            reindexExec.execute(r);
-        }
-    }
-
-    public static boolean isReindexing() {
-        return reindexExec.getActiveCount() > 0;
-    }
-
-    public static void reindexAll(ResolvedResources resources) {
-        Runnable r = new ReindexingAllTask(resources);
-        if (searchService != null) {
-            ((AbstractIndexingTask) r).setSearchService(searchService);
-        }
-        synchronized (reindexExec) {
-            reindexExec.execute(r);
-        }
+    public static void index(ResolvedResources resources) {
+        executeIndexingTask(TaskFactory.createIndexingTask(resources));
     }
 
     public static void unindex(DocumentModel dm, boolean recursive)
             throws IndexingException {
-        execute(new UnIndexingTask(dm, recursive));
+        if (recursive) {
+            executeBrowsingTask(TaskFactory.createUnindexingBrowseTask(
+                    dm.getRef(), dm.getRepositoryName()));
+        } else {
+            executeIndexingTask(TaskFactory.createUnindexingTask(dm.getRef(),
+                    dm.getRepositoryName()));
+        }
     }
 
     public static int getActiveIndexingTasks() {
-        return tpExec.getActiveCount();
+        return indexingTpExec.getActiveCount();
     }
 
     public static long getTotalCompletedIndexingTasks() {
-        return tpExec.getCompletedTaskCount();
+        return indexingTpExec.getCompletedTaskCount();
     }
 
     public static long getQueueSize() {
-        return tpExec.getQueue().size();
+        return indexingTpExec.getQueue().size();
     }
 
-    protected static void execute(AbstractIndexingTask r)
-            throws IndexingException {
-        if (searchService != null) {
-            r.setSearchService(searchService);
+    protected static void executeIndexingTask(Task task) {
+        synchronized (indexingTpExec) {
+            indexingTpExec.execute(task);
         }
-        synchronized (tpExec) {
-            // Should be safe to use this here with the synchronized kw.
-            while (tpExec.getQueue().size() >= DEFAULT_QUEUE_SIZE) {
+    }
+
+    protected static void executeBrowsingTask(Task task)
+            throws IndexingException {
+        synchronized (browsingTpExec) {
+            while (browsingTpExec.getQueue().size() >= BROWSING_TASK_QUEUE_SIZE) {
                 try {
                     Thread.sleep(300);
-                } catch (InterruptedException ie) {
-                    throw new IndexingException(ie);
+                } catch (InterruptedException e) {
+                    throw new IndexingException(e);
                 }
             }
-            tpExec.execute(r);
+            browsingTpExec.execute(task);
         }
     }
 
     @Override
     protected void finalize() throws Throwable {
-        tpExec.shutdown();
+        indexingTpExec.shutdown();
         super.finalize();
+    }
+
+    public static void reindexAll(DocumentModel dm) {
+        executeReindexingTask(TaskFactory.createReindexingAllTask(dm.getRef(),
+                dm.getRepositoryName()));
+    }
+
+    protected static void executeReindexingTask(Task task) {
+        synchronized (reindexExec) {
+            reindexExec.execute(task);
+        }
+    }
+
+    public static boolean isReindexing() {
+        return reindexExec.getActiveCount() > 0;
     }
 
 }

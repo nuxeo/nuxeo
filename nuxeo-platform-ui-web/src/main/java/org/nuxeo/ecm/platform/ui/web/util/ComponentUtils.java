@@ -79,7 +79,6 @@ public final class ComponentUtils {
      * @param child
      * @param facetName facet name to put the child in.
      */
-    @SuppressWarnings("unchecked")
     public static void initiateSubComponent(UIComponent parent,
             String facetName, UIComponent child) {
         parent.getFacets().put(facetName, child);
@@ -116,7 +115,6 @@ public final class ComponentUtils {
      * @param child
      * @param valueNames
      */
-    @SuppressWarnings("unchecked")
     public static void copyValues(UIComponent parent, UIComponent child,
             String[] valueNames) {
         Map<String, Object> parentAttributes = parent.getAttributes();

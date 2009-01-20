@@ -34,7 +34,7 @@ import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkflowException;
  * Defines the policy regarding the distributions of rights to principals on a
  * document. Each policy is associated to a given process.
  *
- * @see org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentRightsPolicySevice
+ * @see org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicySevice
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
@@ -98,10 +98,16 @@ public interface WorkflowDocumentSecurityPolicy extends Serializable {
      * @return true if direct action to perform, false if not.
      * @throws WMWorkflowException
      */
-    // XXX AT: this should take the work item as parameter, and not the
-    // principal
     boolean hasParticipantImmediateAction(String pid, Principal principal)
             throws WMWorkflowException;
+
+    /**
+     * Should we show this item in a dashboard.
+     * @param item
+     * @return
+     * @throws WMWorkflowException
+     */
+    boolean selectThisItem(WMWorkItemInstance item) throws WMWorkflowException;
 
     /**
      * Checks if a given participant can remove a given work item.
@@ -128,7 +134,7 @@ public interface WorkflowDocumentSecurityPolicy extends Serializable {
     /**
      * Checks if a given participant can reject a given work item.
      *
-     * @param particpant the actual workflow participant.
+     * @param participant the current workflow participant.
      * @param wi the work item instance.
      * @return true if granted / false if denied
      * @throws WMWorkflowException TODO
@@ -143,7 +149,7 @@ public interface WorkflowDocumentSecurityPolicy extends Serializable {
      * <p>
      * This is specific to ordered reviews.
      *
-     * @param particpant the current workflow participant.
+     * @param participant the current workflow participant.
      * @param wi the work item instance.
      * @return true if granted / false if denied
      * @throws WMWorkflowException TODO
@@ -158,7 +164,7 @@ public interface WorkflowDocumentSecurityPolicy extends Serializable {
      * <p>
      * This is specific to ordered reviews.
      *
-     * @param particpant the current workflow participant.
+     * @param participant the current workflow participant.
      * @param wi the work item instance.
      * @return true if granted / false if denied
      * @throws WMWorkflowException TODO

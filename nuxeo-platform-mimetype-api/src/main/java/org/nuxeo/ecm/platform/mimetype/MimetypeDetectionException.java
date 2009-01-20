@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.mimetype;
  * Exception raised when an unexpected exception occur during mimetype sniffing.
  *
  * @author ogrisel@nuxeo.com
- *
  */
 public class MimetypeDetectionException extends Exception {
 

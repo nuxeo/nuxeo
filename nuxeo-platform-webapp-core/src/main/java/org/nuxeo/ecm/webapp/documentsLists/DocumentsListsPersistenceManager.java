@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -206,12 +207,20 @@ public class DocumentsListsPersistenceManager {
         }
 
         for (DocumentModel entry : entries) {
-            String ref = (String) entry.getProperty(directorySchema,
-                    DIR_COL_REF);
-            long reftype = (Long) entry.getProperty(directorySchema,
-                    DIR_COL_REFTYPE);
-            String repo = (String) entry.getProperty(directorySchema,
-                    DIR_COL_REPO);
+            String ref;
+            long reftype;
+            String repo;
+            try {
+                ref = (String) entry.getProperty(directorySchema,
+                        DIR_COL_REF);
+                reftype = (Long) entry.getProperty(directorySchema,
+                        DIR_COL_REFTYPE);
+                repo = (String) entry.getProperty(directorySchema,
+                        DIR_COL_REPO);
+            } catch (ClientException e1) {
+                releasePersistenceService();
+                throw new ClientRuntimeException(e1);
+            }
 
             DocumentModel doc = getDocModel(currentSession, ref, reftype, repo);
 

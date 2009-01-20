@@ -87,7 +87,7 @@ public class MimetypeDescriptor {
         NodeList elements = mimetypes.getElementsByTagName("extension");
         int len = elements.getLength();
         for (int i = 0; i < len; i++) {
-            exts.add(elements.item(i).getTextContent());
+            exts.add(elements.item(i).getTextContent().trim());
         }
         return exts;
     }
@@ -109,7 +109,7 @@ public class MimetypeDescriptor {
         NodeList elements = mimetypes.getElementsByTagName("mimetype");
         int len = elements.getLength();
         for (int i = 0; i < len; i++) {
-            mtypes.add(elements.item(i).getTextContent());
+            mtypes.add(elements.item(i).getTextContent().trim());
         }
         return mtypes;
     }

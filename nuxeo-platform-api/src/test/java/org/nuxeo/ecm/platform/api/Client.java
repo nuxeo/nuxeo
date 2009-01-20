@@ -93,7 +93,7 @@ public class Client extends NXRuntimeApplication {
         CoreInstance.getInstance().close(session);
     }
 
-    protected void serviceExample(Platform platform) throws Exception {
+    protected void serviceExample(Platform platform) {
 //        TypeManager typeMgr = platform.getService(TypeManager.class);
 //        System.out.println(">>> ECM Types: "+typeMgr.getTypes());
     }

@@ -60,10 +60,10 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter
             boolean sessionOpened = false;
             try {
                 RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-                String repoName = null;
-                String uid = null;
+                String repoName;
+                String uid;
                 String localName = ((QNameResource) resource).getLocalName();
-                int index = localName.indexOf("/");
+                int index = localName.indexOf('/');
                 if (index == -1) {
                     // BBB for when repository name was not included in the
                     // local name

@@ -159,10 +159,10 @@ public class DocModelTableModel extends TableModel implements CacheListener {
     public void documentRemove(DocumentModel docModel) {
         try {
             boolean removed = removeRow(docModel);
-            log.info("<documentRemove> removed: " + removed);
+            log.debug("<documentRemove> removed: " + removed);
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // TODO: more robust exception handling?
+            log.error(e);
         }
     }
 

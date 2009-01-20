@@ -276,4 +276,16 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
                 mimetypeRegistry.getMimetypeFromFile(getEmfDocument()));
     }
 
+    /**
+    public void testBigBinFromFile() throws Exception {
+
+        long t0 = System.currentTimeMillis();
+        String mt =mimetypeRegistry.getMimetypeFromFile(new File("/tmp/file-050MB.funky"));
+        long t1 = System.currentTimeMillis();
+        System.out.println(mt);
+        System.out.println(t1-t0);
+    }
+    **/
+
+
 }

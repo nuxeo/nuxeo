@@ -22,7 +22,7 @@ package org.nuxeo.ecm.platform.ui.web.directory;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 
 
 @Local

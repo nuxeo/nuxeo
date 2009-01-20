@@ -8,6 +8,7 @@
     <schema name="group" src="ldapdirectoryschema/group.xsd" />
     <schema name="vocabulary" src="ldapdirectoryschema/vocabulary.xsd" />
     <schema name="xvocabulary" src="ldapdirectoryschema/xvocabulary.xsd" />
+    <schema name="user_profile" src="ldapdirectoryschema/user_profile.xsd" />
   </extension>
 
 </component>

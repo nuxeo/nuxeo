@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.relations.jena;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -86,7 +84,6 @@ import com.hp.hpl.jena.shared.Lock;
  * target="_blank">Jena</a> framework.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class JenaGraph implements Graph {
 
@@ -143,14 +140,14 @@ public class JenaGraph implements Graph {
         private final Model graph;
 
         GraphConnection(DBConnection connection, Model graph) {
-            this.baseConnection = null;
+            baseConnection = null;
             this.connection = connection;
             this.graph = graph;
         }
 
         GraphConnection(Connection baseConnection, Model graph) {
             this.baseConnection = baseConnection;
-            this.connection = null;
+            connection = null;
             this.graph = graph;
         }
 
@@ -366,12 +363,9 @@ public class JenaGraph implements Graph {
         }
         Node nuxNode = null;
         if (jenaNodeInst.isBlank()) {
-            // AT: blank node id is not relevant and is a problem when comparing
-            // nodes
-            // AnonId anonId = jenaNodeInst.getBlankNodeId();
-            // String id = anonId.getLabelString();
-            // nuxNode = NodeFactory.createBlank(id);
-            nuxNode = NodeFactory.createBlank();
+            AnonId anonId = jenaNodeInst.getBlankNodeId();
+            String id = anonId.getLabelString();
+            nuxNode = NodeFactory.createBlank(id);
         } else if (jenaNodeInst.isLiteral()) {
             LiteralLabel label = jenaNodeInst.getLiteral();
             String value = label.getLexicalForm();
@@ -414,7 +408,8 @@ public class JenaGraph implements Graph {
      * @param nuxStatement NXRelations statement
      * @return jena statement selector
      */
-    private static SimpleSelector getJenaSelector(Model graph, Statement nuxStatement) {
+    private static SimpleSelector getJenaSelector(Model graph,
+            Statement nuxStatement) {
         com.hp.hpl.jena.rdf.model.Resource subjResource = null;
         com.hp.hpl.jena.graph.Node subject = getJenaNode(nuxStatement.getSubject());
         if (subject != null && subject.isURI()) {
@@ -477,7 +472,9 @@ public class JenaGraph implements Graph {
             List<com.hp.hpl.jena.rdf.model.Statement> jenaStatements) {
         List<Statement> nuxStmts = new ArrayList<Statement>();
         for (com.hp.hpl.jena.rdf.model.Statement jenaStmt : jenaStatements) {
-            if (!jenaStmt.getSubject().isAnon()) {
+            // NXP-2665: remove reified statements are they're as properties in
+            // nuxeo logic
+            if (!jenaStmt.getSubject().canAs(ReifiedStatement.class)) {
                 nuxStmts.add(getNXRelationsStatement(graph, jenaStmt));
             }
         }
@@ -676,7 +673,6 @@ public class JenaGraph implements Graph {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public List<Node> getSubjects(Node predicate, Node object) {
         Model graph = null;
         GraphConnection graphConnection = null;
@@ -935,35 +931,7 @@ public class JenaGraph implements Graph {
             graphConnection = openGraph();
             graph = graphConnection.getGraph();
             graph.enterCriticalSection(Lock.READ);
-            // dunno why base and lang are inverted here
-            // DM: overcome com.hp.hpl.jena.rdf.model.impl.ModelCom impl bug -
-            // closes the stream
-            // create a temporary stream
-            // TODO : make a temp using hdd to avoid mem usage
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            int av = in.available();
-            while (av > 0) {
-                byte[] buf = new byte[av];
-                in.read(buf);
-                bos.write(buf);
-                av = in.available();
-            }
-
-            byte[] data = bos.toByteArray();
-            // remove trailing spaces at the end to avoid sax parse exception
-            int n = data.length - 1;
-            while (data[n] == ' ') {
-                n--;
-            }
-
-            log.warn("removed " + (data.length - n - 1) + " trailing spaces");
-
-            byte[] trimmed = new byte[n];
-            System.arraycopy(data, 0, trimmed, 0, n);
-
-            ByteArrayInputStream tis = new ByteArrayInputStream(trimmed);
-
-            graph.read(tis, base, lang);
+            graph.read(in, base, lang);
             // default to true
             return true;
         } catch (Exception e) {

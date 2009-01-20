@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.platform.content.template.service.ACEDescriptor;
+import org.nuxeo.ecm.platform.content.template.service.PropertyDescriptor;
 import org.nuxeo.ecm.platform.content.template.service.TemplateItemDescriptor;
 
 public class SimpleTemplateBasedFactory extends BaseContentFactory {
@@ -55,8 +56,18 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
             newChild.setProperty("dublincore", "title", item.getTitle());
             newChild.setProperty("dublincore", "description",
                     item.getDescription());
+            setProperties(item.getProperties(), newChild);
             newChild = session.createDocument(newChild);
             setAcl(item.getAcl(), newChild.getRef());
+        }
+    }
+
+    protected void setProperties(List<PropertyDescriptor> properties,
+            DocumentModel doc) throws ClientException {
+        if (properties != null && !properties.isEmpty()) {
+            for (PropertyDescriptor property : properties) {
+                doc.setPropertyValue(property.getXpath(), property.getValue());
+            }
         }
     }
 
@@ -72,7 +83,7 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
 
             // add the the ACL defined in the descriptor
             for (ACEDescriptor ace : aces) {
-                existingACL.add(new ACE(ace.getUserName(), ace.getPermission(),
+                existingACL.add(new ACE(ace.getPrincipal(), ace.getPermission(),
                         ace.getGranted().booleanValue()));
             }
             // readd the acl to invalidate the ACPImpl cache
@@ -84,7 +95,7 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
     public boolean initFactory(Map<String, String> options,
             List<ACEDescriptor> rootAcl, List<TemplateItemDescriptor> template) {
         this.template = template;
-        this.acl = rootAcl;
+        acl = rootAcl;
         return true;
     }
 

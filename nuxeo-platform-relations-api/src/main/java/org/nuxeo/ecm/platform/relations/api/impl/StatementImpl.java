@@ -163,7 +163,7 @@ public class StatementImpl implements Statement {
 
     public void setProperty(Resource property, Node value) {
         if (property != null && value != null) {
-            Node[] values = new Node[] { value };
+            Node[] values = { value };
             properties.put(property, values);
         }
     }
@@ -227,7 +227,7 @@ public class StatementImpl implements Statement {
                     properties.put(property, valuesList.toArray(new Node[] {}));
                 }
             } else {
-                Node[] values = new Node[] { value };
+                Node[] values = { value };
                 properties.put(property, values);
             }
         }

@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 /**
  * Provides user manager related operations.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
+ * @author Razvan Caraghin
  */
 @Local
 public interface GroupManagerActions {

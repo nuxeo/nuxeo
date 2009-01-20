@@ -31,8 +31,9 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableR
  *
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
  */
-@SuppressWarnings("serial")
 public class FakeIndexableResource implements IndexableResource {
+
+    private static final long serialVersionUID = 1L;
 
     private final IndexableResourceConf conf;
 

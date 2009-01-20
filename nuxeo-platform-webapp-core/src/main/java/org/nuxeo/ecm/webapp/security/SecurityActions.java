@@ -32,7 +32,7 @@ import org.nuxeo.ecm.webapp.table.model.UserPermissionsTableModel;
 /**
  * Provides security related operations on the current document.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
+ * @author Razvan Caraghin
  */
 public interface SecurityActions extends StatefulBaseLifeCycle {
 
@@ -208,4 +208,8 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
     List<String> getCurrentDocumentUsers() throws ClientException;
 
     List<String> getParentDocumentsUsers() throws ClientException;
+
+    String removePermissions() throws ClientException, ECInvalidParameterException;
+
+    String saveSecurityUpdates() throws ClientException;
 }

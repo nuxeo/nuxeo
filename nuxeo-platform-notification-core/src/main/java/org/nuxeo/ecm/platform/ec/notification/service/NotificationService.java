@@ -73,6 +73,7 @@ public class NotificationService extends DefaultComponent implements
 
     private static final String SUBSCRIPTION_NAME = "UserSubscription";
 
+    // FIXME: performance issue when putting URLs in a Map.
     private static final Map<String, URL> TEMPLATES_MAP = new HashMap<String, URL>();
 
     private GeneralSettingsDescriptor generalSettings;
@@ -451,8 +452,7 @@ public class NotificationService extends DefaultComponent implements
         infoMap.put("comment", comment);
         infoMap.put("sender", sender);
 
-        DocumentLocation docLoc = new DocumentLocationImpl(
-                doc.getRepositoryName(), doc.getRef());
+        DocumentLocation docLoc = new DocumentLocationImpl(doc);
         DocumentView docView = new DocumentViewImpl(docLoc);
         docView.setViewId("view_documents");
         infoMap.put(
@@ -491,6 +491,10 @@ public class NotificationService extends DefaultComponent implements
 
     public List<Notification> getNotificationsForSubscriptions(String parentType) {
         return notificationRegistry.getNotificationsForSubscriptions(parentType);
+    }
+
+    public List<Notification> getNotificationsForEvents(String eventId) {
+        return notificationRegistry.getNotificationsForEvent(eventId);
     }
 
 }

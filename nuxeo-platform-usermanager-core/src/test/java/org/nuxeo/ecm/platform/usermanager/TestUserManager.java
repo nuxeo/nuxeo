@@ -85,6 +85,32 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertNull(principal.getCompany());
     }
 
+    public void testGetVirtualUsers() throws ClientException {
+        NuxeoPrincipal principal = userManager.getPrincipal("MyCustomAdministrator");
+        assertNotNull(principal);
+        assertEquals("MyCustomAdministrator", principal.getName());
+        assertEquals("My Custom", principal.getFirstName());
+        assertEquals("Administrator", principal.getLastName());
+        assertNull(principal.getCompany());
+        assertTrue(principal.isMemberOf("administrators"));
+        assertTrue(principal.isAdministrator());
+
+        principal = userManager.getPrincipal("MyCustomMember");
+        assertNotNull(principal);
+        assertEquals("MyCustomMember", principal.getName());
+        assertEquals("My Custom", principal.getFirstName());
+        assertEquals("Member", principal.getLastName());
+        assertNull(principal.getCompany());
+        //assertEquals(4, principal.getAllGroups().size());
+        assertFalse(principal.isAdministrator());
+        assertTrue(principal.isMemberOf("othergroup"));
+        assertTrue(principal.isMemberOf("defgr"));
+        // this one is taken from props
+        assertTrue(principal.isMemberOf("members"));
+        // group1 does not exist => not here
+        assertFalse(principal.isMemberOf("group1"));
+    }
+
     public void testSearchAnonymous() throws ClientException {
         List<NuxeoPrincipal> principals;
         NuxeoPrincipal principal;

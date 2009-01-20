@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.transform;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.nuxeo.common.utils.SerializableHelper;

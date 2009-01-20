@@ -28,7 +28,6 @@ import javax.naming.InitialContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 
 /**
  * Provides helper methods to load a JNDI configuration and lookup some ejb
@@ -89,7 +88,7 @@ public class JNDILookupHelper implements Serializable {
 
             initialContext = loadInitialContext();
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -100,7 +99,7 @@ public class JNDILookupHelper implements Serializable {
         } catch (Throwable t) {
             log.error("Cannot create InitialContext for: "
                     + serverContainerLocation);
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
 
         return ctx;
@@ -127,7 +126,7 @@ public class JNDILookupHelper implements Serializable {
 
             return ejbReference;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 }

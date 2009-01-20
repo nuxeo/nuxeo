@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webapp.action;
 
 import static org.jboss.seam.ScopeType.EVENT;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -36,11 +37,12 @@ import javax.faces.application.FacesMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -54,7 +56,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
 import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
 import org.nuxeo.ecm.platform.events.api.impl.MassLifeCycleTransitionMessage;
@@ -79,19 +80,14 @@ import org.nuxeo.ecm.webapp.trashManagement.TrashManager;
 
 @Name("deleteActions")
 @Scope(EVENT)
+@Install(precedence = FRAMEWORK)
 public class DeleteActionsBean extends InputController implements
         DeleteActions, Serializable, SelectDataModelListener,
         ResultsProviderFarm {
 
-    private static class PathComparator implements Comparator<DocumentModel>, Serializable {
+    public static final String DELETED_CHILDREN_BY_COREAPI = "CURRENT_DOC_DELETED_CHILDREN";
 
-        private static final long serialVersionUID = -6449747704324789701L;
-
-        public int compare(DocumentModel o1, DocumentModel o2) {
-            return o1.getPathAsString().compareTo(o2.getPathAsString());
-        }
-
-    }
+    protected static final String BOARD_USER_DELETED = "USER_DELETED_DOCUMENTS";
 
     private static final long serialVersionUID = 9860854328986L;
 
@@ -106,10 +102,6 @@ public class DeleteActionsBean extends InputController implements
     private static final String DELETE_TRANSITION = "delete";
 
     private static final String UNDELETE_TRANSITION = "undelete";
-
-    protected static final String BOARD_USER_DELETED = "USER_DELETED_DOCUMENTS";
-
-    public static final String DELETED_CHILDREN_BY_COREAPI = "CURRENT_DOC_DELETED_CHILDREN";
 
     private transient DocumentMessageProducer docMsgProducer;
 
@@ -154,6 +146,17 @@ public class DeleteActionsBean extends InputController implements
 
     private Boolean searchDeletedDocuments;
 
+
+    private static class PathComparator implements Comparator<DocumentModel>, Serializable {
+
+        private static final long serialVersionUID = -6449747704324789701L;
+
+        public int compare(DocumentModel o1, DocumentModel o2) {
+            return o1.getPathAsString().compareTo(o2.getPathAsString());
+        }
+
+    }
+
     public String purgeSelection() throws ClientException {
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION)) {
             return purgeSelection(documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION));
@@ -166,7 +169,6 @@ public class DeleteActionsBean extends InputController implements
     public String purgeSelection(List<DocumentModel> docsToPurge)
             throws ClientException {
         if (null != docsToPurge) {
-
             List<DocumentModel> docsThatCanBeDeleted = filterDeleteListAccordingToPerms(docsToPurge);
 
             // Keep only topmost documents (see NXP-1411)
@@ -318,8 +320,7 @@ public class DeleteActionsBean extends InputController implements
                     return true;
                 }
             } catch (ClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error(e);
             }
         }
         return false;
@@ -730,14 +731,14 @@ public class DeleteActionsBean extends InputController implements
             currentDocumentChildren = resultsProvider.getCurrentPage();
 
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
         return currentDocumentChildren;
     }
 
     /**
      * Listener method - not used for now because the binding is not used but
-     * might be used after the refactorization
+     * might be used after the refactoring.
      */
     public void processSelectRowEvent(SelectDataModelRowEvent event)
             throws ClientException {
@@ -779,7 +780,7 @@ public class DeleteActionsBean extends InputController implements
         PagedDocumentsProvider provider = null;
 
         if (BOARD_USER_DELETED.equals(name)) {
-            Object[] params = new Object[] { currentUser.getName() };
+            Object[] params = { currentUser.getName() };
             try {
                 provider = getQmDocuments(name, params, sortInfo);
             } catch (Exception e) {
@@ -822,21 +823,13 @@ public class DeleteActionsBean extends InputController implements
 
     /**
      * Usable with a queryModel that defines a pattern NXQL.
-     *
-     * @param queryModelName
-     * @param parent
-     * @param sortInfo
-     * @return
-     * @throws ClientException
      */
     private PagedDocumentsProvider getChildrenResultsProviderQMPattern(
             String queryModelName, DocumentModel parent, SortInfo sortInfo)
             throws ClientException {
 
         final String parentId = parent.getId();
-
-        Object[] params = new Object[] { parentId };
-
+        Object[] params = { parentId };
         return getResultsProvider(queryModelName, params, sortInfo);
     }
 

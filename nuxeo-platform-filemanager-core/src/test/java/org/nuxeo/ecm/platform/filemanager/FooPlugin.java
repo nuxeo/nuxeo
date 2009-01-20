@@ -19,60 +19,20 @@
 
 package org.nuxeo.ecm.platform.filemanager;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
-import org.nuxeo.ecm.platform.filemanager.service.extension.Plugin;
+import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractFileImporter;
 import org.nuxeo.ecm.platform.types.TypeManager;
 
-public class FooPlugin implements Plugin {
+public class FooPlugin extends AbstractFileImporter {
 
     private static final long serialVersionUID = 1L;
-
-    protected String name = "";
-
-    protected List<String> filters = new ArrayList<String>();
-
-    public boolean isEnabled() {
-        return true;
-    }
-
-    public void setEnabled(boolean enabled) {
-        //
-    }
-
-    public List<String> getFilters() {
-        return filters;
-    }
-
-    public void setFilters(List<String> filters) {
-        this.filters = filters;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public DocumentModel create(CoreSession documentManager, Blob content,
             String path, boolean overwrite, String filename,
             TypeManager typService) {
         return null;
-    }
-
-    public boolean matches(String mimeType) {
-        return false;
-    }
-
-    public void setFileManagerService(FileManagerService fileManagerService) {
-        // ignore
     }
 
 }

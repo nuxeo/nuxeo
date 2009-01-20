@@ -23,9 +23,11 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.nuxeo.ecm.platform.workflow.api.client.wfmc.ResultSlice;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMActivityInstance;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMFilter;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMParticipant;
@@ -78,8 +80,8 @@ public interface WorkflowEngine {
      * @return the process definition id
      * @throws WMWorkflowException
      */
-    WMProcessDefinitionState deployDefinition(InputStream stream, String mimetype)
-            throws WMWorkflowException;
+    WMProcessDefinitionState deployDefinition(InputStream stream,
+            String mimetype) throws WMWorkflowException;
 
     /**
      * Undeploys a process definition given its identifier.
@@ -274,6 +276,71 @@ public interface WorkflowEngine {
             String state);
 
     /**
+     * Returns the work items for any of the given participants in a given
+     * state.
+     *
+     * @param participants
+     * @param state
+     * @return
+     */
+    Collection<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participants, String state);
+
+    /**
+     * Returns the range of work items ordered by start date for any of the
+     * given participants in a given state.
+     *
+     * @param participants
+     * @param state
+     * @param firstResult
+     * @param maxResult (-1 for no maximum)
+     * @return
+     * @throws WMWorkflowException
+     */
+    ResultSlice<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participants, String state, int firstResult,
+            int maxResult) throws WMWorkflowException;
+
+    /**
+     * Returns the range of ordered work items for any of the given
+     * participants. The sort order is determined by the orderBy and
+     * orderAscending parameters
+     *
+     * @param participants
+     * @param state
+     * @param firstResult
+     * @param maxResults
+     * @param orderBy TaskInstance attribute name to sort
+     * @param orderAscending ascending order if true, descending if false
+     * @return
+     * @throws WMWorkflowException
+     */
+    ResultSlice<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participants, String state, int firstResult,
+            int maxResults, String orderBy, boolean orderAscending)
+            throws WMWorkflowException;
+
+    /**
+     * Returns the range of ordered work items for any of the given participants
+     * and process names. The sort order is determined by the orderBy and
+     * orderAscending parameters
+     *
+     * @param participants
+     * @param state
+     * @param processNames allowed process names for the work item to fetch
+     * @param firstResult
+     * @param maxResults
+     * @param orderBy TaskInstance attribute name to sort
+     * @param orderAscending ascending order if true, descending if false
+     * @return
+     * @throws WMWorkflowException
+     */
+    ResultSlice<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participants, String state,
+            List<String> processNames, int firstResult, int maxResults,
+            String orderBy, boolean orderAscending) throws WMWorkflowException;
+
+    /**
      * Returns the work items for a given process instance in a given state.
      *
      * @see org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemState
@@ -396,4 +463,13 @@ public interface WorkflowEngine {
      */
     WMWorkItemIterator listWorkItems(WMFilter filter)
             throws WMWorkflowException;
+
+    /**
+     * Returns a list of process instance having created by one of those users.
+     *
+     * @param creators the creators.
+     * @return
+     */
+    Collection<WMProcessInstance> listProcessInstanceForCreators(List<String> creators);
+
 }

@@ -27,22 +27,16 @@ import javax.security.auth.login.LoginContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory.BuiltinDocumentFields;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
-import org.nuxeo.ecm.core.search.api.client.SearchException;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
-import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
-import org.nuxeo.ecm.core.search.api.client.query.ComposedNXQuery;
-import org.nuxeo.ecm.core.search.api.client.query.QueryException;
-import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
-import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
-import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -62,32 +56,17 @@ public final class IndexingHelper {
     private static void index(DocumentModel docModel, CoreSession session,
             SearchService service) throws IndexingException {
         if (log.isDebugEnabled()) {
-            log.debug("indexing: " + docModel.getPath());
+            log.debug("indexing: " + docModel.getPath() + " docRef: "
+                    + docModel.getRef());
         }
         // Pool the task in an indexing thread.
         // Do not recurse in thread and do compute fulltext
         service.indexInThread(docModel, false, true);
     }
 
-    /**
-     * Delete one document from the document indexes.
-     *
-     * @param docModel : the actual document model to unindex.
-     * @param service : the search service.
-     * @throws IndexingException
-     */
-    private static void unindex(DocumentModel docModel, SearchService service)
-            throws IndexingException {
-        if (log.isDebugEnabled()) {
-            log.debug("Unindexing: " + docModel.getPathAsString());
-        }
-        // Document model identifier is the aggregated key for now.
-        service.deleteAggregatedResources(docModel.getId());
-    }
-
     private static void recursiveIndex(DocumentModel docModel,
-            CoreSession session, SearchService service) {
-
+            CoreSession session, SearchService service)
+            throws IndexingException, ClientException {
         try {
             index(docModel, session, service);
         } catch (Throwable t) {
@@ -99,17 +78,9 @@ public final class IndexingHelper {
         DocumentRef ref = docModel.getRef();
         Boolean isProxy = docModel.isProxy();
         Path docPath = docModel.getPath();
-        docModel=null;
+        docModel = null;
 
-        try {
-            DocumentModelList children = session.getChildren(ref);
-            for (DocumentModel child : children) {
-                recursiveIndex(child, session, service);
-            }
-        } catch (Exception e) {
-            log.error("Doc children iterator inconsistency under "
-                    + docPath, e);
-        }
+        recursiveIndexOnChildren(ref, session, service);
 
         // NXP-1463 fix.
         // Document proxies might have indexable versions some day in the future
@@ -135,8 +106,40 @@ public final class IndexingHelper {
             // exception here.
             // TODO Not enough protection. Rebuild a session.
             // Trying to index a proxy in the section space.
-            log.error("An error occured trying to index versions for doc: "+ref, t);
+            log.error("An error occured trying to index versions for doc: "
+                    + ref, t);
         }
+    }
+
+    private static void recursiveIndexOnChildren(DocumentRef parentRef,
+            CoreSession session, SearchService service) throws ClientException,
+            IndexingException {
+        // Get the folderish childrens
+        DocumentModelList folderishChildren = getFolderishChildren(parentRef,
+                session);
+        for (DocumentModel child : folderishChildren) {
+            recursiveIndex(child, session, service);
+        }
+        // Get the non folderish children
+        DocumentModelList nonFolderishChildren = getNonFolderishChildren(
+                parentRef, session);
+        for (DocumentModel child : nonFolderishChildren) {
+            index(child, session, service);
+        }
+    }
+
+    private static DocumentModelList getFolderishChildren(
+            DocumentRef parentRef, CoreSession session) throws ClientException {
+        DocumentModelList folderishChildren = session.getChildren(parentRef,
+                null, new FacetFilter("Folderish", true), null);
+        return folderishChildren;
+    }
+
+    private static DocumentModelList getNonFolderishChildren(
+            DocumentRef parentRef, CoreSession session) throws ClientException {
+        DocumentModelList nonFolderishChildren = session.getChildren(parentRef,
+                null, new FacetFilter("Folderish", false), null);
+        return nonFolderishChildren;
     }
 
     /* Ugly copy-paste */
@@ -171,14 +174,14 @@ public final class IndexingHelper {
      * @throws Exception
      */
     public static void recursiveIndex(DocumentModel docModel,
-            String managedSessionId) throws Exception {
+            String managedSessionId, SearchService service) throws Exception {
         CoreSession session = CoreInstance.getInstance().getSession(
                 managedSessionId);
         if (session == null) {
             throw new IndexingException(String.format(
                     "Managed session id %s is invalid", managedSessionId));
         }
-        recursiveIndex(docModel, session);
+        recursiveIndex(docModel, session, service);
         // do not close the session if it is managed externally
     }
 
@@ -187,9 +190,11 @@ public final class IndexingHelper {
      * will automatically be closed at the end og the indexing process.
      *
      * @param docModel
+     * @param service
      * @throws Exception
      */
-    public static void recursiveIndex(DocumentModel docModel) throws Exception {
+    public static void recursiveIndex(DocumentModel docModel,
+            SearchService service) throws Exception {
         // we are in the processs of external asynchronous indexing, use a
         // SystemLogin to do the job
         LoginContext sysSession = login();
@@ -204,7 +209,7 @@ public final class IndexingHelper {
             log.debug("Bound to an indexing thread. Using shared Nuxeo core connection...");
         }
         try {
-            recursiveIndex(docModel, session);
+            recursiveIndex(docModel, session, service);
         } finally {
             if (session != null && !isBoundToIndexingThread()) {
                 log.debug("Closing core session");
@@ -222,110 +227,6 @@ public final class IndexingHelper {
                 logout(sysSession);
             }
         }
-    }
-
-    public static void recursiveUnindex(DocumentModel docModel)
-            throws Exception {
-        // we are in the processs of external asynchronous indexing, use a
-        // SystemLogin to do the job
-        LoginContext sysSession = login();
-
-        CoreSession session;
-        if (!isBoundToIndexingThread()) {
-            RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-            session = mgr.getRepository(docModel.getRepositoryName()).open();
-            log.debug("Open a new core session");
-        } else {
-            session = ((IndexingThread) Thread.currentThread()).getCoreSession(docModel.getRepositoryName());
-            log.debug("Bound to an indexing thread. Using shared Nuxeo core connection...");
-        }
-        try {
-            recursiveUnIndex(docModel, session);
-        } finally {
-            if (session != null && !isBoundToIndexingThread()) {
-                log.debug("Closing core session");
-                try {
-                    CoreInstance.getInstance().close(session);
-                } catch (Exception e) {
-                    // Here, let's not make the txn fail if closing the session
-                    // fails.
-                    log.error("Failed to close core session.... for docModel="
-                            + docModel.getPathAsString(), e);
-                }
-            }
-            // Bound to an indexing thread.
-            if (sysSession != null) {
-                logout(sysSession);
-            }
-        }
-    }
-
-    private static void recursiveUnIndex(DocumentModel docModel,
-            CoreSession session, SearchService service)
-            throws IndexingException {
-
-        // Here, the document model might already be unindexed by a synchronous
-        // listener. Let's ask for it again anyway.
-        unindex(docModel, service);
-
-        // Perform a query to get all matching children under the path
-        ResultSet rset = null;
-        try {
-            rset = service.searchQuery(createUnindexPathQuery(docModel), 0, 100);
-        } catch (SearchException se) {
-            throw new IndexingException(se);
-        } catch (QueryException qe) {
-            throw new IndexingException(qe);
-        }
-
-        if (rset == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("No children to unindex for dm=");
-            }
-            return;
-        }
-
-        while (true) {
-            for (ResultItem item : rset) {
-                String key = (String) item.get(BuiltinDocumentFields.FIELD_DOC_UUID);
-                if (key != null) {
-                    service.deleteAggregatedResources(key);
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("No UUID indexed for dm=");
-                    }
-                }
-            }
-
-            if (rset.hasNextPage()) {
-                try {
-                    rset = rset.nextPage();
-                } catch (SearchException se) {
-                    throw new IndexingException(se);
-                }
-            } else {
-                break;
-            }
-        }
-    }
-
-    private static ComposedNXQuery createUnindexPathQuery(DocumentModel dm) {
-        String queryStr = "SELECT * FROM Document WHERE "
-                + BuiltinDocumentFields.FIELD_DOC_PATH + " STARTSWITH " + "'"
-                + dm.getPathAsString() + "'";
-        return new ComposedNXQueryImpl(queryStr);
-    }
-
-    private static void recursiveIndex(DocumentModel docModel,
-            CoreSession session) throws Exception {
-        recursiveIndex(docModel, session,
-                SearchServiceDelegate.getRemoteSearchService());
-    }
-
-    private static void recursiveUnIndex(DocumentModel docModel,
-            CoreSession session) throws Exception {
-        recursiveUnIndex(docModel, session,
-                SearchServiceDelegate.getRemoteSearchService());
     }
 
     private static boolean isBoundToIndexingThread() {

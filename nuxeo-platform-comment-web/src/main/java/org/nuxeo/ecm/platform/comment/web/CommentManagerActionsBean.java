@@ -40,15 +40,16 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
-import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -115,7 +116,7 @@ public class CommentManagerActionsBean extends InputController implements
         showCreateForm = false;
 
         principal = userSession.getCurrentNuxeoPrincipal();
-        principalIsAdmin = principal.getGroups().contains("administrators");
+        principalIsAdmin = principal.isAdministrator();
     }
 
     @Destroy
@@ -134,14 +135,22 @@ public class CommentManagerActionsBean extends InputController implements
 
     protected DocumentModel initializeComment(DocumentModel comment) {
         if (comment != null) {
-            if (comment.getProperty("dublincore", "contributors") == null) {
-                String[] contributors = new String[1];
-                contributors[0] = getPrincipalName();
-                comment.setProperty("dublincore", "contributors", contributors);
+            try {
+                if (comment.getProperty("dublincore", "contributors") == null) {
+                    String[] contributors = new String[1];
+                    contributors[0] = getPrincipalName();
+                    comment.setProperty("dublincore", "contributors", contributors);
+                }
+            } catch (ClientException e) {
+                throw new ClientRuntimeException(e);
             }
-            if (comment.getProperty("dublincore", "created") == null) {
-                comment.setProperty("dublincore", "created",
-                        Calendar.getInstance());
+            try {
+                if (comment.getProperty("dublincore", "created") == null) {
+                    comment.setProperty("dublincore", "created",
+                            Calendar.getInstance());
+                }
+            } catch (ClientException e) {
+                throw new ClientRuntimeException(e);
             }
         }
         return comment;
@@ -149,7 +158,6 @@ public class CommentManagerActionsBean extends InputController implements
 
     public DocumentModel addComment(DocumentModel comment)
             throws ClientException {
-
         try {
             comment = initializeComment(comment);
             UIComment parentComment = null;
@@ -175,8 +183,7 @@ public class CommentManagerActionsBean extends InputController implements
 
         } catch (Throwable t) {
             log.error("failed to add comment", t);
-            log.error(t.getStackTrace());
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -192,14 +199,10 @@ public class CommentManagerActionsBean extends InputController implements
         return null;
     }
 
-    /*
-     * @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
-     * EventNames.DOCUMENT_CHANGED, CommentEvents.COMMENT_ADDED,
-     * CommentEvents.COMMENT_REMOVED }, create = false, inject=false)
-     */
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
             EventNames.CONTENT_ROOT_SELECTION_CHANGED,
             EventNames.DOCUMENT_CHANGED }, create = false, inject = false)
+    @BypassInterceptors
     public void documentChanged() {
         cleanContextVariable();
     }
@@ -334,7 +337,7 @@ public class CommentManagerActionsBean extends InputController implements
             return null;
         } catch (Throwable t) {
             log.error("failed to delete comment", t);
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -384,6 +387,7 @@ public class CommentManagerActionsBean extends InputController implements
         flatComments.add(comment);
     }
 
+    @SuppressWarnings("unchecked")
     public List<UIComment> getLastCommentsByDate(String n)
             throws ClientException {
         int number = Integer.parseInt(n);
@@ -444,4 +448,5 @@ public class CommentManagerActionsBean extends InputController implements
         savedReplyCommentId = null;
         newContent = null;
     }
+
 }

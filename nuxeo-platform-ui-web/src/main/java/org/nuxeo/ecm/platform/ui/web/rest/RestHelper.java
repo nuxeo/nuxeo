@@ -21,9 +21,9 @@ package org.nuxeo.ecm.platform.ui.web.rest;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.ecm.platform.url.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentLocation;
@@ -50,20 +49,20 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
  *
  * @author tiry
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
+ * @author Florent Guillaume
  */
 @Name("restHelper")
 @Scope(EVENT)
-@NuxeoJavaBeanErrorHandler
 public class RestHelper implements Serializable {
 
     private static final Log log = LogFactory.getLog(RestHelper.class);
+    private static final long serialVersionUID = 1L;
 
     @In(create = true)
-    NavigationContext navigationContext;
+    transient NavigationContext navigationContext;
 
     @In(create = true)
-    WebActions webActions;
+    transient WebActions webActions;
 
     private DocumentView docView;
 
@@ -109,9 +108,7 @@ public class RestHelper implements Serializable {
         if (currentDocument != null) {
             // XXX AT: i dont get why currentServerLocation is null while
             // currentDocument is not..
-            DocumentLocation docLoc = new DocumentLocationImpl(
-                    currentDocument.getRepositoryName(),
-                    currentDocument.getRef());
+            DocumentLocation docLoc = new DocumentLocationImpl(currentDocument);
             TypeInfo typeInfo = currentDocument.getAdapter(TypeInfo.class);
             Map<String, String> params = new HashMap<String, String>();
             params.put("tabId", webActions.getCurrentTabId());
@@ -141,11 +138,12 @@ public class RestHelper implements Serializable {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(conversationManager.getConversationIdParameter(),
                 conversationId);
+        /*      Not needed anymore ????
         if (conversationManager.isLongRunningConversation()) {
             params.put(
                     conversationManager.getConversationIsLongRunningParameter(),
                     "true");
-        }
+        }*/
         return conversationManager.encodeParameters(url, params);
     }
 
@@ -160,7 +158,8 @@ public class RestHelper implements Serializable {
         if (conversationManager == null) {
             return url;
         }
-        return conversationManager.appendConversationIdFromRedirectFilter(url);
+        // XXX : deprecated
+        return conversationManager.encodeConversationId(url);
     }
 
     /**

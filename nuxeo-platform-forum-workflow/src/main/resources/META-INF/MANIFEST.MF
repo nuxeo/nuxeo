@@ -7,3 +7,4 @@ Bundle-Category: stateful
 Nuxeo-Component: OSGI-INF/forum-workflow-rules-contrib.xml,
  OSGI-INF/forum-workflow-definitions-contrib.xml,
  OSGI-INF/forum-workflow-document-security-policy-contrib.xml
+Require-Bundle: org.nuxeo.ecm.platform.workflow.jbpm

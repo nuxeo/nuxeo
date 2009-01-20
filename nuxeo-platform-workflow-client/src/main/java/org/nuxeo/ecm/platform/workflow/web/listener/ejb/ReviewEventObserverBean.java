@@ -23,10 +23,12 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.annotations.In;
+import org.jboss.seam.Component;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -61,25 +63,20 @@ public class ReviewEventObserverBean implements ReviewEventObserver {
 
     private static final Log log = LogFactory.getLog(ReviewEventObserverBean.class);
 
-    @In(create = true)
     protected transient NavigationContext navigationContext;
 
-    @In(create = true)
     protected transient WorkflowBeansDelegate workflowBeansDelegate;
 
-    @In(required = false)
     protected transient DocumentWorkflowActions documentWorkflowActions;
 
-    @In(required = false)
     protected transient DocumentTaskActions documentTaskActions;
 
-    @In(required = false)
     protected transient WorkItemsListsActions workItemsListsActions;
 
-    @In(required = false)
     protected transient DashboardActions dashboardActions;
 
     @Observer( value={ EventNames.WF_INIT }, create=true, inject=false)
+    @BypassInterceptors
     public void init() {
         log.debug("WF Seam Event Observer created");
     }
@@ -87,8 +84,8 @@ public class ReviewEventObserverBean implements ReviewEventObserver {
     @Observer( value={ EventNames.DOCUMENT_CHANGED }, create=false)
     public void updateCurrentLevelAfterDocumentChanged()
             throws WMWorkflowException {
-        if (documentWorkflowActions != null) {
-            documentWorkflowActions.updateCurrentLevelAfterDocumentChanged();
+        if (getDocumentWorkflowActions() != null) {
+            getDocumentWorkflowActions().updateCurrentLevelAfterDocumentChanged();
         }
         // XXX TD : Not usefull, DashBoard already listen to WF events !
         // Invalidate user dashboard items
@@ -102,48 +99,59 @@ public class ReviewEventObserverBean implements ReviewEventObserver {
         }*/
     }
 
+
+    @Observer( value={ EventNames.DOCUMENT_SELECTION_CHANGED}, create=false)
+    @BypassInterceptors
+    public void onDocumentChanged()
+    {
+        invalidateContextVariables();
+        invalidateTasksContextVariables();
+        try {
+            invalidateWorkItemsListsMap();
+        } catch (WorkItemsListException e) {
+            log.error("Error during WorkItems invalidation", e);
+        }
+    }
+
     @Observer(value={EventNames.WORKFLOW_USER_ASSIGNMENT_CHANGED}, create=false)
     public void updateDocumentRights() throws WMWorkflowException {
-        if (documentWorkflowActions != null) {
+        if (getDocumentWorkflowActions() != null) {
             // check if workflow is started before updating rights
-            if (documentWorkflowActions.isWorkflowStarted()) {
-                documentWorkflowActions.updateDocumentRights();
+            if (getDocumentWorkflowActions().isWorkflowStarted()) {
+                getDocumentWorkflowActions().updateDocumentRights();
             }
         }
     }
 
-    @Observer( value={ EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.WORKFLOW_ENDED, EventNames.WORKFLOW_NEW_STARTED,
+    @Observer( value={ EventNames.WORKFLOW_ENDED, EventNames.WORKFLOW_NEW_STARTED,
             EventNames.WORKFLOW_TASK_STOP, EventNames.WORKFLOW_TASK_REJECTED,
             EventNames.WORKFLOW_TASK_COMPLETED,
             EventNames.WORKFLOW_TASK_REMOVED }, create=false)
     public void invalidateContextVariables() {
-        if (documentWorkflowActions != null) {
-            documentWorkflowActions.invalidateContextVariables();
+        if (getDocumentWorkflowActions() != null) {
+            getDocumentWorkflowActions().invalidateContextVariables();
         }
     }
 
-    @Observer( value={ EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.WORKFLOW_ENDED, EventNames.WORKFLOW_NEW_STARTED,
+    @Observer( value={ EventNames.WORKFLOW_ENDED, EventNames.WORKFLOW_NEW_STARTED,
             EventNames.WORKFLOW_TASK_START, EventNames.WORKFLOW_TASK_STOP,
             EventNames.WORKFLOW_TASK_COMPLETED,
             EventNames.WORKFLOW_USER_ASSIGNMENT_CHANGED,
             EventNames.WORKFLOW_TASK_REMOVED, EventNames.WORKFLOW_TASK_REJECTED }, create=false)
     public void invalidateTasksContextVariables() {
-        if (documentTaskActions != null) {
-            documentTaskActions.invalidateContextVariables();
+        if (getDocumentTaskActions() != null) {
+            getDocumentTaskActions().invalidateContextVariables();
         }
     }
 
     @Observer( value={ EventNames.WORKFLOW_ENDED, EventNames.WORKFLOW_NEW_STARTED,
             EventNames.WORKFLOW_TASK_STOP, EventNames.WORKFLOW_TASK_REMOVED,
             EventNames.WORKFLOW_TASK_COMPLETED,
-            EventNames.DOCUMENT_SELECTION_CHANGED,
             EventNames.WORK_ITEMS_LIST_ADDED,
             EventNames.WORK_ITEMS_LIST_REMOVED }, create=false)
     public void invalidateWorkItemsListsMap() throws WorkItemsListException {
-        if (workItemsListsActions != null) {
-            workItemsListsActions.invalidateWorkItemsListsMap();
+        if (getWorkItemsListsActions() != null) {
+            getWorkItemsListsActions().invalidateWorkItemsListsMap();
         }
     }
 
@@ -156,11 +164,11 @@ public class ReviewEventObserverBean implements ReviewEventObserver {
     public void unlockDocument() throws WMWorkflowException {
         // :XXX: Here automatically unlock the document to avoid deadlocks. We
         // could certainly do something better than that though.
-        if (workflowBeansDelegate != null) {
+        if (getWorkflowBeansDelegate() != null) {
             try {
                 DocumentModel dm = getCurrentDocument();
                 if (dm != null) {
-                    WorkflowDocumentSecurityManager mgr = workflowBeansDelegate.getWFSecurityManagerBean();
+                    WorkflowDocumentSecurityManager mgr = getWorkflowBeansDelegate().getWFSecurityManagerBean();
                     if (mgr != null) {
                         mgr.unlockDocument(dm.getRef());
                     }
@@ -172,12 +180,60 @@ public class ReviewEventObserverBean implements ReviewEventObserver {
     }
 
     private DocumentModel getCurrentDocument() {
-        return navigationContext.getCurrentDocument();
+        return getNavigationContext().getCurrentDocument();
     }
 
     @Observer( value={ EventNames.CURRENT_DOCUMENT_LIFE_CYCLE_CHANGED }, create=false)
     public void updateDocumentLifecycle() throws ClientException {
         getCurrentDocument().prefetchCurrentLifecycleState(null);
+    }
+
+    protected NavigationContext getNavigationContext() {
+        if (navigationContext==null)
+        {
+            navigationContext = (NavigationContext) Component.getInstance("navigationContext",ScopeType.CONVERSATION);
+        }
+        return navigationContext;
+    }
+
+    protected WorkflowBeansDelegate getWorkflowBeansDelegate() {
+        if (workflowBeansDelegate==null)
+        {
+            workflowBeansDelegate  = (WorkflowBeansDelegate) Component.getInstance("workflowBeansDelegate");
+        }
+        return workflowBeansDelegate;
+    }
+
+    protected DocumentWorkflowActions getDocumentWorkflowActions() {
+        if (documentWorkflowActions==null)
+        {
+            documentWorkflowActions  = (DocumentWorkflowActions) Component.getInstance("documentWorkflowActions");
+        }
+        return documentWorkflowActions;
+    }
+
+    protected DocumentTaskActions getDocumentTaskActions() {
+        if (documentTaskActions==null)
+        {
+            documentTaskActions  = (DocumentTaskActions) Component.getInstance("documentTaskActions");
+        }
+        return documentTaskActions;
+    }
+
+    protected WorkItemsListsActions getWorkItemsListsActions() {
+        if (workItemsListsActions==null)
+        {
+            workItemsListsActions  = (WorkItemsListsActions) Component.getInstance("workItemsListsActions");
+        }
+        return workItemsListsActions;
+    }
+
+    protected DashboardActions getDashboardActions() {
+        if (dashboardActions==null)
+        {
+            dashboardActions  = (DashboardActions) Component.getInstance("dashboardActions");
+        }
+        return dashboardActions;
     }
 
 }

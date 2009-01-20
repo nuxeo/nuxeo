@@ -40,14 +40,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.StringUtils;
@@ -56,13 +57,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
@@ -81,7 +81,6 @@ import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
@@ -126,20 +125,7 @@ public class DocumentActionsBean extends InputController implements
     @In(create = true)
     protected transient WebActions webActions;
 
-    protected static transient MimetypeRegistry mimetypeService;
-
     protected String comment;
-
-    protected MimetypeRegistry getMimetypeService() {
-        if (mimetypeService == null) {
-            try {
-                mimetypeService = Framework.getService(MimetypeRegistry.class);
-            } catch (Exception e) {
-                log.error("Unable to get mimetype service : " + e.getMessage());
-            }
-        }
-        return mimetypeService;
-    }
 
     //@Create
     public void initialize() {
@@ -163,6 +149,7 @@ public class DocumentActionsBean extends InputController implements
         log.debug("PostActivate");
     }
 
+    @Factory(autoCreate=true, value="currentDocumentType", scope = ScopeType.EVENT)
     public Type getCurrentType() {
         DocumentModel doc = navigationContext.getCurrentDocument();
         if (doc == null) {
@@ -216,7 +203,7 @@ public class DocumentActionsBean extends InputController implements
             return name;
 
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -232,7 +219,7 @@ public class DocumentActionsBean extends InputController implements
             FacesContext context = FacesContext.getCurrentInstance();
             return ComponentUtils.download(context, blob, filename);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -313,7 +300,7 @@ public class DocumentActionsBean extends InputController implements
             context.responseComplete();
             return null;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -341,7 +328,7 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.navigateToDocument(currentDocument,
                     "after-edit");
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -351,7 +338,6 @@ public class DocumentActionsBean extends InputController implements
     public String updateDocument() throws ClientException {
         try {
             DocumentModel changeableDocument = navigationContext.getChangeableDocument();
-            setDocumentIconPath(changeableDocument);
             changeableDocument = documentManager.saveDocument(changeableDocument);
             throwUpdateComments(changeableDocument);
             documentManager.save();
@@ -363,58 +349,17 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.navigateToDocument(changeableDocument,
                     "after-edit");
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
-    private void setDocumentIconPath(DocumentModel docModel) {
-        // Set the document icon according to the uploaded file if document
-        // schema holds given values.
-        // FIXME: Surely not the better way to do this here
-        // XXX AT: jsf components should take care of this, or event
-        // listeners should make the necessary updates + this would need to
-        // be done again after each edition
-        Type currentType = getChangeableDocumentType();
-        Object file = docModel.getProperty("file", "content");
-        if (file != null && file instanceof Blob) {
-            Blob blob = (Blob) file;
-            MimetypeEntry mimeEntry = getMimetypeService().getMimetypeEntryByMimeType(
-                    blob.getMimeType());
-            String iconPath = "";
-            if (mimeEntry != null) {
-                if (mimeEntry.getIconPath() != null) {
-                    // FIXME: above Context should find it
-                    iconPath = "/icons/" + mimeEntry.getIconPath();
-                } else {
-                    iconPath = currentType.getIcon();
-                }
-            } else {
-                iconPath = currentType.getIcon();
-            }
-            docModel.setProperty("common", "icon", iconPath);
-        } else {
-            docModel.setProperty("common", "icon", currentType.getIcon());
-        }
-    }
 
     /**
      * Saves changes in current version and then create a new current one.
      */
     public String updateDocumentAsNewVersion() throws ClientException {
         try {
-            /*
-             * // save the changed data to the current working version String
-             * result = updateDocument(); // Do a checkin / checkout of the
-             * edited version DocumentRef docRef = changeableDocument.getRef();
-             * VersionModel newVersion = new VersionModelImpl(); newVersion
-             * .setLabel(documentManager.generateVersionLabelFor(docRef));
-             * documentManager.checkIn(docRef, newVersion);
-             * logDocumentWithTitle("Checked in ", changeableDocument);
-             * documentManager.checkOut(docRef); logDocumentWithTitle("Checked
-             * out ", changeableDocument);
-             */
             DocumentModel changeableDocument = navigationContext.getChangeableDocument();
-            setDocumentIconPath(changeableDocument);
             changeableDocument = documentManager.saveDocumentAsNewVersion(changeableDocument);
 
             facesMessages.add(FacesMessage.SEVERITY_INFO,
@@ -426,7 +371,7 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.navigateToDocument(changeableDocument,
                     "after-edit");
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -456,7 +401,7 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.getActionResult(changeableDocument,
                     UserAction.CREATE);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -488,8 +433,6 @@ public class DocumentActionsBean extends InputController implements
             // set parent path and name for document model
             newDocument.setPathInfo(parentPath, name);
 
-            setDocumentIconPath(newDocument);
-
             newDocument = documentManager.createDocument(newDocument);
             documentManager.save();
 
@@ -503,7 +446,7 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.navigateToDocument(newDocument,
                     "after-create");
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -518,7 +461,8 @@ public class DocumentActionsBean extends InputController implements
         // XXX : this proves that this method is called too many times
         // log.debug("Getter children select model");
         DocumentModelList documents = navigationContext.getCurrentDocumentChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST,
                 documents, selectedDocuments);
         model.addSelectModelListener(this);
@@ -568,6 +512,23 @@ public class DocumentActionsBean extends InputController implements
         return "ERROR: " + errorMessage;
     }
 
+    /**
+     * Handle row selection event after having ensured that the
+     * navigation context stills points to currentDocumentRef to protect against
+     * browsers' back button errors
+     *
+     * @throws ClientException if currentDocRef is not a valid document
+     */
+    @WebRemote
+    public String checkCurrentDocAndProcessSelectRow(String docRef, String providerName,
+            String listName, Boolean selection, String currentDocRef) throws ClientException {
+        DocumentRef currentDocumentRef = new IdRef(currentDocRef);
+        if (!currentDocumentRef.equals(navigationContext.getCurrentDocument().getRef())) {
+            navigationContext.navigateToRef(currentDocumentRef);
+        }
+        return processSelectRow(docRef, providerName, listName, selection);
+    }
+
     @WebRemote
     public String processSelectRow(String docRef, String providerName,
             String listName, Boolean selection) {
@@ -597,6 +558,23 @@ public class DocumentActionsBean extends InputController implements
             documentsListsManager.removeFromWorkingList(lName, doc);
         }
         return computeSelectionActions(lName);
+    }
+
+    /**
+     * Handle complete table selection event after having ensured that the
+     * navigation context stills points to currentDocumentRef to protect against
+     * browsers' back button errors
+     *
+     * @throws ClientException if currentDocRef is not a valid document
+     */
+    @WebRemote
+    public String checkCurrentDocAndProcessSelectPage(String providerName, String listName,
+            Boolean selection, String currentDocRef) throws ClientException {
+        DocumentRef currentDocumentRef = new IdRef(currentDocRef);
+        if (!currentDocumentRef.equals(navigationContext.getCurrentDocument().getRef())) {
+            navigationContext.navigateToRef(currentDocumentRef);
+        }
+        return processSelectPage(providerName, listName, selection);
     }
 
     @WebRemote

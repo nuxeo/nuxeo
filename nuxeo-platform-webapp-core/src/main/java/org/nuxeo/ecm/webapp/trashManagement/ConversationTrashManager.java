@@ -42,7 +42,7 @@ public class ConversationTrashManager implements Serializable{
         log.debug("Initialize");
     }
 
-    public boolean isTrashManagementEnabled(){
+    public static boolean isTrashManagementEnabled(){
         return getService().isTrashManagementEnabled();
     }
 

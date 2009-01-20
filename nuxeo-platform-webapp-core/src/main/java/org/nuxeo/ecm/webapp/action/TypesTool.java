@@ -38,8 +38,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 
 /**
  * Document type service for document type creation.
@@ -49,7 +49,6 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  */
 @Name("typesTool")
 @Scope(CONVERSATION)
-@NuxeoJavaBeanErrorHandler
 public class TypesTool implements Serializable {
 
     private static final long serialVersionUID = -5037578301250616973L;
@@ -68,6 +67,7 @@ public class TypesTool implements Serializable {
 
     @Observer(value = { EventNames.CONTENT_ROOT_SELECTION_CHANGED,
             EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject=false)
+    @BypassInterceptors
     public void resetTypesList() {
         typesList = null;
     }

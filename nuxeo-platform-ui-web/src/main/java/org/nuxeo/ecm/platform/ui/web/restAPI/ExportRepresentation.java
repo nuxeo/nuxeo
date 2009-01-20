@@ -49,9 +49,9 @@ public abstract class ExportRepresentation extends OutputRepresentation {
 
     private static final Log log = LogFactory.getLog(ExportRepresentation.class);
 
-    protected String repositoryName;
+    protected final String repositoryName;
 
-    protected String rootId;
+    protected final String rootId;
 
     protected ExportRepresentation(MediaType mediaType, DocumentModel root) {
         super(mediaType);

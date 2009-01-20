@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.platform.api;
 
-import org.nuxeo.runtime.NXRuntime;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.ServiceManagement;
 
 /**
@@ -39,7 +39,7 @@ public final class NXPlatformAPI {
      * @return the platform service.
      */
     public static PlatformService getPlatformService() {
-        return (PlatformService) NXRuntime.getRuntime().getComponent(
+        return (PlatformService) Framework.getRuntime().getComponent(
                 PlatformService.NAME);
     }
 

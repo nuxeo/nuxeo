@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.api.ClientException;
  * Publishing related exception.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class PublishingException extends ClientException {
 

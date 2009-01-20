@@ -28,7 +28,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Graph type extension defined by its name and implementation class.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 @XObject("graphtype")
 public class GraphTypeDescriptor implements Serializable {

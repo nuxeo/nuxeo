@@ -69,10 +69,10 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
     private static final long serialVersionUID = 2125646683248052737L;
 
     @In(create = true)
-    UserManager userManager;
+    transient UserManager userManager;
 
     @In(create = true, required = false)
-    CoreSession documentManager;
+    transient CoreSession documentManager;
 
     @In(required = false)
     @Out(required = false)

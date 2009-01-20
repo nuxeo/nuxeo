@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.webapp.search;
 
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;

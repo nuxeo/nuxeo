@@ -305,7 +305,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
             }
             if (!userTxn || mustCommitNow(session.countWaitingResources())) {
                 session.saveAndCommit(userTxn);
-                if (userTxn){
+                if (userTxn) {
                     doOptimize();
                     markForRecycling();
                 }
@@ -336,9 +336,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
      * It's quite possible that Compass could do a better join of handling joins
      * etc by its own concept of MultiResource.
      */
-    @SuppressWarnings("unchecked")
     public void index(ResolvedResources resources) throws IndexingException {
-
 
         boolean activeTxn = false;
         boolean userTxn;
@@ -401,8 +399,9 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         if (optimizerLock.tryLock()) {
             try {
                 optimize_try += 1;
-                if ((optimize_try >= OPTIMIZER_SAVE_INTERVAL) && (getCompass().getSearchEngineOptimizer().needOptimization())) {
-                    optimize_try=0;
+                if ((optimize_try >= OPTIMIZER_SAVE_INTERVAL)
+                        && (getCompass().getSearchEngineOptimizer().needOptimization())) {
+                    optimize_try = 0;
                     log.debug("Running optimizer");
                     getCompass().getSearchEngineOptimizer().optimize();
                     log.debug("Optimizer ended");
@@ -507,7 +506,9 @@ public class CompassBackend extends AbstractSearchEngineBackend {
                     range, query, principal);
         } catch (SearchEngineQueryParseException qe) {
             if (tx != null) {
-                tx.rollback();
+                // Shouldn't have to rollback the transaction since Query is not
+                // executed
+                // tx.rollback();
             }
             throw new QueryException(qe.getMessage(), qe);
         } catch (CompassException ce) {
@@ -692,11 +693,14 @@ public class CompassBackend extends AbstractSearchEngineBackend {
                             break;
                         }
                     }
-                    if (map == null) {
+                    if (map == null && !Util.EMPTY_MARKER.equals(sValue)) {
                         map = new HashMap<String, Serializable>();
                         cmpl.add(map);
                     }
                 }
+            }
+            if (map == null) {
+                continue;
             }
 
             if (value == null || dataConf == null || isComplex
@@ -822,7 +826,6 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         return s;
     }
 
-    @SuppressWarnings("unchecked")
     public SearchServiceSession createSession() {
         SearchServiceSession s = new SearchServiceSessionImpl();
         return createSession(s.getSessionId());

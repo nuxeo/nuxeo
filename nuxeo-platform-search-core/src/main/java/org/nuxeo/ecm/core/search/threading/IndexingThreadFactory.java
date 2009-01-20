@@ -26,9 +26,9 @@ import java.util.concurrent.ThreadFactory;
  * <p>
  * Used within <code>IndexingThreadPool</code> as thread factory for the
  * underlying <code>ThreadPoolExecutor</code>
- *
+ * 
  * @see org.nuxeo.ecm.core.search.threading.IndexingThreadPool
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class IndexingThreadFactory implements ThreadFactory {
@@ -36,5 +36,4 @@ public class IndexingThreadFactory implements ThreadFactory {
     public Thread newThread(Runnable r) {
         return new IndexingThreadImpl(r);
     }
-
 }

@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * Helper class to display a publishing information
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class PublishingInformation {
 

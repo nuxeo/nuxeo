@@ -66,13 +66,12 @@ public class PluggableRestletService extends DefaultComponent {
         if (newContrib.getUrlPatterns() != null
                 && !newContrib.getUrlPatterns().isEmpty()) {
             oldDescriptor.getUrlPatterns().addAll(newContrib.getUrlPatterns());
-
         }
 
         // override class (NXP-170)
         if (newContrib.getClassName() != null) {
             oldDescriptor.setClassName(newContrib.getClassName());
-            }
+        }
     }
 
     @Override
@@ -116,7 +115,7 @@ public class PluggableRestletService extends DefaultComponent {
                         + name);
                 return null;
             }
-            Class theClass = rpd.getClassName();
+            Class<Restlet> theClass = rpd.getClassName();
             if (theClass == null) {
                 log.error("Error while creating Restlet instance. Class not available for restlet descriptor: "
                         + name);
@@ -124,7 +123,7 @@ public class PluggableRestletService extends DefaultComponent {
             }
             Restlet restlet;
             try {
-                restlet = (Restlet) theClass.newInstance();
+                restlet = theClass.newInstance();
             } catch (InstantiationException e) {
                 log.error("Error while creating Restlet instance : " + e.getMessage());
                 return null;

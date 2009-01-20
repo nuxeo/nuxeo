@@ -71,7 +71,7 @@ public class WorkItemsListsBean implements WorkItemsListsManager {
     protected EntityManager em;
 
     @PersistenceUnit(unitName = "NXWorkflowDocument")
-    protected EntityManagerFactory emf;
+    protected transient EntityManagerFactory emf;
 
     protected final WorkItemsListFactory factory = new WorkItemsListFactory();
 
@@ -166,12 +166,13 @@ public class WorkItemsListsBean implements WorkItemsListsManager {
             // :XXX: Hibernate bug
             // http://opensource.atlassian.com/projects/hibernate/browse/EJB-98
             // We will return null as it should
-            e.printStackTrace();
+            // TODO: more robust exception handling?
+            log.error(e);
         }
         return wiListEntry;
     }
 
-    private int getNextMaxReviewLevel(String pid) throws WorkItemsListException {
+    private static int getNextMaxReviewLevel(String pid) throws WorkItemsListException {
         WAPI wapi;
         try {
             wapi = WAPIBusinessDelegate.getWAPI();

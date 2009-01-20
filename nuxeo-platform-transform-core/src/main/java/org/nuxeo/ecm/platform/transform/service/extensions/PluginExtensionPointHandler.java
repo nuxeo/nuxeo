@@ -74,6 +74,7 @@ public class PluginExtensionPointHandler extends
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static void registerOne(PluginExtension pluginExtension,
             Extension extension) throws Exception {
 
@@ -93,26 +94,22 @@ public class PluginExtensionPointHandler extends
             log.warn("Plugin class not specified for plugin extension: " + pluginExtension);
             return;
         }
-        Class<Plugin> pluginClass = (Class<Plugin>)extension.getContext().loadClass(className);
+        Class<Plugin> pluginClass = extension.getContext().loadClass(className);
         if (null == pluginClass) {
             throw new TransformException("Unable to load plugin class: '" + className + "'");
         }
-        try {
-            Plugin plugin = pluginClass.newInstance();
-            plugin.setName(name);
-            plugin.setSourceMimeTypes(sourceMimeTypes);
-            plugin.setDestinationMimeType(destinationMimeType);
-            plugin.setDefaultOptions(defaultOptions);
+        Plugin plugin = pluginClass.newInstance();
+        plugin.setName(name);
+        plugin.setSourceMimeTypes(sourceMimeTypes);
+        plugin.setDestinationMimeType(destinationMimeType);
+        plugin.setDefaultOptions(defaultOptions);
 
-            TransformServiceCommon transformService = getNXTransform();
-            if (transformService != null) {
-                getNXTransform().registerPlugin(name, plugin);
-            } else {
-                log.error("No TransformServiceCommon service found impossible to register plugin");
-            }
-        // XXX: dubious code
-        } catch (Exception e) {
-            throw new Exception(e);
+        TransformServiceCommon transformService = getNXTransform();
+        if (transformService != null) {
+            transformService.registerPlugin(name, plugin);
+        } else {
+            throw new TransformException("No TransformServiceCommon service found."
+                    + "Impossible to register plugin: " + name);
         }
     }
 

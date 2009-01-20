@@ -102,8 +102,8 @@ public class RenderingServiceImpl extends DefaultComponent implements
     public void registerEngine(RenderingEngine engine) {
         RenderingEngine existing = engines.put(engine.getFormatName(), engine);
         if (existing != null) {
-            log.warn("Replaced existing RenderingEngine "
-                    + engine.getFormatName());
+            log.debug("Replaced existing RenderingEngine " +
+                    engine.getFormatName());
         } else if (log.isDebugEnabled()) {
             log.debug("Registered RenderingEngine " + engine.getFormatName());
         }

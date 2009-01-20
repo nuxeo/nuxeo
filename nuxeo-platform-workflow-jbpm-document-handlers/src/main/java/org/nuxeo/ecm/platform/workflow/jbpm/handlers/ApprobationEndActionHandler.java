@@ -35,7 +35,8 @@ public class ApprobationEndActionHandler extends
     private static final long serialVersionUID = -6338380183606090792L;
 
     public void execute(ExecutionContext ec) throws Exception {
-        log.info("PROCESS ENDS");
+
+        log.debug("Ending process");
 
         try {
             ProcessInstance pi = getProcessInstance(ec);

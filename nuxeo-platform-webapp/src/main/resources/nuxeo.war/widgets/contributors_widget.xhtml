@@ -1,12 +1,11 @@
 <f:subview xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   id="#{widget.id}">
 
-  <t:dataList id="#{widget.id}_list" var="listItem" value="#{field_0}"
+  <nxu:dataList id="#{widget.id}_list" var="listItem" value="#{field_0}"
     layout="simple" styleClass="standardList">
     <h:graphicImage value="/icons/html.png" />
     <h:commandLink value="#{nxu:userFullName(listItem)}" immediate="true"
@@ -15,6 +14,6 @@
       <f:param name="usernameParam" value="#{listItem}" />
     </h:commandLink>
     <br />
-  </t:dataList>
+  </nxu:dataList>
 
 </f:subview>

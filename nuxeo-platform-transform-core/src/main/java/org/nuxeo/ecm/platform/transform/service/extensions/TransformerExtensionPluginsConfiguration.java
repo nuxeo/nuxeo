@@ -28,11 +28,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 /**
- *
  * Object holding the plugins configuration for a transformer.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class TransformerExtensionPluginsConfiguration {
 

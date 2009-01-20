@@ -62,7 +62,6 @@ public class SelectOneListboxTag extends UIComponentTag {
 
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void setProperties(UIComponent component) {
         super.setProperties(component);
 

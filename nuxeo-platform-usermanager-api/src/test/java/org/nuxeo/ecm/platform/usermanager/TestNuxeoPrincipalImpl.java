@@ -55,4 +55,5 @@ public class TestNuxeoPrincipalImpl extends NXRuntimeTestCase {
         // we don't assert that hash codes are different for principals with
         // different names, as that doesn't have to be true
     }
+
 }

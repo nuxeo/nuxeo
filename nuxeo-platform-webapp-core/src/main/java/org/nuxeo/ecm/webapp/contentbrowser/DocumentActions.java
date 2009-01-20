@@ -23,7 +23,7 @@ import javax.annotation.security.PermitAll;
 import javax.ejb.Remove;
 
 import org.jboss.seam.annotations.Destroy;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.types.Type;
@@ -93,6 +93,7 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
     SelectDataModel getChildrenSelectModel() throws ClientException;
 
     SelectDataModel getSectionChildrenSelectModel() throws ClientException;
+
     /**
      * Checks the current document write permission.
      *
@@ -102,11 +103,36 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
      */
     boolean getWriteRight() throws ClientException;
 
+    /**
+     * Handle complete row selection event after having ensured that the
+     * navigation context stills points to currentDocumentRef to protect against
+     * browsers' back button errors
+     *
+     * @throws ClientException if currentDocRef is not a valid document
+     */
     @WebRemote
-    String processSelectRow(String docRef, String providerName, String listName, Boolean selection);
+    String checkCurrentDocAndProcessSelectRow(String docRef, String providerName,
+            String listName, Boolean selection, String currentDocRef)
+            throws ClientException;
 
     @WebRemote
-    String processSelectPage(String providerName, String listName, Boolean selection) throws ClientException;
+    String processSelectRow(String docRef, String providerName,
+            String listName, Boolean selection);
+
+    /**
+     * Handle complete table selection event after having ensured that the
+     * navigation context stills points to currentDocumentRef to protect against
+     * browsers' back button errors
+     *
+     * @throws ClientException if currentDocRef is not a valid document
+     */
+    @WebRemote
+    String checkCurrentDocAndProcessSelectPage(String providerName, String listName,
+            Boolean selection, String currentDocRef) throws ClientException;
+
+    @WebRemote
+    String processSelectPage(String providerName, String listName,
+            Boolean selection) throws ClientException;
 
     String getComment();
 

@@ -47,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Fake WAPI service
+ * Fake WAPI service.
  * <p>
  * Provides adapters for beans that do not actually have a service at the
  * runtime level (just facade beans).
@@ -129,4 +129,5 @@ public class MockWAPIService extends DefaultComponent {
         }
         return null;
     }
+
 }

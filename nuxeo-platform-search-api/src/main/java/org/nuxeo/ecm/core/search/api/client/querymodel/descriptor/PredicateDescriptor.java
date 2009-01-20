@@ -90,7 +90,7 @@ public class PredicateDescriptor {
                     "type of field %s.%s is not string",
                     fieldDescriptor.getSchema(), fieldDescriptor.getName()));
         }
-        return "(" + (String) fieldDescriptor.getRawValue(model) + ")";
+        return "(" + fieldDescriptor.getRawValue(model) + ")";
     }
 
     protected String atomicQueryElement(DocumentModel model, Escaper escaper)

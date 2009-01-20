@@ -87,7 +87,7 @@ public class FilterRule {
                     && condition.endsWith("}")) {
                 String parsedCondition = condition.substring(2, condition
                         .length() - 1);
-                int idx = parsedCondition.indexOf(".");
+                int idx = parsedCondition.indexOf('.');
                 if (idx == -1) {
                     // simple context variable lookup (may be Factory call)
                     conditions[i] = "SeamContext.get(\"" + parsedCondition

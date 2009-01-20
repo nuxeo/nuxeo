@@ -30,9 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.extractor.TextExtractor;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -103,16 +103,15 @@ public abstract class AbstractJRBasedTextExtractorPlugin extends AbstractPlugin 
                     log.error("Error when closing reader", e);
                 }
             }
-            blob = null;
-            if (f != null) {
-                f.delete();
-            }
             if (fas != null) {
                 try {
                     fas.close();
                 } catch (IOException e) {
                     log.error("Error when closing FileOutputStream", e);
                 }
+            }
+            if (f != null) {
+                f.delete();
             }
         }
     }

@@ -42,4 +42,5 @@ public class LocalConfiguration extends AbstractIOConfiguration {
     public boolean isLocal() {
         return true;
     }
+
 }

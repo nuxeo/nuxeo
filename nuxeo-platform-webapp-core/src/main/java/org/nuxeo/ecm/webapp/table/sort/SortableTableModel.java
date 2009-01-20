@@ -25,8 +25,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.servlet.http.HttpServletRequest;
 
-import org.nuxeo.ecm.core.api.ClientException;
-
 /**
  * Provides support for sorting table models. Inspired from Tomahawk examples.
  * Abstract method design pattern.
@@ -70,7 +68,6 @@ public abstract class SortableTableModel implements Serializable {
      * Sorts the table.
      *
      * @param event
-     * @throws ClientException
      */
     public void doSort(ActionEvent event) {
 

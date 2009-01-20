@@ -38,9 +38,10 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Contexts;
-import org.jboss.seam.contexts.Lifecycle;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.contexts.FacesLifecycle;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
@@ -130,7 +131,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache, Seriali
 
     public PagedDocumentsProvider get(String name, SortInfo sortInfo)
             throws ClientException, SortNotSupportedException {
-        PhaseId lifeCycleId = Lifecycle.getPhaseId();
+        PhaseId lifeCycleId = FacesLifecycle.getPhaseId();
         PagedDocumentsProvider provider = resultsProvidersCache.get(name);
         if (cleanProviders == null) {
             cleanProviders = new HashSet<String>();
@@ -153,18 +154,19 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache, Seriali
             } catch (Exception e) {
                 log.error("failed to obtain sorted resultProvider", e);
                 try {
-                    log.info("retrying search without sort parameters");
+                    log.debug("retrying search without sort parameters");
                     provider = getProviderFarmFor(name).getResultsProvider(
                             name, null);
                 } catch (Exception e2) {
                     if (lifeCycleId != PhaseId.RENDER_RESPONSE) {
                         // don't send message during render phase
                         // otherwise they will be displayed in next page !
+
                         facesMessages.add(FacesMessage.SEVERITY_WARN,
-                                resourcesAccessor.getMessages().get(
-                                        e.getMessage()));
+                                resourcesAccessor.getMessages().get("feedback.search.invalid"));
                     }
-                    return new EmptyResultsProvider();
+                    resultsProvidersCache.put(name, new EmptyResultsProvider());
+                    return resultsProvidersCache.get(name);
                 }
             }
             resultsProvidersCache.put(name, provider);
@@ -203,7 +205,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache, Seriali
         } catch (SecurityException e) {
             return new EmptyResultsProvider();
         } catch (NoSuchMethodException e) {
-            log.info(farm.getClass().getName() +" will have to " +
+            log.warn(farm.getClass().getName() +" will have to " +
                     "implement getEmptyResultsProvider() for Nuxeo 5.2");
             return new EmptyResultsProvider();
         }
@@ -222,6 +224,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache, Seriali
     }
 
     @Observer(value={ EventNames.DOCUMENT_CHILDREN_CHANGED, EventNames.LOCATION_SELECTION_CHANGED }, create=false,inject=false)
+    @BypassInterceptors
     public void invalidateChildrenProvider()
     {
         invalidate(DocumentChildrenStdFarm.CHILDREN_BY_COREAPI);

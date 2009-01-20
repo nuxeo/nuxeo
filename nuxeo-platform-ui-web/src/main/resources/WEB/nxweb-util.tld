@@ -39,6 +39,13 @@
       </li>
       <li> userFullName(String): returns the full name of a user given its id.
       </li>
+      <li> printFileSize(String size): same as printFormatedFileSize( size, "SI", true)
+      </li>
+      <li> printFormatedFileSize(String size, String format, bollean isShort) pretty print the size of 
+      a file using the format given in its short or long form. The format available are "SI",
+      "IEC" or "JEDEC". See <a href="http://en.wikipedia.org/wiki/Byte">the wikipedia article on Byte</a> 
+      for more information on those format.
+      </li>
     </ul>
     ]]>
   </description>
@@ -547,6 +554,14 @@
       </description>
     </attribute>
     <attribute>
+      <name>timeZone</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        String timeZone ID. The server time zone is used if not set.
+      </description>
+    </attribute>
+    <attribute>
       <name>triggerLabel</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
@@ -826,17 +841,26 @@
   <tag>
     <name>inputDate</name>
     <tag-class>None</tag-class>
-    <description>Standard tomahawk tag</description>
+    <description>
+      DISABLED TAG for nuxeo > 5.2m2, otherwise deprecated standard tomahawk
+      tag.
+    </description>
   </tag>
   <tag>
     <name>inputCalendar</name>
     <tag-class>None</tag-class>
-    <description>Standard tomahawk tag</description>
+    <description>
+      DISABLED TAG for nuxeo > 5.2m2, otherwise deprecated standard tomahawk
+      tag.
+    </description>
   </tag>
   <tag>
     <name>schedule</name>
     <tag-class>None</tag-class>
-    <description>Standard tomahawk tag</description>
+    <description>
+      DISABLED TAG for nuxeo > 5.2m2, otherwise deprecated standard tomahawk
+      tag.
+    </description>
   </tag>
   <tag>
     <name>graphicImage</name>
@@ -846,7 +870,11 @@
   <tag>
     <name>inputFileUpload</name>
     <tag-class>None</tag-class>
-    <description>Standard trinidad inputFile tag</description>
+    <description>
+      DISABLED TAG for nuxeo > 5.2m2, otherwise deprecated standard trinidad
+      inputFile tag. Use s:fileUpload instead (available only for versions >
+      5.2m2).
+    </description>
   </tag>
   <tag>
     <name>selectOneRadio</name>

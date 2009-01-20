@@ -81,17 +81,8 @@ public class TestListener extends RepositoryTestCase {
 
         deployContrib("org.nuxeo.runtime", "OSGI-INF/EventService.xml");
 
-        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
-                "CoreService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
-                "TypeService.xml");
         deployContrib("org.nuxeo.ecm.core", "OSGI-INF/PolicyService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
-                "SecurityService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
-                "RepositoryService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
-                "test-CoreExtensions.xml");
+
         deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
                 "CoreTestExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
@@ -200,10 +191,8 @@ public class TestListener extends RepositoryTestCase {
         prefetchInfo.put("dc.title", "title");
         prefetchInfo.put("dc.modified", new GregorianCalendar());
         prefetchInfo.put("dc.contributors", new String[0]);
-        if (prefetchInfo != null) {
-            for (String k : prefetchInfo.keySet()) {
-                dm.prefetchProperty(k, prefetchInfo.get(k));
-            }
+        for (String k : prefetchInfo.keySet()) {
+            dm.prefetchProperty(k, prefetchInfo.get(k));
         }
 
         assertFalse(dm.getPrefetch().isEmpty());

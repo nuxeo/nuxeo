@@ -3,8 +3,6 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
-  xmlns:a4j="http://ajax4jsf.dev.java.net/ajax"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
@@ -12,7 +10,7 @@
   <nxu:methodResult name="provider" value="#{resultsProvidersCache.get('CURRENT_DOC_CHILDREN')}" >
 
   <ui:decorate template="/incl/documents_table.xhtml">
-    <ui:param name="documents" value="#{documentActions.childrenSelectModel}" />
+    <ui:param name="documents" value="#{documentActions.sectionChildrenSelectModel}" />
     <ui:param name="showCheckboxes" value="#{true}" />
     <ui:param name="provider" value="#{provider}" />
     <ui:param name="providerName" value="CURRENT_DOC_CHILDREN" />

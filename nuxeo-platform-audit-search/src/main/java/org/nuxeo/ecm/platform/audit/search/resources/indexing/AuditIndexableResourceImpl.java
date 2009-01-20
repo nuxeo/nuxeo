@@ -47,11 +47,12 @@ public class AuditIndexableResourceImpl extends AbstractIndexableResource
 
     private static final long serialVersionUID = 1L;
 
-    protected long logUUID;
+    protected final long logUUID;
 
     protected Logs auditLogsService;
 
     public AuditIndexableResourceImpl() {
+        this(0L);
     }
 
     public AuditIndexableResourceImpl(long logUUID) {
@@ -69,7 +70,6 @@ public class AuditIndexableResourceImpl extends AbstractIndexableResource
 
     public Map<String, Serializable> getLogEntryDataMapFor(long id)
             throws IndexingException {
-
         Logs logsRemote = getAuditLogsService();
 
         if (logsRemote == null) {
@@ -80,7 +80,7 @@ public class AuditIndexableResourceImpl extends AbstractIndexableResource
         try {
             entry = logsRemote.getLogEntryByID(logUUID);
         } catch (AuditException e) {
-            throw new IndexingException(e.getMessage());
+            throw new IndexingException(e.getMessage(), e);
         }
 
         if (entry == null) {
@@ -91,8 +91,8 @@ public class AuditIndexableResourceImpl extends AbstractIndexableResource
     }
 
     protected Logs getAuditLogsService() {
-        if (auditLogsService == null) {
-            auditLogsService = AuditLogsServiceDelegate.getRemoteAuditLogsService();
+        if (auditLogsService == null) {        
+                auditLogsService = AuditLogsServiceDelegate.getRemoteAuditLogsService();        
         }
         return auditLogsService;
     }
@@ -115,7 +115,7 @@ public class AuditIndexableResourceImpl extends AbstractIndexableResource
     }
 
     public String computeId() {
-        return ((Long) logUUID).toString();
+        return Long.toString(logUUID);
     }
 
     @Override

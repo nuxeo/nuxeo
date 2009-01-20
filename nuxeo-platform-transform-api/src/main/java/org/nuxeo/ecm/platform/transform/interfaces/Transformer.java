@@ -42,7 +42,7 @@ public interface Transformer extends Serializable {
      * The map keys are plugin names. The map values are maps which have string
      * as keys and serializable objects as values.
      *
-     * @return hashmap holding the default configuration
+     * @return a map holding the default configuration
      */
     Map<String, Map<String, Serializable>> getDefaultOptions();
 
@@ -52,7 +52,7 @@ public interface Transformer extends Serializable {
      * <p>
      * Information taken from the last plugin defined in the plugins chain.
      *
-     * @return string holding the destination mimetype.
+     * @return a string holding the destination mimetype.
      */
     String getMimeTypeDestination();
 
@@ -61,14 +61,14 @@ public interface Transformer extends Serializable {
      * <p>
      * Information taken from the first plugin defined in the plugins chain.
      *
-     * @return list of string representing the mimetypes.
+     * @return a list of strings representing the mimetypes.
      */
     List<String> getMimeTypeSources();
 
     /**
      * Returns the transformer name.
      *
-     * @return string holding the name
+     * @return a string holding the name
      */
     String getName();
 
@@ -78,18 +78,17 @@ public interface Transformer extends Serializable {
      * The plugins are registered in the order the transformer should call them
      * to get the expected result.
      *
-     * @return list of plugins
+     * @return a list of plugins
      */
     List<Plugin> getPluginChains();
 
     /**
      * Sets plugin default options.
      * <p>
-     * The hashmap keys are plugin names. The hashmap values are hashmaps which
+     * The map keys are plugin names. The map values are maps which
      * have string as keys and serializable objects as values.
      *
-     * @param defaultOptions
-     * @return hashmap holding the default configuration
+     * @param defaultOptions a map holding the default configuration
      */
     void setDefaultOptions(Map<String, Map<String, Serializable>> defaultOptions);
 
@@ -116,7 +115,7 @@ public interface Transformer extends Serializable {
      *            plugin options (the keys are the plugin names)
      * @param sources
      *            list of sources as TransformDocument instances
-     * @return list of TransformDocument instances.
+     * @return a list of TransformDocument instances.
      */
     List<TransformDocument> transform(
             Map<String, Map<String, Serializable>> options,
@@ -129,7 +128,7 @@ public interface Transformer extends Serializable {
      *            plugin options (the keys are the plugin names)
      * @param blobs
      *            list of sources as StreamingBlob instances.
-     * @return list of TransformDocument instances.
+     * @return a list of TransformDocument instances.
      */
     List<TransformDocument> transform(
             Map<String, Map<String, Serializable>> options,

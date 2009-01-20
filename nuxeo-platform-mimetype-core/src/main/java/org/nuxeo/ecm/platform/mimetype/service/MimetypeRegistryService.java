@@ -119,8 +119,8 @@ public class MimetypeRegistryService extends DefaultComponent implements
     }
 
     public void registerFileExtension(ExtensionDescriptor extensionDescriptor) {
-        log.debug("Registering file extension: " +
-                extensionDescriptor.getName());
+        log.debug("Registering file extension: "
+                + extensionDescriptor.getName());
         extensionRegistry.put(extensionDescriptor.getName(),
                 extensionDescriptor);
     }
@@ -160,8 +160,8 @@ public class MimetypeRegistryService extends DefaultComponent implements
     }
 
     public void unregisterFileExtension(ExtensionDescriptor extensionDescriptor) {
-        log.debug("Unregistering file extension: " +
-                extensionDescriptor.getName());
+        log.debug("Unregistering file extension: "
+                + extensionDescriptor.getName());
         extensionRegistry.remove(extensionDescriptor.getName());
     }
 
@@ -249,6 +249,9 @@ public class MimetypeRegistryService extends DefaultComponent implements
 
     public String getMimetypeFromFilename(String filename)
             throws MimetypeNotFoundException {
+        if (filename == null) {
+            throw new MimetypeNotFoundException("filename is null");
+        }
         String[] parts = filename.split("\\.");
         if (parts.length < 2) {
             throw new MimetypeNotFoundException(filename + "has no extension");
@@ -301,8 +304,8 @@ public class MimetypeRegistryService extends DefaultComponent implements
             throws MimetypeNotFoundException, MimetypeDetectionException {
         File file = null;
         try {
-            // make sure the blob can be read several times without exhausting its
-            // binary source
+            // make sure the blob can be read several times without exhausting
+            // its binary source
             if (!blob.isPersistent()) {
                 blob = blob.persist();
             }
@@ -377,6 +380,30 @@ public class MimetypeRegistryService extends DefaultComponent implements
                 return defaultMimetype;
             }
         }
+    }
+
+    public Blob updateMimetype(Blob blob, String filename)
+            throws MimetypeDetectionException {
+        if (!blob.isPersistent()) {
+            try {
+                blob = blob.persist();
+            } catch (IOException e) {
+                throw new MimetypeDetectionException(e.getMessage(), e);
+            }
+        }
+        if (filename == null) {
+            filename = blob.getFilename();
+        } else if (blob.getFilename() == null) {
+            blob.setFilename(filename);
+        }
+        String mimetype = getMimetypeFromFilenameAndBlobWithDefault(filename,
+                blob, DEFAULT_MIMETYPE);
+        blob.setMimeType(mimetype);
+        return blob;
+    }
+
+    public Blob updateMimetype(Blob blob) throws MimetypeDetectionException {
+        return updateMimetype(blob, null);
     }
 
 }

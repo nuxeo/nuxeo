@@ -6,4 +6,5 @@ Bundle-Vendor: Nuxeo
 Bundle-Category: core
 Nuxeo-Component: OSGI-INF/forum-schemas-contrib.xml,
  OSGI-INF/forum-life-cycle-contrib.xml
-Require-Bundle: org.nuxeo.ecm.core.schema
+Require-Bundle: org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core

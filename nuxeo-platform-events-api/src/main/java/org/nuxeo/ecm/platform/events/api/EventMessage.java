@@ -37,6 +37,8 @@ public interface EventMessage extends Serializable {
     String DUPLICATED = "DUPLICATED";
     String BLOCK_JMS_PRODUCING = "BLOCK_JMS_PRODUCING";
     String BLOCK_SYNC_INDEXING = "BLOCK_SYNC_INDEXING";
+    String BLOCK_ASYNC_INDEXING = "BLOCK_ASYNC_INDEXING";
+    String PERFORM_FULL_SYNC_INDEXING = "PERFORM_FULL_SYNC_INDEXING";
 
     Date getEventDate();
 
@@ -57,8 +59,7 @@ public interface EventMessage extends Serializable {
     /**
      * Initialize this with a NXCore CoreEvent instance.
      *
-     * @param coreEvent
-     *            CoreEvent instance.
+     * @param coreEvent CoreEvent instance.
      * @deprecated feed the coreEvent through the constructor instead.
      */
     @Deprecated

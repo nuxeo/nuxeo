@@ -57,14 +57,10 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 assertEquals(Long.valueOf(1), entry.getProperty(
                         USER_SCHEMANAME, "intField"));
             }
-            assertNull(entry.getProperty(USER_SCHEMANAME, "sn"));
             assertEquals("Administrator", entry.getProperty(USER_SCHEMANAME,
                     "firstName"));
-            assertNull(entry.getProperty(USER_SCHEMANAME, "givenName"));
-            assertNull(entry.getProperty(USER_SCHEMANAME, "cn"));
             assertNull(entry.getProperty(USER_SCHEMANAME, "password"));
-            assertNull(entry.getProperty(USER_SCHEMANAME, "userPassword"));
-            List val = (List)entry.getProperty(USER_SCHEMANAME, "employeeType");
+            List val = (List) entry.getProperty(USER_SCHEMANAME, "employeeType");
             assertTrue(val.isEmpty());
 
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
@@ -83,7 +79,12 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             assertEquals("User", entry2.getProperty(USER_SCHEMANAME,
                     "firstName"));
             assertNull(entry2.getProperty(USER_SCHEMANAME, "password"));
-            assertNull(entry2.getProperty(USER_SCHEMANAME, "userPassword"));
+            try {
+                entry2.getProperty(USER_SCHEMANAME, "userPassword");
+                fail();
+            } catch (ClientException ce) {
+                //expected
+            }
             assertEquals(Arrays.asList("Boss"), entry2.getProperty(
                     USER_SCHEMANAME, "employeeType"));
 
@@ -270,6 +271,35 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             parentGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME,
                     "parentGroups");
             assertEquals(Arrays.asList("dyngroup1", "members"), parentGroups);
+        } finally {
+            session.close();
+        }
+    }
+
+    // NXP-2730: ldap queries are case-insensitive => test entry retrieval is ok
+    // when using other cases (lower or upper)
+    @SuppressWarnings("unchecked")
+    public void testGetEntryWithIdInDifferentCase() throws ClientException {
+        Session session = getLDAPDirectory("userDirectory").getSession();
+        try {
+            DocumentModel entry = session.getEntry("Administrator");
+            assertNotNull(entry);
+            assertEquals("Administrator", entry.getId());
+            List<String> profiles = (List) entry.getProperty(USER_SCHEMANAME,
+                    "profiles");
+            assertNotNull(profiles);
+            assertEquals(1, profiles.size());
+            assertEquals("FUNCTIONAL_ADMINISTRATOR", profiles.get(0));
+
+            // retrieve again in upper case
+            entry = session.getEntry("ADMINISTRATOR");
+            assertNotNull(entry);
+            assertEquals("Administrator", entry.getId());
+            profiles = (List) entry.getProperty(USER_SCHEMANAME, "profiles");
+            assertNotNull(profiles);
+            assertEquals(1, profiles.size());
+            assertEquals("FUNCTIONAL_ADMINISTRATOR", profiles.get(0));
+
         } finally {
             session.close();
         }
@@ -797,7 +827,8 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             DocumentModelList entries;
 
             orderBy.put("company", "asc");
-            entries = session.query(filter, Collections.<String> emptySet(), orderBy);
+            entries = session.query(filter, Collections.<String> emptySet(),
+                    orderBy);
             assertEquals(4, entries.size());
             // user3: creole
             // Administrator: nuxeo

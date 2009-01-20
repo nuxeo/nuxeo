@@ -22,8 +22,6 @@ package org.nuxeo.ecm.platform.workflow.document.ejb;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
-import javax.naming.NamingException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -93,7 +91,7 @@ public class WorkflowDocumentVersioningPolicyBean implements
      * Returns the workflow document session bean from delegate.
      *
      * @return the workflow document session bean
-     * @throws NamingException
+     * @throws Exception
      */
     protected WorkflowDocumentRelationManager getWorkflowDocument()
             throws Exception {
@@ -104,7 +102,7 @@ public class WorkflowDocumentVersioningPolicyBean implements
      * Returns the WAPI session bean from delegate.
      *
      * @return the WAPI session bean
-     * @throws NamingException
+     * @throws WMWorkflowException
      */
     protected WAPI getWAPI() throws WMWorkflowException {
         return WAPIBusinessDelegate.getWAPI();

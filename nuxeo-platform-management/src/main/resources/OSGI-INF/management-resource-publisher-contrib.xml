@@ -2,9 +2,8 @@
   name="org.nuxeo.ecm.platform.management.ResourcePublisherContrib">
 
   <require>org.nuxeo.runtime.management.ResourcePublisher</require>
+  <require>org.nuxeo.ecm.platform.audit.service.NXAuditEventsService</require>
   
-  <require>org.nuxeo.ecm.platform.management.usecases.UsecaseScheduler</require>
-
   <extension target="org.nuxeo.runtime.management.ResourcePublisher"
     point="factories">
 
@@ -20,6 +19,9 @@
 
     <factory name="managementUsecaseScheduler"
       class="org.nuxeo.ecm.platform.management.usecases.UsecaseFactory"/>
+
+    <factory name="auditMetric"
+      class="org.nuxeo.ecm.platform.audit.service.management.AuditEventMetricFactory"/>
 
   </extension>
 

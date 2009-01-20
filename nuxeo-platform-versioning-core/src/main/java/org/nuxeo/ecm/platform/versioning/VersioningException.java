@@ -24,7 +24,9 @@ package org.nuxeo.ecm.platform.versioning;
  *
  * @author DM
  *
+ * @deprecated use {@link VersioningException} instead
  */
+@Deprecated
 public class VersioningException extends Exception {
 
     private static final long serialVersionUID = 5390675925763793228L;

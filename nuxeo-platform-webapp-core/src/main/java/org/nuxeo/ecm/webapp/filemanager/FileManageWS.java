@@ -52,7 +52,7 @@ import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
@@ -75,7 +75,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.api.ws.DocumentDescriptor;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
@@ -119,28 +118,16 @@ public class FileManageWS extends InputController implements
 
     private static final String CURRENT_EDITED_DOCUMENT = "liveEditEditedDocument";
     private static final String CURRENT_EDITED_REPOSITORY_LOCATION = "liveEditEditedRepositoryLocation";
-
-
     private static final String DOC_URL = "doc_url";
-
     private static final String DOC_UUID = "doc_uuid";
-
     private static final String FIELD_NAME = "field_name";
-
     private static final String FILE_NAME = "file_name";
-
     private static final String META_TYPE = "meta_type";
-
     private static final String CONTENT_TYPE = "content_type";
-
     private static final String SERVER_VERSION = "ServerVersion";
-
     private static final String WS_ADRESS = "wsaddress";
-
     private static final String JSESSION_ID = "JSESSIONID";
-
     private static final String NEW_LINE = "\n";
-
     private static final String COOKIE = "Cookie";
 
     // XXX need to use accessors from navigationContext instead
@@ -152,7 +139,7 @@ public class FileManageWS extends InputController implements
     protected CoreSession documentManager;
 
     @In(required = false, create = true)
-    protected transient TypesTool typesTool;
+    protected TypesTool typesTool;
 
     @In(create = true, required=false)
     protected DocumentVersioning documentVersioning;
@@ -185,12 +172,12 @@ public class FileManageWS extends InputController implements
 
     /**
      * This method is called from a page action link to generate a file used by
-     * client IE plugin
+     * client IE plugin.
+     *
      * @deprecated use nxd:liveEditUrl function defined in DocumentModelFunctions instead
      */
     @Deprecated
     public String edit() throws ClientException {
-
         final String logPrefix = "<edit> ";
 
         DocumentModel currentDocument =navigationContext.getCurrentDocument();
@@ -250,7 +237,7 @@ public class FileManageWS extends InputController implements
                 contentType = blob.getEncoding();
             }
 
-            log.info(logPrefix + CONTENT_TYPE + ':' + contentType);
+            log.debug(logPrefix + CONTENT_TYPE + ':' + contentType);
             response.getWriter().write(
                     CONTENT_TYPE + " : " + contentType + NEW_LINE);
             String serverVersion = "Nuxeo5";
@@ -283,7 +270,7 @@ public class FileManageWS extends InputController implements
             response.getWriter().write(resultCookies + NEW_LINE);
 
             response.getWriter().write(NEW_LINE);
-            log.info("Editing with: " + contentType + ';');
+            log.debug("Editing with: " + contentType + ';');
             response.setContentType("application/nx5-edit");
             response.getWriter().flush();
             blob.transferTo(response.getOutputStream());
@@ -291,7 +278,7 @@ public class FileManageWS extends InputController implements
             context.responseComplete();
             return null;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -299,12 +286,12 @@ public class FileManageWS extends InputController implements
         log.info("Initializing...");
     }
 
-    public DocumentModel _getChangeableDocument() {
+    private DocumentModel _getChangeableDocument() {
         // return navigationContext.getChangeableDocument();
         return navigationContext.getCurrentDocument();
     }
 
-    public void _setChangeableDocument(DocumentModel documentModel) {
+    private void _setChangeableDocument(DocumentModel documentModel) {
         navigationContext.setChangeableDocument(documentModel);
         // navigationContext.setCurrentDocument(documentModel);
     }
@@ -444,7 +431,7 @@ public class FileManageWS extends InputController implements
         // check versioning actions
         final VersioningActions selectedOption = VersioningActions.valueOf(actionID);
         if (selectedOption != null) {
-            log.info("Saving Document with versioning option: "
+            log.debug("Saving Document with versioning option: "
                     + selectedOption);
 
             // documentVersioning.incrementVersions(changeableDocument,
@@ -468,7 +455,7 @@ public class FileManageWS extends InputController implements
      * @deprecated use UploadFileRestlet instead
      */
     @Deprecated
-    public String updateDocument(DocumentModel docModel) throws ClientException {
+    private String updateDocument(DocumentModel docModel) throws ClientException {
         try {
             // DocumentModel changeableDocument = getChangeableDocument();
 
@@ -488,7 +475,7 @@ public class FileManageWS extends InputController implements
             // "after-edit");
             return ""; // non-null
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -498,7 +485,7 @@ public class FileManageWS extends InputController implements
      *             directly
      */
     @Deprecated
-    public String updateDocumentAsNewVersion(DocumentModel docModel)
+    private String updateDocumentAsNewVersion(DocumentModel docModel)
             throws ClientException {
         try {
             // save the changed data to the current working version
@@ -517,7 +504,7 @@ public class FileManageWS extends InputController implements
             return result;
 
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -546,7 +533,7 @@ public class FileManageWS extends InputController implements
             byte[] output = content.getByteArray();
             return new String(output);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -554,8 +541,8 @@ public class FileManageWS extends InputController implements
      * The client must call this method on the doc before saving.
      * <p>
      * This methods returns a HashMap listing all possibles actions with their
-     * desciption. Ex: { 'lock' : "Locking the document", 'lock+version' : "Lock
-     * and version the document" ...} The returned actions are all exclusives,
+     * description. Ex: { 'lock' : "Locking the document", 'lock+version' : "Lock
+     * and version the document" ...}. The returned actions are all exclusive,
      * and the user will have to chose one of the options.
      *
      * @param doc_url
@@ -596,7 +583,7 @@ public class FileManageWS extends InputController implements
          * postEditActList.add("Save_in_new_Version");
          */
 
-        log.info(logPrefix + "postEditActList: " + postEditActList);
+        log.debug(logPrefix + "postEditActList: " + postEditActList);
 
         String[] postEditAct = new String[postEditActList.size()];
         postEditAct = postEditActList.toArray(postEditAct);
@@ -625,7 +612,7 @@ public class FileManageWS extends InputController implements
         return preEditActList.toArray(new String[0]);
     }
 
-    public Map<String, Object> createDataMap(String[] propertiesArray) {
+    private Map<String, Object> createDataMap(String[] propertiesArray) {
         Map<String, Object> map = new HashMap<String, Object>();
 
         for (int i = 0; i < propertiesArray.length; i += 2) {

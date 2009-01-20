@@ -26,7 +26,6 @@ import org.nuxeo.runtime.api.Framework;
  * Stateless transform service delegate.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public final class TransformServiceDelegate {
 

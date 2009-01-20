@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.transform.plugin.xml;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +39,8 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class Xml2Text extends DefaultHandler {
 
-    protected static SAXParserFactory factory = SAXParserFactory.newInstance();
+    protected static final SAXParserFactory factory = SAXParserFactory.newInstance();
+
     static {
         factory.setValidating(false);
         factory.setNamespaceAware(false);
@@ -50,10 +50,6 @@ public class Xml2Text extends DefaultHandler {
     protected StringBuffer buf;
     protected boolean trim = false;
 
-
-    /**
-     *
-     */
     public Xml2Text() throws SAXException, ParserConfigurationException {
         parser = factory.newSAXParser();
         XMLReader reader = parser.getXMLReader();
@@ -101,11 +97,13 @@ public class Xml2Text extends DefaultHandler {
             String name, Attributes attributes) throws SAXException {
         trim = true;
     }
+
     @Override
     public void endElement(String uri, String localName, String name)
             throws SAXException {
         trim = true;
     }
+
     @Override
     public void characters(char[] ch, int start, int length)
             throws SAXException {
@@ -113,7 +111,9 @@ public class Xml2Text extends DefaultHandler {
         if (trim) {
             int i = start;
             int end = start + length;
-            while (i < end && Character.isWhitespace(ch[i])) i++;
+            while (i < end && Character.isWhitespace(ch[i])) {
+                i++;
+            }
             buf.append(" ").append(ch, i, length - i + start);
             trim = false;
             //System.out.println("["+new String(ch, i, length - i + start)+"]");
@@ -122,17 +122,5 @@ public class Xml2Text extends DefaultHandler {
             //System.out.println("{"+new String(ch, start, length)+"}");
         }
     }
-
-    public static void main(String[] args) {
-        String STR = "<?xml version=\"1.0\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict_ZZZZZ.dtd\">" +
-                "<root>aaaa<v>1</v>   aaaaaaa<c>      zzzzzzz    </c> nnnn ab   nnn</root>";
-        try {
-            System.out.println("============\n"+new Xml2Text().parse(new ByteArrayInputStream(STR.getBytes())));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
 
 }

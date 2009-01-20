@@ -29,7 +29,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
 import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.platform.workflow.api.client.delegate.WAPIBusinessDelegate;
 import org.nuxeo.ecm.platform.workflow.api.client.events.EventNames;
@@ -61,7 +60,6 @@ import org.nuxeo.ecm.platform.workflow.web.api.WorkflowBeansDelegate;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @Name("workflowBeansDelegate")
-@NuxeoJavaBeanErrorHandler
 public class WorkflowBeansDelegateBean implements WorkflowBeansDelegate {
 
     private static final long serialVersionUID = 8589557822791361833L;

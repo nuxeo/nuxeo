@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.search.api.client.common.TypeManagerServiceDelegate;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.core.search.api.client.search.results.document.impl.ResultDocumentModel;
+import org.nuxeo.ecm.core.search.api.client.search.results.impl.DocumentModelResultItem;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceConf;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.ResourceType;
 
@@ -62,10 +63,6 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.R
  *
  */
 public class SearchPageProvider implements PagedDocumentsProvider {
-
-    private static final long serialVersionUID = 4391326971391218440L;
-
-    private static final Log log = LogFactory.getLog(SearchPageProvider.class);
 
     // to be used by the blob filter to transform maps into blob instances
 
@@ -79,7 +76,15 @@ public class SearchPageProvider implements PagedDocumentsProvider {
 
     public static final String BLOB_NAME_KEY = "name";
 
+    public static final String BLOB_LENGTH_KEY = "length";
+
+    private static final long serialVersionUID = 4391326971391218440L;
+
+    private static final Log log = LogFactory.getLog(SearchPageProvider.class);
+
     private static final DocumentModelList EMPTY = new DocumentModelListImpl();
+
+    private static final Map<String, String> prefix2SchemaNameCache = new HashMap<String, String>();
 
     private ResultSet searchResults;
 
@@ -105,8 +110,6 @@ public class SearchPageProvider implements PagedDocumentsProvider {
     private boolean pageChanged = false;
 
     private SchemaManager typeManager;
-
-    private static final Map<String, String> prefix2SchemaNameCache = new HashMap<String, String>();
 
     /**
      * Constructor to create a sortable provider. Note that a provider can be
@@ -171,7 +174,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
      * Return the current list of document models
      *
      * @return the list
-     * @deprecated use {@link getCurrentPage} (see in interface) instead. will
+     * @deprecated use {@link #getCurrentPage} (see in interface) instead. will
      *             be removed in 5.2
      */
     @Deprecated
@@ -364,9 +367,16 @@ public class SearchPageProvider implements PagedDocumentsProvider {
         return new DocumentModelListImpl(res);
     }
 
-    @SuppressWarnings("unchecked")
     private DocumentModel constructDocumentModel(ResultItem rItem)
             throws SearchException {
+
+        // try to recover DocumentModel
+        if (rItem instanceof DocumentModelResultItem) {
+            DocumentModel doc = ((DocumentModelResultItem) rItem).getDocumentModel();
+            if (doc != null) {
+                return doc;
+            }
+        }
 
         // Collector
         Map<String, Map<String, Object>> dataModels = new HashMap<String, Map<String, Object>>();
@@ -411,7 +421,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
 
         List<String> facetsList = (List<String>) rItem.get(BuiltinDocumentFields.FIELD_DOC_FACETS);
         if (facetsList == null) {
-            facetsList = Collections.EMPTY_LIST;
+            facetsList = Collections.emptyList();
         }
 
         Set<String> facets = new HashSet<String>(facetsList);
@@ -494,8 +504,13 @@ public class SearchPageProvider implements PagedDocumentsProvider {
                 String mimetype = (String) map.get(BLOB_MIMETYPE_KEY);
                 String digest = (String) map.get(BLOB_DIGEST_KEY);
                 String name = (String) map.get(BLOB_NAME_KEY);
-                Blob blob = StreamingBlob.createFromString(data == null ? ""
-                        : data, mimetype);
+                String lengthS = (String) map.get(BLOB_LENGTH_KEY);
+                final int length = lengthS == null ? 0 : Integer.parseInt(lengthS);
+                if (mimetype == null) {
+                    mimetype = "application/octet-stream";
+                }
+                ExtendedStringSource src = new ExtendedStringSource(data == null ? "" : data, length);
+                Blob blob = new StreamingBlob(src, mimetype);
                 blob.setEncoding((String) map.get(BLOB_ENCODING_KEY));
                 blob.setDigest(digest == null ? "" : digest);
                 blob.setFilename(name == null ? "" : name);

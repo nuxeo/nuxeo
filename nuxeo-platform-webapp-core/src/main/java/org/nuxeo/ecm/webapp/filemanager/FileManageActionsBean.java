@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webapp.filemanager;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +32,6 @@ import javax.faces.application.FacesMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.myfaces.trinidad.model.UploadedFile;
 import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -45,10 +45,8 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.api.FileManagerPermissionException;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.publishing.api.PublishActions;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
@@ -75,21 +73,23 @@ public class FileManageActionsBean extends InputController implements
 
     private static final Log log = LogFactory.getLog(FileManageActionsBean.class);
 
-    private static final String TRANSF_ERROR = "TRANSF_ERROR";
+    public static final String TRANSF_ERROR = "TRANSF_ERROR";
 
-    private static final String MOVE_ERROR = "MOVE_ERROR";
+    public static final String MOVE_ERROR = "MOVE_ERROR";
 
-    private static final String COPY_ERROR = "COPY_ERROR";
+    public static final String COPY_ERROR = "COPY_ERROR";
 
-    private static final String PASTE_ERROR = "PASTE_ERROR";
+    public static final String PASTE_ERROR = "PASTE_ERROR";
 
-    private static final String MOVE_IMPOSSIBLE = "MOVE_IMPOSSIBLE";
+    public static final String MOVE_IMPOSSIBLE = "MOVE_IMPOSSIBLE";
 
-    private static final String MOVE_PUBLISH = "MOVE_PUBLISH";
+    public static final String MOVE_PUBLISH = "MOVE_PUBLISH";
 
-    private static final String MOVE_OK = "MOVE_OK";
+    public static final String MOVE_OK = "MOVE_OK";
 
-    protected UploadedFile fileUpload;
+    protected InputStream fileUpload;
+
+    protected String fileName;
 
     @In(create = true, required = false)
     protected CoreSession documentManager;
@@ -110,9 +110,9 @@ public class FileManageActionsBean extends InputController implements
             try {
                 fileManager = Framework.getService(FileManager.class);
             } catch (Exception e) {
-                log.error("Unable to get FileManager service " + e.getMessage());
-                throw new ClientException("Unable to get FileManager service "
-                        + e.getMessage());
+                log.error("Unable to get FileManager service ", e);
+                throw new ClientException("Unable to get FileManager service ",
+                        e);
             }
         }
         return fileManager;
@@ -129,7 +129,7 @@ public class FileManageActionsBean extends InputController implements
 
     public String addFile() throws ClientException {
         try {
-            if (fileUpload == null) {
+            if (fileUpload == null || fileName == null) {
                 facesMessages.add(FacesMessage.SEVERITY_ERROR,
                         resourcesAccessor.getMessages().get(
                                 "fileImporter.error.nullUploadedFile"));
@@ -137,12 +137,14 @@ public class FileManageActionsBean extends InputController implements
                         navigationContext.getCurrentDocument(),
                         UserAction.AFTER_CREATE);
             }
+            fileName = FileUtils.getCleanFileName(fileName);
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             String path = currentDocument.getPathAsString();
-            Blob blob = FileUtils.fetchContent(fileUpload);
+            Blob blob = FileUtils.createSerializableBlob(fileUpload, fileName,
+                    null);
 
             DocumentModel createdDoc = getFileManagerService().createDocumentFromBlob(
-                    documentManager, blob, path, true, fileUpload.getFilename());
+                    documentManager, blob, path, true, fileName);
             eventManager.raiseEventsOnDocumentSelected(createdDoc);
 
             facesMessages.add(FacesMessage.SEVERITY_INFO,
@@ -152,7 +154,7 @@ public class FileManageActionsBean extends InputController implements
                     UserAction.AFTER_CREATE);
 
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -165,6 +167,19 @@ public class FileManageActionsBean extends InputController implements
         return true;
     }
 
+    protected String getErrorMessage(String errorType, String errorInfo) {
+        // Rux INA-224 simple patch for the moment, until full i18n into
+        // Exceptions
+        return String.format("%s |(%s)| %s", errorType, errorInfo,
+                resourcesAccessor.getMessages().get(
+                        "message.operation.fails.generic"));
+    }
+
+    /**
+     * @deprecated use addBinaryFileFromPlugin with a Blob argument API to avoid
+     *             loading the content in memory
+     */
+    @Deprecated
     public String addFileFromPlugin(String content, String mimetype,
             String fullName, String morePath, Boolean UseBase64)
             throws ClientException {
@@ -180,67 +195,73 @@ public class FileManageActionsBean extends InputController implements
                     morePath);
         } catch (Throwable t) {
             log.error(t);
-            //Rux INA-224 simple patch for the moment, until full i18n into Exceptions
-            return TRANSF_ERROR + " |(" + fullName + ")| "
-                    + resourcesAccessor.getMessages().get("message.operation.fails.generic");
+            return getErrorMessage(TRANSF_ERROR, fullName);
         }
     }
 
+    public String addBinaryFileFromPlugin(Blob blob, String fullName,
+            String morePath) throws ClientException {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        String curPath = currentDocument.getPathAsString();
+
+        String path = curPath + morePath;
+        return createDocumentFromBlob(blob, fullName, path);
+    }
+
+    public String addBinaryFileFromPlugin(Blob blob, String fullName,
+            DocumentModel targetContainer) throws ClientException {
+        return createDocumentFromBlob(blob, fullName,
+                targetContainer.getPathAsString());
+    }
+
+    protected String createDocumentFromBlob(Blob blob, String fullName,
+            String path) throws ClientException {
+        DocumentModel createdDoc;
+        try {
+            createdDoc = getFileManagerService().createDocumentFromBlob(
+                    documentManager, blob, path, true, fullName);
+        } catch (FileManagerPermissionException e) {
+            // security check failed
+            log.debug("No permissions creating " + fullName);
+            return getErrorMessage(TRANSF_ERROR, fullName);
+        } catch (Exception e) {
+            // log error stack trace for server side debugging while giving a
+            // generic and localized error message to the client
+            log.error("Error importing " + fullName, e);
+            return getErrorMessage(TRANSF_ERROR, fullName);
+        }
+        if (createdDoc == null) {
+            log.error("could not create the document " + fullName);
+            return getErrorMessage(TRANSF_ERROR, fullName);
+        }
+        // update the context, raise events to update the seam context
+        if (navigationContext.getCurrentDocument().getRef().equals(
+                createdDoc.getRef())) {
+            // contextManager.updateContext(createdDoc);
+            navigationContext.updateDocumentContext(createdDoc);
+        }
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                currentDocument);
+        eventManager.raiseEventsOnDocumentSelected(createdDoc);
+        return createdDoc.getName();
+    }
+
+    /**
+     * @deprecated Use addBinaryFileFromPlugin(Blob, String, String) to avoid
+     *             loading the data in memory as a Bytes array
+     */
+    @Deprecated
     public String addBinaryFileFromPlugin(byte[] content, String mimetype,
             String fullName, String morePath) throws ClientException {
-        try {
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
-            String curPath = currentDocument.getPathAsString();
-
-            // compute the path of the target container
-            if (!currentDocument.isFolder()) {
-                curPath = curPath.substring(0, curPath.lastIndexOf("/"));
-            }
-            String path = curPath + morePath;
-
-            // wrap the content into a streaming blob and use the mimetype
-            // service to update the right
-            Blob blob = StreamingBlob.createFromByteArray(content, null);
-            MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
-            mimetype = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
-                    fullName, blob, mimetype);
-            blob.setMimeType(mimetype);
-            DocumentModel createdDoc;
-            try {
-                createdDoc = getFileManagerService().createDocumentFromBlob(
-                        documentManager, blob, path, true, fullName);
-            } catch (FileManagerPermissionException e) {
-                // security check failed
-                //Rux INA-224 simple patch for the moment, until full i18n into Exceptions
-                log.error("No permissions creating " + fullName);
-                return TRANSF_ERROR + " |(" + fullName + ")| "
-                        + resourcesAccessor.getMessages().get("message.operation.fails.generic");
-            }
-
-            if (createdDoc == null) {
-                //Rux INA-224 simple patch for the moment, until full i18n into Exceptions
-                log.error("Couldn't create the document " + fullName);
-                return TRANSF_ERROR + " |(" + fullName + ")| "
-                        + resourcesAccessor.getMessages().get("message.operation.fails.generic");
-            }
-
-            // update the context, raise events and return the next page
-            if (currentDocument.getRef().equals(createdDoc.getRef())) {
-                // contextManager.updateContext(createdDoc);
-                navigationContext.updateDocumentContext(createdDoc);
-            }
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                    currentDocument);
-            eventManager.raiseEventsOnDocumentSelected(createdDoc);
-            return createdDoc.getName();
-        } catch (Throwable t) {
-            //Rux INA-224 simple patch for the moment, until full i18n into Exceptions
-            log.error(t);
-            return TRANSF_ERROR + " |(" + fullName + ")| "
-                    + resourcesAccessor.getMessages().get("message.operation.fails.generic");
-        }
+        Blob blob = StreamingBlob.createFromByteArray(content, null);
+        return addBinaryFileFromPlugin(blob, fullName, morePath);
     }
 
+    /**
+     * @deprecated Use addBinaryFileFromPlugin(Blob, String, DocumentRef) to
+     *             avoid loading the data in memory as a Bytes array
+     */
+    @Deprecated
     public String addBinaryFile(byte[] content, String mimetype,
             String fullName, DocumentRef docRef) throws ClientException {
         try {
@@ -249,19 +270,12 @@ public class FileManageActionsBean extends InputController implements
             String path = targetContainer.getPathAsString();
             Blob blob = StreamingBlob.createFromByteArray(content, mimetype);
 
-            MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
-            mimetype = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
-                    fullName, blob, mimetype);
-            blob.setMimeType(mimetype);
-
             DocumentModel createdDoc = getFileManagerService().createDocumentFromBlob(
                     documentManager, blob, path, true, fullName);
             return createdDoc.getName();
         } catch (Throwable t) {
-            //Rux INA-224 simple patch for the moment, until full i18n into Exceptions
             log.error(t);
-            return TRANSF_ERROR + " |(" + fullName + ")| "
-                    + resourcesAccessor.getMessages().get("message.operation.fails.generic");
+            return getErrorMessage(TRANSF_ERROR, fullName);
         }
     }
 
@@ -272,7 +286,7 @@ public class FileManageActionsBean extends InputController implements
 
             String curPath = currentDocument.getPathAsString();
             if (!currentDocument.isFolder()) {
-                curPath = curPath.substring(0, curPath.lastIndexOf("/"));
+                curPath = curPath.substring(0, curPath.lastIndexOf('/'));
             }
             String path = curPath + morePath;
 
@@ -281,17 +295,13 @@ public class FileManageActionsBean extends InputController implements
                 createdDoc = getFileManagerService().createFolder(
                         documentManager, fullName, path);
             } catch (FileManagerPermissionException e) {
-                //Rux INA-224 simple patch for the moment, until full i18n into Exceptions
-                log.error("No permissions creating folder " + fullName);
-                return TRANSF_ERROR + " |(" + fullName + ")| "
-                        + resourcesAccessor.getMessages().get("message.operation.fails.generic");
+                log.debug("No permissions creating folder " + fullName);
+                return getErrorMessage(TRANSF_ERROR, fullName);
             }
 
             if (createdDoc == null) {
-                //Rux INA-224 simple patch for the moment, until full i18n into Exceptions
                 log.error("Couldn't create the folder " + fullName);
-                return TRANSF_ERROR + " |(" + fullName + ")| "
-                        + resourcesAccessor.getMessages().get("message.operation.fails.generic");
+                return getErrorMessage(TRANSF_ERROR, fullName);
             }
 
             eventManager.raiseEventsOnDocumentSelected(createdDoc);
@@ -299,10 +309,8 @@ public class FileManageActionsBean extends InputController implements
                     currentDocument);
             return createdDoc.getName();
         } catch (Throwable t) {
-            //Rux INA-224 simple patch for the moment, until full i18n into Exceptions
             log.error(t);
-            return TRANSF_ERROR + " |(" + fullName + ")| "
-                    + resourcesAccessor.getMessages().get("message.operation.fails.generic");
+            return getErrorMessage(TRANSF_ERROR, fullName);
         }
     }
 
@@ -321,22 +329,30 @@ public class FileManageActionsBean extends InputController implements
             log.debug(debug);
             return debug;
         } catch (Throwable t) {
-            //Rux INA-224 simple patch for the moment, until full i18n into Exceptions
             log.error(t);
-            return COPY_ERROR + " |(" + docId + ")| "
-                    + resourcesAccessor.getMessages().get("message.operation.fails.generic");
+            return getErrorMessage(COPY_ERROR, docId);
         }
     }
 
-    private String checkMoveAllowed(DocumentRef docRef, DocumentRef containerRef)
-            throws ClientException {
+    protected String checkMoveAllowed(DocumentRef docRef,
+            DocumentRef containerRef) throws ClientException {
 
         DocumentModel doc = documentManager.getDocument(docRef);
         DocumentModel container = documentManager.getDocument(containerRef);
 
-        if (container.getType().equals("Section")
+        // check that we are not trying to move a folder inside itself
+        if ((container.getPathAsString() + "/").startsWith(doc.getPathAsString()
+                + "/")) {
+            facesMessages.add(FacesMessage.SEVERITY_WARN,
+                    resourcesAccessor.getMessages().get("move_impossible"));
+            return MOVE_IMPOSSIBLE;
+        }
+
+        if (!doc.isProxy() && container.getType().equals("Section")
                 && !doc.getType().equals("Section")) {
-            // We try to do a publication check browse in sections
+            // we try to do a publication check browse in sections
+            // TODO: use a PUBLICATION_TARGET facet instead of hardcoding the
+            // Section type name
             if (!documentManager.hasPermission(containerRef,
                     SecurityConstants.BROWSE)) {
                 // This should never append since user can only drop in visible
@@ -344,25 +360,8 @@ public class FileManageActionsBean extends InputController implements
                 facesMessages.add(FacesMessage.SEVERITY_WARN,
                         resourcesAccessor.getMessages().get(
                                 "move_insuffisant_rights"));
+                // TODO: this should be PUBLISH_IMPOSSIBLE
                 return MOVE_IMPOSSIBLE;
-            }
-
-            // check the right to remove an element from the source folder :
-            if (!documentManager.hasPermission(doc.getParentRef(),
-                    SecurityConstants.REMOVE_CHILDREN)
-                    || documentManager.hasPermission(doc.getRef(),
-                            SecurityConstants.REMOVE)) {
-                // This should never append since user can only drop in visible
-                // sections
-                facesMessages.add(FacesMessage.SEVERITY_WARN,
-                        resourcesAccessor.getMessages().get(
-                                "move_insuffisant_rights"));
-                return MOVE_IMPOSSIBLE;
-            }
-
-            if (doc.isProxy()) {
-                // if this is a proxy, simply move it
-                return MOVE_OK;
             }
 
             if (doc.hasFacet(FacetNames.PUBLISHABLE)) {
@@ -371,18 +370,23 @@ public class FileManageActionsBean extends InputController implements
                 facesMessages.add(FacesMessage.SEVERITY_WARN,
                         resourcesAccessor.getMessages().get(
                                 "publish_impossible"));
+                // TODO: this should be PUBLISH_IMPOSSIBLE
                 return MOVE_IMPOSSIBLE;
             }
-
         }
+        // this is a real move operation (not a publication)
 
-        // do not allow to move a published document back in a workspace
-        if (doc.isProxy() && !container.getType().equals("Section")) {
+        // check the right to remove the document from the source container
+        if (!documentManager.hasPermission(doc.getParentRef(),
+                SecurityConstants.REMOVE_CHILDREN)
+                || !documentManager.hasPermission(doc.getRef(),
+                        SecurityConstants.REMOVE)) {
             facesMessages.add(FacesMessage.SEVERITY_WARN,
                     resourcesAccessor.getMessages().get("move_impossible"));
             return MOVE_IMPOSSIBLE;
         }
 
+        // check that we have the right to create the copy in the target
         if (!documentManager.hasPermission(containerRef,
                 SecurityConstants.ADD_CHILDREN)) {
             facesMessages.add(FacesMessage.SEVERITY_WARN,
@@ -391,12 +395,24 @@ public class FileManageActionsBean extends InputController implements
             return MOVE_IMPOSSIBLE;
         }
 
-        List<String> allowedTypes = Arrays.asList(typeManager.getType(
-                container.getType()).getAllowedSubTypes());
-        if (!allowedTypes.contains(doc.getType())) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get("move_impossible"));
-            return MOVE_IMPOSSIBLE;
+        if (doc.isProxy()) {
+            if (!container.getType().equals("Section")) {
+                // do not allow to move a published document back in a workspace
+                // TODO: use a PUBLICATION_TARGET facet instead of hardcoding
+                // the Section type name
+                facesMessages.add(FacesMessage.SEVERITY_WARN,
+                        resourcesAccessor.getMessages().get("move_impossible"));
+                return MOVE_IMPOSSIBLE;
+            }
+        } else {
+            // check allowed content types constraints for non-proxy documents
+            List<String> allowedTypes = Arrays.asList(typeManager.getType(
+                    container.getType()).getAllowedSubTypes());
+            if (!allowedTypes.contains(doc.getType())) {
+                facesMessages.add(FacesMessage.SEVERITY_WARN,
+                        resourcesAccessor.getMessages().get("move_impossible"));
+                return MOVE_IMPOSSIBLE;
+            }
         }
 
         return MOVE_OK;
@@ -432,7 +448,7 @@ public class FileManageActionsBean extends InputController implements
             if (moveStatus.equals(MOVE_PUBLISH)) {
                 DocumentModel doc = documentManager.getDocument(srcRef);
                 DocumentModel container = documentManager.getDocument(dstRef);
-                if (publishActions==null) {
+                if (publishActions == null) {
                     return debug;
                 }
                 publishActions.publishDocument(doc, container);
@@ -466,10 +482,8 @@ public class FileManageActionsBean extends InputController implements
 
             return debug;
         } catch (Throwable t) {
-            //Rux INA-224 simple patch for the moment, until full i18n into Exceptions
-            log.error(t);
-            return MOVE_ERROR + " |(" + docId + ")| "
-                    + resourcesAccessor.getMessages().get("message.operation.fails.generic");
+            log.error(t.getMessage(), t);
+            return getErrorMessage(MOVE_ERROR, docId);
         }
     }
 
@@ -490,10 +504,8 @@ public class FileManageActionsBean extends InputController implements
             clipboardActions.putSelectionInWorkList(docsToAdd, true);
             return debug;
         } catch (Throwable t) {
-            //Rux INA-224 simple patch for the moment, until full i18n into Exceptions
             log.error(t);
-            return COPY_ERROR + " |(" + docId + ")| "
-                    + resourcesAccessor.getMessages().get("message.operation.fails.generic");
+            return getErrorMessage(COPY_ERROR, docId);
         }
     }
 
@@ -514,10 +526,8 @@ public class FileManageActionsBean extends InputController implements
             clipboardActions.pasteDocumentList(pasteDocs);
             return debug;
         } catch (Throwable t) {
-            //Rux INA-224 simple patch for the moment, until full i18n into Exceptions
             log.error(t);
-            return PASTE_ERROR + " |(" + docId + ")| "
-                    + resourcesAccessor.getMessages().get("message.operation.fails.generic");
+            return getErrorMessage(PASTE_ERROR, docId);
         }
     }
 
@@ -525,12 +535,20 @@ public class FileManageActionsBean extends InputController implements
         log.info("Initializing...");
     }
 
-    public UploadedFile getFileUpload() {
+    public InputStream getFileUpload() {
         return fileUpload;
     }
 
-    public void setFileUpload(UploadedFile fileUpload) {
+    public void setFileUpload(InputStream fileUpload) {
         this.fileUpload = fileUpload;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public DocumentModel getChangeableDocument() {

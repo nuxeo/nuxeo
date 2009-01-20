@@ -46,6 +46,19 @@ public interface DirectoryManager extends DirectoryService {
     DocumentModel getEntry(long sessionId, String id) throws DirectoryException;
 
     /**
+     * Retrieves a directory entry using its id.
+     *
+     * @see #getEntry(long, String)
+     *
+     * @param id the entry id
+     * @param fetchReferences boolean stating if references have to be fetched
+     * @return a DocumentModel representing the entry
+     * @throws DirectoryException
+     */
+    DocumentModel getEntry(long sessionId, String id, boolean fetchReferences)
+            throws DirectoryException;
+
+    /**
      * Retrieves all the entries in the directory.
      *
      * @return a collection with all the entries in the directory
@@ -181,6 +194,10 @@ public interface DirectoryManager extends DirectoryService {
     DocumentModelList query(long sessionId, Map<String, Object> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws DirectoryException;
+
+    DocumentModelList query(long sessionId, Map<String, Object> filter,
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences) throws DirectoryException;
 
     // TODO: create an API to allow sql AND/OR/NOT/LIKE conditions
     // public DocumentModelList query(Criteria criteria ) throws

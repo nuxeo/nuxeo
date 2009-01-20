@@ -43,7 +43,6 @@ public interface ContentHistoryActions extends Serializable {
      * Invalidates log entries.
      * <p>
      * The invalidation will be done lazily.
-     * </p>
      *
      * @throws AuditException
      */
@@ -54,14 +53,14 @@ public interface ContentHistoryActions extends Serializable {
      *
      * @throws AuditException
      */
-    List<LogEntry> computeLogEntries() throws AuditException;
+    List<? extends LogEntry> computeLogEntries() throws AuditException;
 
     /**
      * Computes all log entries for given document.
      *
      * @throws AuditException
      */
-    List<LogEntry> computeLogEntries(DocumentModel document)
+    List<? extends LogEntry> computeLogEntries(DocumentModel document)
             throws AuditException;
 
     /**
@@ -69,7 +68,7 @@ public interface ContentHistoryActions extends Serializable {
      *
      * @throws AuditException
      */
-    List<LogEntry> computeLatestLogEntries() throws AuditException;
+    List<? extends LogEntry> computeLatestLogEntries() throws AuditException;
 
     Map<Long, String> computeLogEntriesComments() throws AuditException;
 
@@ -81,7 +80,6 @@ public interface ContentHistoryActions extends Serializable {
      * <p>
      * This log may be filled automatically when dealing with copy/paste/move
      * log entries.
-     * </p>
      *
      * @throws AuditException
      */
@@ -92,7 +90,6 @@ public interface ContentHistoryActions extends Serializable {
      * <p>
      * The linked document is resolved from the log original comment, when
      * dealing with copy/paste/move log entries.
-     * </p>
      *
      * @throws AuditException
      */

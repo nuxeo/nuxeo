@@ -36,14 +36,13 @@ public abstract class AbstractIOConfiguration implements IOConfiguration, Serial
 
     private static final long serialVersionUID = 1L;
 
-    protected List<DocumentRef> docRefs;
+    protected final List<DocumentRef> docRefs;
     protected String repositoryName;
-    protected Map<String,Object> properties;
+    protected final Map<String,Object> properties;
 
-
-    public AbstractIOConfiguration() {
-        this.docRefs = new ArrayList<DocumentRef>();
-        this.properties = new HashMap<String, Object>();
+    protected AbstractIOConfiguration() {
+        docRefs = new ArrayList<DocumentRef>();
+        properties = new HashMap<String, Object>();
     }
 
     public Collection<DocumentRef> getDocuments() {
@@ -62,7 +61,7 @@ public abstract class AbstractIOConfiguration implements IOConfiguration, Serial
     }
 
     public void addDocument(DocumentRef docRef) {
-        this.docRefs.add(docRef);
+        docRefs.add(docRef);
     }
 
     public void setRepositoryName(String repositoryName) {

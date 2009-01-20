@@ -75,10 +75,8 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
 
     @WebMethod
     public ModifiedDocumentDescriptor[] listModifiedDocuments(
-            @WebParam(name = "sessionId")
-            String sessionId, @WebParam(name = "dataRangeQuery")
-            String dateRangeQuery) throws AuditException {
-
+            @WebParam(name = "sessionId") String sessionId,
+            @WebParam(name = "dataRangeQuery") String dateRangeQuery) throws AuditException {
         try {
             initSession(sessionId);
         } catch (ClientException ce) {
@@ -119,13 +117,11 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
 
     @WebMethod
     public ModifiedDocumentDescriptorPage listModifiedDocumentsByPage(
-            @WebParam(name = "sessionId")
-            String sessionId, @WebParam(name = "dataRangeQuery")
-            String dateRangeQuery, @WebParam(name = "docPath")
-            String path, @WebParam(name = "pageIndex")
-            int page, @WebParam(name = "pageSize")
-            int pageSize) throws AuditException {
-
+            @WebParam(name = "sessionId") String sessionId,
+            @WebParam(name = "dataRangeQuery") String dateRangeQuery,
+            @WebParam(name = "docPath") String path,
+            @WebParam(name = "pageIndex") int page,
+            @WebParam(name = "pageSize") int pageSize) throws AuditException {
         try {
             initSession(sessionId);
         } catch (ClientException ce) {
@@ -135,12 +131,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
         List<LogEntry> logEntries = getLogsBean().queryLogsByPage(null,
                 dateRangeQuery, "eventDocumentCategory", path, page, pageSize);
 
-        boolean hasMorePage = false;
-        if (logEntries.size() < pageSize) {
-            hasMorePage = false;
-        } else {
-            hasMorePage = true;
-        }
+        boolean hasMorePage = logEntries.size() >= pageSize;
 
         List<ModifiedDocumentDescriptor> ldocs = new ArrayList<ModifiedDocumentDescriptor>();
         Set<String> uuids = new HashSet<String>();
@@ -160,12 +151,50 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
     }
 
     @WebMethod
-    public EventDescriptorPage listEventsByPage(@WebParam(name = "sessionId")
-    String sessionId, @WebParam(name = "dataRangeQuery")
-    String dateRangeQuery, @WebParam(name = "pageIndex")
-    int page, @WebParam(name = "pageSize")
-    int pageSize) throws AuditException {
+    public ModifiedDocumentDescriptorPage listDeletedDocumentsByPage(
+            @WebParam(name = "sessionId") String sessionId,
+            @WebParam(name = "dataRangeQuery") String dateRangeQuery,
+            @WebParam(name = "docPath") String path,
+            @WebParam(name = "pageIndex") int page,
+            @WebParam(name = "pageSize") int pageSize) throws AuditException {
+        try {
+            initSession(sessionId);
+        } catch (ClientException ce) {
+            throw new AuditException(ce.getMessage(), ce);
+        }
 
+        String[] eventIds = new String[0];
+
+        eventIds[0]="documentRemoved";
+
+        List<LogEntry> logEntries = getLogsBean().queryLogsByPage(eventIds,
+                dateRangeQuery, "eventDocumentCategory", path, page, pageSize);
+
+        boolean hasMorePage = logEntries.size() >= pageSize;
+
+        List<ModifiedDocumentDescriptor> ldocs = new ArrayList<ModifiedDocumentDescriptor>();
+        Set<String> uuids = new HashSet<String>();
+        for (LogEntry logEntry : logEntries) {
+            if (!uuids.contains(logEntry.getDocUUID())) {
+                uuids.add(logEntry.getDocUUID());
+                ldocs.add(new ModifiedDocumentDescriptor(
+                        logEntry.getEventDate(), logEntry.getDocType(),
+                        logEntry.getDocUUID()));
+            }
+        }
+
+        ModifiedDocumentDescriptor[] docs = new ModifiedDocumentDescriptor[ldocs.size()];
+        ldocs.toArray(docs);
+
+        return new ModifiedDocumentDescriptorPage(docs, page, hasMorePage);
+    }
+
+    @WebMethod
+    public EventDescriptorPage listEventsByPage(
+            @WebParam(name = "sessionId") String sessionId,
+            @WebParam(name = "dataRangeQuery") String dateRangeQuery,
+            @WebParam(name = "pageIndex") int page,
+            @WebParam(name = "pageSize") int pageSize) throws AuditException {
         try {
             initSession(sessionId);
         } catch (ClientException ce) {
@@ -174,12 +203,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
 
         List<LogEntry> logEntries = getLogsBean().queryLogsByPage(null,
                 dateRangeQuery, null, null, page, pageSize);
-        boolean hasMorePage = false;
-        if (logEntries.size() < pageSize) {
-            hasMorePage = false;
-        } else {
-            hasMorePage = true;
-        }
+        boolean hasMorePage = logEntries.size() >= pageSize;
 
         List<EventDescriptor> events = new ArrayList<EventDescriptor>();
 
@@ -197,14 +221,12 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
 
     @WebMethod
     public EventDescriptorPage listDocumentEventsByPage(
-            @WebParam(name = "sessionId")
-            String sessionId, @WebParam(name = "dataRangeQuery")
-            String dateRangeQuery, @WebParam(name = "startDate")
-            String startDate, @WebParam(name = "path")
-            String path, @WebParam(name = "pageIndex")
-            int page, @WebParam(name = "pageSize")
-            int pageSize) throws AuditException {
-
+            @WebParam(name = "sessionId") String sessionId,
+            @WebParam(name = "dataRangeQuery") String dateRangeQuery,
+            @WebParam(name = "startDate") String startDate,
+            @WebParam(name = "path") String path,
+            @WebParam(name = "pageIndex") int page,
+            @WebParam(name = "pageSize") int pageSize) throws AuditException {
         try {
             initSession(sessionId);
         } catch (ClientException ce) {
@@ -219,12 +241,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
             logEntries = getLogsBean().queryLogsByPage(null, limit,
                     EVENT_DOCUMENT_CATEGORY, path, page, pageSize);
         }
-        boolean hasMorePage = false;
-        if (logEntries.size() < pageSize) {
-            hasMorePage = false;
-        } else {
-            hasMorePage = true;
-        }
+        boolean hasMorePage = logEntries.size() >= pageSize;
 
         List<EventDescriptor> events = new ArrayList<EventDescriptor>();
 
@@ -241,12 +258,11 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
     }
 
     @WebMethod
-    public EventDescriptorPage queryEventsByPage(@WebParam(name = "sessionId")
-    String sessionId, @WebParam(name = "whereClause")
-    String whereClause, @WebParam(name = "pageIndex")
-    int page, @WebParam(name = "pageSize")
-    int pageSize) throws AuditException {
-
+    public EventDescriptorPage queryEventsByPage(
+            @WebParam(name = "sessionId") String sessionId,
+            @WebParam(name = "whereClause") String whereClause,
+            @WebParam(name = "pageIndex") int page,
+            @WebParam(name = "pageSize") int pageSize) throws AuditException {
         try {
             initSession(sessionId);
         } catch (ClientException ce) {
@@ -255,12 +271,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
 
         List<LogEntry> logEntries = getLogsBean().nativeQueryLogs(whereClause,
                 page, pageSize);
-        boolean hasMorePage = false;
-        if (logEntries.size() < pageSize) {
-            hasMorePage = false;
-        } else {
-            hasMorePage = true;
-        }
+        boolean hasMorePage = logEntries.size() >= pageSize;
 
         List<EventDescriptor> events = new ArrayList<EventDescriptor>();
 

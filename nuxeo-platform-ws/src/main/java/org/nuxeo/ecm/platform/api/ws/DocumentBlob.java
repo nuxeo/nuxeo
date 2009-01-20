@@ -24,11 +24,11 @@ import java.io.Serializable;
 
 import org.nuxeo.ecm.core.api.Blob;
 
-
 /**
  * Web service document blob.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 public class DocumentBlob implements Serializable {
 
@@ -44,8 +44,10 @@ public class DocumentBlob implements Serializable {
 
     private byte[] blob;
 
+    private String url;
+
     /**
-     * Emtpy ctor needed by tools like jaxb.
+     * Empty ctor needed by tools like jaxb.
      */
     public DocumentBlob() {
     }
@@ -57,11 +59,17 @@ public class DocumentBlob implements Serializable {
         this.name = name;
     }
 
+    public DocumentBlob(String name, String encoding, String mimeType, String downloadUrl) {
+        this.name = name;
+        this.encoding = encoding;
+        this.mimeType = mimeType;
+        url = downloadUrl;
+    }
 
     /**
      * Returns the name of the document field name.
      * <p>
-     * We probably need to embeed the name along with the schema prefix.
+     * We probably need to embed the name along with the schema prefix.
      *
      * @return the name of the document field name
      */
@@ -96,10 +104,6 @@ public class DocumentBlob implements Serializable {
         return blob;
     }
 
-
-    /**
-     * @param extensions the extensions to set.
-     */
     public void setExtensions(String[] extensions) {
         this.extensions = extensions;
     }
@@ -108,32 +112,24 @@ public class DocumentBlob implements Serializable {
         return extensions;
     }
 
-    /**
-     * @param blob the blob to set.
-     */
     public void setBlob(byte[] blob) {
         this.blob = blob;
     }
 
-    /**
-     * @param mimeType the mimeType to set.
-     */
     public void setMimetype(String mimeType) {
         this.mimeType = mimeType;
     }
 
-    /**
-     * @param encoding the encoding to set.
-     */
     public void setEncoding(String encoding) {
         this.encoding = encoding;
     }
 
-    /**
-     * @param name the name to set.
-     */
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDownloadUrl() {
+        return url;
     }
 
 }

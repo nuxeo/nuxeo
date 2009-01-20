@@ -193,7 +193,6 @@ public class ChainSelect extends UIInput {
         return values;
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getSelectionKeyList() {
         return keyList;
     }
@@ -203,7 +202,6 @@ public class ChainSelect extends UIInput {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void decode(FacesContext context) {
         setValid(true);
         rebuildOptions();
@@ -290,7 +288,6 @@ public class ChainSelect extends UIInput {
         writer.endElement("div");
     }
 
-    @SuppressWarnings("unchecked")
     public Object getProperty(String name) {
         ValueBinding vb = getValueBinding(name);
         if (vb != null) {
@@ -394,7 +391,6 @@ public class ChainSelect extends UIInput {
         // optionList[index] = options;
     }
 
-    @SuppressWarnings("unchecked")
     public ChainSelectListboxComponent getComponent(int i) {
         List<UIComponent> children = getChildren();
         for (UIComponent child : children) {

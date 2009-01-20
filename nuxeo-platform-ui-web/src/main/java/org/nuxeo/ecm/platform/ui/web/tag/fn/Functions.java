@@ -42,6 +42,41 @@ import org.nuxeo.runtime.api.Framework;
  */
 public final class Functions {
 
+    public enum BytePrefix {
+
+        SI(1000, new String[]{"", "k", "M", "G", "T", "P", "E", "Z", "Y"},
+                new String[]{"", "kilo", "mega", "giga", "tera", "exa", "zetta", "yotta"}),
+        IEC(1024, new String[]{"", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi"},
+                new String[]{"", "kibi", "mebi", "tebi", "pebi", "exbi", "zebi", "yobi"}),
+        JEDEC(1024, new String[]{"", "K", "M", "G"},
+                new String[]{"", "kilo", "mega", "giga"});
+
+        private final int base;
+
+        private final String[] shortSuffixes;
+
+        private final String[] longSuffixes;
+
+        BytePrefix(int base, String[] shortSuffixes, String[] longSuffixes) {
+            this.base = base;
+            this.shortSuffixes = shortSuffixes;
+            this.longSuffixes = longSuffixes;
+        }
+
+        public int getBase() {
+            return base;
+        }
+
+        public String[] getShortSuffixes() {
+            return shortSuffixes;
+        }
+
+        public String[] getLongSuffixes() {
+            return longSuffixes;
+        }
+
+    }
+
     // XXX we should not use a static variable for this cache, but use a cache
     // at a higher level in the Framework or in a facade.
     private static UserManager userManager;
@@ -112,6 +147,7 @@ public final class Functions {
      * @param username the user id, or null or empty for the current user.
      * @return the full user name.
      */
+    @SuppressWarnings("unchecked")
     public static String userFullName(String username) {
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
         // empty user name is current user
@@ -212,4 +248,23 @@ public final class Functions {
         return dateAndTimeFormater("short");
     }
 
+    public static String printFileSize(String size) {
+        return printFormatedFileSize(size, "SI", true);
+    }
+
+
+    public static String printFormatedFileSize(String sizeS, String format,
+            Boolean isShort) {
+        Integer size = (sizeS == null || "".equals(sizeS)) ? 0 : Integer.parseInt(sizeS);
+        BytePrefix prefix = Enum.valueOf(BytePrefix.class, format);
+        int base = prefix.getBase();
+        String[] suffix = isShort ? prefix.getShortSuffixes()
+                : prefix.getLongSuffixes();
+        int ex = 0;
+        while (size > base - 1 || ex > suffix.length) {
+            ex++;
+            size /= base;
+        }
+        return "" + size + " " + suffix[ex] + "B";
+    }
 }

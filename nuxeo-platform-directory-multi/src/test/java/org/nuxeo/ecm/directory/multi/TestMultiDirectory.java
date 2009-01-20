@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -74,8 +75,7 @@ public class TestMultiDirectory extends NXRuntimeTestCase {
         deployContrib(TEST_BUNDLE, "directories-config.xml");
 
         // mem dir factory
-        directoryService = Framework.getLocalService(
-                DirectoryService.class);
+        directoryService = Framework.getLocalService(DirectoryService.class);
         memoryDirectoryFactory = new MemoryDirectoryFactory();
         directoryService.registerDirectory("memdirs", memoryDirectoryFactory);
 
@@ -199,7 +199,13 @@ public class TestMultiDirectory extends NXRuntimeTestCase {
         assertEquals("5", entry.getProperty("schema3", "uid"));
         assertEquals("foo5", entry.getProperty("schema3", "thefoo"));
         assertEquals("bar5", entry.getProperty("schema3", "thebar"));
-        assertNull(entry.getProperty("schema3", "xyz"));
+        boolean exceptionThrwon = false;
+        try {
+            assertNull(entry.getProperty("schema3", "xyz"));
+        } catch (ClientException ce) {
+            exceptionThrwon = true;
+        }
+        assertTrue(exceptionThrwon);
 
         // check underlying directories
         assertNotNull(dir1.getEntry("5"));

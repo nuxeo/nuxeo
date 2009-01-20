@@ -90,7 +90,6 @@ public abstract class TestServerCacheBase extends TestCase {
     }
 
     protected void startCacheService() throws CacheServiceException {
-
         // at this point if no peer service is being detected
         // an internal exception is traced out - but not thrown
         // and the thread continue (unwisely?) ...
@@ -144,15 +143,10 @@ public abstract class TestServerCacheBase extends TestCase {
                 resource);
     }
 
-    private void deploy(String bundle) {
+    private void deploy(String bundle) throws Exception {
         URL url = getResource(bundle);
         assertNotNull("Test resource not found " + bundle, url);
-        try {
-            runtime.deploy(url);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Failed to deploy bundle " + bundle);
-        }
+        runtime.deploy(url);
     }
 
 }

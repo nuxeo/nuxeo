@@ -30,7 +30,6 @@ import org.nuxeo.ecm.platform.relations.api.QNameResource;
  * type.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 @XObject("adapter")
 public class ResourceAdapterDescriptor {

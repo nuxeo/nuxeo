@@ -19,14 +19,14 @@
 
 package org.nuxeo.ecm.platform.usermanager;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -55,12 +55,16 @@ public class UserService extends DefaultComponent {
             return;
         }
         UserManagerDescriptor merged = new UserManagerDescriptor();
-        merged.userListingMode = "search_only"; // SEARCH_ONLY
+        merged.userListingMode = "search_only";
         // BBB backward compatibility defaults
         merged.userDirectoryName = "userDirectory";
         merged.userEmailField = "email";
-        merged.userSearchFields = new HashSet<String>(Arrays.asList("username",
-                "firstName", "lastName"));
+
+        merged.userSearchFields = new HashMap<String, MatchType>();
+        merged.userSearchFields.put("username", MatchType.SUBSTRING);
+        merged.userSearchFields.put("firstName", MatchType.SUBSTRING);
+        merged.userSearchFields.put("lastName", MatchType.SUBSTRING);
+
         merged.groupDirectoryName = "groupDirectory";
         merged.groupMembersField = "members";
         merged.groupSubGroupsField = "subGroups";
@@ -89,22 +93,7 @@ public class UserService extends DefaultComponent {
                         + klass, e);
             }
         }
-        // TODO just put the descriptor in the userManager
-        userManager.setDefaultGroup(merged.defaultGroup);
-        userManager.setRootLogin(merged.rootLogin);
-        userManager.setUserSortField(merged.userSortField);
-        userManager.setGroupSortField(merged.groupSortField);
-        userManager.setUserListingMode(merged.userListingMode);
-        userManager.setGroupListingMode(merged.groupListingMode);
-        userManager.setUserDirectoryName(merged.userDirectoryName);
-        userManager.setUserEmailField(merged.userEmailField);
-        userManager.setUserSearchFields(merged.userSearchFields);
-        userManager.setUserPasswordPattern(merged.userPasswordPattern);
-        userManager.setGroupDirectoryName(merged.groupDirectoryName);
-        userManager.setGroupMembersField(merged.groupMembersField);
-        userManager.setGroupSubGroupsField(merged.groupSubGroupsField);
-        userManager.setGroupParentGroupsField(merged.groupParentGroupsField);
-        userManager.setAnonymousUser(merged.anonymousUser);
+        userManager.setConfiguration(merged);
     }
 
     @Override
@@ -144,4 +133,5 @@ public class UserService extends DefaultComponent {
         descriptors.remove(contribution);
         recomputeUserManager(true);
     }
+
 }

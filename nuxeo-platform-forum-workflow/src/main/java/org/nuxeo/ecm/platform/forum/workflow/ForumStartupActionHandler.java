@@ -22,9 +22,7 @@ import org.jbpm.graph.exe.ExecutionContext;
 import org.nuxeo.ecm.platform.workflow.api.common.WorkflowConstants;
 
 /**
- *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class ForumStartupActionHandler extends
         AbstractForumWorkflowDocumentHandler {

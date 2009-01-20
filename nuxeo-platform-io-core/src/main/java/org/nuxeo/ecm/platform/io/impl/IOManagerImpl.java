@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.io.impl;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -98,6 +99,12 @@ public class IOManagerImpl implements IOManager {
         return systemSession;
     }
 
+    private void closeStream(Closeable stream) throws IOException {
+        if (stream != null) {
+            stream.close();
+        }
+    }
+
     public IOResourceAdapter getAdapter(String name) throws ClientException {
         return adaptersRegistry.get(name);
     }
@@ -166,10 +173,6 @@ public class IOManagerImpl implements IOManager {
         zip.setLevel(9);
 
         ByteArrayOutputStream docsZip = new ByteArrayOutputStream();
-        // IODocumentManager docManager = new IODocumentManagerImpl();
-        // DocumentTranslationMap map = docManager.exportDocuments(docsZip,
-        // repo,
-        // sources, recurse, format);
         DocumentTranslationMap map = docsExporter.exportDocs(docsZip);
 
         ZipEntry docsEntry = new ZipEntry(DOCUMENTS_ADAPTER_NAME + ".zip");
@@ -250,7 +253,6 @@ public class IOManagerImpl implements IOManager {
         importDocumentsAndResources(docsImporter, in, repo);
     }
 
-    // XXX AT: this method is not finished yet.
     void importDocumentsAndResources(DocumentsImporter docsImporter,
             InputStream in, String repo) throws IOException, ClientException,
             ImportDocumentException {
@@ -275,11 +277,10 @@ public class IOManagerImpl implements IOManager {
         }
         zip.closeEntry();
 
-        // IODocumentManager docManager = new IODocumentManagerImpl();
-        // DocumentTranslationMap map = docManager.importDocuments(
-        // new FileInputStream(temp.getPath()), repo, root);
-        DocumentTranslationMap map = docsImporter.importDocs(new FileInputStream(
-                temp.getPath()));
+        InputStream tempIn = new FileInputStream(temp.getPath());
+        DocumentTranslationMap map = docsImporter.importDocs(tempIn);
+        tempIn.close();
+        temp.delete();
 
         while ((zentry = zip.getNextEntry()) != null) {
             String entryName = zentry.getName();
@@ -405,12 +406,20 @@ public class IOManagerImpl implements IOManager {
             throws ClientException {
         File tempFile = getLocalFile(uri);
 
+        InputStream in = null;
         try {
-            InputStream in = new FileInputStream(tempFile);
+            in = new FileInputStream(tempFile);
             importDocumentsAndResources(in, targetLocation.getServerName(),
                     targetLocation.getDocRef());
         } catch (IOException e) {
             throw new ClientException(e);
+        } finally {
+            tempFile.delete();
+            try {
+                closeStream(in);
+            } catch (IOException e) {
+                throw new ClientException(e);
+            }
         }
     }
 
@@ -472,30 +481,32 @@ public class IOManagerImpl implements IOManager {
     }
 
     public String externalizeExport(String repo,
-            Collection<DocumentRef> sources,
-            Collection<String> ioAdapters) throws ClientException {
+            Collection<DocumentRef> sources, Collection<String> ioAdapters)
+            throws ClientException {
 
         return externalizeExport(repo, sources, null, null, ioAdapters);
     }
 
-    public String externalizeExport(String repo,
-            String docReaderFactoryName,
+    public String externalizeExport(String repo, String docReaderFactoryName,
             Map<String, Object> readerFactoryParams,
             Collection<String> ioAdapters) throws ClientException {
 
-        return externalizeExport(repo, null, docReaderFactoryName, readerFactoryParams, ioAdapters);
+        return externalizeExport(repo, null, docReaderFactoryName,
+                readerFactoryParams, ioAdapters);
     }
 
     public String externalizeExport(String repo,
             Collection<DocumentRef> sources, String docReaderFactoryName,
             Map<String, Object> readerFactoryParams,
             Collection<String> ioAdapters) throws ClientException {
-        File tempFile;
+        File tempFile = null;
+        FileOutputStream fos = null;
+        StreamSource src = null;
         try {
             // copy via a temp file...
-            tempFile = File.createTempFile("export-import", "zip");
+            tempFile = File.createTempFile("export-import", ".zip");
 
-            FileOutputStream fos = new FileOutputStream(tempFile);
+            fos = new FileOutputStream(tempFile);
             // TODO specify format
             String format = null;
             if (docReaderFactoryName == null) {
@@ -503,43 +514,52 @@ public class IOManagerImpl implements IOManager {
                 exportDocumentsAndResources(fos, repo, sources, true, format,
                         ioAdapters);
             } else {
-                // create a custom reader using factory instance...
+                // create a custom reader using factory instance
                 Class clazz = Class.forName(docReaderFactoryName);
                 Object factoryObj = clazz.newInstance();
                 if (factoryObj instanceof DocumentReaderFactory) {
-                    // ok
                     DocumentReader customDocReader = ((DocumentReaderFactory) factoryObj).createDocReader(readerFactoryParams);
-                    exportDocumentsAndResources(fos, repo, format,
-                            ioAdapters, customDocReader);
+                    exportDocumentsAndResources(fos, repo, format, ioAdapters,
+                            customDocReader);
                 } else {
-                    // TODO throw another error maybe
                     throw new ClientException("bad class type: " + factoryObj);
                 }
             }
-            fos.close();
+
+            StreamManager localStreamManager = Framework.getLocalService(StreamManager.class);
+
+            if (localStreamManager == null) {
+                throw new ClientException(
+                        "StreamManager service not available locally");
+            }
+
+            src = new FileSource(tempFile);
+            double start = System.currentTimeMillis();
+            String uri = null;
+            try {
+                uri = localStreamManager.addStream(src);
+                double end = System.currentTimeMillis();
+                log.info(">>> upload took " + ((end - start) / 1000) + " sec.");
+            } catch (IOException e) {
+                throw new ClientException(e);
+            }
+            return uri;
+
         } catch (Exception e) {
             throw new ClientException(e);
+        } finally {
+            try {
+                closeStream(fos);
+            } catch (IOException e) {
+                throw new ClientException(e);
+            }
+            if (src != null) {
+                src.destroy();
+            }
+            if (tempFile != null) {
+                tempFile.delete();
+            }
         }
-
-        StreamManager localStreamManager = Framework.getLocalService(StreamManager.class);
-
-        if (localStreamManager == null) {
-            throw new ClientException(
-                    "StreamManager service not available locally");
-        }
-
-        StreamSource src = new FileSource(tempFile);
-        double start = System.currentTimeMillis();
-        String uri = null;
-        try {
-            uri = localStreamManager.addStream(src);
-            double end = System.currentTimeMillis();
-            log.info(">>> upload took " + ((end - start) / 1000) + " sec.");
-        } catch (IOException e) {
-            throw new ClientException(e);
-        }
-
-        return uri;
     }
 
     public void disposeExport(String uri) throws ClientException {
@@ -561,13 +581,21 @@ public class IOManagerImpl implements IOManager {
                 factoryParams);
 
         File tempFile = getLocalFile(uri);
-
+        InputStream in = null;
         try {
-            InputStream in = new FileInputStream(tempFile);
+            in = new FileInputStream(tempFile);
             importDocumentsAndResources(in, targetLocation.getServerName(),
                     targetLocation.getDocRef(), customDocWriter);
         } catch (IOException e) {
             throw new ClientException(e);
+        } finally {
+            customDocWriter.close();
+            try {
+                closeStream(in);
+            } catch (IOException e) {
+                throw new ClientException(e);
+            }
+            tempFile.delete();
         }
     }
 
@@ -577,7 +605,7 @@ public class IOManagerImpl implements IOManager {
         double start = System.currentTimeMillis();
         File tempFile;
         try {
-            tempFile = File.createTempFile("export-import", "zip");
+            tempFile = File.createTempFile("export-import", ".zip");
             log.info("get stream source at uri: " + uri);
             StreamSource source = streamManager.getStream(uri);
             if (source == null) {
@@ -595,7 +623,7 @@ public class IOManagerImpl implements IOManager {
 
     private DocumentWriter createDocWriter(String docWriterFactoryName,
             Map<String, Object> factoryParams) throws ClientException {
-        // create a custom writer using factory instance...
+        // create a custom writer using factory instance
 
         Object factoryObj;
         try {
@@ -608,10 +636,8 @@ public class IOManagerImpl implements IOManager {
 
         DocumentWriter customDocWriter;
         if (factoryObj instanceof DocumentWriterFactory) {
-            // ok
             customDocWriter = ((DocumentWriterFactory) factoryObj).createDocWriter(factoryParams);
         } else {
-            // TODO throw another error maybe
             throw new ClientException("bad class type: " + factoryObj);
         }
 
@@ -625,7 +651,7 @@ public class IOManagerImpl implements IOManager {
 
     private DocumentReader createDocReader(String docReaderFactoryName,
             Map<String, Object> factoryParams) throws ClientException {
-        // create a custom Reader using factory instance...
+        // create a custom reader using factory instance
 
         Object factoryObj;
         try {
@@ -638,14 +664,11 @@ public class IOManagerImpl implements IOManager {
 
         DocumentReader customDocReader;
         if (factoryObj instanceof DocumentReaderFactory) {
-            // ok
             customDocReader = ((DocumentReaderFactory) factoryObj).createDocReader(factoryParams);
         } else {
-            // TODO throw another error maybe
             throw new ClientException("bad class type: " + factoryObj);
         }
 
-        // guard against NPE
         if (customDocReader == null) {
             throw new ClientException("null DocumentReader created by "
                     + docReaderFactoryName);
@@ -656,14 +679,15 @@ public class IOManagerImpl implements IOManager {
 
     public void importFromStreamSource(String uri,
             DocumentLocation targetLocation, String docReaderFactoryClassName,
-            Map<String, Object> rFactoryParams,   String docWriterFactoryClassName,
-            Map<String, Object> wFactoryParams) throws ClientException {
+            Map<String, Object> rFactoryParams,
+            String docWriterFactoryClassName, Map<String, Object> wFactoryParams)
+            throws ClientException {
 
         log.info("import source uri: " + uri);
 
-
         DocumentWriter customDocWriter = createDocWriter(
                 docWriterFactoryClassName, wFactoryParams);
+        DocumentReader customDocReader = null;
 
         File tempFile = getLocalFile(uri);
         InputStream in = null;
@@ -674,17 +698,21 @@ public class IOManagerImpl implements IOManager {
                 rFactoryParams = new HashMap<String, Object>();
             }
             rFactoryParams.put("source_stream", in);
-
-            DocumentReader customDocReader = createDocReader(
-                    docReaderFactoryClassName, rFactoryParams);
+            customDocReader = createDocReader(docReaderFactoryClassName,
+                    rFactoryParams);
 
             IODocumentManager docManager = new IODocumentManagerImpl();
-            DocumentTranslationMap map =  docManager.importDocuments(customDocReader, customDocWriter);
-
+            DocumentTranslationMap map = docManager.importDocuments(
+                    customDocReader, customDocWriter);
         } catch (IOException e) {
             String msg = "Cannot import from uri: " + uri;
             throw new ClientException(msg, e);
         } finally {
+            if (customDocReader != null) {
+                customDocReader.close();
+            }
+            customDocWriter.close();
+
             if (in != null) {
                 try {
                     in.close();
@@ -692,6 +720,7 @@ public class IOManagerImpl implements IOManager {
                     log.error(e);
                 }
             }
+            tempFile.delete();
             disposeExport(uri);
         }
     }

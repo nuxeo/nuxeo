@@ -28,7 +28,6 @@ import java.util.Map;
  * Date range parser.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public final class DateRangeParser {
 
@@ -73,10 +72,9 @@ public final class DateRangeParser {
             try {
                 parsed.put(DateRangeQueryConstants.MIN, Integer.parseInt(sub));
             } catch (NumberFormatException nfe) {
-                throw new AuditQueryException(nfe.getMessage());
+                throw new AuditQueryException(nfe.getMessage(), nfe);
             }
         }
-
         if (offsetHours != -1) {
             String sub;
             if (offsetMinutes == -1) {
@@ -87,10 +85,9 @@ public final class DateRangeParser {
             try {
                 parsed.put(DateRangeQueryConstants.HOUR, Integer.parseInt(sub));
             } catch (NumberFormatException nfe) {
-                throw new AuditQueryException(nfe.getMessage());
+                throw new AuditQueryException(nfe.getMessage(), nfe);
             }
         }
-
         return parsed;
     }
 

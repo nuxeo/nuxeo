@@ -78,6 +78,8 @@ public abstract class DirectoryAwareComponent extends UIInput {
 
     protected VocabularyEntryList directoryValues;
 
+    protected Boolean caseSensitive;
+
     protected String getStringValue(String name, String defaultValue) {
         ValueExpression ve = getValueExpression(name);
         if (ve != null) {
@@ -95,7 +97,7 @@ public abstract class DirectoryAwareComponent extends UIInput {
         ValueExpression ve = getValueExpression(name);
         if (ve != null) {
             try {
-                return (!Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext())));
+                return !Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext()));
             } catch (ELException e) {
                 throw new FacesException(e);
             }
@@ -137,6 +139,17 @@ public abstract class DirectoryAwareComponent extends UIInput {
         this.localize = localize;
     }
 
+    public Boolean getCaseSensitive() {
+        if (caseSensitive != null) {
+            return caseSensitive;
+        }
+        return getBooleanValue("caseSensitive", false);
+    }
+
+    public void setCaseSensitive(Boolean caseSensitive) {
+        this.caseSensitive = caseSensitive;
+    }
+
     public Map<String, SelectItem> getOptions() {
         // rebuild systematically since a single component may be rendered
         // several times in the same page for different directories
@@ -169,8 +182,9 @@ public abstract class DirectoryAwareComponent extends UIInput {
             optionList = new ArrayList<DirectorySelectItem>();
         }
         String ordering = getOrdering();
+        Boolean caseSensitive = getCaseSensitive();
         if (ordering != null && !"".equals(ordering)) {
-            Collections.sort(optionList, new SelectItemComparator(ordering));
+            Collections.sort(optionList, new SelectItemComparator(ordering, caseSensitive));
         }
 
         for (DirectorySelectItem item : optionList) {
@@ -312,9 +326,10 @@ public abstract class DirectoryAwareComponent extends UIInput {
         this.directoryValues = directoryValues;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object saveState(FacesContext context) {
-        Object[] values = new Object[16];
+        Object[] values = new Object[17];
         values[0] = super.saveState(context);
         values[1] = directoryName;
         values[2] = options;
@@ -331,9 +346,11 @@ public abstract class DirectoryAwareComponent extends UIInput {
         values[13] = size;
         values[14] = ordering;
         values[15] = directoryValues;
+        values[16] = caseSensitive;
         return values;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void restoreState(FacesContext context, Object state) {
         Object[] values = (Object[]) state;
@@ -353,9 +370,9 @@ public abstract class DirectoryAwareComponent extends UIInput {
         size = (String) values[13];
         ordering = (String) values[14];
         directoryValues = (VocabularyEntryList) values[15];
+        caseSensitive = (Boolean) values[16];
     }
 
-    @SuppressWarnings("unchecked")
     public Boolean getBooleanProperty(String key, Boolean defaultValue) {
         Map<String, Object> map = getAttributes();
         Boolean value = (Boolean) map.get(key);
@@ -365,7 +382,6 @@ public abstract class DirectoryAwareComponent extends UIInput {
         return value;
     }
 
-    @SuppressWarnings("unchecked")
     public String getStringProperty(String key, String defaultValue) {
         Map<String, Object> map = getAttributes();
         String value = (String) map.get(key);

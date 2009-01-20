@@ -52,22 +52,22 @@ import org.nuxeo.ecm.core.search.api.internals.SearchServiceInternals;
 
 /**
  * A SearchServiceInternals implementation to be used in unit tests.
- *
+ * 
  * <p>
  * The configuration is a simple public hashmap, so that test cases can fill it.
  * The keys have to be the fully qualified field names, as used in queries, e.g,
- *
+ * 
  * <pre>
  * dc:title
  * </pre>
- *
+ * 
  * </p>
- *
+ * 
  * TODO Move (as a backend-agnostic helper) in
  * org.nuxeo.ecm.core.search.testing?
- *
+ * 
  * @author gracinet
- *
+ * 
  */
 @SuppressWarnings("serial")
 public class FakeSearchService implements SearchServiceInternals {
@@ -301,6 +301,7 @@ public class FakeSearchService implements SearchServiceInternals {
     }
 
     public void setReindexingAll(boolean flag) {
+
     }
 
     public void index(IndexableResources sources, boolean fulltext,
@@ -310,8 +311,11 @@ public class FakeSearchService implements SearchServiceInternals {
     public void index(ResolvedResources sources, boolean newTxn)
             throws IndexingException {
     }
-
     public void clear(boolean newTxn) throws IndexingException {
+
+    }
+
+    public void unindex(DocumentModel dm) throws IndexingException {
     }
 
 }

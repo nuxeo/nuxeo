@@ -24,7 +24,6 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.ejb.PostActivate;
@@ -42,12 +41,11 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.publishing.api.PublishActions;
@@ -60,9 +58,7 @@ import org.nuxeo.ecm.platform.workflow.api.client.delegate.WAPIBusinessDelegate;
 import org.nuxeo.ecm.platform.workflow.api.client.events.EventNames;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WAPI;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMParticipant;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMProcessInstance;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemState;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkflowException;
 import org.nuxeo.ecm.platform.workflow.api.common.WorkflowConstants;
 import org.nuxeo.ecm.platform.workflow.document.api.ejb.delegate.WorkflowDocumentRelationBusinessDelegate;
@@ -71,8 +67,7 @@ import org.nuxeo.ecm.webapp.dashboard.DashboardActions;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Publishing actions listener. Listens to publish/reject
- * document actions.
+ * Publishing actions listener. Listens to publish/reject document actions.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
@@ -167,7 +162,9 @@ public class PublishingActionsListenerBean extends InputController implements
     public String publishDocument() throws PublishingException {
         WMParticipant creator;
         try {
-            WMWorkItemInstance wi = getPublishingWorkItem();
+            PublishingTasks tasks = new PublishingTasks(
+                    navigationContext.getCurrentDocument(), currentUser);
+            WMWorkItemInstance wi = tasks.getPublishingWorkItem();
             if (wi == null) {
                 throw new PublishingException(
                         "No publishing task found for user="
@@ -185,9 +182,9 @@ public class PublishingActionsListenerBean extends InputController implements
         try {
             DocumentModel currentDocument = getCurrentDocument();
 
-            CoreSession session = null;
-            LoginContext context = null;
-            Repository repository = null;
+            CoreSession session;
+            LoginContext context;
+            Repository repository;
             try {
                 context = Framework.login();
                 RepositoryManager repositoryMgr = Framework.getService(RepositoryManager.class);
@@ -199,8 +196,7 @@ public class PublishingActionsListenerBean extends InputController implements
 
             String proxySourceId = session.getDocument(
                     new IdRef(currentDocument.getSourceId())).getSourceId();
-            sourceDocument = session.getDocument(new IdRef(
-                    proxySourceId));
+            sourceDocument = session.getDocument(new IdRef(proxySourceId));
             try {
                 if (repository != null && session != null) {
                     repository.close(session);
@@ -250,29 +246,27 @@ public class PublishingActionsListenerBean extends InputController implements
         // Of course it remains a temporary solution.
         if (rejectPublishingComment == null
                 || rejectPublishingComment.trim().length() <= 0) {
-            // :XXX: Should be error but the error severity is not yet well
-            // integrated Nuxeo5 side.
-            FacesMessage message = FacesMessages.createFacesMessage(
+            facesMessages.addToControl("rejectPublishingComment",
                     FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.publishing.reject.user.comment.mandatory"));
-
-            FacesMessages.instance().add("rejectPublishingComment", message);
             return null;
         }
 
         // Compute parent before deleting the document.
         DocumentModel currentDocument = getCurrentDocument();
         DocumentModel parent;
-        WMParticipant creator;
         try {
             parent = documentManager.getDocument(currentDocument.getParentRef());
         } catch (ClientException ce) {
             throw new PublishingException(ce);
         }
 
+        WMParticipant creator;
         try {
-            WMWorkItemInstance wi = getPublishingWorkItem();
+            PublishingTasks tasks = new PublishingTasks(
+                    navigationContext.getCurrentDocument(), currentUser);
+            WMWorkItemInstance wi = tasks.getPublishingWorkItem();
             if (wi == null) {
                 throw new PublishingException(
                         "No publishing task found for user="
@@ -288,11 +282,9 @@ public class PublishingActionsListenerBean extends InputController implements
         // Notify reject event
         DocumentModel sourceDocument;
         try {
-
-
-            CoreSession session = null;
-            LoginContext context = null;
-            Repository repository = null;
+            CoreSession session;
+            LoginContext context;
+            Repository repository;
             try {
                 context = Framework.login();
                 RepositoryManager repositoryMgr = Framework.getService(RepositoryManager.class);
@@ -304,8 +296,7 @@ public class PublishingActionsListenerBean extends InputController implements
 
             String proxySourceId = session.getDocument(
                     new IdRef(currentDocument.getSourceId())).getSourceId();
-            sourceDocument = session.getDocument(new IdRef(
-                    proxySourceId));
+            sourceDocument = session.getDocument(new IdRef(proxySourceId));
             try {
                 if (repository != null && session != null) {
                     repository.close(session);
@@ -358,62 +349,6 @@ public class PublishingActionsListenerBean extends InputController implements
         return view;
     }
 
-    protected WMWorkItemInstance getPublishingWorkItem()
-            throws PublishingException {
-        WMWorkItemInstance workItem = null;
-
-        DocumentModel dm = getCurrentDocument();
-
-        try {
-            String[] pids = wfDocRelBD.getWorkflowDocument().getWorkflowInstanceIdsFor(
-                    dm.getRef());
-            for (String pid : pids) {
-
-                // Check we are on the right process.
-                WMProcessInstance pi = wapi.getProcessInstanceById(pid,
-                        WorkflowConstants.WORKFLOW_INSTANCE_STATUS_ACTIVE);
-                if (!pi.getName().equals(
-                        PublishingConstants.WORKFLOW_DEFINITION_NAME)) {
-                    continue;
-                }
-
-                // Now that we are check if this guy has a task.
-                boolean found = false;
-                for (WMWorkItemInstance wi : wapi.listWorkItems(pid,
-                        WMWorkItemState.WORKFLOW_TASK_STATE_STARTED)) {
-                    if (wi.getParticipantName().equals(currentUser.getName())) {
-                        workItem = wi;
-                        found = true;
-                        break;
-                    }
-                    // Try group resolution
-                    if (currentUser instanceof NuxeoPrincipal) {
-                        List<String> groupNames = ((NuxeoPrincipal) currentUser).getAllGroups();
-                        for (String groupName : groupNames) {
-                            if (wi.getParticipantName().equals(groupName)) {
-                                workItem = wi;
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (found) {
-                        break;
-                    }
-
-                }
-
-                if (found) {
-                    break;
-                }
-
-            }
-        } catch (Exception e) {
-            throw new PublishingException(e);
-        }
-        return workItem;
-    }
-
     protected DocumentModel getCurrentDocument() {
         return navigationContext.getCurrentDocument();
     }
@@ -425,11 +360,14 @@ public class PublishingActionsListenerBean extends InputController implements
         if (document != null) {
             String parentDocumentType = document.getType();
             // FIXME AT: types shouldn't be harcoded here
-            /* Rux NXP-1879: Multiple types can be suitable for publishing. Is the FIXME
-             * fixed now?
+            /*
+             * Rux NXP-1879: Multiple types can be suitable for publishing. Is
+             * the FIXME fixed now?
              */
-            result = publishActions.getSectionRootTypes().contains(parentDocumentType) ||
-                    publishActions.getSectionTypes().contains(parentDocumentType);
+            result = publishActions.getSectionRootTypes().contains(
+                    parentDocumentType)
+                    || publishActions.getSectionTypes().contains(
+                            parentDocumentType);
         }
         return result;
     }
@@ -437,7 +375,9 @@ public class PublishingActionsListenerBean extends InputController implements
     public boolean canManagePublishing() throws PublishingException {
         // Current document is a proxy and the current user has a publishing
         // task.
-        return isProxy() && getPublishingWorkItem() != null;
+        PublishingTasks tasks = new PublishingTasks(
+                navigationContext.getCurrentDocument(), currentUser);
+        return isProxy() && tasks.getPublishingWorkItem() != null;
     }
 
     public String getRejectPublishingComment() {

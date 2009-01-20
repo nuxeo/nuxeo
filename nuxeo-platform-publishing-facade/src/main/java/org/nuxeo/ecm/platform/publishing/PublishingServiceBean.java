@@ -19,10 +19,6 @@
 
 package org.nuxeo.ecm.platform.publishing;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -37,9 +33,9 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
  */
-@Stateless
-@Local(PublishingService.class)
-@Remote(PublishingService.class)
+//@Stateless
+//@Local(PublishingService.class)
+//@Remote(PublishingService.class)
 public class PublishingServiceBean implements PublishingService {
 
     private static final long serialVersionUID = 1L;
@@ -48,12 +44,9 @@ public class PublishingServiceBean implements PublishingService {
 
     protected PublishingService service;
 
-    private PublishingService getService() throws Exception {
+    private PublishingService getService() {
         if (service == null) {
             service = Framework.getLocalService(PublishingService.class);
-            if (service == null) {
-                service = Framework.getService(PublishingService.class);
-            }
         }
         return service;
     }

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
+  <extension target="faces-config#APPLICATION">
+    <locale-config>
+      <supported-locale>ar</supported-locale>
+      <supported-locale>cn</supported-locale>
+      <supported-locale>de</supported-locale>
+      <supported-locale>es</supported-locale>
+      <supported-locale>it</supported-locale>
+      <supported-locale>ja</supported-locale>
+      <supported-locale>ru</supported-locale>
+      <supported-locale>vn</supported-locale>
+      <supported-locale>pt_BR</supported-locale>
+    </locale-config>
+  </extension>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+  </install>
+
+</fragment>

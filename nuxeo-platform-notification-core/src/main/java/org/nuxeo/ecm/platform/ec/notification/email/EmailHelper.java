@@ -107,7 +107,7 @@ public final class EmailHelper {
             templ.process(mail, out);
             out.flush();
 
-            msg.setSubject(out.toString(), "UTF8");
+            msg.setSubject(out.toString(), "UTF-8");
         } else {
             rs.registerEngine(new NotificationsRenderingEngine(
                     customSubjectTemplate));
@@ -122,7 +122,7 @@ public final class EmailHelper {
             }
             subjectMail = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix()
                     + subjectMail;
-            msg.setSubject(subjectMail, "UTF8");
+            msg.setSubject(subjectMail, "UTF-8");
 
             lc.logout();
         }
@@ -144,8 +144,6 @@ public final class EmailHelper {
         lc.logout();
 
         rs.unregisterEngine("ftl");
-
-        // String bodyMail = out.toString();
 
         msg.setContent(bodyMail, "text/html; charset=utf-8");
 

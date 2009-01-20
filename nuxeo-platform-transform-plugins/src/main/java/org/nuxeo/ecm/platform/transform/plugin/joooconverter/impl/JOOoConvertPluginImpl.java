@@ -35,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.platform.mimetype.NXMimeTypeHelper;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.transform.document.TransformDocumentImpl;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
@@ -43,6 +42,7 @@ import org.nuxeo.ecm.platform.transform.plugin.AbstractPlugin;
 import org.nuxeo.ecm.platform.transform.plugin.joooconverter.api.JOOoConverterPlugin;
 import org.nuxeo.ecm.platform.transform.timer.SimpleTimer;
 import org.nuxeo.runtime.services.streaming.FileSource;
+import org.nuxeo.runtime.api.Framework;
 
 import com.artofsolving.jodconverter.DocumentFamily;
 import com.artofsolving.jodconverter.DocumentFormat;
@@ -110,7 +110,7 @@ public class JOOoConvertPluginImpl extends AbstractPlugin implements
      */
     private static DocumentFormat getSourceFormat(File file) throws Exception {
         DocumentFormat format;
-        MimetypeRegistry mimetypeRegistry = NXMimeTypeHelper.getMimetypeRegistryService();
+        MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
         String mimetypeStr = mimetypeRegistry.getMimetypeFromFile(file);
         // TODO: JODconverter2.1.1 bug on excel file
         // have to check by extension
@@ -226,8 +226,7 @@ public class JOOoConvertPluginImpl extends AbstractPlugin implements
                 }
             } catch (ConnectException e) {
                 log.error("Could not connect to the remote OpenOffice server @"
-                        + getOOoHostURL() + ':'
-                        + String.valueOf(getOOoHostPort()));
+                        + getOOoHostURL() + ':' + getOOoHostPort());
             }
 
             if (connection != null && connection.isConnected()) {

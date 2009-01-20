@@ -95,14 +95,12 @@ public final class SimpleXmlComparator {
     }
 
     public static boolean compareXmlDocs(Document doc1, Document doc2) {
-
         DiffInfo info = compareNodes("/", doc1, doc2);
-        log.info(info.getInfo());
+        log.debug(info.getInfo());
         return info.equal;
     }
 
     private static DiffInfo compareNodes(String path, Node n1, Node n2) {
-
         DiffInfo info = new DiffInfo(path);
 
         String currentPath = path + '/' + n1.getNodeName();

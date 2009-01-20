@@ -24,6 +24,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @deprecated remove in 5.2 - not used anymore in Nuxeo Platform
  */
 @Deprecated
 public final class NXTransform {

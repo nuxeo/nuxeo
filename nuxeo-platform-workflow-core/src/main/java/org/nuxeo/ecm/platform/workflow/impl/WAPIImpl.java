@@ -23,8 +23,10 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.workflow.NXWorkflow;
 import org.nuxeo.ecm.platform.workflow.api.WorkflowEngine;
+import org.nuxeo.ecm.platform.workflow.api.client.wfmc.ResultSlice;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WAPI;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMActivityInstance;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMFilter;
@@ -221,6 +224,51 @@ public class WAPIImpl implements WAPI {
         }
 
         return workItems;
+    }
+
+    public Collection<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participant, String state)
+            throws WMWorkflowException {
+
+        Collection<WMWorkItemInstance> workItems;
+
+        WorkflowEngine workflowEngine = getDefaultEngine();
+        if (workflowEngine != null) {
+            workItems = workflowEngine.getWorkItemsFor(participant, state);
+        } else {
+            workItems = new ArrayList<WMWorkItemInstance>();
+        }
+
+        return workItems;
+    }
+
+    public ResultSlice<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participants, String state, int firstResult,
+            int maxResults) throws WMWorkflowException {
+        WorkflowEngine workflowEngine = getDefaultEngine();
+        if (workflowEngine != null) {
+            return workflowEngine.getWorkItemsFor(participants, state,
+                    firstResult, maxResults);
+        } else {
+            return new ResultSlice<WMWorkItemInstance>(
+                    Collections.<WMWorkItemInstance> emptyList(), firstResult,
+                    maxResults, 0);
+        }
+    }
+
+    public ResultSlice<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participants, String state, int firstResult,
+            int maxResults, String orderBy, boolean orderAscending)
+            throws WMWorkflowException {
+        WorkflowEngine workflowEngine = getDefaultEngine();
+        if (workflowEngine != null) {
+            return workflowEngine.getWorkItemsFor(participants, state,
+                    firstResult, maxResults, orderBy, orderAscending);
+        } else {
+            return new ResultSlice<WMWorkItemInstance>(
+                    Collections.<WMWorkItemInstance> emptyList(), firstResult,
+                    maxResults, 0);
+        }
     }
 
     public Collection<WMWorkItemInstance> getWorkItemsFor(String pid,
@@ -419,6 +467,15 @@ public class WAPIImpl implements WAPI {
         WorkflowEngine workflowEngine = getDefaultEngine();
         if (workflowEngine != null) {
             return workflowEngine.listWorkItems(filter);
+        }
+        return null;
+    }
+
+    public Collection<WMProcessInstance> getProcessInstanceForCreators(
+            List<String> groupNames) {
+        WorkflowEngine workflowEngine = getDefaultEngine();
+        if (workflowEngine != null) {
+            return workflowEngine.listProcessInstanceForCreators(groupNames);
         }
         return null;
     }

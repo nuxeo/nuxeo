@@ -52,8 +52,7 @@ public class FakeSearchEnginePlugin extends AbstractSearchEngineBackend
         return null;
     }
 
-    public ResultSet searchQuery(SQLQuery nxqlQuery, int offset, int range)
-            throws SearchException {
+    public ResultSet searchQuery(SQLQuery nxqlQuery, int offset, int range) {
         return null;
     }
 

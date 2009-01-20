@@ -34,14 +34,11 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default NXP validator.
- *
  * <p>
  * Validators here will be principals having manage everything rights in the
  * sections where the document has been published.
- * </p>
  *
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
+ * @author Julien Anguenot
  */
 public class DefaultValidatorsRule extends AbstractNuxeoCoreValidatorsRule {
 
@@ -49,7 +46,6 @@ public class DefaultValidatorsRule extends AbstractNuxeoCoreValidatorsRule {
 
     public String[] computesValidatorsFor(DocumentModel dm)
             throws PublishingValidatorException {
-
         try {
             login();
             initializeCoreSession(dm.getRepositoryName());
@@ -57,7 +53,7 @@ public class DefaultValidatorsRule extends AbstractNuxeoCoreValidatorsRule {
             throw new PublishingValidatorException(e);
         }
 
-        ACP acp = null;
+        ACP acp;
         try {
             acp = session.getACP(dm.getRef());
         } catch (ClientException ce) {

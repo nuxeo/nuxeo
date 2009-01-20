@@ -107,7 +107,7 @@ public class XmlDataInjector {
         // FIXME empty map in createXslSource is not equivalent to identify
         // transformation and thus do not return the expecting result.
         if (fieldValues == null || fieldValues.keySet().isEmpty()) {
-            log.info("<createTransformer> null options, use identity Xsl transformation");
+            log.debug("<createTransformer> null options, use identity Xsl transformation");
             xslSource = getXslSource();
         } else {
             xslSource = createXslSource();
@@ -126,7 +126,7 @@ public class XmlDataInjector {
             log.error("resource not found: " + xslFilePath);
             return null;
         }
-        log.info("xsl url: " + xslURL);
+        log.debug("xsl url: " + xslURL);
         File xslFile = new File(xslURL.getFile());
         return new StreamSource(xslFile);
     }

@@ -38,7 +38,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -132,6 +132,9 @@ public class SearchColumnsBean extends InputController implements SearchColumns,
         String ref = newField.substring(newField.indexOf(ChainSelect.DEFAULT_KEY_SEPARATOR) + 1);
         ref = ref.replace(ChainSelect.DEFAULT_KEY_SEPARATOR, ":");
         FieldWidget uiField = fieldMap.get(ref);
+        if (uiField == null){
+            return null;
+        }
         if (resultColumns.contains(uiField)) {
             FacesContext context = FacesContext.getCurrentInstance();
             String translatedText = translate(context,
@@ -291,7 +294,7 @@ public class SearchColumnsBean extends InputController implements SearchColumns,
     }
 
     public void setDefaultResultColumnList(String[] resultColumnList) {
-        this.defaultResultColumns = new ArrayList<FieldWidget>();
+        defaultResultColumns = new ArrayList<FieldWidget>();
         for(String fullName: resultColumnList) {
             defaultResultColumns.add(fieldMap.get(fullName));
         }

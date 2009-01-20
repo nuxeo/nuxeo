@@ -24,13 +24,8 @@ package org.nuxeo.ecm.platform.publishing.workflow;
  * Publishing related constants.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public final class PublishingConstants {
-
-    // Constant utility class.
-    private PublishingConstants() {
-    }
 
     public static final String WORKFLOW_REVIEWERS = "workflowReviewers";
 
@@ -43,5 +38,9 @@ public final class PublishingConstants {
     public static final String WORKFLOW_DEFINITION_NAME = "document_publishing";
 
     public static final String SUBMITTED_BY = "submitted_by";
+
+    // Constant utility class.
+    private PublishingConstants() {
+    }
 
 }

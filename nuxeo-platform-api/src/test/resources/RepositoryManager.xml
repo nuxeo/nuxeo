@@ -11,11 +11,10 @@
 
   <service>
     <provide
-      interface="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
+        interface="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
   </service>
 
   <extension-point name="repositories">
-
     <documentation>
       Extension points for registering new repositories.
       <p/>
@@ -30,8 +29,6 @@
     </documentation>
 
     <object class="org.nuxeo.ecm.core.api.repository.Repository"/>
-
   </extension-point>
-
 
 </component>

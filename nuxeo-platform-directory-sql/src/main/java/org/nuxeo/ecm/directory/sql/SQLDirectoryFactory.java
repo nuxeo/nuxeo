@@ -125,7 +125,7 @@ public class SQLDirectoryFactory extends DefaultComponent implements
                 descriptor.setCreateTablePolicy(oldDescriptor.getCreateTablePolicy());
             } catch (DirectoryException e) {
                 // Should never happend since Descriptor was already created
-                e.printStackTrace();
+                log.error(e);
             }
         }
 

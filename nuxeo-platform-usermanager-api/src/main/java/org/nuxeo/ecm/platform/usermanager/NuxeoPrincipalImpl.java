@@ -29,14 +29,16 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jetbrains.annotations.NotNull;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -44,10 +46,6 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class NuxeoPrincipalImpl implements NuxeoPrincipal {
-
-    private static final String TYPE_NAME = "User";
-
-    private static final String SCHEMA_NAME = "user";
 
     // TODO: this should be moved to an extension point of the usermanager
     // service
@@ -66,6 +64,10 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     public static final String GROUPS_COLUMN = "groups";
 
+    private static final String TYPE_NAME = "User";
+
+    private static final String SCHEMA_NAME = "user";
+
     private static final long serialVersionUID = 1791676740406045594L;
 
     private static final Log log = LogFactory.getLog(NuxeoPrincipalImpl.class);
@@ -78,7 +80,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     // transitive closure of the "member of group" relation
     private List<String> allGroups;
 
-    private boolean anonymous;
+    private final boolean anonymous;
 
     private String principalId;
 
@@ -106,40 +108,68 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     public String getCompany() {
-        return (String) dataModel.getData(COMPANY_COLUMN);
+        try {
+            return (String) dataModel.getData(COMPANY_COLUMN);
+        } catch (PropertyException e) {
+            return null;
+        }
     }
 
     public void setCompany(String company) {
-        dataModel.setData(COMPANY_COLUMN, company);
+        try {
+            dataModel.setData(COMPANY_COLUMN, company);
+        } catch (PropertyException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public String getFirstName() {
-        return (String) dataModel.getData(FIRSTNAME_COLUMN);
+        try {
+            return (String) dataModel.getData(FIRSTNAME_COLUMN);
+        } catch (PropertyException e) {
+            return null;
+        }
     }
 
     public void setFirstName(String firstName) {
-        dataModel.setData(FIRSTNAME_COLUMN, firstName);
+        try {
+            dataModel.setData(FIRSTNAME_COLUMN, firstName);
+        } catch (PropertyException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public String getLastName() {
-        return (String) dataModel.getData(LASTNAME_COLUMN);
+        try {
+            return (String) dataModel.getData(LASTNAME_COLUMN);
+        } catch (PropertyException e) {
+            return null;
+        }
     }
 
     public void setLastName(String lastName) {
-        dataModel.setData(LASTNAME_COLUMN, lastName);
+        try {
+            dataModel.setData(LASTNAME_COLUMN, lastName);
+        } catch (PropertyException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     // impossible to modify the name - it is PK
-    public void setName(@NotNull String name) {
-        dataModel.setData(USERNAME_COLUMN, name);
+    public void setName(String name) {
+        try {
+            dataModel.setData(USERNAME_COLUMN, name);
+        } catch (PropertyException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
-    public void setRoles(@NotNull List<String> roles) {
+    public void setRoles(List<String> roles) {
         this.roles.clear();
         this.roles.addAll(roles);
     }
 
-    public void setGroups(@NotNull List<String> groups) {
+    public void setGroups(List<String> groups) {
         if (virtualGroups != null && !virtualGroups.isEmpty()) {
             List<String> groupsToWrite = new ArrayList<String>();
             for (String group : groups) {
@@ -147,20 +177,37 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
                     groupsToWrite.add(group);
                 }
             }
-            dataModel.setData(GROUPS_COLUMN, groupsToWrite);
+            try {
+                dataModel.setData(GROUPS_COLUMN, groupsToWrite);
+            } catch (PropertyException e) {
+                throw new ClientRuntimeException(e);
+            }
         } else {
-            dataModel.setData(GROUPS_COLUMN, groups);
+            try {
+                dataModel.setData(GROUPS_COLUMN, groups);
+            } catch (PropertyException e) {
+                throw new ClientRuntimeException(e);
+            }
         }
     }
 
     public String getName() {
-        return (String) dataModel.getData(USERNAME_COLUMN);
+        try {
+            return (String) dataModel.getData(USERNAME_COLUMN);
+        } catch (PropertyException e) {
+            return null;
+        }
     }
 
     @SuppressWarnings("unchecked")
     public List<String> getGroups() {
         List<String> groups = new LinkedList();
-        List<String> storedGroups = (List<String>) dataModel.getData(GROUPS_COLUMN);
+        List<String> storedGroups;
+        try {
+            storedGroups = (List<String>) dataModel.getData(GROUPS_COLUMN);
+        } catch (PropertyException e) {
+            return null;
+        }
         if (storedGroups != null) {
             groups.addAll(storedGroups);
         }
@@ -174,7 +221,11 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     public void setPassword(String password) {
-        dataModel.setData(PASSWORD_COLUMN, password);
+        try {
+            dataModel.setData(PASSWORD_COLUMN, password);
+        } catch (PropertyException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public String getPassword() {
@@ -186,7 +237,11 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     @Override
     public String toString() {
-        return (String) dataModel.getData(USERNAME_COLUMN);
+        try {
+            return (String) dataModel.getData(USERNAME_COLUMN);
+        } catch (PropertyException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public String getPrincipalId() {
@@ -201,14 +256,22 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
      * @return the email.
      */
     public String getEmail() {
-        return (String) dataModel.getData(EMAIL_COLUMN);
+        try {
+            return (String) dataModel.getData(EMAIL_COLUMN);
+        } catch (PropertyException e) {
+            return null;
+        }
     }
 
     /**
      * @param email the email to set.
      */
     public void setEmail(String email) {
-        dataModel.setData(EMAIL_COLUMN, email);
+        try {
+            dataModel.setData(EMAIL_COLUMN, email);
+        } catch (PropertyException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     /**
@@ -280,7 +343,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     public boolean isAdministrator() {
         try {
-            return isMemberOf("administrators");
+            return isMemberOf(SecurityConstants.ADMINISTRATORS);
         } catch (ClientException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

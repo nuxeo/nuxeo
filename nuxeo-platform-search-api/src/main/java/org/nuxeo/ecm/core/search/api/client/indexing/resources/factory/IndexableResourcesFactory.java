@@ -45,19 +45,19 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableR
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.IndexableDocType;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.IndexableDocTypeDescriptor;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.ResourceType;
+import org.nuxeo.ecm.core.search.api.indexingwrapper.DocumentModelIndexingWrapper;
 
 /**
  * Computes an <code>IndexableResources</code> instance for a given
  * DocumentModel.
  * <p>
  * This factory is specific to a Nuxeo core <code>DocumentModel</code>. Let's
- * see if we need another kind of non document centric factory in the future.
+ * see if we need another kind of non document-centric factory in the future.
  * This use case may appear if <code>org.nuxeo.ecm.search</code> aims at being
  * an enterprise search standalone engine in the future. Right now, this is not
  * aimed at being the case.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public final class IndexableResourcesFactory implements Serializable {
 
@@ -65,9 +65,12 @@ public final class IndexableResourcesFactory implements Serializable {
 
     private static final Log log = LogFactory.getLog(IndexableResourcesFactory.class);
 
-    private static final Map<String, IndexableResourceConf> resourceConfCache = new ConcurrentHashMap<String, IndexableResourceConf>();
-    private static final Map<String, IndexableResourceConf> fullResourceConfCache = new ConcurrentHashMap<String, IndexableResourceConf>();
-    private static final Map<String, IndexableDocType> indexableDocTypeCache = new ConcurrentHashMap<String, IndexableDocType>();
+    private static final Map<String, IndexableResourceConf> resourceConfCache
+            = new ConcurrentHashMap<String, IndexableResourceConf>();
+    private static final Map<String, IndexableResourceConf> fullResourceConfCache
+            = new ConcurrentHashMap<String, IndexableResourceConf>();
+    private static final Map<String, IndexableDocType> indexableDocTypeCache
+            = new ConcurrentHashMap<String, IndexableDocType>();
 
     private static final IndexableDocType NULL = new IndexableDocTypeDescriptor();
 
@@ -104,10 +107,12 @@ public final class IndexableResourcesFactory implements Serializable {
                     CoreSession session = idxThread.getCoreSession(repositoryName);
                     sid = session.getSessionId();
                     dm = session.getDocument(dm.getRef());
+                    // get the wrapper if available
+                    dm = dm.getAdapter(DocumentModelIndexingWrapper.class);
                 } catch (ClientException e) {
                     log.warn(String.format(
-                            "Unable to fetch DocumentModel with ref '%s' and title '%s' from indexing thread context",
-                            dm.getRef(), dm.getTitle()));
+                            "Unable to fetch DocumentModel with ref '%s' from indexing thread context",
+                            dm.getRef()));
                     return null;
                 } catch (Throwable t) {
                     log.error(
@@ -122,7 +127,7 @@ public final class IndexableResourcesFactory implements Serializable {
         String docType = dm.getType();
         IndexableDocType docTypeConf = getIndexableDocType(docType);
 
-        // Compute base resources configuration (including automatique schema
+        // Compute base resources configuration (including automatic schema
         // setup)
         List<String> resourceNames = null;
         List<String> autoSchemas = new ArrayList<String>();

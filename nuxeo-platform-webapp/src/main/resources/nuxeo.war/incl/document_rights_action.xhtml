@@ -2,8 +2,7 @@
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:t="http://myfaces.apache.org/tomahawk">
+  xmlns:h="http://java.sun.com/jsf/html">
 <table class="dataInput">
 <tbody>
   <tr>
@@ -36,7 +35,7 @@
       value="#{messages['command.security.addPerm']}"
       class="button rightsAddButton"
       disabled="#{!securityActions.canAddSecurityRules}"
-      action="#{securityActions.addPermissionsAndUpdate}" />
+      action="#{securityActions.addPermissions}" />
     </td>
   </tr>
 </tbody>

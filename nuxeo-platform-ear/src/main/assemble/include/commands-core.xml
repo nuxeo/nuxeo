@@ -1,7 +1,0 @@
-<assembly>
-  <assemble>
-    <outputFile>/</outputFile>
-    <set>nuxeo-template-core</set>
-  </assemble>
-</assembly>
-

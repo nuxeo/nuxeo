@@ -105,12 +105,11 @@ public class JMSDocumentMessageProducerService extends DefaultComponent
         try {
             JMSDocumentMessageProducer.sendNXCoreEventMessages(events,
                     XA_TOPIC_CONNECTION_FACTORY, CORE_EVENTS_DESTINATION);
-            log.debug("produce() done !");
+            log.debug("produce() done!");
         } catch (DocumentMessageProducerException e) {
             log.error("En error occured while trying to send a JMS message on"
                     + "on the " + CORE_EVENTS_DESTINATION
-                    + " topic destination");
-            e.printStackTrace();
+                    + " topic destination", e);
         }
     }
 

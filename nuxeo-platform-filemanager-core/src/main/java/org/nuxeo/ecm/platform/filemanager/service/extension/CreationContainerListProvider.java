@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 /**
  * Interface to implement for contributions to the FileManagerService
  * creationContainerListProvider extension point.
- *
+ * <p>
  * The provider should tell for a given (handled) document type the list of
  * candidate container the user can create new document in.
  *
@@ -73,4 +73,5 @@ public interface CreationContainerListProvider {
      */
     DocumentModelList getCreationContainerList(CoreSession documentManager,
             String docType) throws Exception;
+
 }

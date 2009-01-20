@@ -53,7 +53,6 @@ import org.nuxeo.runtime.model.Extension;
  * to register your own plugins and transformers
  *
  * @see org.nuxeo.ecm.platform.transform.interfaces.Plugin
- *
  * @see org.nuxeo.ecm.platform.transform.interfaces.Transformer
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webapp.security;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,30 +37,30 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
 import org.jboss.seam.contexts.Context;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
+ * @author Razvan Caraghin
  */
 @Name("groupManagerActions")
 @Scope(CONVERSATION)
+@Install(precedence = FRAMEWORK)
 public class GroupManagerActionsBean extends InputController implements
         GroupManagerActions, Serializable {
 
@@ -114,12 +115,10 @@ public class GroupManagerActionsBean extends InputController implements
 
     @Create
     public void initialize() throws ClientException {
-        log.info("Initializing...");
+        log.debug("Initializing...");
         principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
-        // principalIsAdmin = principal.getGroups().contains("administrators");
         groupListingMode = userManager.getGroupListingMode();
     }
-
 
     public void destroy() {
         log.debug("destroy");
@@ -159,7 +158,7 @@ public class GroupManagerActionsBean extends InputController implements
             conversationContext.set("selectedGroup", selectedGroup);
             return "view_group";
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -168,7 +167,7 @@ public class GroupManagerActionsBean extends InputController implements
             selectedGroup = userManager.getGroup(groupName);
             return viewGroup();
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -185,7 +184,7 @@ public class GroupManagerActionsBean extends InputController implements
             conversationContext.set("selectedGroup", selectedGroup);
             return "edit_group";
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -200,7 +199,7 @@ public class GroupManagerActionsBean extends InputController implements
             }
             return "view_groups";
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -222,7 +221,7 @@ public class GroupManagerActionsBean extends InputController implements
 
             return viewGroup(selectedGroup.getName());
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -231,16 +230,15 @@ public class GroupManagerActionsBean extends InputController implements
             if (StringUtils.isEmpty(newGroup.getName())) {
                 String message = resourcesAccessor.getMessages().get(
                         "label.groupManager.emptyGroupName");
-                facesMessages.add("groupName", message);
-                facesMessages.add(FacesMessage.SEVERITY_INFO, message);
+                facesMessages.addToControl("groupName",
+                        FacesMessage.SEVERITY_INFO, message);
                 return null;
             }
             if (!StringUtils.containsOnly(newGroup.getName(), VALID_CHARS)) {
                 String message = resourcesAccessor.getMessages().get(
                         "label.groupManager.wrongGroupName");
-
-                FacesMessages.instance().add("groupName",
-                        FacesMessage.SEVERITY_ERROR, message, (Object[]) null);
+                facesMessages.addToControl("groupName",
+                        FacesMessage.SEVERITY_ERROR, message);
                 return null;
             }
 
@@ -258,11 +256,11 @@ public class GroupManagerActionsBean extends InputController implements
         } catch (GroupAlreadyExistsException e) {
             String message = resourcesAccessor.getMessages().get(
                     "error.groupManager.groupAlreadyExists");
-            facesMessages.add("groupName", message);
-            facesMessages.add(FacesMessage.SEVERITY_INFO, message);
+            facesMessages.addToControl("groupName", FacesMessage.SEVERITY_INFO,
+                    message);
             return null;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -275,7 +273,7 @@ public class GroupManagerActionsBean extends InputController implements
 
             return "create_group";
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -284,7 +282,7 @@ public class GroupManagerActionsBean extends InputController implements
             return principal.isAdministrator()
                     && !userManager.areGroupsReadOnly();
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -293,7 +291,7 @@ public class GroupManagerActionsBean extends InputController implements
             return principal.isAdministrator()
                     && !userManager.areGroupsReadOnly();
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -302,7 +300,7 @@ public class GroupManagerActionsBean extends InputController implements
             return principal.isAdministrator()
                     && !userManager.areGroupsReadOnly();
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 

@@ -44,11 +44,9 @@ public abstract class AbstractSearchEngineBackend extends DefaultComponent imple
 
     protected String configurationFileName;
 
-    @SuppressWarnings("unchecked")
-    protected final List<String> supportedAnalyzers = Collections.EMPTY_LIST;
+    protected final List<String> supportedAnalyzers = Collections.emptyList();
 
-    @SuppressWarnings("unchecked")
-    protected final List<String> supportedFieldTypes = Collections.EMPTY_LIST;
+    protected final List<String> supportedFieldTypes = Collections.emptyList();
 
 
     protected AbstractSearchEngineBackend() {

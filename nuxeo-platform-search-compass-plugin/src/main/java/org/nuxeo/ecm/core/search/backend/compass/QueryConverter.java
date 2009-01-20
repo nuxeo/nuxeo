@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.search.backend.compass;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -40,6 +41,7 @@ import org.compass.core.CompassQueryBuilder.CompassQueryStringBuilder;
 import org.compass.core.lucene.util.LuceneHelper;
 import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
+import org.nuxeo.ecm.core.query.sql.model.DoubleLiteral;
 import org.nuxeo.ecm.core.query.sql.model.FromClause;
 import org.nuxeo.ecm.core.query.sql.model.IntegerLiteral;
 import org.nuxeo.ecm.core.query.sql.model.Literal;
@@ -47,6 +49,7 @@ import org.nuxeo.ecm.core.query.sql.model.LiteralList;
 import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
@@ -58,6 +61,7 @@ import org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory.BuiltinD
 import org.nuxeo.ecm.core.search.api.backend.security.SecurityFiltering;
 import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.core.search.api.client.query.SearchPrincipal;
+import org.nuxeo.ecm.core.search.api.helper.DoubleConverter;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceDataConf;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.FulltextFieldDescriptor;
 import org.nuxeo.ecm.core.search.api.internals.SearchServiceInternals;
@@ -122,10 +126,8 @@ public class QueryConverter {
         // ORDER BY
         OrderByClause order = query.getOrderByClause();
         if (order != null) {
-            SortDirection direction = order.isDescendent ? SortDirection.REVERSE
-                    : SortDirection.AUTO;
-            for (Reference elt : order.elements) {
-                String orderField = elt.name;
+            for (OrderByExpr elt : order.elements) {
+                String orderField = elt.reference.name;
                 IndexableResourceDataConf propConf = searchService.getIndexableDataConfFor(orderField);
 
                 if (propConf != null) {
@@ -139,7 +141,9 @@ public class QueryConverter {
                                 orderField));
                     }
                 }
-                cQuery.addSort(orderField, direction);
+                cQuery.addSort(orderField,
+                        elt.isDescending ? SortDirection.REVERSE
+                                : SortDirection.AUTO);
             }
         }
         return cQuery;
@@ -182,10 +186,12 @@ public class QueryConverter {
      *
      * @param query
      * @param principal
-     * @return The wrapped query, intersected with security query
-     * @throws QueryException if the list of permissions to query cannot be fetched
+     * @return the wrapped query, intersected with security query
+     * @throws QueryException if the list of permissions to query cannot be
+     *             fetched
      */
-    public CompassQuery toCompassQuery(String query, SearchPrincipal principal) throws QueryException {
+    public CompassQuery toCompassQuery(String query, SearchPrincipal principal)
+            throws QueryException {
         CompassQueryBuilder builder = session.queryBuilder();
 
         CompassQuery sQuery = builder.queryString(query).toQuery();
@@ -205,11 +211,14 @@ public class QueryConverter {
      *
      * @param principal
      * @return the security query, wrapped as a CompassQuery
-     * @throws QueryException if the list of permissions to query cannot be fetched
+     * @throws QueryException if the list of permissions to query cannot be
+     *             fetched
      */
-    public CompassQuery makeSecurityQuery(SearchPrincipal principal) throws QueryException {
+    public CompassQuery makeSecurityQuery(SearchPrincipal principal)
+            throws QueryException {
         try {
-            return makeSecurityQuery(principal, SecurityFiltering.getBrowsePermissionList(),
+            return makeSecurityQuery(principal,
+                    SecurityFiltering.getBrowsePermissionList(),
                     BuiltinDocumentFields.FIELD_ACP_INDEXED);
         } catch (Throwable t) {
             throw new QueryException(t);
@@ -220,9 +229,10 @@ public class QueryConverter {
      * Builds a query for given principal, to check the given list of perms in
      * given indexing field.
      * <p>
-     * This is translated in a {@Link MatchBeforeQuery} to require a positive
-     * occurence of one of the principal's security tokens (name or group),
-     * paired with one of the relevant permissions before any negative one.
+     * This is translated in a {@Link MatchBeforeQuery} to require a
+     * positive occurence of one of the principal's security tokens (name or
+     * group), paired with one of the relevant permissions before any negative
+     * one.
      * <p>
      * Of course the field has to have been constructed accordingly.
      *
@@ -270,10 +280,10 @@ public class QueryConverter {
      * <p>
      * Must not depend on searchEngine to stay unit testable without it.
      *
-     * @param op The operator
-     * @param right Right hand side of the clause
+     * @param op the operator
+     * @param right the right hand side of the clause
      * @param analyzer if necessary
-     * @param type the indexing type. Case insensitive.
+     * @param type the indexing type (case insensitive)
      * @return a compass Query or null to mean it's logically equivalent to a
      *         MatchAllDocQuery
      * @throws QueryException
@@ -320,9 +330,10 @@ public class QueryConverter {
             } else {
                 throw new QueryException("Wrong operand for query on " + name);
             }
-            if (docTypes == null) { // Maybe a bit harsh
-                throw new QueryException("No document types correspond "
-                        + "to specified facets");
+            if (docTypes == null) {
+                // cannot use empty set as this would make the criterion
+                // disappear which would change the semantics of the query
+                docTypes = Collections.singleton("__NOSUCHTYPE__");
             }
             LiteralList newRight = new LiteralList();
             for (String docType : docTypes) {
@@ -388,11 +399,9 @@ public class QueryConverter {
                         "A boolean field can be queried on 0 and 1 only");
             }
         } else if (right instanceof IntegerLiteral) {
-            if ("int".equals(type) || "long".equals(type)) {
-                rightOb = ((IntegerLiteral) right).value;
-            } else {
-                rightOb = ((IntegerLiteral) right).value;
-            }
+            rightOb = ((IntegerLiteral) right).value;
+        } else if (right instanceof DoubleLiteral) {
+            rightOb = ((DoubleLiteral) right).value;
         }
 
         // STARTSWITH for paths boils down to a EQ
@@ -421,9 +430,9 @@ public class QueryConverter {
             if (!isString) {
                 try {
                     return builder.term(name, rightOb);
+                // FIXME: wrong exception to catch
                 } catch (NullPointerException e) {
-                    log.error("Failed building query on property " + name);
-                    e.printStackTrace();
+                    log.error("Failed building query on property " + name, e);
                     throw new QueryException(e.getMessage(), e);
                 }
             }
@@ -471,8 +480,12 @@ public class QueryConverter {
             }
             return LuceneHelper.createCompassQuery(session, lQuery);
         }
+        if (rightOb instanceof Double) {
+            rightOb = DoubleConverter.format(rightOb);
+        }
 
         if (op.equals(Operator.GT)) {
+
             return builder.gt(name, rightOb);
         }
         if (op.equals(Operator.GTEQ)) {
@@ -494,10 +507,19 @@ public class QueryConverter {
         CompassQueryStringBuilder sBuilder = session.queryBuilder().queryString(
                 String.format("%s:(%s)", name.replaceAll(PER_PROP_ESCAPE,
                         "\\\\$0"), value.replaceAll(PER_PROP_ESCAPE, "\\\\$0")));
+
+        if (session.getSettings().getSettingAsBoolean("useAndDefaultOperator",
+                false)) {
+            sBuilder.useAndDefaultOperator();
+        }
         if (analyzer != null) {
             sBuilder.setAnalyzer(analyzer);
         }
-        return sBuilder.toQuery();
+        CompassQuery res = sBuilder.toQuery();
+        if (res.toString().trim().length() == 0) {
+            return null;
+        }
+        return res;
     }
 
     /**
@@ -545,8 +567,8 @@ public class QueryConverter {
     }
 
     /**
-     * Transforms a where predicate into a {@link CompassQuery}. Returns null
-     * if the predicate matches everything.
+     * Transforms a where predicate into a {@link CompassQuery}. Returns null if
+     * the predicate matches everything.
      *
      * @param predicate
      * @return the resulting CompassQuery or null
@@ -567,7 +589,7 @@ public class QueryConverter {
         } else if (op.equals(Operator.NOTBETWEEN)) {
             notOp = Operator.BETWEEN;
         } else if (op.equals(Operator.NOT)) { // generic NOT
-                return negateQuery(wherePredicate((Predicate) predicate.lvalue));
+            return negateQuery(wherePredicate((Predicate) predicate.lvalue));
         }
         if (notOp != null) {
             return negateQuery(wherePredicate(new Predicate(predicate.lvalue,

@@ -35,7 +35,7 @@ public class StartupActionHandler extends AbstractWorkflowDocumentActionHandler 
     private static final long serialVersionUID = 2751273934453742494L;
 
     public void execute(ExecutionContext ec) throws Exception {
-        log.info("             PROCESS STARTS               ");
+        log.debug("Starting process");
 
         // Bind document to process
         bindDocumentToProcess(ec);

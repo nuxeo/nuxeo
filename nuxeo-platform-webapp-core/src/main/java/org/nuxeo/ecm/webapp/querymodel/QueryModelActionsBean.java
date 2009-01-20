@@ -187,6 +187,9 @@ public class QueryModelActionsBean extends InputController implements
 
     public QueryModel load(String queryModelName, DocumentRef ref)
             throws ClientException {
+        if (queryModels == null) {
+            queryModels = new HashMap<String, QueryModel>();
+        }
         QueryModelDescriptor descriptor = getQueryModelDescriptor(queryModelName);
         if (descriptor == null) {
             throw new ClientException(String.format(

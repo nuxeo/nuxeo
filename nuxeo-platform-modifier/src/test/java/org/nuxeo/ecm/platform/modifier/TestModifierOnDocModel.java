@@ -39,6 +39,7 @@ import org.nuxeo.ecm.platform.transform.document.TransformDocumentImpl;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
 import org.nuxeo.ecm.platform.transform.interfaces.Transformer;
 import org.nuxeo.ecm.platform.transform.service.TransformService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Test the Document Modifier component.
@@ -58,9 +59,9 @@ public class TestModifierOnDocModel extends AbstractPluginTestCase {
 
     private Transformer transformer;
 
-    private static final String docPath_MSWORD = "test/resources/data/SampleDoc.doc";
+    private static final String docPath_MSWORD = "data/SampleDoc.doc";
 
-    private static final String docPath_wordML = "src/test/resources/data/wordml/descr04_appro.xml";
+    private static final String docPath_wordML = "data/wordml/descr04_appro.xml";
 
     @Override
     public void setUp() throws Exception {
@@ -70,7 +71,7 @@ public class TestModifierOnDocModel extends AbstractPluginTestCase {
 
         openCoreSession();
 
-        TransformService service = NXTransform.getTransformService();
+        TransformService service = (TransformService) Framework.getRuntime().getComponent(TransformService.NAME);
         transformer = service.getTransformerByName("any2text");
     }
 

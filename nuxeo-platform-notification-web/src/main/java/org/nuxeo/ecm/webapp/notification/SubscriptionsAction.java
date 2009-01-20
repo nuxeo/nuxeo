@@ -35,6 +35,7 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -149,7 +150,8 @@ public class SubscriptionsAction extends InputController implements
         getNotificationsList();
     }
 
-    @Observer(EventNames.DOCUMENT_SELECTION_CHANGED)
+    @Observer(value=EventNames.DOCUMENT_SELECTION_CHANGED, create=false)
+    @BypassInterceptors
     public void invalidateNotificationsSelection() {
         log.debug("Invalidate archive records.................");
         notificationList = null;

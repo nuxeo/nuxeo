@@ -64,16 +64,16 @@ public final class WFVersioningPolicyProvider {
     private WFVersioningPolicyProvider() {
     }
 
-    public static VersioningActions getVersioningPolicyFor(DocumentModel documentModel)
-            throws ClientException {
+    public static VersioningActions getVersioningPolicyFor(
+            DocumentModel documentModel) throws ClientException {
         String wfpol;
         try {
             wfpol = documentModel.getSystemProp(
                     WFDocVersioning.SYSTEM_PROPERTY_NAME_WF_OPTION,
                     String.class);
         } catch (DocumentException e) {
-            log.warn("Workflow versioning inc policy not set as document system prop. Error msg: "
-                    + e.getMessage());
+            log.debug("Workflow versioning inc policy not set "
+                    + "as document system prop", e);
             return VersioningActions.ACTION_UNDEFINED;
         }
 
@@ -111,7 +111,6 @@ public final class WFVersioningPolicyProvider {
 
             return wfpol;
         } catch (Exception e) {
-            // e.printStackTrace();
             log.error("Cannot get versioning policy from workflow. "
                     + "Error connecting to Workflow service.", e);
         }
@@ -119,7 +118,8 @@ public final class WFVersioningPolicyProvider {
         return null;
     }
 
-    public static VersioningActions translateFromWFPolicy(String versioningIncPolicy) {
+    public static VersioningActions translateFromWFPolicy(
+            String versioningIncPolicy) {
         return wf2Ver.get(versioningIncPolicy);
     }
 
