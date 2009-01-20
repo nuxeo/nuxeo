@@ -73,8 +73,8 @@ public final class JCAConnectionFactory
         return mcf.getRepository().getTypeManager();
     }
 
-    public SecurityManager getSecurityManager() {
-        return mcf.getRepository().getSecurityManager();
+    public SecurityManager getNuxeoSecurityManager() {
+        return mcf.getRepository().getNuxeoSecurityManager();
     }
 
     public Session getSession(Map<String, Serializable> context) throws DocumentException {

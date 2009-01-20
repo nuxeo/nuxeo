@@ -112,7 +112,7 @@ public class ResourceAdapterTestCase extends BaseTestCase {
 
         /* Now check the core APIs that this also implements */
         org.nuxeo.ecm.core.model.Repository repo = (org.nuxeo.ecm.core.model.Repository) repository;
-        SecurityManager sm = repo.getSecurityManager();
+        SecurityManager sm = repo.getNuxeoSecurityManager();
         assertNotNull(sm);
 
         tm.commit();

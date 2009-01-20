@@ -39,7 +39,8 @@ import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
 import org.apache.jackrabbit.core.nodetype.NodeTypeRegistry;
 import org.apache.jackrabbit.core.nodetype.PropDef;
 import org.apache.jackrabbit.core.nodetype.PropDefImpl;
-import org.apache.jackrabbit.name.QName;
+import org.apache.jackrabbit.spi.Name;
+import org.apache.jackrabbit.spi.commons.name.NameConstants;
 import org.nuxeo.ecm.core.repository.jcr.versioning.JCRVersioningService;
 import org.nuxeo.ecm.core.repository.jcr.versioning.Versioning;
 import org.nuxeo.ecm.core.repository.jcr.versioning.VersioningService;
@@ -165,7 +166,7 @@ public class TypeImporter implements NodeConstants {
                 collectFieldTypes(types, ntDefs);
             }
             // now collect the schema
-            QName qname = TypeAdapter.getSchemaName(schema);
+            Name qname = TypeAdapter.getSchemaName(schema);
             if (!ntReg.isRegistered(qname)) { // test if schema already registered
                 // first, register the schema namespace
                 Namespace ns = schema.getNamespace();
@@ -188,13 +189,13 @@ public class TypeImporter implements NodeConstants {
         }
     }
 
-    protected NodeTypeDef createSchemaDefinition(Schema schema, QName qname) {
+    protected NodeTypeDef createSchemaDefinition(Schema schema, Name qname) {
         // create the mixin node type
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(qname);
         ntd.setMixin(true);
         // schemas have no supertypes
-        ntd.setSupertypes(new QName[] {NodeConstants.ECM_MIX_SCHEMA.qname});
+        ntd.setSupertypes(new Name[] {NodeConstants.ECM_MIX_SCHEMA.qname});
 
         // create childen definitions
         if (schema.hasFields()) {
@@ -242,14 +243,14 @@ public class TypeImporter implements NodeConstants {
             if (fieldType.isListType()) {
                 ListType listType = (ListType) fieldType;
                 if (!listType.isScalarList()) {
-                    QName qname = TypeAdapter.getFieldTypeName(fieldType);
+                    Name qname = TypeAdapter.getFieldTypeName(fieldType);
                     // test if schema already registered
                     if (!ntReg.isRegistered(qname)) {
                         ntDefs.add(createFieldDefinition((ListType) fieldType, qname));
                     }
                 }
             } else if (fieldType.isComplexType()) { // complex type
-                QName qname = TypeAdapter.getFieldTypeName(fieldType);
+                Name qname = TypeAdapter.getFieldTypeName(fieldType);
                 // test if schema already registered
                 if (!ntReg.isRegistered(qname)) {
                     ntDefs.add(createFieldDefinition((ComplexType) fieldType, qname));
@@ -267,7 +268,7 @@ public class TypeImporter implements NodeConstants {
         }
     }
 
-    protected NodeTypeDef createFieldDefinition(ComplexType fieldType, QName qname) {
+    protected NodeTypeDef createFieldDefinition(ComplexType fieldType, Name qname) {
         if (qname.equals(NodeConstants.ECM_NT_CONTENT.qname)) { // special case for blobs
             return createContentNodeType();
         }
@@ -276,12 +277,12 @@ public class TypeImporter implements NodeConstants {
         ntd.setName(qname);
 
         // set super type
-        QName superQname = NodeConstants.ECM_NT_PROPERTY.qname;
+        Name superQname = NodeConstants.ECM_NT_PROPERTY.qname;
         Type superType = fieldType.getSuperType();
         if (superType != null) {
             superQname = TypeAdapter.getFieldTypeName(superType);
         }
-        ntd.setSupertypes(new QName[] {superQname});
+        ntd.setSupertypes(new Name[] {superQname});
 
         if (fieldType.hasFields()) {
             createChildrenDefs(fieldType, ntd);
@@ -290,15 +291,15 @@ public class TypeImporter implements NodeConstants {
         return ntd;
     }
 
-    protected static NodeTypeDef createFieldDefinition(ListType fieldType, QName qname) {
+    protected static NodeTypeDef createFieldDefinition(ListType fieldType, Name qname) {
         // create the mixin node type
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(qname);
         ntd.setOrderableChildNodes(true);
 
         // set super type
-        QName superQname = NodeConstants.ECM_NT_PROPERTY_LIST.qname;
-        ntd.setSupertypes(new QName[] { superQname });
+        Name superQname = NodeConstants.ECM_NT_PROPERTY_LIST.qname;
+        ntd.setSupertypes(new Name[] { superQname });
 
         //createUnstructuredChildren(ntd);
 
@@ -327,20 +328,20 @@ public class TypeImporter implements NodeConstants {
                 NodeDefImpl nd = new NodeDefImpl();
                 nd.setDeclaringNodeType(ntd.getName());
                 //nd.setAutoCreated(true); // TODO: autocreated?
-                QName typeQname = QName.NT_RESOURCE;
+                Name typeQname = NameConstants.NT_RESOURCE;
                 nd.setDefaultPrimaryType(typeQname);
-                nd.setRequiredPrimaryTypes(new QName[]{typeQname});
-                nd.setName(new QName(nsUri, name.getLocalName()));
+                nd.setRequiredPrimaryTypes(new Name[]{typeQname});
+                nd.setName(JCRName.NAME_FACTORY.create(nsUri, name.getLocalName()));
                 nd.setAllowsSameNameSiblings(false);
                 nodeDefs.add(nd);
             } else if (type.isComplexType()) {
                 NodeDefImpl nd = new NodeDefImpl();
                 nd.setDeclaringNodeType(ntd.getName());
                 //nd.setAutoCreated(true); // TODO: autocreated?
-                QName typeQname = TypeAdapter.getFieldTypeName(type);
+                Name typeQname = TypeAdapter.getFieldTypeName(type);
                 nd.setDefaultPrimaryType(typeQname);
-                nd.setRequiredPrimaryTypes(new QName[]{typeQname});
-                nd.setName(new QName(nsUri, name.getLocalName()));
+                nd.setRequiredPrimaryTypes(new Name[]{typeQname});
+                nd.setName(JCRName.NAME_FACTORY.create(nsUri, name.getLocalName()));
                 nd.setAllowsSameNameSiblings(false);
                 nodeDefs.add(nd);
                 // TODO
@@ -350,7 +351,7 @@ public class TypeImporter implements NodeConstants {
                 if (listType.getFieldType().isSimpleType()) {
                     PropDefImpl pd = new PropDefImpl();
                     //pd.setAutoCreated(true); // TODO: autocreated?
-                    pd.setName(new QName(nsUri, name.getLocalName())); //use default namespace
+                    pd.setName(JCRName.NAME_FACTORY.create(nsUri, name.getLocalName())); //use default namespace
                     pd.setRequiredType(TypeAdapter.scalarType2Jcr(listType.getFieldType()));
                     pd.setDeclaringNodeType(ntd.getName());
                     pd.setMultiple(true);
@@ -360,17 +361,17 @@ public class TypeImporter implements NodeConstants {
                     NodeDefImpl nd = new NodeDefImpl();
                     nd.setDeclaringNodeType(ntd.getName());
                     //nd.setAutoCreated(true); // TODO: autocreated?
-                    QName typeQname = TypeAdapter.getFieldTypeName(type);
+                    Name typeQname = TypeAdapter.getFieldTypeName(type);
                     nd.setDefaultPrimaryType(typeQname);
-                    nd.setRequiredPrimaryTypes(new QName[]{typeQname});
-                    nd.setName(new QName(nsUri, name.getLocalName()));
+                    nd.setRequiredPrimaryTypes(new Name[]{typeQname});
+                    nd.setName(JCRName.NAME_FACTORY.create(nsUri, name.getLocalName()));
                     nd.setAllowsSameNameSiblings(false);
                     nodeDefs.add(nd);
                 }
             } else { // scalar type
                 PropDefImpl pd = new PropDefImpl();
                 //pd.setAutoCreated(true); // TODO: autocreated?
-                pd.setName(new QName(nsUri, name.getLocalName())); //use default namespace
+                pd.setName(JCRName.NAME_FACTORY.create(nsUri, name.getLocalName())); //use default namespace
                 pd.setRequiredType(TypeAdapter.scalarType2Jcr(type));
                 pd.setDeclaringNodeType(ntd.getName());
                 //TODO pd.setDefaultValues(defaultValues);
@@ -431,7 +432,7 @@ public class TypeImporter implements NodeConstants {
      */
     public void collectDocTypes(DocumentType[] types, List<NodeTypeDef> ntDefs) {
         for (DocumentType docType : types) {
-            QName qname = TypeAdapter.getDocTypeName(docType);
+            Name qname = TypeAdapter.getDocTypeName(docType);
             if (!ntReg.isRegistered(qname)) { // test if schema already registered
                 ntDefs.add(createDocTypeDefinition(docType, qname));
             } else {
@@ -454,7 +455,7 @@ public class TypeImporter implements NodeConstants {
      * @return the node type definition
      */
     protected static NodeTypeDef createDocTypeDefinition(DocumentType docType,
-            QName qname) {
+            Name qname) {
 
         // create the mixin node type
         NodeTypeDef ntd = new NodeTypeDef();
@@ -463,14 +464,14 @@ public class TypeImporter implements NodeConstants {
         // set super type
         Type superType = docType.getSuperType();
 
-        QName superQname;
+        Name superQname;
         if (superType != null) {
             superQname = TypeAdapter.getDocTypeName((DocumentType) superType);
         } else { // a root type
             superQname = NodeConstants.ECM_NT_DOCUMENT.qname;
         }
 
-        List<QName> superTypes = new ArrayList<QName>();
+        List<Name> superTypes = new ArrayList<Name>();
         superTypes.add(superQname);
         if (docType.isFolder()) {
             if (docType.isOrdered()) {
@@ -500,9 +501,9 @@ public class TypeImporter implements NodeConstants {
             // TODO: delegate this to the versioning service
             //
             if (vs instanceof JCRVersioningService) {
-                log.debug("add mixin: " + QName.MIX_VERSIONABLE +
+                log.debug("add mixin: " + NameConstants.MIX_VERSIONABLE +
                         " for doc type: " + docType.getName());
-                superTypes.add(QName.MIX_VERSIONABLE);
+                superTypes.add(NameConstants.MIX_VERSIONABLE);
             } else if (vs instanceof CustomVersioningService) {
                 // add our custom versionhistory mix
                 log.debug("add mixin: " +
@@ -514,7 +515,7 @@ public class TypeImporter implements NodeConstants {
             }
         }
 
-        ntd.setSupertypes(superTypes.toArray(new QName[superTypes.size()]));
+        ntd.setSupertypes(superTypes.toArray(new Name[superTypes.size()]));
 
         // doc types have no children or property defs
         // these are specified by the attached schemas
@@ -538,7 +539,7 @@ public class TypeImporter implements NodeConstants {
     public static NodeTypeDef createContentNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(ECM_NT_CONTENT.qname);
-        ntd.setSupertypes(new QName[] {ECM_NT_PROPERTY.qname,  ECM_MIX_CONTENT.qname,  QName.NT_RESOURCE});
+        ntd.setSupertypes(new Name[] {ECM_NT_PROPERTY.qname,  ECM_MIX_CONTENT.qname,  NameConstants.NT_RESOURCE});
 
         return ntd;
     }

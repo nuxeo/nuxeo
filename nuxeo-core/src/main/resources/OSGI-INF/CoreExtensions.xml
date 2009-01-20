@@ -29,6 +29,8 @@
     <schema name="files" src="schema/files.xsd"/>
     <schema name="note" src="schema/note.xsd"/>
     <schema name="domain" src="schema/domain.xsd"/>
+
+    <schema name="webcontainer" prefix="webc" src="schema/webcontainer.xsd"/>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
@@ -87,6 +89,7 @@
     <doctype name="Workspace" extends="Folder">
       <!-- for logo -->
       <schema name="file"/>
+      <schema name="webcontainer"/>
       <facet name="SuperSpace"/>
       <subtypes>
         <type>Workspace</type>

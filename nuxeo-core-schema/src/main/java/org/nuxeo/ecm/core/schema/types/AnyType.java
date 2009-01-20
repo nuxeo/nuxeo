@@ -34,11 +34,9 @@ public final class AnyType extends AbstractType {
 
     private static final long serialVersionUID = 8341470958787837560L;
 
-
     private AnyType() {
         super(null, SchemaNames.BUILTIN, ID);
     }
-
 
     @Override
     public Type getSuperType() {

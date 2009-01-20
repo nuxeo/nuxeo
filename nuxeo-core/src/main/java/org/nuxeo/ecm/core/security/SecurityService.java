@@ -35,14 +35,12 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
-import org.nuxeo.ecm.core.api.security.PolicyService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
 import org.nuxeo.ecm.core.api.security.impl.SecuritySummaryEntryImpl;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -128,7 +126,7 @@ public class SecurityService extends DefaultComponent {
 
     // Never used. Remove ?
     public static void invalidateCache(Session session, String username) {
-        session.getRepository().getSecurityManager().invalidateCache(session);
+        session.getRepository().getNuxeoSecurityManager().invalidateCache(session);
     }
 
     public boolean arePoliciesRestrictingPermission(String permission) {
@@ -153,21 +151,8 @@ public class SecurityService extends DefaultComponent {
             return true;
         }
 
-        // Security Policy
-        PolicyService policyService = Framework.getLocalService(PolicyService.class);
-        if (policyService != null) {
-            CorePolicyService corePolicyService = (CorePolicyService) policyService.getCorePolicy();
-            if (corePolicyService != null
-                    && principal instanceof NuxeoPrincipal) {
-                if (!corePolicyService.checkPolicy(doc,
-                        (NuxeoPrincipal) principal, permission)) {
-                    return false;
-                }
-            }
-        }
-
         // get the security store
-        SecurityManager securityManager = doc.getSession().getRepository().getSecurityManager();
+        SecurityManager securityManager = doc.getSession().getRepository().getNuxeoSecurityManager();
 
         // fully check each ACE in turn
         String[] resolvedPermissions = getPermissionsToCheck(permission);
@@ -254,7 +239,7 @@ public class SecurityService extends DefaultComponent {
         }
 
         // get the security store
-        SecurityManager securityManager = doc.getSession().getRepository().getSecurityManager();
+        SecurityManager securityManager = doc.getSession().getRepository().getNuxeoSecurityManager();
 
         Access access = checkPermissionForUser(securityManager, doc, username,
                 permission);

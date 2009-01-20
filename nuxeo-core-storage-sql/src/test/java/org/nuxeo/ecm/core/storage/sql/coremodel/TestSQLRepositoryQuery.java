@@ -29,6 +29,8 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
         SQLRepositoryHelper.setUpRepository();
         deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
                 SQLRepositoryHelper.getDeploymentContrib());
+        deployBundle("org.nuxeo.ecm.core.event");
+
     }
 
     @Override
@@ -36,4 +38,11 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
         SQLRepositoryHelper.tearDownRepository();
     }
 
+    @Override
+    public void testSQLFulltextBlob() throws Exception {
+        deployBundle("org.nuxeo.ecm.core.convert.api");
+        deployBundle("org.nuxeo.ecm.core.convert");
+        deployBundle("org.nuxeo.ecm.core.convert.plugins");
+        super.testSQLFulltextBlob();
+    }
 }

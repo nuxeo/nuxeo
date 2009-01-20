@@ -147,6 +147,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
 
         nodea.setSingleProperty("tst:title", "hello world");
+        nodea.setSingleProperty("tst:rate", Double.valueOf(1.5));
         Calendar cal = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34,
                 56);
         nodea.setSingleProperty("tst:created", cal);
@@ -156,6 +157,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         assertEquals("hello world",
                 nodea.getSimpleProperty("tst:title").getString());
+        assertEquals(Double.valueOf(1.5),
+                nodea.getSimpleProperty("tst:rate").getValue());
         assertNotNull(nodea.getSimpleProperty("tst:created").getValue());
         String[] subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
         String[] tags = nodea.getCollectionProperty("tst:tags").getStrings();
@@ -166,6 +169,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         // now modify a property and re-save
         nodea.setSingleProperty("tst:title", "another");
+        nodea.setSingleProperty("tst:rate", Double.valueOf(3.14));
         nodea.setCollectionProperty("tst:subjects", new String[] { "z", "c" });
         nodea.setCollectionProperty("tst:tags", new String[] { "3" });
         session.save();
@@ -188,6 +192,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         nodea = session.getChildNode(root, "foo", false);
         assertEquals("another",
                 nodea.getSimpleProperty("tst:title").getString());
+        assertEquals(Double.valueOf(3.14),
+                nodea.getSimpleProperty("tst:rate").getValue());
         subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
         tags = nodea.getCollectionProperty("tst:tags").getStrings();
         assertEquals(Arrays.asList("z", "c"), Arrays.asList(subjects));

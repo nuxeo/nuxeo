@@ -25,11 +25,11 @@ public class UserVisiblePermission implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected String permission;
+    protected final String permission;
 
-    protected String denyPermission;
+    protected final String denyPermission;
 
-    protected String id;
+    protected final String id;
 
     public UserVisiblePermission(String id, String perm, String denyPerm) {
         permission = perm;
@@ -38,24 +38,42 @@ public class UserVisiblePermission implements Serializable {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (other == null) {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
-        if (toString().equals(other.toString())) {
-            return true;
-        } else {
+        UserVisiblePermission other = (UserVisiblePermission) o;
+
+        if (denyPermission != null ? !denyPermission.equals(other.denyPermission) : other.denyPermission != null) {
             return false;
         }
+        if (id != null ? !id.equals(other.id) : other.id != null) {
+            return false;
+        }
+        if (permission != null ? !permission.equals(other.permission) : other.permission != null) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = permission != null ? permission.hashCode() : 0;
+        result = 31 * result + (denyPermission != null ? denyPermission.hashCode() : 0);
+        result = 31 * result + (id != null ? id.hashCode() : 0);
+        return result;
     }
 
     @Override
     public String toString() {
-        if (denyPermission!=null) {
-            return String.format("UserVisiblePermission %s [%s (deny %s)]", id,  permission, denyPermission);
+        if (denyPermission != null) {
+            return String.format("UserVisiblePermission %s [%s (deny %s)]", id, permission, denyPermission);
         } else {
-            return String.format("UserVisiblePermission %s [%s]",id,  permission);
+            return String.format("UserVisiblePermission %s [%s]", id, permission);
         }
     }
 
@@ -63,24 +81,12 @@ public class UserVisiblePermission implements Serializable {
         return permission;
     }
 
-    public void setPermission(String permission) {
-        this.permission = permission;
-    }
-
     public String getDenyPermission() {
         return denyPermission;
     }
 
-    public void setDenyPermission(String denyPermission) {
-        this.denyPermission = denyPermission;
-    }
-
     public String getId() {
         return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
 }

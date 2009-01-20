@@ -58,6 +58,14 @@
       <artifactId>jackrabbit-jcr-commons</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-spi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-spi-commons</artifactId>
+    </dependency>
+    <dependency>
       <groupId>concurrent</groupId>
       <artifactId>concurrent</artifactId>
     </dependency>
@@ -101,6 +109,14 @@
                 <artifactItem>
                   <groupId>org.apache.jackrabbit</groupId>
                   <artifactId>jackrabbit-jcr-commons</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.jackrabbit</groupId>
+                  <artifactId>jackrabbit-spi</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.jackrabbit</groupId>
+                  <artifactId>jackrabbit-spi-commons</artifactId>
                 </artifactItem>
                 <artifactItem>
                   <groupId>javax.jcr</groupId>

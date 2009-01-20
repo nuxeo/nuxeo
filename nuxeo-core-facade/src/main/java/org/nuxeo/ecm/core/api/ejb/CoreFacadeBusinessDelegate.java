@@ -36,8 +36,7 @@ import org.nuxeo.ecm.core.api.CoreSessionFactory;
  * must be removed but there are yet tests that depends on it
  */
 @Deprecated
-public class CoreFacadeBusinessDelegate implements CoreSessionFactory,
-        Serializable {
+public class CoreFacadeBusinessDelegate implements CoreSessionFactory {
 
     private static final long serialVersionUID = -3747397825256725506L;
 

@@ -39,6 +39,9 @@ public class RepositoryDescriptor {
     @XNode("@name")
     public String name;
 
+    @XNode("indexing/fulltext@analyzer")
+    public String fulltextAnalyzer;
+
     @XNode("xa-datasource")
     public String xaDataSourceName;
 

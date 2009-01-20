@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.security.AccessControlException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,7 +28,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.security.AccessControlException;
 
 import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionMetaData;
@@ -164,6 +164,7 @@ public class SessionImpl implements Session {
 
     public void save() throws StorageException {
         checkLive();
+        context.updateFulltext(this);
         context.save();
         if (!transactionalSession.isInTransaction()) {
             context.notifyInvalidations();
@@ -339,8 +340,8 @@ public class SessionImpl implements Session {
         SimpleFragment hierRow;
         if (model.separateMainTable) {
             // TODO put it in a collection context instead
-            hierRow = context.createSimpleFragment(
-                    model.hierTableName, id, hierMap);
+            hierRow = context.createSimpleFragment(model.hierTableName, id,
+                    hierMap);
         } else {
             hierRow = null;
         }
@@ -588,8 +589,8 @@ public class SessionImpl implements Session {
 
         SimpleFragment hierRow;
         if (model.separateMainTable) {
-            hierRow = context.createSimpleFragment(
-                    model.hierTableName, id, hierMap);
+            hierRow = context.createSimpleFragment(model.hierTableName, id,
+                    hierMap);
         } else {
             hierRow = null;
         }

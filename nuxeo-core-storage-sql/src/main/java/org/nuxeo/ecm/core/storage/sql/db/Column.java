@@ -40,6 +40,22 @@ import org.nuxeo.ecm.core.storage.sql.PropertyType;
  */
 public class Column implements Serializable {
 
+    /**
+     * Extended (internal) types beyond the standard JDBC ones.
+     */
+    public static class ExtendedTypes {
+
+        private ExtendedTypes() {
+        }
+
+        /** A column holding full text information. */
+        public static final int FULLTEXT = Types.OTHER + 10;
+
+        public static boolean hasElement(int type) {
+            return type == FULLTEXT;
+        }
+    }
+
     private static final long serialVersionUID = 1L;
 
     protected final Table table;
@@ -47,6 +63,10 @@ public class Column implements Serializable {
     protected final Dialect dialect;
 
     protected final String physicalName;
+
+    private final String quotedName;
+
+    private final String freeVariableSetter;
 
     /** The backend type */
     private final PropertyType type;
@@ -97,6 +117,8 @@ public class Column implements Serializable {
         this.sqlType = sqlType;
         this.key = key;
         this.model = model;
+        quotedName = dialect.openQuote() + physicalName + dialect.closeQuote();
+        freeVariableSetter = dialect.getFreeVariableSetterForType(sqlType);
     }
 
     /**
@@ -107,20 +129,32 @@ public class Column implements Serializable {
                 column.key, column.model);
     }
 
+    public Table getTable() {
+        return table;
+    }
+
     public String getPhysicalName() {
         return physicalName;
     }
 
     public String getQuotedName() {
-        return dialect.openQuote() + physicalName + dialect.closeQuote();
+        return quotedName;
     }
 
     public String getFullQuotedName() {
-        return table.getQuotedName() + '.' + getQuotedName();
+        return table.getQuotedName() + '.' + quotedName;
     }
 
     public int getSqlType() {
         return sqlType;
+    }
+
+    public String getFreeVariableSetter() {
+        return freeVariableSetter;
+    }
+
+    public boolean isOpaque() {
+        return ExtendedTypes.hasElement(sqlType);
     }
 
     public void setSqlType(int sqlType) {
@@ -208,7 +242,10 @@ public class Column implements Serializable {
     public void setToPreparedStatement(PreparedStatement ps, int index,
             Serializable value) throws SQLException {
         if (value == null) {
-            ps.setNull(index, sqlType);
+            ps.setNull(
+                    index,
+                    sqlType == ExtendedTypes.FULLTEXT ? dialect.getFulltextType()
+                            : sqlType);
             return;
         }
         switch (sqlType) {
@@ -217,6 +254,9 @@ public class Column implements Serializable {
             return;
         case Types.INTEGER:
             ps.setInt(index, ((Long) value).intValue());
+            return;
+        case Types.DOUBLE:
+            ps.setDouble(index, ((Double) value).doubleValue());
             return;
         case Types.VARCHAR:
         case Types.LONGVARCHAR: // MySQL
@@ -241,6 +281,9 @@ public class Column implements Serializable {
             Timestamp ts = new Timestamp(cal.getTimeInMillis());
             ps.setTimestamp(index, ts, cal); // cal passed for timezone
             return;
+        case ExtendedTypes.FULLTEXT:
+            ps.setString(index, (String) value);
+            return;
         default:
             throw new SQLException("Unhandled SQL type: " + sqlType);
         }
@@ -260,6 +303,9 @@ public class Column implements Serializable {
             break;
         case Types.INTEGER:
             result = rs.getLong(index);
+            break;
+        case Types.DOUBLE:
+            result = rs.getDouble(index);
             break;
         case Types.VARCHAR:
         case Types.LONGVARCHAR: // MySQL

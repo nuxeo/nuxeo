@@ -178,7 +178,7 @@ public class SQLSession implements Session {
     }
 
     public SecurityManager getSecurityManager() {
-        return repository.getSecurityManager();
+        return repository.getNuxeoSecurityManager();
     }
 
     public Document getDocumentByUUID(String uuid) throws DocumentException {

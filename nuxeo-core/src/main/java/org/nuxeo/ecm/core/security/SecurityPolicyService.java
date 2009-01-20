@@ -37,12 +37,10 @@ public interface SecurityPolicyService extends Serializable {
 
     /**
      * Checks given permission for doc and principal.
-     *
      * <p>
      * The security service checks this service for a security access. This
      * access is defined iterating over pluggable policies in a defined order.
      * If access is not specified, security service applies its default policy.
-     * </p>
      *
      * @param doc the document to check
      * @param mergedAcp merged acp resolved for this document

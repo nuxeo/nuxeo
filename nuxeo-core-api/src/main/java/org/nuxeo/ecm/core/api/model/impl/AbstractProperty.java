@@ -457,7 +457,6 @@ public abstract class AbstractProperty implements Property {
     /**
      *  application data impl. was copied from eclipse Widget class
      */
-
     public Object getData () {
         return (flags & KEYED_DATA) != 0 ? ((Object []) data) [0] : data;
     }

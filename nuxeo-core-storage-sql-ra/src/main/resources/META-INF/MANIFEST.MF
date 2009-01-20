@@ -7,4 +7,5 @@ Bundle-Localization: bundle
 Bundle-ClassPath: .
 Export-Package: org.nuxeo.ecm.core.storage.sql.ra
 Require-Bundle: org.nuxeo.ecm.core.storage.sql
+Bundle-Category: core
 Eclipse-LazyStart: true

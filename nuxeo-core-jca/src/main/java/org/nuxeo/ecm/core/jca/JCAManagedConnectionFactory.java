@@ -171,7 +171,7 @@ public final class JCAManagedConnectionFactory
             try {
                 createRepository();
             } catch (ResourceException e) { // fatal error
-                throw new RuntimeException("Failed to intialize repository: "+name, e);
+                throw new IllegalStateException("Failed to intialize repository: "+name, e);
             }
         }
         return repository;

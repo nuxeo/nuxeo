@@ -26,7 +26,7 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
-import org.apache.jackrabbit.name.QName;
+import org.apache.jackrabbit.spi.Name;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.AnyType;
@@ -84,16 +84,16 @@ public final class TypeAdapter {
     private TypeAdapter() {
     }
 
-    public static QName getSchemaName(Schema schema) {
-        return new QName(NodeConstants.NS_ECM_SCHEMAS_URI, schema.getName());
+    public static Name getSchemaName(Schema schema) {
+        return JCRName.NAME_FACTORY.create(NodeConstants.NS_ECM_SCHEMAS_URI, schema.getName());
     }
 
-    public static QName getDocTypeName(DocumentType docType) {
-        return new QName(NodeConstants.NS_ECM_DOCS_URI, docType.getName());
+    public static Name getDocTypeName(DocumentType docType) {
+        return JCRName.NAME_FACTORY.create(NodeConstants.NS_ECM_DOCS_URI, docType.getName());
     }
 
-    public static QName getFieldTypeName(Type fieldType) {
-        return new QName(NodeConstants.NS_ECM_FIELDS_URI, fieldType.getName());
+    public static Name getFieldTypeName(Type fieldType) {
+        return JCRName.NAME_FACTORY.create(NodeConstants.NS_ECM_FIELDS_URI, fieldType.getName());
     }
 
 

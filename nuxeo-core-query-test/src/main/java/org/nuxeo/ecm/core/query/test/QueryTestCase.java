@@ -22,11 +22,11 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.Collection;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -146,7 +146,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
                 "testfile1", "File");
         file1.setPropertyValue("dc:title", "testfile1_Title");
         file1.setPropertyValue("dc:description", "testfile1_description");
-        String content = "This is a file.\nCaf\u00e9.";
+        String content = "Some caf\u00e9 in a restaurant.\nDrink!.\n";
         String filename = "testfile.txt";
         ByteArrayBlob blob1 = new ByteArrayBlob(content.getBytes("UTF-8"),
                 "text/plain");
@@ -236,8 +236,14 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         dml = session.query("SELECT * FROM Document");
         assertEquals(7, dml.size());
 
+        dml = session.query("SELECT * FROM File");
+        assertEquals(3, dml.size());
+
         dml = session.query("SELECT * FROM File WHERE dc:title = 'testfile1_Title'");
         assertEquals(1, dml.size());
+
+        dml = session.query("SELECT * FROM File WHERE NOT dc:title = 'testfile1_Title'");
+        assertEquals(2, dml.size());
 
         dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile1_Title'");
         assertEquals(1, dml.size());
@@ -262,7 +268,6 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(3, dml.size());
     }
 
-    // this is disabled for JCR
     public void testQueryMultiple() throws Exception {
         DocumentModelList dml;
         createDocs();
@@ -281,12 +286,20 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(5, dml.size());
         dml = session.query("SELECT * FROM Document WHERE dc:contributors NOT IN ('bob', 'john')");
         assertEquals(5, dml.size());
+    }
+
+    // this is disabled for JCR
+    public void testQueryNegativeMultiple() throws Exception {
+        DocumentModelList dml;
+        createDocs();
         dml = session.query("SELECT * FROM Document WHERE dc:contributors <> 'pete'");
         assertEquals(6, dml.size());
         dml = session.query("SELECT * FROM Document WHERE dc:contributors <> 'blah'");
         assertEquals(7, dml.size());
         dml = session.query("SELECT * FROM File WHERE dc:contributors <> 'blah' AND ecm:isProxy = 0");
         assertEquals(3, dml.size());
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Versionable' AND ecm:mixinType <> 'Downloadable'");
+        assertEquals(1, dml.size()); // 1 note
     }
 
     public void testQueryAfterEdit() throws ClientException, IOException {
@@ -437,13 +450,6 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         // adjust the query to the new title
         sql = "SELECT * FROM document WHERE dc:title LIKE 'testfile1_Mo%'";
         dml = session.query(sql);
-        assertEquals(1, dml.size());
-    }
-
-    public void TODOtestSQLFulltextAndSubpath() throws Exception {
-        createDocs();
-        String sql = "SELECT * FROM document WHERE content LIKE '% Nuxeo%' AND ecm:path STARTSWITH '/'";
-        DocumentModelList dml = session.query(sql);
         assertEquals(1, dml.size());
     }
 
@@ -620,7 +626,6 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(1, dml.size());
     }
 
-    // this is disabled for JCR
     public void testQuerySpecialFields() throws Exception {
         // ecm:isProxy and ecm:isCheckedInVersion are already tested in
         // testQueryWithProxies
@@ -659,9 +664,10 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         dml = session.query(String.format(
                 "SELECT * FROM Document WHERE ecm:name = '%s'", file1.getName()));
         assertIdSet(dml, file1.getId());
-        dml = session.query(String.format(
-                "SELECT * FROM Document WHERE ecm:name = '%s'", file4.getName()));
-        assertIdSet(dml, file4.getId(), proxy.getId(), version.getId());
+        // Disabled, version and proxies names don't need to be identical
+        // dml = session.query(String.format(
+        // "SELECT * FROM Document WHERE ecm:name = '%s'", file4.getName()));
+        // assertIdSet(dml, file4.getId(), proxy.getId(), version.getId());
 
         /*
          * ecm:parentId
@@ -694,14 +700,10 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
 
         dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Folderish'");
         assertEquals(3, dml.size());
-        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Folderish' AND ecm:mixinType <> 'blah'");
-        assertEquals(3, dml.size());
         dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Downloadable'");
         assertEquals(5, dml.size()); // 3 files, 1 proxy, 1 version
         dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Versionable'");
         assertEquals(6, dml.size()); // 1 note, 3 files, 1 proxy, 1 version
-        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Versionable' AND ecm:mixinType <> 'Downloadable'");
-        assertEquals(1, dml.size()); // 1 note
         dml = session.query("SELECT * FROM Document WHERE ecm:mixinType IN ('Folderish', 'Downloadable')");
         assertEquals(8, dml.size()); // 3 folders, 3 files, 1 proxy, 1 version
         dml = session.query("SELECT * FROM Document WHERE ecm:mixinType NOT IN ('Folderish', 'Downloadable')");
@@ -720,7 +722,76 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         dml = session.query("SELECT * FROM Document WHERE ecm:versionLabel = '1'");
         assertIdSet(dml, version.getId());
 
-        // ecm:fulltext
-
+        // ecm:fulltext tested below
     }
+
+    public void testSQLFulltext() throws Exception {
+        createDocs();
+        String query;
+        DocumentModelList dml;
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        DocumentModel file2 = session.getDocument(new PathRef(
+                "/testfolder1/testfile2"));
+        DocumentModel file3 = session.getDocument(new PathRef(
+                "/testfolder1/testfile3"));
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'world'";
+
+        dml = session.query(query);
+        assertEquals(0, dml.size());
+
+        file1.setProperty("dublincore", "title", "hello world");
+        session.saveDocument(file1);
+        session.save();
+
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId());
+
+        file2.setProperty("dublincore", "description", "the world is my oyster");
+        session.saveDocument(file2);
+        session.save();
+
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId(), file2.getId());
+
+        file3.setProperty("dublincore", "title", "brave new world");
+        session.saveDocument(file3);
+        session.save();
+
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId(), file2.getId()); // file3 is a Note
+
+        query = "SELECT * FROM Note WHERE ecm:fulltext = 'world'";
+        dml = session.query(query);
+        assertIdSet(dml, file3.getId());
+
+        query = "SELECT * FROM Document WHERE ecm:fulltext = 'world' "
+                + "AND dc:contributors = 'pete'";
+        dml = session.query(query);
+        assertIdSet(dml, file2.getId());
+
+        // multi-valued field
+        query = "SELECT * FROM Document WHERE ecm:fulltext = 'bzzt'";
+        dml = session.query(query);
+        assertEquals(0, dml.size());
+        file1.setProperty("dublincore", "subjects", new String[] { "bzzt" });
+        session.saveDocument(file1);
+        session.save();
+        query = "SELECT * FROM Document WHERE ecm:fulltext = 'bzzt'";
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId());
+    }
+
+    public void testSQLFulltextBlob() throws Exception {
+        createDocs();
+        String query;
+        DocumentModelList dml;
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant'";
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId());
+    }
+
 }

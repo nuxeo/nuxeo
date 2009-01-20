@@ -75,9 +75,9 @@ public class OrderByExpr implements Operand {
     @Override
     public String toString() {
         if (isDescending) {
-            return reference.toString();
-        } else {
             return reference.toString() + " DESC";
+        } else {
+            return reference.toString();
         }
     }
 

@@ -71,6 +71,7 @@ public interface LifeCycleService {
      * @return a string holding the life cycle state of the
      * @throws LifeCycleException
      * @deprecated use the Document method directly
+     * Not used. Remove in 5.2
      */
     @Deprecated
     String getCurrentLifeCycleState(Document doc) throws LifeCycleException;
@@ -82,6 +83,7 @@ public interface LifeCycleService {
      * @param stateName the name of state as a string
      * @throws LifeCycleException
      * @deprecated use the Document method directly
+     * Not used. Remove in 5.2
      */
     @Deprecated
     void setCurrentLifeCycleState(Document doc, String stateName)
@@ -94,6 +96,7 @@ public interface LifeCycleService {
      * @return the life cycle policy name
      * @throws LifeCycleException TODO
      * @deprecated use the Document method directly
+     * Not used. Remove in 5.2
      */
     @Deprecated
     String getLifeCyclePolicy(Document doc) throws LifeCycleException;
@@ -105,6 +108,7 @@ public interface LifeCycleService {
      * @param policy the life cycle policy name
      * @throws LifeCycleException
      * @deprecated use the Document method directly
+     * Not used. Remove in 5.2
      */
     @Deprecated
     void setLifeCycelPolicy(Document doc, String policy)
@@ -152,14 +156,18 @@ public interface LifeCycleService {
      * Sets the mapping for types to life cycle names.
      *
      * @param typesMapping a mapping from types to life cycle names
+     * @deprecated not used. remove in 5.2
      */
+    @Deprecated
     void setTypesMapping(Map<String, String> typesMapping);
 
     /**
      * Sets the mapping from life cycle names to life cycle instances.
      *
      * @param lifeCycles a mapping from life cycle names to life cycle instances
+     * @deprecated not used. remove in 5.2
      */
+    @Deprecated
     void setLifeCycles(Map<String, LifeCycle> lifeCycles);
 
     /**

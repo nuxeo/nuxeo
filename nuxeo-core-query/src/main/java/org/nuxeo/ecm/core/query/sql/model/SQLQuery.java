@@ -112,6 +112,9 @@ public class SQLQuery implements ASTNode {
         if (where != null) {
             buf.append(" WHERE ").append(where);
         }
+        if (orderBy != null) {
+            buf.append(" ORDER BY ").append(orderBy);
+        }
         return buf.toString();
     }
 

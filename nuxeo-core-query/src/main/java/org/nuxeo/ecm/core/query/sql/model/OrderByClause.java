@@ -57,4 +57,9 @@ public class OrderByClause extends Clause {
         visitor.visitOrderByClause(this);
     }
 
+    @Override
+    public String toString() {
+        return elements.toString();
+    }
+
 }

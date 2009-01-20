@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,11 +42,9 @@ import org.nuxeo.common.utils.Null;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.CoreService;
 import org.nuxeo.ecm.core.NXCore;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocsQueryProviderDef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelIteratorImpl;
@@ -65,11 +64,12 @@ import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleConstants;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleEventTypes;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
-import org.nuxeo.ecm.core.listener.CoreEventListenerService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.DocumentVersionProxy;
@@ -127,6 +127,12 @@ public abstract class AbstractSession implements CoreSession,
     protected String repositoryName;
 
     protected Map<String, Serializable> sessionContext;
+
+    /**
+     * Private access to protected it again direct access since this field is lazy loaded.
+     * You must use {@link #getEventService()} to get the service
+     */
+    private transient EventService eventService;
 
     /**
      * Used to check permissions.
@@ -299,22 +305,45 @@ public abstract class AbstractSession implements CoreSession,
         return options;
     }
 
+    public CoreEventContext newEventContext(Object ... args) {
+        CoreEventContext ctx = new CoreEventContext(this, args);
+        ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, repositoryName);
+        ctx.setProperty(CoreEventConstants.SESSION_ID, sessionId);
+        return ctx;
+    }
+
+    public EventService getEventService() {
+        if (eventService == null) {
+            try {
+                eventService = Framework.getLocalService(EventService.class);
+            } catch (Exception e) {
+                throw new Error("Nuxeo is missconfigured - Core Event Service was not found");
+            }
+        }
+        return eventService;
+    }
+
+    public void fireEvent(Event event) throws ClientException {
+        getEventService().fireEvent(event);
+    }
+
+    @SuppressWarnings("unchecked")
     protected void notifyEvent(String eventId, DocumentModel source,
-            Map<String, Object> options, String category, String comment,
-            boolean withLifeCycle) {
+            Map<String, ?> options, String category, String comment,
+            boolean withLifeCycle) throws ClientException {
 
-        // Default category
-        if (category == null) {
-            category = DocumentEventCategories.EVENT_DOCUMENT_CATEGORY;
+        CoreEventContext ctx = null;
+        if (source != null) {
+            ctx = newEventContext(source);
+        } else {
+            ctx = newEventContext();
         }
-
-        if (options == null) {
-            options = new HashMap<String, Object>();
+        // compatibility with old code (< 5.2.M4) - import info from old event model
+        if (options != null) {
+            ctx.setProperties((Map<String,Serializable>)options);
         }
-
-        // Name of the current repository
-        options.put(CoreEventConstants.REPOSITORY_NAME, repositoryName);
-
+        ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, repositoryName);
+        ctx.setProperty(CoreEventConstants.SESSION_ID, sessionId);
         // Document life cycle
         if (source != null && withLifeCycle) {
             String currentLifeCycleState = null;
@@ -324,23 +353,45 @@ public abstract class AbstractSession implements CoreSession,
                 // FIXME no lifecycle -- this shouldn't generated an
                 // exception (and ClientException logs the spurious error)
             }
-            options.put(CoreEventConstants.DOC_LIFE_CYCLE,
+            ctx.setProperty(CoreEventConstants.DOC_LIFE_CYCLE,
                     currentLifeCycleState);
         }
-        // Add the session ID
-        options.put(CoreEventConstants.SESSION_ID, sessionId);
-
-        CoreEvent coreEvent = new CoreEventImpl(eventId, source, options,
-                getPrincipal(), category, comment);
-
-        CoreEventListenerService service = NXCore.getCoreEventListenerService();
-
-        if (service != null) {
-            service.notifyEventListeners(coreEvent);
-        } else {
-            log.debug("No CoreEventListenerService, cannot notify event "
-                    + eventId);
+        if (comment != null) {
+            ctx.setProperty("comment", comment);
         }
+        ctx.setProperty("category", category == null ?
+                DocumentEventCategories.EVENT_DOCUMENT_CATEGORY : category);
+        // set isLocal on event if JMS is blocked
+        if (source != null && source.getContextData("BLOCK_JMS_PRODUCING") != null
+                && (Boolean) source.getContextData("BLOCK_JMS_PRODUCING")) {
+            ctx.fireEvent(eventId, EnumSet.of(Event.Flag.LOCAL));
+        } else {
+            ctx.fireEvent(eventId);
+        }
+    }
+
+    /**
+     * Copied from obsolete VersionChangeNotifier
+     *
+     * Sends change notifications to core event listeners. The event contains
+     * info with older document (before version change) and newer doc (current
+     * document).
+     *
+     * @param oldDocument
+     * @param newDocument
+     * @param options additional info to pass to the event
+     */
+    protected void notifyVersionChange(DocumentModel oldDocument,
+            DocumentModel newDocument, Map<String, Object> options) throws ClientException {
+        final Map<String, Object> info = new HashMap<String, Object>();
+        if (options != null) {
+            info.putAll(options);
+        }
+        info.put(VersioningChangeNotifier.EVT_INFO_NEW_DOC_KEY, newDocument);
+        info.put(VersioningChangeNotifier.EVT_INFO_OLD_DOC_KEY, oldDocument);
+        notifyEvent(VersioningChangeNotifier.CORE_EVENT_ID_VERSIONING_CHANGE,
+                newDocument, info, DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY,
+                null, false);
     }
 
     public boolean hasPermission(DocumentRef docRef, String permission)
@@ -1586,8 +1637,7 @@ public abstract class AbstractSession implements CoreSession,
                     null, null, true);
 
             if (oldDoc != null) {
-                VersioningChangeNotifier.notifyVersionChange(oldDoc, docModel,
-                        options);
+                notifyVersionChange(oldDoc, docModel, options);
             }
 
             return docModel;
@@ -1748,7 +1798,7 @@ public abstract class AbstractSession implements CoreSession,
                     continue;
                 }
                 if (docVersion.getType() == null) {
-                    throw new RuntimeException("FAILED TO GET VERSIONS FOR"
+                    throw new IllegalStateException("FAILED TO GET VERSIONS FOR"
                             + docRef + " with path: " + doc.getPath());
                 }
                 DocumentModel versionModel = readModel(docVersion, null);
@@ -2662,13 +2712,15 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     public void startOperation(Operation<?> operation) {
-        CoreEventListenerService service = NXCore.getCoreEventListenerService();
-        service.fireOperationStarted(operation);
+        //TODO rework operations
+//        CoreEventListenerService service = NXCore.getCoreEventListenerService();
+//        service.fireOperationStarted(operation);
     }
 
     public void endOperation(Operation<?> operation) {
-        CoreEventListenerService service = NXCore.getCoreEventListenerService();
-        service.fireOperationTerminated(operation);
+        //TODO rework operations
+//        CoreEventListenerService service = NXCore.getCoreEventListenerService();
+//        service.fireOperationTerminated(operation);
     }
 
     public Object[] refreshDocument(DocumentRef ref, int refreshFlags,

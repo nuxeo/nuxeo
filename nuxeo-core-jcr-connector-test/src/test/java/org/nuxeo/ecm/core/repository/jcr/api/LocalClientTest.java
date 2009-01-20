@@ -47,6 +47,7 @@ public class LocalClientTest extends RepositoryTestCase {
                 "LifeCycleService.xml");
         deployContrib(CoreJCRConnectorTestConstants.BUNDLE,
                 "CoreTestExtensions.xml");
+        deployBundle("org.nuxeo.ecm.core.event"); 
         getRepository(); // force deploying repository
 
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();

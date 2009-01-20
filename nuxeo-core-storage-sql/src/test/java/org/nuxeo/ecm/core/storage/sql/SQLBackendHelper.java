@@ -30,8 +30,8 @@ import org.nuxeo.common.utils.FileUtils;
 /**
  * Helper to set up and tear down a test database.
  * <p>
- * This can be used also to use another test database than Derby, for instance
- * PostgreSQL.
+ * This can be used also to use another test database than H2, for instance
+ * Derby or PostgreSQL.
  *
  * @author Florent Guillaume
  */

@@ -40,8 +40,11 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- Use of compile scope for external dependencies because this module must only be used
-      with a test scope (except in [module]-test where you may use compile scope)-->
+    <!-- 
+    Use of compile scope for external dependencies because this module must
+    only be used with a test scope (except in [module]-test where you may use
+    compile scope)
+    -->
     <dependency>
       <groupId>jmock</groupId>
       <artifactId>jmock</artifactId>

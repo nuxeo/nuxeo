@@ -74,9 +74,8 @@ public class JCRQuery implements Query {
             // use
             if (sqlQuery.limit > 0) {
                 QueryImpl jq = (QueryImpl) jcrQuery;
-                // TODO the following is only available in Jackrabbit 1.4
-                // jq.setLimit(sqlQuery.limit);
-                // jq.setOffset(sqlQuery.offset);
+                jq.setLimit(sqlQuery.limit);
+                jq.setOffset(sqlQuery.offset);
             }
             javax.jcr.query.QueryResult qr = jcrQuery.execute();
             return new JCRQueryResult(this, qr);

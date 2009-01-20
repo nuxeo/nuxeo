@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.event.CoreEvent;
+import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 
 /**
  * Nuxeo core event implementation.

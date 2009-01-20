@@ -206,7 +206,7 @@ public class JCRSession implements Session {
     }
 
     public SecurityManager getSecurityManager() {
-        return repository.getSecurityManager();
+        return repository.getNuxeoSecurityManager();
     }
 
     public javax.jcr.Session jcrSession() {

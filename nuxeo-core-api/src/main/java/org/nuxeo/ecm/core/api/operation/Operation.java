@@ -301,7 +301,6 @@ public abstract class Operation<T> implements Serializable {
 
     public abstract T doRun(ProgressMonitor montior) throws Exception;
 
-
     // application data support
 
     public Object getData () {

@@ -265,6 +265,7 @@ public class Mapper {
         try {
             executeConditionalStatements(sqlInfo.getStoredProceduresSqls());
             createTables();
+            executeConditionalStatements(sqlInfo.getTriggersSqls());
         } catch (SQLException e) {
             throw new StorageException(e);
         }
@@ -323,6 +324,11 @@ public class Mapper {
                     int t = column.getSqlType();
                     if (t != sqlType) {
                         // type in database is different...
+                        if (t == Column.ExtendedTypes.FULLTEXT) {
+                            // fulltext, keep our extend type info in the column
+                            continue;
+                        }
+                        // record the actual type
                         column.setSqlType(sqlType);
                         // some databases are known to change requested types
                         if (t == Types.BIT && //
@@ -690,7 +696,7 @@ public class Mapper {
                         state == State.INVALIDATED_MODIFIED ||
                         state == State.INVALIDATED_DELETED) {
                     // XXX TODO
-                    throw new RuntimeException(state.toString());
+                    throw new IllegalStateException(state.toString());
                 }
                 // known id
             }
@@ -708,6 +714,25 @@ public class Mapper {
             Map<String, Serializable> joinMap, boolean limitToOne,
             Context context) throws StorageException {
         List<Map<String, Serializable>> list = new LinkedList<Map<String, Serializable>>();
+        if (select.whatColumns.isEmpty()) {
+            // happens when we fetch a fragment whose columns are all opaque
+            // check it's a by-id query
+            if (select.whereColumns.size() == 1 &&
+                    select.whereColumns.get(0).getKey() == model.MAIN_KEY &&
+                    joinMap == null) {
+                Map<String, Serializable> map = new HashMap<String, Serializable>(
+                        criteriaMap);
+                if (select.opaqueColumns != null) {
+                    for (Column column : select.opaqueColumns) {
+                        map.put(column.getKey(), SimpleFragment.OPAQUE);
+                    }
+                }
+                list.add(map);
+                return list;
+            }
+            // else do a useless select but the criteria are more complex and we
+            // can't shortcut
+        }
         PreparedStatement ps = null;
         try {
             ps = connection.prepareStatement(select.sql);
@@ -756,6 +781,11 @@ public class Mapper {
                 i = 1;
                 for (Column column : select.whatColumns) {
                     map.put(column.getKey(), column.getFromResultSet(rs, i++));
+                }
+                if (select.opaqueColumns != null) {
+                    for (Column column : select.opaqueColumns) {
+                        map.put(column.getKey(), SimpleFragment.OPAQUE);
+                    }
                 }
                 if (log.isDebugEnabled()) {
                     logResultSet(rs, select.whatColumns);
@@ -838,7 +868,8 @@ public class Mapper {
                         throw new AssertionError("Invalid hier column: " + key);
                     }
                     if (v == null) {
-                        throw new RuntimeException("Null value for key: " + key);
+                        throw new IllegalStateException("Null value for key: " +
+                                key);
                     }
                     column.setToPreparedStatement(ps, i, v);
                     if (debugValues != null) {
@@ -967,7 +998,7 @@ public class Mapper {
      * @throws StorageException
      */
     public void updateSingleRow(SimpleFragment row) throws StorageException {
-        List<String> dirty = row.getDirty();
+        Collection<String> dirty = row.getDirty();
         if (dirty.isEmpty()) {
             return;
         }

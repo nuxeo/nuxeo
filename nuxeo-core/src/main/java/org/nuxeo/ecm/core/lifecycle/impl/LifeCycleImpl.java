@@ -56,6 +56,7 @@ public class LifeCycleImpl implements LifeCycle {
         this.transitions = transitions;
     }
 
+    @Deprecated
     public String getInitialStateName() {
         return getDefaultInitialStateName();
     }
@@ -87,13 +88,13 @@ public class LifeCycleImpl implements LifeCycle {
         return lifeCycleState;
     }
 
-    public Collection<String> getAllowedStateTransitionsFrom(String state)
+    public Collection<String> getAllowedStateTransitionsFrom(String stateName)
             throws LifeCycleException {
-        LifeCycleState lifeCycleState = getStateByName(state);
+        LifeCycleState lifeCycleState = getStateByName(stateName);
         if (lifeCycleState != null) {
             return lifeCycleState.getAllowedStateTransitions();
         } else {
-            throw new LifeCycleException("State <" + state
+            throw new LifeCycleException("State <" + stateName
                     + "> does not exist !");
         }
     }
@@ -102,10 +103,10 @@ public class LifeCycleImpl implements LifeCycle {
         return transitions;
     }
 
-    public LifeCycleTransition getTransitionByName(String transition) {
+    public LifeCycleTransition getTransitionByName(String transitionName) {
         LifeCycleTransition lifeCycleTransition = null;
         for (LifeCycleTransition itransition : transitions) {
-            if (itransition.getName().equals(transition)) {
+            if (itransition.getName().equals(transitionName)) {
                 lifeCycleTransition = itransition;
                 break;
             }

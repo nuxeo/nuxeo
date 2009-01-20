@@ -24,8 +24,6 @@ import javax.naming.NamingException;
 
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.lifecycle.impl.LifeCycleServiceImpl;
-import org.nuxeo.ecm.core.listener.CoreEventListenerService;
-import org.nuxeo.ecm.core.listener.impl.CoreEventListenerServiceImpl;
 import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryService;
@@ -60,17 +58,6 @@ public final class NXCore {
     public static RepositoryService getRepositoryService() {
         return (RepositoryService) Framework.getRuntime().getComponent(
                 RepositoryService.NAME);
-    }
-
-    /**
-     * Returns the core event listener service.
-     *
-     * @see CoreEventListenerServiceImpl
-     *
-     * @return the core event listener service
-     */
-    public static CoreEventListenerService getCoreEventListenerService() {
-        return Framework.getLocalService(CoreEventListenerService.class);
     }
 
     public static Repository getRepository(String name)

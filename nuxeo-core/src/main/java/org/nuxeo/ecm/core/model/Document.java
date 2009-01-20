@@ -105,7 +105,6 @@ public interface Document extends DocumentContainer, PropertyContainer,
      */
     void setDirty(boolean value) throws DocumentException;
 
-
     /**
      * Checks if the dirty flag is set on this document.
      *
@@ -113,7 +112,6 @@ public interface Document extends DocumentContainer, PropertyContainer,
      * @throws DocumentException
      */
     boolean isDirty() throws DocumentException;
-
 
     /**
      * Tests whether this document represent a folder or a leaf document.

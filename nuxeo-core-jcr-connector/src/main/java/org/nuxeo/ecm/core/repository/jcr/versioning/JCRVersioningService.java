@@ -79,7 +79,7 @@ public class JCRVersioningService implements VersioningService {
             }
             if (description != null) {
                 node.getVersionHistory().addVersionLabel(version.getName(),
-                        "desc\n" + description, false);
+                        JCRDocumentVersion.DESC_PREFIX + description, false);
             }
         } catch (RepositoryException e) {
             throw new DocumentException("Failed to checkin document "

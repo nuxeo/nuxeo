@@ -27,6 +27,7 @@ package org.nuxeo.ecm.core.api.event;
 // TODO a better id-zation is to define concrete instances of a "EventType"
 // class, so the id-s won't be checked against ordinar strings. This has to be
 // redefined in CoreEvent API
+// TODO ...or use enums...
 public final class DocumentEventTypes {
 
     public static final String ABOUT_TO_CREATE = "aboutToCreate";

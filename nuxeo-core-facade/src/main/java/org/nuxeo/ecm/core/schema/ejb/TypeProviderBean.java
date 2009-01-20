@@ -41,9 +41,6 @@ public class TypeProviderBean implements TypeProvider {
 
     private final SchemaManager typeProvider;
 
-    /**
-     *
-     */
     public TypeProviderBean() {
         // use the local runtime service as the backend
         typeProvider = Framework.getLocalService(SchemaManager.class);

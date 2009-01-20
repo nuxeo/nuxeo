@@ -36,7 +36,9 @@ import org.nuxeo.ecm.core.versioning.DocumentVersion;
 
 public class JCRDocumentVersion extends JCRDocument implements DocumentVersion {
 
-    protected static final String DESC_PREFIX = "desc\n";
+    // note: former "desc\n" is illegal in Jackrabbit 1.5
+    // (no '\n' allowed in names)
+    protected static final String DESC_PREFIX = "desc=";
 
     // public JCRDocumentVersion(JCRSession session, Version version) throws
     // RepositoryException {

@@ -35,7 +35,21 @@ import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
 import org.nuxeo.ecm.core.schema.DocumentType;
 
 /**
+ * A session to the Nuxeo Core.
+ * <p>
+ * The session is opened and closed by a client and gives the
+ * client the possibility to interact with the core.
+ * <p>
+ * The core a session connects to can be located in a separate (remote) JVM or
+ * in the current one.
+ * <p>
+ * To create remote or local sessions, you need to
+ * use a specific {@link CoreSessionFactory}
+ * object. These objects are usually specified using extension points but
+ * you can also use them programatically.
  *
+ * @see DocumentModel
+ * @see DocumentRef
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -790,7 +804,7 @@ public interface CoreSession {
      * Gets the full content of the given field in the given document from the
      * given session.
      * <p>
-     * This method is supposed to be called from the client to lazy load content
+     * This method is supposed to be called from the client to lazily load content
      * fields data.
      *
      * @param docRef the document reference
@@ -838,7 +852,7 @@ public interface CoreSession {
     /**
      * Gets the last version of a document.
      *
-     * @param docRef the document reference
+     * @param docRef the reference to the document
      * @return the version
      * @throws ClientException if any error occurs
      */
@@ -848,7 +862,7 @@ public interface CoreSession {
      * Gets the document corresponding to the last version for the given
      * document.
      *
-     * @param docRef
+     * @param docRef the reference to the document
      * @return the document model corresponding to the version
      * @throws ClientException
      */
@@ -858,7 +872,7 @@ public interface CoreSession {
     /**
      * Gets the head (live) document for this document.
      *
-     * @param docRef the document reference
+     * @param docRef the reference to the document
      * @return the version
      * @throws ClientException if any error occurs
      */
@@ -867,7 +881,7 @@ public interface CoreSession {
     /**
      * Gets the references of the versions of the document.
      *
-     * @param docRef the document reference
+     * @param docRef the reference to the document
      * @return a list of version references
      * @throws ClientException
      * @since 1.4.1
@@ -878,7 +892,7 @@ public interface CoreSession {
     /**
      * Retrieves all the versions for a specified document.
      *
-     * @param docRef the ref to the document
+     * @param docRef the reference to the document
      * @return the list of {@see DocumentModel} representing versions, empty
      *         list if none is found.
      * @throws ClientException
@@ -888,7 +902,7 @@ public interface CoreSession {
     /**
      * Retrieves all the versions for a specified document.
      *
-     * @param docRef the ref to the document
+     * @param docRef the reference to the document
      * @return the list of {@see VersionModel} representing versions, empty list
      *         if none is found.
      */
@@ -898,7 +912,7 @@ public interface CoreSession {
     /**
      * Returns a document that represents the specified version of the document.
      *
-     * @param docRef the document reference
+     * @param docRef the reference to the document
      * @param version the version for which we want the corresponding document
      * @return
      * @throws ClientException
@@ -919,7 +933,7 @@ public interface CoreSession {
     /**
      * Checks out a versioned document.
      *
-     * @param docRef the ref to the document
+     * @param docRef the reference to the document
      * @throws ClientException
      */
     void checkOut(DocumentRef docRef) throws ClientException;
@@ -927,7 +941,7 @@ public interface CoreSession {
     /**
      * Checks in a modified document, creating a new version.
      *
-     * @param docRef the ref to the document
+     * @param docRef the reference to the document
      * @param version the version descriptor
      * @throws ClientException
      */
@@ -946,7 +960,7 @@ public interface CoreSession {
     /**
      * Creates a proxy for the given version of the given document.
      *
-     * @param docRef the document
+     * @param docRef the reference to the document
      * @param version the version
      * @return the proxy
      * @throws ClientException if any error occurs

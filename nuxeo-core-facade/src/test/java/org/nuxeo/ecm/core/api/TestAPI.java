@@ -995,12 +995,10 @@ public abstract class TestAPI extends TestConnection {
         remote.saveDocument(childFile1);
         remote.save();
 
-        DocumentModelList list;
-        DocumentModel docModel;
-
-        list = remote.query("SELECT * FROM Document");
+        DocumentModelList list = remote.query("SELECT * FROM Document");
         assertEquals(1, list.size());
-        docModel = list.get(0);
+
+        DocumentModel docModel = list.get(0);
 
         // read the properties
         docModel.getProperty("dublincore", "title");

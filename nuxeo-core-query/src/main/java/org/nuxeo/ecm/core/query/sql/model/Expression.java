@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.query.sql.model;
 
+import org.nuxeo.ecm.core.query.sql.NXQL;
 
 /**
  * An infix expression.
@@ -90,7 +91,7 @@ public class Expression implements Operand {
 
 
     public boolean isPathExpression() {
-        return (lvalue instanceof Reference) && "ecm:path".equals(((Reference)lvalue).name);
+        return (lvalue instanceof Reference) && NXQL.ECM_PATH.equals(((Reference)lvalue).name);
     }
 
 }

@@ -65,7 +65,7 @@ public class TestXPathBuilder extends TestCase {
         x = "//element(*,ecmdt:File)[jcr:contains(., '%MyText%')]";
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
-        q = "select * from File where ecm:fulltext = '%MyText%' and ecm:id='test'";
+        q = "select * from File where ecm:fulltext = '%MyText%' and ecm:uuid='test'";
         x = "//element(*,ecmdt:File)[(jcr:contains(., '%MyText%')) and (@jcr:uuid = 'test')]";
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
@@ -74,10 +74,10 @@ public class TestXPathBuilder extends TestCase {
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
         q = "select * from File where ecm:fulltext = '%MyText%' and dc:title IN ('test1', 'test2')";
-        x = "//element(*,ecmdt:File)[(jcr:contains(., '%MyText%')) and ( (dc:title = 'test1' or dc:title = 'test2') )]";
+        x = "//element(*,ecmdt:File)[(jcr:contains(., '%MyText%')) and ( (@dc:title = 'test1' or @dc:title = 'test2') )]";
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
-        q = "select * from publishedVersions where ecm:fulltext = '%MyText%' and ecm:type = 'File'";
+        q = "select * from publishedVersions where ecm:fulltext = '%MyText%' and ecm:primaryType = 'File'";
         x = "//element(*,ecmnt:documentProxy)/jcr:deref(@ecm:refFrozenNode, '*')[(jcr:contains(., '%MyText%')) and (@jcr:primaryType = 'ecmdt:File')]";
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
@@ -96,7 +96,7 @@ public class TestXPathBuilder extends TestCase {
         //x = "/jcr:root/ecm:root/ecm:children/default-domain/ecm:children/workspaces/ecm:children//element(*,ecmnt:document)[((@dc:created <> xs:dateTime('1003-02-10T10:00:00.000+00:09:21'))) and (@my:urgency = 2)] order by @jcr:path ascending";
         //assertEquals(x, XPathBuilder.fromNXQL(q));
 
-        System.out.println(">>>> " + ((System.currentTimeMillis() - s) / 1000) + " sec.");
+        // System.out.println(">>>> " + ((System.currentTimeMillis() - s) / 1000) + " sec.");
     }
 
 }

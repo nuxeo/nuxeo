@@ -27,11 +27,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
 import org.nuxeo.ecm.core.query.sql.model.DefaultQueryVisitor;
 import org.nuxeo.ecm.core.query.sql.model.DoubleLiteral;
@@ -111,8 +110,6 @@ import org.nuxeo.ecm.core.storage.sql.db.TableAlias;
  */
 public class QueryMaker {
 
-    private static final Log log = LogFactory.getLog(QueryMaker.class);
-
     /**
      * Name of the Immutable facet, added by {@code DocumentModelFactory} when
      * instantiating a proxy or a version.
@@ -122,30 +119,6 @@ public class QueryMaker {
     /*
      * Fields used by the search service.
      */
-
-    public static final String ECM_PREFIX = "ecm:";
-
-    public static final String ECM_UUID = "ecm:uuid";
-
-    public static final String ECM_PATH = "ecm:path";
-
-    public static final String ECM_NAME = "ecm:name";
-
-    public static final String ECM_PARENTID = "ecm:parentId";
-
-    public static final String ECM_MIXINTYPE = "ecm:mixinType";
-
-    public static final String ECM_PRIMARYTYPE = "ecm:primaryType";
-
-    public static final String ECM_ISPROXY = "ecm:isProxy";
-
-    public static final String ECM_ISVERSION = "ecm:isCheckedInVersion";
-
-    public static final String ECM_LIFECYCLESTATE = "ecm:currentLifeCycleState";
-
-    public static final String ECM_VERSIONLABEL = "ecm:versionLabel";
-
-    public static final String ECM_FULLTEXT = "ecm:fulltext";
 
     protected final SQLInfo sqlInfo;
 
@@ -337,7 +310,7 @@ public class QueryMaker {
          * Build the FROM / JOIN criteria.
          */
 
-        List<String> joins = new ArrayList<String>(fragmentNames.size() + 1);
+        List<String> joins = new LinkedList<String>();
         Table hier = database.getTable(model.hierTableName);
         if (considerProxies) {
             // complex case where we have to add a left joins to link to the
@@ -379,7 +352,6 @@ public class QueryMaker {
                     useHier ? hierId : joinedHierId, table.getColumn(
                             model.MAIN_KEY).getFullQuotedName()));
         }
-        String from = StringUtils.join(joins, " LEFT JOIN ");
 
         /*
          * Filter on facets and mixin types, and create the structural WHERE
@@ -453,8 +425,8 @@ public class QueryMaker {
         }
 
         /*
-         * Create the part of the WHERE clause that comes from the original
-         * query.
+         * Parse the WHERE clause from the original query, and deduce from it
+         * actual WHERE clauses and potential JOINs.
          */
 
         WhereBuilder whereBuilder;
@@ -465,10 +437,14 @@ public class QueryMaker {
         }
         if (info.wherePredicate != null) {
             info.wherePredicate.accept(whereBuilder);
+            // JOINs added by fulltext queries
+            joins.addAll(whereBuilder.joins);
+            selectParams.addAll(0, whereBuilder.joinParams);
+            // WHERE clause
             String where = whereBuilder.buf.toString();
             if (where.length() != 0) {
                 whereClauses.add(where);
-                selectParams.addAll(whereBuilder.params);
+                selectParams.addAll(whereBuilder.whereParams);
             }
         }
 
@@ -477,8 +453,7 @@ public class QueryMaker {
          */
 
         if (queryFilter.getPrincipals() != null) {
-            whereClauses.add(String.format("NX_ACCESS_ALLOWED(%s, ?, ?) = %s",
-                    hierId, dialect.toBooleanValueString(true)));
+            whereClauses.add(dialect.getSecurityCheckSql(hierId));
             Serializable principals;
             Serializable permissions;
             if (dialect.supportsArrays()) {
@@ -512,14 +487,11 @@ public class QueryMaker {
 
         String what = hierId;
         if (considerProxies) {
-            // We do LEFT JOINs with collection tables, so we could get
-            // identical results.
-            // For proxies, there's also a LEFT JOIN with a non equi-join
+            // For proxies we do a LEFT JOIN with a non equi-join
             // condition that can return two rows.
             what = "DISTINCT " + what;
             // Some dialects need any ORDER BY expressions to appear in the
             // SELECT list when using DISTINCT.
-            // This is needed at least by PostgreSQL.
             if (dialect.needsOrderByKeysAfterDistinct()) {
                 for (String key : info.orderKeys) {
                     PropertyInfo propertyInfo = model.getPropertyInfo(key);
@@ -545,13 +517,12 @@ public class QueryMaker {
          */
         Select select = new Select(null);
         select.setWhat(what);
-        select.setFrom(from);
+        select.setFrom(StringUtils.join(joins, " LEFT JOIN "));
         select.setWhere(StringUtils.join(whereClauses, " AND "));
         select.setOrderBy(orderBy);
 
         List<Column> whatColumns = Collections.singletonList(hierTable.getColumn(model.MAIN_KEY));
-        selectInfo = new SQLInfoSelect(select.getStatement(), whatColumns,
-                Collections.<Column> emptyList());
+        selectInfo = new SQLInfoSelect(select.getStatement(), whatColumns, null, null);
     }
 
     /**
@@ -614,7 +585,7 @@ public class QueryMaker {
         }
 
         /**
-         * Checks tolevel ANDed operands, and extracts those that directly
+         * Checks toplevel ANDed operands, and extracts those that directly
          * impact the types restictions:
          * <ul>
          * <li>ecm:primaryType OP literal</li>
@@ -644,11 +615,11 @@ public class QueryMaker {
                             expr.rvalue instanceof StringLiteral) {
                         String name = ((Reference) expr.lvalue).name;
                         String value = ((StringLiteral) expr.rvalue).value;
-                        if (ECM_PRIMARYTYPE.equals(name)) {
+                        if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
                             (isEq ? typesAnyRequired : typesExcluded).add(value);
                             return;
                         }
-                        if (ECM_MIXINTYPE.equals(name)) {
+                        if (NXQL.ECM_MIXINTYPE.equals(name)) {
                             if (FACET_IMMUTABLE.equals(value)) {
                                 Boolean im = Boolean.valueOf(isEq);
                                 if (immutableClause != null &&
@@ -667,9 +638,9 @@ public class QueryMaker {
                             expr.rvalue instanceof IntegerLiteral) {
                         String name = ((Reference) expr.lvalue).name;
                         long v = ((IntegerLiteral) expr.rvalue).value;
-                        if (ECM_ISPROXY.equals(name)) {
+                        if (NXQL.ECM_ISPROXY.equals(name)) {
                             if (v != 0 && v != 1) {
-                                throw new QueryMakerException(ECM_ISPROXY +
+                                throw new QueryMakerException(NXQL.ECM_ISPROXY +
                                         " requires literal 0 or 1 as right argument");
                             }
                             Boolean pr = Boolean.valueOf(v == 1);
@@ -690,12 +661,12 @@ public class QueryMaker {
                     if (expr.lvalue instanceof Reference &&
                             expr.rvalue instanceof LiteralList) {
                         String name = ((Reference) expr.lvalue).name;
-                        if (ECM_PRIMARYTYPE.equals(name)) {
+                        if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
                             Set<String> set = new HashSet<String>();
                             for (Literal literal : (LiteralList) expr.rvalue) {
                                 if (!(literal instanceof StringLiteral)) {
                                     throw new QueryMakerException(
-                                            ECM_PRIMARYTYPE +
+                                            NXQL.ECM_PRIMARYTYPE +
                                                     " IN requires string literals");
                                 }
                                 set.add(((StringLiteral) literal).value);
@@ -716,12 +687,12 @@ public class QueryMaker {
                             }
                             return;
                         }
-                        if (ECM_MIXINTYPE.equals(name)) {
+                        if (NXQL.ECM_MIXINTYPE.equals(name)) {
                             Set<String> set = new HashSet<String>();
                             for (Literal literal : (LiteralList) expr.rvalue) {
                                 if (!(literal instanceof StringLiteral)) {
                                     throw new QueryMakerException(
-                                            ECM_MIXINTYPE +
+                                            NXQL.ECM_MIXINTYPE +
                                                     " IN requires string literals");
                                 }
                                 String value = ((StringLiteral) literal).value;
@@ -742,7 +713,7 @@ public class QueryMaker {
                                     mixinsAnyRequired.addAll(set);
                                 } else {
                                     throw new QueryMakerException(
-                                            ECM_MIXINTYPE +
+                                            NXQL.ECM_MIXINTYPE +
                                                     " cannot have more than one IN clause");
                                 }
                             } else {
@@ -759,41 +730,48 @@ public class QueryMaker {
         @Override
         public void visitReference(Reference node) {
             String name = node.name;
-            if (ECM_PATH.equals(name)) {
+            if (NXQL.ECM_PATH.equals(name)) {
                 if (inOrderBy) {
                     throw new QueryMakerException("Cannot order by: " + name);
                 }
                 return;
             }
-            if (ECM_ISPROXY.equals(name)) {
+            if (NXQL.ECM_ISPROXY.equals(name)) {
                 if (inOrderBy) {
                     throw new QueryMakerException("Cannot order by: " + name);
                 }
                 return;
             }
-            if (ECM_ISVERSION.equals(name)) {
+            if (NXQL.ECM_ISVERSION.equals(name)) {
                 if (inOrderBy) {
                     throw new QueryMakerException("Cannot order by: " + name);
                 }
                 needsVersionsTable = true;
                 return;
             }
-            if (ECM_PRIMARYTYPE.equals(name) || //
-                    ECM_MIXINTYPE.equals(name) || //
-                    ECM_UUID.equals(name) || //
-                    ECM_NAME.equals(name) || //
-                    ECM_PARENTID.equals(name)) {
+            if (NXQL.ECM_PRIMARYTYPE.equals(name) || //
+                    NXQL.ECM_MIXINTYPE.equals(name) || //
+                    NXQL.ECM_UUID.equals(name) || //
+                    NXQL.ECM_NAME.equals(name) || //
+                    NXQL.ECM_PARENTID.equals(name)) {
                 return;
             }
-            if (ECM_LIFECYCLESTATE.equals(name)) {
+            if (NXQL.ECM_LIFECYCLESTATE.equals(name)) {
                 props.add(model.MISC_LIFECYCLE_STATE_PROP);
                 return;
             }
-            if (ECM_VERSIONLABEL.equals(name)) {
+            if (NXQL.ECM_VERSIONLABEL.equals(name)) {
                 props.add(model.VERSION_LABEL_PROP);
                 return;
             }
-            if (name.startsWith(ECM_PREFIX)) {
+            if (NXQL.ECM_FULLTEXT.equals(name)) {
+                if (sqlInfo.dialect.isFulltextTableNeeded()) {
+                    // we only use this for its fragment name
+                    props.add(model.FULLTEXT_SIMPLETEXT_PROP);
+                }
+                return;
+            }
+            if (name.startsWith(NXQL.ECM_PREFIX)) {
                 throw new QueryMakerException("Unknown field: " + name);
             }
 
@@ -834,11 +812,17 @@ public class QueryMaker {
 
         public final StringBuilder buf = new StringBuilder();
 
-        public final List<Serializable> params = new LinkedList<Serializable>();
+        public final List<String> joins = new LinkedList<String>();
+
+        public final List<String> joinParams = new LinkedList<String>();
+
+        public final List<Serializable> whereParams = new LinkedList<Serializable>();
 
         public boolean allowArray;
 
         private boolean inOrderBy;
+
+        private int ftJoinNumber;
 
         @Override
         public void visitMultiExpression(MultiExpression node) {
@@ -860,18 +844,20 @@ public class QueryMaker {
                     : null;
             Operator op = node.operator;
             if (op == Operator.STARTSWITH) {
-                if (!ECM_PATH.equals(name)) {
+                if (!NXQL.ECM_PATH.equals(name)) {
                     throw new QueryMakerException("STARTSWITH requires " +
-                            ECM_PATH + "as left argument");
+                            NXQL.ECM_PATH + "as left argument");
                 }
                 visitExpressionStartsWith(node);
-            } else if (ECM_ISPROXY.equals(name)) {
+            } else if (NXQL.ECM_ISPROXY.equals(name)) {
                 visitExpressionIsProxy(node);
-            } else if (ECM_ISVERSION.equals(name)) {
+            } else if (NXQL.ECM_ISVERSION.equals(name)) {
                 visitExpressionIsVersion(node);
+            } else if (NXQL.ECM_FULLTEXT.equals(name)) {
+                visitExpressionFulltext(node);
             } else if ((op == Operator.EQ || op == Operator.NOTEQ ||
                     op == Operator.IN || op == Operator.NOTIN) &&
-                    name != null && !name.startsWith(ECM_PREFIX)) {
+                    name != null && !name.startsWith(NXQL.ECM_PREFIX)) {
                 PropertyInfo propertyInfo = model.getPropertyInfo(name);
                 if (propertyInfo == null) {
                     throw new QueryMakerException("Unknown field: " + name);
@@ -929,23 +915,23 @@ public class QueryMaker {
                 buf.append("0 = 1");
             } else {
                 buf.append("NX_IN_TREE(").append(hierId).append(", ?) = ");
-                params.add(id);
+                whereParams.add(id);
                 buf.append(dialect.toBooleanValueString(true));
             }
         }
 
         protected void visitExpressionIsProxy(Expression node) {
             if (node.operator != Operator.EQ && node.operator != Operator.NOTEQ) {
-                throw new QueryMakerException(ECM_ISPROXY +
+                throw new QueryMakerException(NXQL.ECM_ISPROXY +
                         " requires = or <> operator");
             }
             if (!(node.rvalue instanceof IntegerLiteral)) {
-                throw new QueryMakerException(ECM_ISPROXY +
+                throw new QueryMakerException(NXQL.ECM_ISPROXY +
                         " requires literal 0 or 1 as right argument");
             }
             long v = ((IntegerLiteral) node.rvalue).value;
             if (v != 0 && v != 1) {
-                throw new QueryMakerException(ECM_ISPROXY +
+                throw new QueryMakerException(NXQL.ECM_ISPROXY +
                         " requires literal 0 or 1 as right argument");
             }
             boolean bool = node.operator == Operator.EQ ^ v == 0;
@@ -961,16 +947,16 @@ public class QueryMaker {
 
         protected void visitExpressionIsVersion(Expression node) {
             if (node.operator != Operator.EQ && node.operator != Operator.NOTEQ) {
-                throw new QueryMakerException(ECM_ISVERSION +
+                throw new QueryMakerException(NXQL.ECM_ISVERSION +
                         " requires = or <> operator");
             }
             if (!(node.rvalue instanceof IntegerLiteral)) {
-                throw new QueryMakerException(ECM_ISVERSION +
+                throw new QueryMakerException(NXQL.ECM_ISVERSION +
                         " requires literal 0 or 1 as right argument");
             }
             long v = ((IntegerLiteral) node.rvalue).value;
             if (v != 0 && v != 1) {
-                throw new QueryMakerException(ECM_ISVERSION +
+                throw new QueryMakerException(NXQL.ECM_ISVERSION +
                         " requires literal 0 or 1 as right argument");
             }
             boolean bool = node.operator == Operator.EQ ^ v == 0;
@@ -979,9 +965,59 @@ public class QueryMaker {
             buf.append(bool ? " IS NOT NULL" : " IS NULL");
         }
 
+        protected void visitExpressionFulltext(Expression node) {
+            if (node.operator != Operator.EQ && node.operator != Operator.LIKE) {
+                throw new QueryMakerException(NXQL.ECM_FULLTEXT +
+                        " requires = or LIKE operator");
+            }
+            if (!(node.rvalue instanceof StringLiteral)) {
+                throw new QueryMakerException(NXQL.ECM_FULLTEXT +
+                        " requires literal string as right argument");
+            }
+            String fulltextQuery = ((StringLiteral) node.rvalue).value;
+            // TODO parse query language for fulltext
+            // for now just a sequence of words
+            Column ftColumn = database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
+                    model.FULLTEXT_FULLTEXT_KEY);
+            Column mainColumn = joinedHierTable.getColumn(model.MAIN_KEY);
+            String[] info = sqlInfo.dialect.getFulltextMatch(ftColumn,
+                    mainColumn, fulltextQuery);
+            String joinExpr = info[0];
+            String joinParam = info[1];
+            String whereExpr = info[2];
+            String whereParam = info[3];
+            String joinAlias = getFtJoinAlias();
+            if (joinExpr != null) {
+                // specific join table (H2)
+                joins.add(String.format(joinExpr, joinAlias));
+                if (joinParam != null) {
+                    joinParams.add(joinParam);
+                }
+            }
+            if (whereExpr != null) {
+                buf.append(String.format(whereExpr, joinAlias));
+                if (whereParam != null) {
+                    whereParams.add(whereParam);
+                }
+            } else {
+                buf.append("1=1"); // we still need an expression in the tree
+            }
+        }
+
+        private String getFtJoinAlias() {
+            ftJoinNumber++;
+            if (ftJoinNumber == 1) {
+                return "_FT";
+            } else {
+                return "_FT" + ftJoinNumber;
+            }
+        }
+
         @Override
         public void visitOperator(Operator node) {
-            buf.append(' ');
+            if (node != Operator.NOT) {
+                buf.append(' ');
+            }
             buf.append(node.toString());
             buf.append(' ');
         }
@@ -990,7 +1026,7 @@ public class QueryMaker {
         public void visitReference(Reference node) {
             String name = node.name;
             Column column;
-            if (name.startsWith(ECM_PREFIX)) {
+            if (name.startsWith(NXQL.ECM_PREFIX)) {
                 column = getSpecialColumn(name);
             } else {
                 PropertyInfo propertyInfo = model.getPropertyInfo(name);
@@ -1013,12 +1049,7 @@ public class QueryMaker {
             String qname = column.getFullQuotedName();
             // some databases (Derby) can't do comparisons on CLOB
             if (column.getSqlType() == Types.CLOB) {
-                String colFmt;
-                if (inOrderBy) {
-                    colFmt = dialect.clobCastingInOrderBy();
-                } else {
-                    colFmt = dialect.clobCasting();
-                }
+                String colFmt = dialect.getClobCast(inOrderBy);
                 if (colFmt != null) {
                     qname = String.format(colFmt, qname, Integer.valueOf(255));
                 }
@@ -1027,28 +1058,32 @@ public class QueryMaker {
         }
 
         protected Column getSpecialColumn(String name) {
-            if (ECM_PRIMARYTYPE.equals(name)) {
+            if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
                 return joinedHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
             }
-            if (ECM_MIXINTYPE.equals(name)) {
+            if (NXQL.ECM_MIXINTYPE.equals(name)) {
                 // toplevel ones have been extracted by the analyzer
                 throw new QueryMakerException("Cannot use non-toplevel " +
                         name + " in query");
             }
-            if (ECM_UUID.equals(name)) {
+            if (NXQL.ECM_UUID.equals(name)) {
                 return hierTable.getColumn(model.MAIN_KEY);
             }
-            if (ECM_NAME.equals(name)) {
+            if (NXQL.ECM_NAME.equals(name)) {
                 return hierTable.getColumn(model.HIER_CHILD_NAME_KEY);
             }
-            if (ECM_PARENTID.equals(name)) {
+            if (NXQL.ECM_PARENTID.equals(name)) {
                 return hierTable.getColumn(model.HIER_PARENT_KEY);
             }
-            if (ECM_LIFECYCLESTATE.equals(name)) {
+            if (NXQL.ECM_LIFECYCLESTATE.equals(name)) {
                 return database.getTable(model.MISC_TABLE_NAME).getColumn(
                         model.MISC_LIFECYCLE_STATE_KEY);
             }
-            if (ECM_VERSIONLABEL.equals(name)) {
+            if (NXQL.ECM_FULLTEXT.equals(name)) {
+                throw new QueryMakerException(NXQL.ECM_FULLTEXT +
+                        " must be used as left-hand operand");
+            }
+            if (NXQL.ECM_VERSIONLABEL.equals(name)) {
                 return database.getTable(model.VERSION_TABLE_NAME).getColumn(
                         model.VERSION_LABEL_KEY);
             }
@@ -1070,25 +1105,25 @@ public class QueryMaker {
         @Override
         public void visitDateLiteral(DateLiteral node) {
             buf.append('?');
-            params.add(node.toCalendar());
+            whereParams.add(node.toCalendar());
         }
 
         @Override
         public void visitStringLiteral(StringLiteral node) {
             buf.append('?');
-            params.add(node.value);
+            whereParams.add(node.value);
         }
 
         @Override
         public void visitDoubleLiteral(DoubleLiteral node) {
             buf.append('?');
-            params.add(Double.valueOf(node.value));
+            whereParams.add(Double.valueOf(node.value));
         }
 
         @Override
         public void visitIntegerLiteral(IntegerLiteral node) {
             buf.append('?');
-            params.add(Long.valueOf(node.value));
+            whereParams.add(Long.valueOf(node.value));
         }
 
         @Override

@@ -40,15 +40,16 @@ import org.nuxeo.ecm.core.schema.DocumentType;
  * to a schema. All the information about a document (like security) is
  * expressed using schemas (and implicitly data models).
  * <p>
- * Data models are lazy loaded as they are needed. At document model creation
+ * Data models are lazily loaded as they are needed. At document model creation
  * only data models corresponding to the default schemas are loaded. The default
  * schemas are configured in the type manager through extension points.
  * <p>
  * The user may overwrite the default schemas by passing the schemas to be used
  * at model creation via {@link CoreSession#getDocument(DocumentRef, String[])}
  * <p>
- * How a lazy data model is loaded depends on the implementation. <br>
- * Anyway the API is already providing a mechanism to handle this as follow:
+ * How a lazy data model is loaded depends on the implementation.
+ * <p>
+ * Anyway the API already provides a mechanism to handle this as follow:
  *
  * <pre><code>
  * public DataModel getDataModel(String schema) {
@@ -65,8 +66,9 @@ import org.nuxeo.ecm.core.schema.DocumentType;
  * }
  * </code></pre>
  *
+ * @see CoreSession
+ * @see DataModel
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface DocumentModel extends Serializable {
 
@@ -179,7 +181,7 @@ public interface DocumentModel extends Serializable {
     Set<String> getDeclaredFacets();
 
     /**
-     * Gets a list with the actual fetched data models.
+     * Gets a list with the currently fetched data models.
      *
      * @return the data models that are already fetched as a collection
      */
@@ -598,14 +600,16 @@ public interface DocumentModel extends Serializable {
     DocumentPart getPart(String schema) throws ClientException;
 
     /**
-     * Get this document parts
+     * Gets this document's parts.
+     *
      * @return
      * @throws ClientException
      */
     DocumentPart[] getParts() throws ClientException;
 
     /**
-     * Get a property given a xpath
+     * Gets a property given a xpath.
+     *
      * @param xpath
      * @return
      * @throws PropertyException
@@ -641,8 +645,9 @@ public interface DocumentModel extends Serializable {
     long getFlags();
 
     /**
-     * Clear any prefetched or cached document data. This will force the document to lazy update
-     * it's data when required.
+     * Clears any prefetched or cached document data.
+     * <p>
+     * This will force the document to lazily update its data when required.
      */
     void reset();
 
