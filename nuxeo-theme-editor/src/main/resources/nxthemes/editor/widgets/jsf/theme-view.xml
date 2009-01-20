@@ -145,8 +145,8 @@
     <nxthemes:controller resource="style-manager-actions.json" />
     <nxthemes:panel identifier="style manager"
       url="/nuxeo/site/nxthemes-editor/styleManager"
-      controlledBy="editor perspectives"
-      visibleInPerspectives="manage styles,style manager actions" />
+      controlledBy="editor perspectives,style manager actions"
+      visibleInPerspectives="manage styles" />
             
     <!-- theme manager -->
     <nxthemes:panel identifier="theme manager"
