@@ -5,6 +5,13 @@
     <repository name="default"
       factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository name="default">
+        <indexing>
+          <!-- for H2 (Lucene Analyzer): -->
+          <fulltext analyzer="org.apache.lucene.analysis.fr.FrenchAnalyzer"/>
+          <!-- for PostgreSQL (Text Search Configuration):
+          <fulltext analyzer="english"/>
+          -->
+        </indexing>
       </repository>
     </repository>
   </extension>
