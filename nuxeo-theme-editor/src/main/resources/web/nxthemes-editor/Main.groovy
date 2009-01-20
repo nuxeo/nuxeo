@@ -433,8 +433,12 @@ public class Main extends DefaultModule {
       String themeName = form.getString("theme_name")
       String presetName = form.getString("preset_name")      
       String category = form.getString("category")
+      String value = form.getString("value")
+      if (value == null) {
+          value = ""
+      }
       try {
-          return Editor.addPreset(themeName, presetName, category, "")
+          return Editor.addPreset(themeName, presetName, category, value)
       } catch (ThemeException e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }

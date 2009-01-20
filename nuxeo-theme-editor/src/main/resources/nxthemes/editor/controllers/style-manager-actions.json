@@ -1,0 +1,7 @@
+    {"id": "style manager actions",
+     "type": "behaviour",
+     "rules": {
+       "form.unidentifiedPresets": {
+         "submit": "add missing preset"
+       }
+    }}

@@ -142,10 +142,11 @@
       visibleInPerspectives="manage presets" />
 
     <!-- style manager -->
+    <nxthemes:controller resource="style-manager-actions.json" />
     <nxthemes:panel identifier="style manager"
       url="/nuxeo/site/nxthemes-editor/styleManager"
       controlledBy="editor perspectives"
-      visibleInPerspectives="manage styles" />
+      visibleInPerspectives="manage styles,style manager actions" />
             
     <!-- theme manager -->
     <nxthemes:panel identifier="theme manager"

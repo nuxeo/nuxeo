@@ -1370,6 +1370,7 @@ NXThemesStyleEditor.refreshStylePicker = function() {
     NXThemes.getViewById("style picker").refresh();
 };
 
+
 // widgets
 NXThemes.registerWidgets({
 
@@ -1417,6 +1418,57 @@ NXThemes.addActions({
   },
   'pick property value': NXThemesStyleEditor.pickPropertyValue
 });
+
+
+// STYLE MANAGER
+
+if (typeof NXThemesStyleManager == "undefined") {
+	NXThemesStyleManager = {
+    };
+}
+
+NXThemesStyleManager.addMissingPreset = function(info) {
+    var form = Event.findElement(info, "form");
+    var themeName, presetName, presetCategory, presetValue;
+    $A(Form.getElements(form)).each(function(i) {
+        var name = i.name;
+        var value = Form.Element.getValue(i);
+        if (name == "preset_category") {
+        	presetCategory = value;
+        } else if (name == "preset_value") {
+        	presetValue = value;
+        } else if (name == "preset_name") {
+        	presetName = value;
+        } else if (name == "theme_name") {
+        	themeName = value;
+        }
+    });
+    var url = nxthemesBasePath + "/nxthemes-editor/add_preset";
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             theme_name: themeName,
+             preset_name: presetName,
+             category: presetCategory,
+             value: presetValue
+         },
+         onSuccess: function(r) {
+             NXThemes.getViewById("style manager").refresh();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }
+    });     
+    
+};
+
+//actions
+NXThemes.addActions({
+  'add missing preset': NXThemesStyleManager.addMissingPreset
+});
+
+
 
 
 

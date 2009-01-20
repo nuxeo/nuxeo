@@ -374,12 +374,18 @@ h1.nxthemesEditor, h2.nxthemesEditor, h3.nxthemesEditor {
   padding: 0;
 }
 
+h1.nxthemesEditor {
+  font-size: 20px;
+}
+	
 h2.nxthemesEditor {
   background-color: #f6f6f6;	
   padding: 2px 12px;	
   -moz-border-radius: 20px;
   -webkit-border-radius: 20px;
-  border-radius: 20px;    
+  border-radius: 20px;
+  font-size: 17px;
+  margin-top: 15px    
 }
 
 form.nxthemesEditor {

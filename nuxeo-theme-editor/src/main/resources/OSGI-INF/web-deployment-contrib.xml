@@ -7,7 +7,7 @@
 		point="install">
 
 	    <install>
-	      <copy path="web/nxthemes-editor" target="/" />
+	      <!-- copy path="web/nxthemes-editor" target="/" /  -->
 	    </install>
 
 	</extension>

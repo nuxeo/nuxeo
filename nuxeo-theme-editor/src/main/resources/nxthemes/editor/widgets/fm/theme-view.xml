@@ -135,9 +135,10 @@
       visibleInPerspectives="manage presets" />
       
     <!-- style manager -->
+    <@nxthemes_controller resource="style-manager-actions.json" />
     <@nxthemes_panel identifier="style manager"
       url="${basePath}/nxthemes-editor/styleManager"
-      controlledBy="editor perspectives"
+      controlledBy="editor perspectives,style manager actions"
       visibleInPerspectives="manage styles" />
           
     <!-- theme manager -->
