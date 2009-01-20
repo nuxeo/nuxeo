@@ -38,6 +38,18 @@ public class OOoServerDescriptor implements Serializable {
     @XNode("autoStart")
     private boolean autoStart=false;
 
+    @XNode("jpipeLibPath")
+    private String jpipeLibPath=null;
+
+
+    public String getJpipeLibPath() {
+        return jpipeLibPath;
+    }
+
+    public void setJpipeLibPath(String jpipeLibPath) {
+        this.jpipeLibPath = jpipeLibPath;
+    }
+
     public boolean isDaemonEnabled() {
         return enabledDaemon;
     }

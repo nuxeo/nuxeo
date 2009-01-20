@@ -116,6 +116,13 @@ public class ConfigBuilderHelper {
 
 
 
+    protected String getLibPath() {
+        if (desc.getJpipeLibPath()!=null) {
+            return desc.getJpipeLibPath();
+        }
+        return getOOServerPath();
+    }
+
     public Config getServerConfig() {
         if (ooServerConfig == null) {
             if (getOOServerPath()==null) {
@@ -131,7 +138,7 @@ public class ConfigBuilderHelper {
             ooServerConfig.userInstallation = getUserDirs();
 
             try {
-                String ld_path = getOOServerPath();
+                String ld_path = getLibPath();
                 hackClassLoader(ld_path);
             } catch (IOException e) {
                 e.printStackTrace();
