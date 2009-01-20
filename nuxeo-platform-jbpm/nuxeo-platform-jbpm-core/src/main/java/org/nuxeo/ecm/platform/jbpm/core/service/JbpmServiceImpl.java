@@ -98,7 +98,7 @@ public class JbpmServiceImpl implements JbpmService {
                         throws NuxeoJbpmException {
                     List<String> groups = currentUser.getAllGroups();
                     groups.add(currentUser.getName());
-                    context.setActorId(currentUser.getName());
+                    context.setActorId(USER_PREFIX + currentUser.getName());
                     return toArrayList(context.getTaskMgmtSession().findTaskInstances(
                             groups));
                 }
@@ -125,7 +125,7 @@ public class JbpmServiceImpl implements JbpmService {
         ProcessInstance pi = (ProcessInstance) executeJbpmOperation(new JbpmOperation() {
             public ProcessInstance run(JbpmContext context)
                     throws NuxeoJbpmException {
-                context.setActorId(user.getName());
+                context.setActorId(USER_PREFIX + user.getName());
                 ProcessDefinition pd = context.getGraphSession().findLatestProcessDefinition(
                         processInstanceName);
                 if (dm != null) {
@@ -170,7 +170,7 @@ public class JbpmServiceImpl implements JbpmService {
         return (List<ProcessInstance>) executeJbpmOperation(new JbpmOperation() {
             public ArrayList<ProcessInstance> run(JbpmContext context)
                     throws NuxeoJbpmException {
-                context.setActorId(principal.getName());
+                context.setActorId(USER_PREFIX + principal.getName());
                 Map<Long, ProcessInstance> maps = new HashMap<Long, ProcessInstance>();
                 for (TaskInstance ti : getCurrentTaskInstances(principal)) {
                     maps.put(ti.getProcessInstance().getId(),
@@ -197,7 +197,7 @@ public class JbpmServiceImpl implements JbpmService {
         return (DocumentModel) executeJbpmOperation(new JbpmOperation() {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
-                context.setActorId(user.getName());
+                context.setActorId(USER_PREFIX + user.getName());
                 TaskInstance sessionedTi = context.getTaskInstance(ti.getId());
                 String docId = (String) sessionedTi.getVariable(JbpmService.VariableName.documentId.name());
                 String repoId = (String) sessionedTi.getVariable(JbpmService.VariableName.documentRepositoryName.name());
@@ -242,7 +242,7 @@ public class JbpmServiceImpl implements JbpmService {
             public ArrayList<ProcessInstance> run(JbpmContext context)
                     throws NuxeoJbpmException {
                 if (user != null) {
-                    context.setActorId(user.getName());
+                    context.setActorId(USER_PREFIX + user.getName());
                 }
                 ArrayList<ProcessInstance> result = new ArrayList<ProcessInstance>();
                 Session session = context.getSession();
@@ -271,10 +271,11 @@ public class JbpmServiceImpl implements JbpmService {
             public ArrayList<TaskInstance> run(JbpmContext context)
                     throws NuxeoJbpmException {
                 if (user != null) {
-                    context.setActorId(user.getName());
+                    context.setActorId(USER_PREFIX + user.getName());
                 }
                 List<String> groups = user.getAllGroups();
-                groups.add(user.getName());
+                groups.add(GROUP_PREFIX + user.getName());
+                groups.add(USER_PREFIX + user.getName());
                 List<TaskInstance> tis = context.getTaskMgmtSession().findTaskInstances(
                         groups);
                 List<Long> donePi = new ArrayList<Long>();
@@ -405,7 +406,7 @@ public class JbpmServiceImpl implements JbpmService {
         return (List<String>) executeJbpmOperation(new JbpmOperation() {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
-                context.setActorId(principal.getName());
+                context.setActorId(USER_PREFIX + principal.getName());
                 // jbpm code returns an array list.
                 return (Serializable) context.getTaskInstance(taskInstanceId).getAvailableTransitions();
             }
@@ -467,7 +468,7 @@ public class JbpmServiceImpl implements JbpmService {
         return (List<ProcessDefinition>) executeJbpmOperation(new JbpmOperation() {
             public ArrayList<ProcessDefinition> run(JbpmContext context)
                     throws NuxeoJbpmException {
-                context.setActorId(user.getName());
+                context.setActorId(USER_PREFIX + user.getName());
                 List<ProcessDefinition> pds = context.getGraphSession().findLatestProcessDefinitions();
                 ArrayList<ProcessDefinition> result = new ArrayList<ProcessDefinition>();
                 for (ProcessDefinition pd : pds) {

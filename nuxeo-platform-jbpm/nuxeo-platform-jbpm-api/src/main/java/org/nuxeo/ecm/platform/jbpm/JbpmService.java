@@ -59,6 +59,14 @@ public interface JbpmService {
         NuxeoHibernateQueries_getProcessInstancesForDoc, NuxeoHibernateQueries_getTaskInstancesForDoc
     }
 
+    public enum ActorIdPrefix {
+        user, group
+    }
+
+    String USER_PREFIX = JbpmService.ActorIdPrefix.user.name() + ":";
+
+    String GROUP_PREFIX = JbpmService.ActorIdPrefix.group.name() + ":";
+
     /**
      * Return the configuration.
      */
@@ -175,8 +183,8 @@ public interface JbpmService {
 
     /**
      * Return a list of available Process Definition Name available for this
-     * document and user. All process definition if dm is <code>null</code>.
-     * The returned process definition is always the latest.
+     * document and user. All process definition if dm is <code>null</code>. The
+     * returned process definition is always the latest.
      *
      * @param user the caller.
      * @param dm the document concerned by the process
