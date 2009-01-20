@@ -18,9 +18,9 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
-import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
+import org.nuxeo.ecm.platform.convert.oooserver.OOoDaemonService;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
@@ -141,6 +141,24 @@ public class JODBasedConverter implements ExternalConverter {
     }
 
     public OpenOfficeConnection getOOoConnection() {
+
+        OOoDaemonService ods = Framework.getLocalService(OOoDaemonService.class);
+        if (ods!=null) {
+            if (ods.isEnabled()) {
+                if (ods.isConfigured()) {
+                    if (!ods.isRunning()) {
+                        ods.startDaemonAndWaitUntilReady();
+                    }
+                }
+                else {
+                    log.debug("OOoDaemonService is not configured, expect OOo to be already running");
+                }
+            }
+            else {
+                log.debug("OOoDaemonService is not enabled, expect OOo to be already running");
+            }
+        }
+
         log.debug("OOo connection lock ACQUIRED");
         if (connection == null || !connection.isConnected()) {
             connection = new SocketOpenOfficeConnection(getOOoHostURL(),
@@ -314,6 +332,7 @@ public class JODBasedConverter implements ExternalConverter {
                      // Perform the actual conversion.
                      getOOoDocumentConverter().convert(sourceFile, sourceFormat,
                              outFile, destinationFormat);
+
 
                      // load the content in the file since it will be deleted
                      // soon: TODO: find a way to stream it to the streaming

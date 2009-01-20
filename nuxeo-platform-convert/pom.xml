@@ -62,12 +62,14 @@
     <dependency>
       <groupId>org.openoffice</groupId>
       <artifactId>juh</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.openoffice</groupId>
       <artifactId>unoil</artifactId>
-      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
     </dependency>
     <dependency>
       <groupId>pdfbox</groupId>
@@ -88,12 +90,13 @@
     </dependency>
   </dependencies>
 
- <build>
+  <build>
     <plugins>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <excludes>
+             <exclude>**/TestOOoServiceManagerService.class</exclude>
           </excludes>
         </configuration>
       </plugin>
