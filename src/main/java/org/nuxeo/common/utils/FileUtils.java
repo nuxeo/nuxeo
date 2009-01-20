@@ -19,9 +19,6 @@
 
 package org.nuxeo.common.utils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -34,10 +31,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -531,4 +533,21 @@ public final class FileUtils {
         }
     }
 
+    
+    /**
+     * Create a file handler (this doesn't create a real file) given a file URI.
+     * This method can be used to create files from invalid URL strings (e.g. containing spaces ..)  
+     * @return a file object
+     */
+    public static File urlToFile(String url) throws MalformedURLException {
+        return urlToFile(new URL(url));
+    }
+    
+    public static File urlToFile(URL url) {
+        try {
+          return new File(url.toURI());
+        } catch(URISyntaxException e) {
+          return new File(url.getPath());
+        }
+    }
 }
