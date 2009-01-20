@@ -94,15 +94,20 @@ public class StandaloneApplication extends OSGiAdapter {
         if (isStarted) {
             throw new IllegalStateException("OSGi Application is already started");
         }
+        List<BundleFile> preBundles = loadUserBundles("pre-bundles");
+        List<BundleFile> postBundles = loadUserBundles("post-bundles");
         // start level 1
         // start bundles that are specified in the osgi.bundles property
-        startBundles("pre-bundles");
+        if (preBundles != null) {
+            startBundles(preBundles);
+        }
         // start level 2
         // if needed install all discovered bundles (the one that are located in bundles dir)
         autoInstallBundles();
         // start level 3
-        startBundles("post-bundles");
-        //TODO
+        if (postBundles != null) {
+            startBundles(postBundles);
+        }
         fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, getSystemBundle(), null));
     }
 
@@ -118,13 +123,19 @@ public class StandaloneApplication extends OSGiAdapter {
         super.shutdown();
     }
 
-    protected void startBundles(String key) throws Exception {
+    protected void startBundles(List<BundleFile> bundles) throws Exception {
+        for (BundleFile bf : bundles) {
+            this.install(new BundleImpl(this, bf, classLoader));
+        }
+    }
+
+    protected List<BundleFile> loadUserBundles(String key) throws Exception {
         if (options == null) {
-            return;
+            return null;
         }        
         String bundlesString = options.getOption(key);
         if (bundlesString == null) {
-            return; // no bundles to start
+            return null; // no bundles to load
         }
         ArrayList<BundleFile> bundles = new ArrayList<BundleFile>();
         String[] ar = StringUtils.split(bundlesString, ':', true);
@@ -145,9 +156,7 @@ public class StandaloneApplication extends OSGiAdapter {
             classLoader.addURL(bf.getURL());
             bundles.add(bf);
         }
-        for (BundleFile bf : bundles) {
-            this.install(new BundleImpl(this, bf, classLoader));
-        }
+        return bundles;
     }
 
     public List<File> getClassPath() {

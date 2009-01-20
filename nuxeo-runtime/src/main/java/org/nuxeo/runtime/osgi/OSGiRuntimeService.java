@@ -36,6 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
@@ -424,8 +425,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             }
             file = new File(location);
         } else if (location.startsWith("file:")) { // nuxeo osgi adapter
-            try {
-                file = new File(new URI(location));
+            try {                
+                file = FileUtils.urlToFile(location);
             } catch (Exception e) {
                 componentDebugLog.error("getBundleFile: Unable to create " +
                         " for bundle: " + name + " as URI: " + location);
