@@ -40,4 +40,6 @@ import org.jboss.seam.annotations.Scope;
 @Install(precedence = FRAMEWORK)
 public class ReducedTreeActionsBean extends TreeActionsBean {
 
+    private static final long serialVersionUID = 1L;
+
 }

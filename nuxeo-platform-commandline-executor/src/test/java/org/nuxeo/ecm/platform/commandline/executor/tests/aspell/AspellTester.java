@@ -26,6 +26,8 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
@@ -37,6 +39,8 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * Test Aspell command line
  */
 public class AspellTester extends NXRuntimeTestCase {
+
+    private static final Log log = LogFactory.getLog(AspellTester.class);
 
     @Override
     public void setUp() throws Exception {
@@ -55,7 +59,7 @@ public class AspellTester extends NXRuntimeTestCase {
         CommandAvailability ca = cles.getCommandAvailability("aspell");
 
         if (!ca.isAvailable()) {
-            System.out.println("Aspell is not avalaible, skipping test");
+            log.warn("aspell is not avalaible, skipping test");
             return;
         }
 
@@ -80,7 +84,7 @@ public class AspellTester extends NXRuntimeTestCase {
 
         List<String> lines = result.getOutput();
 
-        System.out.println(lines);
+        // System.out.println(lines);
 
         assertTrue(checkOutput(lines));
 
@@ -88,7 +92,7 @@ public class AspellTester extends NXRuntimeTestCase {
         result = cles.execCommand("aspell", params);
         assertFalse(result.isSuccessful());
         assertNotSame(0, result.getReturnCode());
-        System.out.println(result.getOutput());
+        // System.out.println(result.getOutput());
 
     }
 

@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.dublincore.listener;
 
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 
@@ -29,7 +30,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
-import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.listener.AbstractEventListener;
 import org.nuxeo.ecm.core.listener.AsynchronousEventListener;
 import org.nuxeo.ecm.core.listener.DocumentModelEventListener;
@@ -59,13 +59,12 @@ public class DublinCoreListener extends AbstractEventListener implements
         Object source = coreEvent.getSource();
         if (source instanceof DocumentModel) {
             try {
-
                 DocumentModel doc = (DocumentModel) source;
                 String eventId = coreEvent.getEventId();
 
                 if (!eventId.equals(DOCUMENT_UPDATED)
                         && !eventId.equals(DOCUMENT_CREATED)
-                        && !eventId.equals(DocumentEventTypes.BEFORE_DOC_UPDATE)) {
+                        && !eventId.equals(BEFORE_DOC_UPDATE)) {
                     return;
                 }
 
@@ -81,7 +80,7 @@ public class DublinCoreListener extends AbstractEventListener implements
                 cEventDate.setTime(eventDate);
                 Boolean updateResult;
 
-                if (eventId.equals(DocumentEventTypes.BEFORE_DOC_UPDATE)) {
+                if (eventId.equals(BEFORE_DOC_UPDATE)) {
                     updateResult = service.setModificationDate(doc, cEventDate,
                             coreEvent);
                     if (updateResult) {
@@ -102,7 +101,6 @@ public class DublinCoreListener extends AbstractEventListener implements
                         log.debug("Modification Date updated");
                     }
                 }
-
             } catch (Exception e) {
                 log.error("An error occurred trying to notify: ", e);
             }

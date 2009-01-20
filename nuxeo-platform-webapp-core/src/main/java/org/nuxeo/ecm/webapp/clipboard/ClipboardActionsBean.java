@@ -95,13 +95,9 @@ public class ClipboardActionsBean extends InputController implements
     private static final int BUFFER = 2048;
 
     private static final String SUMMARY_FILENAME = "INDEX.txt";
-
     private static final String SUMMARY_HEADER = ".";
-
     private static final String PASTE_OUTCOME = "after_paste";
-
     private static final String MOVE_OUTCOME = "after_move";
-
     public static final String DELETED_LIFECYCLE_STATE = "deleted";
 
     @In(create = true, required = false)
@@ -270,7 +266,6 @@ public class ClipboardActionsBean extends InputController implements
     }
 
     public String removeWorkListItem(DocumentRef ref) throws ClientException {
-
         DocumentModel doc = documentManager.getDocument(ref);
         documentsListsManager.removeFromWorkingList(
                 getCurrentSelectedListName(), doc);
@@ -372,6 +367,12 @@ public class ClipboardActionsBean extends InputController implements
     public String moveDocumentList(String listName) throws ClientException {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(listName);
 
+        // Get all parent folders
+        Set<DocumentRef> parentRefs = new HashSet<DocumentRef>();
+        for (DocumentModel doc : docs) {
+            parentRefs.add(doc.getParentRef());
+        }
+
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (null != docs) {
             List<DocumentModel> newDocs = moveDocumentsToNewParent(
@@ -387,6 +388,12 @@ public class ClipboardActionsBean extends InputController implements
             eventManager.raiseEventsOnDocumentSelected(currentDocument);
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                     currentDocument);
+
+            // Send event to all initial parents
+            for (DocumentRef docRef : parentRefs) {
+                Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                        documentManager.getDocument(docRef));
+            }
 
             log.debug("Elements moved and created into the backend...");
         } else {
@@ -420,12 +427,6 @@ public class ClipboardActionsBean extends InputController implements
 
     /**
      * Creates the documents in the backend under the target parent.
-     *
-     * @param parent
-     * @param documents
-     * @return
-     * @throws ClientException
-     * @throws SecurityException
      */
     protected List<DocumentModel> recreateDocumentsWithNewParent(
             DocumentModel parent, List<DocumentModel> documents)
@@ -515,11 +516,7 @@ public class ClipboardActionsBean extends InputController implements
      * <p>
      * In general the currentDocument is the parent. Exceptions to this rule:
      * when the currentDocument is a domain or null. If Domain then content root
-     * is the parent. If NULL is passed then the JCR root is taken as parent.
-     *
-     * @param currentDocument
-     * @return
-     * @throws ClientException
+     * is the parent. If null is passed, then the JCR root is taken as parent.
      */
     protected DocumentModel getParent(DocumentModel currentDocument)
             throws ClientException {
@@ -652,8 +649,6 @@ public class ClipboardActionsBean extends InputController implements
      * <li>the content of the list can be added as children of the current
      * document
      * </ul>
-     *
-     * @throws ClientException
      */
     public boolean getCanPaste(String listName) throws ClientException {
 
@@ -718,8 +713,6 @@ public class ClipboardActionsBean extends InputController implements
      * <li>an element in the list can be removed from its folder and added as
      * child of the current document
      * </ul>
-     *
-     * @throws ClientException
      */
     public boolean getCanMove(String listName) throws ClientException {
 
@@ -834,17 +827,12 @@ public class ClipboardActionsBean extends InputController implements
                     return false;
                 }
             }
-
         }
         return true;
     }
 
     /**
      * Writes a summary file and puts it in the archive.
-     *
-     * @param out
-     * @param data
-     * @throws IOException
      */
     private void addSummaryToZip(ZipOutputStream out, byte[] data,
             SummaryImpl summary) throws IOException {

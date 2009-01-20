@@ -83,7 +83,7 @@ public class TestVersioningDocEdit extends VersioningBaseTestCase {
         // req.setWfStateInitial("assigned");
         // req.setWfStateFinal("inprogress");
 
-        final VersioningService service = ServiceHelper.getVersioningService();
+        final VersioningService service = getVersioningService();
 
         checkVersion(doc, 1L, 0L);
 

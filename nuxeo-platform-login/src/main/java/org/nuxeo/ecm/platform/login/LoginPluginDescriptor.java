@@ -41,19 +41,7 @@ public class LoginPluginDescriptor {
     @XNode("@name")
     protected String pluginName;
 
-    protected Boolean initialized = false;
-
-    public LoginPluginDescriptor() {
-        this(null, null, null, null);
-    }
-
-    public LoginPluginDescriptor(Map<String, String> parameters,
-            String pluginName, Boolean enabled, Class<LoginPlugin> className) {
-        this.parameters = parameters;
-        this.enabled = enabled;
-        this.className = className;
-        this.pluginName = pluginName;
-    }
+    protected boolean initialized = false;
 
     public Class<LoginPlugin> getClassName() {
         return className;
@@ -87,11 +75,11 @@ public class LoginPluginDescriptor {
         this.pluginName = pluginName;
     }
 
-    public void setInitialized(Boolean initialized) {
+    public void setInitialized(boolean initialized) {
         this.initialized = initialized;
     }
 
-    public Boolean getInitialized() {
+    public boolean getInitialized() {
         return initialized;
     }
 

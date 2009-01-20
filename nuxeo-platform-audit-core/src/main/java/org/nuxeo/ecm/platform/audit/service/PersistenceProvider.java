@@ -36,14 +36,14 @@ public class PersistenceProvider {
 
     protected EntityManagerFactory emf;
 
-    public PersistenceProvider(HibernateConfiguration configuration) {
-        this.hibernateConfiguration = configuration;
-    }
-
     protected HibernateConfiguration hibernateConfiguration;
 
+    public PersistenceProvider(HibernateConfiguration configuration) {
+        hibernateConfiguration = configuration;
+    }
+
     public void setHibernateConfiguration(HibernateConfiguration configuration) {
-        this.hibernateConfiguration = configuration;
+        hibernateConfiguration = configuration;
     }
 
     public void openPersistenceUnit() {
@@ -81,9 +81,9 @@ public class PersistenceProvider {
     }
 
     public void closePersistenceUnit() {
-        if (emf == null)
+        if (emf == null) {
             return;
-
+        }
         if (emf.isOpen()) {
             emf.close();
         }

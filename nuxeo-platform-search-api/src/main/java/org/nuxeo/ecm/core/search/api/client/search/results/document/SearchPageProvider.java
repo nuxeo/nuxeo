@@ -116,7 +116,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
      * sortable and have a null sortInfo, which means a subsequent method call
      * with sortInfo not null will succeed.
      *
-     * @param set The resultset
+     * @param set the resultset
      * @param sortable if sortable, a subsequent call that provides sorting info
      * @param sortInfo the sorting info or null if the resultset is not sorted
      * @param query the query that produced this result. will succeed.
@@ -178,6 +178,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
      *             be removed in 5.2
      */
     @Deprecated
+    // Not used.
     public DocumentModelList getDocumentModels() {
         return getCurrentPage();
     }

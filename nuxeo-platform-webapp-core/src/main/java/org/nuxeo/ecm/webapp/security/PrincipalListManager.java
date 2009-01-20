@@ -57,17 +57,11 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 public class PrincipalListManager implements Serializable {
 
     public static final String USER_TYPE = "USER_TYPE";
-
     public static final String GROUP_TYPE = "GROUP_TYPE";
-
     public static final String USER_GROUP_TYPE = "USER_GROUP_TYPE";
-
     public static final String USER_ICON = "/icons/user.gif";
-
     public static final String GROUP_ICON = "/icons/group.gif";
-
     public static final String USER_ICON_ALT = "user.gif";
-
     public static final String GROUP_ICON_ALT = "group.gif";
 
     public static final int MAX_SEARCH_RESULTS = 20;
@@ -77,7 +71,6 @@ public class PrincipalListManager implements Serializable {
     private static final Log log = LogFactory.getLog(PrincipalListManager.class);
 
     public final Map<String, String> iconPath;
-
     public final Map<String, String> iconAlt;
 
     @In(create = true, required = false)

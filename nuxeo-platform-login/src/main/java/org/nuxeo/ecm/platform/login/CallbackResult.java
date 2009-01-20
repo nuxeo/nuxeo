@@ -24,18 +24,18 @@ import java.security.Principal;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 
 /**
- * Simple class to store the result of a jaas callback
+ * Simple class to store the result of a JAAS callback
  *
  * @author tiry
  */
 public class CallbackResult {
 
-    public boolean cb_handled = false;
+    public boolean cb_handled;
 
-    public UserIdentificationInfo userIdent = null;
+    public UserIdentificationInfo userIdent;
 
-    public Principal principal = null;
+    public Principal principal;
 
-    public Object credential = null;
+    public Object credential;
 
 }

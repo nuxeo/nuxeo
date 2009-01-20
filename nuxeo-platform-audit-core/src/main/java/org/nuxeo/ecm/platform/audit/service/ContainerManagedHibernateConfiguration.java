@@ -23,20 +23,22 @@ import org.nuxeo.ecm.platform.audit.service.extension.HibernateOptionsDescriptor
 
 public class ContainerManagedHibernateConfiguration implements HibernateConfiguration {
 
+    private HibernateOptionsDescriptor descriptor;
+
     ContainerManagedHibernateConfiguration() {
     }
-    
-    private HibernateOptionsDescriptor descriptor;
-    
+
     public void setDescriptor(HibernateOptionsDescriptor descriptor) {
         this.descriptor = descriptor;
     }
-    
+
     protected String getDatasource() {
-        if (descriptor != null) return descriptor.getDatasource();
+        if (descriptor != null) {
+            return descriptor.getDatasource();
+        }
         return "jdbc/nxaudits";
     }
-    
+
     public Properties getProperties() {
         Properties properties = new Properties();
         properties.put("hibernate.connection.autocommit", true);

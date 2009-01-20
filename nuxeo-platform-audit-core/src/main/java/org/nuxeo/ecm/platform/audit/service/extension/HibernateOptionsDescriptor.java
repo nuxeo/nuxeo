@@ -23,22 +23,15 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP software Engineer)
- * 
+ *
  */
 @XObject("hibernateOptions")
 public class HibernateOptionsDescriptor implements Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1500818790781765945L;
 
-    public HibernateOptionsDescriptor() {
-        super();
-    }
-
     @XNode("@datasource")
-    protected String datasource;
+    private String datasource;
 
     public String getDatasource() {
         return datasource;

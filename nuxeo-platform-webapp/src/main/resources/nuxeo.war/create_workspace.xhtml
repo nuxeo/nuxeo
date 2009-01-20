@@ -19,7 +19,7 @@
       <h:outputText value="#{messages['title.create.document']} #{messages[typesTool.selectedType.label]}" />
     </h3>
     <ui:include src="/incl/message_banner.xhtml" />
-    <h:form enctype="multipart/form-data">
+    <h:form enctype="multipart/form-data" id="document_create">
       <c:if test="#{!empty documentActions.changeableDocumentType.layout}">
         <ui:include src="/incl/document_editor.xhtml" />
       </c:if>

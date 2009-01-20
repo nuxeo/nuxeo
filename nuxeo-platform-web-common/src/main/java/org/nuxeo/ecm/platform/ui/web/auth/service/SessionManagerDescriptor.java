@@ -27,17 +27,14 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationSessionM
 
 @XObject(value = "sessionManager")
 public class SessionManagerDescriptor implements Serializable {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
 
+    private static final long serialVersionUID = 1L;
 
     @XNode("@name")
     private String name;
 
     @XNode("@enabled")
-    Boolean enabled = true;
+    boolean enabled = true;
 
     @XNode("@class")
     Class<NuxeoAuthenticationSessionManager> className;
@@ -46,24 +43,12 @@ public class SessionManagerDescriptor implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Boolean getEnabled() {
+    public boolean getEnabled() {
         return enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
     }
 
     public Class<NuxeoAuthenticationSessionManager> getClassName() {
         return className;
-    }
-
-    public void setClassName(Class<NuxeoAuthenticationSessionManager> className) {
-        this.className = className;
     }
 
 }

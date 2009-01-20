@@ -35,7 +35,7 @@ public class FileImporterDescriptor implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @XNode("@enabled")
-    Boolean enabled = true;
+    boolean enabled = true;
 
     @XNode("@name")
     protected String name;

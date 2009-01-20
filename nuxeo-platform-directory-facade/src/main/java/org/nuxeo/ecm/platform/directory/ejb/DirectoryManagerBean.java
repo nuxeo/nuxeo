@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -19,22 +19,19 @@
 
 package org.nuxeo.ecm.platform.directory.ejb;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Local;
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
 import javax.ejb.Remote;
-import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Directory;
@@ -47,35 +44,29 @@ import org.nuxeo.ecm.directory.impl.DirectoryClientImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Facade Bean provide Remoting API for DirectoryService
+ * 
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
+ * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
  */
-@Stateful
-// XXX OG+GR: this bean is definitely not thread-safe.
-// think of it while removing the jboss specific annotation
-@SerializedConcurrentAccess
+@Stateless
 @Remote(DirectoryManager.class)
 @Local(DirectoryManager.class)
 public class DirectoryManagerBean implements DirectoryManager {
-
+	
     @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(DirectoryManagerBean.class);
+	private static final Log log = LogFactory.getLog(DirectoryManagerBean.class);
 
-    private static final Map<Long, Session> sessionMap = new HashMap<Long, Session>();
+    private static final Map<Long, Session> sessionMap = new ConcurrentHashMap<Long, Session>();
 
-    private static final Map<Long, String> sessionDirectoryNames = new HashMap<Long, String>();
+    private static final Map<Long, String> sessionDirectoryNames = new ConcurrentHashMap<Long, String>();
 
-    private DirectoryService directoryService;
+    private static final AtomicLong sessionIdCounter = new AtomicLong(0);
 
-    private final AtomicLong sessionIdCounter = new AtomicLong(0);
+    private transient DirectoryService directoryService;
 
-    @PostActivate
     @PostConstruct
     public void initialize() {
-        // UserService userService = (UserService) Framework.getRuntime()
-        // .getComponent(UserService.NAME);
-        // userManager = userService.getUserManager();
-        // sessionMap = new HashMap<Long, Session>();
         getService();
     }
 
@@ -83,21 +74,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         if (directoryService == null) {
             directoryService = Framework.getLocalService(DirectoryService.class);
         }
-
         return directoryService;
-    }
-
-    @PrePassivate
-    public void cleanup() {
-        directoryService = null;
-        for (Session session : sessionMap.values()) {
-            try {
-                session.close();
-            } catch (DirectoryException e) {
-                // ignore
-            }
-        }
-        sessionMap.clear();
     }
 
     private Session getSession(long sessionId) throws DirectoryException {
@@ -109,7 +86,7 @@ public class DirectoryManagerBean implements DirectoryManager {
                         "Could not find directory name while rebuilding session with id: "
                                 + sessionId);
             }
-            session = directoryService.open(directoryName);
+            session = getService().open(directoryName);
         }
         return session;
     }
@@ -352,26 +329,44 @@ public class DirectoryManagerBean implements DirectoryManager {
 
     public String getDirectoryIdField(String directoryName)
             throws DirectoryException {
-        return directoryService.getDirectoryIdField(directoryName);
+        return getService().getDirectoryIdField(directoryName);
     }
 
     public String getDirectoryPasswordField(String directoryName)
             throws DirectoryException {
-        return directoryService.getDirectoryPasswordField(directoryName);
+        return getService().getDirectoryPasswordField(directoryName);
     }
 
     public void registerDirectory(String directoryName, DirectoryFactory factory) {
-        directoryService.registerDirectory(directoryName, factory);
+        getService().registerDirectory(directoryName, factory);
     }
 
     public void unregisterDirectory(String directoryName,
             DirectoryFactory factory) {
-        directoryService.unregisterDirectory(directoryName, factory);
+        getService().unregisterDirectory(directoryName, factory);
     }
 
     public String getParentDirectoryName(String directoryName)
             throws DirectoryException {
-        return directoryService.getParentDirectoryName(directoryName);
+        return getService().getParentDirectoryName(directoryName);
+    }
+
+    public DocumentModel createEntry(long sessionId, DocumentModel entry)
+            throws DirectoryException {
+        try {
+            return getSession(sessionId).createEntry(entry);
+        } catch (Throwable e) {
+            throw DirectoryException.wrap(e);
+        }
+    }
+
+    public boolean hasEntry(long sessionId, String id)
+            throws DirectoryException {
+        try {
+            return getSession(sessionId).hasEntry(id);
+        } catch (Throwable e) {
+            throw DirectoryException.wrap(e);
+        }
     }
 
 }

@@ -307,8 +307,7 @@ public class IOManagerImpl implements IOManager {
                 zip.closeEntry();
             } catch (Exception e) {
                 // TODO fix this
-                log.error("Please check code handling entry " + entryName);
-                log.warn(e);
+                log.error("Please check code handling entry " + entryName, e);
             }
         }
         zip.close();

@@ -48,11 +48,12 @@ public class TestGen extends NXRuntimeTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core"); // for dublincore
-
-        deploy("test-uid-CoreExtensions.xml");
-
-        deploy("nxuidgenerator-bundle.xml");
-        deploy("nxuidgenerator-bundle-contrib.xml");
+        deployBundle("org.nuxeo.ecm.core.event");
+        deployBundle("org.nuxeo.ecm.core.event.compat");
+        
+        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests", "test-uid-CoreExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests", "nxuidgenerator-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests", "nxuidgenerator-bundle-contrib.xml");
 
         // define geide schema
         SchemaImpl sch = new SchemaImpl("geide");
@@ -145,7 +146,6 @@ public class TestGen extends NXRuntimeTestCase {
 
     /**
      * Test multiple UID properties set.
-     * @throws Exception
      */
     public void testUIDGenerator3_multi() throws Exception {
         // create Geide doc

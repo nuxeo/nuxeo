@@ -61,7 +61,6 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
     public List<DocumentModel> getPublishedPosts() throws ClientException {
         if (publishedPosts == null) {
             publishedPosts = new ArrayList<DocumentModel>();
-
             for (DocumentModel doc : getAllPosts()) {
                 if (ForumConstants.PUBLISHED_STATE.equals(doc.getCurrentLifeCycleState())) {
                     publishedPosts.add(doc);
@@ -74,7 +73,6 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
     public List<DocumentModel> getPendingPosts() throws ClientException {
         if (pendingPosts == null) {
             pendingPosts = new ArrayList<DocumentModel>();
-
             for (DocumentModel doc : getAllPosts()) {
                 if (ForumConstants.PENDING_STATE.equals(doc.getCurrentLifeCycleState())) {
                     pendingPosts.add(doc);
@@ -87,7 +85,6 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
     public DocumentModel getLastPublishedPost() throws ClientException {
         if (lastPublishedPost == null) {
             GregorianCalendar lastPostDate = null;
-
             for (DocumentModel post : getPublishedPosts()) {
                 GregorianCalendar postDate = (GregorianCalendar) post.getProperty(
                         "post", "creationDate");
@@ -103,14 +100,11 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
 
     protected List<DocumentModel> getSubComments(DocumentModel doc)
             throws ClientException {
-
         List<DocumentModel> allSubPosts = new ArrayList<DocumentModel>();
-
         CommentableDocument commentDoc = doc.getAdapter(CommentableDocument.class);
 
         if (commentDoc != null) {
             List<DocumentModel> childComments = commentDoc.getComments();
-
             for (DocumentModel childComment : childComments) {
                 allSubPosts.add(childComment);
                 allSubPosts.addAll(getSubComments(childComment));

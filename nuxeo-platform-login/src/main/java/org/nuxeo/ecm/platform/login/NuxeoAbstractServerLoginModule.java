@@ -100,7 +100,7 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
     }
 
     public void initialize(Subject subject, CallbackHandler callbackHandler,
-            Map sharedState, Map options) {
+            Map<String, ?> sharedState, Map<String, ?> options) {
         this.subject = subject;
         this.callbackHandler = callbackHandler;
         this.sharedState = sharedState;

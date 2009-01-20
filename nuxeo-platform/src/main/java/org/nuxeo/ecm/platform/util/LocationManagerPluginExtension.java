@@ -33,38 +33,17 @@ public class LocationManagerPluginExtension implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-//    @XNode("@class")
-//    String className;
-
     @XNode("locationName")
     protected String locationName;
 
     @XNode("locationEnabled")
-    protected Boolean locationEnabled;
+    protected boolean locationEnabled = true;
 
-    public LocationManagerPluginExtension() {
-    }
-
-    public LocationManagerPluginExtension(Boolean locationEnabled,
-            String locationName, String className) {
-        this.locationEnabled = locationEnabled;
-        this.locationName = locationName;
-//        this.className = className;
-    }
-
-/*    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
-*/
-    public Boolean getLocationEnabled() {
+    public boolean getLocationEnabled() {
         return locationEnabled;
     }
 
-    public void setLocationEnabled(Boolean locationEnabled) {
+    public void setLocationEnabled(boolean locationEnabled) {
         this.locationEnabled = locationEnabled;
     }
 

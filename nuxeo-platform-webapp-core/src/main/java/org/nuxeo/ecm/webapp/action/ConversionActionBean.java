@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webapp.action;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import javax.ejb.Remove;
 import javax.faces.context.FacesContext;
@@ -41,13 +40,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
-import org.nuxeo.ecm.platform.transform.api.TransformException;
-import org.nuxeo.ecm.platform.transform.api.TransformServiceDelegate;
-import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
-import org.nuxeo.ecm.platform.transform.interfaces.TransformServiceCommon;
+import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.cache.ThreadSafeCacheHolder;
 import org.nuxeo.runtime.api.Framework;
@@ -60,7 +57,12 @@ import org.nuxeo.runtime.api.Framework;
 @Transactional
 public class ConversionActionBean implements ConversionAction {
 
-    private static final Log log = LogFactory.getLog(ConversionActionBean.class);
+    private static final Log log = LogFactory
+            .getLog(ConversionActionBean.class);
+
+    protected static ConverterCheckResult any2PDFAvailability = null;
+
+    protected static String PDF_PREVIEW_CONVERTER = "any2pdf";
 
     @In(create = true, required = false)
     CoreSession documentManager;
@@ -77,7 +79,8 @@ public class ConversionActionBean implements ConversionAction {
     @RequestParameter
     private String filename;
 
-    protected static final ThreadSafeCacheHolder<Boolean> exportableToPDFCache = new ThreadSafeCacheHolder<Boolean>(20);
+    protected static final ThreadSafeCacheHolder<Boolean> exportableToPDFCache = new ThreadSafeCacheHolder<Boolean>(
+            20);
 
     @Remove
     public void destroy() {
@@ -102,48 +105,66 @@ public class ConversionActionBean implements ConversionAction {
         return blob.getMimeType();
     }
 
-    public boolean isExportableToPDF(Blob blob) {
-        boolean isSupported = false;
+    public void reCheckConverterAvailability() {
+        any2PDFAvailability = null;
+    }
 
+    public ConverterCheckResult getPdfConverterAvailability() throws Exception {
+        if (any2PDFAvailability == null) {
+            ConversionService cs = Framework
+                    .getService(ConversionService.class);
+            any2PDFAvailability = cs.isConverterAvailable(
+                    PDF_PREVIEW_CONVERTER, true);
+        }
+        return any2PDFAvailability;
+    }
+
+    public boolean isExportableToPDF(Blob blob) {
+        String mimetype = blob.getMimeType();
+        return isMimeTypeExportableToPDF(mimetype);
+    }
+
+    protected boolean isMimeTypeExportableToPDF(String mimetype) {
+        if (mimetype == null) {
+            return false;
+        }
         try {
-            if (blob != null) {
-                String mimetype = blob.getMimeType();
-                TransformServiceCommon nxt = TransformServiceDelegate.getRemoteTransformService();
-                isSupported = nxt.isMimetypeSupportedByPlugin("any2pdf",
+            ConverterCheckResult availability = getPdfConverterAvailability();
+
+            if (!availability.isAvailable()) {
+                return false;
+            } else {
+                return availability.getSupportedInputMimeTypes().contains(
                         mimetype);
             }
         } catch (Exception e) {
-            log.error("error asking the any2pdf plugin whether pdf conversion "
-                    + " is supported: " + e.getMessage(), e);
+            log.error("Error while testing PDF converter availability", e);
+            return false;
         }
-
-        return isSupported;
     }
 
     @WebRemote
     public boolean isFileExportableToPDF(String fieldName) {
         boolean isSupported = false;
-
         try {
             DocumentModel doc = getDocument();
-
-            Boolean cacheResult = exportableToPDFCache.getFromCache(doc, fieldName);
+            Boolean cacheResult = exportableToPDFCache.getFromCache(doc,
+                    fieldName);
             if (cacheResult == null) {
                 String mimetype = getMimetypeFromDocument(fieldName);
-                TransformServiceCommon nxt = TransformServiceDelegate.getRemoteTransformService();
-                isSupported = nxt.isMimetypeSupportedByPlugin("any2pdf", mimetype);
+                isSupported = isMimeTypeExportableToPDF(mimetype);
                 exportableToPDFCache.addToCache(doc, fieldName, isSupported);
             } else {
                 isSupported = cacheResult;
             }
-        } catch (TransformException e) {
-            log.error("error asking the any2pdf plugin whether " + fieldName
-                    + " is supported: ", e);
+            return isSupported;
         } catch (Exception e) {
-            log.error(e);
+            log
+                    .error(
+                            "Error while trying to check PDF conversion against a filename",
+                            e);
+            return false;
         }
-
-        return isSupported;
     }
 
     @WebRemote
@@ -152,12 +173,11 @@ public class ConversionActionBean implements ConversionAction {
             if (fileFieldFullName == null) {
                 return null;
             }
-
-            Blob blob = (Blob) getDocument().getPropertyValue(fileFieldFullName);
-
-            TransformServiceCommon nxt = Framework.getService(TransformServiceCommon.class);
-            List<TransformDocument> resultingDocs = nxt.transform("any2pdf",
-                    null, blob);
+            ConversionService cs = Framework
+                    .getService(ConversionService.class);
+            BlobHolder result = cs.convert(PDF_PREVIEW_CONVERTER,
+                    new DocumentBlobHolder(getDocument(), fileFieldFullName),
+                    null);
 
             String name;
             if (filename == null || filename.equals("")) {
@@ -175,14 +195,15 @@ public class ConversionActionBean implements ConversionAction {
                 name = name.replace(sub, "pdf");
             }
 
-            if (resultingDocs.isEmpty()) {
-                log.error("Transform service didn't return any resulting documents which is not normal.");
+            if (result == null) {
+                log
+                        .error("Transform service didn't return any resulting documents which is not normal.");
                 return "pdf_generation_error";
             }
 
             // converting the result into byte[] to be able to put it in the
             // response
-            InputStream inputStream = resultingDocs.get(0).getBlob().getStream();
+            InputStream inputStream = result.getBlob().getStream();
             int length = inputStream.available();
             byte[] array = new byte[length];
             int offset = 0;
@@ -203,31 +224,6 @@ public class ConversionActionBean implements ConversionAction {
     }
 
     /**
-     * @deprecated use LiveEditBootstrapHelper.isCurrentDocumentLiveEditable()
-     *             instead
-     */
-    @Deprecated
-    @WebRemote
-    public boolean isFileOnlineEditable(String fieldName) {
-        try {
-            boolean isOnlineEditable;
-            String mimetype = getMimetypeFromDocument(fieldName);
-            MimetypeRegistry mimeTypeService = Framework.getService(MimetypeRegistry.class);
-            MimetypeEntry mimetypeEntry = mimeTypeService.getMimetypeEntryByMimeType(mimetype);
-            if (mimetypeEntry == null) {
-                isOnlineEditable = false;
-            } else {
-                isOnlineEditable = mimetypeEntry.isOnlineEditable();
-            }
-            return isOnlineEditable;
-        } catch (Exception e) {
-            log.error("error getting the mimetype entry for " + fieldName
-                    + ": " + e.getMessage(), e);
-            return false;
-        }
-    }
-
-    /**
      * Simply sends what to be downloaded or shown at screen via
      * HttpServletResponse.
      *
@@ -240,7 +236,8 @@ public class ConversionActionBean implements ConversionAction {
     private void writeResponse(String header, String headerContent,
             String contentType, byte[] value) throws IOException {
         FacesContext context = FacesContext.getCurrentInstance();
-        HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
+        HttpServletResponse response = (HttpServletResponse) context
+                .getExternalContext().getResponse();
         response.setHeader(header, headerContent);
         response.setContentType(contentType);
         response.getOutputStream().write(value);
@@ -248,7 +245,7 @@ public class ConversionActionBean implements ConversionAction {
     }
 
     public void initialize() {
-        log.info("initializing FileViewAction");
+        // NOP
     }
 
 }

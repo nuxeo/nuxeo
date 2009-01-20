@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Simple download servlet used for big files that can not be downloaded from
- * within the JSF context (because of Buffered ResponseWrapper).
+ * within the JSF context (because of buffered ResponseWrapper).
  *
  * @author tiry
  */
@@ -67,9 +67,7 @@ public class DownloadServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String requestURI = req.getRequestURI();
-
         String filePath = requestURI.replace("/nuxeo/nxbigfile/", "");
-
         String[] pathParts = filePath.split("/");
 
         String repoName = pathParts[0];

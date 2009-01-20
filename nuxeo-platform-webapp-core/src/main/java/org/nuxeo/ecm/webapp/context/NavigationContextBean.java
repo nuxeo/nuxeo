@@ -150,7 +150,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
 
     private List<PathElement> parents;
 
-
     @In(create = true, required = false)
     private transient CoreSession documentManager;
 
@@ -174,7 +173,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
      * Implementation details: the path to current domain
      * is deduced from the path of current document
      * (hardcoded rule that it'd be the first element).
-     *
+     * <p>
      * If current document is null, then the first document found is
      * used instead.
      */
@@ -494,8 +493,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
     /**
      * Switches to a new server location by updating the context and updating to
      * the CoreSession (DocumentManager).
-     *
-     * @throws ClientException
      */
     public void setCurrentServerLocation(RepositoryLocation serverLocation)
             throws ClientException {
@@ -523,8 +520,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
     /**
      * Returns the current documentManager if any or create a new session to the
      * current location.
-     *
-     * @throws ClientException
      */
     public CoreSession getOrCreateDocumentManager() throws ClientException {
         if (documentManager != null) {
@@ -593,10 +588,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         return getCurrentSuperSpace();
     }
 
-    /**
-     * @param workspaceDocModel
-     * @throws ClientException
-     */
     public void setCurrentWorkspace(DocumentModel workspaceDocModel)
             throws ClientException {
 
@@ -632,9 +623,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
     /**
      * Updates variables according to hierachy rules and to the new
      * currentDocument.
-     *
-     * @throws ClientException
-     *
      */
     protected void updateContextVariables() throws ClientException {
 
@@ -689,7 +677,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
                 }
 
                 if (docType != null && docType.equals("Domain")) {
-
                     if (!docModel.equals(currentDomain)) {
                         // update the currentDomain
                         currentDomain = docModel;

@@ -40,7 +40,10 @@ import org.nuxeo.ecm.platform.transform.api.TransformException;
  * @see Plugin
  * @see Transformer
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ *
+ * @deprecated TransformationService is deprecated use {@link org.nuxeo.ecm.core.convert.api.ConversionService}
  */
+@Deprecated
 public interface TransformServiceCommon extends Serializable {
 
     /**

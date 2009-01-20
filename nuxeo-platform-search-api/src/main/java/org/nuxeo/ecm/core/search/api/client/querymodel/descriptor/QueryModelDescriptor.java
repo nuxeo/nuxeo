@@ -221,7 +221,7 @@ public class QueryModelDescriptor {
                     appendQuotedStringList(queryBuilder,
                             (List<?>) params[i]);
                 } else if (params[i] instanceof Boolean) {
-                    boolean b = (Boolean) params[i];
+                    boolean b = ((Boolean) params[i]).booleanValue();
                     queryBuilder.append(b ? 1 : 0);
                 } else if (params[i] instanceof Number) {
                     queryBuilder.append(params[i]);

@@ -158,7 +158,7 @@ public class ThreadActionBean extends InputController implements ThreadAction {
         return docThread;
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings( { "unchecked" })
     public List<String> getModerators() {
         DocumentModel currentThread = navigationContext.getCurrentDocument();
         try {
@@ -174,8 +174,8 @@ public class ThreadActionBean extends InputController implements ThreadAction {
         List<String> moderators = getModerators();
 
         boolean moderator = false;
-        if (isPrincipalGroupModerator()
-                || moderators != null && moderators.contains(principal.getName())) {
+        if (isPrincipalGroupModerator() || moderators != null
+                && moderators.contains(principal.getName())) {
             moderator = true;
         }
         return moderator;
@@ -352,15 +352,16 @@ public class ThreadActionBean extends InputController implements ThreadAction {
 
     public boolean isThreadModerated(DocumentModel thread)
             throws ClientException {
-        thread = getDocumentThreadModel(thread.getRef());
         if (thread != null) {
-            Boolean moderation = (Boolean) thread.getProperty("thread",
-                    "moderated");
-            if (moderation != null) {
-                return moderation;
+            thread = getDocumentThreadModel(thread.getRef());
+            if (thread != null) {
+                Boolean moderation = (Boolean) thread.getProperty("thread",
+                        "moderated");
+                if (moderation != null) {
+                    return moderation;
+                }
             }
         }
-
         return false;
     }
 

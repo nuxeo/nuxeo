@@ -41,7 +41,7 @@ public class UnicityExtension  implements Serializable {
     protected Boolean enabled;
 
     @XNode("computeDigest")
-    protected Boolean computeDigest = false;
+    protected Boolean computeDigest = Boolean.FALSE;
 
     @XNodeList(value = "field", type = ArrayList.class, componentType = String.class)
     protected List<String> fields = DEFAULT_FIELDS;
@@ -59,8 +59,8 @@ public class UnicityExtension  implements Serializable {
     }
 
     public Boolean getComputeDigest() {
-        if (enabled) {
-            return true;
+        if (Boolean.TRUE.equals(enabled)) {
+            return enabled;
         }
         return computeDigest;
     }

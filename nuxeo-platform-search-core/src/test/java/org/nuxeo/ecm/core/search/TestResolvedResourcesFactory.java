@@ -77,7 +77,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        //deploy("ServiceManagement.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "RepositoryManager.xml");
 
@@ -89,8 +88,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
                 "LifeCycleService.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "LifeCycleServiceExtensions.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "CoreEventListenerService.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "PlatformService.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests",
@@ -968,14 +965,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
     public void testPdfIndexation() throws Exception {
         DocumentModel doc = createSampleFileWithPdfBlob();
         service.index(computeResourcesFor(doc), true);
-    }
-
-    public void xtestReindexAll() throws Exception {
-        final int NB_DOCS = 100;
-        for (int i = 0; i < NB_DOCS; i++) {
-            createSampleFileTextPlain();
-        }
-        service.reindexAll("demo", "/", false);
     }
 
 }

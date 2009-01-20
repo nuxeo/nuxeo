@@ -42,16 +42,14 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.DataModelImpl;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntrySource;
@@ -72,9 +70,8 @@ import org.nuxeo.ecm.directory.sql.repository.Update;
  * @author glefter@nuxeo.com
  *
  */
-public class SQLSession implements Session, EntrySource {
+public class SQLSession extends BaseSession implements Session, EntrySource {
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(SQLSession.class);
 
     protected final Map<String, Field> schemaFieldMap;
@@ -127,20 +124,16 @@ public class SQLSession implements Session, EntrySource {
         return directory;
     }
 
-    private DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
-        DataModel dataModel = new DataModelImpl(schemaName, fieldMap);
-
-        String id = String.valueOf(fieldMap.get(idField));
-        DocumentModelImpl docModel = new DocumentModelImpl(sid, schemaName, id,
-                null, null, null, new String[] { schemaName }, null);
+    protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
+        String id = String.valueOf(fieldMap.get(getIdField()));
         try {
-            dataModel.setMap(fieldMap);
+            DocumentModel docModel = BaseSession.createEntryModel(sid,
+                    schemaName, id, fieldMap);
+            return docModel;
         } catch (PropertyException e) {
-            throw new ClientRuntimeException(e);
+            log.error(e);
+            return null;
         }
-        docModel.addDataModel(dataModel);
-
-        return docModel;
     }
 
     private void acquireConnection() throws DirectoryException {
@@ -158,8 +151,19 @@ public class SQLSession implements Session, EntrySource {
             throws ClientException {
         acquireConnection();
         if (idGenerator != null) {
-            Integer idValue = idGenerator.nextId();
+            Integer idValue = Integer.valueOf(idGenerator.nextId());
             fieldMap.put(idField, idValue);
+        } else {
+            // check id that was given
+            Object rawId = fieldMap.get(idField);
+            if (rawId == null) {
+                throw new DirectoryException("Missing id");
+            }
+            String id = String.valueOf(rawId);
+            if (hasEntry(id)) {
+                throw new DirectoryException(String.format(
+                        "Entry with id %s already exists", id));
+            }
         }
 
         // first step: insert stored fields
@@ -224,6 +228,8 @@ public class SQLSession implements Session, EntrySource {
         return directory.getCache().getEntry(id, this, fetchReferences);
     }
 
+    @Deprecated
+    // Not used. Remove in 5.2
     public DocumentModel getEntryFromSource(String id)
             throws DirectoryException {
         return getEntry(id, true);
@@ -233,8 +239,7 @@ public class SQLSession implements Session, EntrySource {
             throws DirectoryException {
         acquireConnection();
         // String sql = String.format("SELECT * FROM %s WHERE %s = ?",
-        // tableName,
-        // idField);
+        // tableName, idField);
         Select select = new Select(dialect);
         select.setFrom(table.getQuotedName(dialect));
         select.setWhat("*");
@@ -629,7 +634,7 @@ public class SQLSession implements Session, EntrySource {
             if ("string".equals(typeName)) {
                 return rs.getString(columnName);
             } else if ("integer".equals(typeName) || "long".equals(typeName)) {
-                return rs.getLong(columnName);
+                return Long.valueOf(rs.getLong(columnName));
             } else if ("date".equals(typeName)) {
                 Timestamp ts = rs.getTimestamp(columnName);
                 if (ts == null) {
@@ -663,13 +668,13 @@ public class SQLSession implements Session, EntrySource {
             } else if ("integer".equals(typeName) || "long".equals(typeName)) {
                 long longValue;
                 if (value instanceof Integer) {
-                    longValue = (Integer) value;
+                    longValue = ((Integer) value).intValue();
                     ps.setLong(index, longValue);
                 } else if (value instanceof Long) {
-                    longValue = (Long) value;
+                    longValue = ((Long) value).longValue();
                     ps.setLong(index, longValue);
                 } else if (value instanceof String) {
-                    longValue = Long.valueOf((String) value);
+                    longValue = Long.valueOf((String) value).longValue();
                     ps.setLong(index, longValue);
                 } else if (value == null) {
                     ps.setNull(index, Types.INTEGER);
@@ -770,12 +775,36 @@ public class SQLSession implements Session, EntrySource {
     }
 
     public boolean isReadOnly() {
-        return directory.getConfig().getReadOnly();
+        return Boolean.TRUE.equals(directory.getConfig().getReadOnly());
     }
 
     public DocumentModelList query(Map<String, Object> filter,
             Set<String> fulltext) throws ClientException {
         return query(filter, fulltext, new HashMap<String, String>());
+    }
+
+    public DocumentModel createEntry(DocumentModel entry)
+            throws ClientException {
+        Map<String, Object> fieldMap = entry.getProperties(schemaName);
+        return createEntry(fieldMap);
+    }
+
+    public boolean hasEntry(String id) throws ClientException {
+        acquireConnection();
+        Select select = new Select(dialect);
+        select.setFrom(table.getQuotedName(dialect));
+        select.setWhat("*");
+        select.setWhere(table.getPrimaryColumn().getQuotedName(dialect)
+                + " = ?");
+        String sql = select.getStatement();
+        try {
+            PreparedStatement ps = sqlConnection.prepareStatement(sql);
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            throw new DirectoryException("hasEntry failed", e);
+        }
     }
 
     /**

@@ -28,7 +28,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -44,6 +43,7 @@ import org.nuxeo.ecm.core.listener.EventListener;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * DublinCoreStorage Test Case.
@@ -62,8 +62,8 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
-                "CoreService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
+
         deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
                 "test-CoreExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
@@ -76,6 +76,9 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
                 "nxdublincore-bundle.xml");
 
+        deployBundle("org.nuxeo.ecm.core.event");
+        deployBundle("org.nuxeo.ecm.core.event.compat");
+
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         context.put("username", "Administrator");
         remote = CoreInstance.getInstance().open("demo", context);
@@ -85,7 +88,7 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
     }
 
     private static CoreEventListenerService getListenerService() {
-        return NXCore.getCoreEventListenerService();
+        return Framework.getLocalService(CoreEventListenerService.class);
     }
 
     public void testServiceRegistration() {
@@ -136,7 +139,8 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         Calendar modified = (Calendar) dm2.getData("modified");
         assertNotNull(modified);
 
-        assertTrue(modified.getTime() + " !> " +created.getTime(), modified.after(created));
+        assertTrue(modified.getTime() + " !> " + created.getTime(),
+                modified.after(created));
     }
 
     // Wait until we can have a real list management
@@ -186,6 +190,8 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
                 "contributors");
         contributorsList = Arrays.asList(contributorsArray);
         assertTrue(contributorsList.contains("Jacky"));
+        assertEquals("Administrator", childFile3.getProperty("dublincore",
+                "creator"));
     }
 
 }

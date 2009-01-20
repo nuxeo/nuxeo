@@ -45,9 +45,9 @@ public class TestIndexableResources extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib(TestConstants.BUNDLE,
+        deployContrib(Constants.BUNDLE,
                 "OSGI-INF/nxsearch-framework.xml");
-        deployContrib(TestConstants.TEST_BUNDLE,
+        deployContrib(Constants.TEST_BUNDLE,
                 "nxsearch-test-contrib.xml");
 
         service = (SearchServiceInternals) Framework.getService(

@@ -32,11 +32,9 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 
 /**
- * Abstract implementation for
- *
- * @link {@link IOResourceAdapter}.
- *       <p>
- *       Offers helper methods for properties.
+ * Abstract implementation for {@link IOResourceAdapter}.
+ * <p>
+ * Offers helper methods for properties.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */

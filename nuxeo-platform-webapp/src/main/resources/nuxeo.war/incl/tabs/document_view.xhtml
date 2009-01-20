@@ -9,6 +9,8 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
+<script src="scripts/infoPopup.js"></script>
+
 <h3><h:outputText
   value="#{messages['label.content.header.documentProperties']}" /></h3>
 
@@ -45,12 +47,18 @@
         <nxh:outputLink
           value="#{nxd:fileUrl('downloadFile', currentDocument, field.fullName, currentDocument.file.filename)}">
           <nxh:graphicImage value="#{nxd:fileIconPath(currentDocument[field.schemaName][field.fieldName])}"
-            rendered="#{! empty nxd:fileIconPath(currentDocument[field.schemaName][field.fieldName])}" 
-            title="#{nxd:fileDescription(currentDocument, 'file:content', 'file:filename')}" 
+            rendered="#{! empty nxd:fileIconPath(currentDocument[field.schemaName][field.fieldName])}"
+            title="#{nxd:fileDescription(currentDocument, 'file:content', 'file:filename')}"
             alt="#{nxd:fileDescription(currentDocument, 'file:content', 'file:filename')}"/>
           <nxh:outputText value="#{currentDocument.file.filename}" />
         </nxh:outputLink>
 
+
+
+
+
+
+      <c:if test="#{conversionActions.pdfConverterAvailability.available}">
         <nxu:methodResult name="hasPDFCapabilities" value="#{conversionActions.isFileExportableToPDF(field.fullName)}">
           <h:panelGroup rendered="#{hasPDFCapabilities}">
             <h:outputText value=" | " />
@@ -61,6 +69,12 @@
             </h:commandLink>
           </h:panelGroup>
         </nxu:methodResult>
+      </c:if>
+     <c:if test="#{!conversionActions.pdfConverterAvailability.available}">
+       <h:outputText value=" | " />
+       <h:outputText value="#{messages['label.document.generatePdf']}" />
+       <img src="icons/info.gif" onclick="showInfoMessagePopup('conversionInfoPopup')"/>
+     </c:if>
 
         <nxu:methodResult name="isLiveEditable"
           value="#{liveEditHelper.isCurrentDocumentLiveEditable(field.schemaName, field.fieldName)}">
@@ -142,6 +156,27 @@
   </h:panelGroup>
 </h:panelGrid>
 </nxu:methodResult>
+
+ <c:if test="#{!conversionActions.pdfConverterAvailability.available}">
+   <div id="conversionInfoPopup" style="display:none">
+   <h2>
+   <h:outputText
+      value="#{messages['heading.error.pdf.openOffice']}" />
+   </h2>
+   <textarea readonly="readonly" cols="80" rows="3">
+    <h:outputText
+      value="#{messages['message.error.pdf.openOffice']}" />
+   </textarea>
+   <br/>
+   <h:commandLink action="pdf_generation_error"><h:outputText value="#{messages['label.pdf.openOffice.setup']}" /></h:commandLink><br/>
+   <h:outputText value="#{messages['label.pdf.openOffice.error']}" /><br/>
+   <textarea readonly="readonly" cols="80" rows="2">
+     <h:outputText value="#{conversionActions.pdfConverterAvailability.errorMessage}"></h:outputText>
+   </textarea><br/>
+   <h:commandLink action="#{conversionActions.reCheckConverterAvailability}"><h:outputText value="#{messages['label.pdf.openOffice.refresh']}" /></h:commandLink>
+   </div>
+ </c:if>
+
 
 <ui:include src="/incl/document_publishing_actions.xhtml" />
 

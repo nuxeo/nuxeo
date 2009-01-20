@@ -82,7 +82,6 @@ public abstract class AbstractJRBasedTextExtractorPlugin extends AbstractPlugin 
         File f = null;
         OutputStream fas = null;
         Reader reader = null;
-
         try {
             TextExtractor extractor = getExtractor();
 

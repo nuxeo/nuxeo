@@ -53,7 +53,7 @@ public class TestSearchEngine extends RepositoryTestCase {
 
     private static final String BACKEND_NAME = "fake";
 
-    private static final String CONF_NAME = "compass-test.cfg.xml";
+    private static final String CONF_NAME = "fake.xml";
 
     private static final String DOC_SCHEMA_CONF_NAME = "dublincore";
 
@@ -69,7 +69,6 @@ public class TestSearchEngine extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.search.tests", "DemoRepository.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests", "LifeCycleService.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests", "LifeCycleServiceExtensions.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests", "CoreEventListenerService.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests", "PlatformService.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests", "DefaultPlatform.xml");
 
@@ -404,7 +403,7 @@ public class TestSearchEngine extends RepositoryTestCase {
 
         Map<String, IndexableResourceDataConf> fields = conf.getIndexableFields();
         // do no more assume static fields count - schemas are dynamic and may change over time
-        log.error("fields content : "+fields);
+        // log.error("fields content : "+fields);
         assertEquals(7, fields.size());
 
         IndexableResourceDataConf fconf = fields.get("filename");

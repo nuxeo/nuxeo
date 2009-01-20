@@ -35,9 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.api.security.PolicyService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -74,14 +72,11 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.F
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.IndexableDocType;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.IndexableDocTypeDescriptor;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.ResourceType;
-import org.nuxeo.ecm.core.search.api.indexingwrapper.DocumentModelIndexingWrapper;
 import org.nuxeo.ecm.core.search.api.internals.IndexingThreadPoolDescriptor;
 import org.nuxeo.ecm.core.search.api.internals.SearchPolicyDescriptor;
 import org.nuxeo.ecm.core.search.api.internals.SearchServiceInternals;
 import org.nuxeo.ecm.core.search.api.security.SearchPolicy;
-import org.nuxeo.ecm.core.search.api.security.SearchPolicyService;
 import org.nuxeo.ecm.core.search.backend.SearchEngineBackendDescriptor;
-import org.nuxeo.ecm.core.search.threading.IndexingThreadPool;
 import org.nuxeo.ecm.core.search.transaction.Transactions;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -693,15 +688,6 @@ public class SearchServiceImpl extends DefaultComponent implements
             String backendName = defaultBackendName;
             SearchEngineBackend backend = getSearchEngineBackendByName(backendName);
             if (backend != null) {
-                // old search policy
-                PolicyService policyService = Framework.getLocalService(PolicyService.class);
-                if (policyService != null) {
-                    SearchPolicyService searchPolicyService = (SearchPolicyService) policyService.getSearchPolicy();
-                    if (searchPolicyService != null) {
-                        nxqlQuery = searchPolicyService.applyPolicy(nxqlQuery);
-                    }
-                }
-                // new search policy
                 List<SearchPolicy> policies = getSearchPolicies();
                 for (SearchPolicy policy : policies) {
                     nxqlQuery = policy.applyPolicy(nxqlQuery);
@@ -997,18 +983,11 @@ public class SearchServiceImpl extends DefaultComponent implements
     }
 
     public long getIndexingWaitingQueueSize() {
-        return IndexingThreadPool.getQueueSize();
+        return 0;
     }
 
     public int getNumberOfIndexingThreads() {
         return threadPoolSizeMax;
-    }
-
-    public void indexInThread(DocumentModel dm, Boolean recursive,
-            boolean fulltext) throws IndexingException {
-        // get the wrapper if available
-        dm = dm.getAdapter(DocumentModelIndexingWrapper.class);
-        IndexingThreadPool.index(dm, recursive, fulltext);
     }
 
     public void closeSession(String sid) {
@@ -1080,51 +1059,15 @@ public class SearchServiceImpl extends DefaultComponent implements
 
     public void reindexAll(String repoName, String path, boolean fulltext)
             throws IndexingException {
-
-        try {
-            CoreSession core = getCoreSession(repoName);
-
-            DocumentModel dm;
-            if (path == null || path.length() == 0) {
-                dm = core.getRootDocument();
-            } else {
-                dm = core.getDocument(new PathRef(path));
-            }
-
-            // Launch a thread for the iteration so that it goes out directly.
-            IndexingThreadPool.reindexAll(dm);
-
-            // Do not return before at least one task has been executed.
-            while (!IndexingThreadPool.isReindexing()) {
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException e) {
-                    throw new IndexingException(e);
-                }
-            }
-        } catch (Exception e) {
-            throw new IndexingException("Recursive indexing failed, path=" +
-                    path, e);
-        }
+        log.error("reindexAll is deprecated and does nothing");
     }
 
     public int getActiveIndexingTasks() {
-        // Indexing thread pool should be part of the search service in the
-        // future. Here, we assume this is on the same node which is the case
-        // right now.
-        return IndexingThreadPool.getActiveIndexingTasks();
+        return 0;
     }
 
     public long getTotalCompletedIndexingTasks() {
-        // Indexing thread pool should be part of the search service in the
-        // future. Here, we assume this is on the same node which is the case
-        // right now.
-        return IndexingThreadPool.getTotalCompletedIndexingTasks();
-    }
-
-    public void indexInThread(ResolvedResources sources)
-            throws IndexingException {
-        IndexingThreadPool.index(sources);
+        return 0;
     }
 
     public boolean isReindexingAll() {

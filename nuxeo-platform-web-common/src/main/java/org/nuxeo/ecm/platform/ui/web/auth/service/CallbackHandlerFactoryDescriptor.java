@@ -59,8 +59,4 @@ public class CallbackHandlerFactoryDescriptor implements Serializable {
         return className;
     }
 
-    public void setClassName(Class<NuxeoCallbackHandlerFactory> className) {
-        this.className = className;
-    }
-
 }

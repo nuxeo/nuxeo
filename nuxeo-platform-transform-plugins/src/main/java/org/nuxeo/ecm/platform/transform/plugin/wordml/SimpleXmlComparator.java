@@ -94,9 +94,11 @@ public final class SimpleXmlComparator {
         return compareXmlDocs(doc1, doc2);
     }
 
-    public static boolean compareXmlDocs(Document doc1, Document doc2) {
+    private static boolean compareXmlDocs(Document doc1, Document doc2) {
         DiffInfo info = compareNodes("/", doc1, doc2);
-        log.debug(info.getInfo());
+        if (log.isDebugEnabled()) {
+            log.debug(info.getInfo());
+        }
         return info.equal;
     }
 

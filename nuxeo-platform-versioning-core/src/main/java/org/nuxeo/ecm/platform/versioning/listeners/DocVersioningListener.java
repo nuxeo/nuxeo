@@ -226,18 +226,17 @@ public class DocVersioningListener extends AbstractEventListener implements
     }
 
     /**
-     * Doesn't return null. if the service is not available an exception is
+     * Doesn't return null. If the service is not available, an exception is
      * thrown so the caller code won't need to check.
      *
-     * @return
-     * @throws VersioningException
+     * @return the versioning service
+     * @throws VersioningException if the versioning service was not found
      */
     private static VersioningService getVerService() throws VersioningException {
         VersioningService service = ServiceHelper.getVersioningService();
         if (service == null) {
             throw new VersioningException("VersioningService service not found");
         }
-
         return service;
     }
 
@@ -263,9 +262,7 @@ public class DocVersioningListener extends AbstractEventListener implements
     private static VersionChangeRequest createAutoChangeRequest(
             DocumentModel doc) {
 
-        final String logPrefix = "<createAutoChangeRequest> ";
-
-        log.debug(logPrefix);
+        log.debug("<createAutoChangeRequest> ");
 
         final VersionChangeRequest req = new BasicVersionChangeRequest(
                 VersionChangeRequest.RequestSource.AUTO, doc) {
@@ -283,9 +280,7 @@ public class DocVersioningListener extends AbstractEventListener implements
     private static VersionChangeRequest createEditChangeRequest(
             DocumentModel doc, final VersioningActions incOption) {
 
-        final String logPrefix = "<createEditChangeRequest> ";
-
-        log.debug(logPrefix);
+        log.debug("<createEditChangeRequest> ");
 
         final VersionChangeRequest req = new BasicVersionChangeRequest(
                 VersionChangeRequest.RequestSource.EDIT, doc) {

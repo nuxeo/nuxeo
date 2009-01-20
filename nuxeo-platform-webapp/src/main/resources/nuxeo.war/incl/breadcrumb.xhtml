@@ -11,13 +11,12 @@
 <div class="printButton">
 <ui:include src="/incl/document_actions_upperbuttons.xhtml"/>
 <script type="text/javascript">
-function printView()
-{
+function printView() {
   baseURL=window.location.href;
-  if (baseURL.indexOf("?")==-1){
+  if (baseURL.indexOf("?")==-1) {
     baseURL+='?';
   }
-  if (baseURL.indexOf("conversationId")==-1){
+  if (baseURL.indexOf("conversationId")==-1) {
     baseURL+='currentConversationId='+currentConversationId;
   }
   window.open(baseURL+'&amp;theme=default/print','_blank')
@@ -66,7 +65,7 @@ function printView()
   </f:subview>
   </h:form>
 </div>
-<div style="clear:both"></div>
 
+<div style="clear:both"></div>
 
 </div>

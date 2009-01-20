@@ -101,10 +101,10 @@ public interface NotificationManager {
      */
     void sendDocumentByMail(DocumentModel doc,
             String freemarkerTemplateName, String subject, String comment,
-            NuxeoPrincipal sender, List<String> sendto);
+            NuxeoPrincipal sender, List<String> sendTo);
 
     List<Notification> getNotificationsForSubscriptions(String parentType);
 
-
     List<Notification> getNotificationsForEvents(String eventId);
+
 }

@@ -22,7 +22,7 @@
                     value="#{actions}"
                     rowIndexVar="row"
                     rowCountVar="rowCount">
-        <h:outputText value=" | " rendered="#{row!=(rowCount-1)}"/>
+        <h:outputText value=" | " rendered="#{row!=rowCount}"/>
         <nxh:commandLink action="#{action.getLink()}">
           <h:outputText value="#{messages[action.label]}" />
         </nxh:commandLink>
@@ -36,7 +36,7 @@
                     value="#{actions}"
                     rowIndexVar="row"
                     rowCountVar="rowCount">
-        <h:outputText value=" | " rendered="#{row!=(rowCount-1)}"/>
+        <h:outputText value=" | " rendered="#{row!=rowCount}"/>
 
         <nxh:commandLink action="#{action.getLink()}" rendered="#{fn:startsWith(action.link,'#')}">
           <h:outputText value="#{messages[action.label]}" />

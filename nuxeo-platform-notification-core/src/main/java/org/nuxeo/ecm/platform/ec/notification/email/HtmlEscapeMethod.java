@@ -28,7 +28,6 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
- *
  */
 public class HtmlEscapeMethod implements TemplateMethodModel {
 
@@ -36,7 +35,8 @@ public class HtmlEscapeMethod implements TemplateMethodModel {
         if (arg0.size() != 1) {
             throw new IllegalArgumentException();
         }
-        String str = (String)arg0.get(0);
+        String str = (String) arg0.get(0);
         return StringEscapeUtils.escapeHtml(str);
     }
+
 }

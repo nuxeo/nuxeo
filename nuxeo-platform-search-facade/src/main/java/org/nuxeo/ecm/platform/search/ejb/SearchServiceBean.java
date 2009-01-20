@@ -349,15 +349,6 @@ public class SearchServiceBean implements SearchService {
         }
     }
 
-    public void indexInThread(DocumentModel dm, Boolean recursive,
-            boolean fulltext) throws IndexingException {
-        if (getSearchService() != null) {
-            getSearchService().indexInThread(dm, recursive, fulltext);
-        } else {
-            log.error("Cannot find core search service....");
-        }
-    }
-
     public void closeSession(String sid) {
         if (getSearchService() != null) {
             getSearchService().closeSession(sid);
@@ -409,6 +400,7 @@ public class SearchServiceBean implements SearchService {
         }
     }
 
+    @Deprecated
     public void reindexAll(String repoName, String path, boolean fulltext)
             throws IndexingException {
         if (getSearchService() != null) {
@@ -433,15 +425,6 @@ public class SearchServiceBean implements SearchService {
         } else {
             log.error("Cannot find core search service....");
             return 0;
-        }
-    }
-
-    public void indexInThread(ResolvedResources sources)
-            throws IndexingException {
-        if (getSearchService() != null) {
-            getSearchService().indexInThread(sources);
-        } else {
-            log.error("Cannot find core search service....");
         }
     }
 

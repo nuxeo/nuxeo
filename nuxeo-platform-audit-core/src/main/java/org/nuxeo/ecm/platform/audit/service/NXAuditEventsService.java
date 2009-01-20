@@ -68,7 +68,7 @@ import com.sun.el.ExpressionFactoryImpl;
 
 /**
  * Event service configuration.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class NXAuditEventsService extends DefaultComponent implements
@@ -309,6 +309,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         entry.setPrincipalName(message.getPrincipalName());
         entry.setCategory(message.getCategory());
         entry.setDocLifeCycle(message.getDocCurrentLifeCycle());
+        entry.setComment(message.getComment());
 
         doPutExtendedInfos(entry, message, source, principal);
         return entry;
@@ -325,6 +326,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         entry.setDocPath(document.getPathAsString());
         entry.setDocType(document.getType());
         entry.setPrincipalName(principal.getName());
+        entry.setComment(event.getComment());
         try {
             if (document.isLifeCycleLoaded())
                 entry.setDocLifeCycle(document.getCurrentLifeCycleState());

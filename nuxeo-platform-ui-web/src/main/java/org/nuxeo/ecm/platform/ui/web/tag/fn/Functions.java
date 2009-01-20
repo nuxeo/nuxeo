@@ -150,6 +150,7 @@ public final class Functions {
     @SuppressWarnings("unchecked")
     public static String userFullName(String username) {
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+
         // empty user name is current user
         if (username == null || username.length() == 0) {
             username = externalContext.getUserPrincipal().getName();
@@ -182,7 +183,7 @@ public final class Functions {
     }
 
     // this should be a method of the principal itself
-    protected static String principalFullName(NuxeoPrincipal principal) {
+    public static String principalFullName(NuxeoPrincipal principal) {
         String first = principal.getFirstName();
         String last = principal.getLastName();
         if (first == null || first.length() == 0) {

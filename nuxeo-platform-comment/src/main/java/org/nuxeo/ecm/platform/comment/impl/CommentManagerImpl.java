@@ -65,7 +65,7 @@ import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.QNameResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
-import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -77,12 +77,15 @@ public class CommentManagerImpl implements CommentManager {
     private static final Log log = LogFactory.getLog(CommentManagerImpl.class);
 
     final SimpleDateFormat timeFormat = new SimpleDateFormat("dd-HHmmss.S");
+
     final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
 
     final CommentServiceConfig config;
+
     final CommentConverter commentConverter;
 
     private CoreSession session;
+
     private String currentRepositoryName;
 
     public CommentManagerImpl(CommentServiceConfig config) {
@@ -191,8 +194,8 @@ public class CommentManagerImpl implements CommentManager {
      * @param comment The comment to update
      * @throws ClientException
      */
-    private static String updateAuthor(DocumentModel docModel, DocumentModel comment)
-            throws ClientException {
+    private static String updateAuthor(DocumentModel docModel,
+            DocumentModel comment) throws ClientException {
         // update the author if not set
         String author = (String) comment.getProperty("comment", "author");
         if (author == null) {
@@ -236,7 +239,13 @@ public class CommentManagerImpl implements CommentManager {
             throw new ClientException("failed to create comment", e);
         }
 
-        NuxeoPrincipal principal = new NuxeoPrincipalImpl(author);
+        NuxeoPrincipal principal = null;
+        try {
+            UserManager userManager = Framework.getService(UserManager.class);
+            principal = userManager.getPrincipal(author);
+        } catch (Exception e) {
+            log.error("Error building principal for notification", e);
+        }
         notifyEvent(docModel, CommentEvents.COMMENT_ADDED, null,
                 createdComment, principal);
 
@@ -346,10 +355,11 @@ public class CommentManagerImpl implements CommentManager {
 
     private static void setCommentPermissions(DocumentModel dm) {
         ACP acp = new ACPImpl();
-        ACE grantRead = new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ, true);
+        ACE grantRead = new ACE(SecurityConstants.EVERYONE,
+                SecurityConstants.READ, true);
         ACE grantRemove = new ACE("members", SecurityConstants.REMOVE, true);
         ACL acl = new ACLImpl();
-        acl.setACEs(new ACE[] { grantRead,grantRemove });
+        acl.setACEs(new ACE[] { grantRead, grantRemove });
         acp.addACL(acl);
         try {
             dm.setACP(acp, true);
@@ -373,7 +383,8 @@ public class CommentManagerImpl implements CommentManager {
      * @deprecated if the caller is remote, we cannot obtain the session
      */
     @Deprecated
-    private static String getCurrentUser(DocumentModel target) throws ClientException {
+    private static String getCurrentUser(DocumentModel target)
+            throws ClientException {
         String sid = target.getSessionId();
         CoreSession userSession = getUserSession(sid);
         if (userSession == null) {
@@ -445,7 +456,13 @@ public class CommentManagerImpl implements CommentManager {
                 docModel.getRepositoryName()).getDocument(new IdRef(commentId));
         DocumentModel newComment = createComment(parentDocModel, child);
 
-        NuxeoPrincipal principal = new NuxeoPrincipalImpl(author);
+        NuxeoPrincipal principal = null;
+        try {
+            UserManager userManager = Framework.getService(UserManager.class);
+            principal = userManager.getPrincipal(author);
+        } catch (Exception e) {
+            log.error("Error building principal for notification", e);
+        }
         notifyEvent(docModel, CommentEvents.COMMENT_ADDED, parent, newComment,
                 principal);
         return newComment;
@@ -453,9 +470,15 @@ public class CommentManagerImpl implements CommentManager {
 
     private static NuxeoPrincipal getAuthor(DocumentModel docModel)
             throws ClientException {
-        String[] contributors = (String[]) docModel.getProperty("dublincore",
-                "contributors");
-        return new NuxeoPrincipalImpl(contributors[0]);
+        try {
+            String[] contributors = (String[]) docModel.getProperty(
+                    "dublincore", "contributors");
+            UserManager userManager = Framework.getService(UserManager.class);
+            return userManager.getPrincipal(contributors[0]);
+        } catch (Exception e) {
+            log.error("Error building principal for comment author", e);
+            return null;
+        }
     }
 
     public List<DocumentModel> getComments(DocumentModel docModel,

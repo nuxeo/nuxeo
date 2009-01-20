@@ -41,8 +41,8 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.NullException
  * @author arussel
  *
  */
-public class SeamExceptionHandlingListener extends
-        NullExceptionHandlingListener {
+public class SeamExceptionHandlingListener extends NullExceptionHandlingListener {
+
     @Override
     public void beforeSetErrorPageAttribute(Throwable t,
             HttpServletRequest request, HttpServletResponse response)
@@ -55,8 +55,8 @@ public class SeamExceptionHandlingListener extends
         // if the event context was cleaned up, fish the conversation id
         // directly out of the ServletRequest attributes, else get it from
         // the event context
-        Manager manager = Contexts.isEventContextActive() ? (Manager) Contexts.getEventContext().get(
-                Manager.class)
+        Manager manager = Contexts.isEventContextActive()
+                ? (Manager) Contexts.getEventContext().get(Manager.class)
                 : (Manager) request.getAttribute(Seam.getComponentName(Manager.class));
         String conversationId = manager == null ? null
                 : manager.getCurrentConversationId();
@@ -82,13 +82,6 @@ public class SeamExceptionHandlingListener extends
         context.release();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @seeorg.nuxeo.ecm.platform.web.common.exceptionhandling.service.
-     * ExceptionHandlingListener#startHandling(java.lang.Throwable,
-     * javax.servlet.http.HttpServletRequest)
-     */
     @Override
     public void startHandling(Throwable t, HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
@@ -125,8 +118,10 @@ public class SeamExceptionHandlingListener extends
         MockFacesContext mockFacesContext = new MockFacesContext(
                 new MockExternalContext(
                         request.getSession().getServletContext(), request,
-                        response), new MockApplication());
+                        response),
+                new MockApplication());
         mockFacesContext.setViewRoot(new UIViewRoot());
         return mockFacesContext;
     }
+
 }

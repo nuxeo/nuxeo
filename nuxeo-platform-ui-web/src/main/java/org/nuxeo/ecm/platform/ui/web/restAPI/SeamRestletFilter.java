@@ -55,13 +55,13 @@ public class SeamRestletFilter extends Filter {
 
     private static final Log log = LogFactory.getLog(SeamRestletFilter.class);
 
-    private Boolean useConversation = false;
+    private boolean useConversation = false;
 
     public SeamRestletFilter() {
         useConversation = false;
     }
 
-    public SeamRestletFilter(Boolean needConversation) {
+    public SeamRestletFilter(boolean needConversation) {
         useConversation = needConversation;
     }
 

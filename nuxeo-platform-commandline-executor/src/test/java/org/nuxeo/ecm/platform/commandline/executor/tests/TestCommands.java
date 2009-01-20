@@ -58,9 +58,7 @@ public class TestCommands extends NXRuntimeTestCase {
 
         CommandLineDescriptor cmdDesc = CommandLineExecutorComponent.getCommandDescriptor("aspell");
 
-        String paramString = cmdDesc.getParametersString();
-
-        System.out.println(paramString);
+        // System.out.println(cmdDesc.getParametersString());
 
         File textFile = File.createTempFile("testMe", "txt");
         String textFilePath = "/tmp/textMe.txt";

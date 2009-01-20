@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Test the event conf service.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class TestNXAuditEventsService extends RepositoryOSGITestCase {
@@ -78,14 +78,23 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         source = session.createDocument(model);
         session.save();
         event = new CoreEventImpl("documentCreated", source, null,
-                session.getPrincipal(), null, null);
+                session.getPrincipal(), "category", "yo");
         message = DocumentMessageFactory.createDocumentMessage(source, event);
     }
 
     public void testLogMessage() throws AuditException, DocumentException {
-        ((NXAuditEventsService)serviceUnderTest).logMessage(getCoreSession(), message);
+        ((NXAuditEventsService) serviceUnderTest).logMessage(getCoreSession(),
+                message);
         List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(source.getId());
         assertTrue(entries.size() == 1);
+        LogEntry entry = entries.get(0);
+        assertEquals("category", entry.getCategory());
+        assertEquals("yo", entry.getComment());
+        assertEquals("project", entry.getDocLifeCycle());
+        assertEquals("/youps", entry.getDocPath());
+        assertEquals("File", entry.getDocType());
+        assertEquals("documentCreated", entry.getEventId());
+        assertEquals("Administrator", entry.getPrincipalName());
     }
 
     public void testsyncLogCreation() throws AuditException, ClientException {
@@ -94,5 +103,13 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         assertEquals(count, 2);
         List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(rootDocument.getId());
         assertEquals(entries.size(), 1);
+        LogEntry entry = entries.get(0);
+        assertEquals("eventDocumentCategory", entry.getCategory());
+        assertEquals(null, entry.getComment());
+        assertEquals("project", entry.getDocLifeCycle());
+        assertEquals("/", entry.getDocPath());
+        assertEquals("Root", entry.getDocType());
+        assertEquals("documentCreated", entry.getEventId());
+        assertEquals("system", entry.getPrincipalName());
     }
 }

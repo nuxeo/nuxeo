@@ -33,7 +33,7 @@ import javax.interceptor.Interceptors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.annotation.ejb.SerializedConcurrentAccess;
-import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -136,8 +136,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
     private void registerDocumentChangeListener() {
         log.info("Register Document change listener");
 
-        CoreEventListenerService repListenerService = NXCore
-                .getCoreEventListenerService();
+        CoreEventListenerService repListenerService = Framework.getLocalService(CoreEventListenerService.class);
         assert null == listener;
         assert null != cacheService;
         listener = new CachedObjectsEventListener(cacheService);
@@ -154,8 +153,7 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
     private void deregisterDocumentChangeListener() {
         log.info("De-register Document change listener");
 
-        CoreEventListenerService repListenerService = NXCore
-                .getCoreEventListenerService();
+        CoreEventListenerService repListenerService = Framework.getLocalService(CoreEventListenerService.class);
         assert null != listener;
         repListenerService.removeEventListener(listener);
         listener = null;

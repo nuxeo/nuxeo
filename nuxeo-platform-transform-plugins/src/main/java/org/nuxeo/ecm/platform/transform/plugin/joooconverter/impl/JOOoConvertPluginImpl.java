@@ -156,23 +156,8 @@ public class JOOoConvertPluginImpl extends AbstractPlugin implements
         }
     }
 
-    private void acquireLock() {
-        boolean acquired = false;
-        try {
-            acquired = conLock.tryLock(60, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            log.error("Cannot acquire an OOo connection");
-        } finally {
-            if (!acquired) {
-                log.error("Cannot acquire an OOo connection :: timeout");
-            }
-        }
-    }
-
     public OpenOfficeConnection getOOoConnection() {
-
         log.debug("OOo connection lock ACQUIRED");
-
         if (connection == null || !connection.isConnected()) {
             connection = new SocketOpenOfficeConnection(getOOoHostURL(),
                     getOOoHostPort());
@@ -187,11 +172,6 @@ public class JOOoConvertPluginImpl extends AbstractPlugin implements
         if (connection != null && connection.isConnected()) {
             connection.disconnect();
         }
-    }
-
-    public void releaseLock() {
-        conLock.unlock();
-        log.debug("Release connection lock");
     }
 
     @Override
@@ -328,6 +308,24 @@ public class JOOoConvertPluginImpl extends AbstractPlugin implements
     protected void finalize() throws Throwable {
         releaseOOoConnection();
         super.finalize();
+    }
+
+    private void acquireLock() {
+        boolean acquired = false;
+        try {
+            acquired = conLock.tryLock(60, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            log.error("Cannot acquire an OOo connection");
+        } finally {
+            if (!acquired) {
+                log.error("Cannot acquire an OOo connection :: timeout");
+            }
+        }
+    }
+
+    private void releaseLock() {
+        conLock.unlock();
+        log.debug("Release connection lock");
     }
 
     private Boolean adaptFilterNameForHTML2PDF(DocumentFormat sourceFormat,

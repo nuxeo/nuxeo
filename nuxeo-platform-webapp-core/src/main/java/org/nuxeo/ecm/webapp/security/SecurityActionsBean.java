@@ -85,29 +85,9 @@ import org.nuxeo.runtime.api.Framework;
 public class SecurityActionsBean extends InputController implements
         SecurityActions, Serializable {
 
-    protected static final String[] SEED_PERMISSIONS_TO_CHECK = {
-            SecurityConstants.WRITE_SECURITY, SecurityConstants.READ_SECURITY };
-
     private static final long serialVersionUID = -7190826911734958662L;
 
     private static final Log log = LogFactory.getLog(SecurityActionsBean.class);
-
-    private static final Labeler labeler = new Labeler(
-            "label.security.permission");
-
-    protected String[] CACHED_PERMISSION_TO_CHECK;
-
-    protected SecurityData securityData;
-
-    protected boolean obsoleteSecurityData = true;
-
-    protected UserPermissionsTableModel tableModel;
-
-    protected List<String> selectedUsers;
-
-    protected transient List<String> cachedValidatedUserAndGroups;
-
-    protected transient List<String> cachedDeletedUserAndGroups;
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
@@ -130,10 +110,31 @@ public class SecurityActionsBean extends InputController implements
     @In(create = true)
     protected NuxeoPrincipal currentUser;
 
+    protected static final String[] SEED_PERMISSIONS_TO_CHECK = {
+            SecurityConstants.WRITE_SECURITY, SecurityConstants.READ_SECURITY };
+
+    private static final Labeler labeler = new Labeler(
+            "label.security.permission");
+
+    protected String[] CACHED_PERMISSION_TO_CHECK;
+
+    protected SecurityData securityData;
+
+    protected boolean obsoleteSecurityData = true;
+
+    protected UserPermissionsTableModel tableModel;
+
+    protected transient List<String> cachedValidatedUserAndGroups;
+
+    protected transient List<String> cachedDeletedUserAndGroups;
+
     private Boolean blockRightInheritance;
 
     protected static final Map<String, List<UserVisiblePermission>> visibleUserPermissions = new HashMap<String, List<UserVisiblePermission>>();
 
+    protected String selectedEntry;
+
+    protected List<String> selectedEntries;
 
     @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false, inject = false)
     public void resetSecurityData() throws ClientException {
@@ -315,7 +316,8 @@ public class SecurityActionsBean extends InputController implements
         }
     }
 
-    public String addPermission(String principalName, String permissionName, boolean grant) {
+    public String addPermission(String principalName, String permissionName,
+            boolean grant) {
         if (securityData == null) {
             try {
                 securityData = getSecurityData();
@@ -328,8 +330,7 @@ public class SecurityActionsBean extends InputController implements
         String grantPerm = permissionName;
         String denyPerm = permissionName;
         if (visibleUserPermissions != null) {
-            List<UserVisiblePermission> uvps = visibleUserPermissions.get(
-                    securityData.getDocumentType());
+            List<UserVisiblePermission> uvps = visibleUserPermissions.get(securityData.getDocumentType());
             if (uvps != null) {
                 for (UserVisiblePermission uvp : uvps) {
                     if (uvp.getId().equals(permissionName)) {
@@ -339,35 +340,37 @@ public class SecurityActionsBean extends InputController implements
                     }
                 }
             } else {
-                log.debug(
-                        "no entry for documentType in visibleUserPermissions this should never happend, using default mapping ...");
+                log.debug("no entry for documentType in visibleUserPermissions this should never happend, using default mapping ...");
             }
         } else {
-            log.debug(
-                    "visibleUserPermissions is null this should never happend, using default mapping ...");
+            log.debug("visibleUserPermissions is null this should never happend, using default mapping ...");
         }
 
         if (grant) {
             // remove the opposite rule if any
-            boolean removed = securityData.removeModifiablePrivilege(principalName, denyPerm,
-                    !grant);
+            boolean removed = securityData.removeModifiablePrivilege(
+                    principalName, denyPerm, !grant);
             if (!removed) {
-                removed = securityData.removeModifiablePrivilege(principalName, grantPerm, !grant);
+                removed = securityData.removeModifiablePrivilege(principalName,
+                        grantPerm, !grant);
             }
             // add rule only if none was removed
             if (!removed) {
-                securityData.addModifiablePrivilege(principalName, grantPerm, grant);
+                securityData.addModifiablePrivilege(principalName, grantPerm,
+                        grant);
             }
         } else {
             // remove the opposite rule if any
-            boolean removed = securityData.removeModifiablePrivilege(principalName, grantPerm,
-                    !grant);
+            boolean removed = securityData.removeModifiablePrivilege(
+                    principalName, grantPerm, !grant);
             if (!removed) {
-                removed = securityData.removeModifiablePrivilege(principalName, denyPerm, !grant);
+                removed = securityData.removeModifiablePrivilege(principalName,
+                        denyPerm, !grant);
             }
             // add rule only if none was removed
             if (!removed) {
-                securityData.addModifiablePrivilege(principalName, denyPerm, grant);
+                securityData.addModifiablePrivilege(principalName, denyPerm,
+                        grant);
             }
         }
 
@@ -380,66 +383,55 @@ public class SecurityActionsBean extends InputController implements
     }
 
     public String addPermission() {
-        String principalName = principalListManager.getSelectedPrincipal();
         String permissionName = permissionListManager.getSelectedPermission();
         boolean grant = permissionActionListManager.getSelectedGrant().equals(
                 "Grant");
-        return addPermission(principalName, permissionName, grant);
+        return addPermission(selectedEntry, permissionName, grant);
     }
 
     public String addPermissions() {
-        if (principalListManager.getSelectedUserListEmpty()) {
+        if (selectedEntries == null || selectedEntries.isEmpty()) {
             String message = ComponentUtils.translate(
                     FacesContext.getCurrentInstance(),
                     "error.rightsManager.noUsersSelected");
             FacesMessages.instance().add(message);
             return null;
         }
-        List<String> principalsName = principalListManager.getSelectedUsers();
         String permissionName = permissionListManager.getSelectedPermission();
         boolean grant = permissionActionListManager.getSelectedGrant().equals(
                 "Grant");
 
-        for (String principalName : principalsName) {
+        for (String principalName : selectedEntries) {
             addPermission(principalName, permissionName, grant);
         }
-        // principalListManager.resetSelectedUserList();
         return null;
     }
 
     public String addPermissionAndUpdate() throws ClientException {
         addPermission();
         updateSecurityOnDocument();
-        // do not redirect to the default folder view
         return null;
     }
 
     public String addPermissionsAndUpdate() throws ClientException {
         addPermissions();
         updateSecurityOnDocument();
-        // do not redirect to the default folder view
-        principalListManager.resetSelectedUserList();
-
+        selectedEntries = null;
         facesMessages.add(FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get("message.updated.rights"));
         return null;
     }
 
-
-    public String saveSecurityUpdates() throws ClientException
-    {
+    public String saveSecurityUpdates() throws ClientException {
         updateSecurityOnDocument();
-        // do not redirect to the default folder view
-        principalListManager.resetSelectedUserList();
-
+        selectedEntries = null;
         facesMessages.add(FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get("message.updated.rights"));
         return null;
     }
 
     public String removePermission() {
-        securityData.removeModifiablePrivilege(
-                principalListManager.getSelectedPrincipal(),
+        securityData.removeModifiablePrivilege(selectedEntry,
                 permissionListManager.getSelectedPermission(),
                 permissionActionListManager.getSelectedGrant().equals("Grant"));
 
@@ -466,22 +458,20 @@ public class SecurityActionsBean extends InputController implements
         return null;
     }
 
-
-    public String removePermissions() throws ClientException, ECInvalidParameterException {
+    public String removePermissions() throws ClientException,
+            ECInvalidParameterException {
         for (String user : getDataTableModel().getSelectedUsers()) {
             securityData.removeModifiablePrivilege(user);
             if (!checkPermissions()) {
                 facesMessages.add(FacesMessage.SEVERITY_ERROR,
                         resourcesAccessor.getMessages().get(
-                            "message.error.removeRight"));
+                                "message.error.removeRight"));
                 return null;
             }
         }
         reconstructTableModel();
         return null;
     }
-
-
 
     public String removePermissionsAndUpdate() throws ClientException,
             ECInvalidParameterException {
@@ -527,15 +517,14 @@ public class SecurityActionsBean extends InputController implements
         if (settablePermissions == null || settablePermissions.length == 0) {
             // new centralized permission provider at the core level
 
-
-            List<UserVisiblePermission> visiblePerms =  visibleUserPermissions.get(documentType);
-            if (visiblePerms == null)
-            {
+            List<UserVisiblePermission> visiblePerms = visibleUserPermissions.get(documentType);
+            if (visiblePerms == null) {
                 PermissionProvider pservice;
                 try {
                     pservice = Framework.getService(PermissionProvider.class);
                 } catch (Exception e) {
-                    throw new ClientException("Unable to get PermissionProvider",e);
+                    throw new ClientException(
+                            "Unable to get PermissionProvider", e);
                 }
 
                 synchronized (visibleUserPermissions) {
@@ -544,10 +533,9 @@ public class SecurityActionsBean extends InputController implements
                 }
             }
             settablePermissions = new String[visiblePerms.size()];
-            int idx=0;
-            for (UserVisiblePermission uvp : visiblePerms)
-            {
-                settablePermissions[idx]=uvp.getId();
+            int idx = 0;
+            for (UserVisiblePermission uvp : visiblePerms) {
+                settablePermissions[idx] = uvp.getId();
                 idx++;
             }
         }
@@ -598,7 +586,8 @@ public class SecurityActionsBean extends InputController implements
                 securityData.addModifiablePrivilege(currentUser.getName(),
                         SecurityConstants.EVERYTHING, true);
                 // add administrators to avoid LockUp
-                securityData.addModifiablePrivilege(SecurityConstants.ADMINISTRATORS,
+                securityData.addModifiablePrivilege(
+                        SecurityConstants.ADMINISTRATORS,
                         SecurityConstants.EVERYTHING, true);
             }
         } else {
@@ -610,7 +599,7 @@ public class SecurityActionsBean extends InputController implements
     }
 
     public Boolean displayInheritedPermissions() throws ClientException {
-        return  getDisplayInheritedPermissions();
+        return getDisplayInheritedPermissions();
     }
 
     public boolean getDisplayInheritedPermissions() throws ClientException {
@@ -621,13 +610,6 @@ public class SecurityActionsBean extends InputController implements
             return false;
         }
         return !securityData.getParentDocumentsUsers().isEmpty();
-    }
-
-    protected List<String> getSelectedUsers() {
-        if (selectedUsers == null) {
-            selectedUsers = new ArrayList<String>();
-        }
-        return selectedUsers;
     }
 
     public List<String> getCurrentDocumentUsers() throws ClientException {
@@ -759,6 +741,22 @@ public class SecurityActionsBean extends InputController implements
             }
         }
         return CACHED_PERMISSION_TO_CHECK;
+    }
+
+    public String getSelectedEntry() {
+        return selectedEntry;
+    }
+
+    public void setSelectedEntry(String selectedEntry) {
+        this.selectedEntry = selectedEntry;
+    }
+
+    public List<String> getSelectedEntries() {
+        return selectedEntries;
+    }
+
+    public void setSelectedEntries(List<String> selectedEntries) {
+        this.selectedEntries = selectedEntries;
     }
 
 }

@@ -97,7 +97,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
  */
-
 @Name("documentTaskActions")
 @Scope(CONVERSATION)
 public class DocumentTaskActionsBean extends InputController implements
@@ -154,7 +153,7 @@ public class DocumentTaskActionsBean extends InputController implements
 
     public String selectedTaskInsertionLevel;
 
-    protected static enum INSERTION_LEVELS {
+    protected enum INSERTION_LEVELS {
         current, below,
     }
 
@@ -314,7 +313,6 @@ public class DocumentTaskActionsBean extends InputController implements
         }
 
         for (String user : selectedUsers) {
-
             String principalName = null;
             boolean isGroup;
             try {
@@ -336,7 +334,6 @@ public class DocumentTaskActionsBean extends InputController implements
             }
 
             if (principalName != null) {
-
                 // Create a new task
                 Map<String, Serializable> props = getTaskProperties(
                         insertionLevel, directive, dueDate, comment);
@@ -359,7 +356,6 @@ public class DocumentTaskActionsBean extends InputController implements
                     WorkflowConstants.WORKFLOW_REVIEW_TYPE_SERIE)) {
                 insertionLevel += 1;
             }
-
         }
 
         if (deleteCurrent) {
@@ -522,7 +518,6 @@ public class DocumentTaskActionsBean extends InputController implements
             throws WMWorkflowException {
 
         if (documentTasks == null) {
-
             log.debug("RECOMPUTE TASK LIST.........................");
 
             if (getCurrentDocument() != null) {
@@ -571,7 +566,6 @@ public class DocumentTaskActionsBean extends InputController implements
     }
 
     public void removeTask(String taskId) throws WMWorkflowException, Exception {
-
         if (taskId == null) {
             log.error("taskId is null. Cancelling....");
             return;
@@ -804,7 +798,6 @@ public class DocumentTaskActionsBean extends InputController implements
     }
 
     public void rejectTask(String taskId) throws WMWorkflowException {
-
         if (taskId == null) {
             log.error("taskId is null. Cancelling....");
             return;
@@ -847,7 +840,6 @@ public class DocumentTaskActionsBean extends InputController implements
     }
 
     public String rejectOneTask() {
-
         // Handle mandatory comment here since we use several commandLinks for
         // now within the same form sharing the same comment textarea.
         // Therefore, we can simply use the jsf control...
@@ -946,7 +938,6 @@ public class DocumentTaskActionsBean extends InputController implements
         canManageWorkflow = false;
 
         try {
-
             String pid = reviewModel.getProcessInstanceId();
             String pname = reviewModel.getProcessInstanceName();
             WorkflowDocumentSecurityPolicy policy = getSecuPolicy(pname);
@@ -1095,9 +1086,6 @@ public class DocumentTaskActionsBean extends InputController implements
 
     /**
      * Returns the security policy bound to the current workflow.
-     *
-     * @return
-     * @throws WMWorkflowException
      */
     private WorkflowDocumentSecurityPolicy getSecuPolicy(String processName)
             throws WMWorkflowException {
@@ -1198,7 +1186,6 @@ public class DocumentTaskActionsBean extends InputController implements
 
             // Work item found.
             if (offset > -1) {
-
                 // Increase the order of the one
                 Map<String, Serializable> props = new HashMap<String, Serializable>();
                 props.put(WorkflowConstants.WORKFLOW_TASK_PROP_ORDER,
@@ -1218,7 +1205,6 @@ public class DocumentTaskActionsBean extends InputController implements
                 for (WMWorkItemInstance wi : next) {
                     wapi.updateWorkItemAttributes(wi.getId(), props);
                 }
-
             }
 
             Events.instance().raiseEvent(
@@ -1237,7 +1223,6 @@ public class DocumentTaskActionsBean extends InputController implements
         WMWorkItemInstance theOne = wapi.getWorkItemById(wiid);
 
         if (theOne != null) {
-
             int offset = -1;
             for (int i = 0; i < documentTasks.size(); i++) {
                 // Here work items are already sorted out.
@@ -1268,7 +1253,6 @@ public class DocumentTaskActionsBean extends InputController implements
                 for (WMWorkItemInstance wi : next) {
                     wapi.updateWorkItemAttributes(wi.getId(), props);
                 }
-
             }
 
             Events.instance().raiseEvent(

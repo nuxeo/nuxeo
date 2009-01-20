@@ -69,7 +69,7 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
     String download() throws ClientException;
 
     /**
-     * Download file as described by given document view
+     * Downloads file as described by given document view.
      * <p>
      * To be used by url pattern descriptors performing a download.
      *

@@ -33,12 +33,10 @@ import org.nuxeo.ecm.platform.types.TypeView;
  * @deprecated
  */
 @Deprecated
-public class ApplicationControllerHelper  {
+public class ApplicationControllerHelper {
 
     protected static final String DEFAULT_VIEW = "view_documents";
-
     protected static final String CREATE_VIEW = "create_document";
-
     protected static final String EDIT_VIEW = "edit_document";
 
     private static final Log log = LogFactory.getLog(ApplicationControllerHelper.class);
@@ -60,6 +58,7 @@ public class ApplicationControllerHelper  {
         return returnPage;
     }
 
+    // Not used.
     public static String getPageOnEditDocumentType(Type docType) {
         String returnPage = null;
         if (docType != null) {
@@ -115,6 +114,5 @@ public class ApplicationControllerHelper  {
         log.debug("Return page -> " + returnPage);
         return returnPage;
     }
-
 
 }

@@ -176,8 +176,10 @@ public class SQLDirectoryFactory extends DefaultComponent implements
             SQLDirectoryDescriptor descriptor = (SQLDirectoryDescriptor) contrib;
             String directoryName = descriptor.getName();
             dirService.unregisterDirectory(directoryName, this);
-            proxies.get(directoryName).shutdown();
-            proxies.remove(directoryName);
+            Directory directory = proxies.remove(directoryName);
+            if (directory != null) {
+                directory.shutdown();
+            }
         }
     }
 

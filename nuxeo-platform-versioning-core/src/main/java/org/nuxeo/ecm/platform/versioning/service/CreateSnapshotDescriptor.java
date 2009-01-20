@@ -74,32 +74,16 @@ public class CreateSnapshotDescriptor {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public boolean getOptional() {
         return optional;
-    }
-
-    public void setOptional(boolean optional) {
-        this.optional = optional;
     }
 
     public boolean getDefaultCreate() {
         return defaultCreate;
     }
 
-    public void setDefaultCreate(boolean defaultCreate) {
-        this.defaultCreate = defaultCreate;
-    }
-
     public String[] getLifecycleStates() {
         return lifecycleStates;
-    }
-
-    public void setLifecycleStates(String[] lifecycleStates) {
-        this.lifecycleStates = lifecycleStates;
     }
 
     public boolean applyForLifecycleState(String lifecycleState) {
@@ -118,12 +102,10 @@ public class CreateSnapshotDescriptor {
         if (optional) {
             if (defaultCreate) {
                 return SnapshotOptions.DISPLAY_SELECTED;
-            }
-            else {
+            } else {
                 return SnapshotOptions.DISPLAY_NOT_SELECTED;
             }
-        }
-        else {
+        } else {
             return SnapshotOptions.NOT_DISPLAYED;
         }
     }
@@ -136,10 +118,9 @@ public class CreateSnapshotDescriptor {
                 try {
                     Class evalClass = Class.forName(evaluatorClassName);
                     Evaluator evaluator = (Evaluator) evalClass.newInstance();
-
                     evaluators.add(evaluator);
                 } catch (ClassNotFoundException e) {
-                    log.error("Cannot load evaluator class: " + evaluatorClassName);
+                    log.error("Cannot load evaluator class: " + evaluatorClassName, e);
                 } catch (InstantiationException e) {
                     log.error("Cannot instantiate evaluator: " + evaluatorClassName, e);
                 } catch (IllegalAccessException e) {
@@ -147,7 +128,6 @@ public class CreateSnapshotDescriptor {
                 }
             }
         }
-
         return evaluators;
     }
 
@@ -155,9 +135,7 @@ public class CreateSnapshotDescriptor {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append(getClass().getSimpleName());
-        sb.append(" {name=");
-        sb.append(name);
-        sb.append('}');
+        sb.append(" {name=").append(name).append('}');
         return sb.toString();
     }
 

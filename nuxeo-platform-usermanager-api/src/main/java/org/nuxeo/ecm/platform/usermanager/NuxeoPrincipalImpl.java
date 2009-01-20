@@ -48,23 +48,50 @@ import org.nuxeo.runtime.api.Framework;
 public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     // TODO: this should be moved to an extension point of the usermanager
-    // service
+    // service, and some of them already are (email, username e.g id) so
+    // configuration may differ
 
+    /**
+     * @deprecated: harcoded
+     */
+    @Deprecated
     public static final String USERNAME_COLUMN = "username";
 
+    /**
+     * @deprecated: harcoded
+     */
+    @Deprecated
     public static final String FIRSTNAME_COLUMN = "firstName";
 
+    /**
+     * @deprecated: harcoded
+     */
+    @Deprecated
     public static final String LASTNAME_COLUMN = "lastName";
 
+    /**
+     * @deprecated: harcoded
+     */
+    @Deprecated
     public static final String COMPANY_COLUMN = "company";
 
+    /**
+     * @deprecated: harcoded
+     */
+    @Deprecated
     public static final String PASSWORD_COLUMN = "password";
 
+    /**
+     * @deprecated: harcoded
+     */
+    @Deprecated
     public static final String EMAIL_COLUMN = "email";
 
+    /**
+     * @deprecated: harcoded
+     */
+    @Deprecated
     public static final String GROUPS_COLUMN = "groups";
-
-    private static final String TYPE_NAME = "User";
 
     private static final String SCHEMA_NAME = "user";
 
@@ -96,7 +123,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     public NuxeoPrincipalImpl(String name, boolean anonymous)
             throws ClientException {
-        DocumentModelImpl documentModelImpl = new DocumentModelImpl(TYPE_NAME);
+        DocumentModelImpl documentModelImpl = new DocumentModelImpl(SCHEMA_NAME);
         // schema name hardcoded default when setModel is never called
         // which happens when a principal is created just to encapsulate
         // a username

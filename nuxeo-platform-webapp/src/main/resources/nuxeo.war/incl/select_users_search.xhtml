@@ -17,10 +17,8 @@
       rendered="#{searchType =='USER_GROUP_TYPE' or empty searchType}"
       class="rightsAddLabel" />
 
-    <h:inputText value="#{principalListManager.searchFilter}" class="directoryFilter">
-      <a4j:support event="onkeyup" onsubmit="if (event.keyCode != 13) return false"
-        reRender="suggestedEntries" ignoreDupResponses="true" />  
-    </h:inputText>
+    <h:inputText value="#{principalListManager.searchFilter}" class="directoryFilter"
+      onkeydown="if (event.keyCode == 13) {Element.next(this).click(); return false;} else return true;" />
     <a4j:commandButton value="#{messages['command.search']}" styleClass="button"
       reRender="suggestedEntries" ignoreDupResponses="true"/>
     <h:inputHidden value="#{principalListManager.searchType}">

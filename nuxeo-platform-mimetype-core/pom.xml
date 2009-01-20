@@ -25,6 +25,13 @@
       <groupId>jmimemagic</groupId>
       <artifactId>jmimemagic</artifactId>
       <version>0.1.2</version>
+      <exclusions>
+        <!-- jmimemagic has a dependency on an old xercesImpl -->
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xercesImpl</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>

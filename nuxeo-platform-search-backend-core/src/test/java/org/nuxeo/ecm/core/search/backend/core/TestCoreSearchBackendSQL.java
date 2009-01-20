@@ -61,6 +61,8 @@ public class TestCoreSearchBackendSQL extends CoreSearchBackendTestCase {
         parent.mkdirs();
         System.setProperty("derby.stream.error.file",
                 new File(DERBY_LOG).getAbsolutePath());
+        // the following noticeably improves performance
+        System.setProperty("derby.system.durability", "test");
     }
 
     protected static void tearDownRepositoryDerby() throws Exception {

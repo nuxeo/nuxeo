@@ -149,11 +149,9 @@ public class WorkspaceActionsBean extends InputController implements
         if (availableTemplates == null) {
             return false;
         }
-
         if (useTemplateFlag == null) {
             return false;
         }
-
         return useTemplateFlag;
     }
 

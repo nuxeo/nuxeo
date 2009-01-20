@@ -48,6 +48,8 @@ public class TestProcessDocumentAdapter extends RepositoryTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
+        deployBundle("org.nuxeo.ecm.core.event");
+
         deployContrib("org.nuxeo.ecm.platform.workflow.web.tests",
                 "DemoRepository.xml");
         deployContrib("org.nuxeo.ecm.platform.workflow.web.tests",

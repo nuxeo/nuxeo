@@ -106,11 +106,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
             applyFilters(context, actions);
 
             for (Action a : allActions) {
-                if (actions.contains(a)) {
-                    a.setAvailable(true);
-                } else {
-                    a.setAvailable(false);
-                }
+                a.setAvailable(actions.contains(a));
             }
 
             Collections.sort(allActions);

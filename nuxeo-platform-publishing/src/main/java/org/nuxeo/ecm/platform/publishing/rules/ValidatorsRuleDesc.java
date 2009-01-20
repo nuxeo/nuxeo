@@ -47,8 +47,4 @@ public class ValidatorsRuleDesc implements Serializable {
         return klass;
     }
 
-    public void setKlass(Class<ValidatorsRule> klass) {
-        this.klass = klass;
-    }
-
 }

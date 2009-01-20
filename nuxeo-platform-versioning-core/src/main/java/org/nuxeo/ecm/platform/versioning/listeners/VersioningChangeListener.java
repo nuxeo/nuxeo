@@ -38,8 +38,10 @@ import org.nuxeo.runtime.api.Framework;
  * through checkin-checkout process).
  *
  * @author DM
+ * @deprecated remove in 5.2
  */
 // XXX AT: this is useless now, event is caught but not processed
+@Deprecated
 public class VersioningChangeListener extends AbstractEventListener implements
         AsynchronousEventListener, DocumentModelEventListener {
 

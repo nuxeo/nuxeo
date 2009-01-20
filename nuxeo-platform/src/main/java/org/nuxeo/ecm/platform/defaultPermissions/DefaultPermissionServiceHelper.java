@@ -23,8 +23,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
+ * @deprecated remove in 5.2
  */
+@Deprecated
 public final class DefaultPermissionServiceHelper {
 
     // Utility class.

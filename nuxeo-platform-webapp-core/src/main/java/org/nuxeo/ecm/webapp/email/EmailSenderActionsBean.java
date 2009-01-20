@@ -40,9 +40,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
-import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.security.PrincipalListManager;
@@ -119,11 +117,6 @@ public class EmailSenderActionsBean extends InputController implements
                             "label.email.subject.empty"));
             return;
         }
-        /*
-         * if (mailContent == null || mailContent.trim().length() == 0){
-         * facesMessages.add(FacesMessage.SEVERITY_ERROR, resourcesAccessor
-         * .getMessages().get("label.email.content.empty")); return; }
-         */
         if (principalListManager.getSelectedUserListEmpty()) {
             facesMessages.add(FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
@@ -133,10 +126,10 @@ public class EmailSenderActionsBean extends InputController implements
             // XXX hack, principals have only one model
             DataModel dm = currentUser.getModel().getDataModels().values().iterator().next();
             try {
-                fromEmail = (String) dm.getData(NuxeoPrincipalImpl.EMAIL_COLUMN);
-            } catch (PropertyException e1) {
+                fromEmail = (String) dm.getData(userManager.getUserEmailField());
+            } catch (ClientException e1) {
                 fromEmail = null;
-            } // XXX
+            }
             List<NuxeoPrincipal> listEmails = new ArrayList<NuxeoPrincipal>();
             for (String user : principalListManager.getSelectedUsers()) {
                 try {

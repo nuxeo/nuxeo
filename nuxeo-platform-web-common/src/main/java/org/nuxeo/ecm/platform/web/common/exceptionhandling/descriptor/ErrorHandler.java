@@ -22,32 +22,16 @@ public class ErrorHandler {
         return error;
     }
 
-    public void setError(String error) {
-        this.error = error;
-    }
-
     public String getMessage() {
         return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public String getPage() {
         return page;
     }
 
-    public void setPage(String page) {
-        this.page = page;
-    }
-
     public Integer getCode() {
         return code;
-    }
-
-    public void setCode(Integer code) {
-        this.code = code;
     }
 
 }

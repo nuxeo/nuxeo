@@ -53,13 +53,11 @@ public class UserManagerBusinessDelegate implements Serializable {
     public UserManager getUserManager() throws ClientException {
         if (userManager == null) {
             try {
-                //userManager = ECM.getPlatform().getService(UserManager.class);
                 userManager = Framework.getService(UserManager.class);
 
             } catch (Exception e) {
                 final String errMsg = "Error connecting to UserManager. "
                         + e.getMessage();
-                // log.error(errMsg, e);
                 throw new ClientException(errMsg, e);
             }
 
@@ -74,7 +72,6 @@ public class UserManagerBusinessDelegate implements Serializable {
     @PermitAll
     public void destroy() throws ClientException {
         if (userManager != null) {
-            userManager.remove();
             userManager = null;
         }
     }

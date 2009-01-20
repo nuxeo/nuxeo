@@ -65,8 +65,8 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         // setup the client environment
-        deployContrib("org.nuxeo.ecm.directory.ldap.tests",
-                "ldap-test-setup/CoreService.xml");
+        deployContrib("org.nuxeo.ecm.core",
+                "OSGI-INF/CoreService.xml");
         deployContrib("org.nuxeo.ecm.directory.ldap.tests",
                 "ldap-test-setup/TypeService.xml");
 
@@ -118,8 +118,8 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
         } finally {
             session.close();
         }
-        undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
-                "ldap-test-setup/CoreService.xml");
+        undeployContrib("org.nuxeo.ecm.core",
+                "OSGI-INF/CoreService.xml");
         undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
                 "ldap-test-setup/TypeService.xml");
 

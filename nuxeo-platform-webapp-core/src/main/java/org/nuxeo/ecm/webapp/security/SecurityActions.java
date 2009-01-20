@@ -209,7 +209,29 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
 
     List<String> getParentDocumentsUsers() throws ClientException;
 
-    String removePermissions() throws ClientException, ECInvalidParameterException;
+    String removePermissions() throws ClientException,
+            ECInvalidParameterException;
 
     String saveSecurityUpdates() throws ClientException;
+
+    /**
+     * Returns selected entry used in add/remove methods
+     */
+    String getSelectedEntry();
+
+    /**
+     * Sets selected entry used in add/remove methods
+     */
+    void setSelectedEntry(String selectedEntry);
+
+    /**
+     * Returns selected entries used in add/remove methods
+     */
+    List<String> getSelectedEntries();
+
+    /**
+     * Sets selected entries used in add/remove methods
+     */
+    void setSelectedEntries(List<String> selectedEntries);
+
 }

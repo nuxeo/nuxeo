@@ -92,9 +92,9 @@ public class FieldDescriptor {
         } else if (rawValue instanceof Integer) {
             return (Integer) rawValue;
         } else if (rawValue instanceof String) {
-            return Integer.parseInt((String) rawValue);
+            return Integer.valueOf((String) rawValue);
         } else {
-            return Integer.parseInt(rawValue.toString());
+            return Integer.valueOf(rawValue.toString());
         }
     }
 
@@ -138,7 +138,7 @@ public class FieldDescriptor {
         } else if (rawValue instanceof Integer || rawValue instanceof Long || rawValue instanceof Double) {
             value = rawValue.toString(); // no quotes
         } else if (rawValue instanceof Boolean) {
-            value = (Boolean) rawValue ? "1" : "0";
+            value = ((Boolean) rawValue).booleanValue() ? "1" : "0";
         } else {
             value = rawValue.toString().trim();
             if (value.equals("")) {

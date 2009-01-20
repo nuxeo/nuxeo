@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 
 /**
- * This helper expose a copy method that works between different repositories (optionally on different hosts)
+ * Exposes a copy method that works between different repositories (optionally on different hosts).
  * The copy method must be moved to IOManager.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -64,12 +64,12 @@ public class IOHelper {
 
     public static String exportAsStream(IOConfiguration location, Collection<String> ioAdapters) throws ClientException {
         return location.getManager().externalizeExport(location.getRepositoryName(), location.getDocuments(),
-                (String)location.getProperty(IOConfiguration.DOC_READER_FACTORY),
+                (String) location.getProperty(IOConfiguration.DOC_READER_FACTORY),
                 location.getProperties(), ioAdapters);
     }
 
     public static void importFromStream(IOConfiguration location, String streamUri) throws ClientException {
-        String docWriterFactoryName = (String)location.getProperty(IOConfiguration.DOC_WRITER_FACTORY);
+        String docWriterFactoryName = (String) location.getProperty(IOConfiguration.DOC_WRITER_FACTORY);
         // call remote server to do the upload
         DocumentLocation targetLocation = new DocumentLocationImpl(
                 location.getRepositoryName(), location.getFirstDocument());

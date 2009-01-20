@@ -59,6 +59,7 @@ public class UIDSequencerManagerBean implements UIDSequencerManager {
      * Handle transaction synchronizing on a static field so that two calls to
      * this method will give a distinct index (see NXP-2157)
      */
+    @SuppressWarnings({"unchecked"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public int getNext(String key) {
         synchronized (SEMAPHORE) {
