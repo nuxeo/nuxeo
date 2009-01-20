@@ -247,6 +247,7 @@ public class PostActionBean extends InputController implements PostAction {
                     // Follow transition
                     unrestrictedSession.followTransition(dm.getRef(),
                             ForumConstants.TRANSITION_TO_PUBLISHED_STATE);
+                    unrestrictedSession.save();
 
                     // Close the unrestricted session.
                     CoreInstance.getInstance().close(unrestrictedSession);
