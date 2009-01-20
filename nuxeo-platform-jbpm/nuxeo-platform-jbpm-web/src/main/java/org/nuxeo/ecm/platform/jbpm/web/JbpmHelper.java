@@ -42,7 +42,6 @@ import org.nuxeo.runtime.api.Framework;
 @Name("org.nuxeo.ecm.platform.jbpm.web.JbpmHelper")
 @Scope(ScopeType.STATELESS)
 public class JbpmHelper {
-
     private transient JbpmService jbpmService;
 
     public JbpmService getJbpmService() throws Exception {

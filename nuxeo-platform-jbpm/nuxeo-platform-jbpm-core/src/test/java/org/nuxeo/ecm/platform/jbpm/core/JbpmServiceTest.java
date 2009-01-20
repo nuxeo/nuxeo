@@ -76,7 +76,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         assertNotNull(dm);
         // list process definition
         List<ProcessDefinition> pds = service.getProcessDefinitions(
-                administrator, dm);
+                administrator, dm, null);
         assertNotNull(pds);
         assertEquals(2, pds.size());
         // create process instance

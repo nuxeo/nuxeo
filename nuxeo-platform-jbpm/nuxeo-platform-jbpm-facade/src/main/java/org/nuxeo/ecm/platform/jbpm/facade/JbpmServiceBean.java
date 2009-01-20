@@ -113,11 +113,6 @@ public class JbpmServiceBean implements JbpmService {
         return service.getDocumentModel(pi, user);
     }
 
-    public List<ProcessDefinition> getProcessDefinitions(NuxeoPrincipal user,
-            DocumentModel dm) throws NuxeoJbpmException {
-        return service.getProcessDefinitions(user, dm);
-    }
-
     public ProcessInstance getProcessInstance(Long processInstanceId)
             throws NuxeoJbpmException {
         return service.getProcessInstance(processInstanceId);
@@ -148,6 +143,15 @@ public class JbpmServiceBean implements JbpmService {
     public void saveTaskInstances(List<TaskInstance> taskInstances)
             throws NuxeoJbpmException {
         service.saveTaskInstances(taskInstances);
+    }
+
+    public List<ProcessDefinition> getProcessDefinitions(NuxeoPrincipal user,
+            DocumentModel dm, JbpmListFilter filter) throws NuxeoJbpmException {
+        return service.getProcessDefinitions(user, dm, filter);
+    }
+
+    public Map<String, String[]> getTypeFilterConfiguration() {
+        return service.getTypeFilterConfiguration();
     }
 
 }

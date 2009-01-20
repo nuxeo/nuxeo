@@ -51,10 +51,12 @@ public class JbpmComponent extends DefaultComponent implements
             "org.nuxeo.ecm.platform.jbpm.core.JbpmService");
 
     public static enum ExtensionPoint {
-        deployer, processDefinition, activeConfiguration, configurationPath, permissionMapper
+        deployer, processDefinition, activeConfiguration, configurationPath, permissionMapper, typeFilter
     };
 
     private JbpmConfiguration jbpmConfiguration;
+
+    private final Map<String, String[]> typeFiltersContrib = new HashMap<String, String[]>();
 
     private String activeConfigurationName;
 
@@ -99,6 +101,10 @@ public class JbpmComponent extends DefaultComponent implements
         case permissionMapper:
             SecurityPolicyDescriptor pmd = (SecurityPolicyDescriptor) contribution;
             bManagementServiceImpl.addPermissionMapper(pmd.getKlass().newInstance());
+            break;
+        case typeFilter:
+            TypeFilterDescriptor tfd = (TypeFilterDescriptor) contribution;
+            typeFiltersContrib.put(tfd.getProcessDefinitionName(), tfd.getAllowedType());
             break;
         }
     }
@@ -181,6 +187,7 @@ public class JbpmComponent extends DefaultComponent implements
                     log.error("error deploying url: " + url, e);
                 }
             }
+            bManagementServiceImpl.setTypeFilters(typeFiltersContrib);
         }
     }
 

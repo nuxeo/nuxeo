@@ -2,8 +2,10 @@
 <component name="org.nuxeo.ecm.platform.jbpm.core.JbpmService">
 
   <documentation>
-    The JbpmService provides a way to contribute process definition, deployer.
-    @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
+    The JbpmService provides a way to contribute process definition,
+    deployer.
+    @author
+    <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
   </documentation>
 
   <implementation
@@ -15,10 +17,13 @@
 
   <extension-point name="deployer">
     <documentation>
-      A deployer is a named instance of a ProcessDefinitionDeployer whose role
-      is to deploy, or not, a process definition.
+      A deployer is a named instance of a
+      ProcessDefinitionDeployer whose role
+      is to deploy, or not, a
+      process definition.
     </documentation>
-    <object class="org.nuxeo.ecm.platform.jbpm.core.service.DeployerDescriptor" />
+    <object
+      class="org.nuxeo.ecm.platform.jbpm.core.service.DeployerDescriptor" />
   </extension-point>
 
   <extension-point name="processDefinition">
@@ -29,7 +34,8 @@
 
   <extension-point name="configurationPath">
     <documentation>
-      A named configuration contribution. It provides the path of the jbpm
+      A named configuration contribution. It provides the
+      path of the jbpm
       configuration file to use.
     </documentation>
     <object
@@ -38,7 +44,8 @@
 
   <extension-point name="activeConfiguration">
     <documentation>
-      The name of the active configuration. Only one configuration can be
+      The name of the active configuration. Only one
+      configuration can be
       active.
     </documentation>
     <object
@@ -49,5 +56,8 @@
     <object
       class="org.nuxeo.ecm.platform.jbpm.core.service.SecurityPolicyDescriptor" />
   </extension-point>
-
+  <extension-point name="typeFilter">
+    <object
+      class="org.nuxeo.ecm.platform.jbpm.core.service.TypeFilterDescriptor" />
+  </extension-point>
 </component>

@@ -20,7 +20,7 @@
           <h:selectOneRadio id="workflowDefinitionId" value="#{selectedPD}"
             layout="pageDirection" required="true">
             <c:forEach var="pd"
-              items="#{jbpmService.getProcessDefinitions(currentUser, currentDocument)}">
+              items="#{jbpmService.getProcessDefinitions(currentUser, currentDocument, typeFilter)}">
               <c:set var="label" value="document_#{pd.name}" />
               <f:selectItem itemLabel="#{messages[label]}"
                 itemValue="#{pd.name}" />

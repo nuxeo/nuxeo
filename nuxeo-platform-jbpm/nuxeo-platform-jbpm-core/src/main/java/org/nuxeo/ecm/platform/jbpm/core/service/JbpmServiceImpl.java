@@ -53,6 +53,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class JbpmServiceImpl implements JbpmService {
+    private Map<String, String[]> typeFilters;
 
     private JbpmConfiguration configuration;
 
@@ -463,8 +464,8 @@ public class JbpmServiceImpl implements JbpmService {
 
     @SuppressWarnings("unchecked")
     public List<ProcessDefinition> getProcessDefinitions(
-            final NuxeoPrincipal user, final DocumentModel dm)
-            throws NuxeoJbpmException {
+            final NuxeoPrincipal user, final DocumentModel dm,
+            final JbpmListFilter filter) throws NuxeoJbpmException {
         return (List<ProcessDefinition>) executeJbpmOperation(new JbpmOperation() {
             public ArrayList<ProcessDefinition> run(JbpmContext context)
                     throws NuxeoJbpmException {
@@ -477,6 +478,9 @@ public class JbpmServiceImpl implements JbpmService {
                     if (perm == null || perm) {
                         result.add(pd);
                     }
+                }
+                if (filter != null) {
+                    result = filter.filter(context, dm, result, user);
                 }
                 return result;
             }
@@ -517,5 +521,13 @@ public class JbpmServiceImpl implements JbpmService {
             }
 
         });
+    }
+
+    public Map<String, String[]> getTypeFilterConfiguration() {
+        return typeFilters;
+    }
+
+    public void setTypeFilters(Map<String, String[]> typeFilters) {
+        this.typeFilters = typeFilters;
     }
 }

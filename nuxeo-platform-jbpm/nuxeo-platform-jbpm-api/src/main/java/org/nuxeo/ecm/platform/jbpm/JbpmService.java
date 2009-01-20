@@ -191,7 +191,7 @@ public interface JbpmService {
      * @return A list of process definition
      */
     List<ProcessDefinition> getProcessDefinitions(NuxeoPrincipal user,
-            DocumentModel dm) throws NuxeoJbpmException;
+            DocumentModel dm, JbpmListFilter filter) throws NuxeoJbpmException;
 
     /**
      * Terminate this process and all the tokens in it.
@@ -251,4 +251,6 @@ public interface JbpmService {
     List<ProcessInstance> getProcessInstances(DocumentModel dm,
             NuxeoPrincipal user, JbpmListFilter jbpmListFilter)
             throws NuxeoJbpmException;
+
+    Map<String, String[]> getTypeFilterConfiguration();
 }
