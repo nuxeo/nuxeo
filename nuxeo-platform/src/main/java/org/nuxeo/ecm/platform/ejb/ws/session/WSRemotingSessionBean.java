@@ -46,7 +46,7 @@ public class WSRemotingSessionBean implements WSRemotingSessionManager {
 
     private static final Log log = LogFactory.getLog(WSRemotingSessionBean.class);
 
-    private transient WSRemotingSessionManager manager;
+    private WSRemotingSessionManager manager;
 
 
     private WSRemotingSessionManager getManager() {

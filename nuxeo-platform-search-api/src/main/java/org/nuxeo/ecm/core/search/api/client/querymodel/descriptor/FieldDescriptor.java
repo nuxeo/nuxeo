@@ -64,7 +64,12 @@ public class FieldDescriptor {
     }
 
     public String getPlainStringValue(DocumentModel model) {
-        Object rawValue = model.getProperty(schema, name);
+        Object rawValue;
+        try {
+            rawValue = model.getProperty(schema, name);
+        } catch (ClientException e) {
+            rawValue = null;
+        }
         if (rawValue == null) {
             return null;
         }
@@ -76,15 +81,20 @@ public class FieldDescriptor {
     }
 
     public Integer getIntValue(DocumentModel model) {
-        Object rawValue = model.getProperty(schema, name);
+        Object rawValue;
+        try {
+            rawValue = model.getProperty(schema, name);
+        } catch (ClientException e) {
+            rawValue = null;
+        }
         if (rawValue == null || "".equals(rawValue)) {
             return null;
         } else if (rawValue instanceof Integer) {
             return (Integer) rawValue;
         } else if (rawValue instanceof String) {
-            return Integer.parseInt((String) rawValue);
+            return Integer.valueOf((String) rawValue);
         } else {
-            return Integer.parseInt(rawValue.toString());
+            return Integer.valueOf(rawValue.toString());
         }
     }
 
@@ -105,6 +115,14 @@ public class FieldDescriptor {
         }
     }
 
+    public Object getRawValue(DocumentModel model) {
+        try {
+            return model.getProperty(schema, name);
+        } catch (ClientException e) {
+            return null;
+        }
+    }
+
     public String getStringValue(DocumentModel model) throws ClientException {
         Object rawValue = model.getProperty(schema, name);
         if (rawValue == null) {
@@ -120,7 +138,7 @@ public class FieldDescriptor {
         } else if (rawValue instanceof Integer || rawValue instanceof Long || rawValue instanceof Double) {
             value = rawValue.toString(); // no quotes
         } else if (rawValue instanceof Boolean) {
-            value = (Boolean) rawValue ? "1" : "0";
+            value = ((Boolean) rawValue).booleanValue() ? "1" : "0";
         } else {
             value = rawValue.toString().trim();
             if (value.equals("")) {
@@ -141,7 +159,12 @@ public class FieldDescriptor {
 
     @SuppressWarnings("unchecked")
     public List<String> getListValue(DocumentModel model) {
-        Object rawValue = model.getProperty(schema, name);
+        Object rawValue;
+        try {
+            rawValue = model.getProperty(schema, name);
+        } catch (ClientException e) {
+            rawValue = null;
+        }
         if (rawValue == null) {
             return null;
         }
@@ -163,7 +186,12 @@ public class FieldDescriptor {
     }
 
     public Boolean getBooleanValue(DocumentModel model) {
-        Object rawValue = model.getProperty(schema, name);
+        Object rawValue;
+        try {
+            rawValue = model.getProperty(schema, name);
+        } catch (ClientException e) {
+            rawValue = null;
+        }
         if (rawValue == null) {
             return null;
         } else {

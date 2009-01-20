@@ -29,11 +29,10 @@ import org.nuxeo.ecm.platform.publishing.api.ValidatorsRule;
  */
 public class FakeValidatorsRule implements ValidatorsRule {
 
-    private static final long serialVersionUID = 5124173341571522375L;
+    private static final long serialVersionUID = 1L;
 
     public String[] computesValidatorsFor(DocumentModel dm)
             throws PublishingValidatorException {
-        // TODO Auto-generated method stub
         return null;
     }
 

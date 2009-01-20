@@ -39,13 +39,12 @@ public class DisplayPluginExtension implements DisplayPlugin {
     String valid;
 
     @XNode("columns")
-    Element columns = null;
+    transient Element columns = null;
 
     DisplayExtensionConf conf;
 
 
     public DisplayPluginExtension() {
-
     }
 
     public DisplayPluginExtension(String name, String valid) {

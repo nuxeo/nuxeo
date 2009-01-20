@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -64,6 +65,8 @@ public abstract class VersioningBaseTestCase extends RepositoryTestCase {
         if (repository == null) {
             // the repository should be deployed the last
             // after any other bundle that is deploying doctypes
+            deployBundle("org.nuxeo.ecm.core.event");
+            deployBundle("org.nuxeo.ecm.core.event.compat");
             deployContrib("org.nuxeo.ecm.platform.versioning.tests",
                     "DemoRepository.xml");
             repository = NXCore.getRepositoryService().getRepositoryManager().getRepository(
@@ -111,8 +114,6 @@ public abstract class VersioningBaseTestCase extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.versioning.tests",
                 "LifeCycleService.xml");
         deployContrib("org.nuxeo.ecm.platform.versioning.tests",
-                "JCRLifeCycleManager.xml");
-        deployContrib("org.nuxeo.ecm.platform.versioning.tests",
                 "LifeCycleCoreExtensions-versioningtest.xml");
 
         // Versioning specific extensions
@@ -159,12 +160,22 @@ public abstract class VersioningBaseTestCase extends RepositoryTestCase {
     protected static void checkVersion(DocumentModel doc, Long expectedMajor,
             Long expectedMinor) {
 
-        final Long currentMajor = (Long) doc.getProperty(
-                VERSIONING_SCHEMA_NAME,
-                DocumentModelUtils.getFieldName(PropertiesDef.DOC_PROP_MAJOR_VERSION));
-        final Long currentMinor = (Long) doc.getProperty(
-                VERSIONING_SCHEMA_NAME,
-                DocumentModelUtils.getFieldName(PropertiesDef.DOC_PROP_MINOR_VERSION));
+        Long currentMajor;
+        try {
+            currentMajor = (Long) doc.getProperty(
+                    VERSIONING_SCHEMA_NAME,
+                    DocumentModelUtils.getFieldName(PropertiesDef.DOC_PROP_MAJOR_VERSION));
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+        Long currentMinor;
+        try {
+            currentMinor = (Long) doc.getProperty(
+                    VERSIONING_SCHEMA_NAME,
+                    DocumentModelUtils.getFieldName(PropertiesDef.DOC_PROP_MINOR_VERSION));
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
 
         log.info("Current major version: " + currentMajor);
         log.info("Current minor version: " + currentMinor);

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webapp.table.comparator;
 
 import java.util.Comparator;
+import java.io.Serializable;
 
 import org.nuxeo.ecm.webapp.table.cell.AbstractTableCell;
 import org.nuxeo.ecm.webapp.table.row.TableRow;
@@ -28,8 +29,11 @@ import org.nuxeo.ecm.webapp.table.row.TableRow;
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  *
  */
+@SuppressWarnings({"ALL"})
 @Deprecated
-public class DefaultCellComparator implements Comparator<TableRow> {
+public class DefaultCellComparator implements Comparator<TableRow>, Serializable {
+
+    private static final long serialVersionUID = -6492431263699827014L;
 
     protected final int columnIndex;
 

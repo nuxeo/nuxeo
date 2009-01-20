@@ -90,7 +90,7 @@ public class TransformerExtensionPointHandler extends
     }
 
     private static void unregisterOne(TransformerExtension transformerExtension,
-            Extension extension) throws Exception {
+            Extension extension) {
         String name = transformerExtension.getName();
         getNXTransform().unregisterTransformer(name);
     }

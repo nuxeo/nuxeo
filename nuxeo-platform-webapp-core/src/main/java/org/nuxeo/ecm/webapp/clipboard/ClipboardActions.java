@@ -47,7 +47,6 @@ public interface ClipboardActions {
      * The selection is added to the clipboard and to the WorkingList.
      *
      * @param docCopied the list of documents we want to copy
-     * @throws ClientException
      */
     void copySelection(List<DocumentModel> docCopied);
 
@@ -60,8 +59,6 @@ public interface ClipboardActions {
 
     /**
      * Called when the "delete all" button is clicked on the clipboard.
-     *
-     * @throws ClientException
      */
     String clearWorkingList();
 
@@ -161,7 +158,7 @@ public interface ClipboardActions {
     boolean getCanPasteInside(String listName, DocumentModel document) throws ClientException;
 
     /**
-     * Checks if there are selected items that can be copied into the current Worklist.
+     * Checks if there are selected items that can be copied into the current worklist.
      *
      * @return
      */
@@ -194,7 +191,7 @@ public interface ClipboardActions {
 
     void putSelectionInDefaultWorkList();
 
-    public void putInClipboard(String docId) throws ClientException;
+    void putInClipboard(String docId) throws ClientException;
 
     /**
      * Retries contents of current WorkList.
@@ -277,10 +274,10 @@ public interface ClipboardActions {
 
     boolean factoryForIsCurrentWorkListEmpty();
 
-
     boolean isCacheEnabled();
 
     String getCacheKey();
 
     boolean isCacheEnabledForSelection();
+
 }

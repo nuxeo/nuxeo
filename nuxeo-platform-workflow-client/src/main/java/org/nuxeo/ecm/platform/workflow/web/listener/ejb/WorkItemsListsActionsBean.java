@@ -40,7 +40,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
@@ -69,13 +69,13 @@ public class WorkItemsListsActionsBean extends InputController implements
     private static final Log log = LogFactory.getLog(WorkItemsListsActionsBean.class);
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected WebActions webActions;
+    protected transient WebActions webActions;
 
     @In(create = true)
-    protected Principal currentUser;
+    protected transient Principal currentUser;
 
     @In(create = true, required = false)
     protected ProcessModel reviewModel;
@@ -274,7 +274,7 @@ public class WorkItemsListsActionsBean extends InputController implements
     }
 
     public void setWorkItemsListsEntrySelectionName(String name) {
-        this.workItemsListsEntrySelectionName = name;
+        workItemsListsEntrySelectionName = name;
     }
 
     protected void rebuildTabsList() {

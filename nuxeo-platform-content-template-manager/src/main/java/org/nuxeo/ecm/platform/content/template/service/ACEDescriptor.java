@@ -29,7 +29,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class ACEDescriptor {
 
     @XNode("@granted")
-    private Boolean granted;
+    private boolean granted = true;
 
     @XNode("@principal")
     private String principal;
@@ -37,7 +37,7 @@ public class ACEDescriptor {
     @XNode("@permission")
     private String permission;
 
-    public Boolean getGranted() {
+    public boolean getGranted() {
         return granted;
     }
 
@@ -50,8 +50,9 @@ public class ACEDescriptor {
         return principal;
     }
 
-    @Deprecated // keep for BBB with old config files
     @XNode("@userName")
+    @Deprecated
+    // keep for BBB with old config files
     public void setUserName(String userName) {
         principal = userName;
     }

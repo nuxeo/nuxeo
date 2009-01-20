@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent">
+  <implementation
+    class="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent" />
+
+  <documentation>
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService" />
+  </service>
+
+  <extension-point name="environment">
+    <documentation>
+    Extension point to contribute environement configuration
+    @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.commandline.executor.service.EnvironementDescriptor" />
+  </extension-point>
+
+  <extension-point name="command">
+    <documentation>
+    Extension point to contribute new commands
+    @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor" />
+  </extension-point>
+
+  <extension-point name="commandTester">
+    <documentation>
+    Extension point to contribute new command testers
+    @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.commandline.executor.service.CommandTesterDescriptor" />
+  </extension-point>
+
+</component>

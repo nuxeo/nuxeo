@@ -27,7 +27,6 @@ import org.hibernate.dialect.Dialect;
  * A {@code SELECT} statement.
  *
  * @author Florent Guillaume
- *
  */
 public class Select implements Serializable {
 
@@ -88,4 +87,5 @@ public class Select implements Serializable {
         // ... "for update" in some cases, see dialect.getForUpdateString and lock modes
         return buf.toString();
     }
+
 }

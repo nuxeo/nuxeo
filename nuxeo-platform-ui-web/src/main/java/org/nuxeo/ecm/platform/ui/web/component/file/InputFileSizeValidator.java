@@ -157,7 +157,7 @@ public class InputFileSizeValidator implements Validator, StateHolder {
     public void restoreState(FacesContext context, Object state) {
         Object[] values = (Object[]) state;
         maxSize = (String) values[0];
-        maximumSet = ((Boolean) values[1]).booleanValue();
+        maximumSet = (Boolean) values[1];
     }
 
 }

@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.workflow.document;
 
-
-
 /**
  * Test the workflow rules service.
  *
@@ -30,17 +28,10 @@ public class TestWorkflowRules extends AbstractWorkflowRulesServiceTestCase {
 
     @Override
     public void setUp() throws Exception {
-
         super.setUp();
 
         workflowRules = NXWorkflowDocument.getWorkflowRulesService();
         assertNotNull(workflowRules);
-
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
     }
 
 }

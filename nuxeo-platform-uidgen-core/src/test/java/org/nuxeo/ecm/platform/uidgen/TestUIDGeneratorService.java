@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -53,7 +52,9 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core"); // for dublincore
+        deployBundle("org.nuxeo.ecm.core.event.compat");
         // define geide schema
         SchemaImpl sch = new SchemaImpl("geide");
         sch.addField(QName.valueOf("application_emetteur"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
@@ -67,8 +68,8 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
 
     }
 
-    private CoreEventListenerService getListenerService() {
-        return NXCore.getCoreEventListenerService();
+    private static CoreEventListenerService getListenerService() {
+        return Framework.getLocalService(CoreEventListenerService.class);
     }
 
     public void testServiceRegistration() {
@@ -84,7 +85,7 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
-    private DocumentModel createDocumentModel(String type) throws Exception {
+    private static DocumentModel createDocumentModel(String type) throws Exception {
         DocumentModelImpl docModel = new DocumentModelImpl(type);
         Map<String, Object> dcMap = new HashMap<String, Object>();
         dcMap.put("title", null);

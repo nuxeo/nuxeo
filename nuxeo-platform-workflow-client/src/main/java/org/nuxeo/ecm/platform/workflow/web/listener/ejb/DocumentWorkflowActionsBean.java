@@ -89,14 +89,10 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Workflow actions bean.
- *
  * <p>
  * Deals with a document workflow related actions.
- * </p>
- *
  * <p>
  * The tasks do have a dedicated action listener.
- * </p>
  *
  * @See org.nuxeo.ecm.platform.workflow.web.listener.DocumentTaskActionsBean
  *
@@ -118,9 +114,6 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
 
     @In(create = true)
     protected WorkflowBeansDelegate workflowBeansDelegate;
-
-    @In(required = true)
-    protected RepositoryLocation currentServerLocation;
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -189,6 +182,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
 
     @In(required = false)
     protected List<WMWorkItemInstance> documentTasks;
+
 
     @Create
     public void init() {
@@ -353,17 +347,17 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
             processVariables.put(
                     WorkflowConstants.WORKFLOW_FORMER_REVIEW_LEVEL, 0);
 
+            RepositoryLocation currentServerLocation = navigationContext.getCurrentServerLocation();
             processVariables.put(WorkflowConstants.DOCUMENT_LOCATION_URI,
                     currentServerLocation.getName());
 
-            log.debug("About to start a process for participant="
-                    + currentUser.getName());
+            log.debug("About to start a process for participant=" +
+                    currentUser.getName());
 
             workflowPath = wapi.startProcess(wdefId, processVariables, null);
         } catch (WMWorkflowException we) {
             workflowPath = null;
-            log.error("An error occurred while grabbing workflow definitions");
-            we.printStackTrace();
+            log.error("An error occurred while grabbing workflow definitions", we);
         }
 
         // Broadcast a message.
@@ -380,8 +374,6 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
 
     protected WMProcessInstance endWorkflow(String wid)
             throws WMWorkflowException {
-
-        WMProcessInstance workflowInstance;
 
         // Unlink the document to the process
         // :XXX: We might want to do that using JMS in the future.
@@ -410,12 +402,12 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
 
         log.debug("Deny WF rights");
 
+        WMProcessInstance workflowInstance;
         try {
             workflowInstance = wapi.terminateProcessInstance(wid);
         } catch (WMWorkflowException we) {
             workflowInstance = null;
-            log.error("An error occurred while grabbing workflow definitions");
-            we.printStackTrace();
+            log.error("An error occurred while grabbing workflow definitions", we);
         }
 
         // Broadcast events
@@ -579,7 +571,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
         String[] directiveIds = (String[]) variables.get(WorkflowConstants.WORKFLOW_DIRECTIVES);
         if (directiveIds != null) {
             for (String directiveId : directiveIds) {
-                String label = getMessages().get(directiveId);
+                String label = messages.get(directiveId);
                 workItemDirectives.add(new SelectItem(directiveId,
                         label != null ? label : directiveId));
             }
@@ -791,7 +783,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
 
         if (transitions != null) {
             for (String transition : transitions) {
-                String label = getMessages().get(transition);
+                String label = messages.get(transition);
                 availableStateTransitionsMap.put(label != null ? label
                         : transition, transition);
             }
@@ -821,7 +813,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
                 // Reverse order for f:selectItems.
                 String id = definition.getId();
                 String name = definition.getName();
-                String label = getMessages().get(name);
+                String label = messages.get(name);
                 workflowDefinitionsMap.put(label != null ? label : name, id);
                 // Cache for further faster lookup
                 workflowDefCache.put(id, name);
@@ -844,7 +836,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
         props.add(WorkflowDocumentModificationConstants.WORKFLOW_DOCUMENT_MODIFICATION_NOT_ALLOWED);
 
         for (String prop : props) {
-            String label = getMessages().get(prop);
+            String label = messages.get(prop);
             reviewModificationPropertiesMap.put(label != null ? label : prop,
                     prop);
         }
@@ -867,7 +859,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
         props.add(WorkflowDocumentVersioningPolicyConstants.WORKFLOW_DOCUMENT_VERSIONING_NO_INCREMENT);
 
         for (String prop : props) {
-            String label = getMessages().get(prop);
+            String label = messages.get(prop);
             reviewVersioningPropertiesMap.put(label != null ? label : prop,
                     prop);
         }
@@ -996,18 +988,15 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
     }
 
     private String getRecipientsFromList(List<String> participants) {
-        StringBuffer recipients = new StringBuffer();
-        UserManager userManager;
+        StringBuilder recipients = new StringBuilder();
         try {
-            userManager = Framework.getService(UserManager.class);
-            if (participants != null && participants.size() > 0) {
+            UserManager userManager = Framework.getService(UserManager.class);
+            if (participants != null && !participants.isEmpty()) {
                 for (String participantName : participants) {
-                    boolean isUser = false;
-                    isUser = userManager.getGroup(participantName) == null;
+                    boolean isUser = userManager.getGroup(participantName) == null;
                     participantName = (isUser ? "user:" : "group:")
                             + participantName;
-                    recipients.append(participantName + "|");
-
+                    recipients.append(participantName).append("|");
                 }
                 String recipient = null;
                 if (recipients.toString().trim().length() > 0) {
@@ -1021,4 +1010,5 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
         }
         return "";
     }
+
 }

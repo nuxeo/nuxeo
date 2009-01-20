@@ -30,7 +30,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -40,7 +39,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("userManager")
 @Scope(CONVERSATION)
-@NuxeoJavaBeanErrorHandler
 public class UserManagerBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = 8469446313008631864L;
@@ -55,13 +53,11 @@ public class UserManagerBusinessDelegate implements Serializable {
     public UserManager getUserManager() throws ClientException {
         if (userManager == null) {
             try {
-                //userManager = ECM.getPlatform().getService(UserManager.class);
                 userManager = Framework.getService(UserManager.class);
 
             } catch (Exception e) {
                 final String errMsg = "Error connecting to UserManager. "
                         + e.getMessage();
-                // log.error(errMsg, e);
                 throw new ClientException(errMsg, e);
             }
 
@@ -76,7 +72,6 @@ public class UserManagerBusinessDelegate implements Serializable {
     @PermitAll
     public void destroy() throws ClientException {
         if (userManager != null) {
-            userManager.remove();
             userManager = null;
         }
     }

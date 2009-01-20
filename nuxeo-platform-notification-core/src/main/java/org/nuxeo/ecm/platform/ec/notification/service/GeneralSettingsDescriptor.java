@@ -42,6 +42,7 @@ public class GeneralSettingsDescriptor {
         return eMailSubjectPrefix;
     }
 
+    // Not used.
     public void setEMailSubjectPrefix(String mailSubjectPrefix) {
         eMailSubjectPrefix = mailSubjectPrefix;
     }
@@ -50,6 +51,7 @@ public class GeneralSettingsDescriptor {
         return serverPrefix;
     }
 
+    // Not used.
     public void setServerPrefix(String serverPrefix) {
         this.serverPrefix = serverPrefix;
     }
@@ -58,6 +60,7 @@ public class GeneralSettingsDescriptor {
         return mailSessionJndiName;
     }
 
+    // Not used.
     public void setMailSessionJndiName(String mailSessionJndiName) {
         this.mailSessionJndiName = mailSessionJndiName;
     }

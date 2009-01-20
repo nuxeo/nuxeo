@@ -33,7 +33,7 @@ public class DBAnnotatableDocumentAdapter implements DBAnnotatableDocument {
     private final DocumentModel doc;
     private EJBPlacefulService service;
 
-    public DBAnnotatableDocumentAdapter(DocumentModel doc) throws ClientException {
+    public DBAnnotatableDocumentAdapter(DocumentModel doc) {
         this.doc = doc;
     }
 

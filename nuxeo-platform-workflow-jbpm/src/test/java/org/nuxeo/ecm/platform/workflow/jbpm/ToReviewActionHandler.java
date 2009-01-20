@@ -46,7 +46,6 @@ public class ToReviewActionHandler extends JbpmWorkflowActionHandler {
             log.info("WORKFLOW CREATOR=" + creatorId);
             log.info("LIFE_CYCLE_STATE_DESTINATION=" + destinationState);
         }
-
     }
 
 }

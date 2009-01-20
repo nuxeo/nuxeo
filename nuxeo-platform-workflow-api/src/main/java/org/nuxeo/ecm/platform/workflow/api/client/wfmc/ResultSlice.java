@@ -32,13 +32,14 @@ import java.util.List;
  */
 public class ResultSlice<E> {
 
-    final public List<E> slice;
+    public final List<E> slice;
 
-    final public int firstResult;
+    public final int firstResult;
 
-    final public int maxResult;
+    public final int maxResult;
 
-    final public int totalResult;
+    // FIXME: totalResult or totalResults ?
+    public final int totalResult;
 
     public ResultSlice(List<E> slice, int firstResult, int maxResult,
             int totalResults) {

@@ -49,26 +49,19 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 /**
  * POJO class that extracts and holds the list of the users from backend.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
+ * @author Razvan Caraghin
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
- *
  */
 @Name("principalListManager")
 @Scope(SESSION)
 public class PrincipalListManager implements Serializable {
 
     public static final String USER_TYPE = "USER_TYPE";
-
     public static final String GROUP_TYPE = "GROUP_TYPE";
-
     public static final String USER_GROUP_TYPE = "USER_GROUP_TYPE";
-
     public static final String USER_ICON = "/icons/user.gif";
-
     public static final String GROUP_ICON = "/icons/group.gif";
-
     public static final String USER_ICON_ALT = "user.gif";
-
     public static final String GROUP_ICON_ALT = "group.gif";
 
     public static final int MAX_SEARCH_RESULTS = 20;
@@ -78,16 +71,15 @@ public class PrincipalListManager implements Serializable {
     private static final Log log = LogFactory.getLog(PrincipalListManager.class);
 
     public final Map<String, String> iconPath;
-
     public final Map<String, String> iconAlt;
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected transient UserManager userManager;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;
 
     protected SelectItem[] availablePrincipals;
@@ -134,9 +126,9 @@ public class PrincipalListManager implements Serializable {
 
     public void setSearchFilter(String searchFilter) {
         Context pageContext = Contexts.getPageContext();
-    	if (pageContext != null) {
-    	    pageContext.set("searchFilter", searchFilter);
-    	}
+        if (pageContext != null) {
+            pageContext.set("searchFilter", searchFilter);
+        }
         this.searchFilter = searchFilter;
     }
 

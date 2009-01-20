@@ -1,10 +1,11 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
-  xmlns:nxh="http://nuxeo.org/nxweb/html" xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
   class="commentActions">
 
   <nxu:methodResult name="isPostPublished"
@@ -32,15 +33,15 @@
 
       <h:outputText value=" | "
         rendered="#{isPrincipalModerator and threadEntry.comment.currentLifeCycleState == 'moderation_pending'}"/>
-
+  
       <h:commandLink action="#{postAction.approvePost(threadEntry.comment)}"
         value="#{messages['command.validate']}"
         rendered="#{isPrincipalModerator and threadEntry.comment.currentLifeCycleState == 'moderation_pending'}">
       </h:commandLink>
-
+  
       <h:outputText value=" | "
         rendered="#{isPrincipalModerator and threadEntry.comment.currentLifeCycleState == 'moderation_pending'}"/>
-
+  
       <h:commandLink action="#{postAction.rejectPost(threadEntry.comment)}"
         value="#{messages['command.reject']}"
         rendered="#{isPrincipalModerator and threadEntry.comment.currentLifeCycleState == 'moderation_pending'}">
