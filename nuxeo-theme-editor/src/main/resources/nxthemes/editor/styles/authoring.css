@@ -350,6 +350,9 @@ div.nxthemesButtonSelector a {
   background-image: url(${basePath}/skin/nxthemes-editor/img/button-bg.png);
   background-repeat: repeat-x;
   background-position: 0 -15px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
 }
 
 div.nxthemesButtonSelector a:hover {
