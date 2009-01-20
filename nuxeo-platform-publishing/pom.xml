@@ -17,6 +17,6 @@
     <module>nuxeo-platform-publishing-web</module>
     <module>nuxeo-platform-publishing-api</module>
     <module>nuxeo-platform-publishing-facade</module>
-    <!-- module>nuxeo-platform-publishing-workflow</module-->
+    <module>nuxeo-platform-publishing-workflow</module>
   </modules>
 </project>
