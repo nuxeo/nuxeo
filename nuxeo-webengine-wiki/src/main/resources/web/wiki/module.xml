@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<module root-type="wikis" path="wikis" extends="base">
+<module root-type="wikis" path="/wikis" extends="base">
   <links>
     <link id="tab_content" path="/@views/content_page">
       <!--guard>Write</guard-->
