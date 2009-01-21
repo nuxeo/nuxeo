@@ -7,7 +7,6 @@
 
 <h1 class="nxthemesEditor">Presets</h1>
 
-
 <#list theme_names as theme_name>
 <#assign presets = This.getCustomPresets(theme_name)>
 
@@ -43,7 +42,7 @@
 </ins>
 ${preset_info.preview}</div>
 <div class="name">${preset_info.name}</div>
-
+<div class="category">${preset_info.category}</div>
 </td>
 
   <#if row == 10>

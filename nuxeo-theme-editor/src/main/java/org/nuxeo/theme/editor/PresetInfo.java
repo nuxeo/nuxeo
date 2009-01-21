@@ -67,6 +67,10 @@ public class PresetInfo {
         return preset.getValue();
     }
 
+    public String getCategory() {
+        return preset.getCategory();
+    }
+
     /* Load properties */
     private Properties getPreviewProperties() {
         Utils.loadProperties(previewProperties, PREVIEW_PROPERTIES_RESOURCE);

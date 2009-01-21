@@ -964,6 +964,11 @@ div.nxthemesFragment b {
   font-size: 11px;
 }
 
+#nxthemesPresetManager div.category {
+  font-size: 11px;
+  font-style: italic;
+}
+
 #nxthemesPresetManager div.preview {
   color: #000;
   text-align: center;
