@@ -6,7 +6,10 @@
 
 <h2 class="nxthemesEditor">Unidentified presets</h2>
 
+<#list theme_names as theme_name>
+<#assign preset_names=This.getUnidentifiedPresetNames(theme_name)>
 
+<#if preset_names>
 <form style="padding: 9px "class="unidentifiedPresets" action="javascript:void(0)" submit="return false">
 
 <table cellpadding="0" cellspacing="0" border="0">
@@ -18,9 +21,8 @@
 <th style="width: 30%">Action</th>
 </tr>
 <#assign row = 1 /> 
-<#list theme_names as theme_name>
-<#list This.getUnidentifiedPresetNames(theme_name) as name>
 
+<#list preset_names as name>
 
   <#if row % 2 == 1>
     <tr class="odd">
@@ -36,6 +38,7 @@
         <option value="background">background</option>
         <option value="border">border</option>
         <option value="font">font</option>
+        <option value="image">image</option>
       </select>
   </td>
   <td><input size="40" type="string" name="preset_value" value="" /></td>
@@ -48,10 +51,13 @@
   </form>
 </tr>
 </#list>
-</#list>
+
 
 </table>
 </form>
+
+</#if>
+</#list>
 
 </div>
 

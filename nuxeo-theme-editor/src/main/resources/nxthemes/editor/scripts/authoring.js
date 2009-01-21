@@ -1443,6 +1443,9 @@ NXThemesStyleManager.addMissingPreset = function(info) {
         	themeName = value;
         }
     });
+    if (!presetValue) {
+    	return;
+    }
     var url = nxthemesBasePath + "/nxthemes-editor/add_preset";
     new Ajax.Request(url, {
          method: 'post',
