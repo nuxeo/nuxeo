@@ -6,7 +6,7 @@
 
   <OOoServer>
     <!-- enable Nuxeo Daemon to manage OOo server instances : default is true -->
-    <enableDaemon>true</enableDaemon>
+    <enableDaemon>false</enableDaemon>
     <!-- define OOo server listen IP : used even if daemon is desabled -->
     <oooListenIP>127.0.0.1</oooListenIP>
     <!-- define OOo server listen port : used even if daemon is desabled -->
