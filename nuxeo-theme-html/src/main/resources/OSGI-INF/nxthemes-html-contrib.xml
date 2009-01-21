@@ -89,6 +89,12 @@
       <path>nxthemes/html/styles/nxthemes-jsf.css</path>
     </resource>
 
+    <!-- WYSIWYG JavaScript framework 0.1 http://github.com/37signals/wysihat/tree/master -->
+    <resource name="wysihat.js">
+      <path>nxthemes/html/scripts/nxthemes/wysihat.js</path>
+      <require>prototype.js</require>
+    </resource>
+
     <!--  nxthemes lib -->
     <resource name="nxthemes.js">
       <path>nxthemes/html/scripts/nxthemes/nxthemes.js</path>
