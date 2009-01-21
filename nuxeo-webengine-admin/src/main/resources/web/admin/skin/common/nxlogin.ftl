@@ -36,7 +36,7 @@ function showLoginError(errtext) {
   logstate.css({color: 'red'});
 }
 
- $(document).ready(function(){
+$(document).ready(function(){
 
     $('#logout').click( function() {
       doLogout();
@@ -67,12 +67,12 @@ function showLoginError(errtext) {
       loggedin = doLogin(username, password);
       if (!loggedin) {
         //login failed
-        showLoginError("Username or password incorrect.")
+        showLoginError("Username or password incorrect.");
       }
       return false;
     });
 
-  });
+});
 </script>
 
 <#if (Context.principal.isAnonymous())>

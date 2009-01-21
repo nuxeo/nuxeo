@@ -16,8 +16,7 @@ import org.apache.commons.logging.*
 import org.nuxeo.ecm.webengine.model.*;
 import javax.management.*;
 
-@WebModule(name="management")
-@Path("/management")
+@WebObject(type="management")
 @Produces(["text/xml; charset=UTF-8"])
 public class ZooMain extends DefaultModule {
 	

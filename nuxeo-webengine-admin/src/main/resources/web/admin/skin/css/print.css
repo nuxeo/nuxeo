@@ -1,8 +1,8 @@
 /* CSS for Print. © 2008 Nuxeo */
 
 a:link, a:visited, a:active {
-color:#000;
-text-decoration: underline;
+  color: #000;
+  text-decoration: underline;
 }
 
 .printButton, .closeWindow, hr, #entry-attachments form {
@@ -40,18 +40,18 @@ text-decoration: underline;
 
 body {
   counter-reset: chapter;
-  }
+}
 
-#entry-print h2:before { 
+#entry-print h2:before {
   content: counter(chapter) " ";
   counter-increment: chapter;
 }
 
 #entry-print h2 {
   counter-reset: section;
-  }
+}
 
-#entry-print h3:before { 
+#entry-print h3:before {
   content: counter(chapter) "." counter(section) " ";
   counter-increment: section;
 }

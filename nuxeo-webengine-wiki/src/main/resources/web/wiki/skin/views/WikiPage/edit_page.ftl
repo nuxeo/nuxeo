@@ -1,10 +1,7 @@
-
 <!-- markit up -->
 <script src="${skinPath}/script/markitup/jquery.markitup.pack.js"></script>
 <script src="${skinPath}/script/markitup/sets/wiki/set.js"></script>
 <!-- end markitup -->
-
-
 
 <form method="POST" action="${This.path}/@put" accept-charset="utf-8">
   <h1><input type="text" name="dc:title" value="${Document.dublincore.title}"/></h1>
@@ -22,10 +19,10 @@
 
 <script>
 function launchEditor() {
-  $('#wiki_editor').markItUp(myWikiSettings)
+  $('#wiki_editor').markItUp(myWikiSettings);
 }
 
-$('#wiki_editor').ready(function(){
-  setTimeout(launchEditor, 10)
-  })
+$('#wiki_editor').ready(function() {
+  setTimeout(launchEditor, 10);
+});
 </script>

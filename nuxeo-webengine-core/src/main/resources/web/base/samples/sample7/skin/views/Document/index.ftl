@@ -1,7 +1,7 @@
 <@extends src="base.ftl">
 
 <@block name="content">
-    <h2>${Document.title}</h2>
+  <h2>${Document.title}</h2>
 
 <table width="100%" border="1">
   <tr>
@@ -16,7 +16,7 @@
     Document children:
     <ul>
     <#list Document.children as doc>
-      <li> <a href="${This.path}/${doc.name}">${doc.name}</a>
+      <li> <a href="${This.path}/${doc.name}">${doc.name}</a> </li>
     </#list>
     </ul>
     </div>
@@ -27,14 +27,14 @@
       <ul>
       <b>Tools</b>
       <#list This.getLinks("INFO") as link>
-        <li> <a href="${link.getCode(This)}">${link.id}</a>
+        <li> <a href="${link.getCode(This)}">${link.id}</a> </li>
       </#list>
       </ul>
       <#-- display here the links available in the current context in category TOOLS -->
       <ul>
       <b>Adminitsration</b>
       <#list This.getLinks("TOOLS") as link>
-        <li> <a href="${link.getCode(This)}">${link.id}</a>
+        <li> <a href="${link.getCode(This)}">${link.id}</a> </li>
       </#list>
       </ul>
     </td>

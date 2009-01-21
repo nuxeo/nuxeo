@@ -66,11 +66,11 @@ public class UserService extends DefaultObject {
             user.firstName = req.getParameter("firstName")
             user.lastName = req.getParameter("lastName")
             user.password = req.getParameter("password")
-            
+
             def selectedGroups = req.getParameterValues("groups")
             def listGroups = Arrays.asList(selectedGroups)
             user.setGroups(listGroups)
-            
+
             userManager.updatePrincipal(user)
         } else {
             // create
@@ -78,11 +78,11 @@ public class UserService extends DefaultObject {
             user.firstName = req.getParameter("firstName")
             user.lastName = req.getParameter("lastName")
             user.password = req.getParameter("password")
-            
+
             def selectedGroups = req.getParameterValues("groups")
             def listGroups = Arrays.asList(selectedGroups)
             user.setGroups(listGroups)
-            
+
             userManager.createPrincipal(user)
         }
     }
@@ -101,7 +101,6 @@ public class UserService extends DefaultObject {
         return redirect(getPath()+"/group/"+group.name);
     }
   }
-
 
   public List getGroups() {
     return Framework.getService(UserManager.class).getAvailableGroups();

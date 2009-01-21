@@ -13,160 +13,151 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.webengine.model.impl;
 
+import java.io.BufferedInputStream;
 import java.io.File;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URL;
 
-import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XNodeList;
-import org.nuxeo.common.xmap.annotation.XNodeMap;
-import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.webengine.ResourceBinding;
-import org.nuxeo.ecm.webengine.model.LinkDescriptor;
-import org.nuxeo.ecm.webengine.model.Utils;
-import org.nuxeo.ecm.webengine.model.Validator;
-import org.nuxeo.ecm.webengine.model.WebModule;
-import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
-import org.nuxeo.ecm.webengine.security.Guard;
-import org.nuxeo.ecm.webengine.security.GuardDescriptor;
-import org.nuxeo.runtime.model.Adaptable;
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.Module;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 
 /**
+ * A module descriptor is a proxy to a module and provide information
+ * about that module so that the module can be referenced before being loaded.
+ * Modules are lazy loaded.
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@XObject("module")
-public class ModuleDescriptor implements Cloneable {
+public class ModuleDescriptor {
 
-    private static final Log log = LogFactory.getLog(ModuleDescriptor.class);
+    protected WebEngine engine;
+    protected String name;
+    protected File configFile;    
 
-    /**
-     * The application directory.
-     * Must be set by the client before registering the descriptor.
-     */
-    public File directory;
-
-    @XNode("@name")
-    public String name;
-
-    /**
-     * A fragment id to be used only if this contribution is patching another one
-     */
-    @XNode("@fragment")
-    public String fragment;
-
-    @XNode("@extends")
-    public String base;
-
-    @XNodeList(value="types/type", componentType=TypeDescriptor.class, type=ArrayList.class, nullByDefault=false)
-    public ArrayList<TypeDescriptor> types;
-
-    @XNodeList(value="adapters/adapter", componentType=AdapterDescriptor.class, type=ArrayList.class, nullByDefault=false)
-    public ArrayList<AdapterDescriptor> adapters;
-
-    @XNodeList(value="links/link", type=ArrayList.class, componentType=LinkDescriptor.class, nullByDefault=true)
-    public List<LinkDescriptor> links;
-
-    @XNodeMap(value="validators/validator", key="@type", type=HashedMap.class, componentType=Class.class, nullByDefault=true )
-    public void setValidators(Map<String, Class<Validator>> m) {
-        if (m != null) {
-            validators = new HashMap<String, Validator>();
-            for (Map.Entry<String, Class<Validator>> entry : m.entrySet()) {
-                try {
-                    validators.put(entry.getKey(), entry.getValue().newInstance());
-                } catch (Exception e) {
-                    log.error(e);
+    private ModuleConfiguration config;
+    private Module module;
+    
+    protected ModuleDescriptor() {
+        
+    }
+    
+    public ModuleDescriptor(WebEngine engine, String name, File configFile) {
+        this.engine = engine;
+        this.name = name;
+        this.configFile = configFile;
+    }
+    
+    public WebEngine getEngine() {
+        return engine;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public File getConfigurationFile() {
+        return configFile;
+    }
+    
+    public ModuleConfiguration getConfiguration() {
+        if (config == null) {
+            synchronized (this) {
+                if (config == null) {
+                    config = loadConfiguration();
                 }
             }
         }
+        return config;
     }
-    public Map<String, Validator> validators;
-
-    @XNodeList(value="resources/resource", type=ArrayList.class, componentType=ResourceBinding.class, nullByDefault=true)
-    public List<ResourceBinding> resources;
-
-    @XNode("permission")
-    public  GuardDescriptor guardDescriptor;
-
-    @XNode("templateFileExt")
-    public String templateFileExt = "ftl";
-
-    @XNodeList(value="media-types/media-type", type=MediaTypeRef[].class, componentType=MediaTypeRef.class, nullByDefault=true)
-    public MediaTypeRef[] mediatTypeRefs;
-
-    public ResourceBinding binding;
-
-    private Guard guard;
-
-    public void checkPermission(Adaptable adaptable) {
-        if (!getGuard().check(adaptable)) {
-            throw new WebSecurityException("Access Restricted");
-        }
+    
+    public String getTitle() {
+        String title = getConfiguration().getTitle();
+        return title == null ? name : title;
+    }
+    
+    public String getIcon() {
+        return getConfiguration().getIcon();
     }
 
-    public Guard getGuard() {
-        if (guard == null) {
+    public String getPath() {
+        return getConfiguration().path;
+    }
+    
+    public Module get() {
+        if (module == null) {
             try {
-                guard = guardDescriptor != null? guardDescriptor.getGuard() : Guard.DEFAULT;
-            } catch (ParseException e) {
-                log.error(e);
-                return null;
+                getConfiguration(); // make sure config is loaded
+                Module superModule = null;
+                if (config.base != null) { // make sure super modules are resolved
+                    ModuleDescriptor superM = engine.getModuleManager().getModule(config.base);
+                    if (superM == null) {
+                        throw new WebResourceNotFoundException("The module '"
+                                +name+"' cannot be loaded since it's super module '"+config.base+"' cannot be found");
+                    }
+                    // force super module loading
+                    superModule = superM.get();
+                }
+                module = new ModuleImpl(engine, name, (ModuleImpl)superModule, config);
+            } catch (Exception e) {
+                throw WebException.wrap(e);
             }
         }
-        return guard;
+        return module;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj.getClass() == ModuleDescriptor.class) {
-            ModuleDescriptor dd = (ModuleDescriptor)obj;
-            return dd.name.equals(name) && Utils.streq(dd.fragment, fragment);
-        }
-        return false;
+    
+    public boolean isLoaded() {
+        return module != null;
     }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public ModuleDescriptor clone() {
+    
+    public void unload() {
+        module = null;
+        config = null;
+    }
+    
+    
+    protected ModuleConfiguration loadConfiguration() {
         try {
-            ModuleDescriptor cfg = (ModuleDescriptor) super.clone();
-            cfg.adapters = (ArrayList) adapters.clone();
-            cfg.types = (ArrayList) types.clone();
-            return cfg;
-        } catch (CloneNotSupportedException e) {
-            throw new Error("Should never happen");
+            XMap xmap = new XMap();
+            xmap.register(ModuleConfiguration.class);
+            InputStream in = new BufferedInputStream(new FileInputStream(configFile));
+            ModuleConfiguration mc = (ModuleConfiguration) xmap.load(createXMapContext(), in);
+            if (mc.resources != null) {
+                for (ResourceBinding rb : mc.resources) {
+                    engine.addResourceBinding(rb);
+                }
+            }
+            if (mc.directory == null) {
+                mc.directory = configFile.getParentFile().getCanonicalFile();
+            }
+            return mc;
+        } catch (Exception e) {
+            throw WebException.wrap("Faile to load module configuration: "+configFile, e);
         }
     }
 
-    public static ModuleDescriptor fromAnnotation(Class<?> clazz) {
-        WebModule anno = clazz.getAnnotation(WebModule.class);
-        if (anno == null) {
-            return null;
-        }
-        ModuleDescriptor ad = new ModuleDescriptor();
-        ad.name = anno.name();
-        ad.fragment = Utils.nullIfEmpty(anno.fragment());
-        ad.base = Utils.nullIfEmpty(anno.base());
-        String guard = Utils.nullIfEmpty(anno.guard());
-        if (guard != null) {
-            ad.guardDescriptor = new GuardDescriptor();
-            ad.guardDescriptor.setExpression(guard);
-        }
-        ad.adapters = new ArrayList<AdapterDescriptor>();
-        ad.types = new ArrayList<TypeDescriptor>();
-        return ad;
+    protected Context createXMapContext() {
+        return new Context() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public Class<?> loadClass(String className)
+            throws ClassNotFoundException {
+                return engine.loadClass(className);
+            }
+            @Override
+            public URL getResource(String name) {
+                return engine.getScripting().getGroovyScripting().getGroovyClassLoader().getResource(name);
+            }
+        };
     }
-
+    
 }

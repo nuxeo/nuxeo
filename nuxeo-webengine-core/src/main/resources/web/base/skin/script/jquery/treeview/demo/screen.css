@@ -1,7 +1,11 @@
-html, body {height:100%; margin: 0; padding: 0; }
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
 
 html>body {
-	font-size: 16px; 
+	font-size: 16px;
 	font-size: 68.75%;
 } /* Reset Base Font Size */
 
@@ -12,13 +16,32 @@ body {
 	color: #333;
 }
 
-h1, h2 { font-family: 'trebuchet ms', verdana, arial; padding: 10px; margin: 0 }
-h1 { font-size: large }
+h1, h2 {
+    font-family: 'trebuchet ms', verdana, arial, sans-serif; padding: 10px; margin: 0;
+}
 
-#banner { padding: 15px; background-color: #06b; color: white; font-size: large; border-bottom: 1px solid #ccc;
-    background: url(bg.gif) repeat-x; text-align: center }
-#banner a { color: white; }
+h1 {
+    font-size: large;
+}
 
-#main { padding: 1em; }
+#banner {
+    padding: 15px;
+    background-color: #06b;
+    color: white;
+    font-size: large;
+    border-bottom: 1px solid #ccc;
+    background: url(bg.gif) repeat-x;
+    text-align: center;
+}
 
-a img { border: none; }
+#banner a {
+    color: white;
+}
+
+#main {
+    padding: 1em;
+}
+
+a img {
+    border: none;
+}

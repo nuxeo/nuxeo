@@ -13,9 +13,10 @@ import org.nuxeo.ecm.webengine.*;
  * Web Module Main Resource Sample.
  * <p>
  * This demonstrates how to define the entry point for a WebEngine module.
+ * <p>
  * The module entry point is a regular JAX-RS resource named 'Main' and with an additional @WebModule annotation.
  * This annotation is mainly used to specify the WebModule name. I will explain the rest of @WebModule attributes in the following samples.
- * A Web Module is implicitly defined by its entry point. You can also configure a Web Module using a modules.xml file located
+ * A Web Module is implicitly defined by its entry point. You can also configure a Web Module using a module.xml file located
  * in the module root directory. This file can be used to define: root resources (as we've seen in the previous example), links, media type IDs
  * random extensions to other extension points; but also to define new Web Modules without an entry point.
  * <p>
@@ -41,6 +42,6 @@ public class Main extends DefaultModule {
   public String doGet(@PathParam("name") String name) {
     return "Sample2: Hello "+name+"!";
   }
-  
+
 }
 

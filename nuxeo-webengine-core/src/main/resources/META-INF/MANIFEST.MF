@@ -11,7 +11,7 @@ Nuxeo-Require: org.nuxeo.ecm.platform.rendering,
  org.nuxeo.ecm.core.api;
  org.nuxeo.ecm.platform.web.common
 Nuxeo-Component: OSGI-INF/webengine-framework.xml,
- OSGI-INF/webengine-config.xml,
+ OSGI-INF/webengine-contrib.xml,
  OSGI-INF/web-deployment-contrib.xml,
  OSGI-INF/authentication-contrib.xml,
  OSGI-INF/wiki-transformer-contrib.xml

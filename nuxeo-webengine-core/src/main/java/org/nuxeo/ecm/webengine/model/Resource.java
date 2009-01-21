@@ -61,8 +61,6 @@ public interface Resource extends Adaptable {
 
     boolean isAdapter();
 
-    boolean isModule();
-
     boolean isRoot();
 
     void setRoot(boolean isRoot);

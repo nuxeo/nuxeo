@@ -9,19 +9,10 @@ Hello <strong>${Context.principal.name}</strong>! This is the root of your web s
 <div id="mainContentBox">
 Welcome to Nuxeo WebEngine. Here are the available applications :
 <ul>
-<#--
-<#list Engine.moduleRegistry.modules as module>
-  <#if module.name != "base" >
-  
-  <li><a href="${basePath}${module.moduleBinding.path}">${module.moduleTitle}</a></li>
-  </#if>
-</#list>
--->
 
-<#list Engine.moduleRegistry.lazyModuleKeys as path>
-  <#assign name=Engine.moduleRegistry.getLazyModuleName(path)>
-  <#if name != "base" >  
-    <li><a href="${basePath}${path}">${name}</a></li>
+<#list Engine.moduleManager.modules as module>
+  <#if module.name != "base" >  
+    <li><a href="${basePath}${module.path}">${module.name}</a></li>
   </#if>
 </#list>
 

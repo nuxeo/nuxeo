@@ -19,26 +19,20 @@
 
 package org.nuxeo.ecm.webengine;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.Path;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.common.xmap.Context;
-import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
@@ -51,7 +45,7 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.impl.GlobalTypes;
 import org.nuxeo.ecm.webengine.model.impl.ModuleDescriptor;
 import org.nuxeo.ecm.webengine.model.impl.ModuleImpl;
-import org.nuxeo.ecm.webengine.model.impl.ModuleRegistry;
+import org.nuxeo.ecm.webengine.model.impl.ModuleManager;
 import org.nuxeo.ecm.webengine.model.io.BlobWriter;
 import org.nuxeo.ecm.webengine.model.io.ResourceWriter;
 import org.nuxeo.ecm.webengine.model.io.ScriptFileWriter;
@@ -77,11 +71,29 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
 
     protected static final Pattern PATH_PATTERN = Pattern.compile("\\s+@Path\\(\"([^\"]*)\"\\)\\s+");
 
+    protected static final Map<Object, Object> mimeTypes = loadMimeTypes();
+
     private static final Log log = LogFactory.getLog(WebEngine.class);
 
     private static final ThreadLocal<WebContext> CTX = new ThreadLocal<WebContext>();
 
-    protected static final Map<Object, Object> mimeTypes = loadMimeTypes();
+    protected final File root;
+    protected ModuleManager moduleMgr;
+    protected FileChangeNotifier notifier;
+    protected volatile long lastMessagesUpdate = 0;
+    protected Scripting scripting;
+    protected RenderingEngine rendering;
+    protected Map<String, Object> env;
+    protected boolean isDebug = false;
+
+    protected GlobalTypes globalTypes;
+
+    protected AnnotationManager annoMgr;
+
+    protected final ResourceRegistry registry;
+    protected Messages messages;
+
+    protected String skinPathPrefix;
 
     static Map<Object, Object> loadMimeTypes() {
         Map<Object,Object> mimeTypes = new HashMap<Object, Object>();
@@ -110,31 +122,11 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         CTX.set(ctx);
     }
 
-
-    protected final File root;
-    protected ModuleRegistry moduleReg;
-    protected FileChangeNotifier notifier;
-    protected volatile long lastMessagesUpdate = 0;
-    protected Scripting scripting;
-    protected RenderingEngine rendering;
-    protected Map<String, Object> env;
-    protected boolean isDebug = false;
-
-    protected GlobalTypes globalTypes;
-
-    protected AnnotationManager annoMgr;
-
-    protected final ResourceRegistry registry;
-    protected Messages messages;
-
-    protected String skinPathPrefix;
-
-
     public WebEngine(ResourceRegistry registry, File root) throws IOException {
         this.registry = registry;
         isDebug = Boolean.parseBoolean(Framework.getProperty("debug", "false"));
         this.root = root;
-        if (isDebug) { // TODO notifier must be intialized by WebEngine
+        if (isDebug) { // TODO notifier must be initialized by WebEngine
             notifier = new FileChangeNotifier();
             notifier.start();
             notifier.watch(new File(root, "i18n")); // watch i18n files
@@ -156,12 +148,15 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
             //TODO: should put this in web.xml and not use jboss.home.dir to test if on jboss
             skinPathPrefix = System.getProperty("jboss.home.dir") != null ? "/nuxeo/site/skin" : "/skin";
         }
-        loadModules();
+//TODO remove this
+//        moduleMgr = new ModuleManager(this);
+//        moduleMgr.loadModules(root);
+//        registry.addBinding(new ResourceBinding("/", Main.class, false));
 
         env = new HashMap<String, Object>();
         env.put("installDir", root);
         env.put("engine", "Nuxeo Web Engine");
-        env.put("version", "1.0.0.b1"); //TODO this should be put in the MANIFEST
+        env.put("version", "1.0.0.rc"); //TODO this should be put in the MANIFEST
 
         rendering = new FreemarkerEngine();
         rendering.setResourceLocator(this);
@@ -179,16 +174,10 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         registry.addMessageBodyWriter(new BlobWriter());
     }
 
-    /**
-     * @param skinPathPrefix the skinPathPrefix to set.
-     */
     public void setSkinPathPrefix(String skinPathPrefix) {
         this.skinPathPrefix = skinPathPrefix;
     }
 
-    /**
-     * @return the skinPathPrefix.
-     */
     public String getSkinPathPrefix() {
         return skinPathPrefix;
     }
@@ -204,7 +193,6 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
     public GlobalTypes getGlobalTypes() {
         return globalTypes;
     }
-
 
     public String getMimeType(String ext) {
         return (String)mimeTypes.get(ext);
@@ -244,141 +232,141 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         return annoMgr;
     }
 
-    protected Context createXMapContext() {
-        return new Context() {
-            private static final long serialVersionUID = 1L;
-            @Override
-            public Class<?> loadClass(String className)
-                    throws ClassNotFoundException {
-                return scripting.loadClass(className);
-            }
-            @Override
-            public URL getResource(String name) {
-                return scripting.getGroovyScripting().getGroovyClassLoader().getResource(name);
-            }
-        };
-    }
-
-    /**
-     * PreLoad a module this is loading only the web binding to be registered in
-     * JAX-RS engine. The module itself will be loaded later at first HTTP request on that module.
-     * This speed startup and also, may solve startup dependency problems.
-     * @param file
-     */
-    public void preloadModule(File file) throws IOException {
-        File appFile = new File(file, "Main.groovy");
-        if (!appFile.isFile()) {
-            return;
-        }
-        // extract web path from @Path annotation
-        String content = FileUtils.readFile(appFile);
-        Matcher m = PATH_PATTERN.matcher(content);
-        if (!m.find()) {
-            return;
-        }
-        String path = m.group(1);
-        String filePath = file.getAbsolutePath();
-        registry.registerLazyModule(path, filePath);
-        moduleReg.registerLazyModule(path, filePath);
-    }
-
-
-    public boolean loadLazyModule(String name) throws Exception {
-        return loadModule(new File(name));
-    }
-
-    /**
-     * Try to load the module in the given directory
-     * If the directory dooesn't contain a WebModule nfalse is returned.
-     * @param file the module directory
-     */
-    public  boolean loadModule(File file) throws Exception {
-        ModuleDescriptor ad = null;
-        File appFile = new File(file, "Main.groovy");
-        if (appFile.isFile()) {
-            ad = loadModuleDescriptor(file.getName()+".Main");
-            appFile = new File(file, "module.xml");
-            if (appFile.isFile()) {
-                ModuleDescriptor ad2 = loadModuleDescriptor(appFile);
-                ad.links = ad2.links;
-                ad.validators = ad2.validators;
-                ad2.links = null;
-                ad2.validators = null;
-            }
-        } else {
-            appFile = new File(file, "module.xml");
-            if (appFile.isFile()) {
-                ad = loadModuleDescriptor(appFile);
-            }
-        }
-        if (ad != null) {
-            moduleReg.registerDescriptor(file, ad);
-            if (notifier != null) {
-                notifier.watch(file);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    protected  void loadModules() {
-        moduleReg = new ModuleRegistry(this);
-        for (File file : root.listFiles()) {
-            try {
-                if (file.isDirectory()) {
-                    preloadModule(file);
-                }
-            } catch (Exception e) {
-                log.error(e);
-            }
-        }
-    }
-
-    /**
-     * Loads a module given its annotated class.
-     *
-     * @param className
-     */
-    protected synchronized ModuleDescriptor loadModuleDescriptor(String className) {
-        try {
-            Class<?> clazz = scripting.loadClass(className);
-            ModuleDescriptor ad = ModuleDescriptor.fromAnnotation(clazz);
-            if (ad != null) {
-                ad.binding = ResourceBinding.fromAnnotation(clazz);
-                if (ad.binding != null) {
-                    addResourceBinding(ad.binding);
-                }
-            }
-            return ad;
-        } catch (ClassNotFoundException e) {
-            log.error(e);
-            // do nothing
-        }
-        return null;
-    }
-
-    /**
-     * Loads an module given its configuration file.
-     *
-     * @param cfgFile
-     */
-    protected synchronized ModuleDescriptor loadModuleDescriptor(File cfgFile) {
-        try {
-            XMap xmap = new XMap();
-            xmap.register(ModuleDescriptor.class);
-            InputStream in = new BufferedInputStream(new FileInputStream(cfgFile));
-            ModuleDescriptor md = (ModuleDescriptor) xmap.load(createXMapContext(), in);
-            if (md.resources != null) {
-                for (ResourceBinding rb : md.resources) {
-                    addResourceBinding(rb);
-                }
-            }
-            return md;
-        } catch (Exception e) {
-            log.error(e);
-        }
-        return null;
-    }
+//    protected Context createXMapContext() {
+//        return new Context() {
+//            private static final long serialVersionUID = 1L;
+//            @Override
+//            public Class<?> loadClass(String className)
+//                    throws ClassNotFoundException {
+//                return scripting.loadClass(className);
+//            }
+//            @Override
+//            public URL getResource(String name) {
+//                return scripting.getGroovyScripting().getGroovyClassLoader().getResource(name);
+//            }
+//        };
+//    }
+//
+//    /**
+//     * PreLoad a module this is loading only the web binding to be registered in
+//     * JAX-RS engine. The module itself will be loaded later at first HTTP request on that module.
+//     * This speed startup and also, may solve startup dependency problems.
+//     * @param file
+//     */
+//    public void preloadModule(File file) throws IOException {
+//        File appFile = new File(file, "Main.groovy");
+//        if (!appFile.isFile()) {
+//            return;
+//        }
+//        // extract web path from @Path annotation
+//        String content = FileUtils.readFile(appFile);
+//        Matcher m = PATH_PATTERN.matcher(content);
+//        if (!m.find()) {
+//            return;
+//        }
+//        String path = m.group(1);
+//        String filePath = file.getAbsolutePath();
+//        registry.registerLazyModule(path, filePath);
+//        moduleReg.registerLazyModule(path, filePath);
+//    }
+//
+//
+//    public boolean loadLazyModule(String name) throws Exception {
+//        return loadModule(new File(name));
+//    }
+//
+//    /**
+//     * Try to load the module in the given directory
+//     * If the directory dooesn't contain a WebModule nfalse is returned.
+//     * @param file the module directory
+//     */
+//    public  boolean loadModule(File file) throws Exception {
+//        ModuleConfiguration ad = null;
+//        File appFile = new File(file, "Main.groovy");
+//        if (appFile.isFile()) {
+//            ad = loadModuleDescriptor(file.getName()+".Main");
+//            appFile = new File(file, "module.xml");
+//            if (appFile.isFile()) {
+//                ModuleConfiguration ad2 = loadModuleDescriptor(appFile);
+//                ad.links = ad2.links;
+//                ad.validators = ad2.validators;
+//                ad2.links = null;
+//                ad2.validators = null;
+//            }
+//        } else {
+//            appFile = new File(file, "module.xml");
+//            if (appFile.isFile()) {
+//                ad = loadModuleDescriptor(appFile);
+//            }
+//        }
+//        if (ad != null) {
+//            moduleReg.registerDescriptor(file, ad);
+//            if (notifier != null) {
+//                notifier.watch(file);
+//            }
+//            return true;
+//        }
+//        return false;
+//    }
+//
+//    protected  void loadModules() {
+//        moduleReg = new ModuleRegistry(this);
+//        for (File file : root.listFiles()) {
+//            try {
+//                if (file.isDirectory()) {
+//                    preloadModule(file);
+//                }
+//            } catch (Exception e) {
+//                log.error(e);
+//            }
+//        }
+//    }
+//
+//    /**
+//     * Loads a module given its annotated class.
+//     *
+//     * @param className
+//     */
+//    protected synchronized ModuleConfiguration loadModuleDescriptor(String className) {
+//        try {
+//            Class<?> clazz = scripting.loadClass(className);
+//            ModuleConfiguration ad = ModuleConfiguration.fromAnnotation(clazz);
+//            if (ad != null) {
+//                ad.binding = ResourceBinding.fromAnnotation(clazz);
+//                if (ad.binding != null) {
+//                    addResourceBinding(ad.binding);
+//                }
+//            }
+//            return ad;
+//        } catch (ClassNotFoundException e) {
+//            log.error(e);
+//            // do nothing
+//        }
+//        return null;
+//    }
+//
+//    /**
+//     * Loads an module given its configuration file.
+//     *
+//     * @param cfgFile
+//     */
+//    protected synchronized ModuleConfiguration loadModuleDescriptor(File cfgFile) {
+//        try {
+//            XMap xmap = new XMap();
+//            xmap.register(ModuleConfiguration.class);
+//            InputStream in = new BufferedInputStream(new FileInputStream(cfgFile));
+//            ModuleConfiguration md = (ModuleConfiguration) xmap.load(createXMapContext(), in);
+//            if (md.resources != null) {
+//                for (ResourceBinding rb : md.resources) {
+//                    addResourceBinding(rb);
+//                }
+//            }
+//            return md;
+//        } catch (Exception e) {
+//            log.error(e);
+//        }
+//        return null;
+//    }
 
     public boolean isDebug() {
         return isDebug;
@@ -404,12 +392,28 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         return scripting;
     }
 
-    public ModuleRegistry getModuleRegistry() {
-        return moduleReg;
+    public ModuleManager getModuleManager() {
+        if (moduleMgr == null) { // avoid synchronizing if not needed
+            synchronized(this) {
+                if (moduleMgr == null) {
+                    moduleMgr = new ModuleManager(this);
+                    try {
+                        moduleMgr.loadModules(root);
+                    } catch (IOException e) {
+                        throw WebException.wrap("Failed to load modules", e);
+                    }
+                }
+            }
+        }
+        return moduleMgr;
     }
 
     public Module getModule(String name) {
-        return moduleReg.getModule(name);
+        ModuleDescriptor md = getModuleManager().getModule(name);
+        if (md != null) {
+            return md.get();
+        }
+        return null;
     }
 
     public File getRootDirectory() {
@@ -424,7 +428,8 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         return rendering;
     }
 
-    /** Manage jax-rs root resource bindings */
+    /* Manage jax-rs root resource bindings */
+
     public void addResourceBinding(ResourceBinding binding) {
         registry.addBinding(binding);
     }
@@ -442,24 +447,25 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
      */
     public synchronized void reload() {
         log.info("Reloading WebEngine");
-        reloadModules();
+//        reloadModules();
     }
 
-    public synchronized void reloadModules() {
-        for (Module module : moduleReg.getModules()) {
-            ResourceBinding binding = module.getModuleBinding();
-            if (binding != null) { // a module may not have a resource binding ..
-                registry.removeBinding(binding);
-            }
-            List<ResourceBinding> bindings = module.getResourceBindings();
-            if (bindings != null) {
-                for (ResourceBinding b : bindings) {
-                    registry.removeBinding(b);
-                }
-            }
-        }
-        loadModules();
-    }
+    //TODO
+//    public synchronized void reloadModules() {
+//        for (Module module : moduleReg.getModules()) {
+//            ResourceBinding binding = module.getModuleBinding();
+//            if (binding != null) { // a module may not have a resource binding ..
+//                registry.removeBinding(binding);
+//            }
+//            List<ResourceBinding> bindings = module.getResourceBindings();
+//            if (bindings != null) {
+//                for (ResourceBinding b : bindings) {
+//                    registry.removeBinding(b);
+//                }
+//            }
+//        }
+//        loadModules();
+//    }
 
     public void destroy() {
         if (notifier != null) {
@@ -469,14 +475,14 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         registry.clear();
     }
 
-    protected Module getModuleFromPath(String rootPath, String path) {
+    protected ModuleDescriptor getModuleFromPath(String rootPath, String path) {
         path = path.substring(rootPath.length()+1);
         int p = path.indexOf('/');
         String moduleName = path;
         if (p > -1) {
             moduleName = path.substring(0, p);
         }
-        return moduleReg.getModuleByRoot(moduleName);
+        return moduleMgr.getModule(moduleName);
     }
 
     public void fileChanged(FileEntry entry, int type, long now) throws Exception {
@@ -504,16 +510,16 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
                 log.info("File changed: " + entry.file);
                 reload();
             } else {
-                Module module = getModuleFromPath(rootPath, path);
-                if (module != null) {
+                ModuleDescriptor module = getModuleFromPath(rootPath, path);
+                if (module != null && module.isLoaded()) {
                     log.info("File changed: " + entry.file);
                     if (path.indexOf("/skin/", 0) > 0) {
-                        ((ModuleImpl) module).flushSkinCache();
+                        ((ModuleImpl) module.get()).flushSkinCache();
                     } else if (name.equals("i18n")) {
-                        ((ModuleImpl) module).reloadMessages();
+                        ((ModuleImpl) module.get()).reloadMessages();
                     } else { // not a skin may be a type
                         //module.flushCache();
-                        ((ModuleImpl) module).flushTypeCache();
+                        ((ModuleImpl) module.get()).flushTypeCache();
                     }
                 }
             }
@@ -536,7 +542,7 @@ public class WebEngine implements FileChangeListener, ResourceLocator, Annotatio
         }
     }
 
-    /** ResourceLocator API */
+    /* ResourceLocator API */
 
     public URL getResourceURL(String key) {
         try {

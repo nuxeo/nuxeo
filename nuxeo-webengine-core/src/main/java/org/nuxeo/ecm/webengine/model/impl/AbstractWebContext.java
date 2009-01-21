@@ -86,6 +86,10 @@ public abstract class AbstractWebContext implements WebContext {
 //    public abstract HttpServletResponse getHttpServletResponse();
 
 
+    public void setModule(Module module) {
+        this.module = module;
+    }
+    
     public Resource getRoot() {
         return root;
     }
@@ -191,16 +195,28 @@ public abstract class AbstractWebContext implements WebContext {
 
     public Resource newObject(ResourceType type, Object ...  args) {
         Resource obj = type.newInstance();
-        obj.initialize(this, type, args);
-        push(obj);
+        try {
+            obj.initialize(this, type, args);
+        } finally {
+            // we must be sure the object is pushed even if an error occurred
+            // otherwise we may end up with an empty object stack and we will not be able to 
+            // handle errors based on objects handleError() method
+            push(obj);
+        }
         return obj;
     }
 
     public AdapterResource newAdapter(Resource ctx, String serviceName, Object ...  args) {
         AdapterType st = module.getAdapter(ctx, serviceName);
         AdapterResource service = (AdapterResource)st.newInstance();
-        service.initialize(this, st, args);
-        push(service);
+        try {
+            service.initialize(this, st, args);
+        } finally {
+            // we must be sure the object is pushed even if an error occurred
+            // otherwise we may end up with an empty object stack and we will not be able to 
+            // handle errors based on objects handleError() method
+            push(service);
+        }
         return service;
     }
 
@@ -314,7 +330,7 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public String getUrlPath(DocumentModel document) {
-        return getModuleInstance().getLink(document);
+        return getHead().getLink(document);
     }
 
     public Log getLog() {
@@ -323,7 +339,7 @@ public abstract class AbstractWebContext implements WebContext {
 
     /* object stack API */
 
-    public ModuleResource getModuleInstance() {
+    public ModuleResource getHead() {
         return (ModuleResource)head;
     }
 
@@ -335,7 +351,6 @@ public abstract class AbstractWebContext implements WebContext {
             rs.prev = tail;
             tail = rs;
         } else {
-            module = obj.getModule();
             rs.prev = tail;
             head = tail = rs;
         }

@@ -22,7 +22,6 @@ package org.nuxeo.ecm.webengine.server.resteasy;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.Path;
@@ -36,9 +35,7 @@ import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.ResourceRegistry;
-import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -50,13 +47,10 @@ public class ResourceRegistryImpl implements ResourceRegistry {
     protected final ResourceMethodRegistry registry;
     protected List<ResourceBinding> bindings;
     
-    protected List<LazyModule> lazyModules;
-
     
     public ResourceRegistryImpl(Dispatcher dispatcher) {
         registry = (ResourceMethodRegistry)dispatcher.getRegistry();
         bindings = new ArrayList<ResourceBinding>();
-        lazyModules = new ArrayList<LazyModule>();
         this.dispatcher = dispatcher;
     }
 
@@ -154,48 +148,5 @@ public class ResourceRegistryImpl implements ResourceRegistry {
         dispatcher.getProviderFactory().addMessageBodyWriter(writer);
     }
 
-    
-    public void registerLazyModule(String path, String name) {
-        synchronized (lazyModules) {
-            lazyModules.add(new LazyModule(path, name));
-        }
-    }
-    
-
-    public boolean loadLazyModuleIfNeeded(String path) throws Exception  {
-        if (lazyModules.isEmpty()) {
-            return false;
-        }
-        if (path == null || path.length() == 0) {
-            path = "/";
-        }
-        LazyModule lm = null;
-        synchronized (lazyModules) {
-            Collections.sort(lazyModules);
-            for (int i=0,len=lazyModules.size(); i<len; i++) {
-                lm = lazyModules.get(i);
-                if (path.startsWith(lm.webPath)) { // lazy loading works only on paths without regexp
-                    lazyModules.remove(i);
-                    WebEngine engine = Framework.getService(WebEngine.class);
-                    engine.loadLazyModule(lm.dirPath);
-                    return true;
-                }
-            }
-            return false;
-        }
-        
-    }
-    
-    static class LazyModule implements Comparable<LazyModule> {
-        String webPath;
-        String dirPath;
-        LazyModule(String webPath, String dirPath) {
-            this.webPath = webPath;
-            this.dirPath = dirPath;
-        }
-        public int compareTo(LazyModule o) {
-            return -webPath.compareTo(o.webPath);
-        }
-    }
     
 }

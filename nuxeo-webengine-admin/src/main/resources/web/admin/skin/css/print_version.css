@@ -34,26 +34,25 @@ form {
 }
 
 #entry-attachments form {
- display:none;
+  display:none;
 }
-
 
 /* Css 2 for firefox */
 
 body {
   counter-reset: chapter;
-  }
+}
 
-#entry-print h2:before { 
+#entry-print h2:before {
   content: counter(chapter) " ";
   counter-increment: chapter;
 }
 
 #entry-print h2 {
   counter-reset: section;
-  }
+}
 
-#entry-print h3:before { 
+#entry-print h3:before {
   content: counter(chapter) "." counter(section) " ";
   counter-increment: section;
 }

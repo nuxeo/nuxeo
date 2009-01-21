@@ -27,9 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ModuleResource extends Resource{
-
-    String getName();
+public interface ModuleResource extends Resource {
 
     Object handleError(WebApplicationException e);
 

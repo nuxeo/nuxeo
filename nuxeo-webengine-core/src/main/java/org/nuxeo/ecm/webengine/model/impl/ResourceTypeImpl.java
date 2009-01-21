@@ -36,7 +36,7 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
  */
 public class ResourceTypeImpl extends AbstractResourceType {
 
-    public ResourceTypeImpl(WebEngine engine, AbstractModule module, ResourceTypeImpl superType, String name, ClassProxy clazz, int visibility) {
+    public ResourceTypeImpl(WebEngine engine, ModuleImpl module, ResourceTypeImpl superType, String name, ClassProxy clazz, int visibility) {
         super(engine, module, superType, name, clazz, visibility);
     }
 

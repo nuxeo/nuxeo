@@ -37,7 +37,6 @@ function showLoginError(errtext) {
 }
 
  $(document).ready(function(){
-
     $('#logout').click( function() {
       doLogout();
     });
@@ -55,7 +54,6 @@ function showLoginError(errtext) {
     });
 
     $('#login_form').submit(function() {
-
       username = $('#username')[0].value;
       password = $('#password')[0].value;
 
@@ -71,20 +69,18 @@ function showLoginError(errtext) {
       }
       return false;
     });
-
   });
 </script>
 
-  <#if (Context.principal.isAnonymous())>
-
+<#if (Context.principal.isAnonymous())>
   <div id="logstate">Hi Guest! You are not logged in.</div>
 
   <div id="login">
-  <form id="login_form" method="post" action="#">
-    <input type="text" name="userid" id="username" value="Username" class="username">
-    <input type="password" name="password" id="password" value="password" class="password">
-    <input type="submit" name="nuxeo_login" value="Log In" id="login" class="button">
-  </form>
+    <form id="login_form" method="post" action="#">
+      <input type="text" name="userid" id="username" value="Username" class="username">
+      <input type="password" name="password" id="password" value="password" class="password">
+      <input type="submit" name="nuxeo_login" value="Log In" id="login" class="button">
+    </form>
   </div>
 <#else>
   <div id="logstate">You are logged in as ${Context.principal.name}</div>

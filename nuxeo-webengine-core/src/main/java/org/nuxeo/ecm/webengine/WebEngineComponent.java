@@ -54,7 +54,7 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
     public static final String BINDING_XP = "binding"; // TODO deprecated
     public static final String RESOURCE_BINDING_XP = "resource";
     public static final String GUARD_XP = "guard"; // global guards
-    public static final String APPLICATION_XP = "application";
+    public static final String MODULE_XP = "application";
     public static final String INSTALL_XP = "install";
     public static final String CONFIG_XP = "configuration";
     public static final String APP_MAPPING_XP = "application-mapping";
@@ -124,7 +124,7 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
     }
 
     private static void deployWebDir(Bundle bundle, File root) throws IOException {
-        if (!new File(root, "admin").exists()) {
+        if (!new File(root, "base").exists()) {
             root.mkdirs();
             Installer.copyResources(bundle, "web", root);
         }

@@ -56,7 +56,8 @@ public class WebEngineServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected WebEngineDispatcher dispatcher;
-
+//    protected WebEngine engine;
+    
     protected void initializeBuiltinProviders(
             ResteasyProviderFactory providerFactory) {
         // RegisterBuiltin.register(providerFactory);
@@ -93,6 +94,18 @@ public class WebEngineServlet extends HttpServlet {
     protected void service(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) throws ServletException,
             IOException {
+//        if (engine == null) {
+//            synchronized (engine) {
+//                if (engine == null) {
+//                    try {
+//                        engine = Framework.getService(WebEngine.class);
+//                        engine.getModuleManager(); // force module loading
+//                    } catch (Exception e) {
+//                        throw new ServletException(e);
+//                    }
+//                }
+//            }
+//        }
         dispatcher.service(httpServletRequest, httpServletResponse);
     }
 

@@ -4,7 +4,7 @@
 <@block name="content">
 
 <ul>
-  <li> <a href="${This.path}/reload">Reload</a>
+  <li> <a href="${This.path}/reload">Reload</a> </li>
 </ul>
 
 </@block>

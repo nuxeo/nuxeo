@@ -22,7 +22,7 @@ package org.nuxeo.ecm.webengine.util;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 
-public interface RelationConstants {
+public class RelationConstants {
 
     public static final String GRAPH_NAME = "default";
 
@@ -33,5 +33,9 @@ public interface RelationConstants {
     public static final Resource TITLE = new ResourceImpl(METADATA_NAMESPACE + "title");
 
     public static final Resource UUID = new ResourceImpl(METADATA_NAMESPACE + "uuid");
+
+    // Constant utility class
+    private RelationConstants() {
+    }
 
 }

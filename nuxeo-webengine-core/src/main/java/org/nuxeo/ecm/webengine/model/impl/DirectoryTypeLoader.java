@@ -70,6 +70,9 @@ public class DirectoryTypeLoader {
             File cache = new File(root, ".types");
             if (cache.isFile()) {
                 for (String line : FileUtils.readLines(cache)) {
+                    if (line.equals("")) {
+                        continue;
+                    }
                     TypeDescriptor td = loadType(line);
                     if (td != null) {
                         typeReg.registerTypeDescriptor(td);
@@ -147,7 +150,7 @@ public class DirectoryTypeLoader {
      * @throws ClassNotFoundException
      */
     protected TypeDescriptor loadType(String className) throws ClassNotFoundException {
-        ClassProxy clazz = null;
+        ClassProxy clazz;
         if (isDebug) {
             clazz = new GroovyClassProxy(loader, className);
         } else {

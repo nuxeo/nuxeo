@@ -35,10 +35,10 @@ public class TestPermissionService extends TestCase {
     public void test1() throws ParseException {
         String expr = "a AND b OR c";
         PostfixExpression postfix = new PostfixExpression(expr);
-        System.out.println(postfix.toString().trim());
+        // System.out.println(postfix.toString().trim());
         Guard root = (Guard) postfix.visit(ptb);
         assertEquals("a b AND c OR", postfix.toString().trim());
-        System.out.println(root.toString());
+        // System.out.println(root.toString());
         assertEquals("((PERM[a] AND PERM[b]) OR PERM[c])", root.toString());
     }
 

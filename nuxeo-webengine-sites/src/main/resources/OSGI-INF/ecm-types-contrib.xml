@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.webengine.sites.ecm.types">
+
+  <require>org.nuxeo.ecm.platform.types.TypeService</require>
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService"
+    point="types">
+
+    <type id="WebPage" coretype="WebPage">
+      <label>Web Page</label>
+      <icon>/icons/folder.gif</icon>
+      <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>WebPage</type>
+      </subtypes>
+      <!-- new layout config -->
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>webpage</layout>
+      </layouts>
+    </type>
+    
+    <type id="Workspace" coretype="Workspace">
+      <subtypes>
+        <type>WebPage</type>
+      </subtypes>
+    </type>
+    
+  </extension>
+</component>

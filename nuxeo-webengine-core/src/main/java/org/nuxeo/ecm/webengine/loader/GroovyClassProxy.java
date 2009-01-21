@@ -59,6 +59,8 @@ public class GroovyClassProxy implements ClassProxy {
              }
              timestamp = tm;
              return clazz;
+         } catch (ClassNotFoundException e) {
+             throw WebException.wrap("Class Not found: '" + className + "'", e);             
          } catch (Exception e) {
              throw WebException.wrap(e);
          }

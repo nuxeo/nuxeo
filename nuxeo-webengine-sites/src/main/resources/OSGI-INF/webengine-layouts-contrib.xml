@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.webengine.sites.layouts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+    <layout name="webpage">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>pushtomenu</widget>
+        </row>
+        <!--
+          row> <widget>template</widget> </row> <row>
+          <widget>tags</widget> </row
+        -->
+        <row>
+          <widget>content</widget>
+        </row>
+      </rows>
+
+      <widget name="pushtomenu" type="checkbox">
+        <translated>true</translated>
+        <fields>
+          <field>webp:pushtomenu</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+
+      <widget name="content" type="htmltext">
+        <translated>true</translated>
+        <fields>
+          <field>webp:content</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+
+    </layout>
+
+
+    <layout name="webcontainer">
+      <templates>
+        <template mode="any">/layouts/workspace_layout_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>name</widget>
+        </row>
+        <row>
+          <widget>url</widget>
+        </row>
+        <row>
+          <widget>template</widget>
+        </row>
+        <row>
+          <widget>email</widget>
+        </row>
+        <row>
+          <widget>logo</widget>
+        </row>
+        <row>
+          <widget>welcomeText</widget>
+        </row>
+        <row>
+          <widget>welcomeMedia</widget>
+        </row>
+        <row>
+          <widget>useCaptcha</widget>
+        </row>
+      </rows>
+
+      <widget name="name" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>webc:name</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+
+      <widget name="url" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>webc:url</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+
+      <widget name="template" type="template">
+        <translated>true</translated>
+        <fields>
+          <field>webc:template</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/site_template_widget.xhtml
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="email" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>webc:email</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+
+      <widget name="logo" type="file">
+        <translated>true</translated>
+        <fields>
+          <field>webc:logo</field>
+        </fields>
+      </widget>
+
+      <widget name="welcomeText" type="textarea">
+        <translated>true</translated>
+        <fields>
+          <field>webc:welcomeText</field>
+        </fields>
+      </widget>
+
+      <widget name="welcomeMedia" type="file">
+        <translated>true</translated>
+        <fields>
+          <field>webc:welcomeMedia</field>
+        </fields>
+      </widget>
+
+      <widget name="useCaptcha" type="checkbox">
+        <translated>true</translated>
+        <fields>
+          <field>webc:useCaptcha</field>
+        </fields>
+      </widget>
+
+    </layout>
+
+
+  </extension>
+
+</component>

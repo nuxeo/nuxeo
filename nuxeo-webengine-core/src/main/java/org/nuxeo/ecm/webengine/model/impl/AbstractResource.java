@@ -73,9 +73,6 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return type.getClass() == AdapterTypeImpl.class;
     }
 
-    public boolean isModule() {
-        return type.getClass() == ModuleTypeImpl.class;
-    }
 
     public boolean isRoot() {
         return this == ctx.getRoot();

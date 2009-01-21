@@ -9,7 +9,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.*;
 
 /**
  * Managing links.
- *
+ * <p>
  * Almost any template page will contain links to other pages in your application.
  * These links are usually absolute paths to other WebObjects or WebAdapters (including parameters if any).
  * Maintaining these links when application object changes is painful when you are using modular applications
@@ -65,7 +65,6 @@ public class Main extends DefaultModule {
     return DocumentFactory.newDocumentRoot(ctx, "/default-domain");
   }
 
-
   /**
    * Example on how to handle errors
    */
@@ -82,4 +81,3 @@ public class Main extends DefaultModule {
   }
 
 }
-

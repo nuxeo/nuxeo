@@ -60,15 +60,17 @@ public class AnnotationTest extends TestCase {
                 Arrays.asList(acI.getAnnotations()).toString());
 
         // methods
-        System.out.println("#################methods##########");
-        printMethodAnnos(acA, Anno1.class);
-        printMethodAnnos(acA, Anno2.class);
-        printMethodAnnos(acB, Anno1.class);
-        printMethodAnnos(acB, Anno2.class);
-        printMethodAnnos(acC, Anno1.class);
-        printMethodAnnos(acC, Anno2.class);
-        printMethodAnnos(acI, Anno1.class);
-        printMethodAnnos(acI, Anno2.class);
+        if (false) {
+            System.out.println("#################methods##########");
+            printMethodAnnos(acA, Anno1.class);
+            printMethodAnnos(acA, Anno2.class);
+            printMethodAnnos(acB, Anno1.class);
+            printMethodAnnos(acB, Anno2.class);
+            printMethodAnnos(acC, Anno1.class);
+            printMethodAnnos(acC, Anno2.class);
+            printMethodAnnos(acI, Anno1.class);
+            printMethodAnnos(acI, Anno2.class);
+        }
     }
 
     static void printMethodAnnos(AnnotatedClass<?> ac, Class<? extends Annotation> annoClass) {

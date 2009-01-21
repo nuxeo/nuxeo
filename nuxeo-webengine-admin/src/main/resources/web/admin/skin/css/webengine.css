@@ -20,8 +20,7 @@
 
  */
 
-body,
-    html {
+body, html {
     margin: 0;
     padding: 0;
 }
@@ -408,7 +407,7 @@ h2 {
     background-color: #f1f2f3;
     font: normal normal bold 150% "Century Gothic", "Trebuchet MS", Verdana, sans-serif;
     color: #111;
-    margin: 0px;
+    margin: 0;
     margin: 15px 0px 10px 0px;
 
 }

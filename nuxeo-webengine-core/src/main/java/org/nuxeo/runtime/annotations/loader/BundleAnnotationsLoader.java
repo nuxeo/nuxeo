@@ -132,7 +132,7 @@ public class BundleAnnotationsLoader implements BundleListener {
                     list.add(buf.toString());
                     buf.setLength(0);
                 }  else {
-                    System.out.println("escaped | >>> "+buf.toString());
+                    // System.out.println("escaped | >>> "+buf.toString());
                     buf.append(c);
                     esc = false;
                 }

@@ -45,7 +45,7 @@ import org.nuxeo.runtime.annotations.AnnotationManager;
  */
 public abstract class AbstractResourceType implements ResourceType {
 
-    protected final AbstractModule owner;
+    protected final ModuleImpl owner;
     protected final String name;
     protected int visibility = TypeVisibility.DEFAULT;
     protected AbstractResourceType superType;
@@ -55,7 +55,7 @@ public abstract class AbstractResourceType implements ResourceType {
     protected volatile ConcurrentMap<String, ScriptFile> templateCache;
 
 
-    protected AbstractResourceType(WebEngine engine, AbstractModule module, AbstractResourceType superType, String name, ClassProxy clazz, int visibility) {
+    protected AbstractResourceType(WebEngine engine, ModuleImpl module, AbstractResourceType superType, String name, ClassProxy clazz, int visibility) {
         templateCache = new ConcurrentHashMap<String, ScriptFile>();
         this.owner = module;
         this.superType = superType;
@@ -192,8 +192,9 @@ public abstract class AbstractResourceType implements ResourceType {
     }
 
     protected ScriptFile findSkinTemplate(Module module, String name) {
-        return module.getFile(new StringBuilder().append("views/")
-                .append(this.name).append("/").append(name).toString());
+        return module.getFile(new StringBuilder().append("views").
+                append(File.separatorChar).append(this.name)
+                .append(File.separatorChar).append(name).toString());
     }
 
     protected ScriptFile findTypeTemplate(Module module, String name) throws IOException {
@@ -212,8 +213,9 @@ public abstract class AbstractResourceType implements ResourceType {
         if (p > -1) {
             path = path.substring(0, p);
         }
-        path = path.replace('.', '/');
-        return new StringBuilder().append("/").append(path).append('/')
+        path = path.replace('.', File.separatorChar);
+        return new StringBuilder().append(File.separatorChar).append(path)
+                .append(File.separatorChar)
                 .append(fileName).toString();
     }
 

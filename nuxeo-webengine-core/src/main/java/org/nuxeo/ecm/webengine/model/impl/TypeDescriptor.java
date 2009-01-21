@@ -129,20 +129,12 @@ public class TypeDescriptor implements Cloneable {
         return false;
     }
 
-    public boolean isModule() {
-        return false;
-    }
-
     public AdapterDescriptor asAdapterDescriptor() {
         return null;
     }
 
     public TypeDescriptor asTypeDescriptor() {
         return this;
-    }
-
-    public ModuleTypeDescriptor asModuleTypeDescriptor() {
-        return null;
     }
 
     public static TypeDescriptor fromAnnotation(ClassProxy clazz, WebObject type) {

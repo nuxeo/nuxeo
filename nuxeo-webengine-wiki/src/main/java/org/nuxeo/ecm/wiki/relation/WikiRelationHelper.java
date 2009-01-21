@@ -14,7 +14,11 @@ import org.nuxeo.ecm.webengine.util.RelationConstants;
 import org.nuxeo.ecm.webengine.util.RelationHelper;
 import org.nuxeo.ecm.wiki.listener.WikiHelper;
 
-public class WikiRelationHelper implements WikiRelationConstants{
+public class WikiRelationHelper implements WikiRelationConstants {
+
+    private WikiRelationHelper() {
+    }
+
     // this will update links graph
     // TODO optimize this!
     // keep old statements
@@ -35,8 +39,8 @@ public class WikiRelationHelper implements WikiRelationConstants{
             if (list != null) {
                 QNameResource docResource = RelationHelper.getDocumentResource(doc);
                 for (String word : list) {
-                    Statement stmt = new StatementImpl(
-                            docResource, HAS_LINK_TO, new LiteralImpl(word));
+                    Statement stmt = new StatementImpl(docResource,
+                            HAS_LINK_TO, new LiteralImpl(word));
                     stmts.add(stmt);
                 }
                 rm.add(RelationConstants.GRAPH_NAME, stmts);
@@ -45,7 +49,5 @@ public class WikiRelationHelper implements WikiRelationConstants{
             e.printStackTrace();
         }
     }
-
-
 
 }

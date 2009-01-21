@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<module>
+<module root-type="management" path="/management" extends="base">
   <links>
     <link id="tab_content" path="/@views/content_page">
       <category>TABVIEW</category>

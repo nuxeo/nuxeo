@@ -11,7 +11,7 @@ ${sdate?date}
 <br/>
 
 <#list results as doc>
-    ${doc.dublincore.title}
+  ${doc.dublincore.title}
 </#list>
 
 <br/><br/>

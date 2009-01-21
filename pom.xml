@@ -104,6 +104,16 @@
         <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-event</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-event-compat</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-comment</artifactId>
         <version>${nuxeo.platform.version}</version>
@@ -137,8 +147,41 @@
         <artifactId>nuxeo-shell-commands-base</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-all</artifactId>
+        <version>1.5.7</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.script</groupId>
+        <artifactId>script-api</artifactId>
+        <version>1.0</version>
+      </dependency>
+        <dependency>
+          <groupId>org.resteasy</groupId>
+          <artifactId>resteasy-jaxrs</artifactId>
+          <version>1.0-beta-8-nx</version>
+        </dependency>
+        <dependency>
+          <groupId>org.resteasy</groupId>
+          <artifactId>jaxrs-api</artifactId>
+          <version>1.0-beta-8</version>
+        </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
   <reporting>
     <plugins>
@@ -174,9 +217,6 @@
             <link>http://jakarta.apache.org/commons/io/apidocs/</link>
             <link>http://junit.sourceforge.net/javadoc/</link>
             <link>http://logging.apache.org/log4j/docs/api/</link>
-            <link>
-              http://www.opensymphony.com/compass/versions/1.2M2/api/
-            </link>
             <link>http://jackrabbit.apache.org/api-1/</link>
             <link>http://www.day.com/maven/jsr170/javadocs/jcr-1.0/</link>
             <link>http://myfaces.apache.org/tomahawk/apidocs/</link>
@@ -214,20 +254,12 @@
       <id>maven-website</id>
       <url>scpexe://gironde.nuxeo.com/home/mavenweb/webengine/</url>
     </site>
-    <repository>
-      <id>nuxeo-release</id>
-      <url>scpexe://amour.nuxeo.com/home/nexus/repositories/nuxeo-release</url>
-    </repository>
-    <snapshotRepository>
-      <id>nuxeo-snapshot</id>
-      <url>scpexe://amour.nuxeo.com/home/nexus/repositories/nuxeo-snapshot</url>
-    </snapshotRepository>
   </distributionManagement>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/nuxeo-webengine#5.2</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo-webengine#5.2</developerConnection>
-    <url>http://hg.nuxeo.org/nuxeo-webengine#5.2/</url>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-webengine#5.2</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-webengine#5.2</developerConnection>
+    <url>http://hg.nuxeo.org/nuxeo/nuxeo-webengine#5.2/</url>
   </scm>
 
   <developers>

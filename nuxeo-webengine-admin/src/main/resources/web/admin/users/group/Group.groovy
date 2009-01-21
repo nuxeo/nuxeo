@@ -1,4 +1,4 @@
-package nuxeo.admin.users.group;
+package admin.users.group;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
