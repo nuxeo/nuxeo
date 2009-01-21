@@ -34,7 +34,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public abstract class RepositoryOSGITestCase extends NXRuntimeTestCase {
 
@@ -61,7 +61,7 @@ public abstract class RepositoryOSGITestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core");
         // backend
         deployBundle("org.nuxeo.ecm.core.jcr");
-//      assertNotNull(Framework.getService(CoreEventListenerService.class));
+        // assertNotNull(Framework.getService(CoreEventListenerService.class));
     }
 
     @Override
@@ -71,7 +71,7 @@ public abstract class RepositoryOSGITestCase extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    public void openRepository() throws Exception {
+    protected void openRepositoryAsUser(String userName) throws Exception {
         if (repository == null) {
             // the repository should be deployed the last
             // after any other bundle that is doctypes
@@ -80,7 +80,15 @@ public abstract class RepositoryOSGITestCase extends NXRuntimeTestCase {
             repository = NXCore.getRepositoryService().getRepositoryManager().getRepository(
                     REPOSITORY_NAME);
         }
-        openCoreSession(null);
+        openCoreSession(userName);
+    }
+
+    public void openRepository() throws Exception {
+        openRepositoryAsUser("Administrator");
+    }
+
+    public void openRepositoryWithSystemPrivileges() throws Exception {
+        openRepositoryAsUser(null);
     }
 
     public CoreSession getCoreSession() {
