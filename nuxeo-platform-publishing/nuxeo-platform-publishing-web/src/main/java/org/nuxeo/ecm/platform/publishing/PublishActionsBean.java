@@ -33,6 +33,7 @@ import javax.faces.application.FacesMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -148,6 +149,15 @@ public class PublishActionsBean implements PublishActions, Serializable {
     private static Set<String> sectionRootTypes;
 
     private static Set<String> sectionTypes;
+
+    @Create
+    public void create() {
+        try {
+            publishingService = Framework.getService(PublishingService.class);
+        } catch (Exception e) {
+            throw new IllegalStateException("Publishing service not deployed.", e);
+        }
+    }
 
     public Set<String> getSectionRootTypes() {
         if (sectionRootTypes == null) {
