@@ -1,0 +1,38 @@
+<process-definition name="publication">
+  <start-state>
+    <task swimlane='initiator' />
+    <transition to='for each section' />
+  </start-state>
+  <node name="for each section">
+    <action class="org.nuxeo.ecm.platform.jbpm.core.node.ForeachFork">
+      <var>section</var>
+      <list>sections</list>
+    </action>
+    <transition to="need validation" />
+  </node>
+  <decision name="need validation">
+    <handler
+      class="org.nuxeo.ecm.platform.jbpm.core.helper.PublicationHelperImpl" />
+    <transition name="can publish" to="publish document" />
+    <transition name="need permission" to="ask permission" />
+  </decision>
+  <task-node name="ask permission">
+    <task name="give permission">
+      <assignment
+        class="org.nuxeo.ecm.platform.jbpm.core.helper.PublicationHelperImpl" />
+    </task>
+    <transition to="publish document" />
+  </task-node>
+  <node name="publish document">
+    <script><![CDATA[
+         publicationHelper.publishDocument(executionContext.getContextInstance().getTransientVariable("session"),
+                                           executionContext.getContextInstance().getTransientVariable("document"),
+                                           executionContext.getContextInstance().getTransientVariable("section"));
+     ]]></script>
+    <transition to="join section" />
+  </node>
+  <join name="join section">
+    <transition to="end" />
+  </join>
+  <end-state name="end" />
+</process-definition>

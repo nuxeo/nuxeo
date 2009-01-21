@@ -1,0 +1,36 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax" class="closedContent">
+<h:form>
+  <h3><h:outputText
+    value="#{messages['label.workflow.variable.participants']}" /></h3>
+  <table class="dataInput">
+    <tbody>
+      <tr>
+        <td class="labelColumn"><h:outputText
+          value="#{messages['label.review.select.reviewers']}" /></td>
+        <td class="labelField">
+        <div><ui:include src="/process/tmp/select_users_search.xhtml" /></div>
+        <table class="rightsAddManager">
+          <tr>
+            <td valign="top"><ui:include
+              src="/process/tmp/select_users_results.xhtml" /></td>
+            <td valign="top"><ui:include
+              src="/process/tmp/select_users_selection.xhtml" /></td>
+          </tr>
+        </table>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><h:commandButton
+          type="submit" value="#{messages['command.validate']}"
+          styleClass="button"
+          action="#{jbpmHelper.updateProcessVariable(process, 'participants', principalListManager.selectedUsers)}" /></td>
+      </tr>
+    </tbody>
+  </table>
+</h:form></div>

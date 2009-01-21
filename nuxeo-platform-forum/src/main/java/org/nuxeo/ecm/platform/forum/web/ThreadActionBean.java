@@ -223,7 +223,7 @@ public class ThreadActionBean extends InputController implements ThreadAction {
                 }
                 List<String> cs = Arrays.asList(contributorsArray);
 
-                if (postAction.isPostPublished(threadEntry.getComment())
+                 if (postAction.isPostPublished(threadEntry.getComment())
                         || isPrincipalModerator()
                         || cs.contains(currentUser.getName())) {
                     basicCommentList.add(threadEntry);
