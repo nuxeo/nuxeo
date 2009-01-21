@@ -343,6 +343,11 @@
         <version>3.3.0.GA</version>
       </dependency>
       <dependency>
+        <groupId>org.jbpm.jbpm3</groupId>
+        <artifactId>jbpm-jpdl</artifactId>
+        <version>3.3.0.GA</version>
+      </dependency>
+      <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss</artifactId>
         <version>${jboss.version}</version>
