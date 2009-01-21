@@ -47,7 +47,7 @@ ins.model, ins.view, ins.controller {
 
 /* Contextual menu */
 .nxthemesContextMenu {
-  font: 13px arial;
+  font: 11px arial;
   border: 1px solid #333;
   background: #fff;
   color: #000;
@@ -56,7 +56,10 @@ ins.model, ins.view, ins.controller {
   padding: 2px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
-  border-radius: 3px;  
+  border-radius: 3px;
+  border-width: 1px 2px 2px 1px;
+  border-style: solid;
+  border-color: #000;
 }
 
 .nxthemesContextMenu a {
@@ -64,7 +67,7 @@ ins.model, ins.view, ins.controller {
   text-decoration: none;
   vertical-align: middle;
   color: #000 !important;
-  padding: 3px 5px 3px 5px;
+  padding: 2px 5px 2px 5px;
   white-space: nowrap;
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;

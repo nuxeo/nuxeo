@@ -65,7 +65,7 @@
         <form id="nxthemesElementStyleCSS" class="nxthemesForm" action=""
           onsubmit="return false">
           <div>
-            <textarea name="cssSource" rows="15" cols="72"
+            <textarea id="csseditor" name="cssSource" rows="15" cols="72"
               style="width: 100%; height: 250px; font-size: 11px;">${rendered_style_properties}</textarea>
             <input type="hidden" name="id" value="#{selected_element.uid}" />
             <input type="hidden" name="viewName" value="${selected_view_name}" />
@@ -76,6 +76,6 @@
         </form>
       </#if>  
   </fieldset>
-
+  
 </div>
 
