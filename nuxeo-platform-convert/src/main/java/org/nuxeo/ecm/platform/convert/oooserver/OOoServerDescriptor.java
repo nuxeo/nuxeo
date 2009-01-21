@@ -41,6 +41,16 @@ public class OOoServerDescriptor implements Serializable {
     @XNode("jpipeLibPath")
     private String jpipeLibPath=null;
 
+    @XNode("logInfoAsDebug")
+    private boolean logInfoAsDebug = true;
+
+    public boolean getLogInfoAsDebug() {
+        return logInfoAsDebug;
+    }
+
+    public void setLogInfoAsDebug(boolean logInfoAsDebug) {
+        this.logInfoAsDebug = logInfoAsDebug;
+    }
 
     public String getJpipeLibPath() {
         return jpipeLibPath;

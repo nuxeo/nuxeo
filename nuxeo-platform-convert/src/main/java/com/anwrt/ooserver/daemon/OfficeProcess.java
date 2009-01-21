@@ -101,8 +101,6 @@ public class OfficeProcess extends Thread
             Logger.fatalError("cannot launch OpenOffice Server instance (command="
                     + command + ") ");
             Logger.debug(ex);
-            if (_config.exitsWhenInstanceCannotBeCreated)
-                System.exit(1);
         }
     }
     /**
