@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -506,22 +505,26 @@
       <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-editor</artifactId>
     </dependency>
-    <!--dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-publishing-api</artifactId>
-      </dependency>
-      <dependency>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-publishing</artifactId>
-      </dependency>
-      <dependency>
+      <artifactId>nuxeo-platform-publishing-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-publishing-facade</artifactId>
-      </dependency>
-      <dependency>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-publishing-web</artifactId>
-      </dependency-->
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-publishing-workflow</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-url-core</artifactId>
@@ -659,7 +662,10 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jboss-packaging-maven-plugin</artifactId>
-        <version>2.0-beta-1</version><!-- required for enabling mevenide -->
+        <version>2.0-beta-1</version>
+        <!--
+          required for enabling mevenide
+        -->
         <extensions>true</extensions>
       </plugin>
       <plugin>
@@ -688,14 +694,17 @@
       <!--
         plugin> <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId> <executions>
-        <execution> <id>attach-artifacts</id> <phase>package</phase> <goals>
-        <goal>attach-artifact</goal> </goals> <configuration> <artifacts>
-        <artifact> <file>
-        ${project.build.directory}/nuxeo-platform-ear-${pom.version}.ear </file>
-        <type>ear</type> </artifact> </artifacts> </configuration> </execution>
-        </executions> </plugin
+        <execution> <id>attach-artifacts</id> <phase>package</phase>
+        <goals> <goal>attach-artifact</goal> </goals> <configuration>
+        <artifacts> <artifact> <file>
+        ${project.build.directory}/nuxeo-platform-ear-${pom.version}.ear
+        </file> <type>ear</type> </artifact> </artifacts>
+        </configuration> </execution> </executions> </plugin
       -->
-      <!-- copy nuxeo libraries that must go into $JBOSS/server/default/lib/ -->
+      <!--
+        copy nuxeo libraries that must go into
+        $JBOSS/server/default/lib/
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
