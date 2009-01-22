@@ -29,6 +29,8 @@ import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 
 /**
  * Simple test of the visitor using a dumb printer.
+ * <p>
+ * Also tests SQLQuery.toString() while we're at it.
  *
  * @author Florent Guillaume
  */
@@ -36,7 +38,9 @@ public class TestQueryVisitor extends TestCase {
 
     private void check(String sql, String expected) {
         PrintVisitor v = new PrintVisitor();
-        v.visitQuery(SQLQueryParser.parse(sql));
+        SQLQuery query = SQLQueryParser.parse(sql);
+        assertEquals(sql, query.toString());
+        v.visitQuery(query);
         assertEquals(expected, v.toString());
     }
 
@@ -60,14 +64,10 @@ public class TestQueryVisitor extends TestCase {
 
         sql = "SELECT p, q AS qq, f(x) FROM t, u, v" + //
                 " WHERE title = 'ab' AND des = 'cd'" + //
-                // " GROUP BY x, y" + // unimpl
-                // " HAVING 1+1=2" + // unimpl
                 " ORDER BY x DESC,y,z  DESC" + //
                 " LIMIT 8   OFFSET 43";
         expected = "SELECT p, q AS qq, f(x) FROM t, u, v" + //
                 " WHERE ((title = 'ab') AND (des = 'cd'))" + //
-                // " GROUP BY x, y" + //
-                // " HAVING 1+1=2" + //
                 " ORDER BY x DESC, y, z DESC" + //
                 " LIMIT 8 OFFSET 43";
         check(sql, expected);
@@ -78,6 +78,10 @@ public class TestQueryVisitor extends TestCase {
 
         sql = "select * from d where foo <> DATE '2008-01-01'";
         expected = "SELECT * FROM d WHERE (foo <> DATE '2008-01-01')";
+        check(sql, expected);
+
+        sql = "select * from d where foo between DATE '2008-01-01' and DATE '2008-02-01'";
+        expected = "SELECT * FROM d WHERE (foo BETWEEN DATE '2008-01-01' AND DATE '2008-02-01')";
         check(sql, expected);
 
         // hack around timezone variations for this test
@@ -91,6 +95,10 @@ public class TestQueryVisitor extends TestCase {
 
         sql = "select * from d where a = 2 OR NOT b = 5";
         expected = "SELECT * FROM d WHERE ((a = 2) OR (NOT (b = 5)))";
+        check(sql, expected);
+
+        sql = "select * from d where NOT (a = 2 OR b = 5)";
+        expected = "SELECT * FROM d WHERE (NOT ((a = 2) OR (b = 5)))";
         check(sql, expected);
 
         sql = "select foo from docs where x = 1 AND x=2 AND x = 3";
@@ -244,6 +252,15 @@ class PrintVisitor extends DefaultQueryVisitor {
             node.operator.accept(this);
             buf.append(' ');
             node.lvalue.accept(this);
+        } else if (node.operator == Operator.BETWEEN) {
+            LiteralList l = (LiteralList) node.rvalue;
+            node.lvalue.accept(this);
+            buf.append(' ');
+            node.operator.accept(this);
+            buf.append(' ');
+            l.get(0).accept(this);
+            buf.append(" AND ");
+            l.get(1).accept(this);
         } else {
             node.lvalue.accept(this);
             buf.append(' ');

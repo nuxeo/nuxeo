@@ -468,7 +468,7 @@ public class TestQueryParser extends TestCase {
         assertEquals(2, elements.size());
 
         query = SQLQueryParser.parse("SELECT p, q, r FROM t ORDER BY p, q ASC");
-        expected = "SELECT p, q, r FROM t ORDER BY p, q";
+        expected = "SELECT p, q, r FROM t ORDER BY p, q ASC";
         assertEquals(expected, query.toString());
         clause = query.getOrderByClause();
         elements = clause.elements;

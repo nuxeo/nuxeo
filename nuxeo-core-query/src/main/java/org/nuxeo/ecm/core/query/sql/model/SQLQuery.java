@@ -26,6 +26,8 @@ public class SQLQuery implements ASTNode {
 
     private static final long serialVersionUID = 6383829486216039408L;
 
+    private String queryString;
+
     public final SelectClause select;
 
     public final FromClause from;
@@ -107,6 +109,9 @@ public class SQLQuery implements ASTNode {
     @Override
     // FIXME: not finished
     public String toString() {
+        if (queryString != null) {
+            return queryString;
+        }
         StringBuilder buf = new StringBuilder();
         buf.append("SELECT ").append(select).append(" FROM ").append(from);
         if (where != null) {
@@ -132,6 +137,14 @@ public class SQLQuery implements ASTNode {
 
     public long getOffset() {
         return offset;
+    }
+
+    public String getQueryString() {
+        return queryString;
+    }
+
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
     }
 
     @Override

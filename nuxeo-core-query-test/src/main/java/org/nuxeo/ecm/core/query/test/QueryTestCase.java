@@ -266,6 +266,12 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
 
         dml = session.query("SELECT * FROM Document WHERE filename = 'testfile.txt' OR dc:contributors = 'bob'");
         assertEquals(3, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:created BETWEEN DATE '2007-01-01' AND DATE '2008-01-01'");
+        assertEquals(2, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:created BETWEEN DATE '2007-03-15' AND DATE '2008-01-01'");
+        assertEquals(1, dml.size());
     }
 
     public void testQueryMultiple() throws Exception {
