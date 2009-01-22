@@ -709,7 +709,18 @@ public class Main extends DefaultModule {
       Element element = ThemeManager.getElementById(id)
       Editor.updateElementWidget(element, viewName)
   }
-
+  
+  @POST
+  @Path("delete_style_view")
+  public void deleteStyleView() {
+      FormData form = ctx.getForm()
+      String styleUid = form.getString("style_uid")
+      String viewName = form.getString("view_name")
+      String themeName = form.getString("theme_name")
+      Style style = (Style) ThemeManager.getFormatById(styleUid)
+      Editor.deleteStyleView(style, viewName)
+  }
+  
   
   /* API */
    
@@ -1104,6 +1115,21 @@ public class Main extends DefaultModule {
   
   public static List<String> getUnidentifiedPresetNames(String themeName) {
       return PresetManager.getUnidentifiedPresetNames(themeName)
+  }
+  
+  public static List<String> getUnusedStyleViews(Style style) {
+      return ThemeManager.getUnusedStyleViews(style)
+  }
+  
+  public static List<Style> getStyles(String themeName) {
+      return Manager.getThemeManager().getStyles(themeName)
+  }
+  
+  public static String renderStyleView(Style style, String viewName) {
+      List<String> viewNames = new ArrayList<String>()
+      viewNames.add(viewName)
+      return org.nuxeo.theme.html.Utils.styleToCss(style,
+              viewNames, false, true, true, true)
   }
   
   /* Session */

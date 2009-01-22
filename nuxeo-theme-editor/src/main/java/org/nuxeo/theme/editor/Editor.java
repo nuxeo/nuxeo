@@ -551,6 +551,13 @@ public class Editor {
         themeManager.removeNamedObject(themeName, "style", styleName);
     }
 
+    public static void deleteStyleView(Style style, String viewName) {
+        style.clearPropertiesFor(viewName);
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                style, null));
+    }
+    
     public static String addPreset(String themeName, String presetName,
             String category, String value) throws ThemeException {
         if (presetName.equals("")) {

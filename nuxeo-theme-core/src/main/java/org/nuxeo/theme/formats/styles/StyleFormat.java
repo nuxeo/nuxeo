@@ -64,12 +64,15 @@ public class StyleFormat extends DefaultFormat implements Style {
         } else {
             propertiesMap.remove(path);
         }
-        styleProperties.put(viewName, propertiesMap);
+        if (propertiesMap.isEmpty()) {
+            styleProperties.remove(viewName);
+        } else {
+            styleProperties.put(viewName, propertiesMap);
+        }
     }
 
     public void clearPropertiesFor(String viewName) {
         styleProperties.remove(viewName);
-        styleProperties.put(viewName, new LinkedHashMap<String, Properties>());
     }
 
     public void clearPropertiesFor(String viewName, String path) {

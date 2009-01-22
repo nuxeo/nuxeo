@@ -608,9 +608,22 @@ public final class ThemeManager implements Registrable {
     }
 
     public List<Style> getStyles() {
+        return getStyles(null);
+    }
+
+    public List<Style> getStyles(String themeName) {
         List<Style> styles = new ArrayList<Style>();
         for (Format format : getFormatsByTypeName("style")) {
-            styles.add((Style) format);
+            Style style = (Style) format;
+            if (themeName != null) {
+                if (style.isNamed()) {
+                    continue;
+                }
+                if (!themeName.equals(getThemeOfFormat(style).getName())) {
+                    continue;
+                }
+            }
+            styles.add(style);
         }
         return styles;
     }
@@ -907,6 +920,24 @@ public final class ThemeManager implements Registrable {
             ThemeManager.removeInheritanceTowards(f);
         }
         unregisterFormat(format);
+    }
+
+    public static List<String> getUnusedStyleViews(Style style) {
+        List<String> views = new ArrayList<String>();
+        if (style.isNamed()) {
+            return views;
+        }
+        for (Element element : ElementFormatter.getElementsFor(style)) {
+            Widget widget = (Widget) ElementFormatter.getFormatFor(element,
+                    "widget");
+            String viewName = widget.getName();
+            for (String name : style.getSelectorViewNames()) {
+                if (!name.equals(viewName)) {
+                    views.add(name);
+                }
+            }
+        }
+        return views;
     }
 
     // Cached styles

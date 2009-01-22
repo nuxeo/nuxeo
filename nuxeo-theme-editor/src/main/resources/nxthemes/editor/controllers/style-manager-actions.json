@@ -3,5 +3,8 @@
      "rules": {
        "form.unidentifiedPresets": {
          "submit": "add missing preset"
+       },
+       "form.unusedViews": {
+         "submit": "delete unused style view"
        }
     }}

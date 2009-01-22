@@ -1466,9 +1466,42 @@ NXThemesStyleManager.addMissingPreset = function(info) {
     
 };
 
+NXThemesStyleManager.deleteUnusedStyleView = function(info) {
+    var form = Event.findElement(info, "form");
+    var themeName, styleUid, viewName;
+    $A(Form.getElements(form)).each(function(i) {
+        var name = i.name;
+        var value = Form.Element.getValue(i);
+        if (name == "style_uid") {
+        	styleUid = value;
+        } else if (name == "view_name") {
+        	viewName = value;
+        } else if (name == "theme_name") {
+        	themeName = value;
+        }
+    });
+    var url = nxthemesBasePath + "/nxthemes-editor/delete_style_view";
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             theme_name: themeName,
+             view_name: viewName,
+             style_uid: styleUid
+         },
+         onSuccess: function(r) {
+             NXThemes.getViewById("style manager").refresh();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }
+    });     
+};
+
 //actions
 NXThemes.addActions({
-  'add missing preset': NXThemesStyleManager.addMissingPreset
+  'add missing preset': NXThemesStyleManager.addMissingPreset,
+  'delete unused style view': NXThemesStyleManager.deleteUnusedStyleView
 });
 
 
