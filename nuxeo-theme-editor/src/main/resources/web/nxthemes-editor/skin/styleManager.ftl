@@ -63,49 +63,40 @@
 <h2 class="nxthemesEditor">Unused style views</h2>
 
 <#list theme_names as theme_name>
-<form style="padding: 9px "class="unusedViews" action="javascript:void(0)" submit="return false">
+<#assign styles=This.getStyles(theme_name)>
 
-<table cellpadding="0" cellspacing="0" border="0">
-<tr>
-<th style="width: 10%">Theme</th>
-<th style="width: 50%">Unused CSS</th>
-<th style="width: 40%">Action</th>
-</tr>
-
-<#list This.getStyles(theme_name) as style>
+<#list styles as style>
 <#assign views=This.getUnusedStyleViews(style)>
 
 <#if views>
-<#assign row = 1 /> 
+
 <#list views as view>
 
-  <#if row % 2 == 1>
-    <tr class="odd">
-  <#else>
-    <tr class="even">
-  </#if>
-  <#assign row = row + 1/>
-
-  <td>${theme_name} <input type="hidden" name="theme_name" value="${theme_name}" /></td>
-  <td><div style="font-size: 11px; font-weight: bold">${view}
+<form style="padding: 13px "class="unusedViews" action="javascript:void(0)" submit="return false">
+  <div>
+    <input type="hidden" name="theme_name" value="${theme_name}" />
+    <input type="hidden" name="style_uid" value="#{style.uid}" />
     <input type="hidden" name="view_name" value="${view}" />
   </div>
-  <input type="hidden" name="style_uid" value="#{style.uid}" />
-  <pre style="margin: 1px 0; font-size: 10px; background-color: #ffc; border: 1px solid #fc0">${This.renderStyleView(style, view)}</pre></td>
-  <td>
-    <button type="submit">
-      <img src="${skinPath}/img/cleanup-16.png" width="16" height="16" />
-      Clean up
-    </button>
-  </td>
-</tr>
+   
+  <div style="font-size: 11px; font-weight: bold">
+    ${theme_name}/ ${view}
+  </div>
+  
+  <pre style="margin: 4px 0; font-size: 10px; background-color: #ffc; border: 1px solid #fc0">${This.renderStyleView(style, view)}</pre>
+
+  <button type="submit">
+    <img src="${skinPath}/img/cleanup-16.png" width="16" height="16" />
+    Clean up
+  </button>
+
+</form>
+
 </#list>
+
 </#if>
 </#list>
 
-</table>
-
-</form>
 </#list>
 
 </div>
