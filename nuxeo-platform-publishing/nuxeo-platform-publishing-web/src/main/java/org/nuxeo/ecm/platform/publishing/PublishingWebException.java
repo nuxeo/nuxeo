@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,34 +12,36 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
- * $Id: PublishingException.java 26321 2007-10-22 15:27:12Z janguenot $
+ *     arussel
  */
+package org.nuxeo.ecm.platform.publishing;
 
-package org.nuxeo.ecm.platform.publishing.api;
+import javax.ejb.ApplicationException;
+
+import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * Publishing related exception.
+ * @author arussel
  *
  */
-public class PublishingException extends Exception {
+@ApplicationException(rollback = true)
+public class PublishingWebException extends ClientException {
 
     private static final long serialVersionUID = 1L;
 
-    public PublishingException() {
+    public PublishingWebException() {
         super();
     }
 
-    public PublishingException(String message, Throwable cause) {
+    public PublishingWebException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public PublishingException(String message) {
+    public PublishingWebException(String message) {
         super(message);
     }
 
-    public PublishingException(Throwable cause) {
+    public PublishingWebException(Throwable cause) {
         super(cause);
     }
 

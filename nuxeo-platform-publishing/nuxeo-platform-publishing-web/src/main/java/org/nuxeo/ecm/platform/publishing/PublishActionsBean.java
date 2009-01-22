@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.publishing;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,6 +51,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentModelTreeNode;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
@@ -64,6 +64,8 @@ import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
 import org.nuxeo.ecm.platform.events.api.EventMessage;
 import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
 import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
+import org.nuxeo.ecm.platform.publishing.api.DocumentWaitingValidationException;
+import org.nuxeo.ecm.platform.publishing.api.PublishingException;
 import org.nuxeo.ecm.platform.publishing.api.PublishingInformation;
 import org.nuxeo.ecm.platform.publishing.api.PublishingService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -104,7 +106,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
     private static final String DOMAIN_TYPE = "Domain";
 
     @In(create = true)
-    protected transient Principal currentUser;
+    protected transient NuxeoPrincipal currentUser;
 
     @In(create = true)
     protected transient WebActions webActions;
@@ -155,7 +157,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
         try {
             publishingService = Framework.getService(PublishingService.class);
         } catch (Exception e) {
-            throw new IllegalStateException("Publishing service not deployed.", e);
+            throw new IllegalStateException("Publishing service not deployed.",
+                    e);
         }
     }
 
@@ -218,13 +221,10 @@ public class PublishActionsBean implements PublishActions, Serializable {
     protected void getSectionsSelectModel() throws ClientException {
         SelectionModelGetter selectionModelGetter = new SelectionModelGetter(
                 documentManager, navigationContext.getCurrentDocument(),
-                sectionRootTypes, sectionTypes, getSelectedSections(),
+                sectionRootTypes, sectionTypes,
                 queryModelActions.get("DOMAIN_SECTIONS"));
         selectionModelGetter.runUnrestricted();
-        for (DocumentModelTreeNode node : selectionModelGetter.getTreeNodes()) {
-            addSelectedSection(node);
-        }
-        setSectionsModel(selectionModelGetter.getDataModel());
+        sectionsModel = selectionModelGetter.getDataModel();
     }
 
     // TODO move to protected
@@ -280,68 +280,37 @@ public class PublishActionsBean implements PublishActions, Serializable {
             return null;
         }
 
-        log.debug("selected " + selectedSections.size() + " sections");
-
-        /*
-         * Proxies for which we need a moderation. Let's request the moderation
-         * after the document manager session has been saved to avoid conflicts
-         * in between sync txn and async txn that can start before the end of
-         * the sync txn.
-         */
-        List<DocumentModel> forModeration = new ArrayList<DocumentModel>();
-        List<DocumentModel> alreadyPublished = new ArrayList<DocumentModel>();
-
-        boolean published = false;
+        boolean somePublished = false;
+        boolean someWaiting = false;
         for (DocumentModelTreeNode section : selectedSections) {
-            DocumentModel proxy = getPublishedInSection(docToPublish,
-                    section.getDocument());
-            boolean moderation = proxy == null
-                    || publishingService.isPublished(proxy);
-            boolean candidate = false;
-            if (proxy == null) {
-                candidate = true;
-                proxy = publishDocument(docToPublish, section.getDocument());
+            try {
+                publishingService.submitToPublication(
+                        navigationContext.getCurrentDocument(),
+                        section.getDocument(), currentUser);
+                somePublished = true;
+            } catch (DocumentWaitingValidationException e) {
+                someWaiting = true;
+            } catch (PublishingException e) {
+                throw new PublishingWebException(e);
             }
-            if (candidate && isReviewer(proxy)) {
-                published = true;
-            }
-            if (moderation && !isReviewer(proxy)) {
-                forModeration.add(proxy);
-            }
+
         }
 
-        if (published) {
-
-            // notifyEvent(org.nuxeo.ecm.webapp.helpers.EventNames.
-            // DOCUMENT_PUBLISHED,
-            // null, comment,
-            // null, docToPublish);
-
+        if (somePublished) {
             comment = null;
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get("document_published"),
                     resourcesAccessor.getMessages().get(docToPublish.getType()));
         }
 
-        if (!forModeration.isEmpty()) {
-            // notifyEvent(org.nuxeo.ecm.webapp.helpers.EventNames.
-            // DOCUMENT_SUBMITED_FOR_PUBLICATION,
-            // null, comment,
-            // null, docToPublish);
+        if (someWaiting) {
             comment = null;
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
                             "document_submitted_for_publication"),
                     resourcesAccessor.getMessages().get(docToPublish.getType()));
-            for (DocumentModel proxy : forModeration) {
-                notifyEvent(
-                        org.nuxeo.ecm.webapp.helpers.EventNames.PROXY_PUSLISHING_PENDING,
-                        null, comment, null, proxy);
-            }
         }
-
-        setSectionsModel(null);
-
+        sectionsModel = null;
         return null;
     }
 
@@ -367,17 +336,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
             }
         }
         return false;
-    }
-
-    private DocumentModel getPublishedInSection(DocumentModel doc,
-            DocumentModel section) throws ClientException {
-        for (PublishingInformation each : getPublishingInformation(doc)) {
-            if (each.getSection().getPathAsString().equals(
-                    section.getPathAsString())) {
-                return each.getProxy();
-            }
-        }
-        return null;
     }
 
     /*
@@ -527,20 +485,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
     public List<DocumentModelTreeNode> getSelectedSections() {
         return selectedSections;
-    }
-
-    private void addSelectedSection(DocumentModelTreeNode section) {
-        Boolean sectionAlreadySelected = false;
-        for (DocumentModelTreeNode node : selectedSections) {
-            if (node.getDocument().getRef().equals(
-                    section.getDocument().getRef())) {
-                sectionAlreadySelected = true;
-                break;
-            }
-        }
-        if (!sectionAlreadySelected) {
-            selectedSections.add(section);
-        }
     }
 
     public void setSelectedSections(List<DocumentModelTreeNode> selectedSections) {

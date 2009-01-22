@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.platform.publishing;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,19 +38,21 @@ import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
  *
  */
 public abstract class AbstractPublisher {
-    protected CoreSession getCoreSession(DocumentModel document,
+    protected CoreSession getCoreSession(String repoName,
             NuxeoPrincipal principal) throws ClientException {
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         context.put("principal", principal);
-        return CoreInstance.getInstance().open(document.getRepositoryName(),
+        return CoreInstance.getInstance().open(repoName,
                 context);
     }
 
-    protected DocumentModel publish(DocumentModel document, DocumentModel sectionToPublishTo,
-            NuxeoPrincipal principal) throws ClientException {
-        CoreSession coreSession = getCoreSession(document, principal);
-        document.setProperty("dublincore", "issued", Calendar.getInstance());
-        return coreSession.publishDocument(document, sectionToPublishTo);
+    protected DocumentModel publish(final DocumentModel document,
+            final DocumentModel sectionToPublishTo, NuxeoPrincipal principal, CoreSession coreSession)
+            throws ClientException {
+        PublishUnrestricted publisher = new PublishUnrestricted(coreSession,
+                document, sectionToPublishTo);
+        publisher.runUnrestricted();
+        return publisher.getModel();
     }
 
     public void notifyEvent(String eventId,

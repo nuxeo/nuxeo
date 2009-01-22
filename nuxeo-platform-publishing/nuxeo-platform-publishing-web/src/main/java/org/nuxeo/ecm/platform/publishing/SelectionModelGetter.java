@@ -42,10 +42,10 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author alexandre
- * 
+ *
  */
 public class SelectionModelGetter extends UnrestrictedSessionRunner {
-    private List<DocumentModelTreeNode> treeNodes = new ArrayList<DocumentModelTreeNode>();
+    private final List<DocumentModelTreeNode> treeNodes = new ArrayList<DocumentModelTreeNode>();
 
     protected final CoreSession coreSession;
 
@@ -59,19 +59,15 @@ public class SelectionModelGetter extends UnrestrictedSessionRunner {
 
     private SelectDataModel model;
 
-    protected final List<DocumentModelTreeNode> selectedSections;
-
     protected final VersioningManager versioningManager;
 
     public SelectionModelGetter(CoreSession coreSession, DocumentModel doc,
-            Set<String> sectionRootTypes, Set<String> sectionTypes,
-            List<DocumentModelTreeNode> selectedSections, QueryModel queryModel)
+            Set<String> sectionRootTypes, Set<String> sectionTypes, QueryModel queryModel)
             throws ClientException {
         super(coreSession);
         this.currentDocRef = doc.getRef();
         this.currentParentRef = doc.getParentRef();
         this.coreSession = coreSession;
-        this.selectedSections = selectedSections;
         this.queryModel = queryModel;
         try {
             this.versioningManager = Framework.getService(VersioningManager.class);
@@ -126,7 +122,7 @@ public class SelectionModelGetter extends UnrestrictedSessionRunner {
             }
         }
         model = new SelectDataModelImpl("SECTIONS_DOCUMENT_TREE", sections,
-                selectedSections);
+                treeNodes);
     }
 
     @SuppressWarnings("unchecked")

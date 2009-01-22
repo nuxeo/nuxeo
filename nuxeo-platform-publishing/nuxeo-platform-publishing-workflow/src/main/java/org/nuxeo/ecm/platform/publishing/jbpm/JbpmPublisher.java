@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.platform.publishing.jbpm;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,13 +28,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.security.UserEntry;
-import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 import org.nuxeo.ecm.platform.publishing.AbstractPublisher;
+import org.nuxeo.ecm.platform.publishing.ChangePermissionUnrestricted;
+import org.nuxeo.ecm.platform.publishing.api.DocumentWaitingValidationException;
 import org.nuxeo.ecm.platform.publishing.api.Publisher;
 import org.nuxeo.ecm.platform.publishing.api.PublishingException;
 import org.nuxeo.ecm.platform.publishing.api.PublishingService;
@@ -123,30 +120,38 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
 
     public void submitToPublication(DocumentModel document,
             DocumentModel placeToPublishTo, NuxeoPrincipal principal)
-            throws PublishingException {
+            throws PublishingException, DocumentWaitingValidationException {
         DocumentModel newProxy;
+        CoreSession coreSession;
         try {
-            newProxy = publish(document, placeToPublishTo, principal);
-            notifyEvent(PublishingEvent.documentSubmittedForPublication.name(),
-                    null, null, null, newProxy, null);
+            coreSession = getCoreSession(document.getRepositoryName(),
+                    principal);
+        } catch (ClientException e2) {
+            throw new IllegalStateException("No core session available.", e2);
+        }
+        try {
+            newProxy = publish(document, placeToPublishTo, principal,
+                    coreSession);
+            notifyEvent(PublishingEvent.documentSubmittedForPublication,
+                    newProxy, coreSession);
         } catch (ClientException e1) {
             throw new PublishingException(e1);
         }
         if (!isValidator(newProxy, principal)) {
             try {
-                notifyEvent(PublishingEvent.documentWaitingPublication.name(),
-                        null, null, null, newProxy, null);
-                restrictPermission(newProxy, principal);
+                notifyEvent(PublishingEvent.documentWaitingPublication,
+                        newProxy, coreSession);
+                restrictPermission(newProxy, principal, coreSession);
                 createTask(newProxy);
+                throw new DocumentWaitingValidationException();
             } catch (PublishingValidatorException e) {
                 throw new PublishingException(e);
             } catch (NuxeoJbpmException e) {
                 throw new PublishingException(e);
-            } catch (ClientException e) {
-                throw new PublishingException(e);
             }
         } else {
-            notifyEvent(PublishingEvent.documentPublished, newProxy);
+            notifyEvent(PublishingEvent.documentPublished, newProxy,
+                    coreSession);
         }
     }
 
@@ -167,49 +172,19 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
     }
 
     protected void restrictPermission(DocumentModel newProxy,
-            NuxeoPrincipal principal) throws PublishingValidatorException,
-            PublishingException {
-        CoreSession coreSession = null;
+            NuxeoPrincipal principal, CoreSession coreSession)
+            throws PublishingValidatorException, PublishingException {
+        ChangePermissionUnrestricted permissionChanger = new ChangePermissionUnrestricted(
+                coreSession, newProxy, getPublishingService().getValidatorsFor(
+                        newProxy), principal, ACL_NAME);
         try {
-            coreSession = getCoreSession(newProxy, null);
-        } catch (ClientException e) {
-            throw new PublishingException(e);
-        }
-        List<UserEntry> userEntries = new ArrayList<UserEntry>();
-        String[] validators = getPublishingService().getValidatorsFor(newProxy);
-        for (String validator : validators) {
-            UserEntry ue = new UserEntryImpl(validator);
-            ue.addPrivilege(SecurityConstants.READ, true, false);
-            userEntries.add(ue);
-            ue = new UserEntryImpl(validator);
-            ue.addPrivilege(SecurityConstants.WRITE, true, false);
-            userEntries.add(ue);
-        }
-
-        // Give View permission to the user who submitted for publishing.
-        UserEntry ue = new UserEntryImpl(principal.getName());
-        ue.addPrivilege(SecurityConstants.READ, true, false);
-        userEntries.add(ue);
-
-        // Deny everyone the write and read access once process has started.
-        UserEntry everyoneElse = new UserEntryImpl(SecurityConstants.EVERYONE);
-        ue.addPrivilege(SecurityConstants.WRITE, false, false);
-        userEntries.add(everyoneElse);
-        UserEntry everyoneView = new UserEntryImpl(SecurityConstants.EVERYONE);
-        ue.addPrivilege(SecurityConstants.READ, false, false);
-        userEntries.add(everyoneView);
-        try {
-            ACP acp = newProxy.getACP();
-            acp.setRules(ACL_NAME, userEntries.toArray(new UserEntry[] {}));
-            newProxy.setACP(acp, true);
-            coreSession.saveDocument(newProxy);
-            coreSession.save();
+            permissionChanger.runUnrestricted();
         } catch (ClientException e) {
             throw new PublishingException(e);
         }
     }
 
-    private boolean isValidator(DocumentModel document, NuxeoPrincipal principal)
+    public boolean isValidator(DocumentModel document, NuxeoPrincipal principal)
             throws PublishingException {
         try {
             String[] validators = getPublishingService().getValidatorsFor(
@@ -225,10 +200,10 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
         return false;
     }
 
-    public void notifyEvent(PublishingEvent event, DocumentModel doc)
-            throws PublishingException {
+    public void notifyEvent(PublishingEvent event, DocumentModel doc,
+            CoreSession coreSession) throws PublishingException {
         try {
-            notifyEvent(event.name(), null, null, null, doc, null);
+            notifyEvent(event.name(), null, null, null, doc, coreSession);
         } catch (ClientException e) {
             throw new PublishingException(e);
         }
@@ -239,8 +214,8 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
         removeACL(currentDocument);
         endTask(currentDocument, currentUser);
         notifyEvent(PublishingEvent.documentPublicationApproved,
-                currentDocument);
-        notifyEvent(PublishingEvent.documentPublished, currentDocument);
+                currentDocument, null);
+        notifyEvent(PublishingEvent.documentPublished, currentDocument, null);
     }
 
     private void endTask(DocumentModel document, NuxeoPrincipal currentUser)
@@ -263,7 +238,8 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
     private void removeACL(DocumentModel document) throws PublishingException {
         try {
             document.getACP().removeACL(ACL_NAME);
-            CoreSession session = getCoreSession(document, null);
+            CoreSession session = getCoreSession(document.getRepositoryName(),
+                    null);
             session.saveDocument(document);
             session.save();
         } catch (ClientException e) {
@@ -275,7 +251,7 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
     public void validatorRejectPublication(DocumentModel doc,
             NuxeoPrincipal principal, String comment)
             throws PublishingException {
-        notifyEvent(PublishingEvent.documentPublicationRejected, doc);
+        notifyEvent(PublishingEvent.documentPublicationRejected, doc, null);
         removeProxy(doc);
         endTask(doc, principal);
 
@@ -283,7 +259,7 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
 
     private void removeProxy(DocumentModel doc) throws PublishingException {
         try {
-            CoreSession session = getCoreSession(doc, null);
+            CoreSession session = getCoreSession(doc.getRepositoryName(), null);
             session.removeDocument(doc.getRef());
             session.save();
         } catch (ClientException e) {

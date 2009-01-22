@@ -51,13 +51,13 @@ public class RejecterPublisher extends AbstractPublisher implements Publisher {
             throws PublishingException {
         CoreSession coreSession = null;
         try {
-            coreSession = getCoreSession(document, principal);
+            coreSession = getCoreSession(document.getRepositoryName(), principal);
             boolean docPerm = coreSession.hasPermission(document.getRef(),
                     SecurityConstants.READ);
             boolean secPerm = coreSession.hasPermission(
                     placeToPublishTo.getRef(), SecurityConstants.ADD_CHILDREN);
             if (docPerm && secPerm) {
-                publish(document, placeToPublishTo, principal);
+                publish(document, placeToPublishTo, principal, null);
             } else {
                 throw new DocumentWaitingValidationException();
             }
@@ -74,6 +74,11 @@ public class RejecterPublisher extends AbstractPublisher implements Publisher {
     public void validatorRejectPublication(DocumentModel doc,
             NuxeoPrincipal principal, String comment) {
         // rejected for no reason
+    }
+
+    protected boolean isValidator(DocumentModel document, NuxeoPrincipal principal)
+            throws PublishingException {
+        return false;
     }
 
 }

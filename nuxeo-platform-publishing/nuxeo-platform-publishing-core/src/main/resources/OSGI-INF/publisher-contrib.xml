@@ -2,7 +2,7 @@
 <component name="org.nuxeo.ecm.platform.publishing.publisher.contrib"
   version="1.0">
 
-  <extension target="org.nuxeo.ecm.platform.publishing" point="publishingValidDateField">
+  <extension target="org.nuxeo.ecm.platform.publishing" point="publisher">
     <publisher class="org.nuxeo.ecm.platform.publishing.RejecterPublisher" />
   </extension>
 </component>
