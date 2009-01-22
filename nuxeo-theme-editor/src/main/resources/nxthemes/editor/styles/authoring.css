@@ -398,8 +398,15 @@ h2.nxthemesEditor {
 h3.nxthemesEditor {
   color: #333;
   margin: 0;
-  padding: 0;
   margin-left: 14px;
+  border: 1px solid #ccc;
+  display: inline;
+  padding: 1px 10px;
+  margin-left: 4px;
+  font-size: 14px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px; 
 }
 
 form.nxthemesEditor {

@@ -46,7 +46,12 @@
      }
   }
 </ins>
-${preset_info.preview}</div>
+<#if preset_info.category>
+${preset_info.preview}
+<#else>
+<div><em style="color: #666"><br/>category not set</em></div>
+</#if>
+</div>
 <div class="name">${preset_info.name}</div>
 <div class="category">${preset_info.category}</div>
 </td>
