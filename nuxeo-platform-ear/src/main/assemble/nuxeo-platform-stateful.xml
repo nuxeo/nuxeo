@@ -33,7 +33,6 @@
 
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
-      <artifact name="nuxeo-platform-search-compass-plugin" />
       <artifact name="nuxeo-platform-ear" />
     </excludes>
   </artifactSet>
@@ -49,7 +48,6 @@
     <includes>
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
-      <artifact name="nuxeo-platform-search-compass-plugin" />
     </includes>
   </artifactSet>
 
@@ -64,7 +62,7 @@
       <artifact group="org.osgi" name="osgi-core" version="4.1" />
       <artifact group="commons-collections" name="commons-collections"
         version="3.1" />
-      <artifact group="commons-io" name="commons-io" version="1.2" />
+      <artifact group="commons-io" name="commons-io" version="1.4" />
       <artifact group="commons-lang" name="commons-lang" version="2.2" />
       <artifact group="commons-fileupload" name="commons-fileupload"
         version="1.1.1" />

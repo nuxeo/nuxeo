@@ -55,7 +55,6 @@
 
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
-      <artifact name="nuxeo-platform-search-compass-plugin" />
       <artifact name="nuxeo-platform-ear" />
       <artifact name="nuxeo-apt-extensions" />
     </excludes>
@@ -72,7 +71,6 @@
     <includes>
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
-      <artifact name="nuxeo-platform-search-compass-plugin" />
     </includes>
   </artifactSet>
 
@@ -123,6 +121,17 @@
       <artifact group="org.resteasy" name="resteasy-jaxrs" />
       <artifact group="org.resteasy" name="jaxrs-api" />
       <artifact group="javax.script" name="script-api" />
+      <!-- JOD / OOo libs and other converters deps-->
+      <artifact group="com.artofsolving" name="jodconverter" />
+      <artifact group="org.openoffice" name="ridl" />
+      <artifact group="org.openoffice" name="juh" />
+      <artifact group="org.openoffice" name="unoil" />
+      <artifact group="org.openoffice" name="jurt" />
+      <artifact group="com.thoughtworks.xstream" name="xstream" />
+      <artifact group="pdfbox" name="pdfbox" />
+      <artifact group="org.fontbox" name="fontbox" />
+      <artifact group="org.jempbox" name="jempbox" />
+
     </artifacts>
   </artifactSet>
 
@@ -145,7 +154,7 @@
   -->
 
   <!--
-    CUSTOM RESOURCES 
+    CUSTOM RESOURCES
   <assemble>
     <outputFile>/</outputFile>
     <set>custom-resources</set>
@@ -156,7 +165,7 @@
   -->
 
   <!--
-    CUSTOM ARTIFACTS 
+    CUSTOM ARTIFACTS
   <assemble>
     <outputFile>plugins</outputFile>
     <set>custom-plugins</set>

@@ -6,8 +6,6 @@
     points to this datasource so it will use only 1 database.
     To use another database than Derby, comment out the following section and uncomment
     your database configuration or add it if not present.
-    You also need to configure the  compass.cfg.xml file, refer to the nuxeo book for more
-    information.
     If you wish to use a different database for a service, comment out the link in the relevant
     xxx-ds.xml file and add a datasource configuration.
   -->

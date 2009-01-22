@@ -52,7 +52,7 @@
       <modules>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
-        <module>nuxeo-tomcat-template</module>
+        <module>nuxeo-distribution-tomcat</module>
       </modules>
     </profile>
     <profile>
@@ -60,6 +60,19 @@
       <modules>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
+      </modules>
+    </profile>
+    <!-- for deployment purpose -->
+    <profile>
+      <id>all-distributions</id>
+      <modules>
+        <module>nuxeo-platform-ear</module>
+        <module>nuxeo-distribution-base</module>
+        <module>nuxeo-distribution-shell</module>
+        <module>nuxeo-distribution-server</module>
+        <module>nuxeo-distribution-jetty</module>
+        <module>nuxeo-distribution-gf3</module>
+        <module>nuxeo-distribution-tomcat</module>
       </modules>
     </profile>
   </profiles>
