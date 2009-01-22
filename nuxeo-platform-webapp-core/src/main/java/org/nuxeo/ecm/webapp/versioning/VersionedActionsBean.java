@@ -38,8 +38,9 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Context;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -69,7 +70,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
 
     private static final Log log = LogFactory.getLog(VersionedActionsBean.class);
 
-    @In(create = true, required = true)
+    @In(create = true)
     protected transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
@@ -88,7 +89,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     @Out(required = false)
     protected VersionModel newVersion;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected transient DocumentVersioning documentVersioning;
 
     protected transient List<VersionModel> versionModelList;
@@ -103,6 +104,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
             EventNames.DOCUMENT_CHANGED }, create = false, inject = false)
+    @BypassInterceptors
     public void resetVersions() {
         versionModelList = null;
     }

@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.workflow.api.client.wfmc;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,7 +52,7 @@ import java.util.List;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public final class WMWorkItemState implements Serializable {
+public final class WMWorkItemState {
 
     public static final String WORKFLOW_TASK_STATE_CREATED = "WORKFLOW_TASK_STATE_CREATED";
 
@@ -69,14 +68,12 @@ public final class WMWorkItemState implements Serializable {
 
     public static final String WORKFLOW_TASK_STATE_REJECTED = "WORKFLOW_TASK_STATE_REJECTED";
 
-    private static final long serialVersionUID = -8664257701455068539L;
-
-    private static final String[] WORKFLOW_TASK_STATE_ACTIVE = new String[] {
+    private static final String[] WORKFLOW_TASK_STATE_ACTIVE = {
             WORKFLOW_TASK_STATE_CREATED, WORKFLOW_TASK_STATE_ALL,
             WORKFLOW_TASK_STATE_SUSPENDED, WORKFLOW_TASK_STATE_REJECTED, };
 
-    private static final String[] WORKFLOW_TASK_STATE_NOT_ACTIVE = new String[] {
-        WORKFLOW_TASK_STATE_CLOSED, WORKFLOW_TASK_STATE_CANCELLED, };
+    private static final String[] WORKFLOW_TASK_STATE_NOT_ACTIVE = {
+            WORKFLOW_TASK_STATE_CLOSED, WORKFLOW_TASK_STATE_CANCELLED, };
 
     // This is an utility class.
     private WMWorkItemState() { }

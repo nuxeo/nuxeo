@@ -24,13 +24,13 @@ import org.nuxeo.ecm.core.api.WrappedException;
  * Transform service general exception.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ *
  */
 public class TransformException extends Exception {
 
     private static final long serialVersionUID = 7572310562544004499L;
 
     public TransformException() {
-        super();
     }
 
     public TransformException(String message, Throwable cause) {

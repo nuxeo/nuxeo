@@ -26,6 +26,7 @@ import org.jbpm.graph.exe.Token;
 import org.jbpm.graph.node.TaskNode;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.jbpm.taskmgmt.exe.TaskMgmtInstance;
+import org.jbpm.taskmgmt.def.Task;
 
 /**
  * @author <a href="bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
@@ -36,22 +37,21 @@ public class ForumEnterModerationHandler extends
 
     private static final long serialVersionUID = 1L;
 
+    @SuppressWarnings({"unchecked"})
     public void execute(ExecutionContext executionContext) throws Exception {
         Token token = executionContext.getToken();
         TaskMgmtInstance tmi = executionContext.getTaskMgmtInstance();
 
         TaskNode taskNode = (TaskNode) executionContext.getNode();
-
-        Map tasks = taskNode.getTasksMap();
-
+        Map<String, Task> tasks = taskNode.getTasksMap();
         Object[] moderators = (Object[]) executionContext.getVariable(
                 ForumConstants.FORUM_MODERATORS_LIST);
 
         if (moderators != null) {
             for (Object moderator : moderators) {
-                for (Object k : tasks.keySet()) {
+                for (String k : tasks.keySet()) {
                     TaskInstance ti = tmi.createTaskInstance(
-                            taskNode.getTask((String) k), token);
+                            taskNode.getTask(k), token);
                     ti.start();
                     log.debug("Moderation : Creating and starting task ="
                             + ti.getId() + " for assignee : " + moderator);

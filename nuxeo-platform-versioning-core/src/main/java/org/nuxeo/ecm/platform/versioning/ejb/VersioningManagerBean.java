@@ -64,7 +64,7 @@ public class VersioningManagerBean implements VersioningManager {
     private static final Log log = LogFactory.getLog(VersioningManagerBean.class);
 
     @Transient
-    private transient VersioningService service;
+    private VersioningService service;
 
     @PostConstruct
     public void ejbCreate() {
@@ -110,11 +110,11 @@ public class VersioningManagerBean implements VersioningManager {
     /**
      * @deprecated i'm not in the interface, my life is meaningless. please
      *             don't use me. please.
+     * Not used. Remove in 5.2.
      */
     @Deprecated
     public VersionIncEditOptions getVersionIncOptions(DocumentRef docRef,
-            CoreSession documentManager) throws VersioningException,
-            DocumentException, ClientException {
+            CoreSession documentManager) throws VersioningException, ClientException {
 
         final String logPrefix = "<getVersionIncOptions> ";
 
@@ -192,16 +192,6 @@ public class VersioningManagerBean implements VersioningManager {
         return service.getNextVersion(doc);
     }
 
-    /**
-     * @deprecated i'm not in the interface, my life is meaningless. please
-     *             don't use me. please.
-     */
-    @Deprecated
-    public void notifyVersionChange(DocumentModel oldDocument,
-            DocumentModel newDocument) {
-        VersioningChangeNotifier.notifyVersionChange(oldDocument, newDocument,
-                null);
-    }
 
     public SnapshotOptions getCreateSnapshotOption(DocumentModel document)
             throws ClientException {

@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.audit.api;
 import java.io.Serializable;
 
 public class FilterMapEntry implements Serializable {
+
     private static final long serialVersionUID = -9120973644582569871L;
 
     private String operator;

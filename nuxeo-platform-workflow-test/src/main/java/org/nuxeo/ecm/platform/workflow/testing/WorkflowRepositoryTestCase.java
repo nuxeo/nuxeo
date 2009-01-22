@@ -82,7 +82,7 @@ public abstract class WorkflowRepositoryTestCase extends RepositoryOSGITestCase 
 
     // db management
 
-    public EntityManager createEntityManager() throws Exception {
+    public EntityManager createEntityManager() {
         emf = Persistence.createEntityManagerFactory("NXWorkflowDocument");
         em = emf.createEntityManager();
         EntityTransaction et = em.getTransaction();
@@ -95,7 +95,7 @@ public abstract class WorkflowRepositoryTestCase extends RepositoryOSGITestCase 
         return em;
     }
 
-    public void removeEntityManager() throws Exception {
+    public void removeEntityManager() {
         if (em != null) {
             // remove tests data
             EntityTransaction et = em.getTransaction();

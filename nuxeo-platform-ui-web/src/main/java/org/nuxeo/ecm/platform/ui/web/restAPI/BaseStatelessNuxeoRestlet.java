@@ -31,9 +31,8 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.Response;
 
-
 /**
- * Base class for stateless restlet : ie Restlets that don't use Seam.
+ * Base class for stateless restlet, i.e. Restlets that don't use Seam.
  *
  * @author tiry
  */

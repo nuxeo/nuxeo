@@ -40,7 +40,6 @@ public class WMFilterImpl implements WMFilter {
     protected Serializable filterValue;
 
     public WMFilterImpl() {
-
     }
 
     public WMFilterImpl(String attributeName, int comparison,

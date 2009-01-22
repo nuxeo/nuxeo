@@ -40,7 +40,8 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -54,9 +55,7 @@ import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.search.api.client.query.QueryException;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
 import org.nuxeo.ecm.platform.workflow.api.client.delegate.WAPIBusinessDelegate;
@@ -79,19 +78,16 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 
 /**
  * Dash board actions.
- *
  * <p>
  * Those actions are related to the current authenticated principal.
- * </p>
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 @Name("dashboardActions")
 @Scope(SESSION)
 @Install(precedence = FRAMEWORK)
 public class DashBoardActionsBean extends InputController implements
-        DashboardActions, ResultsProviderFarm {
+        DashboardActions {
 
     private static final long serialVersionUID = 7737098220471277412L;
 
@@ -135,9 +131,9 @@ public class DashBoardActionsBean extends InputController implements
     @In(create = true)
     protected transient ResultsProvidersCache resultsProvidersCache;
 
-    transient protected Collection<DashBoardItem> dashboardItems;
+    protected transient Collection<DashBoardItem> dashboardItems;
 
-    transient protected Collection<DocumentProcessItem> documentProcessItems;
+    protected transient Collection<DocumentProcessItem> documentProcessItems;
 
     @RequestParameter("sortColumn")
     protected String newSortColumn;
@@ -177,6 +173,7 @@ public class DashBoardActionsBean extends InputController implements
             EventNames.WORK_ITEMS_LIST_LOADED,
             EventNames.WORKFLOW_TASKS_COMPUTED,
             org.nuxeo.ecm.webapp.helpers.EventNames.DOMAIN_SELECTION_CHANGED }, create=false, inject=false)
+    @BypassInterceptors
     public void invalidateDocumentProcessItems() throws ClientException {
         documentProcessItems = null;
     }
@@ -190,6 +187,7 @@ public class DashBoardActionsBean extends InputController implements
             EventNames.WORK_ITEMS_LIST_LOADED,
             EventNames.WORKFLOW_TASKS_COMPUTED,
             org.nuxeo.ecm.webapp.helpers.EventNames.DOMAIN_SELECTION_CHANGED }, create=false, inject=false)
+    @BypassInterceptors
     public void invalidateDashboardItems() throws ClientException {
         dashboardItems = null;
     }
@@ -252,7 +250,7 @@ public class DashBoardActionsBean extends InputController implements
                 }
             }
         } catch (ClientException ce) {
-            throw EJBExceptionHandler.wrapException(ce);
+            throw ClientException.wrap(ce);
         }
         return documentProcessItems;
     }
@@ -341,9 +339,9 @@ public class DashBoardActionsBean extends InputController implements
                 }
             }
         } catch (WMWorkflowException we) {
-            throw EJBExceptionHandler.wrapException(we);
+            throw ClientException.wrap(we);
         } catch (ClientException ce) {
-            throw EJBExceptionHandler.wrapException(ce);
+            throw ClientException.wrap(ce);
         }
         return dashboardItems;
     }

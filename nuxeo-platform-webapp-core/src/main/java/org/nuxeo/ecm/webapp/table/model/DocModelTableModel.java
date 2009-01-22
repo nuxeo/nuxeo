@@ -37,6 +37,7 @@ import org.nuxeo.ecm.webapp.table.row.TableRow;
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  *
  */
+@SuppressWarnings({"ALL"})
 @Deprecated
 public class DocModelTableModel extends TableModel implements CacheListener {
     private static final long serialVersionUID = -2063444397095908727L;
@@ -158,21 +159,19 @@ public class DocModelTableModel extends TableModel implements CacheListener {
     public void documentRemove(DocumentModel docModel) {
         try {
             boolean removed = removeRow(docModel);
-            log.info("<documentRemove> removed: " + removed);
+            log.debug("<documentRemove> removed: " + removed);
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // TODO: more robust exception handling?
+            log.error(e);
         }
     }
 
     public void documentRemoved(String fqn) {
         // TODO Auto-generated method stub
-
     }
 
     public void documentUpdate(DocumentModel docModel, boolean pre) {
         // TODO Auto-generated method stub
-
     }
     // CacheListener intf implementation - end
     // --------------------------------------------------------

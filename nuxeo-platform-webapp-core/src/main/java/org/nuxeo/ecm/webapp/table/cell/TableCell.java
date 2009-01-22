@@ -32,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
 public class TableCell extends AbstractTableCell {
     private static final long serialVersionUID = 2677617397388697893L;
 
-    private static Log log = LogFactory.getLog(TableCell.class);
+    private static final Log log = LogFactory.getLog(TableCell.class);
 
     protected String label;
 

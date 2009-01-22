@@ -43,11 +43,8 @@ public class VersioningChangeListenerForTesting extends
     // these are the values that should be checked against when event is
     // received
     private static long oldDoc_majV;
-
     private static long oldDoc_minV;
-
     private static long newDoc_majV;
-
     private static long newDoc_minV;
 
     protected DocumentModel newDoc;
@@ -96,4 +93,5 @@ public class VersioningChangeListenerForTesting extends
         newDoc_majV = new_maj;
         newDoc_minV = new_min;
     }
+
 }

@@ -3,7 +3,6 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
@@ -23,7 +22,7 @@
       columnClasses="iconColumn,"
       rowClasses="dataRowEven,dataRowOdd">
      <h:column>
-       <t:graphicImage value="#{nxd:iconPath(document)}" />
+       <nxu:graphicImage value="#{nxd:iconPath(document)}" />
      </h:column>
      <h:column>
        <h:commandLink value="#{nxd:titleOrId(document)}" immediate="true"

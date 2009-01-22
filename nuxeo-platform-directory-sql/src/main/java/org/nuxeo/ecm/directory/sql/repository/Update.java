@@ -31,7 +31,6 @@ import org.nuxeo.common.utils.StringUtils;
  * An {@code UPDATE} statement.
  *
  * @author George Lefter
- *
  */
 public class Update implements Serializable {
 
@@ -61,7 +60,7 @@ public class Update implements Serializable {
     }
 
     /**
-     * Get the insert statement, and fill in {@code keys} with free parameter
+     * Gets the insert statement, and fill in {@code keys} with free parameter
      * names.
      *
      * @return the SQL insert statement.
@@ -90,10 +89,8 @@ public class Update implements Serializable {
         return buf.toString();
     }
 
-    /**
-     * @param whereString
-     */
     public void setWhere(String whereString) {
         where = whereString;
     }
+
 }

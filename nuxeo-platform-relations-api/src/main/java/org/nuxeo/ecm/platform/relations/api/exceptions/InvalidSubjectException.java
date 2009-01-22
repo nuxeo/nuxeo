@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.relations.api.exceptions;
  * A subject cannot be a literal.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class InvalidSubjectException extends RuntimeException {
 
@@ -43,4 +42,5 @@ public class InvalidSubjectException extends RuntimeException {
     public InvalidSubjectException(Throwable cause) {
         super(cause);
     }
+
 }

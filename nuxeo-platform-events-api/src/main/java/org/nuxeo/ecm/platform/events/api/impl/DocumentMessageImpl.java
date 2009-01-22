@@ -44,7 +44,6 @@ import org.nuxeo.ecm.platform.events.api.EventMessage;
  * @see org.nuxeo.ecm.platform.events.api.DocumentMessage
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public final class DocumentMessageImpl extends DocumentModelImpl implements
         DocumentMessage {
@@ -53,9 +52,9 @@ public final class DocumentMessageImpl extends DocumentModelImpl implements
 
     private static final Log log = LogFactory.getLog(DocumentMessageImpl.class);
 
-    protected final EventMessage eventMessage;
+    final EventMessage eventMessage;
 
-    protected String docCurrentLifeCycle;
+    String docCurrentLifeCycle;
 
     public DocumentMessageImpl() {
         // need to initialize this thus getProperty won't fail

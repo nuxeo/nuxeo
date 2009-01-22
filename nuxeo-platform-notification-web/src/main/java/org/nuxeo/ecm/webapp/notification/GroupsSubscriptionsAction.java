@@ -36,7 +36,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.i18n.Labeler;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -75,7 +75,7 @@ public class GroupsSubscriptionsAction extends InputController implements
     @In(create = true)
     private PrincipalListManager principalListManager;
 
-    @In(required = true, create = true)
+    @In(create = true)
     private transient NotificationManager notificationManager;
 
     private String selectedGrant;
@@ -241,7 +241,7 @@ public class GroupsSubscriptionsAction extends InputController implements
             List<String> principals = new ArrayList<String>();
             for (String usr : userGroups) {
                 if (usr != null) {
-                    principals.add(usr.substring(usr.indexOf(":") + 1));
+                    principals.add(usr.substring(usr.indexOf(':') + 1));
                 }
             }
             result.put(notification.getLabel(), principals);

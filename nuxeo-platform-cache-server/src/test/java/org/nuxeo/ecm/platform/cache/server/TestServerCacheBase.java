@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.cache.server;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -72,8 +73,23 @@ public abstract class TestServerCacheBase extends TestCase {
         //cache.initCache(Config.CFG_REPL_SYNC);
     }
 
-    protected void startCacheService() throws CacheServiceException {
+    @Override
+    protected void tearDown() throws Exception {
+        // close the core session
+        server.close(coreSession);
 
+        if (runtime != null) {
+            Framework.shutdown();
+        }
+
+        if (cache != null) {
+            cache.stopService();
+        }
+
+        super.tearDown();
+    }
+
+    protected void startCacheService() throws CacheServiceException {
         // at this point if no peer service is being detected
         // an internal exception is traced out - but not thrown
         // and the thread continue (unwisely?) ...
@@ -115,44 +131,22 @@ public abstract class TestServerCacheBase extends TestCase {
      * Object>)'
      */
     private void openCoreSession() throws ClientException {
-        HashMap<String, Serializable> ctx = new HashMap<String, Serializable>();
+        Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("username", SecurityConstants.ADMINISTRATOR);
-        coreSession = CoreInstance.getInstance()
-                .open("demo", ctx);
+        coreSession = CoreInstance.getInstance().open("demo", ctx);
 
         assertNotNull(coreSession);
     }
 
-    private URL getResource(String resource) {
+    private static URL getResource(String resource) {
         return Thread.currentThread().getContextClassLoader().getResource(
                 resource);
     }
 
-    private void deploy(String bundle) {
+    private void deploy(String bundle) throws Exception {
         URL url = getResource(bundle);
         assertNotNull("Test resource not found " + bundle, url);
-        if (url != null) {
-            try {
-                runtime.deploy(url);
-            } catch (Exception e) {
-                e.printStackTrace();
-                fail("Failed to deploy bundle " + bundle);
-            }
-        }
+        runtime.deploy(url);
     }
 
-    protected void tearDown() throws Exception {
-        // close the core session
-        server.close(coreSession);
-
-        if (runtime != null) {
-            Framework.shutdown();
-        }
-
-        if (cache != null) {
-            cache.stopService();
-        }
-
-        super.tearDown();
-    }
 }

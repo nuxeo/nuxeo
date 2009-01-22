@@ -30,22 +30,21 @@ public class TrashConfigDescriptor implements Serializable {
     private static final long serialVersionUID = 187652786580987097L;
 
     @XNode("@enabled")
-    Boolean enabled;
+    boolean enabled;
 
     public TrashConfigDescriptor() {
-        enabled = true;
+        this(true);
     }
 
-    public TrashConfigDescriptor(Boolean enabled) {
-        this();
+    public TrashConfigDescriptor(boolean enabled) {
         this.enabled = enabled;
     }
 
-    public Boolean getEnabled() {
+    public boolean getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 

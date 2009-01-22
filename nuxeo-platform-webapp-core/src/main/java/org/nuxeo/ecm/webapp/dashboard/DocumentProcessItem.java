@@ -72,6 +72,4 @@ public interface DocumentProcessItem extends Serializable {
      */
     String getProcessInstanceName();
 
-
-
 }

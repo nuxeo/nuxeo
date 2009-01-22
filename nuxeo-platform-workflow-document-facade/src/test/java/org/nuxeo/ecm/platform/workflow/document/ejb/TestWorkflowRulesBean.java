@@ -33,9 +33,4 @@ public class TestWorkflowRulesBean extends AbstractWorkflowRulesServiceTestCase 
         assertNotNull(workflowRules);
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
 }

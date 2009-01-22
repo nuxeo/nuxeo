@@ -153,8 +153,6 @@ public final class EmailHelper {
 
     /**
      * Gets the session from the JNDI.
-     *
-     * @return
      */
     private static Session getSession() {
         Session session = null;

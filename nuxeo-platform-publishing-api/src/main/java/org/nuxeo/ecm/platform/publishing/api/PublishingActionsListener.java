@@ -25,7 +25,6 @@ import java.io.Serializable;
  * Publishing actions listener base interface.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public interface PublishingActionsListener extends Serializable {
 

@@ -40,7 +40,6 @@ public class WMWorkItemDefinitionImpl implements WMWorkItemDefinition {
     protected String type;
 
     public WMWorkItemDefinitionImpl() {
-
     }
 
     /**

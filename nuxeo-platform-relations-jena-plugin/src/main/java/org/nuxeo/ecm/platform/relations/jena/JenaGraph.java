@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.relations.jena;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -86,7 +84,6 @@ import com.hp.hpl.jena.shared.Lock;
  * target="_blank">Jena</a> framework.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class JenaGraph implements Graph {
 

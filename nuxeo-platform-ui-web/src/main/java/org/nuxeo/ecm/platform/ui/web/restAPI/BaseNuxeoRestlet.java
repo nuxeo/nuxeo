@@ -38,15 +38,16 @@ import com.noelios.restlet.http.HttpRequest;
 import com.noelios.restlet.http.HttpResponse;
 
 /**
- *
- * Base class for Nuxeo Restlet
- * Provides utility methods :
- *  - error handling
- *  - authentication
- *  - http request/response retrieval
+ * Base class for Nuxeo Restlet.
+ * <p>
+ * Provides utility methods:
+ * <ul>
+ * <li>error handling
+ * <li>authentication
+ * <li>http request/response retrieval
+ * </ul>
  *
  * @author tiry
- *
  */
 public class BaseNuxeoRestlet extends Restlet {
 
