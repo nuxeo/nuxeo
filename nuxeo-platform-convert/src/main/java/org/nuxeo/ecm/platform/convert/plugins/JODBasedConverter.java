@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.ConnectException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -45,6 +47,8 @@ public class JODBasedConverter implements ExternalConverter {
     private static final String DEFAULT_OOO_HOST_URL = "localhost";
 
     private static final int DEFAULT_OOO_HOST_PORT = 8100;
+
+    protected static final String TMP_PATH_PARAMETER = "TmpDirectory";
 
     // OOo doesn't support multi thread connection on the same port.
     private static OpenOfficeConnection connection;
@@ -279,6 +283,7 @@ public class JODBasedConverter implements ExternalConverter {
              if (connection != null && connection.isConnected()) {
                  File sourceFile = null;
                  File outFile = null;
+                 File[] files = null;
                  try {
 
                      // Copy in a file to be able to read it several time
@@ -324,23 +329,68 @@ public class JODBasedConverter implements ExternalConverter {
                      DocumentFormat destinationFormat = getDestinationFormat();
 
                      // allow HTML2PDF filtering
-                     adaptFilterNameForHTML2PDF(sourceFormat, destinationFormat);
 
-                     outFile = File.createTempFile("NXJOOoConverterDocumentOut",
-                             '.' + destinationFormat.getFileExtension());
+                     List<Blob> blobs = new ArrayList<Blob>();
 
-                     // Perform the actual conversion.
-                     getOOoDocumentConverter().convert(sourceFile, sourceFormat,
-                             outFile, destinationFormat);
+                     if (descriptor.getDestinationMimeType().equals("text/html")) {
+                         String tmpDirPath = getTmpDirectory();
+                         File myTmpDir = new File(tmpDirPath + "/JODConv_" + System.currentTimeMillis());
+                         boolean created = myTmpDir.mkdir();
+                         if (!created) {
+                             throw new ConversionException("Unable to create temp dir");
+                         }
+
+                         outFile = new File(myTmpDir.getAbsolutePath() + "/" + "NXJOOoConverterDocumentOut." + destinationFormat.getFileExtension());
+
+                         created = outFile.createNewFile();
+                         if (!created) {
+                             throw new ConversionException("Unable to create temp file");
+                         }
+
+                         log.debug("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                         log.debug("Input File = " + outFile.getAbsolutePath());
+                        // Perform the actual conversion.
+                         getOOoDocumentConverter().convert(sourceFile, sourceFormat,
+                                 outFile, destinationFormat);
+
+                         files = myTmpDir.listFiles();
+                         for (File file : files) {
+                             Blob blob = StreamingBlob.createFromByteArray(
+                                     new FileSource(file).getBytes());
+                             if (file.getName().equals(outFile.getName())) {
+                                 blob.setFilename("index.html");
+                                 blobs.add(0,blob);
+                             }
+                             else {
+                                 blob.setFilename(file.getName());
+                                 blobs.add(blob);
+                             }
+
+                         }
 
 
-                     // load the content in the file since it will be deleted
-                     // soon: TODO: find a way to stream it to the streaming
-                     // server without loading it all in memory
-                     Blob blob = StreamingBlob.createFromByteArray(
-                             new FileSource(outFile).getBytes(),
-                             getDestinationMimeType());
-                     return new SimpleCachableBlobHolder(blob);
+                     }
+                     else {
+                         adaptFilterNameForHTML2PDF(sourceFormat, destinationFormat);
+
+                         outFile = File.createTempFile("NXJOOoConverterDocumentOut",
+                                 '.' + destinationFormat.getFileExtension());
+
+                         // Perform the actual conversion.
+                         getOOoDocumentConverter().convert(sourceFile, sourceFormat,
+                                 outFile, destinationFormat);
+
+
+                         // load the content in the file since it will be deleted
+                         // soon: TODO: find a way to stream it to the streaming
+                         // server without loading it all in memory
+                         Blob blob = StreamingBlob.createFromByteArray(
+                                 new FileSource(outFile).getBytes(),
+                                 getDestinationMimeType());
+                         blobs.add(blob);
+                     }
+
+                     return new SimpleCachableBlobHolder(blobs);
 
                  } catch (Exception e) {
                      log.error(String.format(
@@ -355,6 +405,15 @@ public class JODBasedConverter implements ExternalConverter {
                      if (outFile != null) {
                          outFile.delete();
                      }
+
+                     if (files!=null) {
+                         for (File file : files) {
+                             if(file.exists()) {
+                                 file.delete();
+                             }
+                         }
+                     }
+
                  }
              }
              else {
@@ -397,5 +456,17 @@ public class JODBasedConverter implements ExternalConverter {
             }
 
         }
+    }
+
+    protected String getTmpDirectory() {
+        String tmp=null;
+        Map<String, String> parameters = descriptor.getParameters();
+        if ((parameters!=null) &&(parameters.containsKey(TMP_PATH_PARAMETER))) {
+            tmp = (String) parameters.get(TMP_PATH_PARAMETER);
+        }
+        if (tmp==null) {
+            tmp = System.getProperty("java.io.tmpdir");
+        }
+        return tmp;
     }
 }

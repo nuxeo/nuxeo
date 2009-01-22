@@ -11,6 +11,7 @@ import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
 
 import com.anwrt.ooserver.daemon.Config;
+import com.anwrt.ooserver.daemon.Log4JLogger;
 import com.sun.star.bridge.XUnoUrlResolver;
 import com.sun.star.comp.helper.Bootstrap;
 import com.sun.star.container.XNameAccess;
@@ -48,13 +49,13 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
         if (SERVER_CONFIG_EP.equals(extensionPoint)) {
             OOoServerDescriptor desc = (OOoServerDescriptor) contribution;
             serverDescriptor=desc;
+            Log4JLogger.logInfoAsDebug = desc.getLogInfoAsDebug();
         }
     }
 
     public void unregisterContribution(Object contribution, String extensionPoint,
             ComponentInstance contributor) throws Exception {
     }
-
 
     /** Service interface **/
     protected Config getOrBuildConfig() {

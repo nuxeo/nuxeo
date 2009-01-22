@@ -1,7 +1,5 @@
 package org.nuxeo.ecm.platform.convert.tests;
 
-import java.io.File;
-
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
@@ -50,13 +48,13 @@ public class TestOffice2html extends BaseConverterTest {
             return;
         }
 
-        //doTestHtmlConverter("application/vnd.ms-excel",  "hello.xls");
+        doTestHtmlConverter("application/vnd.ms-excel",  "hello.xls");
         doTestHtmlConverter("application/vnd.sun.xml.writer", "hello.sxw");
         doTestHtmlConverter("application/vnd.oasis.opendocument.text",  "hello.odt");
         doTestHtmlConverter("application/vnd.sun.xml.calc",  "hello.sxc");
         doTestHtmlConverter("application/vnd.oasis.opendocument.spreadsheet", "hello.ods");
-        doTestHtmlConverter("application/vnd.sun.xml.impress",  "hello.sxi");
-        doTestHtmlConverter("application/vnd.oasis.opendocument.presentation",  "hello.odp");
+        //doTestHtmlConverter("application/vnd.sun.xml.impress",  "hello.sxi");
+        //doTestHtmlConverter("application/vnd.oasis.opendocument.presentation",  "hello.odp");
     }
 
 }

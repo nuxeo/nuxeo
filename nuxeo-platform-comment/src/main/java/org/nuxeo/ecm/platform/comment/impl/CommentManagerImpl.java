@@ -28,6 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
@@ -37,7 +40,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
@@ -84,35 +86,33 @@ public class CommentManagerImpl implements CommentManager {
 
     final CommentConverter commentConverter;
 
-    private CoreSession session;
-
-    private String currentRepositoryName;
-
     public CommentManagerImpl(CommentServiceConfig config) {
         this.config = config;
         commentConverter = config.getCommentConverter();
     }
 
-    protected CoreSession getRepositorySession(String repositoryName) {
-        // return cached session
-        if (currentRepositoryName != null
-                && repositoryName.equals(currentRepositoryName)
-                && session != null) {
-            return session;
-        }
-
+    protected CoreSession openCoreSession(String repositoryName)
+            throws ClientException {
         try {
-            log.debug("trying to connect to ECM platform");
-            Framework.login();
-            RepositoryManager manager = Framework.getService(RepositoryManager.class);
-            session = manager.getRepository(repositoryName).open();
-            log.debug("CommentManager connected to ECM");
-            currentRepositoryName = repositoryName;
+            RepositoryManager repoMgr = Framework.getService(RepositoryManager.class);
+            return repoMgr.getRepository(repositoryName).open();
         } catch (Exception e) {
-            log.error("failed to connect to ECM platform", e);
-            throw new RuntimeException(e);
+            throw new ClientException(e);
         }
-        return session;
+    }
+
+    protected void closeCoreSession(LoginContext loginContext,
+            CoreSession session) throws ClientException {
+        if (loginContext != null) {
+            try {
+                loginContext.logout();
+            } catch (LoginException e) {
+                throw new ClientException(e);
+            }
+        }
+        if (session != null) {
+            CoreInstance.getInstance().close(session);
+        }
     }
 
     private static RelationManager getRelationManager() throws Exception {
@@ -171,13 +171,26 @@ public class CommentManagerImpl implements CommentManager {
 
     public DocumentModel createComment(DocumentModel docModel, String comment,
             String author) throws ClientException {
-        DocumentModel commentDM = getRepositorySession(
-                docModel.getRepositoryName()).createDocumentModel("Comment");
-        commentDM.setProperty("comment", "text", comment);
-        commentDM.setProperty("comment", "author", author);
-        commentDM.setProperty("comment", "creationDate", Calendar.getInstance());
+        LoginContext loginContext = null;
+        CoreSession session = null;
+        try {
+            loginContext = Framework.login();
+            session = openCoreSession(docModel.getRepositoryName());
 
-        return createComment(docModel, commentDM);
+            DocumentModel commentDM = session.createDocumentModel("Comment");
+            commentDM.setProperty("comment", "text", comment);
+            commentDM.setProperty("comment", "author", author);
+            commentDM.setProperty("comment", "creationDate",
+                    Calendar.getInstance());
+            commentDM = createComment(session, docModel, commentDM);
+            session.save();
+
+            return commentDM;
+        } catch (Exception e) {
+            throw new ClientException(e);
+        } finally {
+            closeCoreSession(loginContext, session);
+        }
     }
 
     public DocumentModel createComment(DocumentModel docModel, String comment)
@@ -208,11 +221,29 @@ public class CommentManagerImpl implements CommentManager {
 
     public DocumentModel createComment(DocumentModel docModel,
             DocumentModel comment) throws ClientException {
+        LoginContext loginContext = null;
+        CoreSession session = null;
+        try {
+            loginContext = Framework.login();
+            session = openCoreSession(docModel.getRepositoryName());
+            DocumentModel doc = createComment(session, docModel, comment);
+            session.save();
+            return doc;
+        } catch (Exception e) {
+            throw new ClientException(e);
+        } finally {
+            closeCoreSession(loginContext, session);
+        }
+    }
+
+    protected DocumentModel createComment(CoreSession session,
+            DocumentModel docModel, DocumentModel comment)
+            throws ClientException {
         String author = updateAuthor(docModel, comment);
         DocumentModel createdComment;
 
         try {
-            createdComment = createCommentDocModel(docModel, comment);
+            createdComment = createCommentDocModel(session, docModel, comment);
 
             RelationManager relationManager = getRelationManager();
             List<Statement> statementList = new ArrayList<Statement>();
@@ -252,15 +283,15 @@ public class CommentManagerImpl implements CommentManager {
         return createdComment;
     }
 
-    private DocumentModel createCommentDocModel(DocumentModel docModel,
-            DocumentModel comment) throws ClientException {
+    private DocumentModel createCommentDocModel(CoreSession mySession,
+            DocumentModel docModel, DocumentModel comment)
+            throws ClientException {
 
         updateAuthor(docModel, comment);
 
         String[] pathList = getCommentPathList(comment);
 
         String domainPath = docModel.getPath().segment(0);
-        CoreSession mySession = getRepositorySession(docModel.getRepositoryName());
         if (mySession == null) {
             return null;
         }
@@ -282,7 +313,6 @@ public class CommentManagerImpl implements CommentManager {
                 dm = mySession.createDocument(dm);
                 setFolderPermissions(dm);
 
-                mySession.save();
                 parent = dm;
             }
         }
@@ -298,8 +328,6 @@ public class CommentManagerImpl implements CommentManager {
         commentDocModel = mySession.createDocument(commentDocModel);
         setCommentPermissions(commentDocModel);
         log.debug("created comment with id=" + commentDocModel.getId());
-
-        mySession.save();
 
         return commentDocModel;
     }
@@ -421,23 +449,26 @@ public class CommentManagerImpl implements CommentManager {
 
     public void deleteComment(DocumentModel docModel, DocumentModel comment)
             throws ClientException {
+        LoginContext loginContext = null;
+        CoreSession session = null;
         try {
+            loginContext = Framework.login();
+            session = openCoreSession(docModel.getRepositoryName());
 
-            CoreSession mySession = getRepositorySession(docModel.getRepositoryName());
-            if (mySession == null) {
+            if (session == null) {
                 throw new ClientException(
                         "Unable to acess repository for comment: "
                                 + comment.getId());
             }
-            DocumentRef ref = new IdRef(comment.getId());
-            if (!mySession.exists(ref)) {
+            DocumentRef ref = comment.getRef();
+            if (!session.exists(ref)) {
                 throw new ClientException("Comment Document does not exist: "
                         + comment.getId());
             }
 
             NuxeoPrincipal author = getAuthor(comment);
-            mySession.removeDocument(ref);
-            mySession.save();
+            session.removeDocument(ref);
+            session.save();
 
             notifyEvent(docModel, CommentEvents.COMMENT_REMOVED, null, comment,
                     author);
@@ -445,27 +476,37 @@ public class CommentManagerImpl implements CommentManager {
         } catch (Throwable e) {
             log.error("failed to delete comment", e);
             throw new ClientException("failed to delete comment", e);
+        } finally {
+            closeCoreSession(loginContext, session);
         }
     }
 
     public DocumentModel createComment(DocumentModel docModel,
             DocumentModel parent, DocumentModel child) throws ClientException {
-        String author = updateAuthor(docModel, child);
-        String commentId = parent.getId();
-        DocumentModel parentDocModel = getRepositorySession(
-                docModel.getRepositoryName()).getDocument(new IdRef(commentId));
-        DocumentModel newComment = createComment(parentDocModel, child);
-
-        NuxeoPrincipal principal = null;
+        LoginContext loginContext = null;
+        CoreSession session = null;
         try {
+            loginContext = Framework.login();
+            session = openCoreSession(docModel.getRepositoryName());
+
+            String author = updateAuthor(docModel, child);
+            DocumentModel parentDocModel = session.getDocument(parent.getRef());
+            DocumentModel newComment = createComment(session, parentDocModel,
+                    child);
+            session.save();
+
             UserManager userManager = Framework.getService(UserManager.class);
-            principal = userManager.getPrincipal(author);
+            NuxeoPrincipal principal = userManager.getPrincipal(author);
+            notifyEvent(docModel, CommentEvents.COMMENT_ADDED, parent,
+                    newComment, principal);
+
+            return newComment;
+
         } catch (Exception e) {
-            log.error("Error building principal for notification", e);
+            throw new ClientException(e);
+        } finally {
+            closeCoreSession(loginContext, session);
         }
-        notifyEvent(docModel, CommentEvents.COMMENT_ADDED, parent, newComment,
-                principal);
-        return newComment;
     }
 
     private static NuxeoPrincipal getAuthor(DocumentModel docModel)
@@ -483,10 +524,19 @@ public class CommentManagerImpl implements CommentManager {
 
     public List<DocumentModel> getComments(DocumentModel docModel,
             DocumentModel parent) throws ClientException {
-        String commentId = parent.getId();
-        DocumentModel parentDocModel = getRepositorySession(
-                docModel.getRepositoryName()).getDocument(new IdRef(commentId));
-        return getComments(parentDocModel);
+        LoginContext loginContext = null;
+        CoreSession session = null;
+        try {
+            loginContext = Framework.login();
+            session = openCoreSession(docModel.getRepositoryName());
+            DocumentModel parentDocModel = session.getDocument(parent.getRef());
+            return getComments(parentDocModel);
+        } catch (Exception e) {
+            throw new ClientException(e);
+        } finally {
+            closeCoreSession(loginContext, session);
+        }
+
     }
 
 }

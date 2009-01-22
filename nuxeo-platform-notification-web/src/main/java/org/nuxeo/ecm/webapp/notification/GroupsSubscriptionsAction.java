@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webapp.notification;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +69,9 @@ public class GroupsSubscriptionsAction extends InputController implements
     @In(create = true, required = false)
     private transient CoreSession documentManager;
 
+    @In(create = true)
+    protected Principal currentUser;
+
     @In(required = false)
     @Out(required = false)
     private List<String> selectedNotifications;
@@ -91,23 +95,14 @@ public class GroupsSubscriptionsAction extends InputController implements
      * @throws ClientException
      */
     public List<SelectItem> getNotificationList() throws ClientException {
-        //Using runtime
-//        NotificationService service = (NotificationService) NXRuntime
-//                .getRuntime().getComponent(NotificationService.NAME);
-
-        //Using EJB3.0
-//        JNDILookupHelper helper = new JNDILookupHelper(null);
-//        NotificationServiceRemote service = (NotificationServiceRemote) helper.lookupEjbReference("NotificationService");
-
-        String parentType = documentManager.getSuperParentType(
-                navigationContext.getCurrentDocument());
+        String parentType = documentManager.getSuperParentType(navigationContext.getCurrentDocument());
         List<Notification> notifs = notificationManager.getNotificationsForSubscriptions(parentType);
         List<SelectItem> notifsResult = new ArrayList<SelectItem>();
         for (Notification notification : notifs) {
             String notifName = notification.getName();
             String notifLabel = notification.getLabel();
-            notifsResult.add(
-                    new SelectItem(notifName, resourcesAccessor.getMessages().get(notifLabel)));
+            notifsResult.add(new SelectItem(notifName,
+                    resourcesAccessor.getMessages().get(notifLabel)));
         }
         return notifsResult;
     }
@@ -127,33 +122,27 @@ public class GroupsSubscriptionsAction extends InputController implements
         List<String> removedSubscriptions = getDisjunctElements(subscriptions,
                 selectedNotifications);
 
-        //Using runtime
-//        NotificationService service = (NotificationService) NXRuntime
-//                .getRuntime().getComponent(NotificationService.NAME);
-        //Using EJB3.0
-//        JNDILookupHelper helper = new JNDILookupHelper(null);
-//        NotificationServiceRemote service = (NotificationServiceRemote) helper.lookupEjbReference("NotificationService");
-
-        NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext
-                .getCurrentInstance().getExternalContext().getUserPrincipal();
+        NuxeoPrincipal principal = (NuxeoPrincipal) currentUser;
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         // removing the unselected subscriptions
         if (!removedSubscriptions.isEmpty()) {
             for (String subscription : removedSubscriptions) {
-                notificationManager.removeSubscription("user:" + principal.getName(),
-                        subscription, currentDoc.getId());
+                notificationManager.removeSubscription("user:"
+                        + principal.getName(), subscription, currentDoc.getId());
             }
         }
         // ading the newly selected subsctiptions
         if (!newSubscriptions.isEmpty()) {
             for (String subscription : newSubscriptions) {
-                notificationManager.addSubscription("user:" + principal.getName(),
-                        subscription, currentDoc, false, principal, "");
+                notificationManager.addSubscription("user:"
+                        + principal.getName(), subscription, currentDoc, false,
+                        principal, "");
             }
         }
 
         facesMessages.add(FacesMessage.SEVERITY_INFO,
-                resourcesAccessor.getMessages().get("label.notifications.registered"));
+                resourcesAccessor.getMessages().get(
+                        "label.notifications.registered"));
         log.info("Updating subscriptions.... whatch out !");
     }
 
@@ -191,17 +180,14 @@ public class GroupsSubscriptionsAction extends InputController implements
      */
     private List<String> getSubscriptionsForCurrentUser()
             throws ClientException {
-//        NotificationService service = (NotificationService) NXRuntime
-//                .getRuntime().getComponent(NotificationService.NAME);
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext
-                .getCurrentInstance().getExternalContext().getUserPrincipal();
+        NuxeoPrincipal principal = (NuxeoPrincipal) currentUser;
         List<String> subscriptions;
         try {
             subscriptions = notificationManager.getSubscriptionsForUserOnDocument(
                     "user:" + principal.getName(), currentDoc.getId());
         } catch (ClassNotFoundException e) {
-            throw new ClientException(e.getMessage());
+            throw new ClientException(e);
         }
         return subscriptions;
     }
@@ -214,15 +200,14 @@ public class GroupsSubscriptionsAction extends InputController implements
      */
     public List<String> getSubscribedUsersForNotification(String notification)
             throws ClientException {
-//        NotificationService service = (NotificationService) NXRuntime
-//                .getRuntime().getComponent(NotificationService.NAME);
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         return notificationManager.getUsersSubscribedToNotificationOnDocument(
                 notification, currentDoc.getId());
     }
 
     /**
-     * Returns a hashmap that contains all users and groups subscribed to notifications(keys).
+     * Returns a hashmap that contains all users and groups subscribed to
+     * notifications(keys).
      *
      * @return
      * @throws ClientException
@@ -230,11 +215,8 @@ public class GroupsSubscriptionsAction extends InputController implements
     public Map<String, List<String>> getUsersByNotificationsForCurrentDocument()
             throws ClientException {
         Map<String, List<String>> result = new HashMap<String, List<String>>();
-//        NotificationService service = (NotificationService) NXRuntime
-//                .getRuntime().getComponent(NotificationService.NAME);
 
-        String superParentType = documentManager.getSuperParentType(
-                navigationContext.getCurrentDocument());
+        String superParentType = documentManager.getSuperParentType(navigationContext.getCurrentDocument());
         List<Notification> notifications = notificationManager.getNotificationsForSubscriptions(superParentType);
         for (Notification notification : notifications) {
             List<String> userGroups = getSubscribedUsersForNotification(notification.getName());
@@ -265,7 +247,6 @@ public class GroupsSubscriptionsAction extends InputController implements
     }
 
     public SelectItem[] getNotificationActionItems() {
-//        if (null == permissionActionItems) {
         log.debug("Factory method called...");
 
         List<String> permissionActions = new ArrayList<String>();
@@ -282,7 +263,6 @@ public class GroupsSubscriptionsAction extends InputController implements
         }
 
         permissionActionItems = jsfModelList.toArray(new SelectItem[0]);
-//        }
 
         return permissionActionItems;
     }
@@ -327,28 +307,26 @@ public class GroupsSubscriptionsAction extends InputController implements
                 notificationManager.getNotificationByName(selectedNotification).getLabel());
         boolean subscribe = selectedGrant.equals("Subscribe");
 
-//        NotificationService service = (NotificationService) NXRuntime
-//                .getRuntime().getComponent(NotificationService.NAME);
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        NuxeoPrincipal currentPrincipal = (NuxeoPrincipal) FacesContext
-                .getCurrentInstance().getExternalContext().getUserPrincipal();
-
+        NuxeoPrincipal currentPrincipal = (NuxeoPrincipal) currentUser;
 
         for (String principal : principalsName) {
-            String principalType = principalListManager
-                    .getPrincipalType(principal);
+            String principalType = principalListManager.getPrincipalType(principal);
             if (subscribe) {
                 if ("GROUP_TYPE".equals(principalType)) {
                     notificationManager.addSubscription("group:" + principal,
-                            selectedNotification, currentDoc, true, currentPrincipal, notificationName);
+                            selectedNotification, currentDoc, true,
+                            currentPrincipal, notificationName);
                 } else {
                     notificationManager.addSubscription("user:" + principal,
-                            selectedNotification, currentDoc, true, currentPrincipal, notificationName);
+                            selectedNotification, currentDoc, true,
+                            currentPrincipal, notificationName);
                 }
             } else {
                 if ("GROUP_TYPE".equals(principalType)) {
-                    notificationManager.removeSubscription("group:" + principal,
-                            selectedNotification, currentDoc.getId());
+                    notificationManager.removeSubscription(
+                            "group:" + principal, selectedNotification,
+                            currentDoc.getId());
                 } else {
                     notificationManager.removeSubscription("user:" + principal,
                             selectedNotification, currentDoc.getId());
@@ -356,7 +334,8 @@ public class GroupsSubscriptionsAction extends InputController implements
             }
         }
         facesMessages.add(FacesMessage.SEVERITY_INFO,
-                resourcesAccessor.getMessages().get("label.notifications.registered"));
+                resourcesAccessor.getMessages().get(
+                        "label.notifications.registered"));
         return null;
     }
 
