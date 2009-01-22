@@ -27,6 +27,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import javax.transaction.xa.XAResource;
+import javax.transaction.xa.Xid;
+
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -447,6 +450,43 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, childrenb2.size());
     }
 
+    public void testRollback() throws Exception {
+        Session session = repository.getConnection();
+        XAResource xaresource = ((SessionImpl) session).getXAResource();
+        Node root = session.getRootNode();
+        Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
+        nodea.setSingleProperty("tst:title", "old");
+        assertEquals("old", nodea.getSimpleProperty("tst:title").getString());
+        session.save();
+
+        /*
+         * rollback before save (underlying XAResource saw no updates)
+         */
+        Xid xid = new DummyXid("1");
+        xaresource.start(xid, XAResource.TMNOFLAGS);
+        nodea = session.getNodeByPath("/foo", null);
+        nodea.setSingleProperty("tst:title", "new");
+        xaresource.end(xid, XAResource.TMSUCCESS);
+        xaresource.prepare(xid);
+        xaresource.rollback(xid);
+        nodea = session.getNodeByPath("/foo", null);
+        assertEquals("old", nodea.getSimpleProperty("tst:title").getString());
+
+        /*
+         * rollback after save (underlying XAResource does a rollback too)
+         */
+        xid = new DummyXid("2");
+        xaresource.start(xid, XAResource.TMNOFLAGS);
+        nodea = session.getNodeByPath("/foo", null);
+        nodea.setSingleProperty("tst:title", "new");
+        session.save();
+        xaresource.end(xid, XAResource.TMSUCCESS);
+        xaresource.prepare(xid);
+        xaresource.rollback(xid);
+        nodea = session.getNodeByPath("/foo", null);
+        assertEquals("old", nodea.getSimpleProperty("tst:title").getString());
+    }
+
     public void testMove() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -751,3 +791,25 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 nodea.getSimpleProperty("ecm:wfIncOption").getValue());
     }
 }
+
+class DummyXid implements Xid {
+
+    private final byte[] bytes;
+
+    public DummyXid(String id) {
+        this.bytes = id.getBytes();
+    }
+
+    public byte[] getGlobalTransactionId() {
+        return bytes;
+    }
+
+    public int getFormatId() {
+        return 0;
+    }
+
+    public byte[] getBranchQualifier() {
+        return new byte[0];
+    }
+}
+

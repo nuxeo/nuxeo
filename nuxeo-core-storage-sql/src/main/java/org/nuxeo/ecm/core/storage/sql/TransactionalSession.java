@@ -79,6 +79,7 @@ public class TransactionalSession implements XAResource {
     public void rollback(Xid xid) throws XAException {
         try {
             mapper.rollback(xid);
+            context.rollback();
         } finally {
             inTransaction = false;
             context.notifyInvalidations();

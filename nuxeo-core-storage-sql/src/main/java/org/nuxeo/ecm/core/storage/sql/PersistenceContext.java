@@ -105,6 +105,7 @@ public class PersistenceContext {
         for (Context context : contexts.values()) {
             n += context.clearCaches();
         }
+        createdIds.clear();
         return n;
     }
 
@@ -296,6 +297,19 @@ public class PersistenceContext {
         oldIdMap.putAll(idMap);
 
         log.debug("End of save");
+    }
+
+    /**
+     * Rolls back everything.
+     * <p>
+     * As there may have been things already written to database and recorded as
+     * pristine, the caches must be completely cleared.
+     * <p>
+     * In a transactional context, the underlying XAResource held by the mapper
+     * will also be rolled back by {@link TransactionalSession}.
+     */
+    public void rollback() {
+        clearCaches();
     }
 
     /**

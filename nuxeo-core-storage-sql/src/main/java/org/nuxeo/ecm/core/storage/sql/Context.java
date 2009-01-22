@@ -143,6 +143,9 @@ public class Context {
         // it if a transaction is in progress
         int n = pristine.size();
         pristine.clear();
+        modified.clear(); // not empty when rolling back before save
+        modifiedInTransaction.clear();
+        deletedInTransaction.clear();
         return n;
     }
 
