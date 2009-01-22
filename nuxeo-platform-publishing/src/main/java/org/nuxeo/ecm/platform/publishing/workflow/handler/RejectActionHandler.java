@@ -24,18 +24,16 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.workflow.jbpm.handlers.api.client.AbstractWorkflowDocumentActionHandler;
 
 /**
- * Handler that deals with what happends to a document when publishing is
+ * Handler that deals with what happens to a document when publishing is
  * rejected.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class RejectActionHandler extends AbstractWorkflowDocumentActionHandler {
 
     private static final long serialVersionUID = 1L;
 
     public void execute(ExecutionContext ec) throws Exception {
-
         // Remove rights before deleting it.
         removeWFACL(ec);
 

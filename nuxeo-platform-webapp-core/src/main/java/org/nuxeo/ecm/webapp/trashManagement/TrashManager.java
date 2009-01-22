@@ -19,12 +19,10 @@
 
 package org.nuxeo.ecm.webapp.trashManagement;
 
-
 /**
  *
  * Seam component used to manage named lists of documents.
  * <p>
- *
  * Managing the DM lists into this component insteed of directly inside the Seam
  * context offers the following advantages:
  * <ul>

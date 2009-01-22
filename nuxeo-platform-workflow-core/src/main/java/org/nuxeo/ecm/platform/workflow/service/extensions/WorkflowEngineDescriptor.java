@@ -41,7 +41,6 @@ public class WorkflowEngineDescriptor {
     private boolean defaultEngine;
 
     public WorkflowEngineDescriptor() {
-
     }
 
     public WorkflowEngineDescriptor(String name, Class<WorkflowEngine> className) {

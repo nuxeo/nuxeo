@@ -26,7 +26,7 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
@@ -64,7 +64,7 @@ public class EventJob implements Job {
         String comment = null;
         CoreEvent event = new CoreEventImpl(eventId, source, info, principal,
                 eventCategory, comment);
-        CoreEventListenerService service = NXCore.getCoreEventListenerService();
+        CoreEventListenerService service = Framework.getLocalService(CoreEventListenerService.class);
         if (service != null) {
             log.info("Sending scheduled event id=" + eventId + ", category="
                     + eventCategory);

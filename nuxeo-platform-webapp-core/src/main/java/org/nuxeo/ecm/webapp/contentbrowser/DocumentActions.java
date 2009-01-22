@@ -23,7 +23,7 @@ import javax.annotation.security.PermitAll;
 import javax.ejb.Remove;
 
 import org.jboss.seam.annotations.Destroy;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.types.Type;
@@ -69,7 +69,7 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
     String download() throws ClientException;
 
     /**
-     * Download file as described by given document view
+     * Downloads file as described by given document view.
      * <p>
      * To be used by url pattern descriptors performing a download.
      *
@@ -127,7 +127,7 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
      * @throws ClientException if currentDocRef is not a valid document
      */
     @WebRemote
-    public String checkCurrentDocAndProcessSelectPage(String providerName, String listName,
+    String checkCurrentDocAndProcessSelectPage(String providerName, String listName,
             Boolean selection, String currentDocRef) throws ClientException;
 
     @WebRemote
@@ -141,9 +141,8 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
     /**
      * This method is used to test wheter the looged user has enough rights for
      * the unpublish support.
-     *
-     * @return - true if the user can unpublish
-     *         <p> - false otherwise
+     * @return - true if the user can unpublish<p>
+     *            - false otherwise
      * @throws ClientException
      */
     boolean getCanUnpublish() throws ClientException;

@@ -27,10 +27,7 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.platform.transform.NXTransform;
 import org.nuxeo.ecm.platform.transform.api.TransformException;
 import org.nuxeo.ecm.platform.transform.interfaces.Plugin;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
@@ -39,6 +36,7 @@ import org.nuxeo.ecm.platform.transform.interfaces.Transformer;
 import org.nuxeo.ecm.platform.transform.interfaces.ejb.local.NXTransformLocal;
 import org.nuxeo.ecm.platform.transform.interfaces.ejb.remote.NXTransformRemote;
 import org.nuxeo.ecm.platform.transform.service.TransformService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * TransformServiceCommon EJB component.
@@ -56,8 +54,6 @@ import org.nuxeo.ecm.platform.transform.service.TransformService;
 @Remote(NXTransformRemote.class)
 public class NXTransformBean implements TransformServiceCommon {
 
-    private static final Log log = LogFactory.getLog(NXTransformBean.class);
-
     private static final long serialVersionUID = 1L;
 
     protected TransformService service;
@@ -65,7 +61,7 @@ public class NXTransformBean implements TransformServiceCommon {
 
     private TransformServiceCommon getService() {
         if (service == null) {
-            service = NXTransform.getTransformService();
+            service = (TransformService) Framework.getRuntime().getComponent(TransformService.NAME);
         }
         return service;
     }
@@ -77,8 +73,7 @@ public class NXTransformBean implements TransformServiceCommon {
         return null;
     }
 
-    public Plugin getPluginByMimeTypes(String sourceMT, String destinationMT)
-    {
+    public Plugin getPluginByMimeTypes(String sourceMT, String destinationMT) {
         if (getService() != null) {
             return getService().getPluginByMimeTypes(sourceMT, destinationMT);
         }

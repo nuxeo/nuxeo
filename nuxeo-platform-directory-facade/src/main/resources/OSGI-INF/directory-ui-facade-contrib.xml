@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.ui.DirectoryUIManager.facade">
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+      point="services">
+
+    <documentation>
+      Define the directory ui service bean as a platform service.
+    </documentation>
+
+    <service class="org.nuxeo.ecm.directory.api.ui.DirectoryUIManager"
+        group="platform/directoryui">
+      <locator>%DirectoryUIManagerBean</locator>
+    </service>
+
+  </extension>
+
+</component>

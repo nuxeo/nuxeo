@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webapp.table.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,8 +38,9 @@ import org.nuxeo.ecm.webapp.table.row.TableRow;
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  *
  */
+@SuppressWarnings({"ALL"})
 @Deprecated
-public class TableModel extends GenericTableModel implements Serializable {
+public class TableModel extends GenericTableModel {
 
     private static final long serialVersionUID = 4966601068840824395L;
 

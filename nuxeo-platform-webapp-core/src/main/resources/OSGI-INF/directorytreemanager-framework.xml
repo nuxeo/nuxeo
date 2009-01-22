@@ -4,7 +4,7 @@
 
   <documentation>
     The DirectoryTreeService is used to build tree-shaped explorer like
-    navigation menus (usging the &lt;t:tree2 /&gt; components) from a hierarchical
+    navigation menus (usging the &lt;richfaces:tree /&gt; components) from a hierarchical
     set of directories (with schemas "vocabulary" and "xvocabulary").
 
     DirectoryTreeDescriptors also reference a QueryModel to update on node selection

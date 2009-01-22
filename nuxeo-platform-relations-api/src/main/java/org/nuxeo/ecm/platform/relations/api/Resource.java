@@ -25,7 +25,7 @@ package org.nuxeo.ecm.platform.relations.api;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
  */
-public interface Resource extends Node, Subject {
+public interface Resource extends Subject {
 
     String getUri();
 

@@ -21,7 +21,7 @@ package org.nuxeo.ecm.webapp.search;
 
 import java.util.List;
 
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
@@ -58,7 +58,6 @@ public interface SearchActions extends StatefulBaseLifeCycle,
     void setSimpleSearchKeywords(String k);
 
     /**
-     *
      * @return the nxql query text if the option for nxql is selected
      */
     String getNxql();
@@ -105,7 +104,6 @@ public interface SearchActions extends StatefulBaseLifeCycle,
 
     SelectDataModel getResultsSelectModel(String providerName) throws ClientException;
 
-
     /**
      * @return the Document Model backing the advanced search form up
      * @throws ClientException
@@ -115,14 +113,18 @@ public interface SearchActions extends StatefulBaseLifeCycle,
     /** Reindex all documents.
      *
      * @throws ClientException
+     * @deprecated does nothing
      */
+    @Deprecated
     void reindexDocuments() throws ClientException;
 
     /** Reindex all documents under given path (inclusive).
      *
      * @param path
      * @throws ClientException
+     * @deprecated does nothing
      */
+    @Deprecated
     void reindexDocuments(String path) throws ClientException;
 
     /**
@@ -152,11 +154,12 @@ public interface SearchActions extends StatefulBaseLifeCycle,
      * Refresh cache
      */
     void refreshCache();
-    
+
     /**
      * Is search service reindexing all ?
-     * 
+     *
      * @return bool flag
      */
     boolean isReindexingAll();
+
 }

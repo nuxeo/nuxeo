@@ -39,8 +39,7 @@ public class WhereClauseDescriptor {
     private static final Log log = LogFactory.getLog(WhereClauseDescriptor.class);
 
     @XNode("@escaper")
-    protected String escaperClassName
-        = "org.nuxeo.ecm.core.search.api.client.querymodel.LuceneMinimalEscaper";
+    protected String escaperClassName = "org.nuxeo.ecm.core.search.api.client.querymodel.LuceneMinimalEscaper";
 
     @XNodeList(value = "predicate", componentType = PredicateDescriptor.class, type = PredicateDescriptor[].class)
     protected PredicateDescriptor[] predicates;
@@ -63,7 +62,12 @@ public class WhereClauseDescriptor {
         if (predicates != null) {
             for (PredicateDescriptor predicate : predicates) {
                 String predicateString = predicate.getQueryElement(model,
-                        escaper).trim();
+                        escaper);
+                if (predicateString == null) {
+                    continue;
+                } else {
+                    predicateString = predicateString.trim();
+                }
                 if (!predicateString.equals("")) {
                     elements.add(predicateString);
                 }
@@ -84,19 +88,27 @@ public class WhereClauseDescriptor {
         }
 
         // XXX: for now only a one level implement conjunctive WHERE clause
-        String clauseValues = StringUtils.join(elements, " AND ")
-                .trim();
+        String clauseValues = StringUtils.join(elements, " AND ").trim();
+
+        // GR: WHERE (x = 1) is invalid NXQL
+        while (elements.size() == 1 && clauseValues.startsWith("(")
+                && clauseValues.endsWith(")")) {
+            clauseValues = clauseValues.substring(1, clauseValues.length() - 1).trim();
+        }
+        if (clauseValues.length() == 0) {
+            return "";
+        }
         return " WHERE " + clauseValues;
     }
 
     /**
      * Initiates escaper object by using the provided {@link RuntimeContext}.
+     *
      * @param context
      */
     public void initEscaper(RuntimeContext context) {
         try {
-            escaper = (Escaper)
-                    context.loadClass(escaperClassName).newInstance();
+            escaper = (Escaper) context.loadClass(escaperClassName).newInstance();
         } catch (InstantiationException e) {
             log.warn("Could not instantiate esacper: " + e.getMessage());
         } catch (IllegalAccessException e) {

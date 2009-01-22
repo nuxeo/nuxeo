@@ -49,16 +49,17 @@ import org.restlet.data.Response;
 @Name("uploadFileRestlet")
 @Scope(EVENT)
 public class UploadFileRestlet extends BaseNuxeoRestlet implements
-        LiveEditConstants {
+        LiveEditConstants, Serializable {
+
+    private static final long serialVersionUID = -6167207806181917456L;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     protected CoreSession documentManager;
 
     @Override
     public void handle(Request req, Response res) {
-
         String repo = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");
         String filename = (String) req.getAttributes().get("filename");
@@ -118,11 +119,9 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
 
             documentManager.saveDocument(dm);
             documentManager.save();
-
         } catch (Exception e) {
             handleError(res, e);
         }
-
     }
 
 }

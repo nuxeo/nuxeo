@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.audit.search.resources.indexing.api;
  * Audit indexable resource adapter resource type constants.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public final class ResourceType {
 

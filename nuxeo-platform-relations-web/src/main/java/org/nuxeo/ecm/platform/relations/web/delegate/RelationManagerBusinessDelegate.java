@@ -31,7 +31,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -40,7 +39,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("relationManager")
 @Scope(SESSION)
-@NuxeoJavaBeanErrorHandler
 public class RelationManagerBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = -4778456059717447736L;

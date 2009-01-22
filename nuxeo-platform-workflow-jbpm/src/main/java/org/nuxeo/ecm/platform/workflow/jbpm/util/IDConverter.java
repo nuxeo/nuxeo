@@ -28,6 +28,9 @@ package org.nuxeo.ecm.platform.workflow.jbpm.util;
  */
 public final class IDConverter {
 
+    // Utility class.
+    private IDConverter() {}
+
     /**
      * Returns a NXWorkflow identifier from a jBPM identifier.
      *

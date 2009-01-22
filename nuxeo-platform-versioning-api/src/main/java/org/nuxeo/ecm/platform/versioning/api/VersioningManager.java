@@ -37,9 +37,7 @@ public interface VersioningManager {
      * interrogated further (this is transparently) and the versioning service
      * will process workflow response afterwards.
      * <p>
-     *
      * The flow is like this:
-     *
      * <pre>
      *     client
      *       -&gt; query versioning service
@@ -48,10 +46,7 @@ public interface VersioningManager {
      *       &lt;- return list of inc options
      * </pre>
      *
-     * @param docRef the reference to the document
-     * @param lifecycleState current lifecycle state of the document
-     * @param docType document type
-     *
+     * @param docModel the document
      * @return a list of version incrementation options available for the given
      *         document ref
      *
@@ -63,7 +58,7 @@ public interface VersioningManager {
             ClientException, DocumentException;
 
     /**
-     * Get the label for the current version of a document, for the UI.
+     * Gets the label for the current version of a document, for the UI.
      *
      * @param document the document
      * @return the version label

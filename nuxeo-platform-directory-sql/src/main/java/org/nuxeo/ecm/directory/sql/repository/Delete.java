@@ -27,7 +27,6 @@ import org.hibernate.dialect.Dialect;
  * A {@code DELETE} statement.
  *
  * @author Florent Guillaume
- *
  */
 public class Delete implements Serializable {
 

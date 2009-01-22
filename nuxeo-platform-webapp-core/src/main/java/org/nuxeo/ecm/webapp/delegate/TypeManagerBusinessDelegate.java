@@ -33,7 +33,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.types.TypeManager;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -42,7 +41,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("typeManager")
 @Scope(CONVERSATION)
-@NuxeoJavaBeanErrorHandler
 public class TypeManagerBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = -5326113474071108997L;
@@ -67,7 +65,6 @@ public class TypeManagerBusinessDelegate implements Serializable {
     public TypeManager getTypeManager() throws ClientException {
         if (null == typeManager) {
             try {
-                //typeManager = ECM.getPlatform().getService(TypeManager.class);
                 typeManager = Framework.getService(TypeManager.class);
             } catch (Exception e) {
                 final String errMsg = "Error connecting to TypeManager. "
@@ -86,7 +83,7 @@ public class TypeManagerBusinessDelegate implements Serializable {
 
     @Destroy
     @PermitAll
-    public void destroy() throws ClientException {
+    public void destroy() {
         if (null != typeManager) {
             //typeManager.remove();
             typeManager = null;

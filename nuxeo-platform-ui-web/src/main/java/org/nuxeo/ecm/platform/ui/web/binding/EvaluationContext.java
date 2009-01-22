@@ -44,41 +44,42 @@ public final class EvaluationContext extends ELContext {
     }
 
     public ELContext getELContext() {
-        return this.elContext;
+        return elContext;
     }
 
     @Override
     public FunctionMapper getFunctionMapper() {
-        return this.fnMapper;
+        return fnMapper;
     }
 
     @Override
     public VariableMapper getVariableMapper() {
-        return this.varMapper;
+        return varMapper;
     }
 
     @Override
     public Object getContext(Class key) {
-        return this.elContext.getContext(key);
+        return elContext.getContext(key);
     }
 
     @Override
     public ELResolver getELResolver() {
-        return this.elContext.getELResolver();
+        return elContext.getELResolver();
     }
 
     @Override
     public boolean isPropertyResolved() {
-        return this.elContext.isPropertyResolved();
+        return elContext.isPropertyResolved();
     }
 
     @Override
     public void putContext(Class key, Object contextObject) {
-        this.elContext.putContext(key, contextObject);
+        elContext.putContext(key, contextObject);
     }
 
     @Override
     public void setPropertyResolved(boolean resolved) {
-        this.elContext.setPropertyResolved(resolved);
+        elContext.setPropertyResolved(resolved);
     }
+
 }
