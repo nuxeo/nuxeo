@@ -309,13 +309,11 @@ public class UsecaseSchedulerService extends DefaultComponent implements
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        schedule.doSchedule();
         scheduleEventListener.doListen();
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        schedule.doUnschedule();
         scheduleEventListener.doUnlisten();
     }
 
