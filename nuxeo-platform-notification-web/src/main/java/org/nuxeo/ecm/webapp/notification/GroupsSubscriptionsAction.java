@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webapp.notification;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +69,9 @@ public class GroupsSubscriptionsAction extends InputController implements
     @In(create = true, required = false)
     private transient CoreSession documentManager;
 
+    @In(create = true)
+    protected Principal currentUser;
+
     @In(required = false)
     @Out(required = false)
     private List<String> selectedNotifications;
@@ -91,15 +95,6 @@ public class GroupsSubscriptionsAction extends InputController implements
      * @throws ClientException
      */
     public List<SelectItem> getNotificationList() throws ClientException {
-        // Using runtime
-        // NotificationService service = (NotificationService) NXRuntime
-        // .getRuntime().getComponent(NotificationService.NAME);
-
-        // Using EJB3.0
-        // JNDILookupHelper helper = new JNDILookupHelper(null);
-        // NotificationServiceRemote service = (NotificationServiceRemote)
-        // helper.lookupEjbReference("NotificationService");
-
         String parentType = documentManager.getSuperParentType(navigationContext.getCurrentDocument());
         List<Notification> notifs = notificationManager.getNotificationsForSubscriptions(parentType);
         List<SelectItem> notifsResult = new ArrayList<SelectItem>();
@@ -127,15 +122,7 @@ public class GroupsSubscriptionsAction extends InputController implements
         List<String> removedSubscriptions = getDisjunctElements(subscriptions,
                 selectedNotifications);
 
-        // Using runtime
-        // NotificationService service = (NotificationService) NXRuntime
-        // .getRuntime().getComponent(NotificationService.NAME);
-        // Using EJB3.0
-        // JNDILookupHelper helper = new JNDILookupHelper(null);
-        // NotificationServiceRemote service = (NotificationServiceRemote)
-        // helper.lookupEjbReference("NotificationService");
-
-        NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
+        NuxeoPrincipal principal = (NuxeoPrincipal) currentUser;
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         // removing the unselected subscriptions
         if (!removedSubscriptions.isEmpty()) {
@@ -193,16 +180,14 @@ public class GroupsSubscriptionsAction extends InputController implements
      */
     private List<String> getSubscriptionsForCurrentUser()
             throws ClientException {
-        // NotificationService service = (NotificationService) NXRuntime
-        // .getRuntime().getComponent(NotificationService.NAME);
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
+        NuxeoPrincipal principal = (NuxeoPrincipal) currentUser;
         List<String> subscriptions;
         try {
             subscriptions = notificationManager.getSubscriptionsForUserOnDocument(
                     "user:" + principal.getName(), currentDoc.getId());
         } catch (ClassNotFoundException e) {
-            throw new ClientException(e.getMessage());
+            throw new ClientException(e);
         }
         return subscriptions;
     }
@@ -215,8 +200,6 @@ public class GroupsSubscriptionsAction extends InputController implements
      */
     public List<String> getSubscribedUsersForNotification(String notification)
             throws ClientException {
-        // NotificationService service = (NotificationService) NXRuntime
-        // .getRuntime().getComponent(NotificationService.NAME);
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         return notificationManager.getUsersSubscribedToNotificationOnDocument(
                 notification, currentDoc.getId());
@@ -232,8 +215,6 @@ public class GroupsSubscriptionsAction extends InputController implements
     public Map<String, List<String>> getUsersByNotificationsForCurrentDocument()
             throws ClientException {
         Map<String, List<String>> result = new HashMap<String, List<String>>();
-        // NotificationService service = (NotificationService) NXRuntime
-        // .getRuntime().getComponent(NotificationService.NAME);
 
         String superParentType = documentManager.getSuperParentType(navigationContext.getCurrentDocument());
         List<Notification> notifications = notificationManager.getNotificationsForSubscriptions(superParentType);
@@ -266,7 +247,6 @@ public class GroupsSubscriptionsAction extends InputController implements
     }
 
     public SelectItem[] getNotificationActionItems() {
-        // if (null == permissionActionItems) {
         log.debug("Factory method called...");
 
         List<String> permissionActions = new ArrayList<String>();
@@ -283,7 +263,6 @@ public class GroupsSubscriptionsAction extends InputController implements
         }
 
         permissionActionItems = jsfModelList.toArray(new SelectItem[0]);
-        // }
 
         return permissionActionItems;
     }
@@ -328,10 +307,8 @@ public class GroupsSubscriptionsAction extends InputController implements
                 notificationManager.getNotificationByName(selectedNotification).getLabel());
         boolean subscribe = selectedGrant.equals("Subscribe");
 
-        // NotificationService service = (NotificationService) NXRuntime
-        // .getRuntime().getComponent(NotificationService.NAME);
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        NuxeoPrincipal currentPrincipal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
+        NuxeoPrincipal currentPrincipal = (NuxeoPrincipal) currentUser;
 
         for (String principal : principalsName) {
             String principalType = principalListManager.getPrincipalType(principal);
