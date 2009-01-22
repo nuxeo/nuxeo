@@ -395,6 +395,13 @@ h2.nxthemesEditor {
   margin-top: 15px;
 }
 
+h3.nxthemesEditor {
+  color: #333;
+  margin: 0;
+  padding: 0;
+  margin-left: 14px;
+}
+
 form.nxthemesEditor {
   font-family: Arial, sans-serif;
 }

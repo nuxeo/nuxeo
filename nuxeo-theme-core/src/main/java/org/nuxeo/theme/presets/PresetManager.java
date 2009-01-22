@@ -154,6 +154,12 @@ public class PresetManager {
         preset.setValue(value);
     }
 
+    public static void setPresetCategory(String themeName, String presetName,
+            String category) {
+        PresetType preset = getCustomPreset(themeName, presetName);
+        preset.setCategory(category);
+    }
+
     public static void renamePreset(String themeName, String oldName,
             String newName) throws ThemeException {
         if (newName.equals("")) {
@@ -222,4 +228,5 @@ public class PresetManager {
         }
         return names;
     }
+
 }

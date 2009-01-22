@@ -313,10 +313,16 @@ public class Main extends DefaultModule {
   }
 
   @POST
-  @Path("copy_preset")
-  public void copyPreset() {
-      String id = ctx.getForm().getString("id")
-      SessionManager.setClipboardPresetId(id)
+  @Path("set_preset_category")
+  public void setPresetCategory() {
+      String themeName = ctx.getForm().getString("theme_name")
+      String presetName = ctx.getForm().getString("preset_name")
+      String category = ctx.getForm().getString("category")
+      try {
+          Editor.setPresetCategory(themeName, presetName, category)
+      } catch (ThemeException e) {
+          throw new ThemeEditorException(e.getMessage(), e)
+      }
   }
   
   @POST

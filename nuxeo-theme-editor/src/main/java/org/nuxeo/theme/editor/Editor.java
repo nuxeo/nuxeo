@@ -577,6 +577,13 @@ public class Editor {
         eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
                 null, null));
     }
+    
+    public static void setPresetCategory(String themeName, String presetName, String category) {
+        PresetManager.setPresetCategory(themeName, presetName, category);
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                null, null));
+    }
 
     public static void renamePreset(String themeName, String oldName,
             String newName) throws ThemeException {

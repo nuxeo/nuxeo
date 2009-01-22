@@ -13,6 +13,17 @@
           "action": "edit preset",
           "visible": "editable"
          },
+         {"type": "submenu",
+          "label": "Set category",
+          "icon": "/skin/nxthemes-editor/img/category-16.png",          
+          "visible": "editable",
+          "items": [
+            {"type": "selection",
+             "action": "set preset category",
+             "choices": "categories"
+            }
+          ]
+         },         
          {"type": "item",
           "label": "Rename",
           "icon": "/skin/nxthemes-editor/img/rename-16.png",

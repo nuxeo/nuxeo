@@ -12,7 +12,7 @@
 
 <h2 class="nxthemesEditor">Theme: ${theme_name}</h2>
 
-<table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
+<table cellspacing="5" cellpadding="4" style="margin-bottom: 10px; width: 100%">
 <#assign count = 0 />
 <#assign row = 1 /> 
 
@@ -33,6 +33,12 @@
      "theme_name": "${theme_name}",
      "name": "${preset_info.name}",
      "value": "${preset_info.value}",
+     "categories": [
+       {"label": "Color", "choice": "color"},
+       {"label": "Background", "choice": "background"},
+       {"label": "Font", "choice": "font"},
+       {"label": "Image", "choice": "image"}
+     ],
      "editable": true,
      "copyable": true,
      "pastable": true,
@@ -82,6 +88,45 @@ ${preset_info.preview}</div>
 </#if>
 
 </table>
+
+<#assign preset_names=This.getUnidentifiedPresetNames(theme_name)>
+
+<#if preset_names>
+<h3 class="nxthemesEditor">Unknown presets</h3>
+<table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
+<#assign count = 0 />
+<#assign row = 1 /> 
+
+<#list preset_names as name>
+<#assign row = (count % 10) +1 /> 
+
+  <#if row == 0>
+    <tr>
+  </#if>
+
+<td class="preset">
+  <div class="preview"><div onclick="NXThemesPresetManager.addMissingPreset('${theme_name}', '${name}')">&nbsp;</div></div>
+  <div class="name">${name}</div>
+</td>
+
+  <#if row == 10>
+    </tr>
+  </#if>
+  
+  <#assign count = count + 1/>
+  </#list>
+
+<#if row < 10>
+  <#list row..9 as i>
+       <td></td>
+  </#list>
+  </tr>
+</#if>
+
+</table>
+
+</#if>
+
 
 </#list>
 

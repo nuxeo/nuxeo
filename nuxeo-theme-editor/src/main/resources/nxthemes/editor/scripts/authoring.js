@@ -632,7 +632,7 @@ NXThemesEditor.addPreset = function(themeName, category, view_id) {
 
 
 NXThemesEditor.editPreset = function(themeName, presetName, value, view_id) {
-    var value = prompt("Enter a preset value:", value);
+    var value = prompt("Enter a CSS value:", value);
     var url = nxthemesBasePath + "/nxthemes-editor/edit_preset";
     new Ajax.Request(url, {
          method: 'post',
@@ -646,7 +646,7 @@ NXThemesEditor.editPreset = function(themeName, presetName, value, view_id) {
          }
     });      
 };
-    
+ 
 NXThemesEditor.addSection = function(info) {
     var target = Event.element(info);
     var id = target.getAttribute('sectionid') || target.getAttribute('pageid');
@@ -949,7 +949,7 @@ NXThemesPresetManager.editPreset = function(info) {
   var themeName = data.get('theme_name');
   var presetName = data.get('name');
   var value = data.get('value');
-  value = prompt("Enter a preset value:", value);
+  value = prompt("Enter a CSS value:", value);
   var url = nxthemesBasePath + "/nxthemes-editor/edit_preset";
   new Ajax.Request(url, {
        method: 'post',
@@ -1052,8 +1052,62 @@ NXThemesPresetManager.deletePreset = function(info) {
   });    
 }
 
+NXThemesPresetManager.setPresetCategory = function(info) {
+	var target = Event.element(info);
+	var model = info.model;
+	var data = model.getData();
+    var category = info.options.choice;
+    if (!category) {
+        return;
+    }
+    var themeName = data.get('theme_name');
+    var presetName = data.get('name');
+    var url = nxthemesBasePath + "/nxthemes-editor/set_preset_category";
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             theme_name: themeName,
+             preset_name: presetName,
+             category: category
+         },
+         onSuccess: function(r) {
+             NXThemes.getViewById("preset manager").refresh();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }
+    });         
+};
+
+NXThemesPresetManager.addMissingPreset = function(themeName, presetName) {
+    var presetValue = prompt("Enter a CSS value:", "");
+    if (!presetValue) {
+        return;
+    } 
+    var url = nxthemesBasePath + "/nxthemes-editor/add_preset";
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             theme_name: themeName,
+             preset_name: presetName,
+             category: "",
+             value: presetValue
+         },
+         onSuccess: function(r) {
+             NXThemes.getViewById("preset manager").refresh();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }
+    });     
+    
+};
+
 NXThemes.addActions({
     'edit preset': NXThemesPresetManager.editPreset,
+    'set preset category': NXThemesPresetManager.setPresetCategory,
     'rename preset': NXThemesPresetManager.renamePreset,    
     'copy preset': NXThemesPresetManager.copyPreset,
     'paste preset': NXThemesPresetManager.pastePreset,
@@ -1427,44 +1481,6 @@ if (typeof NXThemesStyleManager == "undefined") {
     };
 }
 
-NXThemesStyleManager.addMissingPreset = function(info) {
-    var form = Event.findElement(info, "form");
-    var themeName, presetName, presetCategory, presetValue;
-    $A(Form.getElements(form)).each(function(i) {
-        var name = i.name;
-        var value = Form.Element.getValue(i);
-        if (name == "preset_category") {
-        	presetCategory = value;
-        } else if (name == "preset_value") {
-        	presetValue = value;
-        } else if (name == "preset_name") {
-        	presetName = value;
-        } else if (name == "theme_name") {
-        	themeName = value;
-        }
-    });
-    if (!presetValue) {
-    	return;
-    }
-    var url = nxthemesBasePath + "/nxthemes-editor/add_preset";
-    new Ajax.Request(url, {
-         method: 'post',
-         parameters: {
-             theme_name: themeName,
-             preset_name: presetName,
-             category: presetCategory,
-             value: presetValue
-         },
-         onSuccess: function(r) {
-             NXThemes.getViewById("style manager").refresh();
-         },
-         onFailure: function(r) {
-             var text = r.responseText;
-             window.alert(text);
-         }
-    });     
-    
-};
 
 NXThemesStyleManager.deleteUnusedStyleView = function(info) {
     var form = Event.findElement(info, "form");
@@ -1500,7 +1516,6 @@ NXThemesStyleManager.deleteUnusedStyleView = function(info) {
 
 //actions
 NXThemes.addActions({
-  'add missing preset': NXThemesStyleManager.addMissingPreset,
   'delete unused style view': NXThemesStyleManager.deleteUnusedStyleView
 });
 
