@@ -41,12 +41,10 @@ public class WMWorkItemIteratorImpl implements WMWorkItemIterator {
     private transient Iterator<WMWorkItemInstance> it;
 
     public WMWorkItemIteratorImpl() {
-        super();
         it = null;
     }
 
     public WMWorkItemIteratorImpl(List<WMWorkItemInstance> procs) {
-        super();
         if (procs != null) {
             l.addAll(procs);
         }

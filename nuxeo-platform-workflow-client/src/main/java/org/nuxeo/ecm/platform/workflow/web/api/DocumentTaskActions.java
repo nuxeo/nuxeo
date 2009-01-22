@@ -41,8 +41,6 @@ public interface DocumentTaskActions extends Serializable {
      * Updates document tasks stack.
      *
      * Seam <code>@Factory</code>
-     *
-     * @throws WorkflowException
      */
     List<WMWorkItemInstance> computeDocumentTasks() throws WMWorkflowException;
 
@@ -57,8 +55,6 @@ public interface DocumentTaskActions extends Serializable {
 
     /**
      * Creates a task for a given principal.
-     *
-     * @throws WorkflowException
      */
     String createTaskFor() throws WMWorkflowException;
 
@@ -66,7 +62,6 @@ public interface DocumentTaskActions extends Serializable {
      * Assigns a task to a given principal.
      * <p>
      * Expect <code>selectedPrincipal</code> injected.
-     *
      */
     String assignTask(WMWorkItemInstance taskInstance, String principalName,
             boolean isGroup) throws WMWorkflowException;
@@ -152,4 +147,5 @@ public interface DocumentTaskActions extends Serializable {
 
     Map<String, Serializable> getTaskProperties(int order, String directive,
             Date dueDate, String comment);
+
 }

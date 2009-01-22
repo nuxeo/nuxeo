@@ -35,6 +35,7 @@ import org.nuxeo.ecm.webapp.table.cell.SelectionTableCell;
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  *
  */
+@SuppressWarnings({"ALL"})
 @Deprecated
 public class TableRow extends GenericTableRow {
 
@@ -63,7 +64,7 @@ public class TableRow extends GenericTableRow {
         }
     }
 
-    protected void computeCellSelectionIndex() throws ClientException {
+    protected void computeCellSelectionIndex() {
         if (NOT_COMPUTED != selectionCellIndex) {
             return;
         }
@@ -111,9 +112,8 @@ public class TableRow extends GenericTableRow {
      * Returns the cell selection index. Computes the index if necessary.
      *
      * @return
-     * @throws ClientException
      */
-    public int getSelectionCellIndex() throws ClientException {
+    public int getSelectionCellIndex() {
         return selectionCellIndex;
     }
 

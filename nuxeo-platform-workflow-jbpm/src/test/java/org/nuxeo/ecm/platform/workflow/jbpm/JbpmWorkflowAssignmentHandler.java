@@ -28,4 +28,6 @@ import org.jbpm.taskmgmt.def.AssignmentHandler;
 public abstract class JbpmWorkflowAssignmentHandler implements
         AssignmentHandler {
 
+    private static final long serialVersionUID = -511084907169567504L;
+
 }

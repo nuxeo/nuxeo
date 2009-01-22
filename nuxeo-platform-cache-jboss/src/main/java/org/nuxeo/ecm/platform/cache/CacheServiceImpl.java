@@ -72,9 +72,6 @@ public class CacheServiceImpl implements CacheService {
                         + pojoCacheServiceName);
             }
         } catch (Exception ex) {
-            // handle exception
-            ex.printStackTrace();
-
             throw new CacheServiceException("Error initializing pojoCache", ex);
         }
 
@@ -239,8 +236,6 @@ public class CacheServiceImpl implements CacheService {
 
     /**
      * Adds a CacheListener that will be notified on cache objects changes.
-     *
-     * @param cacheListener
      */
     public void addCacheListener(final CacheListener cacheListener) {
         if (cacheListeners.containsKey(cacheListener)) {
@@ -250,6 +245,7 @@ public class CacheServiceImpl implements CacheService {
 
         TreeCacheListener treeCacheListener = new AbstractTreeCacheListener() {
 
+            @Override
             public void nodeRemove(Fqn fqn, boolean pre, boolean isLocal) {
                 log.debug("Cache notification received: nodeRemove(" + fqn
                                 + ')');
@@ -281,6 +277,7 @@ public class CacheServiceImpl implements CacheService {
                 }
             }
 
+            @Override
             public void nodeModify(Fqn fqn, boolean pre, boolean isLocal) {
                 log.debug("Cache notification received: nodeModify(" + fqn
                         + ')');
@@ -315,8 +312,6 @@ public class CacheServiceImpl implements CacheService {
 
     /**
      * Removes the given CacheListener.
-     *
-     * @param cacheListener
      */
     public void removeCacheListener(final CacheListener cacheListener) {
         if (cacheListener == null) {

@@ -24,17 +24,17 @@ package org.nuxeo.ecm.platform.workflow.api.common;
  * moved to nuxeo common.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WrappedException extends Exception {
 
     private static final long serialVersionUID = -8068323167952050687L;
 
-    // the class n ame of the original exception
-    private String className;
+    // the class name of the original exception
+    private final String className;
 
-    private WrappedException(String message, WrappedException cause) {
+    private WrappedException(String message, WrappedException cause, String className) {
         super(message, cause);
+        this.className = className;
     }
 
     public String getClassName() {
@@ -54,12 +54,11 @@ public class WrappedException extends Exception {
         if (t instanceof WrappedException) {
             return (WrappedException) t;
         }
-        String exceptionClass = t.getClass().getName();
-        String message = "Exception: " + exceptionClass + ". message: "
+        String exceptionClassName = t.getClass().getName();
+        String message = "Exception: " + exceptionClassName + ". message: "
                 + t.getMessage();
         WrappedException cause = wrap(t.getCause());
-        WrappedException we = new WrappedException(message, cause);
-        we.className = exceptionClass;
+        WrappedException we = new WrappedException(message, cause, exceptionClassName);
         we.setStackTrace(t.getStackTrace());
         return we;
     }

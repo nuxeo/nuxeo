@@ -30,12 +30,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.search.api.backend.impl.AbstractSearchEngineBackend;
-import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResource;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResources;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.SearchException;
@@ -49,7 +49,6 @@ import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.core.search.api.client.search.results.impl.DocumentModelResultItem;
 import org.nuxeo.ecm.core.search.api.client.search.results.impl.ResultSetImpl;
-import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.ResourceType;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -82,16 +81,8 @@ public class CoreSearchBackend extends AbstractSearchEngineBackend {
         throw new UnsupportedOperationException();
     }
 
-    public void index(ResolvedResources resources) throws IndexingException {
-        for (ResolvedResource resource : resources.getIndexableResolvedResources()) {
-            String type = resource.getConfiguration().getName();
-            if (type.equals(ResourceType.SCHEMA)) {
-                // ignore stuff that the core knows how to index
-                continue;
-            }
-            throw new IndexingException("Cannot index resource of type: " +
-                    type);
-        }
+    public void index(ResolvedResources resources) {
+        // ignore indexing
     }
 
     public void deleteAggregatedResources(String key) {
@@ -159,6 +150,8 @@ public class CoreSearchBackend extends AbstractSearchEngineBackend {
                 log.error("Got null document from query: " + query);
                 continue;
             }
+            // detach the document so that we can use it beyond the session
+            ((DocumentModelImpl) doc).detach(true);
             resultItems.add(new DocumentModelResultItem(doc));
         }
         return new ResultSetImpl(sqlQuery, "core", searchPrincipal, offset,

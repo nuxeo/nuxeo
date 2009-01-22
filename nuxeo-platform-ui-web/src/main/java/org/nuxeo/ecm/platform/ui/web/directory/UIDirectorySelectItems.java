@@ -296,7 +296,6 @@ public class UIDirectorySelectItems extends UISelectItems {
         return items.toArray(new SelectItem[] {});
     }
 
-    @SuppressWarnings("unchecked")
     protected SelectItem[] createAllSelectItems() {
         List<SelectItem> items = new ArrayList<SelectItem>();
         Session directorySession = getDirectorySession();

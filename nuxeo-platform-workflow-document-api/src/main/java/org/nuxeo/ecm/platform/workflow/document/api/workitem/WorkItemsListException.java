@@ -32,7 +32,6 @@ public class WorkItemsListException extends WMWorkflowException {
     private static final long serialVersionUID = -7998239443364067564L;
 
     public WorkItemsListException() {
-
     }
 
     public WorkItemsListException(String message) {

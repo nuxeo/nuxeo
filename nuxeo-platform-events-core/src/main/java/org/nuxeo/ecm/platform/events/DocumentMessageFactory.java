@@ -32,7 +32,7 @@ import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
 
 /**
  * Document message factory.
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public final class DocumentMessageFactory {
@@ -43,6 +43,10 @@ public final class DocumentMessageFactory {
     private DocumentMessageFactory() {
     }
 
+    /**
+     * @deprecacted not used - will be removed in 5.2
+     */
+    @Deprecated
     public static DocumentMessage createDocumentMessage(Document doc)
             throws DocumentException {
         DocumentMessage documentMessage;
@@ -52,9 +56,13 @@ public final class DocumentMessageFactory {
         } catch (NullPointerException npe) {
             log.error("Impossible to construct the document message....");
             documentMessage = new DocumentMessageImpl();
-            //npe.printStackTrace();
+            // npe.printStackTrace();
         }
         return documentMessage;
+    }
+
+    public static DocumentMessage createDocumentMessage(DocumentModel model) {
+        return new DocumentMessageImpl(model);
     }
 
     public static DocumentMessage createDocumentMessage(Document doc,
@@ -62,13 +70,20 @@ public final class DocumentMessageFactory {
         DocumentMessage documentMessage;
         try {
             DocumentModel dm = DocumentModelFactory.createDocumentModel(doc);
-            documentMessage = new DocumentMessageImpl(dm, coreEvent);
+            return createDocumentMessage(dm, coreEvent);
         } catch (NullPointerException npe) {
             log.error("Impossible to construct the document message....");
             documentMessage = new DocumentMessageImpl();
-            //npe.printStackTrace();
+            // npe.printStackTrace();
         }
         return documentMessage;
+    }
+
+    public static DocumentMessage createDocumentMessage(DocumentModel dm,
+            CoreEvent coreEvent) throws DocumentException {
+
+        return new DocumentMessageImpl(dm, coreEvent);
+
     }
 
 }

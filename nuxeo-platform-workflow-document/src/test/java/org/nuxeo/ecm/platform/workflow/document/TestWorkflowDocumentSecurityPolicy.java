@@ -26,9 +26,4 @@ package org.nuxeo.ecm.platform.workflow.document;
 public class TestWorkflowDocumentSecurityPolicy extends
         AbstractWorkflowDocumentRightsPolicyServiceTestCase {
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
 }

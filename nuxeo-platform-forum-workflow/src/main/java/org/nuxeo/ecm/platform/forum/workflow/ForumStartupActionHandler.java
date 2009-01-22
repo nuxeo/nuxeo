@@ -22,9 +22,7 @@ import org.jbpm.graph.exe.ExecutionContext;
 import org.nuxeo.ecm.platform.workflow.api.common.WorkflowConstants;
 
 /**
- *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class ForumStartupActionHandler extends
         AbstractForumWorkflowDocumentHandler {
@@ -32,12 +30,10 @@ public class ForumStartupActionHandler extends
     private static final long serialVersionUID = 1L;
 
     public void execute(ExecutionContext ec) throws Exception {
-
         log.info("Moderation started on : "
                 + ec.getVariable(WorkflowConstants.DOCUMENT_REF));
 
         bindDocumentToProcess(ec);
-
     }
 
 }

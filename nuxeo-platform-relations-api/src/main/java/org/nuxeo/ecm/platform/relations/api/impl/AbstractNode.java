@@ -27,7 +27,6 @@ import org.nuxeo.ecm.platform.relations.api.Node;
  * Nodes can be resources, blank nodes or literals.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public abstract class AbstractNode implements Node {
 
@@ -51,7 +50,7 @@ public abstract class AbstractNode implements Node {
 
     public int compareTo(Node o) {
         // dummy override, just used to compare statements lists
-        return this.toString().compareTo(o.toString());
+        return toString().compareTo(o.toString());
     }
 
 }

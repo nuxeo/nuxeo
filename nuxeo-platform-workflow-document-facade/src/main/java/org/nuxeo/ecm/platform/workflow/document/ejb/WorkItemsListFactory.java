@@ -39,7 +39,7 @@ import org.nuxeo.ecm.platform.workflow.document.api.workitem.WorkItemsListExcept
 /**
  * Work items list factory.
  *
- * @see org.nuxeo.platform.workflow.ejb.WorkItemsListsBean
+ * @see org.nuxeo.ecm.platform.workflow.document.ejb.WorkItemsListsBean
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
@@ -47,8 +47,7 @@ public class WorkItemsListFactory implements Serializable {
 
     private static final long serialVersionUID = -1001657403902605977L;
 
-    private static final Log log = LogFactory
-            .getLog(WorkItemsListFactory.class);
+    private static final Log log = LogFactory.getLog(WorkItemsListFactory.class);
 
     public WorkItemsListEntry feed(String pid, String participantName, String label)
             throws WorkItemsListException {
@@ -78,10 +77,10 @@ public class WorkItemsListFactory implements Serializable {
 
         res.setProcessName(pi.getProcessDefinition().getName());
 
-        Collection<WMWorkItemInstance> wiis;
         Set<WMWorkItemInstance> filteredWis = new HashSet<WMWorkItemInstance>();
 
-        wiis = wapi.listWorkItems(pid, WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
+        Collection<WMWorkItemInstance> wiis = wapi.listWorkItems(pid,
+                WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
 
         for (WMWorkItemInstance wii : wiis) {
             if (wii.isCancelled()) {

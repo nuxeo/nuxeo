@@ -39,7 +39,6 @@ public class ApprobationEndActionHandler extends
         log.debug("Ending process");
 
         try {
-
             ProcessInstance pi = getProcessInstance(ec);
 
             // Try to change life cycle of the bound document to specified
@@ -71,7 +70,6 @@ public class ApprobationEndActionHandler extends
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
 }

@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.ecm.platform.api.DefaultPlatform" version="1.0">
   <documentation>
     A default platform layout.
@@ -11,20 +10,21 @@
     This is the default layout that may be used for simple installations schemes like:
     <li>A ECM Web Application deployed on a single JVM</li>
     <li>A client application like Apogee willing to connect to an ECM Application (possibly without web layer)
-    deployed on the same host (localhost)</li>
+      deployed on the same host (localhost)
+    </li>
 
-    @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+    @author
+    <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
   </documentation>
 
   <extension target="org.nuxeo.ecm.platform.api.PlatformService"
       point="servers">
-      <documentation>The default platform layout</documentation>
+    <documentation>The default platform layout</documentation>
 
     <server name="default" host="localhost">
-
       <repository name="demo" class="org.nuxeo.ecm.core.api.CoreSession" description="Demo Repository"/>
-
-    <service class="org.nuxeo.ecm.platform.ec.notification.ejb.facade.NotificationServiceRemote" jndiName="%NotificationServiceBean" />
+      <service class="org.nuxeo.ecm.platform.ec.notification.ejb.facade.NotificationServiceRemote"
+          jndiName="%NotificationServiceBean"/>
     </server>
 
   </extension>

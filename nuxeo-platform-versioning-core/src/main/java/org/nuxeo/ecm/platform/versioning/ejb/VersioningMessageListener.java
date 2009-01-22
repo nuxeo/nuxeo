@@ -30,8 +30,6 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -78,6 +76,7 @@ import org.nuxeo.runtime.api.Framework;
                 + "','"
                 + WorkflowEventTypes.WORKFLOW_ENDED + "')") })
 @TransactionManagement(TransactionManagementType.CONTAINER)
+@TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class VersioningMessageListener implements MessageListener {
 
     private static final Log log = LogFactory.getLog(VersioningMessageListener.class);
@@ -86,8 +85,9 @@ public class VersioningMessageListener implements MessageListener {
     public void onMessage(Message message) {
         try {
             Object obj = ((ObjectMessage) message).getObject();
-            if (!(obj instanceof DocumentMessage))
+            if (!(obj instanceof DocumentMessage)) {
                 return;
+            }
             DocumentMessage doc = (DocumentMessage) obj;
 
             String eventId = doc.getEventId();
@@ -108,7 +108,7 @@ public class VersioningMessageListener implements MessageListener {
      * @param wfInProgress
      *
      * @param doc the DocumentMessage instance
-     * @throws LoginException
+     * @throws Exception
      */
     private void setWFVersioningPolicy(DocumentMessage doc, boolean wfInProgress)
             throws Exception {
@@ -154,8 +154,13 @@ public class VersioningMessageListener implements MessageListener {
             log.error("Cannot set versioning policy: " + e.getMessage(), e);
             // TODO maybe throw exception
         } finally {
-            CoreInstance.getInstance().close(coreSession);
-            loginContext.logout();
+            try {
+                CoreInstance.getInstance().close(coreSession);
+                loginContext.logout();
+            }
+            catch (Throwable t) {
+                log.error("Error during MDB cleanup", t);
+            }
         }
     }
 

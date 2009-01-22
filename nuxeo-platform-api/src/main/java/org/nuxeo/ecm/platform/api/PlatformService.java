@@ -31,7 +31,7 @@ import org.nuxeo.runtime.model.RuntimeContext;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
- * @deprecated use {@link Framework} API instead
+ * @deprecated use {@link Framework} API instead - Remove in 5.2.
  */
 @SuppressWarnings({"ALL"})
 @Deprecated

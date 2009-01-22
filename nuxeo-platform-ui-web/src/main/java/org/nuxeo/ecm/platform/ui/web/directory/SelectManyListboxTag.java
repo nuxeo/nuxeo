@@ -60,7 +60,6 @@ public class SelectManyListboxTag extends UIComponentTag {
 
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void setProperties(UIComponent component) {
         // XXX: lots of duplicated code lying around => fishy => need
         // refactoring with an AbstractDirectoryListBoxTag class

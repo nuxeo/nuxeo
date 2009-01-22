@@ -23,6 +23,8 @@
   <xs:element name="fulltext_phrase" type="xs:string" />
   <xs:element name="fulltext_one_of" type="xs:string" />
 
+  <xs:element name="subclause" type="xs:string" />
+
 </xs:schema>
 
 

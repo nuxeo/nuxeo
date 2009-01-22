@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.dashboard;
 
 import java.util.Date;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMProcessInstance;
 
@@ -38,7 +39,7 @@ public class DocumentProcessItemImpl implements DocumentProcessItem {
 
     protected final WMProcessInstance processInstance;
 
-    protected final String docTitle;
+    protected String docTitle;
 
     protected final Date procesinstanceStartDate;
 
@@ -48,7 +49,11 @@ public class DocumentProcessItemImpl implements DocumentProcessItem {
             WMProcessInstance processInstance) {
         this.documentModel = documentModel;
         this.processInstance = processInstance;
-        docTitle = documentModel.getTitle();
+        try {
+            docTitle = documentModel.getTitle();
+        } catch (ClientException e) {
+            docTitle = null;
+        }
         processInstanceName = processInstance.getName();
         procesinstanceStartDate = processInstance.getStartDate();
     }

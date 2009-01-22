@@ -22,8 +22,9 @@ package org.nuxeo.ecm.platform.cache.server.bd;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
+import org.jboss.cache.aop.annotation.PojoCacheable;
 
-@org.jboss.cache.aop.annotation.PojoCacheable
+@PojoCacheable
 public class CacheableDataModel extends DataModelImpl {
 
     private static final long serialVersionUID = -1546858143868822965L;

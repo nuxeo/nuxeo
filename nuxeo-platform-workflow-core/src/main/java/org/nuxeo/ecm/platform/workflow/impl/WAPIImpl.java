@@ -191,14 +191,11 @@ public class WAPIImpl implements WAPI {
 
     public void assignWorkItem(String workItemId, WMParticipant participant)
             throws WMWorkflowException {
-
         WorkflowEngine workflowEngine = getDefaultEngine();
-
         if (workflowEngine != null) {
             WMWorkItemInstance workItem = workflowEngine.getWorkItemById(workItemId);
             workflowEngine.assignWorkItem(workItem, participant);
         }
-
     }
 
     public void unAssignWorkItem(String workItemId, WMParticipant participant)
@@ -228,8 +225,10 @@ public class WAPIImpl implements WAPI {
 
         return workItems;
     }
+
     public Collection<WMWorkItemInstance> getWorkItemsFor(
-            List<WMParticipant> participant, String state) throws WMWorkflowException {
+            List<WMParticipant> participant, String state)
+            throws WMWorkflowException {
 
         Collection<WMWorkItemInstance> workItems;
 
@@ -248,7 +247,8 @@ public class WAPIImpl implements WAPI {
             int maxResults) throws WMWorkflowException {
         WorkflowEngine workflowEngine = getDefaultEngine();
         if (workflowEngine != null) {
-            return workflowEngine.getWorkItemsFor(participants, state, firstResult, maxResults);
+            return workflowEngine.getWorkItemsFor(participants, state,
+                    firstResult, maxResults);
         } else {
             return new ResultSlice<WMWorkItemInstance>(
                     Collections.<WMWorkItemInstance> emptyList(), firstResult,

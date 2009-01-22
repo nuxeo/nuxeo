@@ -88,9 +88,10 @@ public interface WebActions {
     /**
      * This method is used to nagivate to the given document and open the view page of the given document
      * in the given tab argument.
-     * @param document - to document which will be shown in the view page
-     * @param currentTabActionId - the tab which will be focused in the view page
-     * @return - the path to the view page of the given document in the given tab.
+     *
+     * @param document to document which will be shown in the view page
+     * @param currentTabActionId the tab which will be focused in the view page
+     * @return the path to the view page of the given document in the given tab.
      */
     String setCurrentTabAndNavigate(DocumentModel document, String currentTabActionId);
 

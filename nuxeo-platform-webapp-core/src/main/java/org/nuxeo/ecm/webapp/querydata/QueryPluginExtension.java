@@ -41,7 +41,6 @@ public class QueryPluginExtension implements QueryPlugin {
     String max;
 
     public QueryPluginExtension() {
-
     }
 
     public QueryPluginExtension(String name, String query, String valid, String max) {

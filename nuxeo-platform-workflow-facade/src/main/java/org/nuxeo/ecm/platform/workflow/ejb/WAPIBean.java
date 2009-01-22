@@ -31,7 +31,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.workflow.api.client.ejb.local.WAPILocal;
 import org.nuxeo.ecm.platform.workflow.api.client.ejb.remote.WAPIRemote;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WAPI;
 import org.nuxeo.ecm.platform.workflow.impl.WAPIImpl;
 
 /**
@@ -42,7 +41,7 @@ import org.nuxeo.ecm.platform.workflow.impl.WAPIImpl;
 @Stateless
 @Remote(WAPIRemote.class)
 @Local(WAPILocal.class)
-public class WAPIBean extends WAPIImpl implements WAPI {
+public class WAPIBean extends WAPIImpl {
 
     private static final long serialVersionUID = -8777528285898381216L;
 
@@ -50,8 +49,9 @@ public class WAPIBean extends WAPIImpl implements WAPI {
     private static final Log log = LogFactory.getLog(WAPIBean.class);
 
     @Resource
-    EJBContext context;
+    transient EJBContext context;
 
+    @Override
     public Principal getParticipant() {
         Principal principal;
         try {

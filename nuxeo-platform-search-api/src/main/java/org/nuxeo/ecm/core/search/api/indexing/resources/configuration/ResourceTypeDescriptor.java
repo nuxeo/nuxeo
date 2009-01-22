@@ -64,11 +64,11 @@ public class ResourceTypeDescriptor implements Serializable {
     public IndexableResourceFactory getFactory() {
         IndexableResourceFactory resource = null;
         try {
-            resource = (IndexableResourceFactory) getFactoryClass().newInstance();
+            resource = (IndexableResourceFactory) factoryClass.newInstance();
         } catch (InstantiationException e) {
-            log.error("Cannot instanciate indexable resource=" + getName());
+            log.error("Cannot instanciate indexable resource=" + name);
         } catch (IllegalAccessException e) {
-            log.error("Cannot instanciate indexable resource=" + getName());
+            log.error("Cannot instanciate indexable resource=" + name);
         }
         return resource;
     }

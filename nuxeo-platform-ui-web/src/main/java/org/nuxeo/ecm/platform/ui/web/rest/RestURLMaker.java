@@ -48,7 +48,8 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * TODO: document me.
  *
- * @author fermigier
+ * @author tiry
+ * @author Florent Guillaume
  * @deprecated Most of the API should now use the url service.
  */
 @Deprecated
@@ -227,11 +228,13 @@ public class RestURLMaker {
 
         suffix += conversationManager.getConversationIdParameter() + "="
                 + conversationManager.getCurrentConversationId();
+
+/*      Not needed anymore ????
         if (conversationManager.isLongRunningConversation()) {
             suffix += "&"
-                    + conversationManager.getConversationIsLongRunningParameter()
+                    + conversationManager.is
                     + "true";
-        }
+        }*/
 
         return suffix;
     }
@@ -245,11 +248,12 @@ public class RestURLMaker {
         }
 
         suffix += conversationManager.getConversationIdParameter() + "=" + cId;
+        /*      Not needed anymore ????
         if (conversationManager.isLongRunningConversation()) {
             suffix += "&"
                     + conversationManager.getConversationIsLongRunningParameter()
                     + "true";
-        }
+        }*/
 
         return suffix;
     }

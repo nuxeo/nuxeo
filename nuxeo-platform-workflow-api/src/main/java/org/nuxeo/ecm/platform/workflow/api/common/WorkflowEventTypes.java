@@ -27,29 +27,17 @@ package org.nuxeo.ecm.platform.workflow.api.common;
 public final class WorkflowEventTypes {
 
     public static final String WORKFLOW_STARTED = "workflowStarted";
-
     public static final String WORKFLOW_ENDED = "workflowEnded";
-
     public static final String WORKFLOW_ABANDONED = "workflowAbandoned";
-
     public static final String WORKFLOW_TASK_CREATED = "workflowTaskCreated";
-
     public static final String WORKFLOW_TASK_STARTED = "workflowTaskStarted";
-
     public static final String WORKFLOW_TASK_ENDED = "workflowTaskEnded";
-
     public static final String WORKFLOW_TASK_REMOVED = "workflowTaskRemoved";
-
     public static final String WORKFLOW_TASK_REJECTED = "workflowTaskRejected";
-
     public static final String WORKFLOW_TASK_SUSPENDED = "workflowTaskSuspended";
-
     public static final String WORKFLOW_TASK_ASSIGNED = "workflowTaskAssigned";
-
     public static final String WORKFLOW_TASK_RETURNED = "workflowTaskReturned";
-
     public static final String WORKFLOW_TASK_UNASSIGNED = "workflowTaskUnassigned";
-
     public static final String APPROBATION_WORKFLOW_STARTED = "approbationWorkflowStarted";
 
     private WorkflowEventTypes() {

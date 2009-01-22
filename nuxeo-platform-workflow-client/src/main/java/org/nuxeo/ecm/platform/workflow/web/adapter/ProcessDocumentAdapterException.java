@@ -30,7 +30,6 @@ public class ProcessDocumentAdapterException extends Exception {
     private static final long serialVersionUID = -961763618434457798L;
 
     public ProcessDocumentAdapterException() {
-
     }
 
     public ProcessDocumentAdapterException(String message) {

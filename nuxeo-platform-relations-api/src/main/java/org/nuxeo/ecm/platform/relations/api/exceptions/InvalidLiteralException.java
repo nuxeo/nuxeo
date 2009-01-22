@@ -44,4 +44,5 @@ public class InvalidLiteralException extends RuntimeException {
     public InvalidLiteralException(Throwable cause) {
         super(cause);
     }
+
 }

@@ -37,19 +37,15 @@ import org.nuxeo.ecm.platform.workflow.document.api.relation.WorkflowDocumentRel
 
 /**
  * Process document adapter implementation.
- *
  * <p>
  * This adapter span the workflow services and construct
  * <code>ProcessModel</code> instances holding properties related to the
  * processes against which the actual document is bound.
- * </p>
- *
  * <p>
  * Note, several processes may be bound to one document which is reflected by
  * the <code>ProcessModel</code> collection.
- * </p>
  *
- * @see org.nuxeo.ecm.platform.workflow.web.adapter.ProcessModel
+ * @see ProcessModel
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *

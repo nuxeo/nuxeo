@@ -47,6 +47,7 @@ import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
 import org.nuxeo.common.utils.ArrayUtils;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -355,7 +356,12 @@ public class MassEditActionsBean extends InputController implements
 
         for (DocumentModel doc : docsList) {
 
-            Object exValue = doc.getProperty(schemaName, fieldName);
+            Object exValue;
+            try {
+                exValue = doc.getProperty(schemaName, fieldName);
+            } catch (ClientException e) {
+                exValue = null;
+            }
             // existingValues.add(exValue);
 
             if (exValue != null) {
@@ -395,7 +401,11 @@ public class MassEditActionsBean extends InputController implements
                 }
             }
         }
-        currentFieldValues.setProperty(schemaName, fieldName, existingValues);
+        try {
+            currentFieldValues.setProperty(schemaName, fieldName, existingValues);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     /**
@@ -576,7 +586,11 @@ public class MassEditActionsBean extends InputController implements
     }
 
     private boolean isFieldSelected(String schemaName, String propName) {
-        return (Boolean) changeCheckboxes.getProperty(schemaName, propName);
+        try {
+            return (Boolean) changeCheckboxes.getProperty(schemaName, propName);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     /**
@@ -594,7 +608,12 @@ public class MassEditActionsBean extends InputController implements
 
         // copy only non-null values
         for (String schemaName : schemas) {
-            final Map<String, Object> data = srcDocModel.getProperties(schemaName);
+            Map<String, Object> data;
+            try {
+                data = srcDocModel.getProperties(schemaName);
+            } catch (ClientException e) {
+                data = null;
+            }
 
             if (null == data) {
                 // the fictive document should not have empty dataModels...
@@ -637,7 +656,7 @@ public class MassEditActionsBean extends InputController implements
                     if (!isSelectedValueMatching(destDocModel, schemaName,
                             propName)) {
                         log.debug(logPrefix + "skip value not matching for "
-                                + srcDocModel.getTitle() + '.' + schemaName
+                                + srcDocModel.getId() + '.' + schemaName
                                 + ':' + propName);
                         continue;
                     }
@@ -656,8 +675,13 @@ public class MassEditActionsBean extends InputController implements
                         }
 
                         // prepare current property value for displaying
-                        Object selectedValue = docModelExistingSelect.getProperty(
-                                schemaName, propName);
+                        Object selectedValue;
+                        try {
+                            selectedValue = docModelExistingSelect.getProperty(
+                                    schemaName, propName);
+                        } catch (ClientException e) {
+                            selectedValue = null;
+                        }
                         if (selectedValue != null) {
                             String verboseValue = selectedValue.toString();
                             if (verboseValue.equals(SELECT_ITEM_ID_ALL)) {
@@ -676,15 +700,28 @@ public class MassEditActionsBean extends InputController implements
                             // ok, we have to convert it back so it could be
                             // well displayed
                             // check by type
-                            Object currentValue = destDocModel.getProperty(
-                                    schemaName, propName);
+                            Object currentValue;
+                            try {
+                                currentValue = destDocModel.getProperty(
+                                        schemaName, propName);
+                            } catch (ClientException e) {
+                                throw new ClientRuntimeException(e);
+                            }
                             if (currentValue instanceof Calendar) {
-                                docModelExistingSelectVerbose.setProperty(
-                                        schemaName, propName, currentValue);
+                                try {
+                                    docModelExistingSelectVerbose.setProperty(
+                                            schemaName, propName, currentValue);
+                                } catch (ClientException e) {
+                                    throw new ClientRuntimeException(e);
+                                }
                             } else {
                                 // no special data
-                                docModelExistingSelectVerbose.setProperty(
-                                        schemaName, propName, verboseValue);
+                                try {
+                                    docModelExistingSelectVerbose.setProperty(
+                                            schemaName, propName, verboseValue);
+                                } catch (ClientException e) {
+                                    throw new ClientRuntimeException(e);
+                                }
                             }
                         }
 
@@ -692,7 +729,11 @@ public class MassEditActionsBean extends InputController implements
                     } else {
                         log.debug(logPrefix + "set prop '" + schemaName + ':'
                                 + propName + " = " + value);
-                        destDocModel.setProperty(schemaName, propName, value);
+                        try {
+                            destDocModel.setProperty(schemaName, propName, value);
+                        } catch (ClientException e) {
+                            throw new ClientRuntimeException(e);
+                        }
                     }
                 }
             }
@@ -719,9 +760,19 @@ public class MassEditActionsBean extends InputController implements
      */
     private boolean isSelectedValueMatching(DocumentModel destDocModel,
             String schemaName, String propName) {
-        Object currentValue = destDocModel.getProperty(schemaName, propName);
-        Object selectedValue = docModelExistingSelect.getProperty(schemaName,
-                propName);
+        Object currentValue;
+        try {
+            currentValue = destDocModel.getProperty(schemaName, propName);
+        } catch (ClientException e) {
+            currentValue = null;
+        }
+        Object selectedValue;
+        try {
+            selectedValue = docModelExistingSelect.getProperty(schemaName,
+                    propName);
+        } catch (ClientException e) {
+            selectedValue = null;
+        }
         if (selectedValue == null) {
             log.warn("selectedValue=null");
             return false;
