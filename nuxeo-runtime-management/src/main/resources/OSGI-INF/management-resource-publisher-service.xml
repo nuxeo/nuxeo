@@ -22,5 +22,10 @@
   <extension-point name="locators">
     <object class="org.nuxeo.runtime.management.MBeanServerLocatorDescriptor" />
   </extension-point>
+  
+  <extension target="org.nuxeo.runtime.management.ResourcePublisher"
+    point="services">
+    <service name="managementResourcePublisher" class="org.nuxeo.runtime.management.ResourcePublisher" ifaceClass="prg.nuxeo.runtime.management.ResourcePublisherService"/>
+  </extension>
 
 </component>

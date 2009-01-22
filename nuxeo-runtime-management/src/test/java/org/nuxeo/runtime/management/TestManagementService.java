@@ -107,7 +107,7 @@ public class TestManagementService extends NXRuntimeTestCase {
 
         Set<String> shortcutsName = managementService.getShortcutsName();
         assertNotNull(shortcutsName);
-        assertEquals(4, shortcutsName.size());
+        assertEquals(5, shortcutsName.size());
         assertEquals("dummy", shortcutsName.iterator().next());
     }
 

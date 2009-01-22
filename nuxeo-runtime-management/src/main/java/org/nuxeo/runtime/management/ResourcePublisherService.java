@@ -28,8 +28,6 @@ import java.util.Map.Entry;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
-import javax.management.modelmbean.ModelMBean;
-import javax.management.modelmbean.RequiredModelMBean;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -47,7 +45,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * 
  */
 public class ResourcePublisherService extends DefaultComponent implements
-        ResourcePublisher {
+        ResourcePublisher, ResourcePublisherMBean {
 
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.runtime.management.ResourcePublisher");
@@ -266,11 +264,14 @@ public class ResourcePublisherService extends DefaultComponent implements
     protected class ServerLocatorsRegistry {
         protected ModelMBeanInfoFactory mbeanInfoFactory = new ModelMBeanInfoFactory();
 
-        protected MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+        protected Map<String,MBeanServer> otherServers =
+            new HashMap<String,MBeanServer>();
+
+        protected MBeanServer platformServer = ManagementFactory.getPlatformMBeanServer();
 
         protected void doRegisterServerLocator(
                 MBeanServerLocatorDescriptor descriptor) {
-            mbeanServer = doLocateServer(descriptor);
+            platformServer = doLocateServer(descriptor);
         }
 
         @SuppressWarnings("unchecked")
@@ -279,7 +280,7 @@ public class ResourcePublisherService extends DefaultComponent implements
             String domainName = descriptor.getDomainName();
             for (MBeanServer server : (List<MBeanServer>) MBeanServerFactory.findMBeanServer(null)) {
                 if (server.getDefaultDomain().equals(domainName)) {
-                    return mbeanServer = server;
+                    return otherServers.put(domainName,server);
                 }
             }
             throw new ManagementRuntimeException(
@@ -296,9 +297,8 @@ public class ResourcePublisherService extends DefaultComponent implements
                 mbean = new NamedModelMBean();
                 mbean.setManagedResource(resource.getInstance(),
                         "ObjectReference");
-                mbean.setModelMBeanInfo(mbeanInfoFactory.getModelMBeanInfo(
-                        resource.getClazz()));
-                mbean.setInstance(mbeanServer.registerMBean(mbean,
+                mbean.setModelMBeanInfo(mbeanInfoFactory.getModelMBeanInfo(resource.getClazz()));
+                mbean.setInstance(platformServer.registerMBean(mbean,
                         resource.getManagementName()));
                 if (log.isDebugEnabled()) {
                     log.debug("bound " + resource);
@@ -317,7 +317,7 @@ public class ResourcePublisherService extends DefaultComponent implements
                 return;
             }
             try {
-                mbeanServer.unregisterMBean(resource.mbean.getName());
+                platformServer.unregisterMBean(resource.mbean.getName());
             } catch (Exception e) {
                 throw ManagementRuntimeException.wrap("Cannot unbind "
                         + resource, e);
@@ -327,6 +327,20 @@ public class ResourcePublisherService extends DefaultComponent implements
                     log.debug("unbound " + resource);
                 }
             }
+        }
+        
+     
+        protected MBeanServer doLocateServer(ObjectName qualifiedName)
+                throws ManagementException {
+            if (platformServer.isRegistered(qualifiedName)) {
+                return platformServer;
+            }
+            for (MBeanServer server:otherServers.values()) {
+                if (server.isRegistered(qualifiedName)) {
+                    return server;
+                }
+            }
+            throw new ManagementException(qualifiedName + " is not registered");
         }
     }
 
@@ -368,19 +382,8 @@ public class ResourcePublisherService extends DefaultComponent implements
         return shortcutsRegistry.registry.get(name);
     }
 
-    public class ManagementAdapter implements ResourcePublisherMBean {
-
-        public void bindResources() {
-            doBindResources();
-        }
-
-        public void unbindResources() {
-            doUnbindResources();
-        }
-
-        public Set<ObjectName> getResourcesName() {
-            return resourcesRegistry.registry.keySet();
-        }
+    public MBeanServer lookupServer(ObjectName name) throws ManagementException {
+        return serverLocatorsRegistry.doLocateServer(name);
     }
 
     protected void doBindResources() {
@@ -408,29 +411,8 @@ public class ResourcePublisherService extends DefaultComponent implements
     }
 
     @Override
-    public void activate(ComponentContext context) {
-        try {
-            ModelMBean mbean = new RequiredModelMBean();
-            mbean.setManagedResource(new ManagementAdapter(), "ObjectReference");
-            mbean.setModelMBeanInfo(serverLocatorsRegistry.mbeanInfoFactory.getModelMBeanInfo(
-                    ManagementAdapter.class));
-            serverLocatorsRegistry.mbeanServer.registerMBean(mbean,
-                    ObjectNameFactory.getObjectName(NAME.getName()));
-        } catch (Exception cause) {
-            throw new ManagementRuntimeException(
-                    "Cannot bind service as a mbean", cause);
-        }
-    }
-
-    @Override
     public void deactivate(ComponentContext context) {
         resourcesRegistry.doUnregisterResources();
-        try {
-            serverLocatorsRegistry.mbeanServer.unregisterMBean(ObjectNameFactory.getObjectName(NAME.getName()));
-        } catch (Exception e) {
-            throw new ManagementRuntimeException(
-                    "Cannot unbind management service from mbean server");
-        }
     }
 
     public void bindResource(ObjectName name) {
