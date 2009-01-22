@@ -426,13 +426,8 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     private static Date getCommentTimeStamp(DocumentModel comment) {
-        Calendar creationDate;
-        try {
-            creationDate = (Calendar) comment.getProperty("dublincore",
+        Calendar creationDate = (Calendar) comment.getProperty("dublincore",
                     "created");
-        } catch (ClientException e) {
-            creationDate = null;
-        }
         if (creationDate == null) {
             creationDate = Calendar.getInstance();
         }
