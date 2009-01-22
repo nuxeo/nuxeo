@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.publishing.jbpm;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,6 +33,8 @@ import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 import org.nuxeo.ecm.platform.publishing.AbstractPublisher;
 import org.nuxeo.ecm.platform.publishing.ChangePermissionUnrestricted;
+import org.nuxeo.ecm.platform.publishing.DeleteDocumentUnrestricted;
+import org.nuxeo.ecm.platform.publishing.RemoveACLUnrestricted;
 import org.nuxeo.ecm.platform.publishing.api.DocumentWaitingValidationException;
 import org.nuxeo.ecm.platform.publishing.api.Publisher;
 import org.nuxeo.ecm.platform.publishing.api.PublishingException;
@@ -92,8 +95,7 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
             List<TaskInstance> tis = jbpmService.getTaskInstances(proxy,
                     currentUser, null);
             for (TaskInstance ti : tis) {
-                if (ti.getName().equals(TASK_NAME)
-                        && ti.getPooledActors().contains(currentUser.getName())) {
+                if (ti.getName().equals(TASK_NAME)) {
                     return true;
                 }
             }
@@ -109,13 +111,15 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
                     null);
             for (TaskInstance ti : tis) {
                 if (ti.getName().equals(TASK_NAME)) {
-                    return true;
+                    // if there is a task on this doc, then it is not yet
+                    // published
+                    return false;
                 }
             }
         } catch (NuxeoJbpmException e) {
             throw new PublishingException(e);
         }
-        return false;
+        return true;
     }
 
     public void submitToPublication(DocumentModel document,
@@ -159,7 +163,15 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
             throws PublishingValidatorException, NuxeoJbpmException {
         TaskInstance ti = new TaskInstance();
         String[] actorIds = getPublishingService().getValidatorsFor(document);
-        ti.setPooledActors(actorIds);
+        List<String> prefixedActorIds = new ArrayList<String>();
+        for (String s : actorIds) {
+            if (s.contains(":")) {
+                prefixedActorIds.add(s);
+            } else {
+                prefixedActorIds.add(JbpmService.USER_PREFIX + s);
+            }
+        }
+        ti.setPooledActors(prefixedActorIds.toArray(new String[] {}));
         Map<String, Serializable> variables = new HashMap<String, Serializable>();
         variables.put(JbpmService.VariableName.documentId.name(),
                 document.getId());
@@ -211,11 +223,18 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
 
     public void validatorPublishDocument(DocumentModel currentDocument,
             NuxeoPrincipal currentUser) throws PublishingException {
-        removeACL(currentDocument);
+        CoreSession session;
+        try {
+            session = getCoreSession(
+                    currentDocument.getRepositoryName(), currentUser);
+        } catch (ClientException e) {
+            throw new PublishingException(e);
+        }
+        removeACL(currentDocument, session);
         endTask(currentDocument, currentUser);
         notifyEvent(PublishingEvent.documentPublicationApproved,
-                currentDocument, null);
-        notifyEvent(PublishingEvent.documentPublished, currentDocument, null);
+                currentDocument, session);
+        notifyEvent(PublishingEvent.documentPublished, currentDocument, session);
     }
 
     private void endTask(DocumentModel document, NuxeoPrincipal currentUser)
@@ -235,13 +254,12 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
         }
     }
 
-    private void removeACL(DocumentModel document) throws PublishingException {
+    private void removeACL(DocumentModel document, CoreSession coreSession)
+            throws PublishingException {
         try {
-            document.getACP().removeACL(ACL_NAME);
-            CoreSession session = getCoreSession(document.getRepositoryName(),
-                    null);
-            session.saveDocument(document);
-            session.save();
+            RemoveACLUnrestricted remover = new RemoveACLUnrestricted(
+                    coreSession, document, ACL_NAME);
+            remover.runUnrestricted();
         } catch (ClientException e) {
             throw new PublishingException(e);
         }
@@ -251,17 +269,24 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
     public void validatorRejectPublication(DocumentModel doc,
             NuxeoPrincipal principal, String comment)
             throws PublishingException {
+        CoreSession coreSession;
+        try {
+            coreSession = getCoreSession(doc.getRepositoryName(), principal);
+        } catch (ClientException e) {
+            throw new PublishingException(e);
+        }
         notifyEvent(PublishingEvent.documentPublicationRejected, doc, null);
-        removeProxy(doc);
+        removeProxy(doc, coreSession);
         endTask(doc, principal);
 
     }
 
-    private void removeProxy(DocumentModel doc) throws PublishingException {
+    private void removeProxy(DocumentModel doc, CoreSession coreSession)
+            throws PublishingException {
         try {
-            CoreSession session = getCoreSession(doc.getRepositoryName(), null);
-            session.removeDocument(doc.getRef());
-            session.save();
+            DeleteDocumentUnrestricted deleter = new DeleteDocumentUnrestricted(
+                    coreSession, doc);
+            deleter.runUnrestricted();
         } catch (ClientException e) {
             throw new PublishingException(e);
         }

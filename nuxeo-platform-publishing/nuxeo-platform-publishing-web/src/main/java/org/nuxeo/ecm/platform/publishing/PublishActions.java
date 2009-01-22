@@ -27,10 +27,8 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentModelTreeNode;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.publishing.api.PublishingInformation;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
 
@@ -41,7 +39,6 @@ import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
  * @author Narcis Paslaru
  * @author Florent Guillaume
  */
-// XXX shouldn't be here : Seam remoting bug
 public interface PublishActions extends SelectDataModelListener {
 
     String SECTIONS_DOCUMENT_TREE = "SECTIONS_DOCUMENT_TREE";
@@ -63,25 +60,6 @@ public interface PublishActions extends SelectDataModelListener {
      * @throws ClientException
      */
     SelectDataModel getSectionsModel() throws ClientException;
-
-    /**
-     * Retrieves all visible proxies for this document.
-     *
-     * @deprecated Unused externally, will be moved to protected
-     */
-    @Deprecated
-    DocumentModelList getProxies(DocumentModel docModel) throws ClientException;
-
-    /**
-     * Retrieves all visible proxies for this document, and associated visible
-     * sections.
-     *
-     * @deprecated Unused externally, will be moved to protected
-     * @throws ClientException
-     */
-    @Deprecated
-    List<PublishingInformation> getPublishingInformation(DocumentModel docModel)
-            throws ClientException;
 
     /**
      * Publishes the current document to the selected sections.
@@ -118,38 +96,12 @@ public interface PublishActions extends SelectDataModelListener {
     String unPublishDocument() throws ClientException;
 
     /**
-     * This method is used to unpublish the given proxy.
-     *
-     * @param proxy - the proxy to unpublish.
-     * @throws ClientException
-     * @deprecated Unused externally, will be moved to protected
-     */
-    @Deprecated
-    void unPublishDocument(DocumentModel proxy) throws ClientException;
-
-    /**
-     * This method is used to unpublish the given list of document models.
-     *
-     * @param documentsList - the list of the document models which are going to
-     *                be unpublish.
-     * @throws ClientException
-     * @deprecated Unused externally, will be moved to protected
-     */
-    @Deprecated
-    void unPublishDocuments(List<DocumentModel> documentsList)
-            throws ClientException;
-
-    /**
      * This method is used to unpublish the current document list selection.
      *
      * @throws ClientException
      */
     void unPublishDocumentsFromCurrentSelection() throws ClientException;
 
-    /*
-     * Rux NXP-1879: Multiple types can be suitable for publishing. So use array
-     * instead single element. Also better naming.
-     */
     Set<String> getSectionRootTypes();
 
     Set<String> getSectionTypes();
@@ -177,21 +129,15 @@ public interface PublishActions extends SelectDataModelListener {
     List<DocumentModelTreeNode> getSelectedSections();
 
     /**
-     * Checks if a document is already published in a section.
-     *
-     * @deprecated Unused externally, will be moved to protected
-     * @throws ClientException
-     */
-    @Deprecated
-    boolean isAlreadyPublishedInSection(DocumentModel doc, DocumentModel section)
-            throws ClientException;
-
-    /**
      * Returns true if authenticated user has all permissions on document.
      *
      * @throws ClientException
      */
     boolean isReviewer(DocumentModel dm) throws ClientException;
+
+    boolean hasValidationTask();
+
+    boolean isPublished();
 
     // XXX annotations shouldn't be there but this interface used as Local
     // interface because of Seam remoting bug.

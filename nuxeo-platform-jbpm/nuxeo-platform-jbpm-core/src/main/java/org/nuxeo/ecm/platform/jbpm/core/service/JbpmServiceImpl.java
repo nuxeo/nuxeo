@@ -20,8 +20,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.hibernate.Session;
 import org.jbpm.JbpmConfiguration;
@@ -53,6 +55,8 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class JbpmServiceImpl implements JbpmService {
+    private static final String FROM_ORG_JBPM_TASKMGMT_EXE_TASK_INSTANCE_TI_WHERE_TI_END_IS_NULL = "from org.jbpm.taskmgmt.exe.TaskInstance ti where ti.end is null";
+
     private Map<String, String[]> typeFilters;
 
     private JbpmConfiguration configuration;
@@ -267,30 +271,41 @@ public class JbpmServiceImpl implements JbpmService {
             final NuxeoPrincipal user, final JbpmListFilter filter)
             throws NuxeoJbpmException {
         assert dm != null;
-        assert user != null;
         return (List<TaskInstance>) executeJbpmOperation(new JbpmOperation() {
             public ArrayList<TaskInstance> run(JbpmContext context)
                     throws NuxeoJbpmException {
+                Set<TaskInstance> tisSet = new HashSet<TaskInstance>();
                 if (user != null) {
                     context.setActorId(USER_PREFIX + user.getName());
+                    List<String> groups = user.getAllGroups();
+                    List<String> prefixedActorsId = new ArrayList<String>();
+                    for (String s : groups) {
+                        prefixedActorsId.add(GROUP_PREFIX + s);
+                    }
+                    prefixedActorsId.add(USER_PREFIX + user.getName());
+                    List<TaskInstance> tis = context.getTaskMgmtSession().findTaskInstances(
+                            prefixedActorsId);
+                    tis.addAll(context.getTaskMgmtSession().findPooledTaskInstances(
+                            prefixedActorsId));
+                    tisSet.addAll(tis);
+                } else {
+                    List<TaskInstance> tis = context.getSession().createQuery(FROM_ORG_JBPM_TASKMGMT_EXE_TASK_INSTANCE_TI_WHERE_TI_END_IS_NULL).list();
+                    tisSet.addAll(tis);
                 }
-                List<String> groups = user.getAllGroups();
-                groups.add(GROUP_PREFIX + user.getName());
-                groups.add(USER_PREFIX + user.getName());
-                List<TaskInstance> tis = context.getTaskMgmtSession().findTaskInstances(
-                        groups);
                 List<Long> donePi = new ArrayList<Long>();
                 List<Long> useDocument = new ArrayList<Long>();
                 ArrayList<TaskInstance> result = new ArrayList<TaskInstance>();
                 // we need to look at the variables of the process instance of
                 // the task.
-                for (TaskInstance ti : tis) {
+                for (TaskInstance ti : tisSet) {
                     ProcessInstance pi = ti.getProcessInstance();
                     if (pi == null) {// task created outside a process
                         String docId = (String) ti.getVariable(JbpmService.VariableName.documentId.name());
                         String repoId = (String) ti.getVariable(JbpmService.VariableName.documentRepositoryName.name());
-                        if (docId == dm.getId()
-                                && repoId == dm.getRepositoryName()) {
+                        String d = dm.getId();
+                        String r = dm.getRepositoryName();
+                        if (docId.equals(dm.getId())
+                                && repoId.equals(dm.getRepositoryName())) {
                             result.add(ti);
                         }
                     } else if (!donePi.contains(pi.getId())) {

@@ -23,6 +23,7 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.util.Map;
 
+import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -36,6 +37,7 @@ import org.nuxeo.ecm.platform.publishing.api.PublishingService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.webapp.base.InputController;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Publishing actions listener. Listens to publish/reject document actions.
@@ -47,7 +49,7 @@ import org.nuxeo.ecm.webapp.base.InputController;
 @Scope(CONVERSATION)
 public class PublishingActionsListenerBean extends InputController implements
         ValidatorActionsService {
-    private PublishingService publishingWorkflowFacade;
+    private PublishingService publishingService;
 
     private static final long serialVersionUID = 1L;
 
@@ -78,29 +80,24 @@ public class PublishingActionsListenerBean extends InputController implements
         return messages;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.publishing.ValidatorActionsService#publishDocument
-     * ()
-     */
+    @Create
+    public void create() {
+        try {
+            publishingService = Framework.getService(PublishingService.class);
+        } catch (Exception e) {
+            throw new IllegalStateException("Publishing service not deployed.", e);
+        }
+    }
+
     public String publishDocument() throws PublishingException {
-        publishingWorkflowFacade.validatorPublishDocument(
+        publishingService.validatorPublishDocument(
                 navigationContext.getCurrentDocument(), currentUser);
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.publishing.ValidatorActionsService#rejectDocument
-     * ()
-     */
     public String rejectDocument() throws PublishingException {
-        publishingWorkflowFacade.validatorRejectPublication(
-                getCurrentDocument(), currentUser, rejectPublishingComment);
+        publishingService.validatorRejectPublication(getCurrentDocument(),
+                currentUser, rejectPublishingComment);
         try {
             return navigationContext.navigateToRef(getCurrentDocument().getParentRef());
         } catch (ClientException e) {
@@ -126,7 +123,7 @@ public class PublishingActionsListenerBean extends InputController implements
     }
 
     public boolean canManagePublishing() throws PublishingException {
-        return publishingWorkflowFacade.canManagePublishing(
+        return publishingService.canManagePublishing(
                 navigationContext.getCurrentDocument(), currentUser);
     }
 

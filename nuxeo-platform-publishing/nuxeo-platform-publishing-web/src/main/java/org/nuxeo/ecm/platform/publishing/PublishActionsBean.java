@@ -39,7 +39,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
@@ -91,7 +90,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("publishActions")
 @Scope(ScopeType.CONVERSATION)
-@Transactional
 public class PublishActionsBean implements PublishActions, Serializable {
     private PublishingService publishingService;
 
@@ -640,8 +638,22 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
     public void processSelectRowEvent(SelectDataModelRowEvent event)
             throws ClientException {
-        // TODO Auto-generated method stub
-
     }
 
+    public boolean hasValidationTask() {
+        try {
+            return publishingService.hasValidationTask(
+                    navigationContext.getCurrentDocument(), currentUser);
+        } catch (PublishingException e) {
+            throw new IllegalStateException("Publishing service not deployed properly.", e);
+        }
+    }
+
+    public boolean isPublished() {
+        try {
+            return publishingService.isPublished(navigationContext.getCurrentDocument());
+        } catch (PublishingException e) {
+            throw new IllegalStateException("Publishing service not deployed properly.", e);
+        }
+    }
 }

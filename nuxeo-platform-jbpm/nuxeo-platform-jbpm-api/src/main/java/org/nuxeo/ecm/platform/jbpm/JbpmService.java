@@ -95,7 +95,7 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * Return a list of task instance for this process instance
+     * Return a list of task instance for this process instance.
      *
      * @param processInstanceId the id of the process instance.
      * @param principal
@@ -230,7 +230,10 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * Return the list of task instances associated with this document.
+     * Return the list of task instances associated with this document for which
+     * the user is the actor or belongs to the pooled actor list.
+     *
+     * If the user is null, then it returns all task instances for the document.
      *
      * @param dm the document.
      * @param user
