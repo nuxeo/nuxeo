@@ -257,7 +257,13 @@ public final class Utils {
                 addSpace = true;
             }
 
-            for (String path : style.getPathsForView(viewName)) {
+            for (String path : style.getPathsForView(viewName)) {                
+                final Properties styleProperties = style.getPropertiesFor(
+                        viewName, path);
+                if (styleProperties.isEmpty()) {
+                    continue;
+                }
+                
                 final String[] splitPaths = path.split(",");
                 final int len = splitPaths.length;
                 for (int i = 0; i < len; i++) {
@@ -270,14 +276,11 @@ public final class Utils {
                         sb.append(", ");
                     }
                 }
-
                 sb.append(" {");
                 if (indent) {
                     sb.append('\n');
                 }
 
-                final Properties styleProperties = style.getPropertiesFor(
-                        viewName, path);
                 final Enumeration<?> propertyNames = cssProperties.propertyNames();
                 while (propertyNames.hasMoreElements()) {
                     final String propertyName = (String) propertyNames.nextElement();

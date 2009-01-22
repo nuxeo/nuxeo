@@ -272,6 +272,11 @@ public class ThemeSerializer {
             }
             for (String viewName : style.getSelectorViewNames()) {
                 for (String path : style.getPathsForView(viewName)) {
+                    Properties styleProperties = style.getPropertiesFor(
+                            viewName, path);
+                    if (styleProperties.isEmpty()) {
+                        continue;
+                    }
                     org.w3c.dom.Element domSelector = doc.createElement("selector");
                     path = Utils.cleanUp(path);
                     domSelector.setAttribute("path", path);
@@ -279,11 +284,11 @@ public class ThemeSerializer {
                         domSelector.setAttribute("view", viewName);
                     }
 
-                    for (Map.Entry<Object, Object> entry : style.getPropertiesFor(
-                            viewName, path).entrySet()) {
+                    for (Map.Entry<Object, Object> entry : styleProperties.entrySet()) {
                         org.w3c.dom.Element domProperty = doc.createElement((String) entry.getKey());
                         String value = (String) entry.getValue();
-                        String presetName = PresetManager.extractPresetName(null, value);
+                        String presetName = PresetManager.extractPresetName(
+                                null, value);
                         if (presetName != null) {
                             domProperty.setAttribute("preset", presetName);
                         } else {
