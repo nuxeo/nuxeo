@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author arussel
  *
  */
-// renamed in components.xml for easier configuration
+// renamed in META-INF/components.xml for easier configuration
 @Name("org.nuxeo.ecm.platform.jbpm.web.JbpmHelper")
 @Scope(ScopeType.STATELESS)
 public class JbpmHelper {

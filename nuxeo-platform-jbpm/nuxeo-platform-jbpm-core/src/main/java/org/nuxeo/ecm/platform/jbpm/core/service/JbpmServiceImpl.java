@@ -101,11 +101,20 @@ public class JbpmServiceImpl implements JbpmService {
             return (List<TaskInstance>) executeJbpmOperation(new JbpmOperation() {
                 public ArrayList<TaskInstance> run(JbpmContext context)
                         throws NuxeoJbpmException {
-                    List<String> groups = currentUser.getAllGroups();
-                    groups.add(currentUser.getName());
                     context.setActorId(USER_PREFIX + currentUser.getName());
-                    return toArrayList(context.getTaskMgmtSession().findTaskInstances(
-                            groups));
+                    List<String> groups = currentUser.getAllGroups();
+                    List<String> prefixedGroup = new ArrayList<String>();
+                    for (String s : groups) {
+                        prefixedGroup.add(GROUP_PREFIX + s);
+                    }
+                    prefixedGroup.add(USER_PREFIX + currentUser.getName());
+                    List<TaskInstance> tis = context.getTaskMgmtSession().findTaskInstances(
+                            prefixedGroup);
+                    tis.addAll(context.getTaskMgmtSession().findPooledTaskInstances(
+                            prefixedGroup));
+                    Set<TaskInstance> setTis = new HashSet<TaskInstance>();
+                    setTis.addAll(tis);
+                    return toArrayList(setTis);
                 }
 
             });
@@ -178,8 +187,10 @@ public class JbpmServiceImpl implements JbpmService {
                 context.setActorId(USER_PREFIX + principal.getName());
                 Map<Long, ProcessInstance> maps = new HashMap<Long, ProcessInstance>();
                 for (TaskInstance ti : getCurrentTaskInstances(principal)) {
-                    maps.put(ti.getProcessInstance().getId(),
-                            ti.getProcessInstance());
+                    if (ti.getProcessInstance() != null) {
+                        maps.put(ti.getProcessInstance().getId(),
+                                ti.getProcessInstance());
+                    }
                 }
                 return toArrayList(maps.values());
             }
@@ -289,7 +300,8 @@ public class JbpmServiceImpl implements JbpmService {
                             prefixedActorsId));
                     tisSet.addAll(tis);
                 } else {
-                    List<TaskInstance> tis = context.getSession().createQuery(FROM_ORG_JBPM_TASKMGMT_EXE_TASK_INSTANCE_TI_WHERE_TI_END_IS_NULL).list();
+                    List<TaskInstance> tis = context.getSession().createQuery(
+                            FROM_ORG_JBPM_TASKMGMT_EXE_TASK_INSTANCE_TI_WHERE_TI_END_IS_NULL).list();
                     tisSet.addAll(tis);
                 }
                 List<Long> donePi = new ArrayList<Long>();

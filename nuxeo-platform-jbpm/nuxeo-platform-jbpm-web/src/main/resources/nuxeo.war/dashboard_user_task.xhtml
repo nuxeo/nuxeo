@@ -10,9 +10,10 @@
 <h3 class="unfolded"><a href="#nogo"
 	onclick="return toggleBox(this)"> <h:outputText
 	value="#{messages['title.dashboard.userTasks']}" /> </a></h3>
-
+<c:choose>
+<c:when test="#{not empty currentTaskInstances}">
 <div class="boxBody"><h:dataTable
-	value="#{jbpmService.getCurrentTaskInstances(currentUser)}" var="task"
+	value="#{currentTaskInstances}" var="task"
 	rowClasses="dataRowEven,dataRowOdd" styleClass="dataList">
 	<h:column>
 		<f:facet name="header">#{messages['label.workflow.task.name']}</f:facet>
@@ -31,5 +32,10 @@
 		</h:form>
 	</h:column>
 </h:dataTable></div>
+</c:when>
+<c:otherwise>
+<h:outputText value="#{messages['label.dashboard.empty']}"/>
+</c:otherwise>
+</c:choose>
 </div>
 </div>
