@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.transform.service.TransformService.Compa.Test">
+
+  <extension  target="org.nuxeo.ecm.platform.transform.service.TransformService" point="plugins">
+    <plugin name="dummyOldPlugin" class="org.nuxeo.ecm.platform.transform.compat.oldcontribs.DummyOldPlugin"
+      destinationMimeType="text/html">
+      <sourceMimeType>foo/bar</sourceMimeType>
+    </plugin>
+  </extension>
+
+  <extension  target="org.nuxeo.ecm.platform.transform.service.TransformService" point="plugins">
+    <plugin name="dummyOldPlugin2" class="org.nuxeo.ecm.platform.transform.compat.oldcontribs.DummyOldPlugin2"
+      destinationMimeType="foo/bar">
+      <sourceMimeType>dummy/bar</sourceMimeType>
+    </plugin>
+  </extension>
+
+
+  <extension target="org.nuxeo.ecm.platform.transform.service.TransformService" point="transformers">
+    <transformer name="dummy2html" class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
+      <plugins>
+        <plugin name="dummyOldPlugin2">
+        </plugin>
+        <plugin name="dummyOldPlugin">
+        </plugin>
+      </plugins>
+    </transformer>
+  </extension>
+
+</component>
+
+
+

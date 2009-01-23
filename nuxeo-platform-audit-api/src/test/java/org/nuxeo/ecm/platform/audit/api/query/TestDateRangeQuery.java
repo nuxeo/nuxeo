@@ -66,7 +66,7 @@ public class TestDateRangeQuery extends TestCase {
         assertEquals(expected, now.getTime() - then.getTime());
     }
 
-    public void testWrongFormat() throws AuditQueryException {
+    public void testWrongFormat() {
         boolean raises = false;
         Date now = new Date();
         try {
@@ -77,7 +77,7 @@ public class TestDateRangeQuery extends TestCase {
         assertTrue(raises);
     }
 
-    public void testWrongFormatOrder() throws AuditQueryException {
+    public void testWrongFormatOrder() {
         boolean raises = false;
         Date now = new Date();
         try {

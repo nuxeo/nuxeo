@@ -41,7 +41,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -82,7 +82,7 @@ public class PublishingActionsListenerBean extends InputController implements
     private static final Log log = LogFactory.getLog(PublishingActionsListenerBean.class);
 
     @In(create = true, required = false)
-    private CoreSession documentManager;
+    private transient CoreSession documentManager;
 
     @In(create = true)
     protected transient Principal currentUser;
@@ -97,7 +97,7 @@ public class PublishingActionsListenerBean extends InputController implements
     protected transient DashboardActions dashboardActions;
 
     @In(create = true)
-    protected PublishActions publishActions;
+    protected transient PublishActions publishActions;
 
     @In
     protected transient Context eventContext;
@@ -182,9 +182,9 @@ public class PublishingActionsListenerBean extends InputController implements
         try {
             DocumentModel currentDocument = getCurrentDocument();
 
-            CoreSession session = null;
-            LoginContext context = null;
-            Repository repository = null;
+            CoreSession session;
+            LoginContext context;
+            Repository repository;
             try {
                 context = Framework.login();
                 RepositoryManager repositoryMgr = Framework.getService(RepositoryManager.class);
@@ -246,7 +246,7 @@ public class PublishingActionsListenerBean extends InputController implements
         // Of course it remains a temporary solution.
         if (rejectPublishingComment == null
                 || rejectPublishingComment.trim().length() <= 0) {
-            facesMessages.add("rejectPublishingComment",
+            facesMessages.addToControl("rejectPublishingComment",
                     FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.publishing.reject.user.comment.mandatory"));
@@ -256,13 +256,13 @@ public class PublishingActionsListenerBean extends InputController implements
         // Compute parent before deleting the document.
         DocumentModel currentDocument = getCurrentDocument();
         DocumentModel parent;
-        WMParticipant creator;
         try {
             parent = documentManager.getDocument(currentDocument.getParentRef());
         } catch (ClientException ce) {
             throw new PublishingException(ce);
         }
 
+        WMParticipant creator;
         try {
             PublishingTasks tasks = new PublishingTasks(
                     navigationContext.getCurrentDocument(), currentUser);
@@ -282,10 +282,9 @@ public class PublishingActionsListenerBean extends InputController implements
         // Notify reject event
         DocumentModel sourceDocument;
         try {
-
-            CoreSession session = null;
-            LoginContext context = null;
-            Repository repository = null;
+            CoreSession session;
+            LoginContext context;
+            Repository repository;
             try {
                 context = Framework.login();
                 RepositoryManager repositoryMgr = Framework.getService(RepositoryManager.class);

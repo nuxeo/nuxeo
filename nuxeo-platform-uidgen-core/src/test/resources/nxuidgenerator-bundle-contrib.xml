@@ -7,8 +7,9 @@
     point="generators">
 
     <generator name="geideDoc"
-      class="org.nuxeo.ecm.platform.uidgen.tests.generators.UIDGenerator1">
+      class="org.nuxeo.ecm.platform.uidgen.generators.UIDGenerator1">
       <propertyName>uid:uid</propertyName>
+      <propertyName>other_uid_schema:uid2</propertyName>
       <docType>GeideDoc</docType>
     </generator>
 

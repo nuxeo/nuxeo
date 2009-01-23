@@ -27,13 +27,9 @@ package org.nuxeo.ecm.platform.workflow.web.api;
 public final class WorkflowDirectiveConstants {
 
     public static final String WORKFLOW_DIRECTIVE_VALIDATION = "workflowDirectiveValidation";
-
     public static final String WORKFLOW_DIRECTIVE_OPINION = "workflowDirectiveOpinion";
-
     public static final String WORKFLOW_DIRECTIVE_DIFFUSION = "workflowDirectiveDiffusion";
-
     public static final String WORKFLOW_DIRECTIVE_CHECK = "workflowDirectiveCheck";
-
     public static final String WORKFLOW_DIRECTIVE_VERIFICATION = "workflowDirectiveVerification";
 
     private WorkflowDirectiveConstants() {

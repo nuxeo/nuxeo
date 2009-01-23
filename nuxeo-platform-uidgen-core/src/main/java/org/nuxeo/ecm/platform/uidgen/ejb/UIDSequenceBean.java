@@ -54,7 +54,6 @@ public class UIDSequenceBean {
      *
      */
     public UIDSequenceBean() {
-
     }
 
     /**

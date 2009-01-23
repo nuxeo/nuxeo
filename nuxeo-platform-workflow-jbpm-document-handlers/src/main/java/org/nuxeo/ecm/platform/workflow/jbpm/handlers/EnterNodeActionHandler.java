@@ -30,33 +30,30 @@ import org.nuxeo.ecm.platform.workflow.jbpm.handlers.api.client.AbstractWorkflow
 
 /**
  * Enter a task state.
- *
  * <p>
  * Creates a default task while entering the state.
- * </p>
  *
- * @see org.nuxeo.ecm.platform.workflow.jbpm.handlers.NuxeoAssignementHandler
+ * @see NuxeoAssignmentHandler
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class EnterNodeActionHandler extends
         AbstractWorkflowDocumentActionHandler {
 
     private static final long serialVersionUID = 1327637414446001773L;
 
-
+    @SuppressWarnings({"unchecked"})
     public void execute(ExecutionContext executionContext) throws Exception {
         Token token = executionContext.getToken();
         TaskMgmtInstance tmi = executionContext.getTaskMgmtInstance();
 
         TaskNode taskNode = (TaskNode) executionContext.getNode();
 
-        Map tasks = taskNode.getTasksMap();
-        for (Object k : tasks.keySet()) {
+        Map<String, ?> tasks = taskNode.getTasksMap();
+        for (String k : tasks.keySet()) {
             log.debug("Create task =" + k);
             TaskInstance ti = tmi.createTaskInstance(
-                    taskNode.getTask((String) k), token);
+                    taskNode.getTask(k), token);
             ti.start();
         }
     }

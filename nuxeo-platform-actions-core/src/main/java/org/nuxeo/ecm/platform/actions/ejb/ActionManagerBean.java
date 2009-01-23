@@ -55,7 +55,7 @@ public class ActionManagerBean implements ActionManager {
     @PostConstruct
     public void initialize() {
         try {
-            actionService = (ActionManager) Framework.getLocalService(ActionManager.class);
+            actionService = Framework.getLocalService(ActionManager.class);
         } catch (Exception e) {
             log.error("Failed to lookup ActionService", e);
         }
@@ -85,7 +85,6 @@ public class ActionManagerBean implements ActionManager {
         return actionService.getFilters(actionId);
     }
 
-
     @Remove
     public void remove() {
         actionService = null;
@@ -102,4 +101,5 @@ public class ActionManagerBean implements ActionManager {
         log.info("PrePassivate");
         remove();
     }
+
 }

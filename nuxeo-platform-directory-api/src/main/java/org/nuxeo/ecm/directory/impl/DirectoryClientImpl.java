@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryClient;
 import org.nuxeo.ecm.directory.api.DirectoryManager;
@@ -39,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  *
  */
-public class DirectoryClientImpl implements DirectoryClient {
+public class DirectoryClientImpl extends BaseSession implements DirectoryClient {
 
     private static final long serialVersionUID = -1170479958816244690L;
 
@@ -58,7 +59,7 @@ public class DirectoryClientImpl implements DirectoryClient {
             try {
                 manager = (DirectoryManager) Framework.getService(DirectoryService.class);
             } catch (Exception e) {
-                log.error("Can't get DirectoryService",e);
+                log.error("Can't get DirectoryService", e);
                 return null;
             }
         }
@@ -70,7 +71,7 @@ public class DirectoryClientImpl implements DirectoryClient {
     }
 
     public boolean authenticate(String username, String password)
-            throws ClientException {
+            throws DirectoryException {
         return getDirectoryManager().authenticate(sessionId, username, password);
     }
 
@@ -78,21 +79,20 @@ public class DirectoryClientImpl implements DirectoryClient {
         getDirectoryManager().close(sessionId);
     }
 
-    public void commit() throws ClientException, DirectoryException {
+    public void commit() throws DirectoryException {
         getDirectoryManager().commit(sessionId);
     }
 
     public DocumentModel createEntry(Map<String, Object> fieldMap)
-            throws ClientException, DirectoryException {
+            throws DirectoryException {
         return getDirectoryManager().createEntry(sessionId, fieldMap);
     }
 
-    public void deleteEntry(DocumentModel docModel)
-            throws ClientException, DirectoryException {
+    public void deleteEntry(DocumentModel docModel) throws DirectoryException {
         getDirectoryManager().deleteEntry(sessionId, docModel);
     }
 
-    public void deleteEntry(String id) throws ClientException, DirectoryException {
+    public void deleteEntry(String id) throws DirectoryException {
         getDirectoryManager().deleteEntry(sessionId, id);
     }
 
@@ -101,7 +101,7 @@ public class DirectoryClientImpl implements DirectoryClient {
         getDirectoryManager().deleteEntry(sessionId, id, map);
     }
 
-    public DocumentModelList getEntries() throws ClientException, DirectoryException {
+    public DocumentModelList getEntries() throws DirectoryException {
         return getDirectoryManager().getEntries(sessionId);
     }
 
@@ -109,54 +109,77 @@ public class DirectoryClientImpl implements DirectoryClient {
         return getDirectoryManager().getEntry(sessionId, id);
     }
 
-    public String getIdField() throws ClientException {
+    public DocumentModel getEntry(String id, boolean fetchReferences)
+            throws DirectoryException {
+        return getDirectoryManager().getEntry(sessionId, id, fetchReferences);
+    }
+
+    public String getIdField() throws DirectoryException {
         return getDirectoryManager().getIdField(sessionId);
     }
 
-    public String getPasswordField() throws ClientException {
+    public String getPasswordField() throws DirectoryException {
         return getDirectoryManager().getPasswordField(sessionId);
     }
 
     public List<String> getProjection(Map<String, Object> filter,
-            String columnName) throws ClientException, DirectoryException {
-        return getDirectoryManager().getProjection(sessionId, filter, columnName);
+            String columnName) throws DirectoryException {
+        return getDirectoryManager().getProjection(sessionId, filter,
+                columnName);
     }
 
     public List<String> getProjection(Map<String, Object> filter,
-            Set<String> fulltext, String columnName) throws ClientException, DirectoryException {
-        return getDirectoryManager().getProjection(sessionId, filter, columnName);
+            Set<String> fulltext, String columnName) throws DirectoryException {
+        return getDirectoryManager().getProjection(sessionId, filter,
+                columnName);
     }
 
-    public boolean isAuthenticating() throws ClientException, DirectoryException {
+    public boolean isAuthenticating() throws DirectoryException {
         return getDirectoryManager().isAuthenticating(sessionId);
     }
 
-    public boolean isReadOnly() throws ClientException {
+    public boolean isReadOnly() throws DirectoryException {
         return getDirectoryManager().isReadOnly(sessionId);
     }
 
     public DocumentModelList query(Map<String, Object> filter)
-            throws ClientException, DirectoryException {
+            throws DirectoryException {
         return getDirectoryManager().query(sessionId, filter);
     }
 
     public DocumentModelList query(Map<String, Object> filter,
-            Set<String> fulltext) throws ClientException, DirectoryException {
+            Set<String> fulltext) throws DirectoryException {
         return getDirectoryManager().query(sessionId, filter, fulltext);
     }
 
     public DocumentModelList query(Map<String, Object> filter,
             Set<String> fulltext, Map<String, String> orderBy)
-            throws ClientException, DirectoryException {
+            throws DirectoryException {
         return getDirectoryManager().query(sessionId, filter, fulltext, orderBy);
     }
 
-    public void rollback() throws ClientException, DirectoryException {
+    public DocumentModelList query(Map<String, Object> filter,
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences) throws DirectoryException {
+        return getDirectoryManager().query(sessionId, filter, fulltext,
+                orderBy, fetchReferences);
+    }
+
+    public void rollback() throws DirectoryException {
         getDirectoryManager().rollback(sessionId);
     }
 
-    public void updateEntry(DocumentModel docModel) throws ClientException, DirectoryException {
+    public void updateEntry(DocumentModel docModel) throws DirectoryException {
         getDirectoryManager().updateEntry(sessionId, docModel);
+    }
+
+    public DocumentModel createEntry(DocumentModel entry)
+            throws ClientException {
+        return getDirectoryManager().createEntry(sessionId, entry);
+    }
+
+    public boolean hasEntry(String id) throws ClientException {
+        return getDirectoryManager().hasEntry(sessionId, id);
     }
 
 }

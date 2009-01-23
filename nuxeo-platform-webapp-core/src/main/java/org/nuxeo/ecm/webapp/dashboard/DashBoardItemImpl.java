@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webapp.dashboard;
 import java.util.Date;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance;
@@ -158,7 +159,11 @@ public class DashBoardItemImpl implements DashBoardItem {
     public String getText() {
         String schemaName = textUtils.keySet().toArray(new String[0])[0];
         String field = textUtils.get(schemaName);
-        text = (String) docModel.getProperty(schemaName, field);
+        try {
+            text = (String) docModel.getProperty(schemaName, field);
+        } catch (ClientException e) {
+            text = null;
+        }
         if (text != null) {
             String[] lines = text.split("\n");
             StringBuilder result = new StringBuilder();
@@ -175,30 +180,5 @@ public class DashBoardItemImpl implements DashBoardItem {
     public void setTextUtils(Map<String, String> textUtils) {
         this.textUtils = textUtils;
     }
-
-/*
- * XXX: comment out setters. Remove ?
- *
- * public void setComment(String comment) { this.comment = comment; }
- *
- * public void setDescription(String description) { this.description =
- * description; }
- *
- * public void setDueDate(Date dueDate) { this.dueDate = dueDate; }
- *
- * public void setId(String id) { this.id = id; }
- *
- * public void setPriority(String priority) { this.priority = priority; }
- *
- * public void setStartDate(Date startDate) { this.startDate = startDate; }
- *
- * public void setName(String name) { this.name = name; }
- *
- * public void setDocRefTitle(String docRefTitle) { this.docRefTitle =
- * docRefTitle; }
- *
- * public void setDocUUID(int docUUID) { this.docUUID = docUUID; }
- *
- */
 
 }

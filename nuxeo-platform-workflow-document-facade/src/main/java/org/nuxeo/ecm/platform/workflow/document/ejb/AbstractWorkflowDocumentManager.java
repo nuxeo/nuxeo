@@ -23,7 +23,6 @@ import java.rmi.RemoteException;
 
 import javax.ejb.EJBException;
 import javax.ejb.SessionSynchronization;
-import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -69,8 +68,6 @@ public abstract class AbstractWorkflowDocumentManager implements
         try {
             log.trace("Connect workflow document manager");
             documentManager = getDocumentManager();
-        } catch (NamingException e) {
-            throw new EJBException(e);
         } catch (ClientException e) {
             throw new EJBException(e);
         }
@@ -88,12 +85,11 @@ public abstract class AbstractWorkflowDocumentManager implements
         }
     }
 
-    public void beforeCompletion() throws EJBException, RemoteException {
+    public void beforeCompletion() throws RemoteException {
         // TODO Auto-generated method stub
     }
 
-    protected CoreSession getDocumentManager() throws NamingException,
-            ClientException {
+    protected CoreSession getDocumentManager() throws ClientException {
         if (documentManager == null) {
             documentManager = documentManagerBusinessDelegate.getDocumentManager(
                     repositoryUri, null);
@@ -107,30 +103,18 @@ public abstract class AbstractWorkflowDocumentManager implements
     }
 
     public void unlockDocument(DocumentRef docRef) throws ClientException {
-
-        try {
-            documentManager = getDocumentManager();
-        } catch (NamingException e) {
-            throw new ClientException(e.getMessage());
-        }
+        documentManager = getDocumentManager();
 
         if (docRef != null) {
             documentManager.unlock(docRef);
             documentManager.save();
             log.debug("Document has been unlocked.... docRef=" + docRef);
         }
-
     }
 
     public DocumentModel getDocumentModelFor(DocumentRef docRef)
             throws ClientException {
-        DocumentModel dm;
-        try {
-            dm = getDocumentManager().getDocument(docRef);
-        } catch (NamingException e) {
-            throw new ClientException(e);
-        }
-        return dm;
+        return getDocumentManager().getDocument(docRef);
     }
 
     public String getRepositoryUri() {

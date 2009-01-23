@@ -33,7 +33,7 @@ public enum UserAction {
 
     final String value;
 
-    private UserAction(String value) {
+    UserAction(String value) {
         this.value = value;
     }
 

@@ -1,12 +1,11 @@
 <?xml version="1.0"?>
-
 <component
-  name="org.nuxeo.ecm.platform.forum.DefaultWorkflowDefinitionContributions">
+    name="org.nuxeo.ecm.platform.forum.DefaultWorkflowDefinitionContributions">
 
   <require>org.nuxeo.ecm.platform.workflow.jbpm</require>
 
   <extension target="org.nuxeo.ecm.platform.workflow.service.WorkflowService"
-    point="definition">
+      point="definition">
 
     <definition>
       <engineName>jbpm</engineName>

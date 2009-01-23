@@ -27,23 +27,22 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
  * This allows to use them in properties definitions.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class RenderVariables {
 
-    public static enum globalVariables {
+    public enum globalVariables {
         value, document, layoutValue, mode, layoutMode,
     }
 
-    public static enum layoutVariables {
+    public enum layoutVariables {
         layout,
     }
 
-    public static enum rowVariables {
+    public enum rowVariables {
         layoutRow, layoutRowIndex,
     }
 
-    public static enum widgetVariables {
+    public enum widgetVariables {
         widget, widgetIndex, field,
     }
 
@@ -52,7 +51,7 @@ public class RenderVariables {
      *             hierarchy.
      */
     @Deprecated
-    public static enum subWidgetVariables {
+    public enum subWidgetVariables {
         subWidget, subWidgetIndex,
     }
 

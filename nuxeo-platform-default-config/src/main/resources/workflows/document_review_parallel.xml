@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <process-definition
-  xmlns=""  name="document_review_parallel">
+    xmlns="" name="document_review_parallel">
 
   <event type="process-start">
     <script>
@@ -9,23 +8,23 @@
         executionContext.setVariable("workflow_review_type", "workflowDocumentReviewTypeParallel");
         executionContext.setVariable("workflowDirectives", new String[] {"workflowDirectiveCheck", "workflowDirectiveDiffusion", "workflowDirectiveOpinion"});
       </expression>
-   </script>
+    </script>
   </event>
 
-   <start-state name="start">
-      <transition name="review" to="review">
-         <action class="org.nuxeo.ecm.platform.workflow.jbpm.handlers.StartupActionHandler"/>
-      </transition>
-   </start-state>
+  <start-state name="start">
+    <transition name="review" to="review">
+      <action class="org.nuxeo.ecm.platform.workflow.jbpm.handlers.StartupActionHandler"/>
+    </transition>
+  </start-state>
 
-   <task-node name="review" create-tasks="false" end-tasks="true" signal="last-wait">
-      <task name="review">
-        <assignment class="org.nuxeo.ecm.platform.workflow.jbpm.handlers.NuxeoAssignmentHandler"/>
-      </task>
-      <transition name="validate" to="validated">
-        <action class="org.nuxeo.ecm.platform.workflow.jbpm.handlers.EndActionHandler"/>
-      </transition>
-   </task-node>
+  <task-node name="review" create-tasks="false" end-tasks="true" signal="last-wait">
+    <task name="review">
+      <assignment class="org.nuxeo.ecm.platform.workflow.jbpm.handlers.NuxeoAssignmentHandler"/>
+    </task>
+    <transition name="validate" to="validated">
+      <action class="org.nuxeo.ecm.platform.workflow.jbpm.handlers.EndActionHandler"/>
+    </transition>
+  </task-node>
 
-   <end-state name="validated"/>
+  <end-state name="validated"/>
 </process-definition>

@@ -47,7 +47,7 @@ public class WFBasedRuleDescriptor implements RuleDescriptor {
     private String action;
 
     @XNode("@enabled")
-    private Boolean enabled = true;
+    private boolean enabled = true;
 
     /**
      * Default constructor - used normally when created as an XObject.
@@ -60,32 +60,16 @@ public class WFBasedRuleDescriptor implements RuleDescriptor {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getAction() {
         return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
     }
 
     public String getWorkflowStateFinal() {
         return workflowStateFinal;
     }
 
-    public void setWorkflowStateFinal(String workflowStateFinal) {
-        this.workflowStateFinal = workflowStateFinal;
-    }
-
     public String getWorkflowStateInitial() {
         return workflowStateInitial;
-    }
-
-    public void setWorkflowStateInitial(String workflowStateInitial) {
-        this.workflowStateInitial = workflowStateInitial;
     }
 
     public boolean isEnabled() {

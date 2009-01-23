@@ -19,20 +19,13 @@
 
 package org.nuxeo.ecm.platform.publishing.workflow;
 
-import java.io.Serializable;
 
 /**
  * Publishing related constants.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
-public final class PublishingConstants implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    private PublishingConstants() {
-    }
+public final class PublishingConstants {
 
     public static final String WORKFLOW_REVIEWERS = "workflowReviewers";
 
@@ -45,5 +38,9 @@ public final class PublishingConstants implements Serializable {
     public static final String WORKFLOW_DEFINITION_NAME = "document_publishing";
 
     public static final String SUBMITTED_BY = "submitted_by";
+
+    // Constant utility class.
+    private PublishingConstants() {
+    }
 
 }

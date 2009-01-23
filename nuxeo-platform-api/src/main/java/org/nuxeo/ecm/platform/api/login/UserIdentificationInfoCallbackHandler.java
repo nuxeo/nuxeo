@@ -39,7 +39,7 @@ public class UserIdentificationInfoCallbackHandler implements CallbackHandler {
     public void handle(Callback[] callbacks) throws IOException,
             UnsupportedCallbackException {
 
-         for (Callback c : callbacks) {
+        for (Callback c : callbacks) {
             if (c instanceof NameCallback) {
                 String username = userIdent.getUserName();
                 NameCallback nc = (NameCallback) c;
@@ -59,6 +59,7 @@ public class UserIdentificationInfoCallbackHandler implements CallbackHandler {
                 throw new UnsupportedCallbackException(c,
                         "Unrecognized Callback:" + c.getClass().getName());
             }
-         }
+        }
     }
+
 }

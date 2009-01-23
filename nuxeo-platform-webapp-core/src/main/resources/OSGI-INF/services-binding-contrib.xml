@@ -4,8 +4,7 @@
   <documentation>
     A document manager binding.
 
-    @author
-    <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+    @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
   </documentation>
 
   <extension target="org.nuxeo.ecm.platform.api.PlatformService"
@@ -18,8 +17,7 @@
 		<!-- service class="org.nuxeo.ecm.platform.versioning.api.VersioningManager" jndiName="%VersioningManagerBean" /-->
 
 		<!-- service class="org.nuxeo.ecm.platform.interfaces.ejb.ECContentRoot" jndiName="%ECContentRootBean" />
-		<service class="org.nuxeo.ecm.platform.interfaces.ejb.ECDomain" jndiName="%ECDomainBean" />
-		<service class="org.nuxeo.ecm.platform.interfaces.ejb.ECServer" jndiName="%ECServerBean" / -->
+		<service class="org.nuxeo.ecm.platform.interfaces.ejb.ECDomain" jndiName="%ECDomainBean" / -->
     </server>
 
   </extension>

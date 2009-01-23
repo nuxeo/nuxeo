@@ -29,7 +29,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
 import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.platform.workflow.api.client.delegate.WAPIBusinessDelegate;
 import org.nuxeo.ecm.platform.workflow.api.client.events.EventNames;
@@ -54,23 +53,20 @@ import org.nuxeo.ecm.platform.workflow.web.api.WorkflowBeansDelegate;
 
 /**
  * Workflow beans delegate bean.
- *
  * <p>
  * Leverages the delegates and acts as a central access point to core workflow
  * session beans.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 @Name("workflowBeansDelegate")
-@NuxeoJavaBeanErrorHandler
 public class WorkflowBeansDelegateBean implements WorkflowBeansDelegate {
 
     private static final long serialVersionUID = 8589557822791361833L;
 
     protected static final Log log = LogFactory.getLog(WorkflowBeansDelegateBean.class);
 
-    @In(required = true)
+    @In
     protected RepositoryLocation currentServerLocation;
 
     protected WAPI wapi;
@@ -92,10 +88,9 @@ public class WorkflowBeansDelegateBean implements WorkflowBeansDelegate {
     protected WorkItemsListsBusinessDelegate wiListsBD;
 
     @Create
-    public void init()
-    {
-    	initializeBD();
-    	Events.instance().raiseEvent(EventNames.WF_INIT);
+    public void init() {
+        initializeBD();
+        Events.instance().raiseEvent(EventNames.WF_INIT);
     }
 
     public WorkflowBeansDelegateBean() {

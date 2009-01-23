@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
  */
 public interface MimetypeRegistry {
 
-    public final static String DEFAULT_MIMETYPE = "application/octet-stream";
+    String DEFAULT_MIMETYPE = "application/octet-stream";
 
     /**
      * Returns the mime type from a given stream.
@@ -123,8 +123,6 @@ public interface MimetypeRegistry {
      * @param defaultMimetype defaultMimeType to be used if no found
      * @return the string mimetype
      * @throws MimetypeDetectionException
-     *
-     *
      */
     String getMimetypeFromFilenameAndBlobWithDefault(String filename,
             Blob blob, String defaultMimetype)
@@ -158,4 +156,5 @@ public interface MimetypeRegistry {
      * @throws MimetypeDetectionException
      */
     Blob updateMimetype(Blob blob) throws MimetypeDetectionException;
+
 }

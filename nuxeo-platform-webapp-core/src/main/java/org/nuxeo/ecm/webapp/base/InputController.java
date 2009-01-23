@@ -19,16 +19,16 @@
 
 package org.nuxeo.ecm.webapp.base;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -54,16 +54,16 @@ public abstract class InputController {
     @In(value = CacheUpdateNotifier.SEAM_NAME_CACHE_NOTIFIER, create = true)
     protected CacheUpdateNotifier cacheUpdateNotifier;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected ActionManager actionManager;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected TypeManager typeManager;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected NavigationContext navigationContext;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected EventManager eventManager;
 
     @In(required = false, create = true)
@@ -76,15 +76,18 @@ public abstract class InputController {
     protected DocumentModel currentDocument;
 
     @In(create = true, required = false)
-    protected transient FacesMessages facesMessages;
+    protected FacesMessages facesMessages;
 
     @In(create = true)
     // won't inject this because of seam problem after activation
     // ::protected Map<String, String> messages;
     protected ResourcesAccessor resourcesAccessor;
 
-    @In(required = true, create = true)
-    protected transient TypesTool typesTool;
+    @In(create = true)
+    protected TypesTool typesTool;
+
+    @In(create = true)
+    protected Principal currentUser;
 
     /**
      * Utility method that helps remove a {@link DocumentModel} from a list. The
@@ -101,7 +104,7 @@ public abstract class InputController {
         }
 
         log.debug("Removing document "
-                + document.getProperty("dublincore", "title") + " from list...");
+                + document.getId() + " from list...");
 
         for (int i = 0; i < documentList.size(); i++) {
             if (documentList.get(i).getRef().equals(document.getRef())) {
@@ -112,16 +115,13 @@ public abstract class InputController {
 
     /**
      * Logs a {@link DocumentModel} title and the passed string (info).
-     *
-     * @param someLogString
-     * @param document
      */
     public void logDocumentWithTitle(String someLogString,
             DocumentModel document) {
         if (null != document) {
             log.trace('[' + getClass().getSimpleName() + "] "
                     + someLogString + ' '
-                    + document.getProperty("dublincore", "title"));
+                    + document.getId());
             log.debug("CURRENT DOC PATH: " + document.getPathAsString());
         } else {
             log.trace('[' + getClass().getSimpleName() + "] "
@@ -131,9 +131,6 @@ public abstract class InputController {
 
     /**
      * Logs a {@link DocumentModel} name and the passed string (info).
-     *
-     * @param someLogString
-     * @param document
      */
     public void logDocumentWithName(String someLogString, DocumentModel document) {
         if (null != document) {
@@ -147,9 +144,6 @@ public abstract class InputController {
 
     /**
      * Extracts references from a list of document models.
-     *
-     * @param documents
-     * @return
      */
     protected List<DocumentRef> extractReferences(List<DocumentModel> documents) {
         List<DocumentRef> references = new ArrayList<DocumentRef>();
@@ -168,20 +162,12 @@ public abstract class InputController {
 
     /**
      * Is the current logged user an administrator?
-     *
-     * @return
      */
     public boolean getAdministrator() {
         boolean administrator = false;
-
-        NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
-
-        List<String> groups = principal.getGroups();
-
-        if (groups.contains("administrators")) {
-            administrator = true;
+        if (currentUser instanceof NuxeoPrincipal) {
+            administrator = ((NuxeoPrincipal) currentUser).isAdministrator();
         }
-
         return administrator;
     }
 

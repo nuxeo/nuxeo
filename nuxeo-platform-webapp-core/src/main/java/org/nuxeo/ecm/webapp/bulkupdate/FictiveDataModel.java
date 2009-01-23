@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webapp.bulkupdate;
 
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +61,7 @@ public class FictiveDataModel implements DataModel {
     public String getSchema() {
         // TODO Auto-generated method stub
         log.error("getSchema not implemented");
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public boolean isDirty() {
@@ -90,11 +89,11 @@ public class FictiveDataModel implements DataModel {
         // every field of a fictiveDataModel is dirty
     }
 
-    public Object getValue(String path) throws ParseException {
+    public Object getValue(String path) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    public Object setValue(String path, Object value) throws ParseException {
+    public Object setValue(String path, Object value) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
