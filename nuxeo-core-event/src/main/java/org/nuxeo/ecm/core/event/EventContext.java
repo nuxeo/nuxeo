@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.Event.Flag;
 
 /**
@@ -133,7 +132,7 @@ public interface EventContext extends Serializable {
      *
      * @param principal
      */
-    void setPrincipal(NuxeoPrincipal principal);
+    void setPrincipal(Principal principal);
 
     /**
      * Creates a new event in that context given the event name. The default

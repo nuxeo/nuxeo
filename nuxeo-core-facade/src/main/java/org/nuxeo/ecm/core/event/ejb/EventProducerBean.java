@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 @Stateless
 @Local(EventProducer.class)
 @Remote(EventProducer.class)
-public class EventServiceBean implements  EventProducer {
+public class EventProducerBean implements  EventProducer {
 
     protected EventProducer service = Framework.getLocalService(EventProducer.class);
     

@@ -20,10 +20,6 @@
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>
     </dependency>
-    <dependency>                                                                                                                                            
-      <groupId>javax.ejb</groupId>                                                                                                                          
-      <artifactId>ejb-api</artifactId>                                                                                                                      
-    </dependency> 
 
     <!-- TODO this should use maven conditional dependencies. If java 6 we don't need it since scripting is part of java 6 -->
     <dependency>

@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -66,6 +65,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleConstants;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleEventTypes;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
@@ -305,8 +305,8 @@ public abstract class AbstractSession implements CoreSession,
         return options;
     }
 
-    public CoreEventContext newEventContext(Object ... args) {
-        CoreEventContext ctx = new CoreEventContext(this, args);
+    public DocumentEventContext newEventContext(DocumentModel source) {
+        DocumentEventContext ctx = new DocumentEventContext(this, getPrincipal(), source);
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, repositoryName);
         ctx.setProperty(CoreEventConstants.SESSION_ID, sessionId);
         return ctx;
@@ -331,13 +331,9 @@ public abstract class AbstractSession implements CoreSession,
     protected void notifyEvent(String eventId, DocumentModel source,
             Map<String, ?> options, String category, String comment,
             boolean withLifeCycle) throws ClientException {
+        
+        DocumentEventContext ctx = new DocumentEventContext(this, getPrincipal(), source);
 
-        CoreEventContext ctx = null;
-        if (source != null) {
-            ctx = newEventContext(source);
-        } else {
-            ctx = newEventContext();
-        }
         // compatibility with old code (< 5.2.M4) - import info from old event model
         if (options != null) {
             ctx.setProperties((Map<String,Serializable>)options);
@@ -361,13 +357,19 @@ public abstract class AbstractSession implements CoreSession,
         }
         ctx.setProperty("category", category == null ?
                 DocumentEventCategories.EVENT_DOCUMENT_CATEGORY : category);
-        // set isLocal on event if JMS is blocked
-        if (source != null && source.getContextData("BLOCK_JMS_PRODUCING") != null
-                && (Boolean) source.getContextData("BLOCK_JMS_PRODUCING")) {
-            ctx.fireEvent(eventId, EnumSet.of(Event.Flag.LOCAL));
-        } else {
-            ctx.fireEvent(eventId);
+        // compat code: mark SAVE event as a commit event 
+        Event event = ctx.event(eventId);
+        if (DocumentEventTypes.SESSION_SAVED.equals(eventId)) {
+            event.setIsCommitEvent(true);
+        }        
+        // compat code: set isLocal on event if JMS is blocked
+        if (source != null) {
+            Boolean blockJms = (Boolean)source.getContextData("BLOCK_JMS_PRODUCING");
+            if (blockJms != null  && blockJms) {
+                event.setLocal(true);
+            }
         }
+        fireEvent(event);
     }
 
     /**
