@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.repository.Repository;
@@ -151,7 +152,12 @@ public class CoreSearchBackend extends AbstractSearchEngineBackend {
                 continue;
             }
             // detach the document so that we can use it beyond the session
-            ((DocumentModelImpl) doc).detach(true);
+            try {
+                ((DocumentModelImpl) doc).detach(true);
+            } catch (DocumentSecurityException e) {
+                // no access to the document (why?)
+                continue;
+            }
             resultItems.add(new DocumentModelResultItem(doc));
         }
         return new ResultSetImpl(sqlQuery, "core", searchPrincipal, offset,
