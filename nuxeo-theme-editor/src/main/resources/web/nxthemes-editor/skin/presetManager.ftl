@@ -137,7 +137,7 @@ ${preset_info.preview}
 <#assign colors=This.getStyleColors(theme_name)>
 
 <#if colors>
-<h3 class="nxthemesEditor">Available colors ...</h3>
+<h3 class="nxthemesEditor">Colors found in this theme ...</h3>
 
 <table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
 <#assign count = 0 />
