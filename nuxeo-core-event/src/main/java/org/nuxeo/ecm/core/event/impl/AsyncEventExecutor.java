@@ -68,7 +68,7 @@ public class AsyncEventExecutor {
                 keepAliveTime, TimeUnit.SECONDS, queue);
     }
     
-    public void run(PostCommitEventListener listener, EventBundle event) throws Exception {        
+    public void run(PostCommitEventListener listener, EventBundle event) {        
         executor.execute(new Job(listener, event));        
     }
     

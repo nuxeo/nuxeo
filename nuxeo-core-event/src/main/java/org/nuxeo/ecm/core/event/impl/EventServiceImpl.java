@@ -55,12 +55,13 @@ public class EventServiceImpl implements EventService {
 
     protected final ListenerList listeners;
     protected final ListenerList postCommitListeners;
-
+    protected AsyncEventExecutor asyncExec;
 
     public EventServiceImpl() {
         EntryComparator cmp = new EntryComparator();
         listeners = new ListenerList(cmp);
         postCommitListeners = new ListenerList(cmp);
+        asyncExec = AsyncEventExecutor.create();
     }
 
     public void addEventListener(EventListenerDescriptor listener) {
@@ -129,8 +130,8 @@ public class EventServiceImpl implements EventService {
         Object[] ar = postCommitListeners.getListeners();
         for (Object obj : ar) {
             Entry<PostCommitEventListener> entry = (Entry<PostCommitEventListener>)obj;
-            if (entry.async) { // TODO not yet implemented
-                entry.listener.handleEvent(event);
+            if (entry.async) {
+                asyncExec.run(entry.listener, event);
             } else {
                 entry.listener.handleEvent(event);
             }
