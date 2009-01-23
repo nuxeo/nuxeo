@@ -172,7 +172,7 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
             if (s.contains(":")) {
                 prefixedActorIds.add(s);
             } else {
-                prefixedActorIds.add(JbpmService.USER_PREFIX + s);
+                prefixedActorIds.add(NuxeoPrincipal.PREFIX + s);
             }
         }
         ti.setPooledActors(prefixedActorIds.toArray(new String[] {}));
