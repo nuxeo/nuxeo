@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.core.event.impl;
 
+import java.rmi.dgc.VMID;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,6 +29,11 @@ import org.nuxeo.ecm.core.event.EventBundle;
  */
 public class EventBundleImpl implements EventBundle {
 
+    private static final long serialVersionUID = 1L;
+
+    // not final to allow modification derived classes
+    protected VMID vmid;  
+    
     protected final List<Event> events;
 
     /**
@@ -39,6 +45,11 @@ public class EventBundleImpl implements EventBundle {
 
     public EventBundleImpl() {
         events = new ArrayList<Event>();
+        vmid = EventServiceImpl.VMID;
+    }
+    
+    public boolean hasRemoteSource() {
+        return !vmid.equals(EventServiceImpl.VMID);
     }
 
     public boolean isTransacted() {

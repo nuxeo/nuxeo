@@ -19,7 +19,6 @@ package org.nuxeo.ecm.core.event.impl;
 import java.security.Principal;
 
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Default implementation
@@ -62,7 +61,7 @@ public class EventContextImpl extends AbstractEventContext {
         this.session = session;
     }
 
-    public void setPrincipal(NuxeoPrincipal principal) {
+    public void setPrincipal(Principal principal) {
         this.principal = principal;
     }
 

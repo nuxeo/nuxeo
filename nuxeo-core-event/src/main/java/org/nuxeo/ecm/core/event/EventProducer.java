@@ -13,27 +13,21 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
+package org.nuxeo.ecm.core.event;
 
-package org.nuxeo.ecm.core.jms;
+import org.nuxeo.ecm.core.api.ClientException;
 
-import java.io.Serializable;
-
-import javax.jms.JMSException;
-import javax.jms.Topic;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface JmsPublisher {
+public interface EventProducer {
 
-    String CORE_EVENTS_TOPIC = "topic/NXCoreEvents";
-
-    void publish(Serializable content) throws JMSException;
-
-    void publish(Topic topic, Object content, MessageFactory factory) throws JMSException;
-
+    public void fireEvent(Event event) throws ClientException;
+    
+    public void fireEventBundle(EventBundle event) throws ClientException;
+    
+    
 }

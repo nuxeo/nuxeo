@@ -885,6 +885,15 @@ public class QueryMaker {
                     // use normal processing
                     super.visitExpression(node);
                 }
+            } else if (node.operator == Operator.BETWEEN) {
+                LiteralList l = (LiteralList) node.rvalue;
+                node.lvalue.accept(this);
+                buf.append(' ');
+                node.operator.accept(this);
+                buf.append(' ');
+                l.get(0).accept(this);
+                buf.append(" AND ");
+                l.get(1).accept(this);
             } else {
                 super.visitExpression(node);
             }

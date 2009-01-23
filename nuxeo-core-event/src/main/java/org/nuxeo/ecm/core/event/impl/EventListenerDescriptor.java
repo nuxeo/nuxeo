@@ -62,6 +62,12 @@ public class EventListenerDescriptor {
     protected boolean isPostCommit;
 
     /**
+     * Applies only for post commit listener
+     */
+    @XNode("@async")
+    protected boolean isAsync;
+    
+    /**
      * The priority to be used to order listeners.
      */
     @XNode("@priority")

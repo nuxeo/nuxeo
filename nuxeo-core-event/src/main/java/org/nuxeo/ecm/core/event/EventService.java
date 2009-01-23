@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.core.event;
 
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 
@@ -42,7 +44,7 @@ import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface EventService {
+public interface EventService extends EventProducer {
 
     /**
      * Add a new event listener.
@@ -93,6 +95,31 @@ public interface EventService {
     void fireEventBundle(EventBundle event) throws ClientException;
 
     /**
+     * Fire an event bundle in asynchronous mode. That is asyncrhounous listeners will be 
+     * synchronously ru.  
+     * @param event
+     * @throws ClientException
+     */
+    void fireEventBundleSync(EventBundle event) throws ClientException;
+
+
+    /**
+     * Get the list of the registered event listeners
+     * Modification on this list will not modify the internal lists in that {@link EventService}  
+     * @return the event listeners
+     */
+    List<EventListener> getEventListeners();
+    
+    
+    /**
+     * Get the list of the registered post commit event listeners
+     * Modification on this list will not modify the internal lists in that {@link EventService}   
+     * @return the post commit event listeners 
+     */
+    List<PostCommitEventListener> getPostCommitEventListeners();
+    
+    
+    /**
      * Notifies that a transaction was started.
      * <p>
      * Any fired events will be recorded until the transaction is terminated
@@ -124,5 +151,5 @@ public interface EventService {
      * @return true if a transaction was started, false otherwise
      */
     boolean isTransactionStarted();
-
+    
 }

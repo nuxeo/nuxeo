@@ -92,14 +92,14 @@ public class TestSerialization extends TestCase {
         String queryString = "SELECT * FROM Document WHERE kw1='vie' AND kw2='mechante'";
         SQLQuery parsed = SQLQueryParser.parse(queryString);
         assertEquals(
-                "SELECT * FROM Document WHERE kw1 = 'vie' AND kw2 = 'mechante'",
+                "SELECT * FROM Document WHERE kw1='vie' AND kw2='mechante'",
                 parsed.toString());
         assertEquals(0, parsed.getSelectClause().elements.size());
         assertEquals(1, parsed.getFromClause().elements.size());
 
         SQLQuery dumped = (SQLQuery) SerializableHelper.serializeUnserialize(parsed);
         assertEquals(
-                "SELECT * FROM Document WHERE kw1 = 'vie' AND kw2 = 'mechante'",
+                "SELECT * FROM Document WHERE kw1='vie' AND kw2='mechante'",
                 dumped.toString());
         assertEquals(0, dumped.getSelectClause().elements.size());
         assertEquals(1, dumped.getFromClause().elements.size());

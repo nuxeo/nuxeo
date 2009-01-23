@@ -53,8 +53,11 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.ejb.local.DocumentManagerLocal;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
+import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
@@ -73,9 +76,9 @@ import org.nuxeo.ecm.core.model.Session;
 @Stateful
 @Local(DocumentManagerLocal.class)
 @Remote(CoreSession.class)
-// @Interceptors(DocumentParameterInterceptor.class)
 @SerializedConcurrentAccess
-public class DocumentManagerBean extends AbstractSession implements SessionSynchronization {
+public class DocumentManagerBean extends AbstractSession implements
+        SessionSynchronization {
 
     private static final long serialVersionUID = 6781675353273516393L;
 
@@ -96,25 +99,19 @@ public class DocumentManagerBean extends AbstractSession implements SessionSynch
     @PermitAll
     public void destroy() {
         log.debug("@Remove");
-        //super.destroy();
+        // super.destroy();
     }
 
     @PreDestroy
-    /**
-     * This method is called before the stateful bean instance is destroyed.
-     * <p>
-     * When a client is explicitly destroying a bean using the @Remove method this method will be automatically
-     * called before the instance is destroyed
+    /*
+     * This method is called before the stateful bean instance is destroyed. <p>
+     * When a client is explicitly destroying a bean using the @Remove method
+     * this method will be automatically called before the instance is destroyed
      */
     public void preDestroy() {
         log.debug("@PreDestroy");
         super.destroy();
     }
-
-    // @PostConstruct
-    // protected void create() {
-    // log.debug("@PostConstructor");
-    // }
 
     @PostActivate
     public void readState() {
@@ -150,7 +147,8 @@ public class DocumentManagerBean extends AbstractSession implements SessionSynch
             principal = (Principal) sessionContext.get(CONTEXT_PRINCIPAL_KEY);
             if (principal == null) {
                 principal = context.getCallerPrincipal();
-                sessionContext.put(CONTEXT_PRINCIPAL_KEY, (Serializable) principal);
+                sessionContext.put(CONTEXT_PRINCIPAL_KEY,
+                        (Serializable) principal);
             }
         } catch (Throwable t) {
             // TODO: don't throw the exception for the moment, as we need to
@@ -313,7 +311,6 @@ public class DocumentManagerBean extends AbstractSession implements SessionSynch
         }
     }
 
-
     public void afterBegin() throws EJBException, RemoteException {
         if (log.isTraceEnabled()) {
             log.trace("Transaction started");
@@ -329,9 +326,9 @@ public class DocumentManagerBean extends AbstractSession implements SessionSynch
     }
 
     public void afterCompletion(boolean committed) throws EJBException,
-    RemoteException {
+            RemoteException {
         if (log.isTraceEnabled()) {
-            log.trace("Transaction "+(committed ? "committed" : "rollbacked"));
+            log.trace("Transaction " + (committed ? "committed" : "rollbacked"));
         }
         try {
             if (committed) {
@@ -344,4 +341,245 @@ public class DocumentManagerBean extends AbstractSession implements SessionSynch
         }
     }
 
+    // Methods that throws a rolling back application exception
+
+    @Override
+    public DocumentModel createDocument(DocumentModel docModel)
+            throws ClientException {
+
+        try {
+            return super.createDocument(docModel);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public DocumentModel[] createDocument(DocumentModel[] docModels)
+            throws ClientException {
+
+        try {
+            return super.createDocument(docModels);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public void save() throws ClientException {
+        try {
+            super.save();
+        } catch (Exception e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public DocumentModel saveDocument(DocumentModel docModel)
+            throws ClientException {
+        try {
+            return super.saveDocument(docModel);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public void saveDocuments(DocumentModel[] docModels) throws ClientException {
+        try {
+            super.saveDocuments(docModels);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    protected void removeDocument(Document doc) throws ClientException {
+        try {
+            super.removeDocument(doc);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public void removeDocuments(DocumentRef[] docRefs) throws ClientException {
+        try {
+            super.removeDocuments(docRefs);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public void removeChildren(DocumentRef docRef) throws ClientException {
+        try {
+            super.removeChildren(docRef);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public DocumentModel copy(DocumentRef src, DocumentRef dst, String name)
+            throws ClientException {
+        try {
+            return super.copy(src, dst, name);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst)
+            throws ClientException {
+        try {
+            return super.copy(src, dst);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst,
+            String name) throws ClientException {
+        try {
+            return super.copyProxyAsDocument(src, dst, name);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src,
+            DocumentRef dst) throws ClientException {
+        try {
+            return super.copyProxyAsDocument(src, dst);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public DocumentModel move(DocumentRef src, DocumentRef dst, String name)
+            throws ClientException {
+        try {
+            return super.move(src, dst, name);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+
+    }
+
+    @Override
+    public void move(List<DocumentRef> src, DocumentRef dst)
+            throws ClientException {
+        try {
+            super.move(src, dst);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public void setACP(DocumentRef docRef, ACP newAcp, boolean overwrite)
+            throws ClientException {
+        try {
+            super.setACP(docRef, newAcp, overwrite);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public DocumentModel restoreToVersion(DocumentRef docRef,
+            VersionModel version) throws ClientException {
+        try {
+            return super.restoreToVersion(docRef, version);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public void checkOut(DocumentRef docRef) throws ClientException {
+        try {
+            super.checkOut(docRef);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public void checkIn(DocumentRef docRef, VersionModel version)
+            throws ClientException {
+        try {
+            super.checkIn(docRef, version);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public DocumentModel createProxy(DocumentRef parentRef, DocumentRef docRef,
+            VersionModel version, boolean overwriteExistingProxy)
+            throws ClientException {
+        try {
+            return super.createProxy(parentRef, docRef, version,
+                    overwriteExistingProxy);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public boolean followTransition(DocumentRef docRef, String transition)
+            throws ClientException {
+        try {
+            return super.followTransition(docRef, transition);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+
+    }
+
+    @Override
+    public void setLock(DocumentRef docRef, String key) throws ClientException {
+        try {
+            super.setLock(docRef, key);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public String unlock(DocumentRef docRef) throws ClientException {
+        try {
+            return super.unlock(docRef);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public DocumentModel publishDocument(DocumentModel docToPublish,
+            DocumentModel section) throws ClientException {
+        try {
+            return super.publishDocument(docToPublish, section);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    public DocumentModel publishDocument(DocumentModel docToPublish,
+            DocumentModel section, boolean overwriteExistingProxy)
+            throws ClientException {
+        try {
+            return super.publishDocument(docToPublish, section,
+                    overwriteExistingProxy);
+        } catch (ClientException e) {
+            throw new RollbackClientException(e);
+        }
+    }
 }
