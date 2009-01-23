@@ -29,7 +29,6 @@ public class PaletteParser {
 
     private static final Log log = LogFactory.getLog(PaletteParser.class);
 
-
     public static Map<String, String> parse(URL url) {
         Map<String, String> entries = new HashMap<String, String>();
         InputStream in = null;
@@ -60,6 +59,26 @@ public class PaletteParser {
 
     public static boolean checkSanity(byte[] bytes) {
         return false;
+    }
+
+    public static String rgbToHex(int r, int g, int b) {
+        final StringBuffer hexcolor = new StringBuffer("#");
+        final int rgb[] = { r, g, b };
+        for (int i = 0; i < rgb.length; i++) {
+            final int val = rgb[i];
+            if (val < 16) {
+                hexcolor.append("0");
+            }
+            hexcolor.append(Integer.toHexString(val));
+        }
+        // optimize #aabbcc to #abc
+        if ((hexcolor.charAt(1) == hexcolor.charAt(2))
+                && (hexcolor.charAt(3) == hexcolor.charAt(4))
+                && (hexcolor.charAt(5) == hexcolor.charAt(6))) {
+            return String.format("#%s%s%s", hexcolor.charAt(1),
+                    hexcolor.charAt(4), hexcolor.charAt(6));
+        }
+        return hexcolor.toString();
     }
 
     public static PaletteFamily identifyPaletteType(byte[] bytes,

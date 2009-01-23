@@ -396,6 +396,10 @@ h2.nxthemesEditor {
 }
 
 h3.nxthemesEditor {
+  background-color: #fcfcfc;
+  font-size: 13px;
+  font-weight: normal;
+  font-style: italic;
   color: #333;
   margin: 0;
   margin-left: 14px;
@@ -403,7 +407,6 @@ h3.nxthemesEditor {
   display: inline;
   padding: 1px 10px;
   margin-left: 4px;
-  font-size: 14px;
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
   border-radius: 10px; 

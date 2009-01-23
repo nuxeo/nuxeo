@@ -16,9 +16,11 @@ package org.nuxeo.theme.editor;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.CellElement;
@@ -557,7 +559,18 @@ public class Editor {
         eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
                 style, null));
     }
-    
+
+    public static List<String> getStyleColors(final String themeName) {
+        Set<String> colors = new HashSet<String>();
+        for (Style style : Manager.getThemeManager().getStyles(themeName)) {
+            for (Map.Entry<Object, Object> entry : style.getAllProperties().entrySet()) {
+                String value = (String) entry.getValue();
+                colors.addAll(org.nuxeo.theme.html.Utils.extractCssColors(value));
+            }
+        }
+        return new ArrayList<String>(colors);
+    }
+
     public static String addPreset(String themeName, String presetName,
             String category, String value) throws ThemeException {
         if (presetName.equals("")) {
@@ -577,8 +590,9 @@ public class Editor {
         eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
                 null, null));
     }
-    
-    public static void setPresetCategory(String themeName, String presetName, String category) {
+
+    public static void setPresetCategory(String themeName, String presetName,
+            String category) {
         PresetManager.setPresetCategory(themeName, presetName, category);
         EventManager eventManager = Manager.getEventManager();
         eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(

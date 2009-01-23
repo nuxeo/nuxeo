@@ -35,8 +35,10 @@ public class GimpPaletteParser extends PaletteParser {
         int counter = 1;
         while (matcher.find()) {
             String key = matcher.group(4).trim();
-            String value = String.format("rgb(%s,%s,%s)", matcher.group(1),
-                    matcher.group(2), matcher.group(3));
+            int r = Integer.parseInt(matcher.group(1));
+            int g = Integer.parseInt(matcher.group(2));
+            int b = Integer.parseInt(matcher.group(3));
+            String value = rgbToHex(r, g, b);
             if (key.equals("Untitled")) {
                 key = String.format("Color %s", counter);
             }
@@ -45,5 +47,4 @@ public class GimpPaletteParser extends PaletteParser {
         }
         return entries;
     }
-
 }

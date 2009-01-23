@@ -40,7 +40,6 @@ public class PhotoshopPaletteParser extends PaletteParser {
 
     private static final int WIDE_CMYK = 9;
 
-
     public static boolean checkSanity(byte[] bytes) {
         return true;
     }
@@ -100,16 +99,15 @@ public class PhotoshopPaletteParser extends PaletteParser {
             int z = words[offset + 5] & 0xffff;
 
             if (colorSpace == RGB) {
-                value = String.format("rgb(%s,%s,%s)", w / 256, x / 256,
-                        y / 256);
+                value = rgbToHex(w / 256, x / 256, y / 256);
 
             } else if (colorSpace == HSB) {
                 float hue = w / 65535F; // [0.0-1.0]
                 float saturation = x / 65535F; // [0.0-1.0]
                 float brightness = y / 65535F; // [0.0-1.0]
                 Color color = Color.getHSBColor(hue, saturation, brightness);
-                value = String.format("rgb(%s,%s,%s)", color.getRed(),
-                        color.getGreen(), color.getBlue());
+                value = rgbToHex(color.getRed(), color.getGreen(),
+                        color.getBlue());
 
             } else if (colorSpace == CMYK) {
                 float cyan = 1F - w / 65535F; // [0.0-1.0]
@@ -120,8 +118,8 @@ public class PhotoshopPaletteParser extends PaletteParser {
                 log.warn("Unsupported color space: CMYK");
 
             } else if (colorSpace == GRAYSCALE) {
-                float gray = w * 256F / 10000F; // [0-256]
-                value = String.format("rgb(%s,%s,%s)", gray, gray, gray);
+                int gray = (int) (w * 256F / 10000F); // [0-256]
+                value = rgbToHex(gray, gray, gray);
 
             } else if (colorSpace == LAB) {
                 float l = w / 100F;

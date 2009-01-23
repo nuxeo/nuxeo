@@ -17,8 +17,10 @@ package org.nuxeo.theme.html;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -69,6 +71,14 @@ public final class Utils {
 
     private static final Pattern emptyCssSelectorPattern = Pattern.compile(
             "(.*?)\\{(.*?)\\}", Pattern.DOTALL);
+
+    private static final Pattern hexColorPattern = Pattern.compile(
+            ".*?#(\\p{XDigit}{3,6}).*?", Pattern.DOTALL);
+
+    private static final Pattern rgbColorPattern = Pattern.compile(
+            ".*?rgb\\s*\\(\\s*([0-9,\\s]+)\\s*\\).*?", Pattern.DOTALL);
+    
+    private static final Pattern rgbDigitPattern = Pattern.compile("([0-9]{1,3},[0-9]{1,3},[0-9]{1,3})");
 
     public static final Pattern PRESET_PATTERN = Pattern.compile("^\"(.*?)\"$",
             Pattern.DOTALL);
@@ -241,7 +251,7 @@ public final class Utils {
                 themeName = theme.getName();
             }
         }
-        
+
         final StringBuilder sb = new StringBuilder();
         final StringBuilder pSb = new StringBuilder();
         for (String viewName : viewNames) {
@@ -257,13 +267,13 @@ public final class Utils {
                 addSpace = true;
             }
 
-            for (String path : style.getPathsForView(viewName)) {                
+            for (String path : style.getPathsForView(viewName)) {
                 final Properties styleProperties = style.getPropertiesFor(
                         viewName, path);
                 if (styleProperties.isEmpty()) {
                     continue;
                 }
-                
+
                 final String[] splitPaths = path.split(",");
                 final int len = splitPaths.length;
                 for (int i = 0; i < len; i++) {
@@ -374,6 +384,50 @@ public final class Utils {
                 style.setPropertiesFor(viewName, selector, properties);
             }
         }
+    }
+
+    public static List<String> extractCssColors(String value) {
+        final List<String> colors = new ArrayList<String>();
+        Matcher m = hexColorPattern.matcher(value);
+        while (m.find()) {
+            colors.add("#" + optimizeHexColor(m.group(1)));
+        }
+        m = rgbColorPattern.matcher(value);
+        while (m.find()) {
+            colors.add("#" + optimizeHexColor(rgbToHex(m.group(1))));
+        }
+        return colors;
+    }
+
+    public static String optimizeHexColor(String value) {
+        value = value.toLowerCase();
+        if ((value.charAt(0) == value.charAt(1))
+                && (value.charAt(2) == value.charAt(3))
+                && (value.charAt(4) == value.charAt(5))) {
+            return String.format("%s%s%s", value.charAt(0), value.charAt(2),
+                    value.charAt(4));
+        }
+        return value;
+    }
+
+    public static String rgbToHex(String value) {
+        value = value.replaceAll("\\s", "");
+        final Matcher m = rgbDigitPattern.matcher(value);
+        final StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            final String[] rgb = m.group(1).split(",");
+            final StringBuffer hexcolor = new StringBuffer();
+            for (int i = 0; i < rgb.length; i++) {
+                final int val = Integer.parseInt(rgb[i]);
+                if (val < 16) {
+                    hexcolor.append("0");
+                }
+                hexcolor.append(Integer.toHexString(val));
+            }
+            m.appendReplacement(sb, hexcolor.toString());
+        }
+        m.appendTail(sb);
+        return sb.toString();
     }
 
     public static void loadProperties(final Properties properties,

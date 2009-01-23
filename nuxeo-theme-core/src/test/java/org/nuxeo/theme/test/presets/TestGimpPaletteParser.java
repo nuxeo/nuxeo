@@ -32,10 +32,10 @@ public class TestGimpPaletteParser extends TestCase {
         assertEquals("Chocolate", keys[1]);
         assertEquals("Color 3", keys[2]);
         assertEquals("Double", keys[3]);
-        assertEquals("rgb(173,127,168)", entries.get(keys[0]));
-        assertEquals("rgb(233,185,110)", entries.get(keys[1]));
-        assertEquals("rgb(1,2,3)", entries.get(keys[2]));
-        assertEquals("rgb(1,2,3)", entries.get(keys[3]));
+        assertEquals("#ad7fa8", entries.get(keys[0]));
+        assertEquals("#e9b96e", entries.get(keys[1]));
+        assertEquals("#010203", entries.get(keys[2]));
+        assertEquals("#010203", entries.get(keys[3]));
     }
 
 }

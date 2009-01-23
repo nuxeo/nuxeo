@@ -133,6 +133,46 @@ ${preset_info.preview}
 </#if>
 
 
+
+<#assign colors=This.getStyleColors(theme_name)>
+
+<#if colors>
+<h3 class="nxthemesEditor">Available colors ...</h3>
+
+<table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
+<#assign count = 0 />
+<#assign row = 1 />
+<#assign row = (count % 10) +1 /> 
+
+  <#if row == 0>
+    <tr>
+  </#if>
+<#list colors as color>
+<td class="preset">
+  <div class="preview"><div onclick="NXThemesPresetManager.convertValueToPreset('${theme_name}', 'color', '${color}')" style="background-color: ${color}">&nbsp;</div></div>
+  <div class="name">${color}</div>
+</td>
+
+  <#if row == 10>
+    </tr>
+  </#if>
+  
+  <#assign count = count + 1/>
+</#list>
+
+<#if row < 10>
+  <#list row..9 as i>
+      <td></td>
+  </#list>
+  </tr>
+</#if>
+        
+</table>
+
+</#if>
+
+
+
 </#list>
 
 

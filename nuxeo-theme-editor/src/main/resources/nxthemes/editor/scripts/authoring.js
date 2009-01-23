@@ -1105,6 +1105,31 @@ NXThemesPresetManager.addMissingPreset = function(themeName, presetName) {
     
 };
 
+NXThemesPresetManager.convertValueToPreset = function(themeName, category, presetValue) {
+    var presetName = prompt("Enter a preset name:", "");
+    if (!presetName) {
+        return;
+    } 
+    var url = nxthemesBasePath + "/nxthemes-editor/add_preset";
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             theme_name: themeName,
+             preset_name: presetName,
+             category: category,
+             value: presetValue
+         },
+         onSuccess: function(r) {
+             NXThemes.getViewById("preset manager").refresh();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }
+    });     
+    
+};
+
 NXThemes.addActions({
     'edit preset': NXThemesPresetManager.editPreset,
     'set preset category': NXThemesPresetManager.setPresetCategory,
