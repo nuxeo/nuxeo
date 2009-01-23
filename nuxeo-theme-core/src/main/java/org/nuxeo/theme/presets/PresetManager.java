@@ -195,7 +195,7 @@ public class PresetManager {
         for (Style style : themeManager.getStyles()) {
 
             if (style.isNamed()) {
-                if (!themeName.equals(Manager.getThemeManager().getThemeNameOfNamedObject(
+                if (!themeName.equals(themeManager.getThemeNameOfNamedObject(
                         style))) {
                     continue;
                 }

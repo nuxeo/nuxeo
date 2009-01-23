@@ -579,7 +579,8 @@ public final class ThemeManager implements Registrable {
         }
         final String formatTypeName = format.getFormatType().getTypeName();
         if (formatTypeName == null) {
-            throw new ThemeException("Cannot register a format without a type");
+            throw new ThemeException(
+                    "Cannot unregister a format without a type");
         }
         if (formatsByTypeName.containsKey(formatTypeName)) {
             final List<Integer> ids = formatsByTypeName.get(formatTypeName);
@@ -619,7 +620,12 @@ public final class ThemeManager implements Registrable {
                 if (style.isNamed()) {
                     continue;
                 }
-                if (!themeName.equals(getThemeOfFormat(style).getName())) {
+                ThemeElement theme = getThemeOfFormat(style);
+                if (theme == null) {
+                    // The style is associated to a non-existing element
+                    continue;
+                }
+                if (!themeName.equals(theme.getName())) {
                     continue;
                 }
             }
