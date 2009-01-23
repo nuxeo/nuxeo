@@ -44,12 +44,13 @@ public final class Functions {
 
     public enum BytePrefix {
 
-        SI(1000, new String[]{"", "k", "M", "G", "T", "P", "E", "Z", "Y"},
-                new String[]{"", "kilo", "mega", "giga", "tera", "exa", "zetta", "yotta"}),
-        IEC(1024, new String[]{"", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi"},
-                new String[]{"", "kibi", "mebi", "tebi", "pebi", "exbi", "zebi", "yobi"}),
-        JEDEC(1024, new String[]{"", "K", "M", "G"},
-                new String[]{"", "kilo", "mega", "giga"});
+        SI(1000, new String[] { "", "k", "M", "G", "T", "P", "E", "Z", "Y" },
+                new String[] { "", "kilo", "mega", "giga", "tera", "exa",
+                        "zetta", "yotta" }), IEC(1024, new String[] { "", "Ki",
+                "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi" }, new String[] { "",
+                "kibi", "mebi", "tebi", "pebi", "exbi", "zebi", "yobi" }), JEDEC(
+                1024, new String[] { "", "K", "M", "G" }, new String[] { "",
+                        "kilo", "mega", "giga" });
 
         private final int base;
 
@@ -186,9 +187,13 @@ public final class Functions {
     public static String principalFullName(NuxeoPrincipal principal) {
         String first = principal.getFirstName();
         String last = principal.getLastName();
+        return userDisplayName(principal.getName(), first, last);
+    }
+
+    public static String userDisplayName(String id, String first, String last) {
         if (first == null || first.length() == 0) {
             if (last == null || last.length() == 0) {
-                return principal.getName();
+                return id;
             } else {
                 return last;
             }
@@ -253,10 +258,10 @@ public final class Functions {
         return printFormatedFileSize(size, "SI", true);
     }
 
-
     public static String printFormatedFileSize(String sizeS, String format,
             Boolean isShort) {
-        Integer size = (sizeS == null || "".equals(sizeS)) ? 0 : Integer.parseInt(sizeS);
+        Integer size = (sizeS == null || "".equals(sizeS)) ? 0
+                : Integer.parseInt(sizeS);
         BytePrefix prefix = Enum.valueOf(BytePrefix.class, format);
         int base = prefix.getBase();
         String[] suffix = isShort ? prefix.getShortSuffixes()
@@ -268,4 +273,5 @@ public final class Functions {
         }
         return "" + size + " " + suffix[ex] + "B";
     }
+
 }

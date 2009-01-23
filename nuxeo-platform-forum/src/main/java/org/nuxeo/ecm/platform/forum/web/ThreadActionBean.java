@@ -55,7 +55,6 @@ import org.nuxeo.ecm.platform.forum.workflow.ForumConstants;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 
 /**
  * This Action Listener represents a Thread inside a forum.
@@ -86,21 +85,20 @@ public class ThreadActionBean extends InputController implements ThreadAction {
     protected transient DocumentActions documentActions;
 
     @In(create = true)
-    protected PrincipalListManager principalListManager;
-
-    @In(create = true)
     protected transient CommentManagerActions commentManagerActions;
 
     @In(create = true)
     protected PostAction postAction;
 
-    private String title;
+    protected String title;
 
-    private String description;
+    protected String description;
 
-    private boolean moderated;
+    protected List<String> selectedModerators;
 
-    private NuxeoPrincipal principal;
+    protected boolean moderated;
+
+    protected NuxeoPrincipal principal;
 
     public String addThread() throws ClientException {
 
@@ -119,21 +117,20 @@ public class ThreadActionBean extends InputController implements ThreadAction {
     /**
      * Clean variables.
      */
-    private void clean() {
+    protected void clean() {
         title = null;
         description = null;
         moderated = false;
+        selectedModerators = null;
     }
 
     /**
      * Gets the Thread to create as a DocumentModel.
      */
-    private DocumentModel getThreadModel() throws ClientException {
+    protected DocumentModel getThreadModel() throws ClientException {
 
         String path = currentDocument.getPathAsString();
         String docId = IdUtils.generateId(title);
-
-        List<String> moderators = principalListManager.getSelectedUsers();
 
         final DocumentModel docThread = documentManager.createDocumentModel(
                 path, docId, type);
@@ -145,14 +142,14 @@ public class ThreadActionBean extends InputController implements ThreadAction {
             // XXX: hack, administrators should have the right to moderate
             // without being in this list
             // We automatically add administrators as moderators
-            if (!moderators.contains(SecurityConstants.ADMINISTRATORS)) {
-                moderators.add(SecurityConstants.ADMINISTRATORS);
+            if (!selectedModerators.contains(SecurityConstants.ADMINISTRATORS)) {
+                selectedModerators.add(SecurityConstants.ADMINISTRATORS);
             }
-            // We can also remove Administrator() since his group is added
-            if (moderators.contains("Administrator()")) {
-                moderators.remove("Administrator()");
+            // We can also remove Administrator since his group is added
+            if (selectedModerators.contains(SecurityConstants.ADMINISTRATOR)) {
+                selectedModerators.remove(SecurityConstants.ADMINISTRATOR);
             }
-            docThread.setProperty(schema, "moderators", moderators);
+            docThread.setProperty(schema, "moderators", selectedModerators);
         }
 
         return docThread;
@@ -393,13 +390,24 @@ public class ThreadActionBean extends InputController implements ThreadAction {
     /**
      * Gets the thread for a given document reference.
      */
-    private DocumentModel getDocumentThreadModel(DocumentRef threadRef)
+    protected DocumentModel getDocumentThreadModel(DocumentRef threadRef)
             throws ClientException {
         DocumentModel thread = null;
         if (threadRef != null) {
             thread = documentManager.getDocument(threadRef);
         }
         return thread;
+    }
+
+    public List<String> getSelectedModerators() {
+        if (selectedModerators == null) {
+            selectedModerators = new ArrayList<String>();
+        }
+        return selectedModerators;
+    }
+
+    public void setSelectedModerators(List<String> selectedModerators) {
+        this.selectedModerators = selectedModerators;
     }
 
 }
