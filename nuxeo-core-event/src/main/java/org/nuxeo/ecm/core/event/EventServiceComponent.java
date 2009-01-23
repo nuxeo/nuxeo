@@ -67,7 +67,7 @@ public class EventServiceComponent extends DefaultComponent {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (EventService.class == adapter) {
+        if (EventService.class == adapter || EventProducer.class == adapter) {
             return (T)service;
         }
         return null;

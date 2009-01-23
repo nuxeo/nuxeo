@@ -16,15 +16,21 @@
  */
 package org.nuxeo.ecm.core.event.test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URL;
+import java.rmi.dgc.VMID;
 import java.util.Collections;
 import java.util.EnumSet;
 
 import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.Event.Flag;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.Event.Flag;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
+import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -149,4 +155,45 @@ public class EventListenerTest extends NXRuntimeTestCase {
         assertEquals(2, SCRIPT_CNT);
     }
 
+
+    public void testRemoteForwarding() throws Exception {
+        VMID vmid1 = EventServiceImpl.VMID; // the source vmid
+        // generate another different vmid that will be used as the target host VMID
+        VMID vmid2 = new VMID();
+        int cnt = 0;
+        while (vmid2.equals(vmid1)) {
+            Thread.sleep(1000); 
+            vmid2 = new VMID();
+            if (cnt++ >10) {
+                fail("Unable to complete test - unable to generate a target vmid");
+            }
+        }        
+        
+        TestEventBundle event = new TestEventBundle();
+        assertFalse(event.hasRemoteSource());
+        // change the vmid of the event as it was created on another machine                
+        event.setVMID(vmid2);
+        assertTrue(event.hasRemoteSource());
+        // serialize the event as it was sent from vmid2 to vmid1
+        event = (TestEventBundle)serialize(event);
+        // now test the event - it should be marked as remote 
+        assertTrue(event.hasRemoteSource());
+        // redo the test but with a non remote event
+        event = new TestEventBundle();
+        assertFalse(event.hasRemoteSource());
+        event = (TestEventBundle)serialize(event);
+        // now test the event - it should be marked as local 
+        assertFalse(event.hasRemoteSource());
+    }
+    
+    public final static Object serialize(Object obj) throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream(baos);
+        out.writeObject(obj);
+        out.flush();
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        ObjectInputStream in = new ObjectInputStream(bais);
+        return in.readObject();        
+    }
+    
 }

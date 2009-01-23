@@ -14,20 +14,22 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.core.event.jms;
+package org.nuxeo.ecm.core.event.test;
 
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
+import java.rmi.dgc.VMID;
+
+import org.nuxeo.ecm.core.event.impl.EventBundleImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class JmsEventProducer implements PostCommitEventListener {
+public class TestEventBundle extends EventBundleImpl {
 
-    public void handleEvent(EventBundle events) throws ClientException {
-        // TODO Auto-generated method stub
+    private static final long serialVersionUID = 1L;
+
+    public void setVMID(VMID vmid) {
+        this.vmid = vmid;
     }
-
+    
 }

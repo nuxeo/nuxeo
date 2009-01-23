@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.core.event;
 
+import java.io.Serializable;
+
 /**
  * An ordered set of events raised during an user operation.
  * <p>
@@ -29,7 +31,7 @@ package org.nuxeo.ecm.core.event;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface EventBundle extends Iterable<Event> {
+public interface EventBundle extends Iterable<Event>, Serializable {
 
     /**
      * Gets the bundle name.
@@ -87,5 +89,11 @@ public interface EventBundle extends Iterable<Event> {
      * @return the number of events in that bundle
      */
     int size();
+    
+    /**
+     * Tests whether or not this event bundle was created on a remote machine.
+     * @return  true if the event bundle was fired from a remote machine, false otherwise
+     */
+    boolean hasRemoteSource();
 
 }

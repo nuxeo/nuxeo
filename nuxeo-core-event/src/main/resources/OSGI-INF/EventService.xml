@@ -10,6 +10,7 @@
 
   <service>
     <provide interface="org.nuxeo.ecm.core.event.EventService"/>
+    <provide interface="org.nuxeo.ecm.core.event.EventProducer"/>    
   </service>
 
   <extension-point name="listener">

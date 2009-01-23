@@ -43,5 +43,5 @@ public class CoreEventContext extends EventContextImpl {
             throws ClientException {
         ((AbstractSession) session).fireEvent(event(name, flags));
     }
-
+        
 }
