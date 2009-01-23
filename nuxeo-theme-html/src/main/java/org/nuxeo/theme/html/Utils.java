@@ -400,6 +400,9 @@ public final class Utils {
     }
 
     public static String optimizeHexColor(String value) {
+        if (value.length() != 6) {
+            return value;
+        }
         value = value.toLowerCase();
         if ((value.charAt(0) == value.charAt(1))
                 && (value.charAt(2) == value.charAt(3))
