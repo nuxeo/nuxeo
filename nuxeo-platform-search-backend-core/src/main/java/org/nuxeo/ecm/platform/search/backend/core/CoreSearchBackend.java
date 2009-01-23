@@ -139,13 +139,12 @@ public class CoreSearchBackend extends AbstractSearchEngineBackend {
     protected static ResultSet searchQuery(SQLQuery sqlQuery, int offset,
             int limit, CoreSession session, SearchPrincipal searchPrincipal)
             throws ClientException {
-        // TODO record the orignal query in sqlQuery instead of calling toString
         String query = sqlQuery.toString();
-        int max = limit == 0 ? 0 : offset + limit;
-        DocumentModelList documentModelList = session.query(query, max);
-        int size = documentModelList.size();
-        int pageHits = size - offset;
-        List<ResultItem> resultItems = new ArrayList<ResultItem>(size);
+        DocumentModelList documentModelList = session.query(query, null, limit,
+                offset, true);
+        int totalHits = (int) documentModelList.totalSize();
+        int pageHits = documentModelList.size();
+        List<ResultItem> resultItems = new ArrayList<ResultItem>(pageHits);
         for (DocumentModel doc : documentModelList) {
             if (doc == null) {
                 log.error("Got null document from query: " + query);
@@ -161,7 +160,7 @@ public class CoreSearchBackend extends AbstractSearchEngineBackend {
             resultItems.add(new DocumentModelResultItem(doc));
         }
         return new ResultSetImpl(sqlQuery, "core", searchPrincipal, offset,
-                limit, resultItems, size, pageHits);
+                limit, resultItems, totalHits, pageHits);
     }
 
     protected static Serializable getPrincipal(SearchPrincipal searchPrincipal) {
