@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
+import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -529,10 +530,10 @@ public class SessionImpl implements Session {
         return nodes;
     }
 
-    public List<Serializable> query(SQLQuery query, QueryFilter queryFilter)
-            throws StorageException {
+    public PartialList<Serializable> query(SQLQuery query, QueryFilter queryFilter,
+            boolean countTotal) throws StorageException {
         try {
-            return mapper.query(query, queryFilter, this);
+            return mapper.query(query, queryFilter, countTotal, this);
         } catch (SQLException e) {
             throw new StorageException("Invalid query: " + query, e);
         }

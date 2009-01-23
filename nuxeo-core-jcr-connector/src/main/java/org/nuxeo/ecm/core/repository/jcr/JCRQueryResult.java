@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.repository.jcr;
@@ -34,6 +33,7 @@ import javax.jcr.ValueFormatException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jackrabbit.core.query.lucene.QueryResultImpl;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
@@ -48,8 +48,8 @@ import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author Bogdan Stefanescu
+ * @author Florent Guillaume
  */
 public class JCRQueryResult implements QueryResult {
 
@@ -63,11 +63,19 @@ public class JCRQueryResult implements QueryResult {
 
     private Node node;
 
-    public JCRQueryResult(JCRQuery query, javax.jcr.query.QueryResult qr)
-            throws RepositoryException {
+    private final long totalSize;
+
+    public JCRQueryResult(JCRQuery query, javax.jcr.query.QueryResult qr,
+            boolean countTotal) throws RepositoryException {
         jcrQueryResult = qr;
         iterator = qr.getNodes();
         this.query = query;
+        if (countTotal) {
+            totalSize = ((QueryResultImpl) qr).getTotalSize();
+            // may return -1 but that's ok
+        } else {
+            totalSize = -1;
+        }
     }
 
     public javax.jcr.query.QueryResult jcrQueryResult() {
@@ -76,6 +84,10 @@ public class JCRQueryResult implements QueryResult {
 
     public long count() {
         return iterator.getSize();
+    }
+
+    public long getTotalSize() {
+        return totalSize;
     }
 
     public boolean isEmpty() {
@@ -301,7 +313,7 @@ public class JCRQueryResult implements QueryResult {
                     log.error("Could not create document model for doc " + doc);
                 }
             }
-            return new DocumentModelListImpl(list);
+            return new DocumentModelListImpl(list, totalSize);
         } catch (Exception e) {
             e.printStackTrace();
             throw new QueryException("getDocumentModels failed", e);

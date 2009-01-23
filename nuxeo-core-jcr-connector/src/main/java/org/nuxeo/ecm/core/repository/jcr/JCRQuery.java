@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.repository.jcr;
@@ -45,8 +44,8 @@ import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.query.sql.model.WhereClause;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author Bogdan Stefanescu
+ * @author Florent Guillaume
  */
 public class JCRQuery implements Query {
 
@@ -58,32 +57,40 @@ public class JCRQuery implements Query {
 
     private final String rawQuery;
 
+    private long limit;
+
+    private long offset;
+
     public JCRQuery(JCRSession session, String query) {
         rawQuery = query;
         this.session = session;
     }
 
     public QueryResult execute() throws QueryException {
-        //log.debug("SQL query: " + rawQuery);
+        return execute(false);
+    }
+
+    public QueryResult execute(boolean countTotal) throws QueryException {
         try {
             sqlQuery = SQLQueryParser.parse(rawQuery);
-            //log.info("!nxql Query: " + sqlQuery.getStatement());
             javax.jcr.query.Query jcrQuery = buildJcrQuery(sqlQuery);
-            //log.info("!jcr Query: " + jcrQuery.getStatement());
-            // run query within a controlable thread
-            // use
-            if (sqlQuery.limit > 0) {
-                QueryImpl jq = (QueryImpl) jcrQuery;
-                jq.setLimit(sqlQuery.limit);
-                jq.setOffset(sqlQuery.offset);
-            }
-            javax.jcr.query.QueryResult qr = jcrQuery.execute();
-            return new JCRQueryResult(this, qr);
+            QueryImpl jq = (QueryImpl) jcrQuery;
+            jq.setLimit(limit);
+            jq.setOffset(offset);
+            return new JCRQueryResult(this, jcrQuery.execute(), countTotal);
         } catch (RepositoryException e) {
             throw new QueryException("Failed to execute query", e);
         } catch (QueryParseException e) {
             throw new QueryException(e);
         }
+    }
+
+    public void setLimit(long limit) {
+        this.limit = limit;
+    }
+
+    public void setOffset(long offset) {
+        this.offset = offset;
     }
 
     public static String buildJCRQueryString(SQLQuery sqlQuery) {

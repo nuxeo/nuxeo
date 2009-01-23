@@ -25,6 +25,7 @@ import javax.resource.cci.Connection;
 
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
+import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -327,10 +328,12 @@ public interface Session extends Connection {
      *
      * @param query the query as a parsed tree
      * @param queryFilter the query filter
-     * @return the resulting ids
+     * @param countTotal if {@code true}, also count the total size without
+     *            offset/limit
+     * @return the resulting list with total size included
      */
-    // TODO should be an iterator
-    List<Serializable> query(SQLQuery query, QueryFilter queryFilter)
+    PartialList<Serializable> query(SQLQuery query,
+            QueryFilter queryFilter, boolean countTotal)
             throws StorageException;
 
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.api;
@@ -51,7 +50,8 @@ import org.nuxeo.ecm.core.schema.DocumentType;
  * @see DocumentModel
  * @see DocumentRef
  *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author Bogdan Stefanescu
+ * @author Florent Guillaume
  */
 public interface CoreSession {
 
@@ -987,10 +987,7 @@ public interface CoreSession {
      * @param max number of document to retrieve
      * @return the query result
      * @throws ClientException
-     *
-     * @deprecated use search service
      */
-    @Deprecated
     DocumentModelList query(String query, int max) throws ClientException;
 
     /**
@@ -1001,10 +998,7 @@ public interface CoreSession {
      * @param filter the filter to apply to result
      * @return the query result
      * @throws ClientException
-     *
-     * @deprecated use search service
      */
-    @Deprecated
     DocumentModelList query(String query, Filter filter) throws ClientException;
 
     /**
@@ -1019,6 +1013,24 @@ public interface CoreSession {
      */
     DocumentModelList query(String query, Filter filter, int max)
             throws ClientException;
+
+    /**
+     * Executes the given NXQL query and returns the result that matches the
+     * filter.
+     *
+     * @param query the query to execute
+     * @param filter the filter to apply to result
+     * @param limit the maximum number of documents to retrieve, or 0 for all of
+     *            them
+     * @param offset the offset (starting at 0) into the list of documents
+     * @param countTotal if {@code true}, return a {@link DocumentModelList}
+     *            that includes a total size of the underlying list (size if
+     *            there was no limit or offset)
+     * @return the query result
+     * @throws ClientException
+     */
+    DocumentModelList query(String query, Filter filter, long limit,
+            long offset, boolean countTotal) throws ClientException;
 
     /**
      * Executes the given NXQL query and returns an iterators of results.

@@ -29,6 +29,8 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
  * <p>
  * This includes filtering on the BROWSE permission for the given principal,
  * filtering on facets, and applying query transformers.
+ * <p>
+ * You can also include a limit and offset, to get a subset of the total.
  *
  * @author Florent Guillaume
  */

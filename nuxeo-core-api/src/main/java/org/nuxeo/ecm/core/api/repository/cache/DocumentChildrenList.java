@@ -124,6 +124,10 @@ public class DocumentChildrenList implements DocumentModelList {
         return list.size();
     }
 
+    public long totalSize() {
+        return size();
+    }
+
     public List<DocumentModel> subList(int fromIndex, int toIndex) {
         return new DocumentChildrenList(cache, list.subList(fromIndex, toIndex));
     }

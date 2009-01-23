@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
 import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryResult;
+import org.nuxeo.ecm.core.storage.PartialList;
 
 /**
  * @author Florent Guillaume
@@ -48,16 +49,24 @@ public class SQLQueryResult implements QueryResult {
 
     protected final long size;
 
+    protected final long totalSize;
+
     protected Serializable currentId;
 
-    public SQLQueryResult(SQLSession session, List<Serializable> ids) {
+    public SQLQueryResult(SQLSession session, List<Serializable> list,
+            long totalSize) {
         this.session = session;
-        it = ids.iterator();
-        size = ids.size();
+        it = list.iterator();
+        size = list.size();
+        this.totalSize = totalSize;
     }
 
     public long count() {
         return size;
+    }
+
+    public long getTotalSize() {
+        return totalSize;
     }
 
     public boolean isEmpty() {
@@ -78,7 +87,7 @@ public class SQLQueryResult implements QueryResult {
                         currentId + ": " + e.getMessage());
             }
         }
-        return new DocumentModelListImpl(list);
+        return new DocumentModelListImpl(list, totalSize);
     }
 
     public DocumentIterator getDocuments(int start) {

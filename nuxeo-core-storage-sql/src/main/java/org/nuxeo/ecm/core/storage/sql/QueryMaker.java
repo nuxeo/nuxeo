@@ -494,17 +494,7 @@ public class QueryMaker {
             // SELECT list when using DISTINCT.
             if (dialect.needsOrderByKeysAfterDistinct()) {
                 for (String key : info.orderKeys) {
-                    PropertyInfo propertyInfo = model.getPropertyInfo(key);
-                    if (propertyInfo == null) {
-                        throw new StorageException("Unknown ORDER BY field: " +
-                                key);
-                    }
-                    if (propertyInfo.propertyType.isArray()) {
-                        throw new StorageException("Cannot use collection " +
-                                key + " in ORDER BY");
-                    }
-                    Column column = database.getTable(propertyInfo.fragmentName).getColumn(
-                            propertyInfo.fragmentKey);
+                    Column column = findColumn(key, false, true);
                     String qname = column.getFullQuotedName();
                     what += ", " + qname;
                 }
@@ -523,6 +513,65 @@ public class QueryMaker {
 
         List<Column> whatColumns = Collections.singletonList(hierTable.getColumn(model.MAIN_KEY));
         selectInfo = new SQLInfoSelect(select.getStatement(), whatColumns, null, null);
+    }
+
+    protected Column findColumn(String name, boolean allowArray,
+            boolean inOrderBy) {
+        Column column;
+        if (name.startsWith(NXQL.ECM_PREFIX)) {
+            column = getSpecialColumn(name);
+        } else {
+            PropertyInfo propertyInfo = model.getPropertyInfo(name);
+            if (propertyInfo == null) {
+                throw new QueryMakerException("Unknown field: " + name);
+            }
+            Table table = database.getTable(propertyInfo.fragmentName);
+            if (propertyInfo.propertyType.isArray()) {
+                if (!allowArray) {
+                    String msg = inOrderBy ? "Cannot use collection %s in ORDER BY clause"
+                            : "Can only use collection %s with =, <>, IN or NOT IN clause";
+                    throw new QueryMakerException(String.format(msg, name));
+                }
+                // arrays are allowed when in a EXISTS subselect
+                column = table.getColumn(model.COLL_TABLE_VALUE_KEY);
+            } else {
+                column = table.getColumn(propertyInfo.fragmentKey);
+            }
+        }
+        return column;
+    }
+
+    protected Column getSpecialColumn(String name) {
+        if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
+            return joinedHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
+        }
+        if (NXQL.ECM_MIXINTYPE.equals(name)) {
+            // toplevel ones have been extracted by the analyzer
+            throw new QueryMakerException("Cannot use non-toplevel " +
+                    name + " in query");
+        }
+        if (NXQL.ECM_UUID.equals(name)) {
+            return hierTable.getColumn(model.MAIN_KEY);
+        }
+        if (NXQL.ECM_NAME.equals(name)) {
+            return hierTable.getColumn(model.HIER_CHILD_NAME_KEY);
+        }
+        if (NXQL.ECM_PARENTID.equals(name)) {
+            return hierTable.getColumn(model.HIER_PARENT_KEY);
+        }
+        if (NXQL.ECM_LIFECYCLESTATE.equals(name)) {
+            return database.getTable(model.MISC_TABLE_NAME).getColumn(
+                    model.MISC_LIFECYCLE_STATE_KEY);
+        }
+        if (NXQL.ECM_FULLTEXT.equals(name)) {
+            throw new QueryMakerException(NXQL.ECM_FULLTEXT +
+                    " must be used as left-hand operand");
+        }
+        if (NXQL.ECM_VERSIONLABEL.equals(name)) {
+            return database.getTable(model.VERSION_TABLE_NAME).getColumn(
+                    model.VERSION_LABEL_KEY);
+        }
+        throw new QueryMakerException("Unknown field: " + name);
     }
 
     /**
@@ -754,6 +803,9 @@ public class QueryMaker {
                     NXQL.ECM_UUID.equals(name) || //
                     NXQL.ECM_NAME.equals(name) || //
                     NXQL.ECM_PARENTID.equals(name)) {
+                if (inOrderBy) {
+                    orderKeys.add(name);
+                }
                 return;
             }
             if (NXQL.ECM_LIFECYCLESTATE.equals(name)) {
@@ -823,6 +875,12 @@ public class QueryMaker {
         private boolean inOrderBy;
 
         private int ftJoinNumber;
+
+        @Override
+        public void visitQuery(SQLQuery node) {
+            super.visitQuery(node);
+            // intentionally does not set limit or offset in the query
+        }
 
         @Override
         public void visitMultiExpression(MultiExpression node) {
@@ -1033,28 +1091,7 @@ public class QueryMaker {
 
         @Override
         public void visitReference(Reference node) {
-            String name = node.name;
-            Column column;
-            if (name.startsWith(NXQL.ECM_PREFIX)) {
-                column = getSpecialColumn(name);
-            } else {
-                PropertyInfo propertyInfo = model.getPropertyInfo(name);
-                if (propertyInfo == null) {
-                    throw new QueryMakerException("Unknown field: " + name);
-                }
-                Table table = database.getTable(propertyInfo.fragmentName);
-                if (propertyInfo.propertyType.isArray()) {
-                    if (!allowArray) {
-                        throw new QueryMakerException(
-                                "Cannot only use collection " + name +
-                                        " with =, <>, IN or NOT IN clause");
-                    }
-                    // arrays are allowed when in a EXISTS subselect
-                    column = table.getColumn(model.COLL_TABLE_VALUE_KEY);
-                } else {
-                    column = table.getColumn(propertyInfo.fragmentKey);
-                }
-            }
+            Column column = findColumn(node.name, allowArray, inOrderBy);
             String qname = column.getFullQuotedName();
             // some databases (Derby) can't do comparisons on CLOB
             if (column.getSqlType() == Types.CLOB) {
@@ -1064,39 +1101,6 @@ public class QueryMaker {
                 }
             }
             buf.append(qname);
-        }
-
-        protected Column getSpecialColumn(String name) {
-            if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
-                return joinedHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
-            }
-            if (NXQL.ECM_MIXINTYPE.equals(name)) {
-                // toplevel ones have been extracted by the analyzer
-                throw new QueryMakerException("Cannot use non-toplevel " +
-                        name + " in query");
-            }
-            if (NXQL.ECM_UUID.equals(name)) {
-                return hierTable.getColumn(model.MAIN_KEY);
-            }
-            if (NXQL.ECM_NAME.equals(name)) {
-                return hierTable.getColumn(model.HIER_CHILD_NAME_KEY);
-            }
-            if (NXQL.ECM_PARENTID.equals(name)) {
-                return hierTable.getColumn(model.HIER_PARENT_KEY);
-            }
-            if (NXQL.ECM_LIFECYCLESTATE.equals(name)) {
-                return database.getTable(model.MISC_TABLE_NAME).getColumn(
-                        model.MISC_LIFECYCLE_STATE_KEY);
-            }
-            if (NXQL.ECM_FULLTEXT.equals(name)) {
-                throw new QueryMakerException(NXQL.ECM_FULLTEXT +
-                        " must be used as left-hand operand");
-            }
-            if (NXQL.ECM_VERSIONLABEL.equals(name)) {
-                return database.getTable(model.VERSION_TABLE_NAME).getColumn(
-                        model.VERSION_LABEL_KEY);
-            }
-            throw new QueryMakerException("Unknown field: " + name);
         }
 
         @Override

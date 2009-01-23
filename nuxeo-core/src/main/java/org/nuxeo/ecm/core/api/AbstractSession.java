@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -1261,28 +1261,35 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     public DocumentModelList query(String query) throws ClientException {
-        return query(query, null, 0);
+        return query(query, null, 0, 0, false);
     }
 
-    @Deprecated
     public DocumentModelList query(String query, int max)
             throws ClientException {
-        return query(query, null, max);
+        return query(query, null, max, 0, false);
     }
 
-    @Deprecated
     public DocumentModelList query(String query, Filter filter)
             throws ClientException {
-        return query(query, filter, 0);
+        return query(query, filter, 0, 0, false);
     }
 
     public DocumentModelList query(String query, Filter filter, int max)
             throws ClientException {
+        return query(query, filter, max, 0, false);
+    }
+
+    public DocumentModelList query(String query, Filter filter, long limit,
+            long offset, boolean countTotal) throws ClientException {
         SecurityService securityService = getSecurityService();
         Principal principal = getPrincipal();
         try {
             Query compiledQuery = getSession().createQuery(query,
                     Query.Type.NXQL);
+            if (limit != 0) {
+                compiledQuery.setLimit(limit);
+                compiledQuery.setOffset(offset);
+            }
             QueryResult results;
             boolean postFilterPermission;
             boolean postFilterFilter;
@@ -1313,12 +1320,13 @@ public abstract class AbstractSession implements CoreSession,
                         filter instanceof FacetFilter ? (FacetFilter) filter
                                 : null,
                         securityService.getPoliciesQueryTransformers());
-                results = ((FilterableQuery) compiledQuery).execute(queryFilter);
+                results = ((FilterableQuery) compiledQuery).execute(
+                        queryFilter, countTotal);
             } else {
                 postFilterPermission = true;
                 postFilterPolicies = securityService.arePoliciesRestrictingPermission(permission);
                 postFilterFilter = filter != null;
-                results = compiledQuery.execute();
+                results = compiledQuery.execute(countTotal);
             }
             if (!postFilterPermission && !postFilterFilter
                     && !postFilterPolicies) {
@@ -1326,7 +1334,9 @@ public abstract class AbstractSession implements CoreSession,
                 return results.getDocumentModels();
             }
             // post-filter the results if the query couldn't do it
-            final DocumentModelList docs = new DocumentModelListImpl();
+            final DocumentModelList docs = new DocumentModelListImpl(
+                    Collections.<DocumentModel> emptyList(),
+                    results.getTotalSize());
             int nbr = 0;
             for (DocumentModel model : results.getDocumentModels()) {
                 if (postFilterPermission || postFilterPolicies) {
@@ -1341,7 +1351,7 @@ public abstract class AbstractSession implements CoreSession,
                 }
                 docs.add(model);
                 nbr++;
-                if (max != 0 && nbr >= max) {
+                if (limit != 0 && nbr >= limit) {
                     break;
                 }
             }

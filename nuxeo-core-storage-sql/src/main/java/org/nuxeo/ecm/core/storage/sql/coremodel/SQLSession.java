@@ -55,6 +55,7 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.security.SecurityManager;
 import org.nuxeo.ecm.core.security.SecurityService;
+import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
@@ -334,15 +335,28 @@ public class SQLSession implements Session {
             this.sqlQuery = sqlQuery;
         }
 
-        public QueryResult execute() throws QueryException {
-            return execute(null);
+        public void setLimit(long limit) {
+            sqlQuery.setLimit(limit);
         }
 
-        public QueryResult execute(QueryFilter queryFilter)
+        public void setOffset(long offset) {
+            sqlQuery.setOffset(offset);
+        }
+
+        public QueryResult execute() throws QueryException {
+            return execute(null, false);
+        }
+
+        public QueryResult execute(boolean countTotal) throws QueryException {
+            return execute(null, countTotal);
+        }
+
+        public QueryResult execute(QueryFilter queryFilter, boolean countTotal)
                 throws QueryException {
             try {
-                List<Serializable> ids = session.query(sqlQuery, queryFilter);
-                return new SQLQueryResult(SQLSession.this, ids);
+                PartialList<Serializable> lwts = session.query(sqlQuery,
+                        queryFilter, countTotal);
+                return new SQLQueryResult(SQLSession.this, lwts.list, lwts.totalSize);
             } catch (StorageException e) {
                 throw new QueryException(e.getMessage(), e);
             }
