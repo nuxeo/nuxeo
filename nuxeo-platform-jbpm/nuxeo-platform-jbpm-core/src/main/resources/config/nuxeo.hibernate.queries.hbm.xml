@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+      "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+      "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <query name="NuxeoHibernateQueries_getProcessInstancesForDoc">
+    <![CDATA[
+      select si1.token.processInstance
+      from org.jbpm.context.exe.variableinstance.StringInstance si1,
+           org.jbpm.context.exe.variableinstance.StringInstance si2
+      where si1.token = si2.token
+      and si1.value = :docId
+      and si2.value = :repoId
+      and si1.name = 'documentId'
+      and si2.name = 'documentRepositoryName'
+      and si1.token.processInstance.end is null
+    ]]>
+  </query>
+
+  <query name="NuxeoHibernateQueries_getTaskInstancesForDoc">
+    <![CDATA[
+      select t
+      from org.jbpm.context.exe.variableinstance.StringInstance si1, 
+           org.jbpm.context.exe.variableinstance.StringInstance si2,
+           org.jbpm.taskmgmt.exe.TaskInstance t
+      where (si1.id member of t.variableInstances
+        or si1.token.id = t.token.id)
+      and si1.name = 'documentId'
+      and si2.name = 'documentRepositoryName'
+      and si1.value = :docId
+      and si2.value = :repoId
+      and t.end is null
+    ]]>
+  </query>
+</hibernate-mapping>

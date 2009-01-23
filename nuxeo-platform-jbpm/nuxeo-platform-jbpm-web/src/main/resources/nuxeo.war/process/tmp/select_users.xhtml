@@ -1,0 +1,28 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <ui:composition>
+    <ui:include src="/incl/select_users_search.xhtml" />
+
+    <table cellspacing="10" cellpadding="0" border="0" class="rightsAddManager">
+    <tbody>
+      <tr>
+      <td valign="top" align="center">
+        <ui:include src="/incl/select_users_results.xhtml" />
+      </td>
+      <td valign="top" align="center">
+        <ui:include src="/incl/select_users_selection.xhtml" />
+      </td>
+      <td>
+        <ui:insert name="action" />
+      </td>
+      </tr>
+    </tbody>
+    </table>
+  </ui:composition>
+</div>

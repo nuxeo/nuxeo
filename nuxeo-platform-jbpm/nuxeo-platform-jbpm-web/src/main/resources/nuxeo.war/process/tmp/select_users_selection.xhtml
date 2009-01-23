@@ -1,0 +1,70 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <h:panelGroup id="selectedUsersAndGroups">
+    <h4>
+      <h:outputText
+        rendered="#{searchType == 'USER_TYPE' and empty searchLocation}"
+        value="#{messages['label.security.selectedUsers']}" />
+      <h:outputText
+        rendered="#{searchLocation == 'USER_MANAGEMENT'}"
+        value="#{messages['label.security.groupMembers']}" />
+      <h:outputText
+        rendered="#{searchType == 'GROUP_TYPE' and empty searchLocation}"
+        value="#{messages['label.security.selectedGroups']}" />
+      <h:outputText
+        rendered="#{(searchType == 'USER_GROUP_TYPE' or empty searchType) and empty searchLocation}"
+        value="#{messages['label.security.selectedUsersAndGroups']}" />
+    </h4>
+    <h:dataTable class="dataOutput" rowClasses="dataRowEven,dataRowOdd"
+      var="user" value="#{principalListManager.selectedUsers}"
+      rendered="#{!principalListManager.selectedUserListEmpty}">
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.username']}" />
+        </f:facet>
+        <h:outputText value="#{nxu:userFullName(user)}" />
+      </h:column>
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.action']}" />
+        </f:facet>
+        <a4j:commandLink
+          value="#{messages['label.security.delUsername']}"
+          action="#{principalListManager.removeFromSelectedUsers(user)}"
+          reRender="selectedUsersAndGroups"
+          rendered="#{empty searchLocation}" />
+        <a4j:commandLink
+          value="#{messages['label.security.removeFromGroup']}"
+          action="#{principalListManager.removeFromSelectedUsers(user)}"
+          reRender="selectedUsersAndGroups"
+          rendered="#{searchLocation == 'USER_MANAGEMENT'}" />
+      </h:column>
+    </h:dataTable>
+    <br />
+    <h:outputText
+      value="#{messages['label.security.selectedUserListEmpty']}"
+      class="clipboardEmptyMessage"
+      rendered="#{principalListManager.selectedUserListEmpty}" />
+
+    <a4j:commandButton
+      value="#{messages['label.security.resetUserList']}"
+      rendered="#{!principalListManager.selectedUserListEmpty and empty searchLocation}"
+      styleClass="button rightsAddButton"
+      action="#{principalListManager.resetSelectedUserList}"
+      reRender="selectedUsersAndGroups" />
+    <a4j:commandButton
+      value="#{messages['label.security.removeAllMembers']}"
+      rendered="#{!principalListManager.selectedUserListEmpty and searchLocation == 'USER_MANAGEMENT'}"
+      styleClass="button rightsAddButton"
+      action="#{principalListManager.resetSelectedUserList}"
+      reRender="selectedUsersAndGroups" />
+
+  </h:panelGroup>
+
+</div>

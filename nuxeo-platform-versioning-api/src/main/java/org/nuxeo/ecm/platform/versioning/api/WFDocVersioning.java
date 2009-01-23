@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.platform.versioning.api;
 
+/**
+ * @deprecated since 5.2M4: versioning does not handle workflow anymore
+ */
+@Deprecated
 public interface WFDocVersioning {
 
     /**
