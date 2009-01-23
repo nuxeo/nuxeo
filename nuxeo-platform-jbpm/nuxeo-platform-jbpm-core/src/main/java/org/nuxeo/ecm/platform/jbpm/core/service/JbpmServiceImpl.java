@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.jbpm.JbpmListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmOperation;
@@ -102,12 +103,22 @@ public class JbpmServiceImpl implements JbpmService {
             return (List<TaskInstance>) executeJbpmOperation(new JbpmOperation() {
                 public ArrayList<TaskInstance> run(JbpmContext context)
                         throws NuxeoJbpmException {
-                    List<String> groups = currentUser.getAllGroups();
-                    groups.add(currentUser.getName());
                     context.setActorId(NuxeoPrincipal.PREFIX
                             + currentUser.getName());
-                    return toArrayList(context.getTaskMgmtSession().findTaskInstances(
-                            groups));
+                    List<String> groups = currentUser.getAllGroups();
+                    List<String> prefixedGroup = new ArrayList<String>();
+                    for (String s : groups) {
+                        prefixedGroup.add(NuxeoGroup.PREFIX + s);
+                    }
+                    prefixedGroup.add(NuxeoPrincipal.PREFIX
+                            + currentUser.getName());
+                    List<TaskInstance> tis = context.getTaskMgmtSession().findTaskInstances(
+                            prefixedGroup);
+                    tis.addAll(context.getTaskMgmtSession().findPooledTaskInstances(
+                            prefixedGroup));
+                    Set<TaskInstance> setTis = new HashSet<TaskInstance>();
+                    setTis.addAll(tis);
+                    return toArrayList(setTis);
                 }
 
             });
@@ -180,8 +191,10 @@ public class JbpmServiceImpl implements JbpmService {
                 context.setActorId(NuxeoPrincipal.PREFIX + principal.getName());
                 Map<Long, ProcessInstance> maps = new HashMap<Long, ProcessInstance>();
                 for (TaskInstance ti : getCurrentTaskInstances(principal)) {
-                    maps.put(ti.getProcessInstance().getId(),
-                            ti.getProcessInstance());
+                    if (ti.getProcessInstance() != null) {
+                        maps.put(ti.getProcessInstance().getId(),
+                                ti.getProcessInstance());
+                    }
                 }
                 return toArrayList(maps.values());
             }
@@ -204,7 +217,7 @@ public class JbpmServiceImpl implements JbpmService {
         return (DocumentModel) executeJbpmOperation(new JbpmOperation() {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
-                context.setActorId(USER_PREFIX + user.getName());
+                context.setActorId(NuxeoPrincipal.PREFIX + user.getName());
                 TaskInstance sessionedTi = context.getTaskInstance(ti.getId());
                 String docId = (String) sessionedTi.getVariable(JbpmService.VariableName.documentId.name());
                 String repoId = (String) sessionedTi.getVariable(JbpmService.VariableName.documentRepositoryName.name());
@@ -249,7 +262,7 @@ public class JbpmServiceImpl implements JbpmService {
             public ArrayList<ProcessInstance> run(JbpmContext context)
                     throws NuxeoJbpmException {
                 if (user != null) {
-                    context.setActorId(USER_PREFIX + user.getName());
+                    context.setActorId(NuxeoPrincipal.PREFIX + user.getName());
                 }
                 ArrayList<ProcessInstance> result = new ArrayList<ProcessInstance>();
                 Session session = context.getSession();
@@ -278,13 +291,13 @@ public class JbpmServiceImpl implements JbpmService {
                     throws NuxeoJbpmException {
                 Set<TaskInstance> tisSet = new HashSet<TaskInstance>();
                 if (user != null) {
-                    context.setActorId(USER_PREFIX + user.getName());
+                    context.setActorId(NuxeoPrincipal.PREFIX + user.getName());
                     List<String> groups = user.getAllGroups();
                     List<String> prefixedActorsId = new ArrayList<String>();
                     for (String s : groups) {
-                        prefixedActorsId.add(GROUP_PREFIX + s);
+                        prefixedActorsId.add(NuxeoGroup.PREFIX + s);
                     }
-                    prefixedActorsId.add(USER_PREFIX + user.getName());
+                    prefixedActorsId.add(NuxeoPrincipal.PREFIX + user.getName());
                     List<TaskInstance> tis = context.getTaskMgmtSession().findTaskInstances(
                             prefixedActorsId);
                     tis.addAll(context.getTaskMgmtSession().findPooledTaskInstances(
@@ -425,7 +438,7 @@ public class JbpmServiceImpl implements JbpmService {
         return (List<String>) executeJbpmOperation(new JbpmOperation() {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
-                context.setActorId(USER_PREFIX + principal.getName());
+                context.setActorId(NuxeoPrincipal.PREFIX + principal.getName());
                 // jbpm code returns an array list.
                 return (Serializable) context.getTaskInstance(taskInstanceId).getAvailableTransitions();
             }
@@ -487,7 +500,7 @@ public class JbpmServiceImpl implements JbpmService {
         return (List<ProcessDefinition>) executeJbpmOperation(new JbpmOperation() {
             public ArrayList<ProcessDefinition> run(JbpmContext context)
                     throws NuxeoJbpmException {
-                context.setActorId(USER_PREFIX + user.getName());
+                context.setActorId(NuxeoPrincipal.PREFIX + user.getName());
                 List<ProcessDefinition> pds = context.getGraphSession().findLatestProcessDefinitions();
                 ArrayList<ProcessDefinition> result = new ArrayList<ProcessDefinition>();
                 for (ProcessDefinition pd : pds) {
