@@ -66,6 +66,7 @@ public class Main extends DefaultModule {
   @Path("presetManager")
   public Object renderPresetManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("presetManager.ftl").arg(
+            "current_theme_name", getCurrentThemeName(path)).arg(            
             "preset_groups", getPresetGroups()).arg(
             "theme_names", Manager.getThemeManager().getThemeNames())
   }
@@ -74,6 +75,7 @@ public class Main extends DefaultModule {
   @Path("styleManager")
   public Object renderStyleManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("styleManager.ftl").arg(
+            "current_theme_name", getCurrentThemeName(path)).arg(            
             "theme_names", Manager.getThemeManager().getThemeNames())
   }  
   

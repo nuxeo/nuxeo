@@ -7,10 +7,9 @@
 
 <h1 class="nxthemesEditor">Presets</h1>
 
-<#list theme_names as theme_name>
-<#assign presets = This.getCustomPresets(theme_name)>
+<#assign presets = This.getCustomPresets(current_theme_name)>
 
-<h2 class="nxthemesEditor">Theme: ${theme_name}</h2>
+<h2 class="nxthemesEditor">Theme: ${current_theme_name}</h2>
 
 <table cellspacing="5" cellpadding="4" style="margin-bottom: 10px; width: 100%">
 <#assign count = 0 />
@@ -26,11 +25,11 @@
 
 <div class="preview" title="${preset_info.value}">
 <ins class="model">
-  {"id": "preset_${theme_name}_${preset_info.name}",
+  {"id": "preset_${current_theme_name}_${preset_info.name}",
    "type": "preset",
    "data": {
      "id": "${preset_info.id}",
-     "theme_name": "${theme_name}",
+     "theme_name": "${current_theme_name}",
      "name": "${preset_info.name}",
      "value": "${preset_info.value}",
      "categories": [
@@ -66,14 +65,14 @@ ${preset_info.preview}
 <#if row < 10>
   <#list row..9 as i>
      <#if i == row>
-       <td id="paste_${theme_name}_${count}">
+       <td id="paste_${current_theme_name}_${count}">
          &nbsp;
          <ins class="model">
-         {"id": "paste_${theme_name}_${count}",
+         {"id": "paste_${current_theme_name}_${count}",
           "type": "preset",
           "data": {
             "id": "",
-            "theme_name": "${theme_name}",
+            "theme_name": "${current_theme_name}",
             "name": "",
             "value": "",
             "editable": false,
@@ -94,7 +93,7 @@ ${preset_info.preview}
 
 </table>
 
-<#assign preset_names=This.getUnidentifiedPresetNames(theme_name)>
+<#assign preset_names=This.getUnidentifiedPresetNames(current_theme_name)>
 
 <#if preset_names>
 <h3 class="nxthemesEditor">Unknown presets</h3>
@@ -110,7 +109,7 @@ ${preset_info.preview}
   </#if>
 
 <td class="preset">
-  <div class="preview"><div onclick="NXThemesPresetManager.addMissingPreset('${theme_name}', '${name}')">&nbsp;</div></div>
+  <div class="preview"><div onclick="NXThemesPresetManager.addMissingPreset('${current_theme_name}', '${name}')">&nbsp;</div></div>
   <div class="name">${name}</div>
 </td>
 
@@ -134,7 +133,7 @@ ${preset_info.preview}
 
 
 
-<#assign colors=This.getStyleColors(theme_name)>
+<#assign colors=This.getStyleColors(current_theme_name)>
 
 <#if colors>
 <h3 class="nxthemesEditor">Colors found in this theme ...</h3>
@@ -149,7 +148,7 @@ ${preset_info.preview}
   </#if>
 <#list colors as color>
 <td class="preset">
-  <div class="preview"><div onclick="NXThemesPresetManager.convertValueToPreset('${theme_name}', 'color', '${color}')" style="background-color: ${color}">&nbsp;</div></div>
+  <div class="preview"><div onclick="NXThemesPresetManager.convertValueToPreset('${current_theme_name}', 'color', '${color}')" style="background-color: ${color}">&nbsp;</div></div>
   <div class="name">${color}</div>
 </td>
 
@@ -173,11 +172,8 @@ ${preset_info.preview}
 
 
 
-</#list>
-
-
 <#list preset_groups as group>
-<h2 class="nxthemesEditor">${group}</h2>
+<h2 class="nxthemesEditor" style="text-align: center">${group}</h2>
 
 <table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
 <#assign count = 0 /> 
