@@ -55,7 +55,7 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
         documentPublished, documentSubmittedForPublication, documentPublicationRejected, documentPublicationApproved, documentWaitingPublication
     };
 
-    private final JbpmService jbpmService;
+    private JbpmService jbpmService;
 
     private PublishingService publishingService;
 
@@ -70,12 +70,16 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
         return publishingService;
     }
 
-    public JbpmPublisher() {
-        try {
-            jbpmService = Framework.getService(JbpmService.class);
-        } catch (Exception e) {
-            throw new IllegalStateException("Jbpm service is not deployed.", e);
+    private JbpmService getJbpmService() {
+        if (jbpmService == null) {
+            try {
+                jbpmService = Framework.getService(JbpmService.class);
+            } catch (Exception e) {
+                throw new IllegalStateException(
+                        "Jbpm service is not deployed.", e);
+            }
         }
+        return jbpmService;
     }
 
     public boolean canManagePublishing(DocumentModel currentDocument,
@@ -92,7 +96,7 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
             NuxeoPrincipal currentUser) throws PublishingException {
         assert currentUser != null;
         try {
-            List<TaskInstance> tis = jbpmService.getTaskInstances(proxy,
+            List<TaskInstance> tis = getJbpmService().getTaskInstances(proxy,
                     currentUser, null);
             for (TaskInstance ti : tis) {
                 if (ti.getName().equals(TASK_NAME)) {
@@ -107,7 +111,7 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
 
     public boolean isPublished(DocumentModel proxy) throws PublishingException {
         try {
-            List<TaskInstance> tis = jbpmService.getTaskInstances(proxy, null,
+            List<TaskInstance> tis = getJbpmService().getTaskInstances(proxy, null,
                     null);
             for (TaskInstance ti : tis) {
                 if (ti.getName().equals(TASK_NAME)) {
@@ -180,7 +184,7 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
         ti.setVariables(variables);
         ti.setName(TASK_NAME);
         ti.setCreate(new Date());
-        jbpmService.saveTaskInstances(Collections.singletonList(ti));
+        getJbpmService().saveTaskInstances(Collections.singletonList(ti));
     }
 
     protected void restrictPermission(DocumentModel newProxy,
@@ -225,8 +229,8 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
             NuxeoPrincipal currentUser) throws PublishingException {
         CoreSession session;
         try {
-            session = getCoreSession(
-                    currentDocument.getRepositoryName(), currentUser);
+            session = getCoreSession(currentDocument.getRepositoryName(),
+                    currentUser);
         } catch (ClientException e) {
             throw new PublishingException(e);
         }
@@ -240,7 +244,7 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
     private void endTask(DocumentModel document, NuxeoPrincipal currentUser)
             throws PublishingException {
         try {
-            List<TaskInstance> tis = jbpmService.getTaskInstances(document,
+            List<TaskInstance> tis = getJbpmService().getTaskInstances(document,
                     currentUser, null);
             for (TaskInstance ti : tis) {
                 if (ti.getName().equals(TASK_NAME)) {
